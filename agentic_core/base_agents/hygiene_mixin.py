@@ -31,7 +31,7 @@ class HygieneMixin:
         try:
             hygiene_results = self._analyze_hygiene_violations()
             violations_found = len(hygiene_results.get("empty_files", [])) + len(
-                hygiene_results.get("duplicate_files", [])
+                hygiene_results.get("duplicate_files", []),
             )
             violations_fixed = 0
 
@@ -76,7 +76,7 @@ class HygieneMixin:
                         file_hash = self._calculate_file_hash(py_file)
                         if file_hash in file_hashes:
                             results["duplicate_files"].append(
-                                {"file": str(rel_path), "duplicate_of": file_hashes[file_hash]}
+                                {"file": str(rel_path), "duplicate_of": file_hashes[file_hash]},
                             )
                         else:
                             file_hashes[file_hash] = str(rel_path)
@@ -84,7 +84,7 @@ class HygieneMixin:
                     # Check for large files
                     if py_file.stat().st_size > 1024 * 1024:  # > 1MB
                         results["large_files"].append(
-                            {"file": str(rel_path), "size_bytes": py_file.stat().st_size}
+                            {"file": str(rel_path), "size_bytes": py_file.stat().st_size},
                         )
 
                     # Check for syntax errors

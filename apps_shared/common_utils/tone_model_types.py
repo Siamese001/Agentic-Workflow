@@ -26,19 +26,19 @@ class StyleProfile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0, le=1.0) = Field(
-        default=0.7, description="Formality level (0=Casual, 1=Academic)"
+        default=0.7, description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: confloat(ge=0.0, le=1.0) = Field(
-        default=0.2, description="Emoji usage frequency"
+        default=0.2, description="Emoji usage frequency",
     )
     sentence_length_avg: int = Field(
-        default=15, ge=5, le=50, description="Target words per sentence"
+        default=15, ge=5, le=50, description="Target words per sentence",
     )
     vocabulary_complexity: confloat(ge=0.0, le=1.0) = Field(
-        default=0.5, description="Vocabulary complexity"
+        default=0.5, description="Vocabulary complexity",
     )
     confidence_level: confloat(ge=0.0, le=1.0) = Field(
-        default=0.8, description="Confidence in analysis"
+        default=0.8, description="Confidence in analysis",
     )
 
     class Config:
@@ -54,7 +54,7 @@ class GenerationConfig(BaseModel):
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
     banned_phrases: list[str] = Field(default_factory=list, description="Phrases to avoid")
     preferred_transitions: list[str] = Field(
-        default_factory=list, description="Preferred transition words"
+        default_factory=list, description="Preferred transition words",
     )
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
@@ -166,7 +166,7 @@ class ToneAnalyzer:
 
             if len(combined_text) < self.min_sample_length:
                 logger.warning(
-                    f"Insufficient content length ({len(combined_text)}), returning neutral profile"
+                    f"Insufficient content length ({len(combined_text)}), returning neutral profile",
                 )
                 return self._get_neutral_profile()
 
@@ -366,7 +366,7 @@ class ToneAnalyzer:
                 "\U0001f1e0-\U0001f1ff"  # Flags
                 "\u2600-\u26ff"  # Misc symbols
                 "\u2700-\u27bf"  # Dingbats
-                "]+"
+                "]+",
             )
 
             emoji_count = len(emoji_pattern.findall(text))
@@ -610,7 +610,7 @@ class ToneModel:
         logger.info("Initialized ToneModel with all components")
 
     def analyze_and_configure(
-        self, content_samples: list[str], archetype: str | None = None
+        self, content_samples: list[str], archetype: str | None = None,
     ) -> tuple[StyleProfile, GenerationConfig]:
         """Analyze content and generate configuration.
 
@@ -627,7 +627,7 @@ class ToneModel:
 
             # Get base configuration
             config = self.config_templates.get(
-                profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE]
+                profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE],
             )
 
             # Adjust based on formality
@@ -641,7 +641,7 @@ class ToneModel:
                 config = self._adjust_for_archetype(config, archetype)
 
             logger.info(
-                f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}"
+                f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}",
             )
 
             return profile, config

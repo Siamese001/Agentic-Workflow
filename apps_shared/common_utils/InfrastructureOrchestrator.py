@@ -179,7 +179,7 @@ class InfrastructureOrchestrator:
         # Register all health checkers
         await self.health_registry.register_checker(EventBusHealthChecker(self.event_bus))
         await self.health_registry.register_checker(
-            ProvenanceHealthChecker(self.provenance_tracker)
+            ProvenanceHealthChecker(self.provenance_tracker),
         )
         await self.health_registry.register_checker(ModelRouterHealthChecker(self.model_router))
 
@@ -216,7 +216,7 @@ class InfrastructureOrchestrator:
                 sources = payload.get("sources", [])
                 if sources:
                     await self.provenance_tracker.record_generation(
-                        event.trace_id, artifact_id, output, model_version, payload.get("prompt")
+                        event.trace_id, artifact_id, output, model_version, payload.get("prompt"),
                     )
 
         except Exception as e:
@@ -323,21 +323,21 @@ class InfrastructureOrchestrator:
             # Get client and generate
             tier = self.model_router._select_model_for_tier(
                 self.model_router._determine_tier(
-                    self.model_router._task_profiles[task_type], complexity_score
-                )
+                    self.model_router._task_profiles[task_type], complexity_score,
+                ),
             )
             client = await self.model_router.get_client(tier)
 
             # Generate response through bulkhead
             result = await self.bulkhead_manager.execute(
-                client.generate, prompt, bulkhead_name="model_generation", priority=priority
+                client.generate, prompt, bulkhead_name="model_generation", priority=priority,
             )
 
             # Record provenance
             if sources:
                 artifact_id = f"artifact_{int(time.time())}"
                 lineage = await self.provenance_tracker.record_generation(
-                    trace_id, artifact_id, result, model_config["model"], prompt
+                    trace_id, artifact_id, result, model_config["model"], prompt,
                 )
 
             # Publish completion event
@@ -479,7 +479,7 @@ async def execute_task(
     """
     orchestrator = await get_infrastructure_orchestrator()
     return await orchestrator.execute_with_infrastructure(
-        task_type, prompt, sources, complexity_score, trace_id, priority
+        task_type, prompt, sources, complexity_score, trace_id, priority,
     )
 
 
@@ -495,7 +495,7 @@ async def get_system_status() -> dict[str, Any]:
 
 # Decorator for automatic infrastructure integration
 def with_infrastructure(
-    task_type: TaskType, complexity_score: int = 1, priority: TaskPriority = TaskPriority.MEDIUM
+    task_type: TaskType, complexity_score: int = 1, priority: TaskPriority = TaskPriority.MEDIUM,
 ):
     """Decorator to add infrastructure support to functions.
 
@@ -521,7 +521,7 @@ def with_infrastructure(
 
             # Execute with infrastructure
             result = await execute_task(
-                task_type, prompt, sources, complexity_score, trace_id, priority
+                task_type, prompt, sources, complexity_score, trace_id, priority,
             )
 
             return result["result"]

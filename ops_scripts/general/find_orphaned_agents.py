@@ -59,7 +59,7 @@ def find_orphaned_agents():
                     "absolute_path": str(path),
                     "is_used": is_used,
                     "action": "KEEP" if is_used else "DELETE",
-                }
+                },
             )
 
     return orphaned

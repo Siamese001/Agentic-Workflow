@@ -290,7 +290,7 @@ def main():
             print("       DO NOT DELETE - These files have different functionality")
             print("       Use NamingAgent to suggest unique names for each variant")
             print(
-                f"       Command: python -m agentic_core.utils.core_extensions.NamingAgent --file {file_info[0]['path']}"
+                f"       Command: python -m agentic_core.utils.core_extensions.NamingAgent --file {file_info[0]['path']}",
             )
             print()
             print("-" * 120)

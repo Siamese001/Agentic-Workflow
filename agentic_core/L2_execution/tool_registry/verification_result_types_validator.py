@@ -99,7 +99,7 @@ class ToolVerifier:
         }
 
     async def verify_tool_call(
-        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None
+        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None,
     ) -> ToolVerificationReport:
         """
         Verify a tool call before execution.
@@ -145,7 +145,7 @@ class ToolVerifier:
         )
 
     def _validate_basic_tool_call(
-        self: Any, tool_name: str, tool_args: dict[str, Any]
+        self: Any, tool_name: str, tool_args: dict[str, Any],
     ) -> list[VerificationIssue]:
         """Basic validation of tool call structure."""
         issues = []
@@ -157,7 +157,7 @@ class ToolVerifier:
                     Severity="error",
                     message="file_read tool requires 'path' argument",
                     suggestion="Add 'path' argument to tool call",
-                )
+                ),
             )
         if tool_name == "file_write" and (not all(k in tool_args for k in ["path", "content"])):
             issues.append(
@@ -165,7 +165,7 @@ class ToolVerifier:
                     Severity="error",
                     message="file_write tool requires 'path' and 'content' arguments",
                     suggestion="Add Missing arguments to tool call",
-                )
+                ),
             )
         return issues
 
@@ -184,7 +184,7 @@ class ToolVerifier:
                                     message=f"Hallucinated import detected: {alias.name}",
                                     line_number=node.lineno,
                                     suggestion=f"Remove import of non-existent module '{alias.name}'",
-                                )
+                                ),
                             )
                 elif isinstance(node, ast.ImportFrom):
                     if node.module and node.module in self.hallucinated_imports:
@@ -194,7 +194,7 @@ class ToolVerifier:
                                 message=f"Hallucinated import detected: from {node.module}",
                                 line_number=node.lineno,
                                 suggestion=f"Remove import from non-existent module '{node.module}'",
-                            )
+                            ),
                         )
                 elif isinstance(node, ast.Call):
                     if isinstance(node.func, ast.Name):
@@ -205,7 +205,7 @@ class ToolVerifier:
                                     message=f"Potentially dangerous function: {node.func.id}",
                                     line_number=node.lineno,
                                     suggestion="Consider safer alternatives",
-                                )
+                                ),
                             )
         except SyntaxError as e:
             issues.append(
@@ -214,7 +214,7 @@ class ToolVerifier:
                     message=f"Syntax error: {e.msg}",
                     line_number=e.lineno,
                     suggestion="Fix syntax error before execution",
-                )
+                ),
             )
         if "import magic" in code.lower():
             issues.append(
@@ -222,7 +222,7 @@ class ToolVerifier:
                     Severity="error",
                     message="Magic imports detected",
                     suggestion="Remove any 'magic' or hallucinated imports",
-                )
+                ),
             )
         if not code.strip().endswith(('"', "'", ")", "]", "}")):
             issues.append(
@@ -230,12 +230,12 @@ class ToolVerifier:
                     Severity="warning",
                     message="Code appears incomplete",
                     suggestion="Ensure all brackets and quotes are closed",
-                )
+                ),
             )
         return issues
 
     async def _verify_tool_specific(
-        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None
+        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None,
     ) -> list[VerificationIssue]:
         """Tool-specific verification logic."""
         issues = []
@@ -247,7 +247,7 @@ class ToolVerifier:
                         Severity="error",
                         message="Path traversal attempt detected",
                         suggestion="Use absolute paths or relative paths without '..'",
-                    )
+                    ),
                 )
             if not any(path.endswith(ext) for ext in [".txt", ".py", ".json", ".csv"]):
                 issues.append(
@@ -255,7 +255,7 @@ class ToolVerifier:
                         Severity="warning",
                         message="Unusual file extension",
                         suggestion="Ensure you're reading the correct file type",
-                    )
+                    ),
                 )
         elif tool_name == "web_search":
             query = tool_args.get("query", "")
@@ -265,7 +265,7 @@ class ToolVerifier:
                         Severity="warning",
                         message="Search query too short",
                         suggestion="Provide a more descriptive search query",
-                    )
+                    ),
                 )
         elif tool_name == "execute_code":
             code = tool_args.get("code", "")
@@ -275,7 +275,7 @@ class ToolVerifier:
                         Severity="warning",
                         message="Code appears to do nothing",
                         suggestion="Add actual functionality to the code",
-                    )
+                    ),
                 )
         return issues
 
@@ -292,7 +292,7 @@ class ToolVerifier:
                         Severity="error",
                         message="Code failed syntax verification",
                         suggestion="Fix syntax errors before execution",
-                    )
+                    ),
                 )
         except Exception as e:
             issues.append(
@@ -300,7 +300,7 @@ class ToolVerifier:
                     Severity="error",
                     message=f"Verification error: {str(e)}",
                     suggestion="Check code for obvious errors",
-                )
+                ),
             )
         return issues
 

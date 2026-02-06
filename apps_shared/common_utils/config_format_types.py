@@ -84,7 +84,7 @@ class ConfigModelConverter:
         self._type_converters = self._initialize_type_converters()
 
     def convert_to_model(
-        self, data: str | dict[str, Any], source_format: ConfigFormat, model: ConfigModel
+        self, data: str | dict[str, Any], source_format: ConfigFormat, model: ConfigModel,
     ) -> ConversionResult:
         """Convert data to configuration model.
 
@@ -132,14 +132,14 @@ class ConfigModelConverter:
             )
 
             self.logger.info(
-                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings"
+                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings",
             )
             return result
 
         except Exception as e:
             self.logger.error(f"Conversion failed: {str(e)}")
             return ConversionResult(
-                config_model=model, converted_data={}, errors=[str(e)], metadata={"error": str(e)}
+                config_model=model, converted_data={}, errors=[str(e)], metadata={"error": str(e)},
             )
 
     def convert_from_dict(self, data: dict[str, Any], model: ConfigModel) -> ConversionResult:
@@ -179,7 +179,7 @@ class ConfigModelConverter:
         return self.convert_to_model(yaml_str, ConfigFormat.YAML, model)
 
     def convert_from_env(
-        self, env_data: str | dict[str, str], model: ConfigModel
+        self, env_data: str | dict[str, str], model: ConfigModel,
     ) -> ConversionResult:
         """Convert environment variables to configuration model.
 
@@ -211,7 +211,7 @@ class ConfigModelConverter:
         return result
 
     def export_to_json(
-        self, model: ConfigModel, include_defaults: bool = True, indent: int = 2
+        self, model: ConfigModel, include_defaults: bool = True, indent: int = 2,
     ) -> str:
         """Export configuration model to JSON string.
 
@@ -281,7 +281,7 @@ class ConfigModelConverter:
         return None
 
     def _handle_missing_value(
-        self, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str]
+        self, field_name: str, field_def: ConfigField, errors: list[str], warnings: list[str],
     ) -> Any:
         """Handle missing field value."""
         if field_def.required:
@@ -338,7 +338,7 @@ class ConfigModelConverter:
                 warnings.append(f"Validation failed for field: {field_name}")
 
     def _convert_to_model(
-        self, data: dict[str, Any], model: ConfigModel
+        self, data: dict[str, Any], model: ConfigModel,
     ) -> tuple[dict[str, Any], list[str], list[str]]:
         """Convert data to match configuration model."""
         converted = {}

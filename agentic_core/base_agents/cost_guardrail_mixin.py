@@ -276,7 +276,7 @@ class CostGuardrailMixin:
 
         Logger.debug(
             f"[COST] Recorded: {total_tokens} tokens, ${estimated_cost:.4f} "
-            f"(Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})"
+            f"(Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})",
         )
 
         return usage
@@ -291,7 +291,7 @@ class CostGuardrailMixin:
             self._budget_alerts_sent.add("token_threshold")
             Logger.warning(
                 f"[COST ALERT] Token usage at {token_pct:.0%} of session limit "
-                f"({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})"
+                f"({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})",
             )
 
         # Cost threshold alert
@@ -300,7 +300,7 @@ class CostGuardrailMixin:
             self._budget_alerts_sent.add("cost_threshold")
             Logger.warning(
                 f"[COST ALERT] Cost at {cost_pct:.0%} of session limit "
-                f"(${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})"
+                f"(${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})",
             )
 
     def check_recursion_limit(self, operation_id: str) -> None:

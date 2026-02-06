@@ -98,7 +98,7 @@ class RecursiveOrchestrator:
 
         Logger.info(
             f"[RecursiveOrchestrator] Initialized with max_depth={max_depth}, "
-            f"cache_enabled={enable_validation_cache}"
+            f"cache_enabled={enable_validation_cache}",
         )
 
     def spawn_successor(
@@ -131,7 +131,7 @@ class RecursiveOrchestrator:
             self._metrics.depth_limit_hits += 1
             self._metrics.max_depth_reached = max(self._metrics.max_depth_reached, current_depth)
             Logger.critical(
-                f"[CIRCUIT_BREAKER] Max depth ({self.max_depth}) reached for {successor_spec.agent_name}"
+                f"[CIRCUIT_BREAKER] Max depth ({self.max_depth}) reached for {successor_spec.agent_name}",
             )
             return AgentResult(
                 agent_name=successor_spec.agent_name,
@@ -148,7 +148,7 @@ class RecursiveOrchestrator:
             self._metrics.failed_spawns += 1
             Logger.critical(
                 f"[CYCLE_DETECTED] Successor {successor_spec.agent_name} would create cycle "
-                f"from {current_agent}"
+                f"from {current_agent}",
             )
             return AgentResult(
                 agent_name=successor_spec.agent_name,
@@ -322,7 +322,7 @@ class RecursiveOrchestrator:
                 "predecessor_agent": predecessor,
                 "spawn_reason": "forward_rolling_recursion",
                 "accumulated_context": merged_context,
-            }
+            },
         )
 
         return ExecutionContext(

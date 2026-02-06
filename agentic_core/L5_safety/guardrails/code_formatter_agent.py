@@ -73,14 +73,14 @@ class CodeFormatterAgent(SovereignBaseAgent):
         try:
             # Black formatting
             black_result = safe_execute(
-                ["black", "--quiet", str(file)], capture_output=True, text=True, check=False
+                ["black", "--quiet", str(file)], capture_output=True, text=True, check=False,
             )
             if black_result.returncode == 0 and "reformatted" in black_result.stderr:
                 changed = True
 
             # Ruff lint auto-fix
             ruff_result = safe_execute(
-                ["ruff", "check", "--fix", "--quiet", str(file)], capture_output=True, check=False
+                ["ruff", "check", "--fix", "--quiet", str(file)], capture_output=True, check=False,
             )
             if ruff_result.returncode == 0:
                 pass  # Ruff ran successfully

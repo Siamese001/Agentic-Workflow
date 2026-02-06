@@ -122,7 +122,7 @@ def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
 def main():
     parser = argparse.ArgumentParser(description="SSOT Archive Path Refactor")
     parser.add_argument(
-        "--execute", action="store_true", help="Execute changes (default is dry-run)"
+        "--execute", action="store_true", help="Execute changes (default is dry-run)",
     )
     args = parser.parse_args()
 

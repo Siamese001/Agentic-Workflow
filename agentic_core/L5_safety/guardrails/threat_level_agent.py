@@ -134,7 +134,6 @@ class ThreatDetection:
     recommendations: list[str]
 
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 
@@ -154,7 +153,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def __init__(self, rules_storage_path: str | None = None) -> None:
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(
-            os.getcwd(), ".canon_memory", "safety_rules.json"
+            os.getcwd(), ".canon_memory", "safety_rules.json",
         )
         self.rules: dict[str, SafetyRule] = {}
         self.threat_patterns: dict[str, ThreatPattern] = {}
@@ -264,7 +263,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
         confidence: Any = 0.0
         if matched_rules:
             confidence: Any = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(
-                matched_rules
+                matched_rules,
             )
         recommendations: Any = self._generate_recommendations(matched_rules)
         detection: Any = ThreatDetection(
@@ -280,7 +279,7 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "detected": detection.detected,
                 "ThreatLevel": detection.ThreatLevel.value,
                 "rules_matched": len(matched_rules),
-            }
+            },
         )
         if detection.detected:
             await self._learn_from_detection(text, matched_rules)

@@ -293,12 +293,12 @@ class ConstitutionalAISystem:
         if RuleSeverity.CRITICAL in violation_by_type:
             recommendations.append(
                 f"CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} "
-                "critical violations immediately"
+                "critical violations immediately",
             )
 
         if RuleSeverity.HIGH in violation_by_type:
             recommendations.append(
-                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-Severity violations"
+                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-Severity violations",
             )
 
         unique_rules = {v.rule_id for v in violations}

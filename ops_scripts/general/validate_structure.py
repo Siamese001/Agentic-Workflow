@@ -51,7 +51,7 @@ VALID_TERRITORIES: frozenset[str] = frozenset(
         ".git",
         "temp_quiet_test",
         "temp_verbose_test",
-    }
+    },
 )
 
 # Valid subfolders for apps_* directories (depth 2)
@@ -77,7 +77,7 @@ APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset(
         "core_components",
         "data",
         "utils",
-    }
+    },
 )
 
 # Valid subfolders for agentic_core (depth 2)
@@ -100,7 +100,7 @@ AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset(
         "patterns",
         "semantic_memory",
         "knowledge",
-    }
+    },
 )
 
 # Valid test type directories (tests/TYPE/...)
@@ -112,7 +112,7 @@ TESTS_VALID_TYPES: frozenset[str] = frozenset(
         "fixtures",
         "guardian",
         "autogen",
-    }
+    },
 )
 
 # =============================================================================
@@ -148,7 +148,7 @@ ROOT_ALLOWED_FILES: frozenset[str] = frozenset(
         "setup.py",
         "AgentTechnicalStatus.py",  # Legacy - to be migrated
         "NuclearAuditAgent.py",  # Legacy - to be migrated
-    }
+    },
 )
 
 

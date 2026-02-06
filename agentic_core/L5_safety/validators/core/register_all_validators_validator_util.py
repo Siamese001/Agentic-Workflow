@@ -111,7 +111,7 @@ def initialize() -> dict[str, Any]:
     Logger.info(
         f"[Sovereign Integration] Initialized: "
         f"{len(results['validators'])} validators, "
-        f"{len(results['strategies'])} strategies"
+        f"{len(results['strategies'])} strategies",
     )
 
     return results

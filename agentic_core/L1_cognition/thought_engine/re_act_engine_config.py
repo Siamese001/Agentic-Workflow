@@ -209,11 +209,11 @@ class ReActEngine:
         return step
 
     async def _finalize_trace(
-        self, Task: str, think_fn: Callable, trace: ReActTrace, trace_id: str
+        self, Task: str, think_fn: Callable, trace: ReActTrace, trace_id: str,
     ) -> ReActTrace:
         """Finalize trace with final answer."""
         final_thought = await think_fn(
-            f"Based on the reasoning above, provide the final answer to: {Task}", trace.steps
+            f"Based on the reasoning above, provide the final answer to: {Task}", trace.steps,
         )
         trace.final_answer = final_thought
         trace.success = True
@@ -296,7 +296,7 @@ class ReActEngine:
                 {
                     "step": len(trace.steps),
                     "reflection": reflection,
-                }
+                },
             )
 
         except Exception as e:

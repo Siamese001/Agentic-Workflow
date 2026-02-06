@@ -78,7 +78,7 @@ class BoundaryStressTest:
 
         try:
             process = subprocess.run(
-                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60
+                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60,
             )
 
             stdout = process.stdout
@@ -118,7 +118,7 @@ class BoundaryStressTest:
             if has_prompt:
                 result["status"] = "FAIL"
                 result["violations"].append(
-                    "❌ FAIL: Structural move triggered a terminal prompt (should be automatic)"
+                    "❌ FAIL: Structural move triggered a terminal prompt (should be automatic)",
                 )
             elif not has_moved and original_exists:
                 result["status"] = "WARN"
@@ -126,7 +126,7 @@ class BoundaryStressTest:
             elif moved_location:
                 result["status"] = "PASS"
                 result["violations"].append(
-                    f"✅ PASS: File moved automatically to {moved_location.relative_to(self.project_root)}"
+                    f"✅ PASS: File moved automatically to {moved_location.relative_to(self.project_root)}",
                 )
             else:
                 result["status"] = "UNKNOWN"
@@ -209,7 +209,7 @@ class BoundaryStressTest:
             if has_automatic_archive:
                 result["status"] = "FAIL"
                 result["violations"].append(
-                    "❌ FAIL: Archival move bypassed terminal prompt (should require approval)"
+                    "❌ FAIL: Archival move bypassed terminal prompt (should require approval)",
                 )
             elif has_prompt:
                 result["status"] = "PASS"
@@ -231,7 +231,7 @@ class BoundaryStressTest:
             # Timeout is EXPECTED if a prompt appears
             result["status"] = "PASS"
             result["violations"].append(
-                "✅ PASS: Command timed out waiting for input (prompt appeared as expected)"
+                "✅ PASS: Command timed out waiting for input (prompt appeared as expected)",
             )
             result["details"].append("Command timed out after 10s (expected - prompt appeared)")
         except Exception as e:
@@ -273,7 +273,7 @@ class BoundaryStressTest:
 
         try:
             process = subprocess.run(
-                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60, env=env
+                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60, env=env,
             )
 
             stdout = process.stdout
@@ -348,7 +348,7 @@ class BoundaryStressTest:
                 "",
                 "---",
                 "",
-            ]
+            ],
         )
 
         # Test Case A
@@ -361,7 +361,7 @@ class BoundaryStressTest:
                 f"**Status:** {self.results['test_a_structural']['status']}",
                 "",
                 "**Violations:**",
-            ]
+            ],
         )
         for violation in self.results["test_a_structural"]["violations"]:
             report_lines.append(f"- {violation}")
@@ -369,7 +369,7 @@ class BoundaryStressTest:
             [
                 "",
                 "**Details:**",
-            ]
+            ],
         )
         for detail in self.results["test_a_structural"]["details"]:
             report_lines.append(f"- {detail}")
@@ -385,7 +385,7 @@ class BoundaryStressTest:
                 f"**Status:** {self.results['test_b_archival']['status']}",
                 "",
                 "**Violations:**",
-            ]
+            ],
         )
         for violation in self.results["test_b_archival"]["violations"]:
             report_lines.append(f"- {violation}")
@@ -393,7 +393,7 @@ class BoundaryStressTest:
             [
                 "",
                 "**Details:**",
-            ]
+            ],
         )
         for detail in self.results["test_b_archival"]["details"]:
             report_lines.append(f"- {detail}")
@@ -409,7 +409,7 @@ class BoundaryStressTest:
                 f"**Status:** {self.results['test_c_cli_interaction']['status']}",
                 "",
                 "**Violations:**",
-            ]
+            ],
         )
         for violation in self.results["test_c_cli_interaction"]["violations"]:
             report_lines.append(f"- {violation}")
@@ -417,7 +417,7 @@ class BoundaryStressTest:
             [
                 "",
                 "**Details:**",
-            ]
+            ],
         )
         for detail in self.results["test_c_cli_interaction"]["details"]:
             report_lines.append(f"- {detail}")
@@ -430,7 +430,7 @@ class BoundaryStressTest:
                 "",
                 "| Operation | Expected Logic | Actual Behavior | Status |",
                 "| --- | --- | --- | --- |",
-            ]
+            ],
         )
 
         # Determine actual behaviors
@@ -450,18 +450,18 @@ class BoundaryStressTest:
                 f"| Archival Move | Terminal Prompt | {archival_behavior} | {self.results['test_b_archival']['status']} |",
                 f"| CLI --yes Flag | Override Env Var | {cli_behavior} | {self.results['test_c_cli_interaction']['status']} |",
                 "",
-            ]
+            ],
         )
 
         # Critical Failures
         critical_failures = []
         if self.results["test_a_structural"]["status"] == "FAIL":
             critical_failures.append(
-                "❌ **CRITICAL:** Structural moves are triggering prompts (should be automatic)"
+                "❌ **CRITICAL:** Structural moves are triggering prompts (should be automatic)",
             )
         if self.results["test_b_archival"]["status"] == "FAIL":
             critical_failures.append(
-                "❌ **CRITICAL:** Archival moves are bypassing prompts (should require approval)"
+                "❌ **CRITICAL:** Archival moves are bypassing prompts (should require approval)",
             )
         if self.results["test_c_cli_interaction"]["status"] == "FAIL":
             critical_failures.append("❌ **CRITICAL:** CLI flags are not overriding environment variables")
@@ -471,7 +471,7 @@ class BoundaryStressTest:
                 [
                     "## ⚠️ Critical Failures",
                     "",
-                ]
+                ],
             )
             report_lines.extend(critical_failures)
             report_lines.append("")
@@ -481,7 +481,7 @@ class BoundaryStressTest:
             [
                 "## Recommendations",
                 "",
-            ]
+            ],
         )
 
         if failed > 0 or errors > 0:
@@ -491,13 +491,13 @@ class BoundaryStressTest:
                     "2. **Inspect HierarchyAgent Logic:** Verify the boundary detection between structural and archival moves",
                     "3. **Check ArchivalGatekeeper:** Ensure prompt logic is correctly integrated",
                     "4. **Verify CLI Flag Parsing:** Confirm --yes flag properly sets ARCHIVE_BATCH_ACCEPT=1",
-                ]
+                ],
             )
         else:
             report_lines.extend(
                 [
                     "✅ All tests passed! The boundary between automatic structural moves and prompted archival moves is working correctly.",
-                ]
+                ],
             )
 
         report_lines.extend(
@@ -507,7 +507,7 @@ class BoundaryStressTest:
                 "",
                 "## Test Files Used",
                 "",
-            ]
+            ],
         )
         for name, path in self.test_files.items():
             exists = "✅ Exists" if path.exists() else "❌ Missing"

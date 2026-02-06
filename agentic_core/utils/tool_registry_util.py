@@ -49,7 +49,7 @@ class ToolRegistry:
         cls._tools = {}
 
     def register_tool(
-        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = ""
+        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = "",
     ) -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
@@ -72,7 +72,7 @@ class ToolRegistry:
                 except ValueError:
                     # Path is not under cwd
                     Logger.error(
-                        f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root."
+                        f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root.",
                     )
                     return False
             else:
@@ -83,14 +83,14 @@ class ToolRegistry:
             if any(excl in path_parts for excl in GLOBAL_EXCLUDED_DIRS):
                 Logger.error(
                     f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} "
-                    "is in a globally excluded directory."
+                    "is in a globally excluded directory.",
                 )
                 return False
 
             # Validate path is in Sovereign Territory
             if not is_path_allowed(str(rel_path)):
                 Logger.error(
-                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory."
+                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory.",
                 )
                 return False
 
@@ -174,7 +174,7 @@ class ToolRegistry:
         return idx.get_files(pattern)
 
     def auto_register_from_pattern(
-        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None
+        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None,
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.
@@ -205,7 +205,7 @@ class ToolRegistry:
                     registered += 1
 
         Logger.info(
-            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'"
+            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'",
         )
         return registered
 

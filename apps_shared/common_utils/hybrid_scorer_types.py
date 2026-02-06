@@ -270,7 +270,7 @@ class HybridScorer:
         return score
 
     def _normalize_score(
-        self, score: float, min_score: float = 0.0, max_score: float = 1.0
+        self, score: float, min_score: float = 0.0, max_score: float = 1.0,
     ) -> float:
         """Normalize score to [0, 1] range.
 

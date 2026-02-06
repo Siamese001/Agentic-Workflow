@@ -63,7 +63,7 @@ if response == "y":
     for old_path, new_path in renames:
         try:
             result = subprocess.run(
-                ["git", "mv", old_path, new_path], capture_output=True, text=True, check=True
+                ["git", "mv", old_path, new_path], capture_output=True, text=True, check=True,
             )
             print(f"✓ Renamed: {Path(old_path).name} -> {Path(new_path).name}")
         except subprocess.CalledProcessError as e:
@@ -74,7 +74,7 @@ if response == "y":
     print("1. Run tests: pytest tests/ -v")
     print("2. Check for broken imports")
     print(
-        "3. Commit changes: git commit -m 'Phase 1.1: Rename VALIDATOR files in L5_safety/validators'"
+        "3. Commit changes: git commit -m 'Phase 1.1: Rename VALIDATOR files in L5_safety/validators'",
     )
 else:
     print("\nRename cancelled.")

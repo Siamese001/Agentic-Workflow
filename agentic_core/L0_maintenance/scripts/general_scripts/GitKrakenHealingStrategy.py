@@ -63,7 +63,7 @@ class GitKrakenHealingStrategy:
                     "details": file_issues,
                     "priority": self.priority,
                     "strategy": self.name,
-                }
+                },
             )
         Logger.info(f"[L0 GITKRAKEN HEALING] Diagnosed {len(fixes)} version control operations")
         return fixes
@@ -93,11 +93,11 @@ class GitKrakenHealingStrategy:
             if result:
                 commit_sha: Any = result.get("commit_sha", "unknown")
                 Logger.info(
-                    f"[L0 GITKRAKEN HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}"
+                    f"[L0 GITKRAKEN HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}",
                 )
                 if config.GITKRAKEN_HEALING_AUTO_PR:
                     pr_desc: Any = "\n".join(
-                        [f"- {i.get('reason', 'Unknown reason')}" for i in fix.get("details", [])]
+                        [f"- {i.get('reason', 'Unknown reason')}" for i in fix.get("details", [])],
                     )
                     Logger.info("[L0 GITKRAKEN HEALING] Creating PR for review")
                     await self._create_pr(summary, pr_desc)
@@ -163,7 +163,7 @@ class GitKrakenHealingStrategy:
             )
             if pr_result and pr_result.get("status") == "success":
                 Logger.info(
-                    f"[L0 GITKRAKEN HEALING] PR created successfully: {pr_result.get('pr_url', 'unknown')}"
+                    f"[L0 GITKRAKEN HEALING] PR created successfully: {pr_result.get('pr_url', 'unknown')}",
                 )
                 return True
             else:

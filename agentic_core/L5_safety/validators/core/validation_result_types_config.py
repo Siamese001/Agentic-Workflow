@@ -201,7 +201,7 @@ class executive_title_composer:
         self.recovery_loop = (
             recovery_loop
             or AdaptiveRecoveryLoop(
-                initial_temperature=self.CONFIG.TEMPERATURE  # Changed self.config to self.CONFIG to match definition
+                initial_temperature=self.CONFIG.TEMPERATURE,  # Changed self.config to self.CONFIG to match definition
             )
         )
 
@@ -327,16 +327,16 @@ class executive_title_composer:
 
         if word_count < self.CONFIG.min_words:  # Changed self.config to self.CONFIG
             violations.append(
-                f"Word count {word_count} below minimum {self.CONFIG.min_words}"
+                f"Word count {word_count} below minimum {self.CONFIG.min_words}",
             )  # Changed self.config to self.CONFIG
         elif word_count > self.CONFIG.max_words:  # Changed self.config to self.CONFIG
             violations.append(
-                f"Word count {word_count} exceeds maximum {self.CONFIG.max_words}"
+                f"Word count {word_count} exceeds maximum {self.CONFIG.max_words}",
             )  # Changed self.config to self.CONFIG
 
         if char_count > self.CONFIG.max_chars:  # Changed self.config to self.CONFIG
             violations.append(
-                f"Character count {char_count} exceeds maximum {self.CONFIG.max_chars}"
+                f"Character count {char_count} exceeds maximum {self.CONFIG.max_chars}",
             )  # Fixed f-string syntax
 
         if violations:

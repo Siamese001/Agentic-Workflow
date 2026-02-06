@@ -25,7 +25,7 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
     if "MCPHardenedMixin" in content and "class MCPHardenedMixin" not in content:
         if "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin" not in content:
             imports_to_add.append(
-                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
+                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin",
             )
 
     if "Tuple" in content and "from typing import" in content:
@@ -40,12 +40,12 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
 
     if "CircuitBreaker" in content and "class CircuitBreaker" not in content:
         imports_to_add.append(
-            "# CircuitBreaker stub\nclass CircuitBreaker:\n    def __init__(self, *args, **kwargs):\n        pass\n"
+            "# CircuitBreaker stub\nclass CircuitBreaker:\n    def __init__(self, *args, **kwargs):\n        pass\n",
         )
 
     if "OutreachEngineContext" in content and "class OutreachEngineContext" not in content:
         imports_to_add.append(
-            "# OutreachEngineContext stub\nclass OutreachEngineContext:\n    def __init__(self, *args, **kwargs):\n        pass\n"
+            "# OutreachEngineContext stub\nclass OutreachEngineContext:\n    def __init__(self, *args, **kwargs):\n        pass\n",
         )
 
     if "ValidationGateExecutor" in content and "class ValidationGateExecutor" not in content:
@@ -95,7 +95,7 @@ def remove_duplicate_mixin_inheritance(file_path: Path) -> bool:
 
     # Remove HealerMixin from class definitions if LICAgentBase is present
     content = re.sub(
-        r"class (\w+)\(([^)]*LICAgentBase[^)]*), HealerMixin([^)]*)\):", r"class \1(\2\3):", content
+        r"class (\w+)\(([^)]*LICAgentBase[^)]*), HealerMixin([^)]*)\):", r"class \1(\2\3):", content,
     )
 
     if content != original:

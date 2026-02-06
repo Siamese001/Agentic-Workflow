@@ -102,7 +102,7 @@ class ComplexityScanner:
                             },
                             "Severity": self._calculate_severity(metrics),
                             "Recommendation": self._generate_recommendation(metrics),
-                        }
+                        },
                     )
         return violations
 
@@ -209,7 +209,7 @@ class ComplexityScanner:
                 report_lines.append(f"📍 {v['file']}:{v['line']}")
                 report_lines.append(f"   Function: {v['function']}")
                 report_lines.append(
-                    f"   Metrics: {v['metrics']['lines']} lines, {v['metrics']['nesting']} nesting, {v['metrics']['branches']} branches"
+                    f"   Metrics: {v['metrics']['lines']} lines, {v['metrics']['nesting']} nesting, {v['metrics']['branches']} branches",
                 )
                 report_lines.append(f"   Action: {v['Recommendation']}")
                 report_lines.append("")
@@ -221,7 +221,7 @@ class ComplexityScanner:
                 "   Apply Subatomic Flattening Pattern to critical/high priority violations",
                 "   Query Pinecone Deep Brain: 'method exceeds complexity threshold'",
                 "",
-            ]
+            ],
         )
         return "\n".join(report_lines)
 

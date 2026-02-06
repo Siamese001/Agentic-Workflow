@@ -14,7 +14,6 @@ Part of the SubAtomic agent family for code quality enforcement.
 import ast
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
 
 
@@ -91,7 +90,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
                 and node.name not in ("__init__", "__str__", "__repr__")
             ):  # Depth 2 (If)
                 file_violations.append(  # Depth 3
-                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing a return type hint."
+                    f"{fp}:{node.lineno}: Function '{node.name}' is Missing a return type hint.",
                 )
         return file_violations
 
@@ -120,7 +119,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
         for i, stmt in enumerate(func_node.body):  # Depth 2
             if isinstance(stmt, ast.Return) and i < len(func_node.body) - 1:  # Depth 3
                 func_violations.append(  # Depth 4
-                    f"{fp}:{stmt.lineno}: Unreachable code after return in function '{func_node.name}'."
+                    f"{fp}:{stmt.lineno}: Unreachable code after return in function '{func_node.name}'.",
                 )
                 break  # Only report once per function # Depth 4
         return func_violations
@@ -181,7 +180,7 @@ class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
                 if unused:
                     file_violations.append(
                         f"{fp}:{node.lineno}: Function '{node.name}' has unused "
-                        f"variables: {', '.join(sorted(unused))}."
+                        f"variables: {', '.join(sorted(unused))}.",
                     )
         return file_violations
 

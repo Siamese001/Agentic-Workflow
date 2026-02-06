@@ -101,7 +101,7 @@ class query_planner:
         """
         prompt: Any = f'\nGenerate 2-3 factual, technical passages about the following query topic.\n\nQuery: "{query}"\n\nMake them detailed, factual, and in the style of canon documentation.\nOutput format: {{"passages": ["passage1", "passage2", ...]}}\n'
         response: Any = await self.engine.resilient_mutation(
-            prompt=prompt, temperature=0.5, response_format={"type": "json_object"}
+            prompt=prompt, temperature=0.5, response_format={"type": "json_object"},
         )
         try:
             result: Any = json.loads(self._clean_json_response(response))

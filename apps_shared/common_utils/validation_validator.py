@@ -34,7 +34,7 @@ class Validation:
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(
-        self, payload: str | int | float | bool | list | dict, context: dict | None = None
+        self, payload: str | int | float | bool | list | dict, context: dict | None = None,
     ) -> ExecutionResult:
         """
         Execute the primary logic for this module.
@@ -58,7 +58,7 @@ class Validation:
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(
-        self, data: str | int | float | bool | list | dict, context: dict | None
+        self, data: str | int | float | bool | list | dict, context: dict | None,
     ) -> str | int | float | bool | list | dict:
         """Internal validation logic implementation."""
         # Initialize validation result
@@ -102,7 +102,7 @@ class Validation:
                 if not isinstance(data[field], expected_type):
                     result["errors"].append(
                         f"Field '{field}' must be of type {expected_type.__name__}, "
-                        f"got {type(data[field]).__name__}"
+                        f"got {type(data[field]).__name__}",
                     )
                     result["is_valid"] = False
 
@@ -129,7 +129,7 @@ class Validation:
                 if not isinstance(item, item_type):
                     result["errors"].append(
                         f"List item at index {i} must be of type {item_type.__name__}, "
-                        f"got {type(item).__name__}"
+                        f"got {type(item).__name__}",
                     )
                     result["is_valid"] = False
 

@@ -151,7 +151,7 @@ class AuditTrailMixin:
         self._session_id = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}..."
+            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}...",
         )
 
     def log_sovereign_event(self, action: str, details: dict[str, Any], level: str = "INFO") -> None:
@@ -327,7 +327,7 @@ class AuditTrailMixin:
         # Check for event_emission_mixin dependency
         if not hasattr(self, "emit_event"):
             raise NotImplementedError(
-                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins."
+                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins.",
             )
 
         # Build event payload with audit proof
@@ -349,7 +349,7 @@ class AuditTrailMixin:
         )
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)",
         )
 
         return proof
@@ -375,7 +375,7 @@ class AuditTrailMixin:
         proof = self._generate_audit_proof(action_type, payload)
 
         Logger.debug(
-            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)",
         )
 
         return proof

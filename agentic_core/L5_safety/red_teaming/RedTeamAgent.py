@@ -14,8 +14,6 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
@@ -182,7 +180,7 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
             report = json.loads(esc_response)
             print(
-                f"   [!] ESCALATION: {report.get('Severity', 'critical')} breach — {report.get('reinforcement_proposal')}"
+                f"   [!] ESCALATION: {report.get('Severity', 'critical')} breach — {report.get('reinforcement_proposal')}",
             )
             if hasattr(ctx, "audit_log"):
                 ctx.audit_log.record(
@@ -275,7 +273,7 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                 {
                                     "fragment": fragment[:50],
                                     "result": str(result)[:100],
-                                }
+                                },
                             )
                             violations_found += 1
                     except Exception as e:
@@ -294,7 +292,7 @@ class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 skipped = len(self.adversarial_fragments)
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)"
+                f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)",
             )
 
             return {

@@ -4,22 +4,21 @@ Removes broken headers and adds proper docstrings.
 """
 
 from pathlib import Path
-import re
 
 
 def fix_single_test_file(test_file: Path) -> bool:
     """Fix a single test file's header."""
     try:
         content = test_file.read_text(encoding="utf-8")
-        
+
         # Check if file needs fixing
         if content.startswith('"""') or content.startswith('import') or content.startswith('from'):
             return False  # Already has proper header
-        
+
         # Extract class name from filename
         class_name = test_file.stem.replace("test_", "")
         class_name_title = "".join(word.capitalize() for word in class_name.split("_"))
-        
+
         # Create proper header
         header = f'''"""
 Unit tests for {class_name_title}
@@ -78,10 +77,10 @@ class Test{class_name_title}TypeBoundaries:
         """Verify output type correctness."""
         pytest.skip("Implementation pending")
 '''
-        
+
         test_file.write_text(header, encoding="utf-8")
         return True
-        
+
     except (UnicodeDecodeError, OSError) as e:
         print(f"Error fixing {test_file}: {e}")
         return False
@@ -93,11 +92,11 @@ def fix_all_test_headers(project_root: Path):
     fixed_count = 0
     skipped_count = 0
     error_count = 0
-    
+
     for test_file in test_dir.rglob("*.py"):
         if test_file.name in ("__init__.py", "conftest.py"):
             continue
-        
+
         result = fix_single_test_file(test_file)
         if result:
             fixed_count += 1
@@ -107,8 +106,8 @@ def fix_all_test_headers(project_root: Path):
             skipped_count += 1
         else:
             error_count += 1
-    
-    print(f"\nSummary:")
+
+    print("\nSummary:")
     print(f"  Fixed: {fixed_count}")
     print(f"  Skipped (already valid): {skipped_count}")
     print(f"  Errors: {error_count}")

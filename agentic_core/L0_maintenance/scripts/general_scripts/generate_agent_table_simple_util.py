@@ -104,7 +104,7 @@ def main():
                     "canonical_quality": item["canonical_quality"]["quality_score"],
                     "duplicate_quality": dup["quality"]["quality_score"],
                     "rationale": infer_rationale(canonical, dup_path, item["action"]),
-                }
+                },
             )
 
     # Sort: DELETE first, then by agent name
@@ -130,7 +130,7 @@ def main():
             f.write(
                 f"| {r['agent_name']} | `{r['canonical']}` | `{r['duplicate']}` | "
                 f"**{r['action']}** | {r['canonical_quality']}/{r['duplicate_quality']} | "
-                f"{r['rationale']} |\n"
+                f"{r['rationale']} |\n",
             )
 
         f.write("\n---\n\n")

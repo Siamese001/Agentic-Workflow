@@ -36,8 +36,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
-from agentic_core.base_agents.circuit_breaker_mixin import circuit_breaker_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     HealingResult,
@@ -214,7 +212,7 @@ class CodeHealerAgent(
                 "enable_import": self._agent_config.enable_import,
                 "enable_structural": self._agent_config.enable_structural,
                 "dry_run": self._agent_config.dry_run,
-            }
+            },
         )
 
         # Initialize Verification Gate for Epistemic Cascade prevention
@@ -381,7 +379,7 @@ class CodeHealerAgent(
                             break
                 else:
                     Logger.error(
-                        f"CST healing failed for {file_path}: {result.get('details', 'Unknown error')}"
+                        f"CST healing failed for {file_path}: {result.get('details', 'Unknown error')}",
                     )
 
         self._actions.extend(actions)
@@ -483,7 +481,7 @@ class CodeHealerAgent(
                     action.applied = True
             else:
                 Logger.error(
-                    f"CST canon healing failed for {file_path}: {result.get('details', 'Unknown error')}"
+                    f"CST canon healing failed for {file_path}: {result.get('details', 'Unknown error')}",
                 )
 
         self._actions.extend(actions)
@@ -595,7 +593,7 @@ class CodeHealerAgent(
                     action.applied = True
             else:
                 Logger.error(
-                    f"CST structural healing failed for {file_path}: {result.get('details', 'Unknown error')}"
+                    f"CST structural healing failed for {file_path}: {result.get('details', 'Unknown error')}",
                 )
 
         self._actions.extend(actions)

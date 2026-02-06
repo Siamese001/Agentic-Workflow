@@ -36,7 +36,7 @@ def scan_file(filepath):
                                 "line": line_num,
                                 "keyword": keyword,
                                 "text": text,
-                            }
+                            },
                         )
                         break
     except Exception:

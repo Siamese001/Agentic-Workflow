@@ -96,17 +96,17 @@ class PromptLoader:
         if global_constraints:
             # Replace placeholder with actual line count
             constraints_with_count = global_constraints.replace(
-                "{original_line_count}", str(original_line_count)
+                "{original_line_count}", str(original_line_count),
             )
             constraints_with_count = constraints_with_count.replace(
-                "{int(original_line_count * 0.1)}", str(int(original_line_count * 0.1))
+                "{int(original_line_count * 0.1)}", str(int(original_line_count * 0.1)),
             )
             sections.append(constraints_with_count)
 
         # Lesson learned from previous failure
         if lesson_learned:
             sections.append(
-                f"\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{lesson_learned}\nApply this lesson to your current fix. Start fresh with the original file.\n"
+                f"\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{lesson_learned}\nApply this lesson to your current fix. Start fresh with the original file.\n",
             )
 
         # Code to fix
@@ -133,7 +133,7 @@ _loader = PromptLoader()
 
 
 def load_prompt_for_agent(
-    agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = ""
+    agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = "",
 ) -> str:
     """
     Convenience function to load complete prompt for an agent.

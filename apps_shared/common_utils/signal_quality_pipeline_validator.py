@@ -18,7 +18,7 @@ class QualityAssessment(BaseModel):
     relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
     authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
     specificity_score: confloat(ge=0.0, le=1.0) = Field(
-        default=0.0, description="Metric specificity"
+        default=0.0, description="Metric specificity",
     )
     coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
     flags: list[str] = Field(default_factory=list, description="Quality flags/warnings")
@@ -158,11 +158,11 @@ class SignalQualityPipeline:
         logger.info(
             f"Initialized SignalQualityPipeline with thresholds: "
             f"relevance={relevance_threshold}, authority={authority_threshold}, "
-            f"specificity={specificity_threshold}"
+            f"specificity={specificity_threshold}",
         )
 
     def evaluate_signal(
-        self, content: str, metadata: dict[str, str], query: str, doc_id: str | None = None
+        self, content: str, metadata: dict[str, str], query: str, doc_id: str | None = None,
     ) -> QualityAssessment:
         """Evaluate a signal through all quality checks.
 
@@ -441,7 +441,7 @@ class SignalQualityPipeline:
             return []
 
     def batch_evaluate(
-        self, documents: list[tuple[str, dict[str, str], str]], filter_failed: bool = True
+        self, documents: list[tuple[str, dict[str, str], str]], filter_failed: bool = True,
     ) -> list[tuple[dict[str, str], QualityAssessment]]:
         """Evaluate multiple documents in batch.
 
@@ -504,7 +504,7 @@ def create_quality_pipeline(
 
 # Convenience function for quick filtering
 def filter_high_quality_signals(
-    documents: list[tuple[str, dict[str, str], str]], strict_mode: bool = False
+    documents: list[tuple[str, dict[str, str], str]], strict_mode: bool = False,
 ) -> list[dict[str, str]]:
     """Quickly filter documents for high-quality signals.
 

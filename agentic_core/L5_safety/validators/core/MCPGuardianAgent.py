@@ -26,7 +26,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -77,7 +76,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "operation": operation,
                     "client": client_name,
                     "message": "Hardcoded credentials detected in MCP call",
-                }
+                },
             )
 
         # Check for Missing timeout
@@ -89,7 +88,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     "operation": operation,
                     "client": client_name,
                     "message": "No timeout configured for MCP call",
-                }
+                },
             )
 
         # Check for SSL enforcement (Redis, Neo4j)
@@ -102,7 +101,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         "operation": operation,
                         "client": client_name,
                         "message": f"{client_name} connection without SSL/TLS",
-                    }
+                    },
                 )
 
         if violations:
@@ -191,7 +190,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                             "type": ViolationType,
                             "Severity": "CRITICAL",
                             "match": match.group(0),
-                        }
+                        },
                     )
 
             if file_violations:
@@ -234,7 +233,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             Logger.critical(
                 f"[MCP GUARDIAN CRITIQUE] {Violation['Severity']}: "
                 f"{Violation['type']} in {Violation.get('client', 'unknown')} "
-                f"operation {Violation.get('operation', 'unknown')}"
+                f"operation {Violation.get('operation', 'unknown')}",
             )
 
         try:
@@ -272,7 +271,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             for Violation in scan_results["violations"]:
                 report.append(
                     f"[{Violation['Severity']}] {Violation['type']} in "
-                    f"{Violation['file']}:{Violation['line']}"
+                    f"{Violation['file']}:{Violation['line']}",
                 )
                 report.append(f"  Match: {Violation['match']}")
                 report.append("")

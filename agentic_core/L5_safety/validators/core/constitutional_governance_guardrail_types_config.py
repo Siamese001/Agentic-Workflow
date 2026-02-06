@@ -159,7 +159,7 @@ class ConstitutionalGovernanceGuardrail:
                             severity="moderate",
                             description=f"Potential violation of {principle.value}: contains '{pattern}'",
                             suggested_revision=f"Consider removing or rephrasing content containing '{pattern}'",
-                        )
+                        ),
                     )
                     self.revisions_suggested += 1
                     break  # One violation per principle
@@ -177,7 +177,7 @@ class ConstitutionalGovernanceGuardrail:
                     principle=ConstitutionalPrinciple.TRANSPARENCY,
                     severity="minor",
                     description="Content exceeds governance length limit",
-                )
+                ),
             )
 
         return violations
@@ -201,7 +201,7 @@ class ConstitutionalGovernanceGuardrail:
                     }
                     for v in violations
                 ],
-            }
+            },
         )
 
         return audit_id

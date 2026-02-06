@@ -22,9 +22,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 L6ObservabilityBaseAgent = object  # Stub for archived import
 AgentPerformanceMetrics = None
@@ -123,7 +121,7 @@ class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sover
             # Check test coverage bottleneck
             if metric.test_coverage < 0.7:
                 issues.append(
-                    f"Low test coverage ({metric.test_coverage * 100:.1f}%) increases debugging time"
+                    f"Low test coverage ({metric.test_coverage * 100:.1f}%) increases debugging time",
                 )
 
             if issues:
@@ -133,7 +131,7 @@ class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sover
                         "layer": metric.layer,
                         "issues": issues,
                         "severity": self._calculate_bottleneck_severity(metric),
-                    }
+                    },
                 )
 
         # Sort by severity (worst first)
@@ -180,7 +178,7 @@ class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sover
 
             for i, bottleneck in enumerate(bottlenecks[:10], 1):  # Top 10 worst
                 lines.append(
-                    f"\n{i}. {bottleneck['agent']} ({bottleneck['layer']}) - Severity: {bottleneck['severity']}/100"
+                    f"\n{i}. {bottleneck['agent']} ({bottleneck['layer']}) - Severity: {bottleneck['severity']}/100",
                 )
                 for issue in bottleneck["issues"]:
                     lines.append(f"   ❌ {issue}")
@@ -188,11 +186,11 @@ class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sover
                 # Harsh recommendation
                 if bottleneck["severity"] > 70:
                     lines.append(
-                        "   📢 RECOMMENDATION: Immediate refactoring required - this is unacceptable"
+                        "   📢 RECOMMENDATION: Immediate refactoring required - this is unacceptable",
                     )
                 elif bottleneck["severity"] > 50:
                     lines.append(
-                        "   📢 RECOMMENDATION: Schedule refactoring sprint - technical debt is mounting"
+                        "   📢 RECOMMENDATION: Schedule refactoring sprint - technical debt is mounting",
                     )
                 else:
                     lines.append("   📢 RECOMMENDATION: Address issues in next release cycle")

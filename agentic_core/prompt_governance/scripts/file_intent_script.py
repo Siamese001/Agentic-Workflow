@@ -343,7 +343,7 @@ class HardenedNamingAuditor:
             manual_icon = "👁️" if violation.requires_manual_review else " "
 
             table.append(
-                f"| {violation.current_name} | {violation.detected_intent.value} | {violation.proposed_name} | {violation.rationale} | {confidence_icon}{violation.confidence:.2f} {manual_icon} |"
+                f"| {violation.current_name} | {violation.detected_intent.value} | {violation.proposed_name} | {violation.rationale} | {confidence_icon}{violation.confidence:.2f} {manual_icon} |",
             )
 
         return "\n".join(table)

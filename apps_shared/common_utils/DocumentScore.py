@@ -40,7 +40,7 @@ class RAGScorer:
         """
         self.config = config or {}
         self.weights = self.config.get(
-            "weights", {"relevance": 0.4, "semantic": 0.3, "keyword": 0.2, "freshness": 0.1}
+            "weights", {"relevance": 0.4, "semantic": 0.3, "keyword": 0.2, "freshness": 0.1},
         )
 
     def score_documents(
@@ -67,7 +67,7 @@ class RAGScorer:
             # Calculate different score components
             relevance = self._calculate_relevance(doc["content"], query)
             semantic = self._calculate_semantic_score(
-                doc, query, query_embedding, document_embeddings[i] if document_embeddings else None
+                doc, query, query_embedding, document_embeddings[i] if document_embeddings else None,
             )
             keyword = self._calculate_keyword_score(doc["content"], query)
             freshness = self._calculate_freshness_score(doc)

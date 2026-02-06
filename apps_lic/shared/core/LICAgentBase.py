@@ -113,8 +113,7 @@ class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
         self._initialize_meta_client()
 
         Logger.debug(
-            f"[{self.__class__.__name__}] LIC Meta-Learning activated with "
-            "guardrails and MetaLearningClient"
+            f"[{self.__class__.__name__}] LIC Meta-Learning activated with guardrails and MetaLearningClient"
         )
 
     def _initialize_guardrails(self) -> None:
@@ -124,8 +123,7 @@ class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
         self._guardrails.guardrails.default_similarity_threshold = self._similarity_threshold
         self._guardrails.guardrails.default_ttl = self._lic_ttl
         Logger.debug(
-            f"[{self.__class__.__name__}] Guardrails initialized "
-            f"(threshold={self._similarity_threshold})"
+            f"[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})"
         )
 
     def _initialize_meta_client(self) -> None:
@@ -351,9 +349,7 @@ class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
         metadata["success_count"] = metadata.get("success_count", 0) + 1
         pattern["_metadata"] = metadata
 
-        return self.cache_pattern_with_metadata(
-            pattern_type, pattern_id, pattern, metadata["success_count"]
-        )
+        return self.cache_pattern_with_metadata(pattern_type, pattern_id, pattern, metadata["success_count"])
 
     # ==================== LIC-SPECIFIC META-LEARNING ====================
 
@@ -447,9 +443,7 @@ class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
         domain_value = pattern.get("domain") or pattern.get("_domain")
         if domain_value:
             if domain_value != "apps_lic":
-                Logger.warning(
-                    f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}"
-                )
+                Logger.warning(f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}")
                 return False
         return True
 
@@ -612,9 +606,7 @@ class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
             "cache_size": stats.get("cache_sizes", {}).get("apps_lic", 0),
             "request_rate": stats.get("request_rates", {}).get("apps_lic", 0),
             "pattern_rate": stats.get("pattern_rates", {}).get("apps_lic", 0),
-            "active_healing_cycles": len(
-                stats.get("depth_trackers", {}).get(self.__class__.__name__, {})
-            ),
+            "active_healing_cycles": len(stats.get("depth_trackers", {}).get(self.__class__.__name__, {})),
             "healthy": True,
         }
 

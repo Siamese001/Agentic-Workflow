@@ -38,7 +38,7 @@ class ToolsUseATool:
             raise ValueError(f"Missing required config keys: {Missing}")
 
     def process(
-        self, payload: str | int | float | bool | list | dict, context: dict[str, Any] | None = None
+        self, payload: str | int | float | bool | list | dict, context: dict[str, Any] | None = None,
     ) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
@@ -51,7 +51,7 @@ class ToolsUseATool:
             ProcessingResult with outcome and metadata
         """
         exec_ctx: Any = ExecutionContext(
-            operation_id=self.config.get("operation_id", "default"), METADATA=context or {}
+            operation_id=self.config.get("operation_id", "default"), METADATA=context or {},
         )
         try:
             exec_ctx.start()
@@ -70,7 +70,7 @@ class ToolsUseATool:
             return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(
-        self, data: str | int | float | bool | list | dict, context: dict[str, Any] | None
+        self, data: str | int | float | bool | list | dict, context: dict[str, Any] | None,
     ) -> str | int | float | bool | list | dict:
         """Core execution logic to be overridden by subclasses."""
         return data

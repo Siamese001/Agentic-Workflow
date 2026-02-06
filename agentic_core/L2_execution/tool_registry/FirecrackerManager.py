@@ -64,7 +64,7 @@ class FirecrackerManager:
         if config.vm_id in self._instances:
             raise ValueError(f"VM {config.vm_id} already exists")
         INSTANCE: Any = VMInstance(
-            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time()
+            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=time.time(),
         )
         self._instances[config.vm_id] = instance
         try:

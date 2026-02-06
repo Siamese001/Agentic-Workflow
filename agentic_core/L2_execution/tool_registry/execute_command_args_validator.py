@@ -61,7 +61,7 @@ def validate_sandbox(path: str) -> Path:
         abs_path.relative_to(project_root)
     except ValueError:
         raise ValueError(
-            f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'."
+            f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.",
         )
     return abs_path
 

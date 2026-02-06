@@ -137,7 +137,7 @@ class ScriptBridge:
         return self.execute_script("file", "read_json", file_path=file_path)
 
     def collect_agent_metrics(
-        self, data_points: list[dict[str, Any]], metric_keys: list[str]
+        self, data_points: list[dict[str, Any]], metric_keys: list[str],
     ) -> ScriptResult:
         """
         Convenience method to collect metrics.

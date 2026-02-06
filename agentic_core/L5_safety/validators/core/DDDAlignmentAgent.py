@@ -191,7 +191,7 @@ STDLIB_MODULES = frozenset(
         "site",
         "code",
         "codeop",
-    }
+    },
 )
 
 # Allowed cross-context import patterns
@@ -202,7 +202,7 @@ ALLOWED_CROSS_CONTEXT_PATTERNS = frozenset(
         "protocols",
         "base_agents",
         "mixins",
-    }
+    },
 )
 
 Logger = logging.getLogger(__name__)
@@ -363,7 +363,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
                                 target_context=ctx_name,
                                 imported_module=module,
                                 line_number=node.lineno,
-                            )
+                            ),
                         )
 
         return violations
@@ -406,7 +406,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
             self.violations.extend(file_violations)
 
         Logger.info(
-            f"[DDDAlignmentAgent] Checked {files_checked} files, found {len(self.violations)} violations"
+            f"[DDDAlignmentAgent] Checked {files_checked} files, found {len(self.violations)} violations",
         )
 
         return self.violations

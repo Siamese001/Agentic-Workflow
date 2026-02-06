@@ -26,7 +26,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -76,7 +75,7 @@ class RetryContext:
                 "max_attempts": self.max_attempts,
                 "failure_reasons": self.failure_reasons,
                 "accumulated_context": self.accumulated_context,
-            }
+            },
         }
 
 
@@ -186,7 +185,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         if not retry_ctx.can_retry:
             logger.warning(
                 f"Max retries exceeded for chain starting at {retry_ctx.original_node_id}. "
-                f"Attempts: {retry_ctx.attempt_number}/{retry_ctx.max_attempts}"
+                f"Attempts: {retry_ctx.attempt_number}/{retry_ctx.max_attempts}",
             )
 
             if self.on_max_retries_exceeded:
@@ -206,7 +205,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         if retry_function is None:
             raise ValueError(
-                f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter."
+                f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter.",
             )
 
         # Spawn successor node via DAGMutation
@@ -232,7 +231,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
             logger.info(
                 f"Spawned retry node {new_node_id} for {failed_node_id} "
-                f"(attempt {retry_ctx.attempt_number}/{retry_ctx.max_attempts})"
+                f"(attempt {retry_ctx.attempt_number}/{retry_ctx.max_attempts})",
             )
 
         return result
@@ -273,7 +272,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             parameters=final_params,
             priority=1,  # Higher priority for retries
             retry_policy={
-                "max_attempts": 0
+                "max_attempts": 0,
             },  # [SAFETY] Prevent internal retries on the new node, rely on Orchestrator
         )
 
@@ -339,7 +338,7 @@ class RecursiveOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             ctx = self.retry_contexts[node_id]
             logger.info(
                 f"Retry chain completed successfully for {ctx.original_node_id} "
-                f"after {ctx.attempt_number} attempts"
+                f"after {ctx.attempt_number} attempts",
             )
             del self.retry_contexts[node_id]
 

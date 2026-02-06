@@ -21,9 +21,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 
@@ -112,7 +110,7 @@ class RuntimeTelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
             status = "☢️ CRITICAL OVERHEAD"
             is_breached = True
             self.logger.warning(
-                f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit."
+                f"SOVEREIGN ALERT: Performance overhead ratio {overhead_ratio:.2f}x exceeds Gospel limit.",
             )
 
         return {"ratio": round(overhead_ratio, 3), "status": status, "breach": is_breached}

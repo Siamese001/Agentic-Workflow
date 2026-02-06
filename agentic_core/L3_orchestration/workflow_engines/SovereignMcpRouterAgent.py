@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """L3 Orchestration: Sovereign MCP router — Eternal Integration
@@ -212,7 +211,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
             elif key_id in {40, 41, 42, 49}:
                 try:
                     structure: Any = await self.manager.call_tool(
-                        "read_wiki_structure", {"repo": "xai/grok-canon"}
+                        "read_wiki_structure", {"repo": "xai/grok-canon"},
                     )
                     relevant_topic: Any = next(
                         (t for t in structure.get("topics", []) if str(key_id) in t or "canon" in t.lower()),
@@ -256,7 +255,7 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                     return {"status": "fallback", "reason": str(search_e)}
             elif key_id == 42:
                 return await self.manager.call_tool(
-                    "fission_write", {"monolith_path": file_path, "files": {}}
+                    "fission_write", {"monolith_path": file_path, "files": {}},
                 )
             return {"status": "no_route", "key_id": key_id}
         except Exception as e:

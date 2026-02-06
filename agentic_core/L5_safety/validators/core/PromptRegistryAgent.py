@@ -223,7 +223,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
                                 "version": e.get("version", "unknown"),
                                 "similarity": score,
                                 "prompt_snippet": e.get("content_hash", "")[:20],
-                            }
+                            },
                         )
         return sorted(similar, key=lambda x: x["similarity"], reverse=True)
 
@@ -289,7 +289,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
                 if existing_entry["active"] == active:
                     Logger.debug(
                         f"Skipping duplicate registration: {template_name} {version} "
-                        f"(author={author}, purpose={purpose[:30]}...)"
+                        f"(author={author}, purpose={purpose[:30]}...)",
                     )
                     return  # Early exit - no changes needed
                 else:

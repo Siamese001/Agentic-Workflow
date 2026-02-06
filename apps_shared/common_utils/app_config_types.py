@@ -75,13 +75,13 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
                 return data
         except json.JSONDecodeError as e:
             logging.error(
-                f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting."
+                f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.",
             )
             raise
 
     if required:
         logging.error(
-            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting."
+            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.",
         )
         raise FileNotFoundError(f"{description} file not found: {path_to_check}")
 
@@ -152,7 +152,7 @@ class ValidatorConfig:
             forbidden_verbs=data.get("forbidden_verbs", []),
             required_sections=set(data.get("required_sections", [])),
             bullet_word_count_sections_to_check=set(
-                data.get("bullet_word_count_sections_to_check", [])
+                data.get("bullet_word_count_sections_to_check", []),
             ),
             provenance_split_targets=data.get("provenance_split_targets", {}),
             pipeline_status_enum=data.get("pipeline_status_enum", []),
@@ -215,7 +215,7 @@ class WebRagConfig:
             "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
             "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
             "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"],
-        }
+        },
     )
 
 
@@ -235,7 +235,7 @@ class EnricherConfig:
             "established": ["established", "establish", "establishing"],
             "managed": ["managed", "manage", "managing"],
             "developed": ["developed", "develop", "developing"],
-        }
+        },
     )
 
 
@@ -280,7 +280,7 @@ class RAGConfig:
             "SOURCE_PEER_JD": 0.8,
             "SOURCE_GENERIC_PROFILE": 0.5,
             "LOCAL_NLP": 0.2,
-        }
+        },
     )
 
     def __post_init__(self) -> None:
@@ -414,7 +414,7 @@ class PromptAddendumConfig:
             ),
             (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
             (0, "• Consider multiple reasoning approaches before concluding.\n"),
-        ]
+        ],
     )
 
     TOT_B_DIRECTIVES: list[tuple[int, str]] = field(
@@ -425,7 +425,7 @@ class PromptAddendumConfig:
             ),
             (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
             (0, "• Consider multiple decision branches at key steps.\n"),
-        ]
+        ],
     )
 
     TOT_D_DIRECTIVES: list[tuple[int, str]] = field(
@@ -440,7 +440,7 @@ class PromptAddendumConfig:
             ),
             (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
             (0, "• Structure reasoning with clear logical progression.\n"),
-        ]
+        ],
     )
 
     REFLEXION_DIRECTIVES: list[tuple[int, str]] = field(
@@ -451,7 +451,7 @@ class PromptAddendumConfig:
             ),
             (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
             (1, "• Review and refine your answer at least once.\n"),
-        ]
+        ],
     )
 
 
@@ -462,7 +462,7 @@ class AppConfig:
     paths: FilePathsConfig = field(default_factory=FilePathsConfig)
     rag: RAGConfig = field(default_factory=lambda: RAGConfig())
     content_constraints: ContentConstraintsConfig = field(
-        default_factory=lambda: ContentConstraintsConfig()
+        default_factory=lambda: ContentConstraintsConfig(),
     )
     signal_constraints: SignalControlConfig = field(default_factory=lambda: SignalControlConfig())
     artist: ArtistConfig = field(default_factory=lambda: ArtistConfig.from_json())
@@ -538,7 +538,7 @@ ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
 
 # K4_TRADERSENSE_NARRATIVE: Unchanged
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
 )
 
 # K5_EY_NARRATIVE: Reduced SC from 4 -> 3
@@ -552,7 +552,7 @@ ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
 
 # K6_EARLY_CAREER_NARRATIVE: Unchanged
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
 )
 
 # K9_COMPETENCIES: Reduced SC from 6 -> 3
@@ -566,7 +566,7 @@ ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
 
 # K10_SKILLS: Unchanged (already minimal)
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False
+    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False,
 )
 
 # K11_COVER_LETTER: Reduced SC from 6 -> 3

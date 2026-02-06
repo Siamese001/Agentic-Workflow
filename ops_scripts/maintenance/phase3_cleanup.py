@@ -58,5 +58,5 @@ def archive_files():
 if __name__ == "__main__":
     archive_files()
     print(
-        "\n[SUCCESS] Phase 3 Cleanup Complete. Run tests/integration/test_phase3_consolidation.py to verify."
+        "\n[SUCCESS] Phase 3 Cleanup Complete. Run tests/integration/test_phase3_consolidation.py to verify.",
     )

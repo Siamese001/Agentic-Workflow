@@ -139,7 +139,7 @@ class SovereignReport:
             if self.issues[dim]:
                 print(
                     f"   Violations: {', '.join(self.issues[dim][:3])}"
-                    + ("..." if len(self.issues[dim]) > 3 else "")
+                    + ("..." if len(self.issues[dim]) > 3 else ""),
                 )
 
         print("-" * 60)

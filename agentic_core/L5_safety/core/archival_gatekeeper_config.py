@@ -206,7 +206,7 @@ class ArchivalGatekeeper:
             Logger.info(
                 f"[ArchivalGatekeeper] [{status}] {result.operation.value}: "
                 f"{result.source_path} -> {result.destination_path} "
-                f"(requester: {result.requester_agent}, reason: {result.reason})"
+                f"(requester: {result.requester_agent}, reason: {result.reason})",
             )
 
     def _validate_path(self, path: Path, operation: str, allow_archive: bool = False) -> str | None:
@@ -304,12 +304,12 @@ class ArchivalGatekeeper:
             if approved:
                 result.approval_status = "APPROVED"
                 Logger.info(
-                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}"
+                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}",
                 )
             else:
                 result.approval_status = "DENIED"
                 Logger.info(
-                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}"
+                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}",
                 )
 
             return approved
@@ -318,7 +318,7 @@ class ArchivalGatekeeper:
             # Handle non-interactive environments gracefully
             result.approval_status = "DENIED"
             Logger.warning(
-                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}"
+                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}",
             )
             return False
 

@@ -241,7 +241,7 @@ class FastDashboardE2EPipeline:
 
             print(f"   ✅ Updated {updated} agent records")
             print(
-                f"   ✅ Heal invocation: {after_invocation}/{total} ({self.stats['heal_invocation_after']:.1f}%)"
+                f"   ✅ Heal invocation: {after_invocation}/{total} ({self.stats['heal_invocation_after']:.1f}%)",
             )
 
             return True
@@ -332,7 +332,7 @@ class FastDashboardE2EPipeline:
         print("┣" + "━" * 78 + "┫")
         print("┃  Heal Invocation Coverage:                                              ┃")
         print(
-            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃"
+            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃",
         )
 
         if after >= 100.0:
@@ -342,13 +342,13 @@ class FastDashboardE2EPipeline:
 
         print("┃                                                                              ┃")
         print(
-            f"┃  Code Fixes: {self.stats['heal_fixes']:3d} agents                                              ┃"
+            f"┃  Code Fixes: {self.stats['heal_fixes']:3d} agents                                              ┃",
         )
         print(
-            f"┃  Total Agents: {self.stats['agents_discovered']:3d}                                              ┃"
+            f"┃  Total Agents: {self.stats['agents_discovered']:3d}                                              ┃",
         )
         print(
-            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃"
+            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃",
         )
         print("┃                                                                              ┃")
         print(f"┃  📊 Dashboard: {str(self.dashboard_path.relative_to(self.project_root)):<58}┃")

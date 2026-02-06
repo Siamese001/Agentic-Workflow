@@ -83,7 +83,7 @@ class AdversarialProbeAgent(SovereignBaseAgent):
                         "success_rate": probe_result.get("success_rate", 0.0),
                         "threat_level": probe_result.get("threat_level", "low"),
                         "description": probe_result.get("description", ""),
-                    }
+                    },
                 )
 
             # Calculate threat assessment

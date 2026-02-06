@@ -53,7 +53,7 @@ class ImportViolationVisitor(ast.NodeVisitor):
                         "import_statement": import_path,
                         "violated_layer": forbidden,
                         "violation_type": "UPWARD_IMPORT",
-                    }
+                    },
                 )
 
 
@@ -90,7 +90,7 @@ def analyze_file(file_path: Path) -> list[dict]:
                 "violated_layer": "N/A",
                 "violation_type": "SYNTAX_ERROR",
                 "error": str(e),
-            }
+            },
         ]
     except Exception as e:
         return [
@@ -101,7 +101,7 @@ def analyze_file(file_path: Path) -> list[dict]:
                 "violated_layer": "N/A",
                 "violation_type": "PARSE_ERROR",
                 "error": str(e),
-            }
+            },
         ]
 
 

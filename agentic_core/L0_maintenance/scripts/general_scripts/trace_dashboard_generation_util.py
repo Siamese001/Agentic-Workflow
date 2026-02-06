@@ -51,7 +51,7 @@ try:
         html = template.replace("const dashboardData = [];", f"const dashboardData = {test_json};")
 
         print(
-            f"After injection, 'const dashboardData = [];' still present: {'const dashboardData = [];' in html}"
+            f"After injection, 'const dashboardData = [];' still present: {'const dashboardData = [];' in html}",
         )
         print(f"After injection, 'const dashboardData = [' present: {'const dashboardData = [' in html}")
 

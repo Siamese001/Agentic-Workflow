@@ -86,7 +86,7 @@ def test_init_gate_compliant():
         return True
     else:
         print(
-            f"❌ DNA-01 FAIL: Compliant agent incorrectly flagged. Violations: {[v.message for v in visitor.violations]}"
+            f"❌ DNA-01 FAIL: Compliant agent incorrectly flagged. Violations: {[v.message for v in visitor.violations]}",
         )
         return False
 

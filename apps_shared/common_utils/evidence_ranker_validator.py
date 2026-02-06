@@ -101,11 +101,11 @@ class EvidenceRanker:
             f"Initialized EvidenceRanker with weights: "
             f"freshness={self.freshness_weight:.2f}, "
             f"corroboration={self.corroboration_weight:.2f}, "
-            f"semantic={self.semantic_weight:.2f}"
+            f"semantic={self.semantic_weight:.2f}",
         )
 
     def rank_evidence(
-        self, signals: list[dict[str, Any]], current_year: int | None = None
+        self, signals: list[dict[str, Any]], current_year: int | None = None,
     ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
@@ -146,7 +146,7 @@ class EvidenceRanker:
 
                     if not 0.0 <= semantic_score <= 1.0:
                         logger.warning(
-                            f"Semantic score out of bounds for doc {doc_id}: {semantic_score}"
+                            f"Semantic score out of bounds for doc {doc_id}: {semantic_score}",
                         )
                         semantic_score = max(0.0, min(1.0, semantic_score))
 
@@ -155,12 +155,12 @@ class EvidenceRanker:
 
                     # Calculate corroboration count
                     corroboration_count, key_entities = self._count_corroboration(
-                        content, all_entities, signals
+                        content, all_entities, signals,
                     )
 
                     # Calculate final score
                     corroboration_normalized = min(
-                        1.0, corroboration_count / 3.0
+                        1.0, corroboration_count / 3.0,
                     )  # Normalize to 0-1
                     final_score = (
                         semantic_score * self.semantic_weight
@@ -199,7 +199,7 @@ class EvidenceRanker:
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
 
             logger.info(
-                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}"
+                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}",
             )
             return ranked_signals
 
@@ -287,7 +287,7 @@ class EvidenceRanker:
             return None
 
     def _count_corroboration(
-        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]]
+        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]],
     ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 

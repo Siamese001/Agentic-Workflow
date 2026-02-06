@@ -75,7 +75,6 @@ class tool_template:
     CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}) -> None:\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
 
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -136,7 +135,7 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     return_description="Validation result",
                     implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}',
                 ),
-            }
+            },
         )
 
     def create_tool_from_spec(self, spec: ToolSpec) -> GeneratedTool:
@@ -157,7 +156,7 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
         dependencies: Any = self._identify_dependencies(code)
         test_code: Any = self._generate_test_code(spec)
         tool: Any = GeneratedTool(
-            spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code
+            spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code,
         )
         self.tools[spec.name] = tool
         Logger.info(f"Created tool: {spec.name}")
@@ -438,13 +437,13 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
     # SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
     TERRITORY_SEED_CONTENT: dict[str, dict[str, str]] = {
         "agentic_core/prompt_governance/meta_prompts": {
-            "convergence_planning.jinja": "{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n"
+            "convergence_planning.jinja": "{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n",
         },
         "agentic_core/prompt_governance/rendering": {
-            "SovereignPromptRenderer.py": "# SovereignPromptRenderer - Dynamic Assembly\nclass SovereignPromptRenderer:\n    def render(self, template_name, context=None):\n        pass\n"
+            "SovereignPromptRenderer.py": "# SovereignPromptRenderer - Dynamic Assembly\nclass SovereignPromptRenderer:\n    def render(self, template_name, context=None):\n        pass\n",
         },
         "agentic_core/schemas/models": {
-            "base_models.py": "from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n"
+            "base_models.py": "from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n",
         },
     }
 

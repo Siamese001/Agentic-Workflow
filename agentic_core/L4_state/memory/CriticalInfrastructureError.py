@@ -67,14 +67,14 @@ class PII_Sanitizer:
         # IPv4 addresses
         "IPV4": re.compile(
             r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
-            r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+            r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b",
         ),
         # IPv6 addresses (simplified pattern)
         "IPV6": re.compile(
             r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b|"
             r"\b(?:[0-9a-fA-F]{1,4}:){1,7}:\b|"
             r"\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\b|"
-            r"\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\b"
+            r"\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\b",
         ),
         # OpenAI API keys (sk-...)
         "OPENAI_KEY": re.compile(r"\bsk-[a-zA-Z0-9]{20,}\b"),
@@ -232,7 +232,7 @@ class SemanticCacheManager:
         """
         if SemanticCacheManager._instance is not None:
             raise RuntimeError(
-                "[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation."
+                "[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation.",
             )
         self._initialize(api_key)
 
@@ -253,11 +253,11 @@ class SemanticCacheManager:
         self.strict_mode = os.environ.get("HIVE_MIND_STRICT_MODE", "true").lower() == "true"
 
         self.trace_sampling_rate = float(
-            os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE))
+            os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE)),
         )
 
         self.promotion_threshold = float(
-            os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD", str(self.DEFAULT_PROMOTION_THRESHOLD))
+            os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD", str(self.DEFAULT_PROMOTION_THRESHOLD)),
         )
 
         # Thread safety lock for operations
@@ -303,7 +303,7 @@ class SemanticCacheManager:
                 raise CriticalInfrastructureError(error_msg)
             else:
                 Logger.error(
-                    "[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode."
+                    "[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode.",
                 )
                 self.stateless_mode = True
 
@@ -321,7 +321,7 @@ class SemanticCacheManager:
         Logger.info(
             f"[HiveMind] Config: strict_mode={self.strict_mode}, "
             f"sampling_rate={self.trace_sampling_rate}, "
-            f"promotion_threshold={self.promotion_threshold}"
+            f"promotion_threshold={self.promotion_threshold}",
         )
 
     def _init_redis(self) -> Exception | None:
@@ -652,7 +652,7 @@ class SemanticCacheManager:
         if feedback_score < self.promotion_threshold:
             Logger.debug(
                 f"[HiveMind] Promotion rejected: feedback_score={feedback_score} "
-                f"< threshold={self.promotion_threshold}"
+                f"< threshold={self.promotion_threshold}",
             )
             return False
 
@@ -695,8 +695,8 @@ class SemanticCacheManager:
                             "feedback_score": feedback_score,
                             "promoted": True,
                         },
-                    }
-                ]
+                    },
+                ],
             )
 
             # Also extend Redis TTL for promoted memories
@@ -714,7 +714,7 @@ class SemanticCacheManager:
                 self.stats["promotions"] += 1
 
             Logger.info(
-                f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})"
+                f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})",
             )
             return True
 

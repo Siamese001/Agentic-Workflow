@@ -107,7 +107,7 @@ class ObservabilityToolExecutor:
         self.logger.info(f"Registered tool: {tool_def.tool_id}")
 
     def execute_tool(
-        self, context: ToolExecutionContext, parameters: dict[str, Any]
+        self, context: ToolExecutionContext, parameters: dict[str, Any],
     ) -> ToolExecutionResult:
         """Execute an observability tool.
 
@@ -161,11 +161,11 @@ class ObservabilityToolExecutor:
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
-                context.execution_id, context.tool_id, str(e), start_time
+                context.execution_id, context.tool_id, str(e), start_time,
             )
 
     def execute_tool_stream(
-        self, context: ToolExecutionContext, parameters: dict[str, str]
+        self, context: ToolExecutionContext, parameters: dict[str, str],
     ) -> dict[str, object]:
         """Execute tool in streaming mode.
 
@@ -242,7 +242,7 @@ class ObservabilityToolExecutor:
         return self._active_executions.get(execution_id)
 
     def _execute_with_context(
-        self, handler: Callable, context: ToolExecutionContext, parameters: dict[str, str]
+        self, handler: Callable, context: ToolExecutionContext, parameters: dict[str, str],
     ) -> ToolExecutionResult:
         """Execute tool with context."""
         # Prepare execution environment
@@ -325,7 +325,7 @@ class ObservabilityToolExecutor:
         }
 
     def _validate_parameter_type(
-        self, param_name: str, value: object, expected_type: str
+        self, param_name: str, value: object, expected_type: str,
     ) -> str | None:
         """Validate a single parameter type and return error message if invalid."""
         type_validators = {
@@ -351,7 +351,7 @@ class ObservabilityToolExecutor:
         return None
 
     def _validate_parameters(
-        self, parameters: dict[str, Any], tool_def: ToolDefinition
+        self, parameters: dict[str, Any], tool_def: ToolDefinition,
     ) -> list[str]:
         """Validate tool parameters."""
         errors = []
@@ -383,7 +383,7 @@ class ObservabilityToolExecutor:
         }
 
     def _track_execution_complete(
-        self, context: ToolExecutionContext, result: ToolExecutionResult
+        self, context: ToolExecutionContext, result: ToolExecutionResult,
     ) -> None:
         """Track execution completion."""
         if context.execution_id in self._active_executions:
@@ -393,7 +393,7 @@ class ObservabilityToolExecutor:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, tool_id: str, error: str, start_time: float
+        self, execution_id: str, tool_id: str, error: str, start_time: float,
     ) -> ToolExecutionResult:
         """Create error result."""
         return ToolExecutionResult(
@@ -463,7 +463,7 @@ class ObservabilityToolExecutor:
                             "value": 67.8,
                             "timestamp": datetime.utcnow().isoformat(),
                         },
-                    ]
+                    ],
                 },
                 "metrics": {"metrics_collected": 2, "processing_time": 0.05},
             }
@@ -512,11 +512,11 @@ class ObservabilityToolExecutor:
 
 # Factory function for easy instantiation
 def create_observability_tool_executor(
-    timeout: float = 30.0, retry_count: int = 3, enable_tracing: bool = True, **kwargs: object
+    timeout: float = 30.0, retry_count: int = 3, enable_tracing: bool = True, **kwargs: object,
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(
-        timeout=timeout, retry_count=retry_count, enable_tracing=enable_tracing, **kwargs
+        timeout=timeout, retry_count=retry_count, enable_tracing=enable_tracing, **kwargs,
     )
     return ObservabilityToolExecutor(config)
 
@@ -544,7 +544,7 @@ def tool_execute_observability_execution(
     executor = create_observability_tool_executor()
 
     context = ToolExecutionContext(
-        execution_id=execution_id, tool_id=tool_id, mode=ExecutionMode(mode), caller_id=caller_id
+        execution_id=execution_id, tool_id=tool_id, mode=ExecutionMode(mode), caller_id=caller_id,
     )
 
     result = executor.execute_tool(context, parameters)

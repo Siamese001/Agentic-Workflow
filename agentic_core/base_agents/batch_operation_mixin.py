@@ -22,7 +22,7 @@ class BatchOperationMixin:
         self._bo_logger = logging.getLogger(self.__class__.__name__)
 
     async def batch_execute(
-        self, tasks: list[Coroutine], max_workers: int = 5, sequential: bool = False
+        self, tasks: list[Coroutine], max_workers: int = 5, sequential: bool = False,
     ) -> list[Any]:
         # Hardened: overall batch timeout + better failure classification
         """
@@ -90,7 +90,7 @@ class BatchOperationMixin:
         self._bo_logger.info(
             f"Batch completed: {success_count}/{total_tasks} successful "
             f"({timeout_count} timeouts) in {duration:.2f}s | "
-            f"Error types: {', '.join(sorted(error_types)) or 'none'}"
+            f"Error types: {', '.join(sorted(error_types)) or 'none'}",
         )
 
         return results

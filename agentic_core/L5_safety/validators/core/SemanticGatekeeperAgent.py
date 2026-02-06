@@ -103,7 +103,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
                     "operation": operation,
                     "error": "TIMEOUT",
                     "timestamp": datetime.now().isoformat(),
-                }
+                },
             )
             raise
         except Exception as e:
@@ -114,7 +114,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
                     "operation": operation,
                     "error": str(e),
                     "timestamp": datetime.now().isoformat(),
-                }
+                },
             )
             raise
         finally:

@@ -132,7 +132,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                 "check_async": self.ruleset.check_async,
                 "check_prints": self.ruleset.check_prints,
                 "print_policy": self.ruleset.print_policy,
-            }
+            },
         )
 
     def validate_syntax(self, file_path: Path) -> list[Violation]:
@@ -159,7 +159,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                         severity="HIGH",
                         suggested_fix="Fix syntax error",
                         auto_fixable=False,
-                    )
+                    ),
                 )
         except Exception as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
@@ -195,7 +195,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                                 severity="MEDIUM",
                                 suggested_fix=f"Rename class to {class_name}Agent",
                                 auto_fixable=True,
-                            )
+                            ),
                         )
 
                 # Check for proper imports
@@ -209,7 +209,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                             severity="MEDIUM",
                             suggested_fix="Import specific modules instead of using *",
                             auto_fixable=False,
-                        )
+                        ),
                     )
         except Exception as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
@@ -260,7 +260,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                                 severity="LOW",
                                 suggested_fix="Consider making function synchronous or add await",
                                 auto_fixable=False,
-                            )
+                            ),
                         )
         except Exception as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
@@ -293,7 +293,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                             severity=severity,
                             suggested_fix="Use logging instead of print",
                             auto_fixable=False,
-                        )
+                        ),
                     )
         except Exception as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
@@ -474,7 +474,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                     issue=violation.get("issue", "Canon compliance violation"),
                     auto_fixable=True,
                     suggested_fix=violation.get("suggested_fix"),
-                )
+                ),
             ]
 
             result = self.fix_violations(violations, dry_run=False)
@@ -496,7 +496,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                     issue=violation.get("issue", "Async/await violation"),
                     auto_fixable=True,
                     suggested_fix=violation.get("suggested_fix"),
-                )
+                ),
             ]
 
             result = self.fix_violations(violations, dry_run=False)
@@ -518,7 +518,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                     issue=violation.get("issue", "Print statement violation"),
                     auto_fixable=True,
                     suggested_fix=violation.get("suggested_fix", "Replace with logging"),
-                )
+                ),
             ]
 
             result = self.fix_violations(violations, dry_run=False)

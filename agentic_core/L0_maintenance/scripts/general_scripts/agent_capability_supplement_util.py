@@ -49,7 +49,7 @@ suspect_agent_names = set(report["suspect_agents"])
 print("=" * 80)
 print("ULTRA CAPABILITY SUPPLEMENTATION ANALYSIS")
 print(
-    f"Live agents: {len(live_agent_names)} | Dead (to mine): {len(dead_agent_names)} | Suspect: {len(suspect_agent_names)}"
+    f"Live agents: {len(live_agent_names)} | Dead (to mine): {len(dead_agent_names)} | Suspect: {len(suspect_agent_names)}",
 )
 print("=" * 80)
 
@@ -323,35 +323,35 @@ def analyze_supplementation():
         recommendations.append(
             "→ Merge GitAgent methods into ToolsmithAgent or new L2 GitToolAgent\n"
             "  Source: agentic_core/L2_execution/tool_registry/GitAgent.py\n"
-            "  Target: agentic_core/L2_execution/tool_registry/ToolsmithAgent.py (add git_* methods)"
+            "  Target: agentic_core/L2_execution/tool_registry/ToolsmithAgent.py (add git_* methods)",
         )
 
     if "dead_code_analysis" in unique_to_dead:
         recommendations.append(
             "→ Extract dead code detection from DeadCodeAgent/DeadCodePrunerAgent\n"
             "  Sources: L5_safety/guardrails/DeadCodeAgent.py, L3_orchestration/DeadCodePrunerAgent.py\n"
-            "  Target: Enhance CodeDeduplicationAgent (L2) with advanced unreachable code logic"
+            "  Target: Enhance CodeDeduplicationAgent (L2) with advanced unreachable code logic",
         )
 
     if "mapping" in unique_to_dead or "territory" in unique_to_dead:
         recommendations.append(
             "→ Integrate SemanticTerritoryMapperAgent patterns\n"
             "  Source: agentic_core/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py\n"
-            "  Target: HierarchyAgent or LocationAgent (L5) for semantic structural awareness"
+            "  Target: HierarchyAgent or LocationAgent (L5) for semantic structural awareness",
         )
 
     if "monitoring" in unique_to_dead or "watchdog" in unique_to_dead:
         recommendations.append(
             "→ Add SovereignWatchdogAgent monitoring logic\n"
             "  Source: agentic_core/L0_maintenance/scripts/SovereignWatchdogAgent.py\n"
-            "  Target: BootstrapAgent or new L0 RuntimeGuard"
+            "  Target: BootstrapAgent or new L0 RuntimeGuard",
         )
 
     if "filesystem_introspection" in unique_to_dead:
         recommendations.append(
             "→ Supplement FilesystemAgent deep introspection\n"
             "  Source: agentic_core/L5_safety/validators/FilesystemAgent.py\n"
-            "  Target: LocationAgent or HierarchyAgent (enhance path validation)"
+            "  Target: LocationAgent or HierarchyAgent (enhance path validation)",
         )
 
     # Console output
@@ -393,7 +393,7 @@ def analyze_supplementation():
 
     # Generate and save markdown report
     md_report = generate_markdown_report(
-        live_cap_counter, dead_cap_detail, unique_to_dead, underrepresented, recommendations
+        live_cap_counter, dead_cap_detail, unique_to_dead, underrepresented, recommendations,
     )
     report_path = PROJECT_ROOT / "agent_supplementation_report.md"
     report_path.write_text(md_report, encoding="utf-8")

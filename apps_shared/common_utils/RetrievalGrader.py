@@ -72,11 +72,11 @@ class RetrievalGrader:
 
         logger.info(
             f"Initialized RetrievalGrader - Threshold: {relevance_threshold}, "
-            f"Confidence: {confidence_threshold}, Fast Model: {use_fast_model}"
+            f"Confidence: {confidence_threshold}, Fast Model: {use_fast_model}",
         )
 
     async def grade_documents(
-        self, query: str, documents: list[str], document_ids: list[str] | None = None
+        self, query: str, documents: list[str], document_ids: list[str] | None = None,
     ) -> RetrievalGrade:
         """Grade documents for relevance to the query.
 
@@ -142,7 +142,7 @@ class RetrievalGrader:
         grading_time = time.time() - start_time
         logger.info(
             f"Grading completed in {grading_time:.3f}s - "
-            f"Status: {status.value}, Relevance: {relevance_ratio:.2f}"
+            f"Status: {status.value}, Relevance: {relevance_ratio:.2f}",
         )
 
         return RetrievalGrade(

@@ -15,7 +15,7 @@ def main():
     try:
         # Get staged files
         staged_result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True,
         )
         staged_files = (
             set(staged_result.stdout.strip().split("\n")) if staged_result.stdout.strip() else set()
@@ -23,7 +23,7 @@ def main():
 
         # Get modified but unstaged files
         modified_result = subprocess.run(
-            ["git", "diff", "--name-only"], capture_output=True, text=True
+            ["git", "diff", "--name-only"], capture_output=True, text=True,
         )
         modified_files = (
             set(modified_result.stdout.strip().split("\n"))
@@ -36,7 +36,7 @@ def main():
 
         # Also check for any new untracked files that might be hook outputs
         untracked_result = subprocess.run(
-            ["git", "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True
+            ["git", "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True,
         )
 
         # Parse git status output for modified but unstaged files

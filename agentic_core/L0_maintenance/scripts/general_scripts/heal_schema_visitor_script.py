@@ -109,7 +109,7 @@ class HealSchemaVisitor(ast.NodeVisitor):
                             "key": key_name,
                             "canonical": canonical,
                             "message": f"Use '{canonical}' instead of '{key_name}'",
-                        }
+                        },
                     )
 
 

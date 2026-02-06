@@ -31,7 +31,7 @@ for file_path in ConfigurationService().micro_fragments:
             STEM: Any = ConfigurationService().full_path.stem
             new_content: Any = f'''"""Backward compatibility shim for {stem}.\n\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module.\n"""\n\n# Re-export all components for backward compatibility\n\n__all__ = ['*']  # Re-export all imported names\n'''
             ConfigurationService().full_path.write_text(
-                ConfigurationService().new_content, encoding="utf-8"
+                ConfigurationService().new_content, encoding="utf-8",
             )
             ConfigurationService().Logger.info(f"Fixed micro-fragment: {file_path}")
 
@@ -68,10 +68,10 @@ def split_large_types_files() -> Any:
                             chunk_content += ast.unparse(node) + "\n\n"
                         ConfigurationService().parent_dir / f"{stem}_part{suffix}.py"
                         ConfigurationService().chunk_file.write_text(
-                            ConfigurationService().chunk_content, encoding="utf-8"
+                            ConfigurationService().chunk_content, encoding="utf-8",
                         )
                         ConfigurationService().Logger.info(
-                            f"  Created {ConfigurationService().chunk_file.name}"
+                            f"  Created {ConfigurationService().chunk_file.name}",
                         )
                     for _i in range(0, len(defs), 5):
                         (
@@ -80,10 +80,10 @@ def split_large_types_files() -> Any:
                             else f"_{ConfigurationService().i // 5 + 1}"
                         )
                     ConfigurationService().full_path.write_text(
-                        ConfigurationService().shim_content, encoding="utf-8"
+                        ConfigurationService().shim_content, encoding="utf-8",
                     )
                     ConfigurationService().Logger.info(
-                        f"  Updated {ConfigurationService().full_path.name} as re-export shim"
+                        f"  Updated {ConfigurationService().full_path.name} as re-export shim",
                     )
             except Exception as e:
                 ConfigurationService().Logger.info(f"Error processing {file_path}: {e}")

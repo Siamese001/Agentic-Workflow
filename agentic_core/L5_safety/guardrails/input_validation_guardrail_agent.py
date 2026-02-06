@@ -30,7 +30,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
             "prompt_injection",
             "bias_detection",
             "format_validation",
-        ]
+        ],
     )
 
     def __post_init__(self):
@@ -94,7 +94,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "pii_email",
                     "severity": "high",
                     "message": "Email address detected in input",
-                }
+                },
             )
 
         # Phone pattern
@@ -104,7 +104,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "pii_phone",
                     "severity": "high",
                     "message": "Phone number detected in input",
-                }
+                },
             )
 
         # SSN pattern
@@ -114,7 +114,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "pii_ssn",
                     "severity": "critical",
                     "message": "Social security number detected in input",
-                }
+                },
             )
 
         return {
@@ -140,7 +140,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                         "type": "prompt_injection",
                         "severity": "high",
                         "message": f"Potential prompt injection detected: {pattern}",
-                    }
+                    },
                 )
 
         return {
@@ -163,7 +163,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                         "type": f"bias_{bias_type}",
                         "severity": "low",
                         "message": f"Potential bias detected: {bias_type}",
-                    }
+                    },
                 )
 
         return {
@@ -181,7 +181,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "empty_input",
                     "severity": "medium",
                     "message": "Input is empty",
-                }
+                },
             )
 
         if len(text) > 1000000:
@@ -190,7 +190,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "oversized_input",
                     "severity": "high",
                     "message": "Input exceeds maximum length",
-                }
+                },
             )
 
         return {

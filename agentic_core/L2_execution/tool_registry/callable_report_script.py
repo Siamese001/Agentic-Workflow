@@ -102,7 +102,7 @@ async def run_sovereign_mission(
     # === INITIALIZE CONTEXT ===
     # Dynamic load of ValidationContext to avoid circular deps
     ValidationContext = dynamic_import(
-        "agentic_core.L4_state.validation_context.ValidationContext", "ValidationContext"
+        "agentic_core.L4_state.validation_context.ValidationContext", "ValidationContext",
     )
     if ValidationContext:
         ctx = ValidationContext()

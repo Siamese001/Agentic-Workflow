@@ -47,7 +47,7 @@ def show_pending_reviews() -> Any:
         ConfigurationService().Logger.info("✅ No pending reviews!")
         return
     ConfigurationService().Logger.info(
-        f"\n📋 Pending Reviews ({len(ConfigurationService().pending)}):"
+        f"\n📋 Pending Reviews ({len(ConfigurationService().pending)}):",
     )
     ConfigurationService().Logger.info("-" * 80)
     for i, entry in enumerate(ConfigurationService().pending, 1):
@@ -140,7 +140,7 @@ def main() -> Any:
         ConfigurationService().Logger.info("\nExample:")
         ConfigurationService().Logger.info("  python manage_false_positives.py show")
         ConfigurationService().Logger.info(
-            "  python manage_false_positives.py fp SafetyInspector_4"
+            "  python manage_false_positives.py fp SafetyInspector_4",
         )
         return
     ConfigurationService().command = sys.argv[1]

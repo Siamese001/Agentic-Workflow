@@ -743,16 +743,16 @@ class SignalLedger:
                         "agent": agent_name,
                         "error": result.get("error", "Unknown error"),
                         "details": result.get("details", ""),
-                    }
+                    },
                 )
         if summary["failed_count"] > 0:
             summary["recommendations"].append(
-                f"Phase {summary['phase']} had {summary['failed_count']} failures"
+                f"Phase {summary['phase']} had {summary['failed_count']} failures",
             )
             summary["recommendations"].append("Consider re-running failed agents before proceeding")
         if summary["phase"] == "integrity_seq" and summary["failed_count"] > 0:
             summary["recommendations"].append(
-                "CRITICAL: Integrity failures must be resolved before continuing"
+                "CRITICAL: Integrity failures must be resolved before continuing",
             )
         return summary
 

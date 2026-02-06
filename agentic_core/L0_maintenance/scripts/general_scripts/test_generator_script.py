@@ -131,7 +131,7 @@ def generate_layer_tests():
         )
 
         tests = generator.generate_agent_tests(
-            L0MaintenanceBaseAgent, "agentic_core.base_agents.L0MaintenanceBaseAgent"
+            L0MaintenanceBaseAgent, "agentic_core.base_agents.L0MaintenanceBaseAgent",
         )
         generator.write_test_file(
             "l0_agent",
@@ -144,7 +144,7 @@ def generate_layer_tests():
     # SovereignBaseAgent
     try:
         tests = generator.generate_agent_tests(
-            L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent"
+            L5SafetyBaseAgent, "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent",
         )
         generator.write_test_file(
             "safety_base_agent",

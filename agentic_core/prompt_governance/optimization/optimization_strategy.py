@@ -45,7 +45,7 @@ class PromptOptimizer:
     def __init__(self, config: OptimizationConfig = None):
         """Initialize prompt optimizer."""
         self.config = config or OptimizationConfig(
-            strategy=OptimizationStrategy.CLARITY, level=OptimizationLevel.MODERATE
+            strategy=OptimizationStrategy.CLARITY, level=OptimizationLevel.MODERATE,
         )
         Logger.debug("PromptOptimizer initialized")
 

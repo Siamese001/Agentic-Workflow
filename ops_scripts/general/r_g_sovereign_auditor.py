@@ -46,7 +46,7 @@ class RGSovereignAuditor:
 
             # Classification logic
             classification, details = self._classify_file_logic(
-                file_path.name, content, classes, imports, functions
+                file_path.name, content, classes, imports, functions,
             )
 
             return {
@@ -75,7 +75,7 @@ class RGSovereignAuditor:
                         bases.append(
                             f"{base.value.id}.{base.attr}"
                             if hasattr(base.value, "id")
-                            else str(base)
+                            else str(base),
                         )
 
                 # Check for agent-like methods
@@ -109,7 +109,7 @@ class RGSovereignAuditor:
                         "line_count": node.end_lineno - node.lineno
                         if hasattr(node, "end_lineno")
                         else 0,
-                    }
+                    },
                 )
 
         return classes
@@ -138,7 +138,7 @@ class RGSovereignAuditor:
                         "args_count": len(node.args.args),
                         "is_generator": any(isinstance(item, ast.Yield) for item in ast.walk(node)),
                         "is_async": isinstance(node, ast.AsyncFunctionDef),
-                    }
+                    },
                 )
         return functions
 
@@ -253,7 +253,7 @@ class RGSovereignAuditor:
         # Check for imposter agents (files with Agent in name but no agent behavior)
         if "Agent" in filename and not inherits_from_agent_base and not has_agent_methods:
             return "IMPOSTER_AGENT", {
-                "reason": "Filename suggests agent but no agent inheritance or methods found"
+                "reason": "Filename suggests agent but no agent inheritance or methods found",
             }
 
         # Check for engines (special case for RG architecture)
@@ -266,7 +266,7 @@ class RGSovereignAuditor:
                 }
             else:
                 return "STATELESS_TOOL", {
-                    "reason": "Engine without agent characteristics - likely a utility engine"
+                    "reason": "Engine without agent characteristics - likely a utility engine",
                 }
 
         # Default classification based on content analysis
@@ -276,13 +276,13 @@ class RGSovereignAuditor:
 
             if has_execute_classes and (has_state_classes or inherits_from_agent_base):
                 return "SOVEREIGN_AGENT", {
-                    "reason": "Contains classes with execute/process methods and state or agent inheritance"
+                    "reason": "Contains classes with execute/process methods and state or agent inheritance",
                 }
             elif not has_state_classes and not inherits_from_agent_base:
                 return "STATELESS_TOOL", {"reason": "Contains only stateless classes/functions"}
             else:
                 return "UNKNOWN", {
-                    "reason": "Contains stateful classes but no clear agent behavior"
+                    "reason": "Contains stateful classes but no clear agent behavior",
                 }
         else:
             # Only functions
@@ -396,7 +396,7 @@ class RGSovereignAuditor:
                             "reason": analysis.get("details", {}).get("reason", "Unknown"),
                             "classes": [cls["name"] for cls in classes],
                             "inherits_from_base": inherits_from_base,
-                        }
+                        },
                     )
 
         results["unknown_ledger"] = unknown_ledger
@@ -414,7 +414,7 @@ class RGSovereignAuditor:
                             "current_name": Path(file_path).name,
                             "suggested_name": self._suggest_fixed_name(file_path, analysis),
                             "reason": analysis.get("details", {}).get("reason", "Unknown"),
-                        }
+                        },
                     )
 
         results["nomenclature_fixes"] = nomenclature_fixes
@@ -433,7 +433,7 @@ class RGSovereignAuditor:
                         "current_location": "engines/",
                         "target_location": "shared/tools/",
                         "reason": analysis.get("details", {}).get("reason", "Unknown"),
-                    }
+                    },
                 )
 
         results["migration_candidates"] = migration_candidates

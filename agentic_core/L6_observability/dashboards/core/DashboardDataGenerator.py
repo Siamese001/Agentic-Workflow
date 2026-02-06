@@ -37,7 +37,7 @@ class DashboardDataGenerator:
             return []
 
     def compute_territory_metrics(
-        self, agents: list[Path], used_stems: set, registry: dict[str, Any]
+        self, agents: list[Path], used_stems: set, registry: dict[str, Any],
     ) -> dict[str, Any]:
         """Compute aggregate metrics for a specific agent group."""
         m = {
@@ -74,7 +74,7 @@ class DashboardDataGenerator:
         return m
 
     def build_territory_row(
-        self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool
+        self, territory_name: str, metrics: dict[str, Any], priority: int, is_infrastructure: bool,
     ) -> dict[str, Any]:
         """Format raw metrics into a standardized dashboard row."""
         t = metrics["total"]

@@ -114,7 +114,7 @@ class DomainPlannerAdapter(HealingAdapter):
         if not any(key in job_context for key in self._required_job_context_keys):
             logger.warning(
                 f"DomainPlannerAdapter: job_context must contain at least one of "
-                f"{self._required_job_context_keys}"
+                f"{self._required_job_context_keys}",
             )
             return False
 
@@ -228,7 +228,7 @@ class DomainPlannerAdapter(HealingAdapter):
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
-                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id)
+                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id),
                 )
                 return future.result()
         else:

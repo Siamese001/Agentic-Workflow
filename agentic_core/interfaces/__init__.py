@@ -7,6 +7,10 @@ preventing circular dependencies while maintaining type safety.
 RE-EXPORT: All protocol files are in agentic_core.utils - this module re-exports for API stability.
 """
 
+# Sovereign Protocols (Zero-Ambiguity Standard)
+from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
+from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
+from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
 from agentic_core.utils.detection_protocol import (
     DetectionRequest,
     DetectionResult,
@@ -29,11 +33,6 @@ from agentic_core.utils.verification_protocol import (
     VerificationRequest,
     VerificationResult,
 )
-
-# Sovereign Protocols (Zero-Ambiguity Standard)
-from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
-from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
 
 __all__ = [
     # Verification

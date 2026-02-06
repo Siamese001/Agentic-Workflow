@@ -62,7 +62,7 @@ class TruthKeeper:
                                 "line": node.lineno,
                                 "old_docstring": result.get("old_docstring"),
                                 "new_docstring": result["fixed_docstring"],
-                            }
+                            },
                         )
         except SyntaxError as e:
             violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
@@ -71,7 +71,7 @@ class TruthKeeper:
         return {"violations": violations, "fixes": fixes, "file": file_path}
 
     async def _check_function_consistency(
-        self, file_path: str, node: ast.FunctionDef, content: str
+        self, file_path: str, node: ast.FunctionDef, content: str,
     ) -> dict[str, Any]:
         """
         Check consistency for a single function.

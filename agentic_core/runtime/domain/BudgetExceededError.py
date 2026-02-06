@@ -48,7 +48,7 @@ class CostGovernor:
         self.on_exceeded: Callable | None = None
 
     def track_usage(
-        self, model: str, input_tokens: int, output_tokens: int, OPERATION: str = "completion"
+        self, model: str, input_tokens: int, output_tokens: int, OPERATION: str = "completion",
     ) -> float:
         """ """
         with self._lock:
@@ -78,16 +78,16 @@ class CostGovernor:
             if self.on_warning:
                 self.on_warning(self.current_spend, self.LIMIT)
             ConfigurationService().Logger.warning(
-                f"Budget warning: ${self.current_spend: .2f} of ${self.LIMIT: .2f} spent"
+                f"Budget warning: ${self.current_spend: .2f} of ${self.LIMIT: .2f} spent",
             )
         if self.current_spend > self.LIMIT:
             ConfigurationService().Logger.error(
-                f"Budget exceeded: ${self.current_spend: .2f} > ${self.LIMIT: .2f}"
+                f"Budget exceeded: ${self.current_spend: .2f} > ${self.LIMIT: .2f}",
             )
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.LIMIT)
             raise BudgetExceededError(
-                f"Budget limit ${self.current_spend:.2f})", self.current_spend, self.LIMIT
+                f"Budget limit ${self.current_spend:.2f})", self.current_spend, self.LIMIT,
             )
 
     def get_spend(self) -> float:
@@ -133,7 +133,7 @@ class CostGovernor:
         """Update pricing for a model."""
         self.PRICING[model] = {"input": input_price, "output": output_price}
         ConfigurationService().Logger.info(
-            f"Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out"
+            f"Updated pricing for {model}: ${input_price}/1k in, ${output_price}/1k out",
         )
 
     def reset(self) -> Any:
@@ -157,7 +157,7 @@ class CostGovernor:
             output: Any = io.StringIO()
             writer: Any = csv.writer(output)
             writer.writerow(
-                ["timestamp", "model", "input_tokens", "output_tokens", "cost", "cumulative_spend"]
+                ["timestamp", "model", "input_tokens", "output_tokens", "cost", "cumulative_spend"],
             )
             for record in self.usage_history:
                 writer.writerow(
@@ -168,7 +168,7 @@ class CostGovernor:
                         record.output_tokens,
                         record.cost,
                         record.cumulative_spend,
-                    ]
+                    ],
                 )
             return output.getvalue()
         else:

@@ -148,7 +148,7 @@ class ASTEnforcementMixin:
                             "snake_classes": audit["snake_classes"],
                             "aliases": audit["aliases"],
                             "pascal_classes": audit["pascal_classes"],
-                        }
+                        },
                     )
                     total_snake += audit["snake_classes"]
                     total_aliases += audit["aliases"]

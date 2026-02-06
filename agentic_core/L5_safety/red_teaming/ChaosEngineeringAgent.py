@@ -90,7 +90,7 @@ class ChaosEngineeringAgent(SovereignBaseAgent):
                         "failure_detected": test_result.get("failure_detected", False),
                         "recovery_time_ms": test_result.get("recovery_time_ms", 0),
                         "severity": test_result.get("severity", "medium"),
-                    }
+                    },
                 )
 
             # Calculate recovery metrics

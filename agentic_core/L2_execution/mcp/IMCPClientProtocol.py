@@ -91,13 +91,13 @@ class MCPClientSpec:
             if not self.resolved_module():
                 raise ValueError(
                     f"MCPClientSpec '{self.name}': no module specified "
-                    f"and no default for provider '{self.provider}'"
+                    f"and no default for provider '{self.provider}'",
                 )
 
             if not self.resolved_class():
                 raise ValueError(
                     f"MCPClientSpec '{self.name}': no class_name specified "
-                    f"and no default for provider '{self.provider}'"
+                    f"and no default for provider '{self.provider}'",
                 )
 
 

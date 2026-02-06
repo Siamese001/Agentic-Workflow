@@ -47,7 +47,7 @@ class AdaptiveRetrievalGate:
             ),
             # Continuation markers
             "continuation": re.compile(
-                r"^(and|but|so|then|also|plus|however|therefore|meanwhile)\b", re.IGNORECASE
+                r"^(and|but|so|then|also|plus|however|therefore|meanwhile)\b", re.IGNORECASE,
             ),
         }
 
@@ -187,7 +187,7 @@ class AdaptiveRetrievalGate:
         query = query.strip()
         if not query:
             return RetrievalDecision(
-                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0
+                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0,
             )
 
         # Classify query type
@@ -249,7 +249,7 @@ class AdaptiveRetrievalGate:
         # Log decision for monitoring
         logger.info(
             f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
-            f"Reason: {reason} | Query: {query[:50]}..."
+            f"Reason: {reason} | Query: {query[:50]}...",
         )
 
         return RetrievalDecision(

@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -25,7 +24,6 @@ from typing import Any
 import redis
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
 from agentic_core.base_agents.timeout_decorator import timeout

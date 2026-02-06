@@ -29,7 +29,7 @@ VERB_PATTERN = re.compile(
     r"^(Fix|Run|Test|Analyze|Update|Manage|Utilities|Check|Archive|Restore|"
     r"Generate|Fetch|Find|Load|Perform|Query|Refactor|Verify|Convert|Calculate|"
     r"Execute|Invoke|Measure|Monitor|Parse|Process|Register|Resolve|Validate|"
-    r"Watch|Write)(?=[A-Z])"
+    r"Watch|Write)(?=[A-Z])",
 )
 
 # Suffixes that denote a Class entity (Keep Pascal)

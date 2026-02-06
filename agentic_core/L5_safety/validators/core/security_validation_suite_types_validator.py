@@ -81,7 +81,7 @@ class RedTeamValidationSuite:
             self._initialized = True
 
     def run_validator(
-        self, validator_name: str, content: Any, context: dict | None = None
+        self, validator_name: str, content: Any, context: dict | None = None,
     ) -> SecurityValidationResult:
         """
         Run a specific validator.

@@ -77,7 +77,7 @@ class IntegrityValidationGuardrail:
         self.gravity_violations = 0
 
     async def validate_integrity(
-        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None
+        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None,
     ) -> IntegrityResult:
         """
         Validate data integrity.
@@ -108,7 +108,7 @@ class IntegrityValidationGuardrail:
                         description="Checksum mismatch - data may be corrupted",
                         expected=expected_checksum,
                         actual=actual_checksum,
-                    )
+                    ),
                 )
 
             # Check against stored checksum
@@ -121,7 +121,7 @@ class IntegrityValidationGuardrail:
                             description="Data has changed since last validation",
                             expected=self.checksums[data_id],
                             actual=actual_checksum,
-                        )
+                        ),
                     )
 
         # Store checksum
@@ -138,7 +138,7 @@ class IntegrityValidationGuardrail:
         )
 
     async def validate_gravity(
-        self, source_layer: str, imported_layers: list[str], file_path: str | None = None
+        self, source_layer: str, imported_layers: list[str], file_path: str | None = None,
     ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
@@ -157,7 +157,7 @@ class IntegrityValidationGuardrail:
 
         if "gravity_compliance" not in self.enabled_rules:
             return IntegrityResult(
-                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000
+                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000,
             )
 
         allowed_imports = self.gravity_rules.get(source_layer, [])
@@ -172,7 +172,7 @@ class IntegrityValidationGuardrail:
                         expected=f"Allowed: {allowed_imports}",
                         actual=imported,
                         location=file_path,
-                    )
+                    ),
                 )
                 self.gravity_violations += 1
 

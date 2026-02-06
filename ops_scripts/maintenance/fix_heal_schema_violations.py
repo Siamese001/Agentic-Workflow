@@ -57,7 +57,7 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
 def main():
     parser = argparse.ArgumentParser(description="Fix @standard_heal schema violations")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without modifying files"
+        "--dry-run", action="store_true", help="Show what would be fixed without modifying files",
     )
     args = parser.parse_args()
 

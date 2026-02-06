@@ -51,7 +51,7 @@ class Bm25Store:
                     "score": float(score),
                     "id": doc["id"],
                     "metadata": doc.get("metadata", {}),
-                }
+                },
             )
         return results
 

@@ -46,7 +46,7 @@ def investigate():
 
         if len(unique_hashes) < len(hashes):
             print(
-                "  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required."
+                "  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required.",
             )
         else:
             print("  [✓] Implementation patterns differ. Likely intentional separation.")

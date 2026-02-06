@@ -133,7 +133,7 @@ class ObservabilityPlanningOrchestrator:
             ObservabilityPlanningResult: Complete planning result with observability setup
         """
         self.logger.info(
-            f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}"
+            f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}",
         )
 
         try:
@@ -162,7 +162,7 @@ class ObservabilityPlanningOrchestrator:
 
             # Calculate resource estimates
             resource_estimates = self._estimate_resources(
-                metric_definitions, log_configuration, trace_configuration
+                metric_definitions, log_configuration, trace_configuration,
             )
 
             result = ObservabilityPlanningResult(
@@ -182,7 +182,7 @@ class ObservabilityPlanningOrchestrator:
             )
 
             self.logger.info(
-                f"Successfully planned observability for {len(metric_definitions)} metrics"
+                f"Successfully planned observability for {len(metric_definitions)} metrics",
             )
             return result
 
@@ -222,7 +222,7 @@ class ObservabilityPlanningOrchestrator:
                 metric_type=MetricType.COUNTER,
                 description="Total number of requests",
                 labels={"service": service_name, "method": "*"},
-            )
+            ),
         )
 
         metrics.append(
@@ -232,7 +232,7 @@ class ObservabilityPlanningOrchestrator:
                 description="Request duration in seconds",
                 labels={"service": service_name},
                 aggregation="percentile",
-            )
+            ),
         )
 
         # Service-specific metrics
@@ -243,7 +243,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.COUNTER,
                     description="Total API errors",
                     labels={"service": service_name, "error_code": "*"},
-                )
+                ),
             )
         elif service_type == "worker":
             metrics.append(
@@ -252,7 +252,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.COUNTER,
                     description="Total jobs processed",
                     labels={"service": service_name, "status": "*"},
-                )
+                ),
             )
             metrics.append(
                 MetricDefinition(
@@ -260,7 +260,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.GAUGE,
                     description="Current queue size",
                     labels={"service": service_name},
-                )
+                ),
             )
 
         return metrics
@@ -319,7 +319,7 @@ class ObservabilityPlanningOrchestrator:
                 threshold=0.05,
                 duration=300,  # 5 minutes
                 notification_channels=["slack", "email"],
-            )
+            ),
         )
 
         alerts.append(
@@ -330,7 +330,7 @@ class ObservabilityPlanningOrchestrator:
                 threshold=1000.0,
                 duration=600,  # 10 minutes
                 notification_channels=["slack"],
-            )
+            ),
         )
 
         # Service-specific alerts
@@ -343,7 +343,7 @@ class ObservabilityPlanningOrchestrator:
                     threshold=0.99,
                     duration=60,  # 1 minute
                     notification_channels=["pagerduty", "slack", "email"],
-                )
+                ),
             )
         elif service_type == "worker":
             alerts.append(
@@ -354,7 +354,7 @@ class ObservabilityPlanningOrchestrator:
                     threshold=1000.0,
                     duration=300,  # 5 minutes
                     notification_channels=["slack", "email"],
-                )
+                ),
             )
 
         return alerts
@@ -421,7 +421,7 @@ def create_observability_planning_orchestrator(
 
 # Convenience function for direct usage
 def plan_observability(
-    service_name: str, service_type: str, config: dict[str, Any] | None = None
+    service_name: str, service_type: str, config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan observability setup from simple parameters.
 
@@ -511,7 +511,7 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
@@ -523,7 +523,7 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
 
 class OrchestrateObservabilityPlanningOrchestratorImpl(
-    OrchestrateObservabilityPlanningOrchestratorProcessor
+    OrchestrateObservabilityPlanningOrchestratorProcessor,
 ):
     """
     L5 Implementation - L1 Cognitive Planning Layer
@@ -531,13 +531,13 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(
     """
 
     def __init__(
-        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None
+        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None,
     ):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
@@ -639,7 +639,7 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
     ) -> OrchestrateObservabilityPlanningOrchestratorInterface:
         """Create configured engine"""
         constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(
-            safety_level=safety_level
+            safety_level=safety_level,
         )
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)

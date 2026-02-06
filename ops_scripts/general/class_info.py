@@ -118,7 +118,7 @@ def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -
 
 
 def analyze_function(
-    node: ast.FunctionDef, file_path: str, source_lines: list[str]
+    node: ast.FunctionDef, file_path: str, source_lines: list[str],
 ) -> FunctionInfo:
     """Analyze a function definition."""
     params = [arg.arg for arg in node.args.args if arg.arg != "self"]

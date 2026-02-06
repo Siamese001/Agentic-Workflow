@@ -52,9 +52,7 @@ class HardenedRouter:
             configs: Optional routing configurations (uses defaults if None)
             telemetry: Optional telemetry instance
         """
-        self.configs = configs or {
-            tier.value: config for tier, config in DEFAULT_ROUTING_CONFIGS.items()
-        }
+        self.configs = configs or {tier.value: config for tier, config in DEFAULT_ROUTING_CONFIGS.items()}
         # Telemetry is optional - use provided or None
         self.telemetry = telemetry
 
@@ -213,9 +211,7 @@ class HardenedRouter:
                     **kwargs,
                 )
             except Exception as e:
-                logger.warning(
-                    f"Primary provider {primary.value} failed: {e}. Attempting fallback..."
-                )
+                logger.warning(f"Primary provider {primary.value} failed: {e}. Attempting fallback...")
         else:
             logger.warning(
                 f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback..."
@@ -253,13 +249,9 @@ class HardenedRouter:
                         **kwargs,
                     )
                 except Exception as e:
-                    logger.warning(
-                        f"Fallback provider {fallback.value} failed: {e}. Trying next fallback..."
-                    )
+                    logger.warning(f"Fallback provider {fallback.value} failed: {e}. Trying next fallback...")
             else:
-                logger.warning(
-                    f"Fallback provider {fallback.value} circuit breaker is OPEN. Skipping..."
-                )
+                logger.warning(f"Fallback provider {fallback.value} circuit breaker is OPEN. Skipping...")
 
         # All providers failed
         all_providers = config.get_all_providers()

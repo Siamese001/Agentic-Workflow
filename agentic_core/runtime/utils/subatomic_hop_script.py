@@ -104,7 +104,7 @@ class SubatomicHop:
         if dep is None:
             raise SovereignDependencyError(
                 f"SubatomicHop Missing critical tool: {name}. "
-                "Orchestration layer must inject this dependency to maintain Gravity Compliance."
+                "Orchestration layer must inject this dependency to maintain Gravity Compliance.",
             )
         return dep
 
@@ -130,7 +130,7 @@ class SubatomicHop:
                     event_type="SUCCESS",
                     PAYLOAD={"total_cost": think_cost + act_cost, "zero_trust": True},
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             return final_output
         except Exception as e:
@@ -156,7 +156,7 @@ class SubatomicHop:
                 event_type="PREFLIGHT_COMPLETE",
                 PAYLOAD={"checks": ["genealogy", "mcp", "membrane"]},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
 
     async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
@@ -178,7 +178,7 @@ class SubatomicHop:
                                 "sanitized_length": len(sanitized_value),
                             },
                             TIMESTAMP=time.time(),
-                        )
+                        ),
                     )
             else:
                 sanitized[key] = value
@@ -191,7 +191,7 @@ class SubatomicHop:
 
         try:
             Verdict = await self.SupremeCourt.deliberate(
-                CONTEXT=str(context), GOAL=context.get("Task", ""), risk_level=risk_level
+                CONTEXT=str(context), GOAL=context.get("Task", ""), risk_level=risk_level,
             )
             plan = AgentPlan(
                 reasoning=Verdict.reasoning,
@@ -211,7 +211,7 @@ class SubatomicHop:
                         "cost": think_cost,
                     },
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             return (plan, think_cost)
         except ValueError as e:
@@ -223,7 +223,7 @@ class SubatomicHop:
                     event_type="CONSENSUS_FAILED",
                     PAYLOAD={"error": str(e)},
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             raise
 
@@ -278,7 +278,7 @@ class SubatomicHop:
                         event_type="AIRLOCK_BLOCKED",
                         PAYLOAD={"tool": tool_name, "error": str(e)},
                         TIMESTAMP=time.time(),
-                    )
+                    ),
                 )
                 raise
 
@@ -294,7 +294,7 @@ class SubatomicHop:
                     "airlock_checks": len(plan.tool_calls),
                 },
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return (results, total_cost)
 
@@ -306,7 +306,7 @@ class SubatomicHop:
 
         if self.governor.spend > self.governor.limit:
             raise Exception(
-                f"Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})"
+                f"Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})",
             )
 
         self.telemetry.record(
@@ -317,7 +317,7 @@ class SubatomicHop:
                 event_type="CRITIQUE_COMPLETE",
                 PAYLOAD={"budget_used": self.governor.spend, "sanitized": True},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return sanitized_output
 
@@ -344,7 +344,7 @@ class SubatomicHop:
                 event_type="COMMIT_COMPLETE",
                 PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return final_output
 
@@ -360,7 +360,7 @@ class SubatomicHop:
                 event_type="BUDGET_EXCEEDED" if error_type == "BudgetExceededError" else "EXECUTION_ERROR",
                 PAYLOAD={"error": str(error), "type": error_type},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
 
     async def _cleanup(self, trace_id: str) -> None:
@@ -374,5 +374,5 @@ class SubatomicHop:
                 event_type="CLEANUP_COMPLETE",
                 PAYLOAD={"zero_trust": True},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )

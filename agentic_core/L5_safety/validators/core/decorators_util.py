@@ -72,7 +72,7 @@ def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
             Logger.warning(
                 f"[standard_heal] {agent_name}: Non-canonical key '{key}' detected. "
                 f"Consider using canonical keys for better schema compliance. "
-                f"See: agentic_core/L5_safety/validators/decorators_util.py"
+                f"See: agentic_core/L5_safety/validators/decorators_util.py",
             )
 
 
@@ -233,7 +233,7 @@ def standard_heal(func: F) -> F:
 
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} "
-                f"(dry_run={dry_run}, execute={execute}, depth={depth})"
+                f"(dry_run={dry_run}, execute={execute}, depth={depth})",
             )
 
             # Call the actual method with Phase 20 signature
@@ -255,7 +255,7 @@ def standard_heal(func: F) -> F:
                 f"[standard_heal] {agent_name}.{func.__name__} completed: "
                 f"status={normalized['status']}, "
                 f"violations={normalized['violations_found']}, "
-                f"fixed={normalized['violations_fixed']}"
+                f"fixed={normalized['violations_fixed']}",
             )
 
             return normalized
@@ -265,7 +265,7 @@ def standard_heal(func: F) -> F:
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
-                f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}"
+                f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
             )
 
             return {
@@ -312,7 +312,7 @@ def standard_heal_async(func: F) -> F:
 
             Logger.debug(
                 f"[standard_heal_async] {agent_name}.{func.__name__} "
-                f"(dry_run={dry_run}, execute={execute}, depth={depth})"
+                f"(dry_run={dry_run}, execute={execute}, depth={depth})",
             )
 
             # Call the actual async method with Phase 20 signature
@@ -336,7 +336,7 @@ def standard_heal_async(func: F) -> F:
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
-                f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}"
+                f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
             )
 
             return {

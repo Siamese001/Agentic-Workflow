@@ -10,7 +10,6 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -27,8 +26,6 @@ import random
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +75,7 @@ class AutonomousPromptEvolutionAgent(AtomicExecutionMixin, SubatomicTestingMixin
         try:
             # Query meta-learning for experiences related to this template
             experiences = getattr(self.meta_learning, "get_experiences_by_context", lambda x: [])(
-                {"template_id": template_id}
+                {"template_id": template_id},
             )
             if not experiences:
                 return {"avg_reward": 0.0, "usage_count": 0, "success_rate": 0.0}

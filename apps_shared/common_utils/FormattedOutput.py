@@ -33,7 +33,7 @@ def format(self: Any, data: object, target_format: str | None) -> FormattedOutpu
     self._transform(data)
     self._format_to_target(transformed, fmt)
     return FormattedOutput(
-        DATA=formatted, format_type=fmt, metadata={"original_type": type(data).__name__}
+        DATA=formatted, format_type=fmt, metadata={"original_type": type(data).__name__},
     )
 
 

@@ -161,7 +161,7 @@ class TitaniumRAGPipeline:
             f"Initialized TitaniumRAGPipeline with all 3 phases + "
             f"Security Layer: {self.enable_security} + "
             f"CRAG Layer: {self.enable_crag} + "
-            f"GraphRAG Layer: {self.enable_graphrag}"
+            f"GraphRAG Layer: {self.enable_graphrag}",
         )
 
     async def query(self, query: str, retrieval_function: callable, **kwargs) -> dict[str, Any]:
@@ -271,12 +271,12 @@ class TitaniumRAGPipeline:
         for sub_query in queries_to_process:
             # Retrieve dense and sparse results
             dense_results, sparse_results = await retrieval_function(
-                sub_query, max_docs=self.max_retrieved_docs, **kwargs
+                sub_query, max_docs=self.max_retrieved_docs, **kwargs,
             )
 
             # Score with dynamic alpha
             scored = self.scorer.score_documents(
-                dense_results=dense_results, sparse_results=sparse_results, query=sub_query
+                dense_results=dense_results, sparse_results=sparse_results, query=sub_query,
             )
 
             all_retrieved.extend(scored)
@@ -384,7 +384,7 @@ class TitaniumRAGPipeline:
                                 "text": text,
                                 "doc_id": doc.doc_id,
                                 "score": getattr(doc, "final_score", 0.0),
-                            }
+                            },
                         )
                     return results
 
@@ -393,7 +393,7 @@ class TitaniumRAGPipeline:
 
                 # Execute GraphRAG fusion
                 fusion_result = await self.graphrag_fusion.query(
-                    query, max_results=self.top_k_final
+                    query, max_results=self.top_k_final,
                 )
 
                 self.stats["graphrag_queries"] += 1
@@ -445,7 +445,7 @@ class TitaniumRAGPipeline:
 
                 logger.info(
                     f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)}, "
-                    f"Graph entities: {len(fusion_result.graph_results.entities)}"
+                    f"Graph entities: {len(fusion_result.graph_results.entities)}",
                 )
 
             except Exception as e:
@@ -474,7 +474,7 @@ class TitaniumRAGPipeline:
 
             # Rerank
             reranked_texts = self.reranker.rerank(
-                query=query, documents=doc_texts, top_k=self.top_k_final
+                query=query, documents=doc_texts, top_k=self.top_k_final,
             )
 
             # Map back to documents by text matching
@@ -548,7 +548,7 @@ class TitaniumRAGPipeline:
         }
 
     def _generate_response(
-        self, query: str, documents: list[Any], compressed_context: str | None = None
+        self, query: str, documents: list[Any], compressed_context: str | None = None,
     ) -> str:
         """Generate response from retrieved documents.
 
@@ -592,7 +592,7 @@ class TitaniumRAGPipeline:
                     "decomposition_rate": 0.0,
                     "compression_rate": 0.0,
                     "reranking_rate": 0.0,
-                }
+                },
             )
 
         return stats

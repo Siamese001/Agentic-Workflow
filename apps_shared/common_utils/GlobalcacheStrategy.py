@@ -176,7 +176,7 @@ class L2VectorStore:
             self.embeddings = self.embeddings[1:]
 
     def search(
-        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5
+        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5,
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
@@ -324,7 +324,7 @@ class GlobalCache:
         self._stats = {"total_requests": 0, "l1_hits": 0, "l2_hits": 0, "total_misses": 0}
 
         logger.info(
-            f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})"
+            f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})",
         )
 
     def get(self, key: str) -> Any | None:
@@ -361,7 +361,7 @@ class GlobalCache:
         return None
 
     def get_semantic(
-        self, query_text: str, threshold: float | None = None, max_results: int = 1
+        self, query_text: str, threshold: float | None = None, max_results: int = 1,
     ) -> list[Any]:
         """Get values by semantic similarity.
 
@@ -620,7 +620,7 @@ def cache_put(
 
 
 def cache_search_semantic(
-    query_text: str, threshold: float | None = None, max_results: int = 1
+    query_text: str, threshold: float | None = None, max_results: int = 1,
 ) -> list[Any]:
     """Search cache semantically.
 

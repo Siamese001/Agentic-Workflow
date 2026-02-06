@@ -306,7 +306,7 @@ class SecureErrorHandler:
         self.Logger = logging.getLogger(logger_name)
 
     def handle_error(
-        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False
+        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False,
     ) -> SecureError:
         """Handle an error securely.
 

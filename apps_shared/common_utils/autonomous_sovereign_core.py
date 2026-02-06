@@ -25,7 +25,7 @@ class TerritoryWatcher(FileSystemEventHandler):
             return
         # Thread-safe handoff to the L3 Executive Queue
         self.core.loop.call_soon_threadsafe(
-            self.core.event_queue.put_nowait, {"path": event.src_path, "type": "modify"}
+            self.core.event_queue.put_nowait, {"path": event.src_path, "type": "modify"},
         )
 
 
@@ -138,14 +138,14 @@ class AutonomousSovereignCore:
                 # Priority 1: L5 Safety Review
                 if "safety" in path or "guardrail" in path:
                     detection = await self.l5_safety.detect_threats(
-                        Path(path).read_text(encoding="utf-8", errors="ignore")
+                        Path(path).read_text(encoding="utf-8", errors="ignore"),
                     )
                     if detection.detected:
                         print(f"   [L5] Threat detected: {detection.ThreatLevel}")
 
                 # Priority 2: L4 Checkpoint
                 await self.l4_checkpoint.auto_checkpoint_if_needed(
-                    state={"event": event["type"], "path": path}, files_to_track=[path]
+                    state={"event": event["type"], "path": path}, files_to_track=[path],
                 )
 
                 # Priority 3: L2 Resource Refresh

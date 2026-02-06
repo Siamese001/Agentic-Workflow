@@ -116,7 +116,7 @@ class SovereignObservabilityAgent(
             return
 
         messages: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = self.redis_client.xreadgroup(
-            self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count
+            self._group_name, self._consumer_name, {self._stream_name: ">"}, count=count,
         )
 
         for _, stream_msgs in messages:

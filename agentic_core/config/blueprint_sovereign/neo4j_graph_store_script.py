@@ -37,7 +37,7 @@ class Neo4jGraphStore:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(
-        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None
+        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None,
     ) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.

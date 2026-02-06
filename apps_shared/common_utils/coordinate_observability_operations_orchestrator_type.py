@@ -53,7 +53,7 @@ class CoordinateObservabilityOperationsOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> CoordinateObservabilityOperationsOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
@@ -65,7 +65,7 @@ class CoordinateObservabilityOperationsOrchestratorProcessor(ABC):
 
 
 class CoordinateObservabilityOperationsOrchestratorImpl(
-    CoordinateObservabilityOperationsOrchestratorProcessor
+    CoordinateObservabilityOperationsOrchestratorProcessor,
 ):
     """
     L5 Implementation - L1 Cognitive Planning Layer
@@ -73,13 +73,13 @@ class CoordinateObservabilityOperationsOrchestratorImpl(
     """
 
     def __init__(
-        self, constraints: CoordinateObservabilityOperationsOrchestratorConstraints | None = None
+        self, constraints: CoordinateObservabilityOperationsOrchestratorConstraints | None = None,
     ):
         self.constraints = constraints or CoordinateObservabilityOperationsOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> CoordinateObservabilityOperationsOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
@@ -181,7 +181,7 @@ class CoordinateObservabilityOperationsOrchestratorFactory:
     ) -> CoordinateObservabilityOperationsOrchestratorInterface:
         """Create configured engine"""
         constraints = CoordinateObservabilityOperationsOrchestratorConstraints(
-            safety_level=safety_level
+            safety_level=safety_level,
         )
         engine = CoordinateObservabilityOperationsOrchestratorImpl(constraints)
         return CoordinateObservabilityOperationsOrchestratorInterface(engine)

@@ -294,7 +294,7 @@ class ReportLocationValidator:
                         "file": result.current_location,
                         "suggested_location": result.expected_location,
                         "violation_type": result.violation_type,
-                    }
+                    },
                 )
 
         inventory.reports_by_location = reports_by_location

@@ -160,7 +160,7 @@ class PromptInjectionLoader:
                 template="Enhance this content with keywords for {job_title}: '{content}'. Include terms like: {keywords}",
                 variables=["content", "job_title", "keywords"],
                 scope=InjectionScope(
-                    hop_types=["resume_writer", "summary_generator"], contexts={"target_role": True}
+                    hop_types=["resume_writer", "summary_generator"], contexts={"target_role": True},
                 ),
                 priority=6,
             ),
@@ -230,7 +230,7 @@ class PromptInjectionLoader:
                 json.dump(injection.dict(), f, indent=2)
 
     def find_matching_injections(
-        self, hop_type: str, stage: str, context: dict[str, Any], content: str | None = None
+        self, hop_type: str, stage: str, context: dict[str, Any], content: str | None = None,
     ) -> list[InjectionMatch]:
         """Find injections matching the given context.
 
@@ -286,8 +286,8 @@ class PromptInjectionLoader:
 
                 matches.append(
                     InjectionMatch(
-                        injection=injection, relevance_score=score, variable_values=variable_values
-                    )
+                        injection=injection, relevance_score=score, variable_values=variable_values,
+                    ),
                 )
 
         # Sort by priority and relevance
@@ -364,7 +364,7 @@ class PromptInjectionLoader:
         return min(score, 1.0)
 
     def _extract_variables(
-        self, injection: InjectionPattern, context: dict[str, Any], content: str | None
+        self, injection: InjectionPattern, context: dict[str, Any], content: str | None,
     ) -> dict[str, Any]:
         """Extract variable values from context."""
         values = {}
@@ -397,7 +397,7 @@ class PromptInjectionLoader:
         }
 
         return keyword_map.get(
-            role.lower(), "Leadership, Communication, Collaboration, Problem-solving, Innovation"
+            role.lower(), "Leadership, Communication, Collaboration, Problem-solving, Innovation",
         )
 
     def apply_injections(self, base_prompt: str, matches: list[InjectionMatch]) -> str:

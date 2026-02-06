@@ -108,7 +108,7 @@ def main():
                 rationale = infer_rationale(canonical, duplicate, project_root)
 
                 f.write(
-                    f"| {agent_name.replace('.py', '')} | `{canonical_rel}` | `{duplicate_rel}` | {rationale} |\n"
+                    f"| {agent_name.replace('.py', '')} | `{canonical_rel}` | `{duplicate_rel}` | {rationale} |\n",
                 )
 
         f.write("\n---\n\n")

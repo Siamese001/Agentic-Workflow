@@ -271,7 +271,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                     "size": dup.size,
                     "file_type": dup.file_type,
                     "hash": dup.hash[:16],
-                }
+                },
             )
 
         return recommendations
@@ -335,7 +335,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
 
                     if dry_run:
                         Logger.info(
-                            f"[DRY RUN] Would archive: {delete_path_str} -> archives/duplicates_{timestamp}/{delete_path_str}"
+                            f"[DRY RUN] Would archive: {delete_path_str} -> archives/duplicates_{timestamp}/{delete_path_str}",
                         )
                         archived.append(delete_path_str)
                     else:
@@ -345,7 +345,7 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                         # Move file to archive
                         shutil.move(str(full_path), str(archive_target))
                         Logger.info(
-                            f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}"
+                            f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}",
                         )
                         archived.append(delete_path_str)
                 except Exception as e:

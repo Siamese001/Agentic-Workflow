@@ -91,10 +91,10 @@ class BoundaryTestingAgent(SovereignBaseAgent):
                             "violation": test_result.get("violation", ""),
                             "severity": test_result.get("severity", "medium"),
                             "input_example": test_result.get("input_example", ""),
-                        }
+                        },
                     )
                     results["recommendations"].append(
-                        f"Fix {test}: {test_result.get('recommendation', 'Add boundary validation')}"
+                        f"Fix {test}: {test_result.get('recommendation', 'Add boundary validation')}",
                     )
 
             self.tests_executed = results["tests_executed"]

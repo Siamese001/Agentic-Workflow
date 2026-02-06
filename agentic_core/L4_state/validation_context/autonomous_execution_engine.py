@@ -99,7 +99,7 @@ class autonomous_execution_engine:
             }
             # Sovereign Pattern: Temp file + Atomic Rename
             with tempfile.NamedTemporaryFile(
-                "w", delete=False, dir=self.state_path.parent, encoding="utf-8"
+                "w", delete=False, dir=self.state_path.parent, encoding="utf-8",
             ) as tf:
                 json.dump(data, tf, indent=2)
                 temp_name = tf.name
@@ -164,7 +164,7 @@ class autonomous_execution_engine:
             # Circuit breaker pattern
             if self.consecutive_failures > self.max_consecutive_failures:
                 Logger.critical(
-                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode."
+                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.",
                 )
                 self.running = False
 

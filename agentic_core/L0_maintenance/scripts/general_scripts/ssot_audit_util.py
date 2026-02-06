@@ -68,7 +68,7 @@ def find_gravity_violations():
                                 "file_layer": file_layer,
                                 "imports": node.module,
                                 "import_layer": import_layer,
-                            }
+                            },
                         )
         except Exception:
             pass
@@ -110,7 +110,7 @@ def find_naming_violations():
                 # Check for CamelCase in non-Agent files
                 if any(c.isupper() for c in name) and "Agent" not in name and "Mixin" not in name:
                     violations.append(
-                        {"file": str(py_file), "issue": "CamelCase naming (should be snake_case)"}
+                        {"file": str(py_file), "issue": "CamelCase naming (should be snake_case)"},
                     )
                 # Check for version suffixes
                 if any(suffix in name for suffix in ["_v1", "_v2", "_v3", "_old", "_new", "_backup"]):

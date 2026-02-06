@@ -80,7 +80,7 @@ class ScanReport:
             lines.append("Top Violations:")
             for v in self.all_violations[:10]:
                 lines.append(
-                    f"  - {v.file_path.name}:{v.line_number} [{v.category.value}] {v.message[:50]}..."
+                    f"  - {v.file_path.name}:{v.line_number} [{v.category.value}] {v.message[:50]}...",
                 )
 
         lines.append("=" * 60)
@@ -160,7 +160,7 @@ class AntiPatternScanner:
                 PathFragilityDetector(enforcement_level=enforcement_level),
                 MagicConfigDetector(enforcement_level=enforcement_level),
                 GlobalMutationDetector(enforcement_level=enforcement_level),
-            ]
+            ],
         )
 
     def scan_repository(self) -> ScanReport:
@@ -223,7 +223,7 @@ class AntiPatternScanner:
 
         # Sort violations by severity
         report.all_violations.sort(
-            key=lambda v: (0 if v.severity == "error" else 1, str(v.file_path), v.line_number)
+            key=lambda v: (0 if v.severity == "error" else 1, str(v.file_path), v.line_number),
         )
 
         return report

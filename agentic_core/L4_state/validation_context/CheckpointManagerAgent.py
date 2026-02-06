@@ -36,7 +36,6 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -236,7 +235,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
             # Run sync in executor to not block
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+                None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
             )
             return checkpoint_id
         else:
@@ -318,7 +317,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Offload I/O to thread pool
         loop = asyncio.get_event_loop()
         file_path = await loop.run_in_executor(
-            None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+            None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
         )
 
         # Trigger background mirroring in AUTONOMOUS mode
@@ -807,7 +806,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)}
+                {"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)},
             )
 
         # Test 3: Checkpoint serialization
@@ -826,7 +825,7 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)}
+                {"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)},
             )
 
         return results
@@ -903,6 +902,6 @@ if __name__ == "__main__":
     else:
         # Demo: Create a test checkpoint
         cp_id = manager.create_checkpoint(
-            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()}, label="demo"
+            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()}, label="demo",
         )
         print(f"Created checkpoint: {cp_id}")

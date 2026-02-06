@@ -87,7 +87,7 @@ def generate_table(json_file: Path, output_file: Path):
                     "canonical_quality": item["canonical_quality"]["quality_score"],
                     "duplicate_quality": dup["quality"]["quality_score"],
                     "rationale": infer_rationale(canonical, [dup], item["action"]),
-                }
+                },
             )
 
     # Sort by action (DELETE first), then by agent name

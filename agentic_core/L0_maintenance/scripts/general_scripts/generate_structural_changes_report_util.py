@@ -38,7 +38,7 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
                         else "root",
                         "file_size_bytes": file_path.stat().st_size,
                         "archived_timestamp": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
-                    }
+                    },
                 )
 
     return archived_files
@@ -72,7 +72,7 @@ def scan_l0_maintenance_scripts() -> list[dict[str, Any]]:
                     else "newly_created",
                     "file_size_bytes": file.stat().st_size,
                     "last_modified": datetime.fromtimestamp(file.stat().st_mtime).isoformat(),
-                }
+                },
             )
 
     return relocated_files
@@ -99,10 +99,10 @@ def scan_created_directories() -> list[dict[str, Any]]:
                                 "full_path": str(subdir.relative_to(PROJECT_ROOT)),
                                 "parent_layer": layer_dir.name,
                                 "created_timestamp": datetime.fromtimestamp(
-                                    subdir.stat().st_ctime
+                                    subdir.stat().st_ctime,
                                 ).isoformat(),
                                 "file_count": len(list(subdir.glob("*.py"))),
-                            }
+                            },
                         )
 
     return created_dirs

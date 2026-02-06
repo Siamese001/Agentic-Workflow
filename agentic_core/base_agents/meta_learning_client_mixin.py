@@ -168,7 +168,7 @@ class MetaLearningClientMixin:
 
         try:
             patterns = MetaLearningClientMixin._ml_client.retrieve_healing_patterns(
-                violation, domain, top_k=1
+                violation, domain, top_k=1,
             )
 
             if patterns:
@@ -186,13 +186,13 @@ class MetaLearningClientMixin:
 
                     if similarity < min_threshold:
                         Logger.debug(
-                            f"[{self.__class__.__name__}] Pattern below similarity threshold: {similarity:.2f} < {min_threshold:.2f}"
+                            f"[{self.__class__.__name__}] Pattern below similarity threshold: {similarity:.2f} < {min_threshold:.2f}",
                         )
                         return None
 
                 Logger.info(
                     f"[{self.__class__.__name__}] Recalled healing pattern: "
-                    f"{pattern.get('violation_type', 'unknown')} (domain={domain}, similarity={pattern.get('similarity_score', 0):.2f})"
+                    f"{pattern.get('violation_type', 'unknown')} (domain={domain}, similarity={pattern.get('similarity_score', 0):.2f})",
                 )
                 return pattern.get("healing_strategy", pattern)
 
@@ -241,7 +241,7 @@ class MetaLearningClientMixin:
 
         try:
             pattern_id = MetaLearningClientMixin._ml_client.store_healing_pattern(
-                violation, healing_result, domain
+                violation, healing_result, domain,
             )
 
             if pattern_id:
@@ -371,7 +371,7 @@ class MetaLearningClientMixin:
             return True  # Allow healing if guardrails unavailable
 
         return MetaLearningClientMixin._ml_guardrails.check_healing_depth(
-            self.__class__.__name__, violation_id
+            self.__class__.__name__, violation_id,
         )
 
     def ml_increment_healing_depth(self, violation_id: str) -> int:
@@ -390,7 +390,7 @@ class MetaLearningClientMixin:
             return 0
 
         return MetaLearningClientMixin._ml_guardrails.increment_healing_depth(
-            self.__class__.__name__, violation_id
+            self.__class__.__name__, violation_id,
         )
 
     def ml_reset_healing_depth(self, violation_id: str) -> None:

@@ -31,7 +31,7 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
 
 
 def generate_llm_cache_key_with_fingerprint(
-    model: str, messages: list[dict[str, Any]], fingerprint: str
+    model: str, messages: list[dict[str, Any]], fingerprint: str,
 ) -> str:
     """Generate a cache key with additional fingerprint.
 

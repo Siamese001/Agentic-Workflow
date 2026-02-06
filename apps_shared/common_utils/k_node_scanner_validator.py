@@ -94,7 +94,7 @@ class KNodeScanner:
                                 "column": match.start() + 1,
                                 "text": text,
                                 "context": line.strip(),
-                            }
+                            },
                         )
             line_number += 1
 
@@ -160,7 +160,7 @@ class KNodeMigrator:
                 "k_node_critic": "quality_critic",
                 "K3_agent": "content_drafter",
                 "K5_validator": "quality_critic",
-            }
+            },
         )
 
         return replacements
@@ -250,7 +250,7 @@ class KNodeMigrator:
                                         value[i] = item.replace(legacy, functional)
                                         changes_made = True
                                         logger.info(
-                                            f"Migrated config list item at {current_path}[{i}]"
+                                            f"Migrated config list item at {current_path}[{i}]",
                                         )
 
             migrate_dict(config)
@@ -359,7 +359,7 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]
 
     logger.info(
         f"Found {results['scan']['total_references']} K-node references "
-        f"in {results['scan']['files_with_references']} files"
+        f"in {results['scan']['files_with_references']} files",
     )
 
     if dry_run:
@@ -392,7 +392,7 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> dict[str, Any]
         results["success"] = True
     else:
         logger.warning(
-            f"Migration incomplete: {results['validation']['remaining_references']} references remain"
+            f"Migration incomplete: {results['validation']['remaining_references']} references remain",
         )
 
     return results

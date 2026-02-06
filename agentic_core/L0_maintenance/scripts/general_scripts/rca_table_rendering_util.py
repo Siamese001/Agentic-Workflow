@@ -75,7 +75,7 @@ def rca_table_rendering():
 
     if in_dash_not_real:
         print(
-            f"\n   ❌ MISMATCH: {len(in_dash_not_real)} territories in dashboardData have NO realAgentData:"
+            f"\n   ❌ MISMATCH: {len(in_dash_not_real)} territories in dashboardData have NO realAgentData:",
         )
         for name in sorted(in_dash_not_real)[:10]:
             print(f"      - '{name}'")

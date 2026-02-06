@@ -6,7 +6,6 @@ from __future__ import annotations
 import ast
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -16,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 
@@ -165,7 +163,7 @@ class DocstringComplianceAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sove
 
         try:
             print(
-                f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only"
+                f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only",
             )
             return {"skipped": 1, "requires_ctx": True}
         finally:

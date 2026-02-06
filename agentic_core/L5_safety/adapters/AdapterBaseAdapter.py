@@ -114,7 +114,7 @@ class AdapterBaseAdapter(ABC, Generic[T]):
         self._verification_gate = None  # Lazy load
 
         logger.info(
-            f"AdapterBaseAdapter initialized for '{service_name}' wrapping {type(legacy_agent).__name__}"
+            f"AdapterBaseAdapter initialized for '{service_name}' wrapping {type(legacy_agent).__name__}",
         )
 
     @property

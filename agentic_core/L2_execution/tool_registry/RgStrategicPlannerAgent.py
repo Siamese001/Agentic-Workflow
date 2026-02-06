@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -40,7 +39,7 @@ class RgStrategicPlannerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     async def execute(self) -> None:
         print(
-            f"\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.base_agents.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan..."
+            f"\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.base_agents.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...",
         )
         if not self.ctx.intelligence_enabled:
             return
@@ -74,7 +73,7 @@ class RgStrategicPlannerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 # Mark handled
                 instruction_file.write_text(
-                    f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions
+                    f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions,
                 )
 
         # LEVEL 6: Analyze Dependency Graph for Blast Radius
@@ -169,7 +168,7 @@ Output ONLY the plan in Markdown.
 
     @standard_heal
     def heal_repository(
-        self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs
+        self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs,
     ) -> dict:
         """Standardized healing signature with signal propagation."""
         return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)

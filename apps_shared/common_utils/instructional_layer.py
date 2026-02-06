@@ -93,7 +93,7 @@ STAGE_MAPPINGS: list[StageMapping] = [
         required=True,
     ),
     StageMapping(
-        InstructionalInjectionType.TASK_MODE_DECLARATION, [MicroStage.PRE_CHECK], priority=8
+        InstructionalInjectionType.TASK_MODE_DECLARATION, [MicroStage.PRE_CHECK], priority=8,
     ),
     StageMapping(
         InstructionalInjectionType.SCOPE_BOUNDARIES,
@@ -102,7 +102,7 @@ STAGE_MAPPINGS: list[StageMapping] = [
         required=True,
     ),
     StageMapping(
-        InstructionalInjectionType.COST_LATENCY_TARGETS, [MicroStage.PRE_CHECK], priority=6
+        InstructionalInjectionType.COST_LATENCY_TARGETS, [MicroStage.PRE_CHECK], priority=6,
     ),
     # Context Layer - Apply in PRE_CHECK and THINK
     StageMapping(
@@ -118,32 +118,32 @@ STAGE_MAPPINGS: list[StageMapping] = [
         priority=7,
     ),
     StageMapping(
-        InstructionalInjectionType.CROSS_FIELD_CONSISTENCY, [MicroStage.THINK], priority=8
+        InstructionalInjectionType.CROSS_FIELD_CONSISTENCY, [MicroStage.THINK], priority=8,
     ),
     StageMapping(
-        InstructionalInjectionType.STRUCTURED_ORDERING, [MicroStage.PRE_CHECK], priority=7
+        InstructionalInjectionType.STRUCTURED_ORDERING, [MicroStage.PRE_CHECK], priority=7,
     ),
     # Reasoning Layer - Apply in THINK
     StageMapping(InstructionalInjectionType.FAILURE_ANTICIPATION, [MicroStage.THINK], priority=8),
     StageMapping(InstructionalInjectionType.MULTI_BRANCH_THINKING, [MicroStage.THINK], priority=7),
     StageMapping(InstructionalInjectionType.CONFIDENCE_UNCERTAINTY, [MicroStage.THINK], priority=6),
     StageMapping(
-        InstructionalInjectionType.REASON_THEN_ANSWER, [MicroStage.THINK], priority=9, required=True
+        InstructionalInjectionType.REASON_THEN_ANSWER, [MicroStage.THINK], priority=9, required=True,
     ),
     StageMapping(InstructionalInjectionType.ERROR_SIMULATION, [MicroStage.THINK], priority=6),
     # Tooling Layer - Apply in ACT
     StageMapping(InstructionalInjectionType.TOOL_FEEDBACK_LOOP, [MicroStage.ACT], priority=8),
     StageMapping(
-        InstructionalInjectionType.EVIDENCE_BINDING, [MicroStage.ACT], priority=9, required=True
+        InstructionalInjectionType.EVIDENCE_BINDING, [MicroStage.ACT], priority=9, required=True,
     ),
     StageMapping(
-        InstructionalInjectionType.CROSS_TOOL_RECONCILIATION, [MicroStage.ACT], priority=7
+        InstructionalInjectionType.CROSS_TOOL_RECONCILIATION, [MicroStage.ACT], priority=7,
     ),
     StageMapping(InstructionalInjectionType.SHADOW_VALIDATION, [MicroStage.ACT], priority=8),
     StageMapping(InstructionalInjectionType.MODEL_SWITCH_AWARE, [MicroStage.ACT], priority=5),
     # Safety Layer - Apply to ALL stages
     StageMapping(
-        InstructionalInjectionType.INJECTION_SHIELDING, list(MicroStage), priority=10, required=True
+        InstructionalInjectionType.INJECTION_SHIELDING, list(MicroStage), priority=10, required=True,
     ),
     StageMapping(
         InstructionalInjectionType.DATA_INSTRUCTION_SEPARATION,
@@ -169,7 +169,7 @@ STAGE_MAPPINGS: list[StageMapping] = [
     StageMapping(InstructionalInjectionType.STABILITY_CONTRACTS, [MicroStage.COMMIT], priority=7),
     StageMapping(InstructionalInjectionType.ERROR_ENVELOPE, [MicroStage.COMMIT], priority=8),
     StageMapping(
-        InstructionalInjectionType.MINIMALITY_CONSTRAINTS, [MicroStage.COMMIT], priority=6
+        InstructionalInjectionType.MINIMALITY_CONSTRAINTS, [MicroStage.COMMIT], priority=6,
     ),
 ]
 
@@ -301,7 +301,7 @@ Applied Rules: {applied_rules}
 Use normalized version for processing.""",
                 variables=["raw_input", "normalized_format", "applied_rules"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["PRE_CHECK"], contexts={"needs_normalization": True}
+                    hop_types=["*"], stages=["PRE_CHECK"], contexts={"needs_normalization": True},
                 ),
                 priority=8,
             ),
@@ -319,7 +319,7 @@ Exclusions: {exclusions}
 Focus only on high-relevance content within budget.""",
                 variables=["relevance_threshold", "token_budget", "priority_fields", "exclusions"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["PRE_CHECK", "THINK"], contexts={"large_context": True}
+                    hop_types=["*"], stages=["PRE_CHECK", "THINK"], contexts={"large_context": True},
                 ),
                 priority=7,
             ),
@@ -336,7 +336,7 @@ Required Alignments: {required_alignments}
 Ensure all fields are mutually consistent.""",
                 variables=["fields_to_check", "consistency_rules", "required_alignments"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["THINK"], contexts={"multiple_fields": True}
+                    hop_types=["*"], stages=["THINK"], contexts={"multiple_fields": True},
                 ),
                 priority=8,
             ),
@@ -353,7 +353,7 @@ Priority Order: {priority_order}
 Process inputs in this exact order for consistency.""",
                 variables=["input_sequence", "grouping_rules", "priority_order"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["PRE_CHECK"], contexts={"ordered_processing": True}
+                    hop_types=["*"], stages=["PRE_CHECK"], contexts={"ordered_processing": True},
                 ),
                 priority=7,
             ),
@@ -371,7 +371,7 @@ Early Warning Signs: {warning_signs}
 Watch for these patterns and apply countermeasures.""",
                 variables=["common_errors", "prevention_strategies", "warning_signs"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["THINK"], contexts={"complex_task": True}
+                    hop_types=["*"], stages=["THINK"], contexts={"complex_task": True},
                 ),
                 priority=8,
             ),
@@ -388,7 +388,7 @@ Branch 3: {branch_3_approach}
 Evaluate all branches, select strongest with justification.""",
                 variables=["branch_1_approach", "branch_2_approach", "branch_3_approach"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["THINK"], contexts={"decision_required": True}
+                    hop_types=["*"], stages=["THINK"], contexts={"decision_required": True},
                 ),
                 priority=7,
             ),
@@ -405,7 +405,7 @@ Evidence Strength: {evidence_strength}
 Quantify confidence and explain uncertainties.""",
                 variables=["confidence_level", "uncertainty_factors", "evidence_strength"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["THINK"], contexts={"assessment_needed": True}
+                    hop_types=["*"], stages=["THINK"], contexts={"assessment_needed": True},
                 ),
                 priority=6,
             ),
@@ -441,7 +441,7 @@ Correction Applied: {correction_applied}
 Test failure modes before finalizing.""",
                 variables=["simulated_error", "impact_analysis", "correction_applied"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["THINK"], contexts={"critical_output": True}
+                    hop_types=["*"], stages=["THINK"], contexts={"critical_output": True},
                 ),
                 priority=6,
             ),
@@ -460,7 +460,7 @@ Next Action: {next_action}
 Use tool results to inform subsequent steps.""",
                 variables=["tool_name", "tool_output", "interpretation", "next_action"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["ACT"], contexts={"tool_usage": True}
+                    hop_types=["*"], stages=["ACT"], contexts={"tool_usage": True},
                 ),
                 priority=8,
             ),
@@ -478,7 +478,7 @@ Citation: {citation}
 All claims must be bound to evidence.""",
                 variables=["claim", "evidence_source", "direct_quote", "citation"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["ACT"], contexts={"claims_made": True}
+                    hop_types=["*"], stages=["ACT"], contexts={"claims_made": True},
                 ),
                 priority=9,
             ),
@@ -501,7 +501,7 @@ Resolve tool conflicts systematically.""",
                     "final_decision",
                 ],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["ACT"], contexts={"tool_conflicts": True}
+                    hop_types=["*"], stages=["ACT"], contexts={"tool_conflicts": True},
                 ),
                 priority=7,
             ),
@@ -545,7 +545,7 @@ Adjust approach based on model characteristics.""",
                     "adaptation_strategy",
                 ],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["ACT"], contexts={"model_switch": True}
+                    hop_types=["*"], stages=["ACT"], contexts={"model_switch": True},
                 ),
                 priority=5,
             ),
@@ -726,7 +726,7 @@ Recovery Steps: {recovery_steps}
 Standardized error response format.""",
                 variables=["error_code", "error_message", "error_context", "recovery_steps"],
                 scope=InjectionScope(
-                    hop_types=["*"], stages=["COMMIT"], contexts={"error_possible": True}
+                    hop_types=["*"], stages=["COMMIT"], contexts={"error_possible": True},
                 ),
                 priority=8,
             ),
@@ -746,7 +746,7 @@ Be concise and minimal within constraints.""",
                 scope=InjectionScope(hop_types=["*"], stages=["COMMIT"], contexts={}),
                 priority=6,
             ),
-        ]
+        ],
     )
 
     return injections

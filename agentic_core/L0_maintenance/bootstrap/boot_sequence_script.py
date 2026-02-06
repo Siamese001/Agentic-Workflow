@@ -79,14 +79,14 @@ class BootSequence:
             if self.compliance_violations:
                 if self.strict_mode:
                     logger.error(
-                        f"❌ Boot failed with {len(self.compliance_violations)} compliance violations."
+                        f"❌ Boot failed with {len(self.compliance_violations)} compliance violations.",
                     )
                     boot_result["status"] = "failed"
                     boot_result["errors"].extend(self.compliance_violations)
                     raise RuntimeError(f"Compliance violations detected: {self.compliance_violations}")
                 else:
                     logger.warning(
-                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations."
+                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations.",
                     )
             else:
                 logger.info("✅ All agents pass compliance validation.")

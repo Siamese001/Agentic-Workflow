@@ -6,7 +6,6 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
@@ -63,7 +62,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
-            safety_layer=self.safety_layer, SignalLedger=self.SignalLedger
+            safety_layer=self.safety_layer, SignalLedger=self.SignalLedger,
         )
         self.config = config or OrchestratorConfig()
 
@@ -113,7 +112,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Initialize helper classes
         self._checkpointing = NervousSystemCheckpointing(
-            self.CheckpointManager, self.SignalLedger, self.session_id, LOGGER
+            self.CheckpointManager, self.SignalLedger, self.session_id, LOGGER,
         )
         self._result_reporting = NervousSystemResultReporting(self.config, LOGGER)
         self._state_management = NervousSystemStateManagement(LOGGER)
@@ -391,7 +390,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             # Run the main execution loop via the orchestrator
             converged, errors = await self._phase_orchestrator.run_execution_loop(
-                context, resume_phase=resume_phase
+                context, resume_phase=resume_phase,
             )
 
             # After the loop, NervousSystem's internal state (_iteration, _state, _results, _signals, _modified_files)
@@ -417,7 +416,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return result
         except Exception as e:
             return self._result_reporting.handle_execution_error(
-                context, context.execution_trace, start_time, e, self._iteration, self._state
+                context, context.execution_trace, start_time, e, self._iteration, self._state,
             )
 
     async def should_continue(self, context: ExecutionContext) -> bool:
@@ -515,7 +514,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return self._architecture_governance.validate_architecture(file_paths)
 
     def post_phase_validation(
-        self, phase_name: str, affected_paths: list[Path], dry_run: bool = True
+        self, phase_name: str, affected_paths: list[Path], dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-phase validation using domain-specific agents.
@@ -603,7 +602,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return report
 
     def cleanup_violations(
-        self, violations: list[PhaseViolation], dry_run: bool = True, max_actions: int = 50
+        self, violations: list[PhaseViolation], dry_run: bool = True, max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup violations using integrated domain agents.
@@ -639,7 +638,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if violation.file_path and self.location_agent:
                     if "LOCATION" in violation.message.upper() or "TERRITORY" in violation.message.upper():
                         cleanup_result = self.location_agent.cleanup_violations(
-                            [(violation.file_path, violation.message)], dry_run=dry_run
+                            [(violation.file_path, violation.message)], dry_run=dry_run,
                         )
                         if cleanup_result:
                             action.update(cleanup_result[0])
@@ -648,7 +647,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                     elif "HIERARCHY" in violation.message.upper() and self.hierarchy_agent:
                         cleanup_result = self.hierarchy_agent.cleanup_violations(
-                            [(violation.file_path, violation.message)], dry_run=dry_run
+                            [(violation.file_path, violation.message)], dry_run=dry_run,
                         )
                         if cleanup_result:
                             action.update(cleanup_result[0])
@@ -658,7 +657,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     elif "IMPORT" in violation.message.upper() or "GRAVITY" in violation.message.upper():
                         if self.import_agent:
                             cleanup_result = self.import_agent.cleanup_violations(
-                                [(violation.file_path, violation.message)], dry_run=dry_run
+                                [(violation.file_path, violation.message)], dry_run=dry_run,
                             )
                             if cleanup_result:
                                 action.update(cleanup_result[0])
@@ -713,7 +712,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         message=loc_viol.get("issue", "Location violation"),
                         file_path=Path(loc_viol.get("file", "")) if loc_viol.get("file") else None,
                         severity=5,
-                    )
+                    ),
                 )
             for hier_viol in validation_report.get("hierarchy_validation", {}).get("violations", []):
                 all_violations.append(
@@ -723,7 +722,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         message=hier_viol.get("issue", "Hierarchy violation"),
                         file_path=Path(hier_viol.get("file", "")) if hier_viol.get("file") else None,
                         severity=4,
-                    )
+                    ),
                 )
             for imp_viol in validation_report.get("import_validation", {}).get("violations", []):
                 all_violations.append(
@@ -733,7 +732,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         message=str(imp_viol.get("issues", "Import violation")),
                         file_path=Path(imp_viol.get("file", "")) if imp_viol.get("file") else None,
                         severity=3,
-                    )
+                    ),
                 )
 
         # Cleanup violations
@@ -746,10 +745,10 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             "detailed_actions": cleanup_results,
             "batch_post_heal_summary": batch_summary,
             "location_summary": {
-                "violations": len([v for v in all_violations if "LOCATION" in v.message.upper()])
+                "violations": len([v for v in all_violations if "LOCATION" in v.message.upper()]),
             },
             "hierarchy_summary": {
-                "violations": len([v for v in all_violations if "HIERARCHY" in v.message.upper()])
+                "violations": len([v for v in all_violations if "HIERARCHY" in v.message.upper()]),
             },
             "import_summary": {
                 "violations": len(
@@ -757,8 +756,8 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         v
                         for v in all_violations
                         if "IMPORT" in v.message.upper() or "GRAVITY" in v.message.upper()
-                    ]
-                )
+                    ],
+                ),
             },
             "dry_run": dry_run,
         }

@@ -378,7 +378,7 @@ class ASTAnalyzer:
         return total_score / len(patterns) if patterns else 0, matched
 
     def analyze_class_capabilities(
-        self, class_info: dict[str, Any], component: ArchitectureComponent
+        self, class_info: dict[str, Any], component: ArchitectureComponent,
     ) -> tuple[float, list[str], list[str]]:
         """Analyze a class for architecture component capabilities."""
         matched_capabilities = []
@@ -391,7 +391,7 @@ class ASTAnalyzer:
                 class_info.get("docstring", ""),
                 " ".join(class_info.get("methods", [])),
                 " ".join(class_info.get("attributes", [])),
-            ]
+            ],
         ).lower()
 
         for capability in component.required_capabilities:
@@ -451,7 +451,7 @@ class ArchitectureGapAnalyzer:
         print("Scanning repository with AST parser...")
         self.ast_analyzer.scan_repository()
         print(
-            f"Parsed {len(self.ast_analyzer.parsed_files)} files, found {len(self.ast_analyzer.class_info)} classes"
+            f"Parsed {len(self.ast_analyzer.parsed_files)} files, found {len(self.ast_analyzer.class_info)} classes",
         )
 
         results = []
@@ -475,11 +475,11 @@ class ArchitectureGapAnalyzer:
         for _key, class_info in self.ast_analyzer.class_info.items():
             # Check pattern match in class name and content
             name_score, name_matches = self.ast_analyzer.fuzzy_match_score(
-                class_info["name"], component.key_patterns
+                class_info["name"], component.key_patterns,
             )
 
             doc_score, doc_matches = self.ast_analyzer.fuzzy_match_score(
-                class_info.get("docstring", ""), component.key_patterns
+                class_info.get("docstring", ""), component.key_patterns,
             )
 
             combined_score = max(name_score, doc_score)
@@ -503,7 +503,7 @@ class ArchitectureGapAnalyzer:
                                 "doc_matches": doc_matches,
                                 "methods": class_info.get("methods", [])[:10],
                             },
-                        )
+                        ),
                     )
 
         # Sort by match score
@@ -596,7 +596,7 @@ class ArchitectureGapAnalyzer:
                             "component": result.component.name,
                             "coverage": result.coverage_score,
                             "gaps": result.gaps[:3],
-                        }
+                        },
                     )
 
             total_coverage += result.coverage_score

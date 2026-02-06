@@ -43,7 +43,7 @@ class DomainConfig:
             "specificity": 0.2,
             "coherence": 0.2,
             "accuracy": 0.1,
-        }
+        },
     )
 
 
@@ -207,7 +207,7 @@ class ResumeValidator(DomainValidator):
                 word.lower()
                 for word in content.split()
                 if word in ["led", "managed", "developed", "created"]
-            }
+            },
         )
         return unique_verbs / max(verbs, 1)
 
@@ -426,7 +426,7 @@ class SharedSignalInfrastructure:
 
         if enhancer_key not in self._enhancers:
             enhancer = signal_enhancer(
-                name=f"{engine_type.value}_enhancer", thresholds=domain_config.quality_thresholds
+                name=f"{engine_type.value}_enhancer", thresholds=domain_config.quality_thresholds,
             )
 
             # Store with domain config reference
@@ -479,7 +479,7 @@ class SharedSignalInfrastructure:
         return assessment
 
     def get_feedback_loop(
-        self, engine_type: EngineType, loop_name: str | None = None
+        self, engine_type: EngineType, loop_name: str | None = None,
     ) -> FeedbackLoop:
         """Get feedback loop for the engine.
 
@@ -618,7 +618,7 @@ class SharedSignalInfrastructure:
             if avg_quality < 0.7:
                 recommendations.append(
                     f"Engine {engine} has low average quality ({avg_quality:.2f}). "
-                    "Consider reviewing domain-specific validation rules."
+                    "Consider reviewing domain-specific validation rules.",
                 )
 
         # Check for common issues
@@ -626,7 +626,7 @@ class SharedSignalInfrastructure:
         if "LOW_QUALITY" in common_flags and len(common_flags["LOW_QUALITY"]) > 1:
             recommendations.append(
                 "Multiple engines experiencing LOW_QUALITY flags. "
-                "Consider strengthening base validation criteria."
+                "Consider strengthening base validation criteria.",
             )
 
         return recommendations
@@ -650,7 +650,7 @@ def get_shared_infrastructure() -> SharedSignalInfrastructure:
 
 # Convenience functions for engines
 def assess_resume_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True
+    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess resume signal quality.
 
@@ -674,7 +674,7 @@ def assess_resume_signal(
 
 
 def assess_outreach_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True
+    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess outreach signal quality.
 

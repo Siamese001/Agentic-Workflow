@@ -68,7 +68,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
                         "coverage_weight": coverage_weight,
                         "systemic_risk": systemic_risk,
                         "dependents": list(dependents),
-                    }
+                    },
                 )
 
         # Sort by systemic risk (highest first)

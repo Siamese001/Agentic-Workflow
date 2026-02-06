@@ -6,7 +6,6 @@ from __future__ import annotations
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
@@ -67,7 +66,6 @@ except ImportError:
         pass
 
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -182,7 +180,7 @@ class DependencyGraph:
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph[file_path]["from_imports"].append(
-                                {"module": node.module, "names": [n.name for n in node.names]}
+                                {"module": node.module, "names": [n.name for n in node.names]},
                             )
                     elif isinstance(node, ast.ClassDef):
                         self.graph[file_path]["classes"].append(node.name)
@@ -477,7 +475,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         return violations
 
     def _check_root_file(
-        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool
+        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool,
     ) -> None:
         if file_path.name not in self.ALLOWED_ROOT_FILES:
             violations.append(f"Unauthorized file at root: {file_path.name}")
@@ -535,7 +533,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                     counter += 1
                 # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
                 result = self.gatekeeper.safe_move(
-                    file_path, target, "GovernanceAgent", "Move root script to scripts/"
+                    file_path, target, "GovernanceAgent", "Move root script to scripts/",
                 )
                 if result.success:
                     return f"MOVED to scripts/{target.name}"
@@ -675,7 +673,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                                 "spaces": spaces,
                                 "content": line.strip()[:100],
                                 "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})",
-                            }
+                            },
                         )
         except Exception as e:
             LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
@@ -709,7 +707,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                                 "complexity": complexity,
                                 "threshold": self.MAX_COMPLEXITY,
                                 "message": f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}",
-                            }
+                            },
                         )
                     if func_lines > self.MAX_FUNC_LINES:
                         violations.append(
@@ -720,7 +718,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                                 "lines": func_lines,
                                 "threshold": self.MAX_FUNC_LINES,
                                 "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}",
-                            }
+                            },
                         )
         except SyntaxError as e:
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
@@ -792,7 +790,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
             report["root_violations"]
             or report["depth_violations"]
             or report["atomicity_violations"]
-            or report["complexity_violations"]
+            or report["complexity_violations"],
         )
 
     def validate_architecture(self, file_paths: list[str] = None, enforce: bool = False) -> dict[str, Any]:
@@ -898,7 +896,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                     "type": "ROOT_HYGIENE",
                     "applied": not dry_run,
                     "action_taken": "SANITIZED" if not dry_run else "PREVIEW",
-                }
+                },
             )
 
         if file_paths:
@@ -912,7 +910,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                             "type": "DEPTH",
                             "applied": False,
                             "action_taken": "SUGGEST: Use HealerAgent.heal_file_moves()",
-                        }
+                        },
                     )
                     affected_paths.append(fp)
 
@@ -925,7 +923,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                             "type": "ATOMICITY",
                             "applied": False,
                             "action_taken": "SUGGEST: Use HealerAgent.heal_fission()",
-                        }
+                        },
                     )
                     affected_paths.append(fp)
 
@@ -1082,7 +1080,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                 errors += 1
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed"
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed",
             )
 
             return {

@@ -43,7 +43,7 @@ _cache_timestamp: float = 0.0
 
 
 def load_agent_discovery(
-    project_root: Path | None = None, force_reload: bool = False
+    project_root: Path | None = None, force_reload: bool = False,
 ) -> list[dict[str, Any]]:
     """
     Load agent discovery data from SSOT JSON file.
@@ -104,7 +104,7 @@ def load_agent_discovery(
 
 
 def get_agent_paths(
-    project_root: Path | None = None, exclude_patterns: list[str] | None = None
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None,
 ) -> list[Path]:
     """
     Get all agent file paths from SSOT.
@@ -234,7 +234,7 @@ def get_healers(project_root: Path | None = None) -> list[dict[str, Any]]:
 
 
 def get_python_files(
-    project_root: Path | None = None, exclude_patterns: list[str] | None = None
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None,
 ) -> list[Path]:
     """
     Get all Python files from the project.
@@ -303,7 +303,7 @@ def get_data_files(
 
 
 def get_all_files(
-    project_root: Path | None = None, exclude_patterns: list[str] | None = None
+    project_root: Path | None = None, exclude_patterns: list[str] | None = None,
 ) -> dict[str, list[Path]]:
     """
     Get all files from the project, grouped by file type.

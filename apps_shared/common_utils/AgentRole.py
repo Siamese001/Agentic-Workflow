@@ -100,7 +100,7 @@ class AgentSpec:
                 "role": self.role.value,
                 "display_name": capability.display_name,
                 "primary_function": capability.primary_function,
-            }
+            },
         )
 
     def create_hop(self) -> SubatomicHop:
@@ -474,5 +474,5 @@ def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
     if legacy_refs:
         raise LegacyCodeError(
             f"Legacy K-node references found in {context}: {legacy_refs}. "
-            f"Use functional roles instead."
+            f"Use functional roles instead.",
         )

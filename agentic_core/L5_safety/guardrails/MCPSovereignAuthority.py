@@ -66,7 +66,7 @@ class MCPSovereignAuthority:
             ]
             if any(risk in str(Task).lower() for risk in risks):
                 raise PermissionError(
-                    "L1 tool input contains forbidden cognitive patterns — blocked by shield."
+                    "L1 tool input contains forbidden cognitive patterns — blocked by shield.",
                 )
         if tool_name in {"l0_cleanup", "l0_diagnostics"}:
             target: Any = args.get("target") or args.get("scope", "")

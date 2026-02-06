@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -277,7 +276,7 @@ def get_unified_agent_class(agent_id: str) -> type:
         phase4_mapping = _get_phase4_detector_healer_router_executor_mapping()
         if agent_id in phase4_mapping:
             Logger.info(
-                f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4)."
+                f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4).",
             )
             return phase4_mapping[agent_id]
     except ImportError as e:
@@ -345,7 +344,7 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
                                 "source_snippet": f"Method: {node.name}\nimport logging\n\nLogger = logging.getLogger(__name__)\nDoc: {doc}\nSource: {source_lines[:200]}...",
                                 "line_number": node.lineno,
                                 "is_async": isinstance(node, ast.AsyncFunctionDef),
-                            }
+                            },
                         )
             except Exception:
                 continue

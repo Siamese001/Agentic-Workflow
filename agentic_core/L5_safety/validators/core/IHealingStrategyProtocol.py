@@ -44,7 +44,7 @@ class ChaosResilienceStrategy:
             "post_healing_validation",
             "chaos_test_required",
             "system_stability_check",
-        }
+        },
     )
 
     def __init__(self) -> None:

@@ -203,7 +203,7 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Make this content more concise and impactful: '{content}'. Remove fluff, use strong verbs, eliminate redundant phrases, and ensure every word adds value. Target {word_count} words maximum.",
             variables=["content", "word_count"],
             scope=InjectionScope(
-                hop_types=["content_generator", "editor"], contexts={"needs_conciseness": True}
+                hop_types=["content_generator", "editor"], contexts={"needs_conciseness": True},
             ),
             priority=6,
         ),
@@ -215,7 +215,7 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Improve clarity of this content: '{content}'. Simplify complex sentences, define jargon, use active voice, and ensure logical flow. Target {reading_level} reading level.",
             variables=["content", "reading_level"],
             scope=InjectionScope(
-                hop_types=["content_generator", "editor"], contexts={"needs_clarity": True}
+                hop_types=["content_generator", "editor"], contexts={"needs_clarity": True},
             ),
             priority=5,
         ),
@@ -227,7 +227,7 @@ def get_quality_boost_injections() -> list[InjectionPattern]:
             template="Make this content more engaging: '{content}'. Add storytelling elements, use emotional language, include compelling examples, and end with clear call to action for {audience}.",
             variables=["content", "audience"],
             scope=InjectionScope(
-                hop_types=["content_generator", "copywriter"], contexts={"needs_engagement": True}
+                hop_types=["content_generator", "copywriter"], contexts={"needs_engagement": True},
             ),
             priority=7,
         ),

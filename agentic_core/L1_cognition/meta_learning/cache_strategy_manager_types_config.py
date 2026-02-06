@@ -107,7 +107,7 @@ class CacheStrategyManager:
             "depth_limit_hits": 0,
             "poisoning_attempts_blocked": 0,
             "by_domain": {},
-        }
+        },
     )
 
     def __new__(cls, *args, **kwargs):

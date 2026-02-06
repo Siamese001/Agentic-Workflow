@@ -77,7 +77,7 @@ class DAGSafetyManager:
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
     def add_validation_hook(
-        self, phase: MutationPhase, hook: Callable[[nx.DiGraph, dict[str, Any]], None]
+        self, phase: MutationPhase, hook: Callable[[nx.DiGraph, dict[str, Any]], None],
     ) -> None:
         """Add a validation hook for a specific phase.
 
@@ -89,7 +89,7 @@ class DAGSafetyManager:
         logger.debug(f"Added validation hook for phase: {phase.value}")
 
     def create_snapshot(
-        self, graph: nx.DiGraph, external_state: dict[str, Any] | None = None
+        self, graph: nx.DiGraph, external_state: dict[str, Any] | None = None,
     ) -> str:
         """Create a snapshot of the current DAG state.
 
@@ -180,7 +180,7 @@ class DAGSafetyManager:
         return mutation_id
 
     def execute_mutation(
-        self, graph: nx.DiGraph, mutation_func: Callable[[nx.DiGraph], None], mutation_id: str
+        self, graph: nx.DiGraph, mutation_func: Callable[[nx.DiGraph], None], mutation_id: str,
     ) -> bool:
         """Execute a mutation with full safety checks.
 
@@ -242,7 +242,7 @@ class DAGSafetyManager:
             self._mutation_stack = [m for m in self._mutation_stack if m["id"] != mutation_id]
 
     def _run_hooks(
-        self, phase: MutationPhase, graph: nx.DiGraph, mutation_info: dict[str, Any]
+        self, phase: MutationPhase, graph: nx.DiGraph, mutation_info: dict[str, Any],
     ) -> None:
         """Run validation hooks for a phase.
 
@@ -303,7 +303,7 @@ def validate_depth_consistency_hook(graph: nx.DiGraph, mutation_info: dict[str, 
 
         if target_depth <= source_depth:
             raise ValueError(
-                f"Depth inconsistency: {edge[0]}({source_depth}) -> {edge[1]}({target_depth})"
+                f"Depth inconsistency: {edge[0]}({source_depth}) -> {edge[1]}({target_depth})",
             )
 
 

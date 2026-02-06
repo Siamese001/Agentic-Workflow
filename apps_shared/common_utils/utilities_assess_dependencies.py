@@ -39,7 +39,7 @@ def main() -> Any:
         help="Main script(s) that trigger the application (e.g., canon_validator_v2_agentic.py)",
     )
     parser.add_argument(
-        "--root-dir", type=str, default="/app", help="Root directory of the project"
+        "--root-dir", type=str, default="/app", help="Root directory of the project",
     )
     parser.add_argument(
         "--output",

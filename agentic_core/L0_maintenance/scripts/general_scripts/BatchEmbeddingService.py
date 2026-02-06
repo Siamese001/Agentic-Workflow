@@ -35,7 +35,7 @@ class BatchEmbeddingService:
         Logger.info(f"Initialized BatchEmbeddingService: batch_size={batch_size}, max_workers={max_workers}")
 
     async def embed_batch(
-        self, texts: list[str], model_func: Callable[[list[str]], list[np.ndarray]]
+        self, texts: list[str], model_func: Callable[[list[str]], list[np.ndarray]],
     ) -> list[np.ndarray]:
         """Embed a list of texts in parallel batches.
 
@@ -70,7 +70,7 @@ class BatchEmbeddingService:
             raise
 
     async def embed_single(
-        self, text: str, model_func: Callable[[list[str]], list[np.ndarray]]
+        self, text: str, model_func: Callable[[list[str]], list[np.ndarray]],
     ) -> np.ndarray:
         """Embed a single text (convenience method).
 

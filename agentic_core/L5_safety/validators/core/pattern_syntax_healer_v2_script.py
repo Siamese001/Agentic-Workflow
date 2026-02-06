@@ -246,7 +246,7 @@ class PatternSyntaxHealerV2:
         print(f"Pattern 2 Fixes:   {stats['pattern2_fixes']} (empty try blocks)")
         print(f"Pattern 3 Fixes:   {stats['pattern3_fixes']} (indentation)")
         print(
-            f"Total Fixes:       {stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes']}"
+            f"Total Fixes:       {stats['pattern1_fixes'] + stats['pattern2_fixes'] + stats['pattern3_fixes']}",
         )
         print("=" * 80)
 

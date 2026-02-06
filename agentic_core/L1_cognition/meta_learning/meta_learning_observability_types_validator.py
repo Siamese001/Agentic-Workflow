@@ -84,7 +84,7 @@ class MetaLearningObservability:
             "cross_domain_shares": 0,
             "errors": 0,
             "start_time": datetime.now().isoformat(),
-        }
+        },
     )
 
     def __post_init__(self) -> None:

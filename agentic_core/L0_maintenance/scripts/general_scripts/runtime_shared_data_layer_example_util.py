@@ -38,7 +38,7 @@ async def example_batch_embedding_workflow() -> Any:
     batch_service: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
     Logger.info(f"Generating embeddings for {len(resume_sections)} sections...")
     embeddings: Any = await batch_service.embed_batch(
-        texts=resume_sections, model_func=mock_embedding_function
+        texts=resume_sections, model_func=mock_embedding_function,
     )
     Logger.info(f"Generated {len(embeddings)} embeddings")
     Logger.info(f"Embedding shape: {embeddings[0].shape}")
@@ -68,7 +68,7 @@ async def example_hot_cache_workflow() -> Any:
     query_embedding: Any = mock_embedding_function(["Python developer"])[0].tolist()
     Logger.info("Searching hot cache...")
     results: Any = await hot_cache.search(
-        query_embeddings=[query_embedding], top_k=2, where={"category": "backend"}
+        query_embeddings=[query_embedding], top_k=2, where={"category": "backend"},
     )
     Logger.info(f"Search results: {results['documents'][0]}")
     stats: Any = hot_cache.get_stats()
@@ -119,7 +119,7 @@ async def example_tiered_storage() -> Any:
     """Example: Two-tier storage with hot cache + warm storage."""
     Logger.info("\n=== Tiered Storage Example ===")
     tiered_store: Any = create_tiered_vector_store(
-        hot_collection_name="hot_resumes", warm_store_url="http://localhost:6333"
+        hot_collection_name="hot_resumes", warm_store_url="http://localhost:6333",
     )
     query_embedding: Any = mock_embedding_function(["Python developer"])[0].tolist()
     await tiered_store.search(query_embeddings=[query_embedding], top_k=10, try_hot_first=True)

@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -129,7 +128,7 @@ class KeyTechnology:
     """
 
     def __init__(
-        self, technology_name: str, implementation_details: str, source_citation: str | None = None
+        self, technology_name: str, implementation_details: str, source_citation: str | None = None,
     ) -> None:
         """
         Initialize key technology.
@@ -382,7 +381,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return RESULT
 
     def _check_unbound_metrics(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         for Metric in research_output.StrategicLayer.financial_proof_points:
             if not Metric.source_citation:
@@ -422,7 +421,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         )
 
     def _check_orphaned_claims(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         INITIATIVES = research_output.StrategicLayer.strategic_initiatives
         TECHNOLOGIES = [t.technology_name for t in research_output.TechnicalLayer.key_technologies]
@@ -439,7 +438,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 )
 
     def _check_citation_coverage(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         if len(research_output.CitationMap.citations) < 3:
             result.add_violation(
@@ -456,7 +455,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         if financial_citations == 0:
             result.add_violation(
-                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics"
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics",
             )
 
         if technical_citations == 0:
@@ -633,7 +632,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         errors += 1
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors"
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors",
             )
 
             return {
@@ -686,7 +685,7 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
 
 def validate_research_output(
-    research_output: DeepResearchOutput, min_depth_score: float = 0.7
+    research_output: DeepResearchOutput, min_depth_score: float = 0.7,
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

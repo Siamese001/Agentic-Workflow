@@ -34,7 +34,7 @@ class HandleApiTimeouts:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(
-        self, primary: Callable, fallback: Callable, *args, **kwargs: dict[str, object]
+        self, primary: Callable, fallback: Callable, *args, **kwargs: dict[str, object],
     ) -> object:
         """Execute with fallback."""
         self.execute(primary, *args, **kwargs)

@@ -130,7 +130,7 @@ class TracingMixin:
         if TracingMixin._circuit_breaker_open:
             self._tracing_degraded = True
             Logger.warning(
-                f"[TRACING] {self._tracing_service_name} initialized in DEGRADED mode (circuit breaker open)"
+                f"[TRACING] {self._tracing_service_name} initialized in DEGRADED mode (circuit breaker open)",
             )
         else:
             # Attempt initialization with timeout protection
@@ -147,13 +147,13 @@ class TracingMixin:
                     TracingMixin._circuit_breaker_open = True
                     Logger.error(
                         f"[TRACING] Circuit breaker OPENED after {TracingMixin._circuit_breaker_failures} failures. "
-                        "All subsequent agents will initialize in degraded mode."
+                        "All subsequent agents will initialize in degraded mode.",
                     )
 
                 self._tracing_degraded = True
                 Logger.warning(
                     f"[TRACING] {self._tracing_service_name} initialization failed: {e}. "
-                    f"Operating in degraded mode. Failures: {TracingMixin._circuit_breaker_failures}"
+                    f"Operating in degraded mode. Failures: {TracingMixin._circuit_breaker_failures}",
                 )
 
         # Cooperative super() call - ALWAYS called regardless of tracing state
@@ -172,7 +172,7 @@ class TracingMixin:
 
     @contextmanager
     def start_span(
-        self, operation_name: str, attributes: dict[str, Any] | None = None
+        self, operation_name: str, attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext, None, None]:
         """
         Start a new tracing span.

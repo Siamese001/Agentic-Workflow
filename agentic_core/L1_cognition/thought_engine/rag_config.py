@@ -52,5 +52,5 @@ class RagConfig:
             "SOURCE_PEER_JD": 0.8,
             "SOURCE_GENERIC_PROFILE": 0.5,
             "LOCAL_NLP": 0.2,
-        }
+        },
     )

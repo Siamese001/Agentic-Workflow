@@ -145,10 +145,10 @@ class UnifiedAgentMonitor:
             )
 
         self._aggregated.min_execution_time_ms = min(
-            self._aggregated.min_execution_time_ms, metric.execution_time_ms
+            self._aggregated.min_execution_time_ms, metric.execution_time_ms,
         )
         self._aggregated.max_execution_time_ms = max(
-            self._aggregated.max_execution_time_ms, metric.execution_time_ms
+            self._aggregated.max_execution_time_ms, metric.execution_time_ms,
         )
 
         # Track by category

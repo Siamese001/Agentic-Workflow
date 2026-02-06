@@ -18,7 +18,7 @@ class CompressionResult(BaseModel):
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
     compression_ratio: float = Field(
-        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)"
+        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)",
     )
 
 
@@ -41,7 +41,7 @@ class ContextualCompressor:
 
         # Simple sentence tokenizer using regex
         self.sentence_pattern = re.compile(
-            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", re.MULTILINE
+            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", re.MULTILINE,
         )
 
         # Named entity patterns (simple keyword-based)
@@ -53,7 +53,7 @@ class ContextualCompressor:
         }
 
         logger.info(
-            f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}"
+            f"Initialized ContextualCompressor: threshold={similarity_threshold}, llm={use_llm}",
         )
 
     def _split_into_sentences(self, text: str) -> list[str]:
@@ -160,7 +160,7 @@ class ContextualCompressor:
                     "similarity": similarity,
                     "entity_match": entity_match,
                     "keyword_match": keyword_match,
-                }
+                },
             )
 
         # Select sentences based on criteria
@@ -238,7 +238,7 @@ Extracted sentences:"""
             return self._compress_heuristic(chunks, query)
 
     def compress(
-        self, chunks: list[str], query: str, use_llm: bool | None = None
+        self, chunks: list[str], query: str, use_llm: bool | None = None,
     ) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
@@ -278,7 +278,7 @@ Extracted sentences:"""
         # Log compression ratio for monitoring
         logger.info(
             f"Compression ratio: {compression_ratio:.2f} "
-            f"({original_length} -> {compressed_length} chars)"
+            f"({original_length} -> {compressed_length} chars)",
         )
 
         # Alert if ratio is unusual

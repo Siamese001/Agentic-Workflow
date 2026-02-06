@@ -76,7 +76,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
         Logger.info(f"[L4 ADAPTER] Routing legacy search to MCP: {query}")
         await self._ensure_initialized()
         result: Any = await self.McpClient.search(
-            query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get("rerank", True)
+            query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get("rerank", True),
         )
         matches: Any = result.get("matches", []) if isinstance(result, dict) else []
         return matches
@@ -108,7 +108,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             _call_path.discard(agent_name)
 
     async def add_texts(
-        self, texts: list[str], metadatas: list[dict] | None = None, ids: list[str] | None = None
+        self, texts: list[str], metadatas: list[dict] | None = None, ids: list[str] | None = None,
     ) -> list[str]:
         """Legacy adapter for adding documents."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -131,7 +131,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
                     "id": vec_id,
                     "values": embeddings[i]["values"] if isinstance(embeddings[i], dict) else embeddings[i],
                     "metadata": meta,
-                }
+                },
             )
             result_ids.append(vec_id)
         await self.McpClient.upsert(vectors=vectors, namespace=self.namespace)
@@ -174,7 +174,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
         try:
             results: Any = await self.McpClient.search(query_text=query, top_k=top_k, rerank=True)
             Logger.info(
-                f"[L4 PINECONE STORE] Semantic search returned {len(results.get('matches', []))} results"
+                f"[L4 PINECONE STORE] Semantic search returned {len(results.get('matches', []))} results",
             )
             return results.get("matches", [])
         except Exception as e:
@@ -196,7 +196,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
         try:
             results: Any = await self.McpClient.search(query_text=query, top_k=top_k, rerank=True)
             Logger.info(
-                f"[L4 PINECONE STORE] Hybrid search returned {len(results.get('matches', []))} results"
+                f"[L4 PINECONE STORE] Hybrid search returned {len(results.get('matches', []))} results",
             )
             return results.get("matches", [])
         except Exception as e:
@@ -214,7 +214,7 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             file_path: Path to file
         """
         Logger.warning(
-            f"[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}"
+            f"[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}",
         )
 
     async def health_check(self) -> dict:

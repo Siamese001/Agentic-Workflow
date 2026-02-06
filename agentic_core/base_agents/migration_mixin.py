@@ -80,7 +80,7 @@ class MigrationMixin:
                 current_v = data.get("_new_version_id", target_version)
 
                 self._migration_history.append(
-                    {"from": old_v, "to": current_v, "timestamp": datetime.utcnow().isoformat()}
+                    {"from": old_v, "to": current_v, "timestamp": datetime.utcnow().isoformat()},
                 )
 
                 if hasattr(self, "_validate_after_migration_step"):

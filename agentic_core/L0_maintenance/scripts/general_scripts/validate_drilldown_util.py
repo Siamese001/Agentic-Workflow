@@ -61,7 +61,7 @@ def main():
 
     infra = validate_drilldown_infrastructure(html)
     print(
-        f"openDrillModal() function:     {'✅ Found' if infra['openDrillModal_function'] else '❌ Missing'}"
+        f"openDrillModal() function:     {'✅ Found' if infra['openDrillModal_function'] else '❌ Missing'}",
     )
     print(f"drillModal DOM element:        {'✅ Found' if infra['drillModal_element'] else '❌ Missing'}")
     print(f"onclick template reference:    {'✅ Found' if infra['template_has_onclick'] else '❌ Missing'}")
@@ -159,7 +159,7 @@ def main():
         if not (has_onclick and has_cursor):
             all_pass = False
         print(
-            f"{territory:<35} {sub:<20} {'✅' if has_onclick else '❌':<10} {'✅' if has_cursor else '❌':<10} {status}"
+            f"{territory:<35} {sub:<20} {'✅' if has_onclick else '❌':<10} {'✅' if has_cursor else '❌':<10} {status}",
         )
 
     print("-" * 90)

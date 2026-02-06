@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -46,7 +45,6 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -153,7 +151,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
         if self.export_path:
             Logger.info(
-                f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})"
+                f"[TracingAgent] File export enabled: {self.export_path} (timestamped={timestamped_exports})",
             )
 
         # Sovereign tracing Provider setup
@@ -306,7 +304,7 @@ class TracingAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
         """
         if not 0.0 <= probability <= 1.0:
             Logger.warning(
-                f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]"
+                f"[TracingAgent] Sampling probability {probability} out of range, clamping to [0.0, 1.0]",
             )
             probability = max(0.0, min(1.0, probability))
 

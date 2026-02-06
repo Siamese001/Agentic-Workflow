@@ -176,7 +176,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, L0Maint
                             import_statement=violation.import_statement,
                             source_layer=violation.source_layer,
                             target_layer=violation.target_layer,
-                        )
+                        ),
                     )
                     break
         return staged_violations
@@ -393,7 +393,7 @@ def main() -> Any:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Pre-Commit Sovereign Agent - Git hook for architectural compliance"
+        description="Pre-Commit Sovereign Agent - Git hook for architectural compliance",
     )
     parser.add_argument("--install", action="store_true", help="Install as git pre-commit hook")
     parser.add_argument("--uninstall", action="store_true", help="Remove git pre-commit hook")

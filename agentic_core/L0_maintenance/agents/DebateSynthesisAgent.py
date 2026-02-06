@@ -12,7 +12,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
@@ -131,7 +130,7 @@ class DebateSynthesisAgent(AtomicExecutionMixin, SovereignBaseAgent):
                                     "severity": "medium",
                                     "recommended_action": "Consider moving to template system",
                                     "confidence": 0.7,
-                                }
+                                },
                             )
 
             except Exception as e:

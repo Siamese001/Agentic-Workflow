@@ -122,7 +122,7 @@ class FeedbackLoopOrchestrator:
 
         logger.info(
             f"Initialized FeedbackLoopOrchestrator: "
-            f"max_attempts={max_attempts}, reversion={reversion_enabled}"
+            f"max_attempts={max_attempts}, reversion={reversion_enabled}",
         )
 
     async def execute_with_feedback(
@@ -151,7 +151,7 @@ class FeedbackLoopOrchestrator:
 
         for attempt in range(1, self.max_attempts + 1):
             logger.info(
-                f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})"
+                f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})",
             )
 
             # Generate content
@@ -194,7 +194,7 @@ class FeedbackLoopOrchestrator:
 
             logger.warning(
                 f"Validation failed on attempt {attempt}: "
-                f"type={failure_type.value}, score={checkpoint.score:.2f}"
+                f"type={failure_type.value}, score={checkpoint.score:.2f}",
             )
 
             # Check reversion policy
@@ -203,7 +203,7 @@ class FeedbackLoopOrchestrator:
                 if checkpoint.score < prev_checkpoint.score:
                     logger.info(
                         f"Reverting to attempt {attempt - 1} "
-                        f"(score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})"
+                        f"(score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})",
                     )
                     return RegenerationResult(
                         success=True,
@@ -234,7 +234,7 @@ class FeedbackLoopOrchestrator:
         if self.reversion_enabled and checkpoints:
             best_checkpoint = max(checkpoints, key=lambda cp: cp.score)
             logger.info(
-                f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})"
+                f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})",
             )
             return RegenerationResult(
                 success=False,
@@ -322,7 +322,7 @@ class FeedbackLoopOrchestrator:
 
         logger.info(
             f"Temperature adjustment: {current_temp:.2f} -> {adjusted_temp:.2f} "
-            f"(failure_type={failure_type.value}, escalation={escalation})"
+            f"(failure_type={failure_type.value}, escalation={escalation})",
         )
 
         return adjusted_temp
@@ -475,7 +475,7 @@ class FeedbackLoopOrchestrator:
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")
             report_lines.append(
-                f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}"
+                f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}",
             )
 
             if hasattr(checkpoint.validation_result, "failures"):

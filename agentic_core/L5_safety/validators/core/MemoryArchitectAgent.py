@@ -199,7 +199,7 @@ class HealingDiffAnalyzer:
                     success.after_code.split("\n"),
                     lineterm="",
                     n=3,
-                )
+                ),
             )
             return {
                 "added_functions": list(added_functions),
@@ -393,7 +393,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
         Logger.info(f"[OK] Successfully harvested pattern from {success.file_path}")
 
     async def _synthesize_pattern(
-        self, success: HealingSuccess, diff_analysis: dict
+        self, success: HealingSuccess, diff_analysis: dict,
     ) -> DistilledPattern | None:
         """
         Stage 3: Generalization - Rule Synthesis
@@ -410,7 +410,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
         prompt = self._build_synthesis_prompt(success, diff_analysis)
         try:
             response = await self.ctx.generate_with_thinking(
-                prompt=prompt, thinking_budget=24576, temperature=0.2
+                prompt=prompt, thinking_budget=24576, temperature=0.2,
             )
             pattern = self._parse_synthesis_response(response, success, diff_analysis)
             return pattern
@@ -461,7 +461,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
         return "\n".join(prompt_parts)
 
     def _parse_synthesis_response(
-        self, response: str, success: HealingSuccess, diff_analysis: dict
+        self, response: str, success: HealingSuccess, diff_analysis: dict,
     ) -> DistilledPattern:
         """Parse Gemini response into structured pattern."""
         try:
@@ -487,7 +487,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
                 after_metrics=success.after_metrics,
                 improvement_percentage=improvement,
                 generalized_rule=parsed.get(
-                    "generalized_rule", "Extract complex logic into focused helper methods"
+                    "generalized_rule", "Extract complex logic into focused helper methods",
                 ),
                 code_examples={
                     "added_functions": diff_analysis["added_functions"],
@@ -519,7 +519,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
         }
 
     def _create_fallback_pattern_object(
-        self, success: HealingSuccess, diff_analysis: dict
+        self, success: HealingSuccess, diff_analysis: dict,
     ) -> DistilledPattern:
         """Create fallback DistilledPattern object."""
         pattern_id = f"pattern_{success.key_id}_{hashlib.sha256(success.file_path.encode()).hexdigest()[:8]}_{datetime.now().strftime('%Y%m%d')}"
@@ -695,7 +695,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
         return report
 
     def cleanup_violations(
-        self, violations: list[MemoryViolation], dry_run: bool = True, max_actions: int = 50
+        self, violations: list[MemoryViolation], dry_run: bool = True, max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup memory violations with pattern re-inoculation.
@@ -782,7 +782,7 @@ class MemoryArchitectAgent(SovereignBaseAgent, SubAtomicAgent):
                         message=f"Pattern extraction failed: {e}",
                         file_path=Path(success.file_path) if success.file_path else None,
                         severity=4,
-                    )
+                    ),
                 )
 
         cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []

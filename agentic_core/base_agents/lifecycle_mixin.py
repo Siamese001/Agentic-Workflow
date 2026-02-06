@@ -136,7 +136,7 @@ class LifecycleMixin(ABC):
             raise LifecycleError(
                 f"{self.__class__.__name__} is not ready. "
                 f"Current state: {self._lifecycle_state.value}. "
-                f"Call startup() first."
+                f"Call startup() first.",
             )
 
     async def startup(self) -> None:

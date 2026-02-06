@@ -245,7 +245,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return True, "OK"
 
     def _validate_depth_requirements(
-        self, parts: tuple, root_folder: str, rel_path: Path
+        self, parts: tuple, root_folder: str, rel_path: Path,
     ) -> tuple[bool, str]:
         """Validate depth requirements from sovereign registry.
 
@@ -479,7 +479,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return None
 
     def _check_semantic_alignment(
-        self, tree: Any, current_territory: str, rel_path: Path
+        self, tree: Any, current_territory: str, rel_path: Path,
     ) -> tuple[bool, str]:
         """Check semantic alignment between file location and content."""
         if not current_territory:
@@ -525,7 +525,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return app_rg_score, app_lic_score, territory_scores
 
     def _check_app_domain_violation(
-        self, app_rg_score: float, app_lic_score: float, rel_path: Path
+        self, app_rg_score: float, app_lic_score: float, rel_path: Path,
     ) -> tuple[bool, str]:
         """
         [HARDENED] Detects cross-contamination AND Global Candidates for apps_shared.
@@ -563,7 +563,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return True, ""
 
     def _check_territory_alignment(
-        self, current_territory: str, territory_scores: dict[str, float], rel_path: Path
+        self, current_territory: str, territory_scores: dict[str, float], rel_path: Path,
     ) -> tuple[bool, str]:
         """Check territory alignment between file location and content."""
         from agentic_core.L5_safety.validators.structure_blueprint_config import (
@@ -593,7 +593,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     # AST scoring utility methods (used by semantic alignment)
     def _collect_ast_increments(
-        self, tree: Any, territory_keywords: dict[str, Any]
+        self, tree: Any, territory_keywords: dict[str, Any],
     ) -> list[tuple[str, float]]:
         """Collect AST-based scoring increments."""
         import ast
@@ -617,7 +617,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return scores
 
     def _recompute_ast_scores(
-        self, tree: Any, territory_keywords: dict[str, Any]
+        self, tree: Any, territory_keywords: dict[str, Any],
     ) -> tuple[float, float, dict[str, float]]:
         """Recompute AST scores (wrapper for _calculate_semantic_scores)."""
         return self._calculate_semantic_scores(tree)

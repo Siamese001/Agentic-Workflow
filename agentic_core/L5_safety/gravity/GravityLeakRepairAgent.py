@@ -81,7 +81,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         self.context = get_context_manager(self.project_root)
 
     def analyze_violation(
-        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str
+        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str,
     ) -> GravityFix:
         """
         Analyze a gravity violation and recommend a fix.
@@ -113,7 +113,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         cached_pattern = self.context.recall_healing_pattern(violation, agent="GravityLeakRepairAgent")
         if cached_pattern:
             self.logger.info(
-                f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}"
+                f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}",
             )
             metadata = cached_pattern.get("metadata", {})
             return GravityFix(
@@ -427,7 +427,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                             "line_number": fix.line_number,
                         }
                         self.context.store_healing_pattern(
-                            violation, healing_result, agent="GravityLeakRepairAgent"
+                            violation, healing_result, agent="GravityLeakRepairAgent",
                         )
                         return {
                             "violations_fixed": 1,

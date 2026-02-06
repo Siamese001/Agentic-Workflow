@@ -100,7 +100,7 @@ def main():
                     "filename": filename,
                     "reason": "No matching file in current codebase",
                     "action": "RESTORE",
-                }
+                },
             )
         else:
             # Check if any match has same content
@@ -114,7 +114,7 @@ def main():
                             "current": str(match),
                             "reason": "Identical file exists",
                             "action": "SKIP",
-                        }
+                        },
                     )
                     break
 
@@ -128,7 +128,7 @@ def main():
                         "current_matches": [str(m) for m in current_matches],
                         "reason": "File exists but content differs",
                         "action": "REVIEW",
-                    }
+                    },
                 )
 
     # Print results

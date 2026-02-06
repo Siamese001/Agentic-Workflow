@@ -21,7 +21,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
@@ -305,7 +304,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         message=f"Stale backup file: {item.suffix}",
                         severity=3,
                         auto_fixable=True,
-                    )
+                    ),
                 )
 
             # Check for temp files
@@ -317,7 +316,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         message="Temporary file should be removed",
                         severity=4,
                         auto_fixable=True,
-                    )
+                    ),
                 )
 
             # Python file checks
@@ -331,7 +330,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             message="Empty Python file",
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Orphaned __init__.py check
@@ -343,7 +342,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             message="Orphaned __init__.py with no other Python files",
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Debug print check
@@ -357,7 +356,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             line_number=debug_lines[0],
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
 
                 # Commented code check
@@ -370,7 +369,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             message=f"Large block of commented-out code ({num_lines} lines)",
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
 
                 # Repeated filename strings check (merged from FileCleanupAgent)
@@ -383,7 +382,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             message=f'Repeated string in filename: "{pattern}"',
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Copy-pattern filename check
@@ -396,7 +395,7 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             message=f'Copy-pattern filename detected (original: "{original}")',
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
     def _fix_violations(self) -> int:

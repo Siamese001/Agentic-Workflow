@@ -383,7 +383,7 @@ def validate_agent_count(agent_count: int, previous_count: int | None = None) ->
             f"❌ CRITICAL: Agent count {agent_count} is below MINIMUM_AGENT_COUNT ({MINIMUM_AGENT_COUNT})!\n"
             f"   This indicates a catastrophic bug in agent detection.\n"
             f"   Discovery ABORTED to prevent data loss.\n"
-            f"   If this is intentional, update MINIMUM_AGENT_COUNT in full_agent_discovery.py"
+            f"   If this is intentional, update MINIMUM_AGENT_COUNT in full_agent_discovery.py",
         )
         return False, errors
 
@@ -398,7 +398,7 @@ def validate_agent_count(agent_count: int, previous_count: int | None = None) ->
                 f"   Previous: {previous_count}, Current: {agent_count}\n"
                 f"   This exceeds MAX_AGENT_DROP_PERCENT ({MAX_AGENT_DROP_PERCENT}%).\n"
                 f"   Discovery ABORTED to prevent data loss.\n"
-                f"   If this is intentional, run with --force flag"
+                f"   If this is intentional, run with --force flag",
             )
             return False, errors
 
@@ -406,12 +406,12 @@ def validate_agent_count(agent_count: int, previous_count: int | None = None) ->
     if agent_count < EXPECTED_AGENT_COUNT:
         diff = EXPECTED_AGENT_COUNT - agent_count
         warnings.append(
-            f"⚠️  WARNING: Agent count {agent_count} is {diff} below EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})"
+            f"⚠️  WARNING: Agent count {agent_count} is {diff} below EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})",
         )
     elif agent_count > EXPECTED_AGENT_COUNT:
         diff = agent_count - EXPECTED_AGENT_COUNT
         warnings.append(
-            f"ℹ️  INFO: Agent count {agent_count} is {diff} above EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})"
+            f"ℹ️  INFO: Agent count {agent_count} is {diff} above EXPECTED_AGENT_COUNT ({EXPECTED_AGENT_COUNT})",
         )
 
     # Print warnings but don't fail
@@ -602,7 +602,7 @@ def extract_method_signatures(node: ast.ClassDef) -> list[dict[str, Any]]:
                     "decorators": [
                         d.id if isinstance(d, ast.Name) else str(d) for d in item.decorator_list[:3]
                     ],
-                }
+                },
             )
     return methods
 
@@ -1313,7 +1313,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # If not an agent candidate, exclude early
     if not has_strong_positive_signal:
         log.debug(
-            f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)"
+            f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)",
         )
         return False
 
@@ -1325,7 +1325,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     if not name.endswith("Agent"):
         log.info(
             f"VIOLATION {name} in {rel_path}: agent candidate lacks 'Agent' suffix. "
-            f"Fix: Rename class to {name}Agent"
+            f"Fix: Rename class to {name}Agent",
         )
         return False
 
@@ -1337,7 +1337,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
                 f"VIOLATION {name} in {rel_path}: "
                 f"class name '{name}' does not match filename stem '{filename_stem}'. "
                 "Enforced: one canonical agent per file. "
-                f"Fix: Move to {name}.py or rename class to {filename_stem}"
+                f"Fix: Move to {name}.py or rename class to {filename_stem}",
             )
             return False
 
@@ -1446,7 +1446,7 @@ def main():
                 if previous_count != EXPECTED_AGENT_COUNT:
                     log.warning(
                         f"[INCREMENTAL] Previous count ({previous_count}) != expected ({EXPECTED_AGENT_COUNT}). "
-                        f"Registry may be stale → falling back to full scan for integrity"
+                        f"Registry may be stale → falling back to full scan for integrity",
                     )
                     incremental_mode = False
             except json.JSONDecodeError as e:
@@ -1478,7 +1478,7 @@ def main():
                 if manifest_count != previous_count:
                     raise ValueError(
                         f"Manifest count ({manifest_count}) != JSON count ({previous_count}). "
-                        f"Data integrity compromised."
+                        f"Data integrity compromised.",
                     )
 
                 old_hashes = old_manifest.get("file_hashes", {})
@@ -1593,14 +1593,14 @@ def main():
 
         agents = retained_agents
         log.info(
-            f"[INCREMENTAL] Retained {len(agents)} agents from {len(previous_agents) - len(agents)} unchanged files"
+            f"[INCREMENTAL] Retained {len(agents)} agents from {len(previous_agents) - len(agents)} unchanged files",
         )
 
         # Validate retained agent integrity
         if len(agents) > EXPECTED_AGENT_COUNT:
             log.error(
                 f"[INCREMENTAL] INTEGRITY ERROR: Retained {len(agents)} agents > baseline {EXPECTED_AGENT_COUNT}. "
-                f"This should never happen. Falling back to full scan."
+                f"This should never happen. Falling back to full scan.",
             )
             incremental_mode = False
             agents = []
@@ -1629,7 +1629,7 @@ def main():
         else list(parsed_files.keys())
     )
     log.info(
-        f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})"
+        f"[PASS 2] Extracting from {len(target_py_files)} files ({'incremental' if incremental_mode else 'full'})",
     )
 
     for py_file in target_py_files:
@@ -1787,7 +1787,7 @@ def main():
             # SSOT: Use centralized territory name function
             path_str = str(rel_path).replace("\\", "/").lower()
             territory = get_territory_from_path(
-                layer=layer, path_str=path_str, is_base_class=is_base_class, class_name=node.name
+                layer=layer, path_str=path_str, is_base_class=is_base_class, class_name=node.name,
             )
 
             # SSOT: Refine high-count territories using AST analysis
@@ -1842,12 +1842,12 @@ def main():
                     FIELD_PROPER_BASE_CLASS: proper_base_class,  # Gravity signal
                     FIELD_SCHEMA_STRICTNESS: schema_strictness,  # Hardened signal
                     "has_metadata": has_metadata,  # PHASE 3: Metadata compliance (not yet in SSOT)
-                }
+                },
             )
 
     if incremental_mode:
         log.info(
-            f"[INCREMENTAL] Complete: {len(agents)} agents ({len(agents) - previous_count} new/extracted)"
+            f"[INCREMENTAL] Complete: {len(agents)} agents ({len(agents) - previous_count} new/extracted)",
         )
         log.warning("NOTE: Cross-file inheritance changes may not propagate until next full scan")
 
@@ -1959,10 +1959,10 @@ def main():
         log.info(f"  {label}: {v}")
 
     log.info(
-        f"Healing: {healing_count}/{len(agents)} ({100 * healing_count // len(agents) if agents else 0}%)"
+        f"Healing: {healing_count}/{len(agents)} ({100 * healing_count // len(agents) if agents else 0}%)",
     )
     log.info(
-        f"Testing: {testing_count}/{len(agents)} ({100 * testing_count // len(agents) if agents else 0}%)"
+        f"Testing: {testing_count}/{len(agents)} ({100 * testing_count // len(agents) if agents else 0}%)",
     )
 
     if parse_errors:

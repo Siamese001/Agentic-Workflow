@@ -84,7 +84,7 @@ class ContextSession:
                 "key": key,
                 "old_value": old_value,
                 "new_value": value,
-            }
+            },
         )
 
     def delete(self, key: str) -> None:
@@ -97,7 +97,7 @@ class ContextSession:
                     "action": "delete",
                     "key": key,
                     "old_value": old_value,
-                }
+                },
             )
 
     def add_focus_file(self, file_path: str) -> None:

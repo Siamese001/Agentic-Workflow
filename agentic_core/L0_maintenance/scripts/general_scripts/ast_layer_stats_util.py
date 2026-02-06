@@ -212,7 +212,7 @@ def analyze_file(path: Path) -> list:
                     "has_mcp": has_mcp,
                     "has_testing": has_testing,
                     "bases": list(bases),
-                }
+                },
             )
 
     return agents
@@ -295,7 +295,7 @@ def main():
     print("|-------|--------|----------|----------|------|")
     if total_count > 0:
         print(
-            f"| **TOTAL** | {total_count} | {total_testing * 100 // total_count}% | {total_healing * 100 // total_count}% | {total_mcp * 100 // total_count}% |"
+            f"| **TOTAL** | {total_count} | {total_testing * 100 // total_count}% | {total_healing * 100 // total_count}% | {total_mcp * 100 // total_count}% |",
         )
 
 

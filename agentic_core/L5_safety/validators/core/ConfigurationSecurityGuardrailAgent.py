@@ -29,7 +29,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
             "secret_detection",
             "config_validation",
             "policy_enforcement",
-        ]
+        ],
     )
 
     def __post_init__(self):
@@ -99,7 +99,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                         "type": f"exposed_{secret_type}",
                         "severity": "critical",
                         "message": f"Potential {secret_type} exposed in configuration",
-                    }
+                    },
                 )
 
         return {
@@ -117,7 +117,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                     "type": "invalid_structure",
                     "severity": "high",
                     "message": "configuration must be a dictionary",
-                }
+                },
             )
 
         required_fields = ["version", "environment"]
@@ -128,7 +128,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                         "type": "missing_field",
                         "severity": "medium",
                         "message": f"Missing required field: {field}",
-                    }
+                    },
                 )
 
         return {
@@ -147,7 +147,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                     "type": "debug_in_production",
                     "severity": "critical",
                     "message": "Debug mode enabled in production environment",
-                }
+                },
             )
 
         # Check for insecure protocols
@@ -157,7 +157,7 @@ class ConfigurationSecurityGuardrail(SovereignBaseAgent):
                     "type": "insecure_protocol",
                     "severity": "high",
                     "message": "HTTP protocol used in production (should be HTTPS)",
-                }
+                },
             )
 
         return {

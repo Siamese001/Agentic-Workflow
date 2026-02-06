@@ -142,7 +142,7 @@ def validate_data_sourcing():
                         "diff": abs(dash_value - expected_value)
                         if isinstance(dash_value, int | float) and isinstance(expected_value, int | float)
                         else "N/A",
-                    }
+                    },
                 )
 
     # Report results
@@ -167,7 +167,7 @@ def validate_data_sourcing():
             print(f"\n   {territory}:")
             for issue in issues:
                 print(
-                    f"      {issue['field']}: Dashboard={issue['dashboard']}, Expected={issue['expected']}, Diff={issue['diff']}"
+                    f"      {issue['field']}: Dashboard={issue['dashboard']}, Expected={issue['expected']}, Diff={issue['diff']}",
                 )
 
         return False
@@ -180,7 +180,7 @@ def validate_data_sourcing():
         sample_territories = list(expected_metrics.items())[:5]
         for territory, metrics in sample_territories:
             print(
-                f"      {territory}: Avg CC={metrics['Avg CC']}, Complexity Health={metrics['Complexity Health']}%"
+                f"      {territory}: Avg CC={metrics['Avg CC']}, Complexity Health={metrics['Complexity Health']}%",
             )
 
         return True

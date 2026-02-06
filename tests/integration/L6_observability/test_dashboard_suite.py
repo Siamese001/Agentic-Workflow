@@ -17,9 +17,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 DASHBOARD_PATH = project_root / REPORTS_DIR / "autonomy_dashboard.html"
-TEMPLATE_PATH = (
-    project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "dashboard_template.html"
-)
+TEMPLATE_PATH = project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "dashboard_template.html"
 
 
 # Mock LocationValidator for testing (Anti-Gravity compliance)
@@ -37,12 +35,8 @@ class DashboardTestSuite:
         self.tests = []
 
         # Load files
-        self.dashboard_html = (
-            DASHBOARD_PATH.read_text(encoding="utf-8") if DASHBOARD_PATH.exists() else ""
-        )
-        self.template_html = (
-            TEMPLATE_PATH.read_text(encoding="utf-8") if TEMPLATE_PATH.exists() else ""
-        )
+        self.dashboard_html = DASHBOARD_PATH.read_text(encoding="utf-8") if DASHBOARD_PATH.exists() else ""
+        self.template_html = TEMPLATE_PATH.read_text(encoding="utf-8") if TEMPLATE_PATH.exists() else ""
 
         # Extract dashboard data
         match = re.search(r"const dashboardData = (\[.*?\]);", self.dashboard_html, re.DOTALL)
@@ -180,12 +174,8 @@ class DashboardTestSuite:
     def test_file_existence(self):
         self.test("Dashboard HTML exists", DASHBOARD_PATH.exists(), f"Missing: {DASHBOARD_PATH}")
         self.test("Template HTML exists", TEMPLATE_PATH.exists(), f"Missing: {TEMPLATE_PATH}")
-        self.test(
-            "Dashboard HTML not empty", len(self.dashboard_html) > 1000, "Dashboard HTML too small"
-        )
-        self.test(
-            "Template HTML not empty", len(self.template_html) > 1000, "Template HTML too small"
-        )
+        self.test("Dashboard HTML not empty", len(self.dashboard_html) > 1000, "Dashboard HTML too small")
+        self.test("Template HTML not empty", len(self.template_html) > 1000, "Template HTML too small")
 
     def test_data_integrity(self):
         self.test("Dashboard data parsed", len(self.dashboard_data) > 0, "No data rows found")
@@ -291,9 +281,7 @@ class DashboardTestSuite:
         # Check balanced HTML tags
         open_divs = self.template_html.count("<div")
         close_divs = self.template_html.count("</div>")
-        self.test(
-            "Balanced div tags", open_divs == close_divs, f"Open: {open_divs}, Close: {close_divs}"
-        )
+        self.test("Balanced div tags", open_divs == close_divs, f"Open: {open_divs}, Close: {close_divs}")
 
         open_scripts = self.template_html.count("<script")
         close_scripts = self.template_html.count("</script>")
@@ -306,9 +294,7 @@ class DashboardTestSuite:
         # Check no duplicate IDs
         id_matches = re.findall(r'id="([^"]+)"', self.template_html)
         duplicate_ids = [id for id in id_matches if id_matches.count(id) > 1]
-        self.test(
-            "No duplicate IDs", len(set(duplicate_ids)) == 0, f"Duplicates: {set(duplicate_ids)}"
-        )
+        self.test("No duplicate IDs", len(set(duplicate_ids)) == 0, f"Duplicates: {set(duplicate_ids)}")
 
     def test_javascript_functions(self):
         # Check critical JS functions exist
@@ -386,16 +372,14 @@ class DashboardTestSuite:
         # Check for recommendations in dashboard
         self.test(
             "Recommendations section exists",
-            "recommendation" in self.dashboard_html.lower()
-            or "strategic" in self.dashboard_html.lower(),
+            "recommendation" in self.dashboard_html.lower() or "strategic" in self.dashboard_html.lower(),
             "No recommendations section found",
         )
 
         # Check for recommendations data and rendering function
         self.test(
             "Recommendations data present",
-            "recommendationsData" in self.dashboard_html
-            or "recommendations-content" in self.dashboard_html,
+            "recommendationsData" in self.dashboard_html or "recommendations-content" in self.dashboard_html,
             "Recommendations data not found",
         )
 
@@ -522,11 +506,7 @@ class DashboardTestSuite:
         """Tests for context/target_resolver passing from Python to dashboard generation."""
         # Check that AutonomyGuardianAgent stores context
         guardian_path = (
-            project_root
-            / AGENTIC_CORE_DIR
-            / "L5_safety"
-            / "validators"
-            / "AutonomyGuardianAgent.py"
+            project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "AutonomyGuardianAgent.py"
         )
         if guardian_path.exists():
             guardian_code = guardian_path.read_text(encoding="utf-8")
@@ -548,8 +528,7 @@ class DashboardTestSuite:
             # Verify target fields are added to row dict
             self.test(
                 "Target Invocation added to row",
-                'row["Target Invocation"]' in guardian_code
-                or "row['Target Invocation']" in guardian_code,
+                'row["Target Invocation"]' in guardian_code or "row['Target Invocation']" in guardian_code,
                 "Target Invocation not being added to dashboard row",
             )
 
@@ -578,9 +557,7 @@ class DashboardTestSuite:
                 "target_resolver not passed in context",
             )
         else:
-            self.test(
-                "canon_validator_agentic_v2_thin.py exists", False, f"Missing: {validator_path}"
-            )
+            self.test("canon_validator_agentic_v2_thin.py exists", False, f"Missing: {validator_path}")
 
     def test_total_vs_territory_rows(self):
         """Tests for proper distinction between TOTAL row and territory rows."""
@@ -749,9 +726,7 @@ class DashboardTestSuite:
             timestamp_str = timestamp_match.group(1)
             self.test(
                 "Timestamp format valid",
-                "January" in timestamp_str
-                or "February" in timestamp_str
-                or "March" in timestamp_str,
+                "January" in timestamp_str or "February" in timestamp_str or "March" in timestamp_str,
                 f"Invalid timestamp format: {timestamp_str}",
             )
 
@@ -789,9 +764,7 @@ class DashboardTestSuite:
         if gauge_match and total_row:
             try:
                 gauge_data = json.loads(gauge_match.group(1))
-                heal_cap_match = (
-                    abs(gauge_data.get("healing_cap", 0) - total_row.get("Heal Cap %", 0)) < 0.1
-                )
+                heal_cap_match = abs(gauge_data.get("healing_cap", 0) - total_row.get("Heal Cap %", 0)) < 0.1
                 self.test(
                     "Gauge data matches TOTAL row",
                     heal_cap_match,
@@ -815,9 +788,7 @@ class DashboardTestSuite:
         # Check that invocation values are reasonable
         inv_values = [r.get("Invocation %") for r in non_total_rows if "Invocation %" in r]
         valid_inv_values = all(isinstance(v, int | float) and 0 <= v <= 100 for v in inv_values)
-        self.test(
-            "All Invocation % values valid", valid_inv_values, "Some invocation values are invalid"
-        )
+        self.test("All Invocation % values valid", valid_inv_values, "Some invocation values are invalid")
 
         # Verify L0 Maintenance has low invocation (expected)
         l0_rows = [r for r in non_total_rows if "L0 Maintenance" in r.get("Territory", "")]
@@ -911,9 +882,7 @@ class DashboardTestSuite:
     def test_l5_domain_subterritories_exception(self):
         """L5 uses domain-specific categories (intentional exception — no Core/Infrastructure/Specialized)."""
         l5_territories = [
-            r.get("Territory")
-            for r in self.dashboard_data
-            if r.get("Territory", "").startswith("L5 Safety/")
+            r.get("Territory") for r in self.dashboard_data if r.get("Territory", "").startswith("L5 Safety/")
         ]
         actual_subs = {t.split("/")[-1] for t in l5_territories if t}
 

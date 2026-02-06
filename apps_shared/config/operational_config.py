@@ -51,7 +51,7 @@ OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
         ".sovereign_healing_backup",
         "temp",
         "tmp",
-    }
+    },
 )
 
 
@@ -85,7 +85,7 @@ OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset(
         # Common base classes (legitimately duplicated)
         "base.py",
         "types.py",
-    }
+    },
 )
 
 
@@ -96,7 +96,7 @@ OPERATIONAL_ALLOWED_DUPLICATES: frozenset[str] = frozenset(
 OPERATIONAL_PYTHON_EXTENSIONS: frozenset[str] = frozenset(
     {
         ".py",
-    }
+    },
 )
 
 OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset(
@@ -105,7 +105,7 @@ OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset(
         ".yaml",
         ".yml",
         ".toml",
-    }
+    },
 )
 
 OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = (

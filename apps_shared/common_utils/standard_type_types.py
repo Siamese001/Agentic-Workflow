@@ -257,7 +257,7 @@ class CrossEngineQualityStandards:
             preferred_standards={"professional_tone", "concise", "adds_value"},
             excellence_standards={"exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.75, MIN_AUTHORITY=0.6, MIN_SPECIFICITY=0.7, MIN_COHERENCE=0.7
+                MIN_RELEVANCE=0.75, MIN_AUTHORITY=0.6, MIN_SPECIFICITY=0.7, MIN_COHERENCE=0.7,
             ),
             domain_weights={
                 "accuracy": 0.3,
@@ -282,7 +282,7 @@ class CrossEngineQualityStandards:
             preferred_standards={"professional_tone", "adds_value"},
             excellence_standards={"concise", "exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.8, MIN_AUTHORITY=0.5, MIN_SPECIFICITY=0.6, MIN_COHERENCE=0.7
+                MIN_RELEVANCE=0.8, MIN_AUTHORITY=0.5, MIN_SPECIFICITY=0.6, MIN_COHERENCE=0.7,
             ),
             domain_weights={"accuracy": 0.25, "relevance": 0.3, "clarity": 0.25, "value": 0.2},
         )
@@ -396,7 +396,7 @@ class CrossEngineQualityStandards:
                 "required_standards": list(
                     profile.base_standards
                     | profile.preferred_standards
-                    | profile.excellence_standards
+                    | profile.excellence_standards,
                 ),
                 "min_score": 0.9,
                 "description": "Excellence quality level",
@@ -404,7 +404,7 @@ class CrossEngineQualityStandards:
         }
 
     def create_domain_config_from_standards(
-        self, engine_type: EngineType, quality_level: StandardType = StandardType.PREFERRED
+        self, engine_type: EngineType, quality_level: StandardType = StandardType.PREFERRED,
     ) -> DomainConfig:
         """Create domain config based on quality standards.
 
@@ -422,13 +422,13 @@ class CrossEngineQualityStandards:
         # Adjust thresholds based on quality level
         if quality_level == StandardType.BASE:
             thresholds = QualityThresholds(
-                EXCELLENT_MIN=0.8, HIGH_MIN=0.65, GOOD_MIN=0.5, MARGINAL_MIN=0.3
+                EXCELLENT_MIN=0.8, HIGH_MIN=0.65, GOOD_MIN=0.5, MARGINAL_MIN=0.3,
             )
         elif quality_level == StandardType.PREFERRED:
             thresholds = profile.custom_thresholds
         else:  # EXCELLENCE
             thresholds = QualityThresholds(
-                EXCELLENT_MIN=0.95, HIGH_MIN=0.85, GOOD_MIN=0.75, MARGINAL_MIN=0.6
+                EXCELLENT_MIN=0.95, HIGH_MIN=0.85, GOOD_MIN=0.75, MARGINAL_MIN=0.6,
             )
 
         # Create validation rules from standards

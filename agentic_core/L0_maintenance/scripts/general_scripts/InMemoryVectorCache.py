@@ -33,7 +33,7 @@ class InMemoryVectorCache:
             self.client = chromadb.Client()
             self.collection = self.client.get_or_create_collection(name=collection_name)
             Logger.info(
-                f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB"
+                f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB",
             )
         except Exception as e:
             Logger.error(f"Failed to initialize InMemoryVectorCache: {e}")
@@ -69,7 +69,7 @@ class InMemoryVectorCache:
         try:
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
             Logger.debug(
-                f"Added {len(documents)} documents to hot cache (collection: {self.collection_name})"
+                f"Added {len(documents)} documents to hot cache (collection: {self.collection_name})",
             )
             return True
         except Exception as e:
@@ -185,11 +185,11 @@ class TieredVectorStore:
         self.hot_cache = hot_cache
         self.warm_store_url = warm_store_url
         Logger.info(
-            f"Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}"
+            f"Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}",
         )
 
     async def search(
-        self, query_embeddings: list[list[float]], top_k: int = 10, try_hot_first: bool = True
+        self, query_embeddings: list[list[float]], top_k: int = 10, try_hot_first: bool = True,
     ) -> dict[str, Any]:
         """Search with hot cache fallback to warm storage.
 
@@ -212,7 +212,7 @@ class TieredVectorStore:
 
 
 def create_memory_vector_cache(
-    collection_name: str = "hot_cache", max_memory_gb: int = 8
+    collection_name: str = "hot_cache", max_memory_gb: int = 8,
 ) -> InMemoryVectorCache:
     """Create an InMemoryVectorCache instance.
 
@@ -227,7 +227,7 @@ def create_memory_vector_cache(
 
 
 def create_tiered_vector_store(
-    hot_collection_name: str = "hot_cache", warm_store_url: str = "http://localhost:6333"
+    hot_collection_name: str = "hot_cache", warm_store_url: str = "http://localhost:6333",
 ) -> TieredVectorStore:
     """Create a TieredVectorStore instance.
 

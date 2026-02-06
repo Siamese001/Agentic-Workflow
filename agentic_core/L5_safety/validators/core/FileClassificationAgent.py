@@ -326,7 +326,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                 # Execute Move
                 if self.resolve_collision_and_rename(
-                    path, target_territory_path.name, target_dir=target_territory_path.parent
+                    path, target_territory_path.name, target_dir=target_territory_path.parent,
                 ):
                     if not self.dry_run:
                         self.stats["territory_moves"] += 1
@@ -1146,7 +1146,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         return False
 
     def _detect_config_patterns(
-        self, tree: ast.AST, path: Path, content: str, indicators: list[str], patterns: set[str]
+        self, tree: ast.AST, path: Path, content: str, indicators: list[str], patterns: set[str],
     ) -> bool:
         """
         Enhanced config detection using AST analysis.
@@ -1198,7 +1198,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         return False
 
     def _detect_validator_patterns(
-        self, tree: ast.AST, path: Path, content: str, patterns: list[str]
+        self, tree: ast.AST, path: Path, content: str, patterns: list[str],
     ) -> bool:
         """
         Enhanced validator detection using AST analysis.
@@ -1672,10 +1672,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         # by adding an optional dot-prefix group. This is vital for maintaining integrity
         # in hierarchical multi-agent systems where local package imports are standard.
         regex_from = re.compile(  # guardian: allow-path_fragility
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
+            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)",
         )
         regex_import = re.compile(  # guardian: allow-path_fragility
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
         # Note: The \.* in regex_from captures any number of leading dots for relative paths,
         # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
@@ -1690,10 +1690,10 @@ class FileClassificationAgent(*BASE_CLASSES):
                     continue
 
                 new_content = regex_from.sub(
-                    r"\g<prefix>" + new_mod + r"\g<suffix>", content
+                    r"\g<prefix>" + new_mod + r"\g<suffix>", content,
                 )  # guardian: allow-path_fragility
                 new_content = regex_import.sub(
-                    r"\g<prefix>" + new_mod + r"\g<suffix>", new_content
+                    r"\g<prefix>" + new_mod + r"\g<suffix>", new_content,
                 )  # guardian: allow-path_fragility
 
                 if new_content != content:
@@ -1711,7 +1711,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem"
+                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if value != 1:

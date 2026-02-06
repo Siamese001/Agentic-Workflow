@@ -6,6 +6,12 @@ All domain types are defined locally in this module.
 """
 
 # Export consolidated exception hierarchy (SSOT) - LOCAL IMPORTS
+# Export legacy artifacts registry (SSOT) - LOCAL IMPORTS
+from .legacy_artifacts_types import (
+    CRITICAL_PLACEHOLDERS,
+    WEAK_OPENING_PATTERNS,
+    LegacyArtifacts,
+)
 from .sovereign_error_types import (
     CircularDependencyError,
     ConfigurationError,
@@ -21,13 +27,6 @@ from .sovereign_error_types import (
 
 # Export event types (SSOT) - LOCAL IMPORTS
 from .sovereign_event_types import SovereignEvent, event_emission_mixin
-
-# Export legacy artifacts registry (SSOT) - LOCAL IMPORTS
-from .legacy_artifacts_types import (
-    LegacyArtifacts,
-    WEAK_OPENING_PATTERNS,
-    CRITICAL_PLACEHOLDERS,
-)
 
 # Public API
 __all__ = [

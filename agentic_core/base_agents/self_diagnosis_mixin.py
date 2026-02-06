@@ -95,13 +95,13 @@ class SelfDiagnosisMixin:
                         }
                         diagnosis["issues"].append(issue)
                         self.Logger.warning(
-                            f"Component {component_name} reported unhealthy: {health.get('issue')}"
+                            f"Component {component_name} reported unhealthy: {health.get('issue')}",
                         )
 
                         # Optional auto-repair attempt
                         if await self._attempt_component_repair(component_name, component):
                             diagnosis["self_repair_attempts"].append(
-                                {"component": component_name, "success": True}
+                                {"component": component_name, "success": True},
                             )
                 except Exception as e:
                     issue = {
@@ -118,7 +118,7 @@ class SelfDiagnosisMixin:
             critical_issues = [i for i in diagnosis["issues"] if i.get("Severity") == "CRITICAL"]
             diagnosis["overall_health"] = "critical" if critical_issues else "degraded"
             self.Logger.warning(
-                f"Self-diagnosis complete: {diagnosis['overall_health']} ({len(diagnosis['issues'])} issues)"
+                f"Self-diagnosis complete: {diagnosis['overall_health']} ({len(diagnosis['issues'])} issues)",
             )
         else:
             diagnosis["overall_health"] = "healthy"

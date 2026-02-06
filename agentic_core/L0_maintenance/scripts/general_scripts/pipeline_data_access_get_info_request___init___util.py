@@ -35,7 +35,7 @@ __all__ = []
 def _initialize_module() -> None:
     """Initialize module with required setup."""
     ConfigurationService().Logger.debug(
-        f"Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}"
+        f"Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}",
     )
 
 

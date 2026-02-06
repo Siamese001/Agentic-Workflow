@@ -36,7 +36,7 @@ __all__ = []
 def _initialize_module() -> None:
     """Initialize module with required setup."""
     ConfigurationService().Logger.debug(
-        f"Initializing Pick Best Refinement module v{ConfigurationService().MODULE_VERSION}"
+        f"Initializing Pick Best Refinement module v{ConfigurationService().MODULE_VERSION}",
     )
 
 

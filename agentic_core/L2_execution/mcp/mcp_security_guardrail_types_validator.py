@@ -117,7 +117,7 @@ class MCPSecurityGuardrail:
                         tool_name=tool_name,
                         description=f"Tool '{tool_name}' not in whitelist",
                         blocked=True,
-                    )
+                    ),
                 )
                 self.tools_blocked += 1
 
@@ -166,7 +166,7 @@ class MCPSecurityGuardrail:
                                 tool_name=tool_name,
                                 description=f"Dangerous pattern in argument '{key}'",
                                 blocked=True,
-                            )
+                            ),
                         )
                         break
 

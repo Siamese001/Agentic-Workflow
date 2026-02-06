@@ -240,13 +240,13 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     output_hash=output_hash
                     or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
                     metadata=metadata or {},
-                )
+                ),
             )
 
         self._touch()
 
     def mark_stage_failed(
-        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0
+        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0,
     ) -> None:
         """Mark a stage as failed.
 
@@ -278,7 +278,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     output_hash="",
                     error_message=error_message,
                     retry_count=retry_count,
-                )
+                ),
             )
 
         self.has_errors = True
@@ -312,7 +312,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     duration_ms=0.0,
                     output_hash="",
                     metadata={"reason": reason} if reason else {},
-                )
+                ),
             )
 
         self._touch()
@@ -439,7 +439,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_legacy_dict(
-        cls, data: dict[str, Any], metadata: dict[str, str] | None = None
+        cls, data: dict[str, Any], metadata: dict[str, str] | None = None,
     ) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 

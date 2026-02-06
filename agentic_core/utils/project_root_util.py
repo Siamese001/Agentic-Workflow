@@ -69,7 +69,7 @@ def get_project_root(start_path: str | None = None) -> Path:
         pass
 
     raise RuntimeError(
-        f"Could not detect project root. Searched 10 levels up from {start_path or Path.cwd()}"
+        f"Could not detect project root. Searched 10 levels up from {start_path or Path.cwd()}",
     )
 
 

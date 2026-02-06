@@ -205,7 +205,7 @@ def main():
                         "router",
                         "Orchestrator",
                         "Conductor",
-                    )
+                    ),
                 ):
                     is_agent = True
 

@@ -12,7 +12,7 @@ import sys
 Logger = logging.getLogger("sovereign.models")
 handler = logging.StreamHandler(sys.stderr)
 handler.setFormatter(
-    logging.Formatter("[MODELS] %(levelname)s %(asctime)s | %(message)s", "%H:%M:%S")
+    logging.Formatter("[MODELS] %(levelname)s %(asctime)s | %(message)s", "%H:%M:%S"),
 )
 Logger.addHandler(handler)
 Logger.setLevel(logging.INFO)
@@ -48,7 +48,7 @@ class ModelVisitor(ast.NodeVisitor):
 
         if is_pydantic or (has_dataclass and is_contract):
             Logger.error(
-                f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py."
+                f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py.",
             )
             sys.exit(1)
         self.generic_visit(node)

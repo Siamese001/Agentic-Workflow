@@ -128,7 +128,7 @@ class RescueReviewer:
                             {
                                 "Verdict": Verdict,
                                 "action": "moved" if Verdict == "RESCUED_AUTO" else "stay",
-                            }
+                            },
                         ),
                         ex=604800,
                     )

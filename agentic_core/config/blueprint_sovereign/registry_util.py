@@ -186,7 +186,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
         "patterns",
         "semantic_memory",
         "knowledge",
-    }
+    },
 )
 
 # ============================================================================

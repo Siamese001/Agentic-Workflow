@@ -190,5 +190,5 @@ if __name__ == "__main__":
     print(f"   Total rows: {results['total_rows']}")
     print(f"   Expected: {results['expected_rows']}")
     print(
-        f"   Status: {'✅ CORRECT' if results['total_rows'] == results['expected_rows'] else '❌ INCORRECT'}"
+        f"   Status: {'✅ CORRECT' if results['total_rows'] == results['expected_rows'] else '❌ INCORRECT'}",
     )

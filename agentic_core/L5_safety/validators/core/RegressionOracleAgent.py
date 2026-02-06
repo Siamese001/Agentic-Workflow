@@ -19,7 +19,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 
@@ -85,7 +84,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
             genai_client,
         )
         self.test_runner = RegressionTestRunner(
-            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass
+            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass,
         )
         self.generated_tests: list[GeneratedTest] = []
 
@@ -139,7 +138,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         edge_cases=edge_cases,
                         passed=passed,
                         error_message=error_msg,
-                    )
+                    ),
                 )
 
     def _emit_regression_check_pass(self, file_path: str, method_name: str) -> Any:
@@ -175,7 +174,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
             _call_path.discard(agent_name)
 
     def post_heal_validation(
-        self, generated_tests: list[GeneratedTest], dry_run: bool = True
+        self, generated_tests: list[GeneratedTest], dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -227,7 +226,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return report
 
     def cleanup_violations(
-        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50
+        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
@@ -313,7 +312,7 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         file_path=test.test_file,
                         method_name=test.target_method,
                         severity=4,
-                    )
+                    ),
                 )
 
         cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []

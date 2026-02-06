@@ -60,7 +60,7 @@ def force_annexation() -> Any:
     for key in ANNEXATION_PLAN.keys():
         exists_in_root: Any = (ROOT / key).exists()
         print(
-            f"  {('[FAILED]' if exists_in_root else '[FIXED]')} {key.ljust(20)} -> {('STILL IN ROOT' if exists_in_root else 'ANNEXED TO CORE')}"
+            f"  {('[FAILED]' if exists_in_root else '[FIXED]')} {key.ljust(20)} -> {('STILL IN ROOT' if exists_in_root else 'ANNEXED TO CORE')}",
         )
 
 

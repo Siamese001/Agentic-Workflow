@@ -55,6 +55,6 @@ print(f"Before: {before_count}/{len(data)} ({before_count / len(data) * 100:.1f}
 print(f"After:  {after_count}/{len(data)} ({after_count / len(data) * 100:.1f}%)")
 print(f"Updated: {updated} agent records")
 print(
-    f"Improvement: +{after_count - before_count} agents (+{(after_count - before_count) / len(data) * 100:.1f}%)"
+    f"Improvement: +{after_count - before_count} agents (+{(after_count - before_count) / len(data) * 100:.1f}%)",
 )
 print("=" * 80)

@@ -36,7 +36,7 @@ BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset(
         "sudo",
         "powershell",
         "cmd",
-    }
+    },
 )
 
 

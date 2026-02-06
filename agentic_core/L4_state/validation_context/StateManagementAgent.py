@@ -33,7 +33,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 from agentic_core.utils.ssot_discovery_validator import get_data_files
@@ -188,7 +187,7 @@ class StateManagementAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         "last_cleanup": None,
                         "last_integrity_check": None,
                     },
-                }
+                },
             )
 
     @property
@@ -940,7 +939,7 @@ class StateManagementAgent(AtomicExecutionMixin, SovereignBaseAgent):
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_manifest_persistence", "status": "failed", "error": str(e)}
+                {"name": "test_manifest_persistence", "status": "failed", "error": str(e)},
             )
 
         return results

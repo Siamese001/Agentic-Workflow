@@ -58,7 +58,7 @@ def find_files_to_update(root: Path) -> list[Path]:
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     files = list(get_python_files(root)) + list(
-        get_data_files(root, extensions=[".json", ".md", ".yaml", ".yml"])
+        get_data_files(root, extensions=[".json", ".md", ".yaml", ".yml"]),
     )
 
     # Filter by CODE_EXTENSIONS and skip directories
@@ -71,7 +71,7 @@ def find_files_to_update(root: Path) -> list[Path]:
 
 
 def update_file_content(
-    file_path: Path, rename_map: dict[str, str], dry_run: bool = True
+    file_path: Path, rename_map: dict[str, str], dry_run: bool = True,
 ) -> tuple[bool, int]:
     """Update file content with new names. Returns (changed, count)."""
     try:

@@ -66,7 +66,7 @@ def load_golden_cases() -> list[GoldenCase]:
                 agent_sequence=["strategy", "drafting", "qa", "safety"],
                 expected_keypoints=[tc.expected_behavior],
                 correctness_criteria={"category": tc.metadata.get("category")},
-            )
+            ),
         )
     return cases
 

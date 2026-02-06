@@ -31,7 +31,7 @@ CRITICAL_DNA_KEYS: frozenset[str] = frozenset(
         "task_dna",
         "mission_id",
         "user_intent",
-    }
+    },
 )
 
 # Default configuration
@@ -106,7 +106,7 @@ class ContextPruningStrategy:
 
         Logger.info(
             f"[ContextPruning] Initialized with strategy={strategy}, "
-            f"max_size={max_context_size}, prune_ratio={prune_ratio}"
+            f"max_size={max_context_size}, prune_ratio={prune_ratio}",
         )
 
     def should_prune(self, context: dict[str, Any]) -> bool:
@@ -181,7 +181,7 @@ class ContextPruningStrategy:
 
         Logger.info(
             f"[ContextPruning] Pruned {len(pruned_keys)} entries, "
-            f"freed {bytes_freed} bytes, preserved {len(preserved_keys)} DNA keys"
+            f"freed {bytes_freed} bytes, preserved {len(preserved_keys)} DNA keys",
         )
 
         return PruningResult(
@@ -363,11 +363,11 @@ class AdaptiveDepthManager:
         self._depth_history: list[int] = []
 
         Logger.info(
-            f"[AdaptiveDepth] Initialized with base={base_limit}, max={max_limit}, adaptive={enable_adaptive}"
+            f"[AdaptiveDepth] Initialized with base={base_limit}, max={max_limit}, adaptive={enable_adaptive}",
         )
 
     def calculate_adaptive_limit(
-        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None
+        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None,
     ) -> int:
         """
         Calculate adaptive depth limit based on mission complexity.

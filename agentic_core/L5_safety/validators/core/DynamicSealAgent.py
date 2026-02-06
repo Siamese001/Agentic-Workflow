@@ -22,7 +22,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
 
 
@@ -338,7 +337,7 @@ def main() -> Any:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Dynamic Seal Agent - Surgical refactoring of import violations"
+        description="Dynamic Seal Agent - Surgical refactoring of import violations",
     )
     parser.add_argument("--pattern", help="Target violation pattern (e.g., 'L3 → L5')", default=None)
     parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode (no files modified)")

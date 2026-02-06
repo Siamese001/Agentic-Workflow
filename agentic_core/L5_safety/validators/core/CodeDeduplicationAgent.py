@@ -457,7 +457,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         suffixes: _flat, _1, _2, _from_utils, _copy, etc.
         """
         print(
-            "\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (intelligent suffix detection)..."
+            "\n[*] CodeDeduplicationAgent: Scanning for duplicate filenames (intelligent suffix detection)...",
         )
         basename_to_entries: dict[str, list[tuple[Path, str]]] = defaultdict(list)
         suffix_duplicates: dict[str, list[Path]] = defaultdict(list)  # Track suffix-based dupes
@@ -650,7 +650,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
             if len(paths) > 1:
                 primary = min(
-                    paths, key=lambda p: (ARCHIVES_DIR in str(p), "tool_registry" in str(p), str(p))
+                    paths, key=lambda p: (ARCHIVES_DIR in str(p), "tool_registry" in str(p), str(p)),
                 )
                 for p in paths:
                     if p != primary:
@@ -797,7 +797,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 self.logger.info("  No significant duplication found")
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} duplicates (batch processing required)"
+                f"[{agent_name}] Complete: {violations_found} duplicates (batch processing required)",
             )
 
             return {
@@ -1011,5 +1011,5 @@ if __name__ == "__main__":
     from agentic_core.utils.agent_cli import run_agent_cli
 
     run_agent_cli(
-        CodeDeduplicationAgent, "CodeDeduplicationAgent: direct execution for validation or healing"
+        CodeDeduplicationAgent, "CodeDeduplicationAgent: direct execution for validation or healing",
     )

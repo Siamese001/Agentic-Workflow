@@ -130,7 +130,7 @@ class AtomicStateManager:
 
             logger.info(
                 f"Atomic checkpoint complete for {workflow_id} "
-                f"(K-Node {new_state.current_k_node}) in {duration_ms:.2f}ms"
+                f"(K-Node {new_state.current_k_node}) in {duration_ms:.2f}ms",
             )
 
             return metadata
@@ -333,7 +333,7 @@ class AtomicStateManager:
                 state = WorkflowState.from_json(json_data)
                 logger.info(
                     f"Loaded checkpoint for {workflow_id} "
-                    f"(K-Node {state.current_k_node}/{state.total_k_nodes})"
+                    f"(K-Node {state.current_k_node}/{state.total_k_nodes})",
                 )
                 return state
 

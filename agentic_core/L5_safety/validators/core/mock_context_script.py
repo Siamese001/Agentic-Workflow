@@ -64,7 +64,7 @@ def validate_depth_precision(project_root: Path) -> dict:
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
-        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
+        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"]),
     )
     for file_path in all_files:
         if file_path.is_dir():
@@ -91,7 +91,7 @@ def validate_tests_depth(project_root: Path) -> dict:
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
-        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
+        get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"]),
     )
     for file_path in all_files:
         if file_path.is_dir():
@@ -136,7 +136,7 @@ def validate_universal_depth(project_root: Path) -> dict:
                         "actual_depth": depth,
                         "expected_depth": agentic_core_exact_depth,
                         "type": file_path.suffix,
-                    }
+                    },
                 )
 
     return violations
@@ -175,7 +175,7 @@ def main():
         print("\n  Files that would be archived:")
         for violation in apps_violations[:5]:
             print(
-                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})",
             )
         if len(apps_violations) > 5:
             print(f"    ... and {len(apps_violations) - 5} more")
@@ -191,7 +191,7 @@ def main():
         print("\n  Files that would be archived:")
         for violation in tests_violations[:5]:
             print(
-                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})",
             )
         if len(tests_violations) > 5:
             print(f"    ... and {len(tests_violations) - 5} more")
@@ -207,7 +207,7 @@ def main():
         print("\n  Files that would be archived:")
         for violation in universal_violations[:5]:
             print(
-                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})"
+                f"    - {violation['file']} (depth {violation['actual_depth']}, expected {violation['expected_depth']})",
             )
         if len(universal_violations) > 5:
             print(f"    ... and {len(universal_violations) - 5} more")

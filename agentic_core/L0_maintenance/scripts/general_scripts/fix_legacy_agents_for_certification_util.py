@@ -93,7 +93,7 @@ def main():
     import subprocess
 
     result = subprocess.run(
-        [sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True
+        [sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True,
     )
     print(result.stdout)
     if result.stderr:

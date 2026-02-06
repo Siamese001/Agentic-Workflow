@@ -9,7 +9,6 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.base_agents.feature_flagged_agent_mixin import feature_flagged_agent_mixin
 from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
@@ -117,7 +116,7 @@ class DomainAgentMixin(FeatureFlaggedAgentMixin):
         if pattern_domain and pattern_domain != self._domain_prefix:
             logger.warning(
                 f"[{self.__class__.__name__}] Cross-domain pattern rejected: "
-                f"{pattern_domain} != {self._domain_prefix}"
+                f"{pattern_domain} != {self._domain_prefix}",
             )
             return False
         return True

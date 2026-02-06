@@ -58,7 +58,7 @@ def find_large_files(min_size_kb=50):
                         "path": str(f.relative_to(ROOT)),
                         "size_kb": round(size / 1024, 1),
                         "lines": len(f.read_text(encoding="utf-8", errors="replace").splitlines()),
-                    }
+                    },
                 )
     return sorted(large, key=lambda x: -x["size_kb"])
 
@@ -105,7 +105,7 @@ def find_empty_or_stub_files():
                             "path": str(f.relative_to(ROOT)),
                             "code_lines": len(code_lines),
                             "total_lines": len(content.splitlines()),
-                        }
+                        },
                     )
             except Exception:
                 pass
@@ -189,7 +189,7 @@ def find_unused_imports():
                             "path": str(f.relative_to(ROOT)),
                             "unused_count": len(unused),
                             "examples": unused[:5],
-                        }
+                        },
                     )
             except Exception:
                 pass
@@ -230,7 +230,7 @@ def find_script_candidates():
                         "path": str(f.relative_to(ROOT)),
                         "size_kb": round(stat.st_size / 1024, 1),
                         "signals": signals,
-                    }
+                    },
                 )
         except Exception:
             pass
@@ -258,7 +258,7 @@ def main():
     total_size = 0
     for folder, data in sorted(folder_stats.items()):
         print(
-            f"  {folder:20} {data['py']:5} .py  {data['other']:5} other  {data['total_size'] / 1024 / 1024:8.2f} MB"
+            f"  {folder:20} {data['py']:5} .py  {data['other']:5} other  {data['total_size'] / 1024 / 1024:8.2f} MB",
         )
         total_py += data["py"]
         total_other += data["other"]

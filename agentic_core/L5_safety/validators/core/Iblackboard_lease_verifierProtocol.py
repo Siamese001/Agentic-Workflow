@@ -37,7 +37,7 @@ class blackboard_lease_verifier(Protocol):
 
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool: ...
     def log_security_event(
-        self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any]
+        self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any],
     ) -> None: ...
 
 
@@ -226,7 +226,7 @@ def write_file(
                     f"Preservation Violation: New content ({new_lines} lines) is less than 90% "
                     f"of original ({original_lines} lines). Minimum required: {min_lines} lines. "
                     f"This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. "
-                    f"Set override_preservation=True if this is intentional (SystemArchitect only)."
+                    f"Set override_preservation=True if this is intentional (SystemArchitect only).",
                 )
         except (OSError, UnicodeDecodeError):
             # If we can't read the file, allow the write
@@ -376,7 +376,7 @@ def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = No
     # DELEGATION: Use ArchivalGatekeeper for safe delete (soft delete to archive)
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
     result = gatekeeper.safe_delete(
-        resolved_path, agent_id or "filesystem.delete_file", "Filesystem delete operation"
+        resolved_path, agent_id or "filesystem.delete_file", "Filesystem delete operation",
     )
 
     if not result.success:

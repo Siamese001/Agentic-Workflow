@@ -68,7 +68,7 @@ class HealingInvocationAudit:
                             "agent": agent_name,
                             "status": "confirmed",
                             "notes": "super() present and chain active",
-                        }
+                        },
                     )
                 else:
                     self.results["without_super"].append(file_path)
@@ -78,7 +78,7 @@ class HealingInvocationAudit:
                             "agent": agent_name,
                             "reason": "Missing super().heal_repository() call",
                             "priority": "HIGH",
-                        }
+                        },
                     )
 
         except Exception as e:

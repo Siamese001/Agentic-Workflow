@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for AutonomicMonitorAgent."""
@@ -27,7 +26,6 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 @dataclass
@@ -134,7 +132,7 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
         return history[-limit:] if history else []
 
     def get_alerts(
-        self, agent_id: str | None = None, Severity: AlertSeverity | None = None
+        self, agent_id: str | None = None, Severity: AlertSeverity | None = None,
     ) -> list[HealthAlert]:
         """Get health alerts.
 
@@ -213,19 +211,19 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
         """
         if metrics.success_rate < self.success_rate_threshold:
             recommendations.append(
-                f"Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym"
+                f"Success rate ({metrics.success_rate:.1%}) below threshold - Consider retraining in Agent Gym",
             )
         if metrics.error_rate > self.error_rate_threshold:
             recommendations.append(
-                f"Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns"
+                f"Error rate ({metrics.error_rate:.1%}) above threshold - Review error logs and failure patterns",
             )
         if metrics.avg_response_time_ms > self.response_time_threshold_ms:
             recommendations.append(
-                f"Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources"
+                f"Response time ({metrics.avg_response_time_ms:.0f}ms) above threshold - Optimize performance or increase resources",
             )
         if metrics.circuit_breaker_trips > 5:
             recommendations.append(
-                f"Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks"
+                f"Circuit breaker trips ({metrics.circuit_breaker_trips}) high - Check external service health and implement fallbacks",
             )
         if status == HealthStatus.CRITICAL:
             recommendations.append("CRITICAL: Consider taking agent offline for maintenance")
@@ -255,7 +253,7 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
 
 
 def create_autonomic_monitor(
-    success_rate_threshold: float = 0.8, error_rate_threshold: float = 0.2
+    success_rate_threshold: float = 0.8, error_rate_threshold: float = 0.2,
 ) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.
 
@@ -267,5 +265,5 @@ def create_autonomic_monitor(
         AutonomicMonitorAgent instance
     """
     return AutonomicMonitorAgent(
-        success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold
+        success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold,
     )

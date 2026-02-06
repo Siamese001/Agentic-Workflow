@@ -277,7 +277,7 @@ class write_file_args(BaseModel):
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
     create_dirs: bool = Field(
-        default=True, description="Create parent directories if they don't exist"
+        default=True, description="Create parent directories if they don't exist",
     )
 
     @validator("path")
@@ -308,7 +308,7 @@ class list_files_args(BaseModel):
 
     path: str = Field(default=".", description="Relative path to the directory to list")
     pattern: str | None = Field(
-        default=None, description="Glob pattern to filter files (e.g., '*.py')"
+        default=None, description="Glob pattern to filter files (e.g., '*.py')",
     )
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
 
@@ -326,7 +326,7 @@ class execute_command_args(BaseModel):
     command: str = Field(..., description="Command to execute")
     args: list[str] = Field(default_factory=list, description="Command arguments")
     cwd: str | None = Field(
-        default=None, description="Working directory (relative to project root)"
+        default=None, description="Working directory (relative to project root)",
     )
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
@@ -386,13 +386,13 @@ class agent_thought_process(BaseModel):
     )
     relevant_context_keys: list[str] = Field(...)
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
-        ..., description="The action type to take"
+        ..., description="The action type to take",
     )
     tool_arguments: dict[str, Any] = Field(
-        default_factory=dict, description="Arguments for the chosen tool"
+        default_factory=dict, description="Arguments for the chosen tool",
     )
     confidence_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)"
+        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)",
     )
 
     @field_validator("tool_arguments")
@@ -422,7 +422,7 @@ class code_generation_result(BaseModel):
     dependencies: list[str] = Field(default_factory=list, description="Required pip packages")
     test_cases: list[str] = Field(default_factory=list, description="Test cases to verify the code")
     safety_notes: list[str] = Field(
-        default_factory=list, description="Potential safety concerns or limitations"
+        default_factory=list, description="Potential safety concerns or limitations",
     )
 
 
@@ -432,14 +432,14 @@ class research_result(BaseModel):
 
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: list[dict[str, str]] = Field(
-        ..., description="List of sources with 'url' and 'relevance' keys"
+        ..., description="List of sources with 'url' and 'relevance' keys",
     )
     key_findings: list[str] = Field(..., description="Main findings from the research")
     confidence_level: Literal["high", "medium", "low"] = Field(
-        ..., description="Confidence in the research results"
+        ..., description="Confidence in the research results",
     )
     follow_up_questions: list[str] = Field(
-        default_factory=list, description="Suggested follow-up research questions"
+        default_factory=list, description="Suggested follow-up research questions",
     )
 
 
@@ -490,17 +490,17 @@ class style_profile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: float = Field(
-        default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)"
+        default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: float = Field(default=0.2, ge=0.0, le=1.0, description="Emoji usage frequency")
     sentence_length_avg: int = Field(
-        default=15, ge=5, le=50, description="Target words per sentence"
+        default=15, ge=5, le=50, description="Target words per sentence",
     )
     vocabulary_complexity: float = Field(
-        default=0.5, ge=0.0, le=1.0, description="Vocabulary complexity"
+        default=0.5, ge=0.0, le=1.0, description="Vocabulary complexity",
     )
     confidence_level: float = Field(
-        default=0.8, ge=0.0, le=1.0, description="Confidence in analysis"
+        default=0.8, ge=0.0, le=1.0, description="Confidence in analysis",
     )
 
     class Config:
@@ -517,7 +517,7 @@ class generation_config(BaseModel):
     temperature_setting: float = Field(..., ge=0.1, le=1.0, description="LLM temperature")
     banned_phrases: list[str] = Field(default_factory=list, description="Phrases to avoid")
     preferred_transitions: list[str] = Field(
-        default_factory=list, description="Preferred transition words"
+        default_factory=list, description="Preferred transition words",
     )
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
@@ -557,7 +557,7 @@ class retry_policy(BaseModel):
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
     retryable_stages: list[micro_stage] = Field(
-        default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE]
+        default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE],
     )
 
 
@@ -701,7 +701,7 @@ class hard_state:
     def add_trace(self, event: str, data: dict[str, Any]) -> "HardState":
         """Add an event to the execution trace (returns new instance)."""
         new_trace = self.execution_trace + [
-            {"event": event, "timestamp": datetime.utcnow().isoformat(), "data": data}
+            {"event": event, "timestamp": datetime.utcnow().isoformat(), "data": data},
         ]
         return HardState(
             execution_id=self.execution_id,
@@ -747,7 +747,7 @@ class soft_state:
                 "old_value": old_value,
                 "new_value": new_value,
                 "timestamp": datetime.utcnow().isoformat(),
-            }
+            },
         )
 
 
@@ -771,10 +771,10 @@ class thermal_config:
                 "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
                 "frequency_penalty": self.node_overrides[node_id].get(
-                    "frequency_penalty", self.frequency_penalty
+                    "frequency_penalty", self.frequency_penalty,
                 ),
                 "presence_penalty": self.node_overrides[node_id].get(
-                    "presence_penalty", self.presence_penalty
+                    "presence_penalty", self.presence_penalty,
                 ),
             }
         return {
@@ -835,11 +835,11 @@ class signal_context(BaseModel):
         self.last_modified = datetime.utcnow()
 
     def add_signed_claim(
-        self, claim: str, source: str, confidence: float, evidence: str | None = None
+        self, claim: str, source: str, confidence: float, evidence: str | None = None,
     ) -> None:
         """Add a signed claim to the context."""
         signed_claim = signed_claim(
-            claim=claim, source=source, confidence=confidence, evidence=evidence
+            claim=claim, source=source, confidence=confidence, evidence=evidence,
         )
         self.signed_claims.append(signed_claim)
 
@@ -852,7 +852,7 @@ class safety_profile(BaseModel):
     """Safety configuration profile used by execution profiles."""
 
     safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug"
+        default="standard", description="Safety tier: standard | strict | relaxed | debug",
     )
     pii_detection_enabled: bool = True
     policy_engine_enabled: bool = True
@@ -1001,7 +1001,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "EvalResult": EvalResult,
         "GoldenCase": GoldenCase,
         "GoldenOutput": GoldenOutput,
-    }
+    },
 )
 
 # === Phase 2C Residual Sweep – Dec 26, 2025 ===
@@ -1170,7 +1170,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "ThematicAnalysis": ThematicAnalysis,
         "RAGState": RAGState,
         "CircuitState": CircuitState,
-    }
+    },
 )
 
 # === Phase 5 Comprehensive Enforcement Sweep – Dec 26, 2025 ===
@@ -1189,49 +1189,49 @@ class file_paths_config:
         / "config"
         / "P1_core"
         / "data"
-        / "master_resume.json"
+        / "master_resume.json",
     )
     hyphenation_rules: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "hyphenation_rules.json"
+        / "hyphenation_rules.json",
     )
     app_tracker_schema: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "app_tracker_schema.json"
+        / "app_tracker_schema.json",
     )
     artist_specs: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "artist_specs.json"
+        / "artist_specs.json",
     )
     artist_constraints: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "artist_constraints.json"
+        / "artist_constraints.json",
     )
     validator_rules: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "validator_rules.json"
+        / "validator_rules.json",
     )
     prompts: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "prompts.json"
+        / "prompts.json",
     )
 
 
@@ -1295,7 +1295,7 @@ class web_rag_config:
             "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
             "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
             "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"],
-        }
+        },
     )
 
 
@@ -1316,7 +1316,7 @@ class enricher_config:
             "established": ["established", "establish", "establishing"],
             "managed": ["managed", "manage", "managing"],
             "developed": ["developed", "develop", "developing"],
-        }
+        },
     )
 
 
@@ -1350,7 +1350,7 @@ class enforcement_rag_config:
             "SOURCE_PEER_JD": 0.8,
             "SOURCE_GENERIC_PROFILE": 0.5,
             "LOCAL_NLP": 0.2,
-        }
+        },
     )
 
 
@@ -1454,7 +1454,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "SignalControlConfig": SignalControlConfig,
         "PromptAddendumConfig": PromptAddendumConfig,
         "AppConfig": AppConfig,
-    }
+    },
 )
 
 # Data models (from L2_execution/tool_registry/data_models_models.py)
@@ -1614,7 +1614,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "GeneratedMessage": GeneratedMessage,
         "EnforcementValidationResult": EnforcementValidationResult,
         "QAReport": QAReport,
-    }
+    },
 )
 
 # K25 Research models (from L1_cognition/thought_engine/k25_models.py)
@@ -1842,7 +1842,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "DeepResearchOutput": DeepResearchOutput,
         "ResearchHopResult": ResearchHopResult,
         "IntegrityGateResult": IntegrityGateResult,
-    }
+    },
 )
 
 # LIC Archetype models (from L1_cognition/thought_engine/lic_archetypes_models.py)
@@ -1931,7 +1931,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "ArchetypeTemplate": ArchetypeTemplate,
         "SignatureTemplate": SignatureTemplate,
         "GreetingTemplate": GreetingTemplate,
-    }
+    },
 )
 
 # Shared Core models (from L0_maintenance/scripts/shared_core_models_types_part.py)
@@ -1978,7 +1978,7 @@ class immutable_staging_buffer:
         from datetime import datetime
 
         return ImmutableStagingBuffer(
-            _version=self.version + 1, _timestamp=datetime.utcnow().isoformat()
+            _version=self.version + 1, _timestamp=datetime.utcnow().isoformat(),
         )
 
 
@@ -1988,7 +1988,7 @@ CORE_CONTRACTS_REGISTRY.update(
         # Shared Core models (new only - duplicates skipped)
         "APICallMetrics": APICallMetrics,
         "ImmutableStagingBuffer": ImmutableStagingBuffer,
-    }
+    },
 )
 
 # === Sovereign Enums (Phase 5 Enum Migration) ===
@@ -2066,7 +2066,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "RecipientArchetype": RecipientArchetype,
         "SignatureFormat": SignatureFormat,
         "CTAFormat": CTAFormat,
-    }
+    },
 )
 
 # RG Creative Brief models (from L1_cognition/thought_engine/rg_creative_brief_models.py)
@@ -2128,7 +2128,7 @@ class headline_brief:
     STRUCTURE: str = "Domain | Leadership | Value Prop"
     segment_word_limit: int = 3
     exclusions: list[str] = field(
-        default_factory=lambda: ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"]
+        default_factory=lambda: ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"],
     )
     GUIDANCE: str = "Must incorporate differentiator keywords from the Competitive Analysis."
 
@@ -2193,7 +2193,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "RetryPolicy": RetryPolicy,
         "HopSpec": HopSpec,
         "WorkflowSpec": WorkflowSpec,
-    }
+    },
 )
 
 # Brief models (from L1_cognition/thought_engine/brief_models.py)
@@ -2207,7 +2207,7 @@ class experience_bullets_brief:
 
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
     provenance_map: dict[str, str] = field(
-        default_factory=lambda: {"Unify Consulting": "4V-3T-0S", "IBM": "4V-2T-0S"}
+        default_factory=lambda: {"Unify Consulting": "4V-3T-0S", "IBM": "4V-2T-0S"},
     )
     default_provenance_fallback: str = "10V-0A-0S"
     selection_logic: str = "Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)"
@@ -2215,7 +2215,7 @@ class experience_bullets_brief:
         default_factory=lambda: {
             "k6": WordCountConstraint(25, 33),
             "k7": WordCountConstraint(22, 28),
-        }
+        },
     )
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
@@ -2233,7 +2233,7 @@ class leadership_competencies_brief:
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
     COUNT: int = 6
     word_count_per_desc: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(24, 30)
+        default_factory=lambda: WordCountConstraint(24, 30),
     )
 
 
@@ -2244,11 +2244,11 @@ class cover_letter_brief:
 
     STRUCTURE: str = "1-intro-2-body"
     word_count_per_para: WordCountConstraint = field(
-        default_factory=lambda: WordCountConstraint(85, 100)
+        default_factory=lambda: WordCountConstraint(85, 100),
     )
     min_specific_details: int = 4
     forbidden_patterns: list[str] = field(
-        default_factory=lambda: ["At [COMPANY], I...", "During my time at..."]
+        default_factory=lambda: ["At [COMPANY], I...", "During my time at..."],
     )
     signature_generation_policy: str = "DYNAMIC_FROM_OWNER_CONTACT"
 
@@ -2271,7 +2271,7 @@ class rg_creative_brief:
     executive_summary: "ExecutiveSummaryBrief" = None
     experience_bullets: ExperienceBulletsBrief = field(default_factory=ExperienceBulletsBrief)
     leadership_competencies: LeadershipCompetenciesBrief = field(
-        default_factory=LeadershipCompetenciesBrief
+        default_factory=LeadershipCompetenciesBrief,
     )
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)
@@ -2286,7 +2286,7 @@ class executive_summary_brief:
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
     forbidden_patterns: list[str] = field(
-        default_factory=lambda: ["I have", "My expertise", "At [COMPANY],", "I"]
+        default_factory=lambda: ["I have", "My expertise", "At [COMPANY],", "I"],
     )
     GUIDANCE: str = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."""
 
@@ -2301,7 +2301,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "OptimizedSkillsBrief": OptimizedSkillsBrief,
         "RGCreativeBrief": RGCreativeBrief,
         "ExecutiveSummaryBrief": ExecutiveSummaryBrief,
-    }
+    },
 )
 
 # LIC Routing Rules models (from L1_cognition/thought_engine/lic_routing_rules_models.py)
@@ -2376,7 +2376,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "RouteConfig": RouteConfig,
         "ArchetoneConfig": ArchetoneConfig,
         "TemperatureConfig": TemperatureConfig,
-    }
+    },
 )
 
 # Strategic Planning models (from L1_cognition/thought_engine/strategic_planner.py)
@@ -2478,7 +2478,7 @@ class mission_plan(sovereign_base_model):
         def add_phase(self, phase: MissionPhase) -> "MissionPlan.Builder":
             if phase.name in self._phase_names:
                 raise ValueError(
-                    f"Sovereignty Violation: Duplicate phase name detected: {phase.name}"
+                    f"Sovereignty Violation: Duplicate phase name detected: {phase.name}",
                 )
             self._phase_names.add(phase.name)
             self._phases.append(phase)
@@ -2505,7 +2505,7 @@ class mission_plan(sovereign_base_model):
             # observability: Log construction
             logger.info(
                 f"[BUILDER] Constructing MissionPlan {self._mission_id} | "
-                f"Phases: {len(self._phases)} | Priority: {self._priority}"
+                f"Phases: {len(self._phases)} | Priority: {self._priority}",
             )
 
             return MissionPlan(
@@ -2551,7 +2551,7 @@ class mission_plan(sovereign_base_model):
                         raise ValueError(
                             f"Sovereignty Breach: Dependency cycle detected in "
                             f"MissionPlan {self._mission_id} involving phases: "
-                            f"{list(rec_stack if rec_stack else graph.keys())}"
+                            f"{list(rec_stack if rec_stack else graph.keys())}",
                         )
 
 
@@ -2648,7 +2648,7 @@ class thought_chain(sovereign_base_model):
             """Construct immutable ThoughtChain with constitutional validation."""
             if not self._chain_id or not self._goal:
                 raise ValueError(
-                    "ThoughtChain construction failed: chain_id and goal are mandatory."
+                    "ThoughtChain construction failed: chain_id and goal are mandatory.",
                 )
 
             if self._success and not self._final_conclusion:
@@ -2659,7 +2659,7 @@ class thought_chain(sovereign_base_model):
 
             # observability: Stamping the birth of the thinking aggregate
             logger.info(
-                f"[AUDIT] ThoughtChain Constructed: {self._chain_id} | Steps: {len(self._steps)}"
+                f"[AUDIT] ThoughtChain Constructed: {self._chain_id} | Steps: {len(self._steps)}",
             )
 
             return ThoughtChain(
@@ -2737,7 +2737,7 @@ class constitutional_violation(sovereign_base_model):
             return self
 
         def at_location(
-            self, file_path: str, line_number: int | None = None
+            self, file_path: str, line_number: int | None = None,
         ) -> "ConstitutionalViolation.Builder":
             self._file_path = file_path
             self._line_number = line_number
@@ -2775,7 +2775,7 @@ class constitutional_violation(sovereign_base_model):
             logger.warning(
                 f"[AUDIT] Violation Detected: {self._violation_id} | "
                 f"Severity: {self._severity} | Dimension: {self._dimension} | "
-                f"Loc: {self._file_path}:{self._line_number or 'N/A'}"
+                f"Loc: {self._file_path}:{self._line_number or 'N/A'}",
             )
 
             return ConstitutionalViolation(
@@ -2887,7 +2887,7 @@ class healing_action(sovereign_base_model):
 
             if self._success is None:
                 raise ValueError(
-                    "Incomplete Record: Must specify outcome via succeeded() or failed()."
+                    "Incomplete Record: Must specify outcome via succeeded() or failed().",
                 )
 
             if not self._action_id:
@@ -2898,7 +2898,7 @@ class healing_action(sovereign_base_model):
             logger.info(
                 f"[AUDIT] Healing Action Logged: {self._action_id} | "
                 f"Outcome: {status} | Strategy: {self._strategy} | "
-                f"Type: {self._action_type} | File: {self._target_file}"
+                f"Type: {self._action_type} | File: {self._target_file}",
             )
 
             return HealingAction(
@@ -2984,7 +2984,7 @@ class healing_cycle(sovereign_base_model):
             """Construct immutable HealingCycle with sovereign validation."""
             if self._trigger_score is None or self._target_score is None:
                 raise ValueError(
-                    "Healing Integrity Error: Both trigger and target scores are required."
+                    "Healing Integrity Error: Both trigger and target scores are required.",
                 )
 
             if not self._cycle_id:
@@ -2999,7 +2999,7 @@ class healing_cycle(sovereign_base_model):
             logger.info(
                 f"[AUDIT] Healing Cycle Concluded: {self._cycle_id} | "
                 f"Outcome: {status} | Delta: {self._trigger_score:.1f}% -> {self._target_score:.1f}% | "
-                f"Restored: {healed}/{len(self._actions)}"
+                f"Restored: {healed}/{len(self._actions)}",
             )
 
             return HealingCycle(
@@ -3069,7 +3069,7 @@ class healing_report(sovereign_base_model):
             """Enforces the invariant that fixed violations cannot exceed found ones."""
             if fixed > found:
                 raise ValueError(
-                    "Sovereignty Violation: violations_fixed cannot exceed violations_found"
+                    "Sovereignty Violation: violations_fixed cannot exceed violations_found",
                 )
             self._violations_found = found
             self._violations_fixed = fixed
@@ -3099,7 +3099,7 @@ class healing_report(sovereign_base_model):
             logger.info(
                 f"[AUDIT] HealingReport Sealed: {self._report_id} | "
                 f"Outcome: {'SUCCESS' if self._success else 'PARTIAL'} | "
-                f"Remediation: {self._violations_fixed}/{self._violations_found}"
+                f"Remediation: {self._violations_fixed}/{self._violations_found}",
             )
 
             return HealingReport(
@@ -3147,7 +3147,7 @@ class sovereign_event(sovereign_base_model):
                 return SovereignEventType(v)
             except ValueError:
                 raise ValueError(
-                    f"Sovereignty Violation: '{v}' is not a registered SovereignEventType"
+                    f"Sovereignty Violation: '{v}' is not a registered SovereignEventType",
                 )
         return v
 
@@ -3194,7 +3194,7 @@ class sovereign_event(sovereign_base_model):
                 self._severity = sovereign_severity(severity)
             except ValueError:
                 raise ValueError(
-                    f"Invalid Severity: {severity}. Choose from {list(SOVEREIGN_SEVERITIES)}"
+                    f"Invalid Severity: {severity}. Choose from {list(SOVEREIGN_SEVERITIES)}",
                 )
             return self
 
@@ -3220,7 +3220,7 @@ class sovereign_event(sovereign_base_model):
                 raise ValueError("event_type is mandatory for SovereignEvent.")
             if self._severity is None:
                 raise ValueError(
-                    "Constitutional Error: severity is mandatory for all SovereignEvents."
+                    "Constitutional Error: severity is mandatory for all SovereignEvents.",
                 )
             if not self._source:
                 raise ValueError("Sovereignty Telemetry Error: source is required.")
@@ -3265,7 +3265,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "SovereignSeverity": SovereignSeverity,
         "SovereignEventType": SovereignEventType,
         "SovereignEvent": SovereignEvent,
-    }
+    },
 )
 
 # === ETERNAL SOVEREIGNTY CERTIFICATION – Dec 26, 2025 ===

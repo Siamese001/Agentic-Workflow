@@ -90,7 +90,7 @@ def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterat
     )
 
     Logger.warning(
-        f"[SCAN_GUARD] rglob('{pattern}') called on {path}{caller_info}. Consider migrating to FileCache."
+        f"[SCAN_GUARD] rglob('{pattern}') called on {path}{caller_info}. Consider migrating to FileCache.",
     )
 
     return path.rglob(pattern)
@@ -121,7 +121,7 @@ def guarded_glob(path: Path, pattern: str, caller: str | None = None) -> Iterato
     )
 
     Logger.warning(
-        f"[SCAN_GUARD] glob('{pattern}') called on {path}{caller_info}. Consider migrating to ssot_discovery."
+        f"[SCAN_GUARD] glob('{pattern}') called on {path}{caller_info}. Consider migrating to ssot_discovery.",
     )
 
     return path.glob(pattern)

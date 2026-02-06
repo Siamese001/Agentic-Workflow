@@ -112,7 +112,7 @@ class ApprovalRequiredError(Exception):
         self.request = request
         super().__init__(
             f"Approval required for '{request.operation_name}' "
-            f"(Risk: {request.risk_level.name}, ID: {request.request_id})"
+            f"(Risk: {request.risk_level.name}, ID: {request.request_id})",
         )
 
 
@@ -123,7 +123,7 @@ class ApprovalRejectedError(Exception):
         self.request = request
         super().__init__(
             f"Operation '{request.operation_name}' rejected by {request.resolved_by}: "
-            f"{request.resolution_notes}"
+            f"{request.resolution_notes}",
         )
 
 
@@ -512,7 +512,7 @@ class HITLMixin:
 
         Logger.warning(
             f"[HITL] Request {request_id} ESCALATED to level "
-            f"{request.current_escalation_level}: {current_approver}"
+            f"{request.current_escalation_level}: {current_approver}",
         )
 
         return request
@@ -542,7 +542,7 @@ class HITLMixin:
             return [req.to_dict() for req in self._pending_approvals.values()]
 
     def get_approval_history(
-        self, limit: int = 100, operation_name: str | None = None
+        self, limit: int = 100, operation_name: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         Get approval history.
@@ -564,7 +564,7 @@ class HITLMixin:
             return [r.to_dict() for r in reversed(history[-limit:])]
 
     def register_approval_callback(
-        self, operation_name: str, callback: Callable[[ApprovalRequest], None]
+        self, operation_name: str, callback: Callable[[ApprovalRequest], None],
     ) -> None:
         """
         Register a callback for when an operation is approved.

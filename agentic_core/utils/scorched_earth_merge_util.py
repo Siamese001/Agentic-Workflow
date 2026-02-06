@@ -71,7 +71,7 @@ def scorched_earth_merge() -> Any:
                 target_dest: Any = path
                 break
         logging.info(
-            f"[!] UNAPPROVED ITEM DETECTED: {item.name} -> Moving to {target_dest.relative_to(ROOT)}"
+            f"[!] UNAPPROVED ITEM DETECTED: {item.name} -> Moving to {target_dest.relative_to(ROOT)}",
         )
         dest_path: Any = target_dest / item.name
         if dest_path.exists():

@@ -220,7 +220,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                             violation_type=StructureViolationType.GRAVITY,
                             message=f"Gravity violation: {source_layer} cannot import from {target_layer}",
                             severity="CRITICAL",
-                        )
+                        ),
                     )
 
         return violations
@@ -249,7 +249,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                             message=f"Class '{node.name}' must end with '{self._agent_config.agent_suffix}' suffix",
                             suggested_fix=f"{node.name}{self._agent_config.agent_suffix}",
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
         return violations
@@ -275,7 +275,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                             violation_type=StructureViolationType.DOCUMENTATION,
                             message=f"Missing docstring for {type(node).__name__} '{node.name}'",
                             severity="WARNING",
-                        )
+                        ),
                     )
                 elif docstring and len(docstring) < self._agent_config.min_docstring_length:
                     violations.append(
@@ -285,7 +285,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                             violation_type=StructureViolationType.DOCUMENTATION,
                             message=f"Docstring too short for '{node.name}' (min {self._agent_config.min_docstring_length} chars)",
                             severity="INFO",
-                        )
+                        ),
                     )
 
         return violations
@@ -308,7 +308,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                         violation_type=StructureViolationType.ASCII,
                         message=f"Non-ASCII characters found: {non_ascii[:5]}",
                         severity="WARNING",
-                    )
+                    ),
                 )
 
         return violations
@@ -425,7 +425,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                     line_number=0,
                     violation_type=StructureViolationType.HIERARCHY,
                     message=f"File not in expected layer directory: {layer}",
-                )
+                ),
             )
 
         return violations

@@ -315,7 +315,7 @@ class ProvenanceTracker:
             return f.readlines()
 
     async def search_lineage(
-        self, trace_id: str | None = None, model_version: str | None = None, limit: int = 100
+        self, trace_id: str | None = None, model_version: str | None = None, limit: int = 100,
     ) -> list[ArtifactLineage]:
         """Search lineage records.
 
@@ -505,7 +505,7 @@ class ProvenanceContext:
             Artifact lineage
         """
         return await self.tracker.record_generation(
-            self.trace_id, artifact_id, output, model_version, generation_prompt
+            self.trace_id, artifact_id, output, model_version, generation_prompt,
         )
 
 
@@ -535,7 +535,7 @@ async def track_provenance(
 
     async with ProvenanceContext(trace_id, sources, tracker):
         return await tracker.record_generation(
-            trace_id, artifact_id, output, model_version, generation_prompt
+            trace_id, artifact_id, output, model_version, generation_prompt,
         )
 
 
@@ -574,7 +574,7 @@ def provenance_tracked(extract_sources: Callable | None = None):
             # Track provenance
             if sources:
                 await track_provenance(
-                    trace_id, sources, f"artifact_{int(time.time())}", output, model_version
+                    trace_id, sources, f"artifact_{int(time.time())}", output, model_version,
                 )
 
             return result

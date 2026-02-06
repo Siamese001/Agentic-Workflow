@@ -30,7 +30,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
                         # Exponential backoff with jitter
                         delay = (base_delay * 2**attempt) + random.uniform(0, 1)
                         _console.print(
-                            f"[yellow]Retrying query (Attempt {attempt + 1}/{max_retries}) in {delay:.2f}s...[/yellow]"
+                            f"[yellow]Retrying query (Attempt {attempt + 1}/{max_retries}) in {delay:.2f}s...[/yellow]",
                         )
                         time.sleep(delay)
             raise last_exception
@@ -82,7 +82,7 @@ def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
             while True:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
                 done, _ = concurrent.futures.wait(
-                    [future], timeout=0.05, return_when=concurrent.futures.FIRST_COMPLETED
+                    [future], timeout=0.05, return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 
                 if done:

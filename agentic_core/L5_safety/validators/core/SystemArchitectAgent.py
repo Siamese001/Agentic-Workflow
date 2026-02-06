@@ -178,7 +178,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             scan_root = target  # Fallback for app-level scans
 
         Logger.info(
-            f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})"
+            f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})",
         )
 
         # Inline Scoped Graph Building (O(M) where M is files in scope)
@@ -279,7 +279,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 required_depth: Any = SOVEREIGN_TERRITORIES[root_folder]["depth"]
                 if depth != required_depth:
                     violations.append(
-                        f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}."
+                        f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.",
                     )
                 continue
         return (len(violations) == 0, violations)
@@ -369,7 +369,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         previous_failure = None
         for round_num in range(1, max_rounds + 1):
             print(
-                f"      [Round {round_num}/{max_rounds}] Healing {check_type} → {os.path.basename(file_path)}"
+                f"      [Round {round_num}/{max_rounds}] Healing {check_type} → {os.path.basename(file_path)}",
             )
             mutated_code = await self.resilient_mutation(
                 Task=Task,

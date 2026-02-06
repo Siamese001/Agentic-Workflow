@@ -54,7 +54,7 @@ class ContentQualityValidator:
             config: Configuration dictionary containing validation rules
         """
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$.*?\$"]
+            "placeholder_patterns", [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$.*?\$"],
         )
         self.quantified_patterns = config.get(
             "quantified_patterns",
@@ -69,7 +69,7 @@ class ContentQualityValidator:
         self.min_skill_matches = config.get("min_skill_matches", 3)
 
     def validate_content_quality(
-        self, resume: dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None,
     ) -> QualityValidationResult:
         """
         Validate content quality using purely deterministic logic.
@@ -144,7 +144,7 @@ class ContentQualityValidator:
         return issues
 
     def _validate_skills(
-        self, resume: dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None,
     ) -> tuple[list[str], list[str]]:
         """
         Validate skills using deterministic rule-based logic.

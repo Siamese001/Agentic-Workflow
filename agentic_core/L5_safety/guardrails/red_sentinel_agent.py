@@ -98,7 +98,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                         "input": input_data,
                         "error": result["error"],
                         "traceback": result["traceback"],
-                    }
+                    },
                 )
                 results["vulnerabilities"].append({"type": "crash", "input": input_data, "Severity": "HIGH"})
             elif result["unexpected_behavior"]:
@@ -108,7 +108,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                         "input": input_data,
                         "behavior": result["behavior"],
                         "Severity": "MEDIUM",
-                    }
+                    },
                 )
         await self._log_fuzz_results(results)
         return {

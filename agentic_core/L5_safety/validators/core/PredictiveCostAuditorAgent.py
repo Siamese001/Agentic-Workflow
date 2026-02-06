@@ -26,7 +26,6 @@ from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
@@ -174,7 +173,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         else:
             sink_severity = "none"
         Recommendation = self._generate_recommendation(
-            file_path, total_attempts, cost_usd, success_rate, sink_severity
+            file_path, total_attempts, cost_usd, success_rate, sink_severity,
         )
         return FileAudit(
             file_path=file_path,
@@ -190,7 +189,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         )
 
     def _generate_recommendation(
-        self, file_path: str, attempts: int, cost_usd: float, success_rate: float, Severity: str
+        self, file_path: str, attempts: int, cost_usd: float, success_rate: float, Severity: str,
     ) -> str:
         """Generate Recommendation for file."""
         if Severity == "critical":
@@ -220,7 +219,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
             efficiency_score = 0
         estimated_cost_usd = total_tokens / 1000 * self.TOKEN_COST_PER_1K
         recommendations = self._generate_global_recommendations(
-            healing_sinks, efficiency_score, estimated_cost_usd
+            healing_sinks, efficiency_score, estimated_cost_usd,
         )
         return CostReport(
             total_files=total_files,
@@ -235,7 +234,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         )
 
     def _generate_global_recommendations(
-        self, healing_sinks: list[FileAudit], efficiency_score: float, cost_usd: float
+        self, healing_sinks: list[FileAudit], efficiency_score: float, cost_usd: float,
     ) -> list[str]:
         """Generate global recommendations."""
         recommendations = []
@@ -246,7 +245,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         critical_sinks = [s for s in healing_sinks if s.sink_severity == "critical"]
         if critical_sinks:
             recommendations.append(
-                f"🔴 {len(critical_sinks)} critical healing sinks - Apply Atomic Fission immediately"
+                f"🔴 {len(critical_sinks)} critical healing sinks - Apply Atomic Fission immediately",
             )
         high_sinks = [s for s in healing_sinks if s.sink_severity == "high"]
         if high_sinks:
@@ -277,7 +276,7 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
                 cost = sink.total_tokens / 1000 * self.TOKEN_COST_PER_1K
                 Logger.warning(f"  {i}. {sink.file_path}")
                 Logger.warning(
-                    f"     Tokens: {sink.total_tokens:,} (${cost:.2f}) | Attempts: {sink.total_attempts} | Success Rate: {sink.success_rate:.0f}%"
+                    f"     Tokens: {sink.total_tokens:,} (${cost:.2f}) | Attempts: {sink.total_attempts} | Success Rate: {sink.success_rate:.0f}%",
                 )
                 Logger.warning(f"     → {sink.Recommendation}")
             if len(report.healing_sinks) > 10:

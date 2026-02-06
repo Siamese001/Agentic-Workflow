@@ -124,7 +124,7 @@ class DeterministicCleaner:
         """Apply autopep8 for PEP8 formatting."""
         try:
             result = safe_execute(
-                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True
+                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True,
             )
             return result.stdout
         except subprocess.CalledProcessError as e:

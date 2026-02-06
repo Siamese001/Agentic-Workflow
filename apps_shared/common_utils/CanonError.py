@@ -51,7 +51,7 @@ class CanonViolationError(CanonError):
                 "violation_type": self.violation_type,
                 "agent_id": self.agent_id,
                 "pattern_id": self.pattern_id,
-            }
+            },
         )
         return result
 
@@ -80,7 +80,7 @@ class MemorySyncError(CanonError):
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update(
-            {"operation": self.operation, "backend": self.backend, "retry_count": self.retry_count}
+            {"operation": self.operation, "backend": self.backend, "retry_count": self.retry_count},
         )
         return result
 
@@ -126,7 +126,7 @@ class AgentExecutionError(CanonError):
     def to_dict(self) -> dict[str, Any]:
         result = super().to_dict()
         result.update(
-            {"agent_id": self.agent_id, "task": self.task, "retry_count": self.retry_count}
+            {"agent_id": self.agent_id, "task": self.task, "retry_count": self.retry_count},
         )
         return result
 

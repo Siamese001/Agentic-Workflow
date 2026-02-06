@@ -162,7 +162,7 @@ def main():
     if unified_counts["total_unified"] > 0:
         ratio = archived_count / unified_counts["total_unified"]
         print(
-            f"   {archived_count} legacy agents -> {unified_counts['total_unified']} unified agents"
+            f"   {archived_count} legacy agents -> {unified_counts['total_unified']} unified agents",
         )
         print(f"   Consolidation ratio: {ratio:.1f}:1")
         reduction = (

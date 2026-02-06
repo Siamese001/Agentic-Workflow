@@ -297,7 +297,7 @@ def validate_all_sdks() -> dict[str, Any]:
 
     logger.info(
         f"SDK validation: {report['available']}/{report['total']} available, "
-        f"{report['missing']} missing, {report['missing_keys']} missing keys"
+        f"{report['missing']} missing, {report['missing_keys']} missing keys",
     )
 
     return report

@@ -167,7 +167,7 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         self._archive_logs(ephemeral)
         self._wipe_active_memory()
         Logger.info(
-            f"   [OK] Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars"
+            f"   [OK] Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars",
         )
 
     def _take_snapshot(self) -> ContextSnapshot:
@@ -240,7 +240,7 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         if hasattr(self.ctx, "generate_with_thinking"):
             try:
                 compressed = await self.ctx.generate_with_thinking(
-                    prompt=prompt, thinking_budget=8000, temperature=0.1
+                    prompt=prompt, thinking_budget=8000, temperature=0.1,
                 )
             except Exception as e:
                 Logger.warning(f"Could not use Gemini for compression: {e}")

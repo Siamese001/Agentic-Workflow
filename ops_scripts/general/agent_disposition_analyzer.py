@@ -41,7 +41,7 @@ class AgentDispositionAnalyzer:
 
             # Classification logic
             classification, details = self._classify_file(
-                file_path.name, content, classes, imports, functions
+                file_path.name, content, classes, imports, functions,
             )
 
             return classification, details
@@ -79,7 +79,7 @@ class AgentDispositionAnalyzer:
                         "line_count": node.end_lineno - node.lineno
                         if hasattr(node, "end_lineno")
                         else 0,
-                    }
+                    },
                 )
 
         return classes
@@ -108,7 +108,7 @@ class AgentDispositionAnalyzer:
                         "is_method": node.name.startswith("_")
                         or node.name in ["__init__", "_process", "run_phase"],
                         "args_count": len(node.args.args),
-                    }
+                    },
                 )
         return functions
 

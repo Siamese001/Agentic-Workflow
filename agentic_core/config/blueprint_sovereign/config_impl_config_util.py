@@ -28,7 +28,7 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
             raise
     if required:
         logging.error(
-            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting."
+            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.",
         )
         raise FileNotFoundError(f"{description} file not found: {path_to_check}")
     logging.warning(f"Optional config file '{filename}' not found, returning empty dict")

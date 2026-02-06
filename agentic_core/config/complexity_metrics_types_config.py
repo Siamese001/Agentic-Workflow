@@ -80,7 +80,7 @@ class FlatteningPattern:
 
     @classmethod
     def analyze_method(
-        cls, method_code: str, method_name: str
+        cls, method_code: str, method_name: str,
     ) -> tuple[ComplexityMetrics, list[ExtractionCandidate]]:
         """
         Analyze a method and identify extraction candidates.
@@ -175,7 +175,7 @@ class FlatteningPattern:
                             suggested_name=f"_initialize_{node.targets[0].id if hasattr(node.targets[0], 'id') else 'result'}",
                             dependencies=[],
                             returns="Dict[str, Any]",
-                        )
+                        ),
                     )
 
             # Pattern 2: If/elif chains with similar structure
@@ -193,14 +193,14 @@ class FlatteningPattern:
                             suggested_name="_process_conditional_branch",
                             dependencies=[],
                             returns="Dict[str, Any]",
-                        )
+                        ),
                     )
 
         return candidates
 
     @classmethod
     def generate_extraction_plan(
-        cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate]
+        cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate],
     ) -> dict:
         """
         Generate a step-by-step extraction plan.

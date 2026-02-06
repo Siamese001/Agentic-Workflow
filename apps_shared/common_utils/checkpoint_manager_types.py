@@ -569,7 +569,7 @@ class CheckpointManager:
             return FileCheckpointStorage(self.config.storage_path, self.config.compression)
         elif self.config.storage_type == CheckpointStorage.REDIS:
             return RedisCheckpointStorage(
-                self.config.redis_url, self.config.redis_prefix, self.config.ttl_seconds
+                self.config.redis_url, self.config.redis_prefix, self.config.ttl_seconds,
             )
         else:  # MEMORY
             return MemoryCheckpointStorage(self.config.max_checkpoints)
@@ -637,7 +637,7 @@ class CheckpointManager:
             return False
 
     async def resume_from_checkpoint(
-        self, trace_id: str, stages: list[str]
+        self, trace_id: str, stages: list[str],
     ) -> SignalEnvelope | None:
         """Resume pipeline from checkpoint.
 

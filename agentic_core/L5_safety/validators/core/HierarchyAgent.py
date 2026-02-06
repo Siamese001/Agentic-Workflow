@@ -4,11 +4,9 @@
 from __future__ import annotations
 
 # ruff: noqa: E501, E402, F811
-
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -281,16 +279,16 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 results["violations_found"] += 1
                 l3_path = layer_l2_path / territory_l3_name
                 Logger.warning(
-                    f"   [!] MISSING L3 TERRITORY: agentic_core/{layer_l2_name}/{territory_l3_name}"
+                    f"   [!] MISSING L3 TERRITORY: agentic_core/{layer_l2_name}/{territory_l3_name}",
                 )
                 if self.healing_enabled:
                     self._create_dir_with_init(
-                        l3_path, results, f"agentic_core/{layer_l2_name}/{territory_l3_name}"
+                        l3_path, results, f"agentic_core/{layer_l2_name}/{territory_l3_name}",
                     )
 
         if results["violations_found"] > 0:
             Logger.info(
-                f"HierarchyAgent: [STRUCTURE] Found {results['violations_found']} missing directories"
+                f"HierarchyAgent: [STRUCTURE] Found {results['violations_found']} missing directories",
             )
             if self.healing_enabled and results["created"]:
                 Logger.info(f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} directories")
@@ -363,7 +361,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             Logger.info(f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files")
             if self.healing_enabled:
                 Logger.info(
-                    f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed"
+                    f"HierarchyAgent: [RELOCATION] {results['files_relocated']} files relocated, {results['folders_removed']} folders removed",
                 )
                 # Universal Cleanup: Trigger recursive empty dir removal for all processed roots
                 for root_name in results.get("roots_processed", []):
@@ -459,7 +457,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if self.healing_enabled:
                     # [PHASE 33j] Gatekeeper is Single Point of Approval
                     gk_result = self.gatekeeper.safe_move(
-                        py_file, dest, self.agent_name, f"Test categorization: {category}"
+                        py_file, dest, self.agent_name, f"Test categorization: {category}",
                     )
                     if gk_result.success:
                         results["files_relocated"] += 1
@@ -488,7 +486,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if self.healing_enabled:
                 self._relocate_file_to_l2(
-                    py_file, bad_layer_l2, agentic_core_path, approved_layers_l2, results
+                    py_file, bad_layer_l2, agentic_core_path, approved_layers_l2, results,
                 )
 
         if self.healing_enabled:
@@ -533,11 +531,11 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if not dest.exists():
                 # [PHASE 33j] Gatekeeper is Single Point of Approval
                 gk_result = self.gatekeeper.safe_move(
-                    py_file, dest, self.agent_name, f"Relocate from illegal layer '{bad_layer_l2}'"
+                    py_file, dest, self.agent_name, f"Relocate from illegal layer '{bad_layer_l2}'",
                 )
                 if gk_result.success:
                     Logger.info(
-                        f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/"
+                        f"      [✓] RELOCATED: {py_file.name} -> {target_layer_l2}/{target_territory_l3}/",
                     )
                     results["files_relocated"] += 1
                 elif gk_result.approval_status == "DENIED":
@@ -548,7 +546,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _relocate_l3_territory_files(
-        self, agentic_core_path: Path, layer_l2_name: str, results: dict[str, Any]
+        self, agentic_core_path: Path, layer_l2_name: str, results: dict[str, Any],
     ) -> None:
         """Relocate files from non-approved L3 territories."""
         layer_l2_path = agentic_core_path / layer_l2_name
@@ -577,12 +575,12 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     continue
                 results["violations_found"] += 1
                 Logger.warning(
-                    f"   [!] MISPLACED FILE: {py_file.name} in illegal territory '{layer_l2_name}/{bad_territory_l3}'"
+                    f"   [!] MISPLACED FILE: {py_file.name} in illegal territory '{layer_l2_name}/{bad_territory_l3}'",
                 )
 
                 if self.healing_enabled:
                     self._relocate_file_to_l3(
-                        py_file, layer_l2_name, layer_l2_path, bad_territory_l3, results
+                        py_file, layer_l2_name, layer_l2_path, bad_territory_l3, results,
                     )
 
             if self.healing_enabled:
@@ -632,7 +630,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 )
                 if gk_result.success:
                     Logger.info(
-                        f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/"
+                        f"      [✓] RELOCATED: {py_file.name} -> {layer_l2_name}/{target_territory_l3}/",
                     )
                     results["files_relocated"] += 1
                 elif gk_result.approval_status == "DENIED":
@@ -709,13 +707,13 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     results["apps_archived"] + results["tests_archived"] + results["universal_archived"]
                 )
                 Logger.info(
-                    f"HierarchyAgent: [DEPTH] Archived {total_archived} files (apps: {results['apps_archived']}, tests: {results['tests_archived']}, universal: {results['universal_archived']})"
+                    f"HierarchyAgent: [DEPTH] Archived {total_archived} files (apps: {results['apps_archived']}, tests: {results['tests_archived']}, universal: {results['universal_archived']})",
                 )
 
         return results
 
     def _enforce_depth_for_root(
-        self, root_key: str, root_check: callable, archive_subdir: str, label: str
+        self, root_key: str, root_check: callable, archive_subdir: str, label: str,
     ) -> int:
         """Generic depth enforcement using dispatch pattern."""
         expected_depth = SOVEREIGN_TERRITORIES.get(root_key, {}).get("depth", 2)
@@ -724,7 +722,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
         all_files = list(get_python_files(self.project_root)) + list(
-            get_data_files(self.project_root, extensions=[".json", ".md", ".yaml", ".yml"])
+            get_data_files(self.project_root, extensions=[".json", ".md", ".yaml", ".yml"]),
         )
         for file_path in all_files:
             if file_path.is_dir():
@@ -779,13 +777,13 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if target_path.exists():
                 # Fallback to legacy archive if target exists to prevent data loss
                 return self._legacy_archive_depth_violation(
-                    file_path, rel, depth, expected, "collision", "COLLISION"
+                    file_path, rel, depth, expected, "collision", "COLLISION",
                 )
 
             # Execute Move using ArchivalGatekeeper
             target_path.parent.mkdir(parents=True, exist_ok=True)
             gk_result = self.gatekeeper.safe_move(
-                file_path, target_path, self.agent_name, f"Depth healing: {action}"
+                file_path, target_path, self.agent_name, f"Depth healing: {action}",
             )
 
             if not gk_result.success:
@@ -802,7 +800,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return 0
 
     def _legacy_archive_depth_violation(
-        self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str
+        self, file_path: Path, rel: Path, depth: int, expected: int, subdir: str, label: str,
     ) -> int:
         """Legacy archive method - only used as fallback when smart healing has collision.
 
@@ -878,13 +876,13 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if depth != agentic_core_exact_depth:
                     violations += 1
                     Logger.warning(
-                        f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}"
+                        f"   [!] DEPTH DRIFT: {rel} is depth {depth}, expected {agentic_core_exact_depth}",
                     )
 
                     if self.healing_enabled:
                         # Use smart depth re-alignment instead of archiving
                         archived += self._heal_depth_violation(
-                            file_path, rel, depth, agentic_core_exact_depth
+                            file_path, rel, depth, agentic_core_exact_depth,
                         )
 
         return violations if not self.healing_enabled else archived
@@ -1015,11 +1013,11 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                     # Use ArchivalGatekeeper for safe archival
                     gk_result = self.gatekeeper.safe_archive(
-                        file_path, self.agent_name, "Orphaned file purge"
+                        file_path, self.agent_name, "Orphaned file purge",
                     )
                     if gk_result.success:
                         Logger.info(
-                            f"      [✓] ARCHIVED & PURGED: {file_path.name} -> {gk_result.destination_path}"
+                            f"      [✓] ARCHIVED & PURGED: {file_path.name} -> {gk_result.destination_path}",
                         )
                         purged_count += 1
                     else:
@@ -1145,7 +1143,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             # [FIX] Skip global orphan purge if scoped, or implement scoped purge
             if target_territory:
                 Logger.info(
-                    "[HierarchyAgent] Skipping global orphan purge in scoped mode to protect out-of-scope assets."
+                    "[HierarchyAgent] Skipping global orphan purge in scoped mode to protect out-of-scope assets.",
                 )
                 results["purge"] = {"purged": 0, "violations_found": 0}
             else:
@@ -1350,7 +1348,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             if results["archived_files_at_root"]:
                 Logger.warning(
-                    f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in .healing_backups/)"
+                    f"   [!] {len(results['archived_files_at_root'])} archived files at root (should be in .healing_backups/)",
                 )
 
         # Phase 2: Territory root violation scanning (Ultra-hardened)
@@ -1449,7 +1447,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 # [PHASE 33j] Gatekeeper is Single Point of Approval
                 try:
                     gk_result = self.gatekeeper.safe_move(
-                        src, dst, self.agent_name, "Move archived file from root"
+                        src, dst, self.agent_name, "Move archived file from root",
                     )
                     if gk_result.success:
                         action["applied"] = True
@@ -1521,7 +1519,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(
-            get_data_files(root_folder, extensions=[".json", ".md", ".yaml", ".yml", ".txt", ".log"])
+            get_data_files(root_folder, extensions=[".json", ".md", ".yaml", ".yml", ".txt", ".log"]),
         )
         for src_file in all_files:
             if src_file.is_dir():

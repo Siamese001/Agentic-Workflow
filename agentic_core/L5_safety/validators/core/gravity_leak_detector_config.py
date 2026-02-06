@@ -186,7 +186,7 @@ class GravityLeakDetector:
                             "type": "GRAVITY_AUTO_HEAL",
                             "file": grav["file"],
                             "removed_imports": removed_modules,
-                        }
+                        },
                     )
 
             except Exception as e:
@@ -195,7 +195,7 @@ class GravityLeakDetector:
                         "type": "GRAVITY_HEAL_ERROR",
                         "file": grav["file"],
                         "error": str(e),
-                    }
+                    },
                 )
 
         return gravity_heal_actions

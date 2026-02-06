@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -19,7 +18,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -127,8 +125,8 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, Sove
                     "faithfulness_threshold": self.faithfulness_threshold,
                     "max_hops": self.max_hops,
                     "base_top_k": self.base_top_k,
-                }
-            )
+                },
+            ),
         )
 
     async def red_team_critique(self, answer: str, documents: list[Any], query: str) -> dict[str, Any]:
@@ -306,13 +304,13 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, Sove
         avg_faithfulness: Any = sum(faithfulness_scores) / len(faithfulness_scores)
         if avg_faithfulness > 0.94:
             self.faithfulness_threshold = min(
-                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate
+                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}")
         elif avg_faithfulness < 0.85:
             self.faithfulness_threshold = max(
-                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate
+                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}")

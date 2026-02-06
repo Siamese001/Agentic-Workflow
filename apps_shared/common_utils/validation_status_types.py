@@ -139,7 +139,7 @@ class ValidationGateExecutor:
         if gate.execution_point != execution_point:
             logger.warning(
                 f"Gate {gate_id} execution point mismatch: "
-                f"expected {gate.execution_point}, got {execution_point}"
+                f"expected {gate.execution_point}, got {execution_point}",
             )
 
         failures = []

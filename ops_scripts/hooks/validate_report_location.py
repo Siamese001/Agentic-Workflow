@@ -92,7 +92,7 @@ def log_violations(misplaced: list, mode: str, action_taken: str) -> Path:
 def main() -> int:
     """Main entry point for the pre-commit hook."""
     parser = argparse.ArgumentParser(
-        description="Validate report file locations against SSOT requirements."
+        description="Validate report file locations against SSOT requirements.",
     )
     parser.add_argument(
         "--mode",

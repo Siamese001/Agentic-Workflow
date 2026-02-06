@@ -392,7 +392,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.25, top_p=0.9, top_k=40, min_p=0.04, repetition_penalty=1.1
+            temperature=0.25, top_p=0.9, top_k=40, min_p=0.04, repetition_penalty=1.1,
         ),
         beam_width=2,
         self_consistency_runs=1,
@@ -411,7 +411,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.2, top_p=0.88, top_k=30, min_p=0.03, repetition_penalty=1.05
+            temperature=0.2, top_p=0.88, top_k=30, min_p=0.03, repetition_penalty=1.05,
         ),
         beam_width=1,
         self_consistency_runs=1,
@@ -448,7 +448,7 @@ class KXNodeRegistry:
         return self._resume_nodes.get(node_key)
 
     def get_outreach_node(
-        self, node_key: str, connection_request: bool = False
+        self, node_key: str, connection_request: bool = False,
     ) -> KNodeConfig | None:
         """Get outreach engine K.X node configuration.
 
@@ -492,7 +492,7 @@ class KXNodeRegistry:
         return {key: config for key, config in all_nodes.items() if config.node_type == node_type}
 
     def register_custom_node(
-        self, node_key: str, config: KNodeConfig, engine: str = "resume"
+        self, node_key: str, config: KNodeConfig, engine: str = "resume",
     ) -> None:
         """Register a custom K.X node.
 

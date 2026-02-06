@@ -416,7 +416,7 @@ class DashboardGenerator:
             "Complexity Health": metrics["complexity_health"],
             "Code Quality Score": metrics["code_quality"],
             "Criticality": self.calculate_layer_criticality(
-                territory_name
+                territory_name,
             ),  # PHASE 2 FIX: Layer-based weight
             "Health": metrics["health"],
             "Health Breakdown": f"Heal:{metrics['heal_cap_pct']:.0f}+Inv:{metrics['heal_inv_pct']:.0f}+Test:{metrics['test_pct']:.0f}+Obs:{metrics['obs_pct']:.0f}+CC:{metrics['complexity_health']:.0f}",
@@ -452,7 +452,7 @@ class DashboardGenerator:
         metadata_pct = weighted_avg("Metadata %")  # PHASE 3 FIX
         used_pct = weighted_avg("Used %")  # PHASE 3 FIX
         avg_criticality = round(
-            sum(r["Criticality"] * r["Total"] for r in rows) / total_agents, 1
+            sum(r["Criticality"] * r["Total"] for r in rows) / total_agents, 1,
         )  # PHASE 2 FIX
         complexity_health = round(sum(r["Complexity Health"] * r["Total"] for r in rows) / total_agents, 1)
         code_quality = round(sum(r["Code Quality Score"] * r["Total"] for r in rows) / total_agents, 1)
@@ -622,7 +622,7 @@ class DashboardGenerator:
                         "base": base,
                         "quality": quality,
                         "loc": agent.get("loc", 0),
-                    }
+                    },
                 )
 
             per_agent_data[territory_name] = {
@@ -692,7 +692,7 @@ class DashboardGenerator:
             missing_fields = [f for f in REQUIRED_FIELDS if f not in row]
             if missing_fields:
                 print(
-                    f"❌ GUARDRAIL VIOLATION: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}"
+                    f"❌ GUARDRAIL VIOLATION: Row {i} ({row.get('Territory', 'UNKNOWN')}) missing fields: {missing_fields}",
                 )
                 return False
 
@@ -744,7 +744,7 @@ class DashboardGenerator:
             matches = re.findall(pattern, html)
             if len(matches) > 1:
                 errors.append(
-                    f"CRITICAL: Found {len(matches)} declarations of 'const {var_name}' (expected 1)"
+                    f"CRITICAL: Found {len(matches)} declarations of 'const {var_name}' (expected 1)",
                 )
             elif len(matches) == 0:
                 errors.append(f"ERROR: Found 0 declarations of 'const {var_name}' (expected 1)")

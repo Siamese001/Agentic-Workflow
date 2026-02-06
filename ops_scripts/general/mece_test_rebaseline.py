@@ -264,7 +264,7 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
                         test_path=test_path,
                         test_name=test_name,
                         needs_test=needs_test,
-                    )
+                    ),
                 )
 
     return classifications
@@ -516,7 +516,7 @@ def run_rebaseline(project_root: Path, dry_run: bool = True) -> dict[str, Any]:
                 {
                     "file": str(c.path),
                     "class": c.primary_class,
-                }
+                },
             )
     print(f"  Stuttering violations: {len(report['stuttering_violations'])}")
 
@@ -525,7 +525,7 @@ def run_rebaseline(project_root: Path, dry_run: bool = True) -> dict[str, Any]:
     for c in classifications:
         if not c.needs_test:
             report["tests_skipped"].append(
-                {"file": str(c.path), "reason": f"Type {c.file_type} excluded from testing"}
+                {"file": str(c.path), "reason": f"Type {c.file_type} excluded from testing"},
             )
             continue
 
@@ -545,7 +545,7 @@ def run_rebaseline(project_root: Path, dry_run: bool = True) -> dict[str, Any]:
                 "test": str(c.test_path),
                 "type": c.file_type,
                 "primary_class": c.primary_class,
-            }
+            },
         )
 
     print(f"  Tests to create: {len(report['tests_created'])}")
@@ -570,7 +570,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MECE Test Suite Re-baseline")
     parser.add_argument("--execute", action="store_true", help="Execute changes (default: dry run)")
     parser.add_argument(
-        "--output", type=str, default="mece_rebaseline_report.json", help="Report output file"
+        "--output", type=str, default="mece_rebaseline_report.json", help="Report output file",
     )
     args = parser.parse_args()
 

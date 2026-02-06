@@ -90,7 +90,7 @@ def main():
 
         f.write("## Metrics Comparison\n\n")
         f.write(
-            "| Agent | Canonical Lines | Dup Lines | Can Methods | Dup Methods | Can Heal | Dup Heal | Recommendation |\n"
+            "| Agent | Canonical Lines | Dup Lines | Can Methods | Dup Methods | Can Heal | Dup Heal | Recommendation |\n",
         )
         f.write("| --- | --- | --- | --- | --- | --- | --- | --- |\n")
 

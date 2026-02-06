@@ -28,7 +28,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -231,7 +230,7 @@ Output strict JSON:
                         "title": "L0 Maintenance Layer",
                         "text": f"L0 is infrastructure/scripts layer. Healing capability is N/A here (currently showing {heal_cap}%). Focus on stability, not self-healing.",
                         "color": "#6b7280",
-                    }
+                    },
                 )
 
         # Apps territories observation
@@ -245,7 +244,7 @@ Output strict JSON:
                         "title": "Apps Test Coverage",
                         "text": f"Apps territories average {avg_apps_test:.0f}% test coverage. Target 80% for production safety.",
                         "color": "#ea580c",
-                    }
+                    },
                 )
 
         # observability observation
@@ -256,7 +255,7 @@ Output strict JSON:
                     "title": "Excellent observability",
                     "text": f"{safe_val(total_row, 'Observable %', 0):.1f}% observability coverage. Production debugging is well-supported.",
                     "color": "#16a34a",
-                }
+                },
             )
 
         # ========================================
@@ -273,7 +272,7 @@ Output strict JSON:
                     "title": "High Complexity",
                     "text": f"Average CC of {avg_cc:.1f} exceeds target (≤15). Refactor high-CC methods in L5 validators and L3 orchestrators.",
                     "color": "#ea580c",
-                }
+                },
             )
 
         # Test coverage observation
@@ -284,7 +283,7 @@ Output strict JSON:
                     "title": "Test Coverage Gap",
                     "text": f"Test coverage at {test_coverage:.1f}% (target: 80%). Focus on L1 Cognition and Apps territories first.",
                     "color": "#dc2626",
-                }
+                },
             )
 
         # Healing invocation observation
@@ -295,7 +294,7 @@ Output strict JSON:
                     "title": "Strong Healing Invocation",
                     "text": f"{invocation:.1f}% healing invocation is excellent. Maintain this level.",
                     "color": "#16a34a",
-                }
+                },
             )
 
         # ========================================
@@ -305,7 +304,7 @@ Output strict JSON:
 
         # Generate strategic review from actual data
         review_parts = [
-            f"Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories."
+            f"Portfolio health at {health:.1f}% with {total_agents} agents across {total_territories} territories.",
         ]
 
         # Test Coverage (most impactful)
@@ -313,7 +312,7 @@ Output strict JSON:
             gap = 95 - test_coverage
             zero_test_territories = [r for r in non_total_rows if safe_val(r, "Test %", 0) == 0]
             review_parts.append(
-                f"Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk."
+                f"Test coverage at {test_coverage:.1f}% (target 95%) increases regression risk.",
             )
             recommendations.append(
                 {
@@ -323,7 +322,7 @@ Output strict JSON:
                     "detail": f"Current: {test_coverage:.1f}% | Gap: {gap:.1f}pp | {len(zero_test_territories)} territories at 0%",
                     "action": "Add unit tests for core behaviors. Focus on zero-coverage territories first.",
                     "impact": "High - Prevents regressions during healing and refactoring cycles.",
-                }
+                },
             )
 
         # Healing Invocation
@@ -331,7 +330,7 @@ Output strict JSON:
             gap = 100 - invocation
             low_invocation = [r for r in non_total_rows if safe_val(r, "Invocation %", 0) < 80]
             review_parts.append(
-                f"Healing invocation at {invocation:.1f}% (target 100%) indicates incomplete healing chains."
+                f"Healing invocation at {invocation:.1f}% (target 100%) indicates incomplete healing chains.",
             )
             recommendations.append(
                 {
@@ -341,7 +340,7 @@ Output strict JSON:
                     "detail": f"Current: {invocation:.1f}% | Gap: {gap:.1f}pp | {len(low_invocation)} territories below 80%",
                     "action": "Add super().heal_repository(**kwargs) calls to agents that override heal_repository().",
                     "impact": "High - Ensures healing propagates through MRO chain.",
-                }
+                },
             )
 
         # MCP Hardening
@@ -349,7 +348,7 @@ Output strict JSON:
             gap = 100 - mcp_hardened
             unhardened = [r for r in non_total_rows if safe_val(r, "Hardened %", 0) < 100]
             review_parts.append(
-                f"MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries."
+                f"MCP hardening at {mcp_hardened:.1f}% (target 100%) exposes tool boundaries.",
             )
             recommendations.append(
                 {
@@ -359,7 +358,7 @@ Output strict JSON:
                     "detail": f"Current: {mcp_hardened:.1f}% | Gap: {gap:.1f}pp | {len(unhardened)} territories incomplete",
                     "action": "Apply MCPHardenedMixin to all agents touching external APIs or tools.",
                     "impact": "Critical - Prevents injection and boundary violations.",
-                }
+                },
             )
 
         # Complexity
@@ -374,7 +373,7 @@ Output strict JSON:
                     "detail": f"{len(high_cc_territories)} territories have Avg CC >15 (avg: {avg_cc:.1f})",
                     "action": "Refactor complex methods into smaller primitives. Target CC ≤10.",
                     "impact": "Medium - Reduces bug density and improves testability.",
-                }
+                },
             )
 
         # Typing
@@ -388,7 +387,7 @@ Output strict JSON:
                     "detail": f"Current: {typed_pct:.1f}% | Gap: {gap:.1f}pp",
                     "action": "Add type hints to function parameters and return types.",
                     "impact": "Medium - Enables static analysis and IDE support.",
-                }
+                },
             )
 
         # Documentation
@@ -402,7 +401,7 @@ Output strict JSON:
                     "detail": f"Current: {documented_pct:.1f}% | Gap: {gap:.1f}pp",
                     "action": "Add docstrings to all public methods and classes.",
                     "impact": "Medium - Reduces hallucinated tool usage by constraining search space.",
-                }
+                },
             )
 
         # Format recommendations for display
@@ -412,7 +411,7 @@ Output strict JSON:
                 f"{i}. {rec['title']}<br>"
                 f"<span style='color:#666'>{rec['detail']}</span><br>"
                 f"<b>Action:</b> {rec['action']}<br>"
-                f"<span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>"
+                f"<span style='color:#059669'><b>Impact:</b> {rec['impact']}</span>",
             )
 
         return {

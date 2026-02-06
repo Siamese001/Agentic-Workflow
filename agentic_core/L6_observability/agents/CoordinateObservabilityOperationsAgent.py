@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -18,7 +17,6 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -64,7 +62,7 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(
-        self, name: str, executor: Any, dependencies: list[str] | None = None
+        self, name: str, executor: Any, dependencies: list[str] | None = None,
     ) -> CoordinateObservabilityOperations:
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
@@ -88,7 +86,7 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
                         status=StepStatus.COMPLETED,
                         OUTPUT=OUTPUT,
                         duration_ms=(time.time() - START) * 1000,
-                    )
+                    ),
                 )
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 SUCCESS: Any = False
@@ -98,7 +96,7 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
                         status=StepStatus.FAILED,
                         error=str(e),
                         duration_ms=(time.time() - START) * 1000,
-                    )
+                    ),
                 )
                 break
         return OrchestrationResult(
@@ -160,7 +158,7 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
 
 
 def orchestrate(
-    steps: list[dict], initial_input: object = None, config: dict | None = None
+    steps: list[dict], initial_input: object = None, config: dict | None = None,
 ) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH: Any = CoordinateObservabilityOperations(config)

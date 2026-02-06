@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -21,7 +20,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
@@ -31,7 +29,7 @@ from agentic_core.L5_safety.validators.NeuralAutoImmuneAgent import NeuralAutoIm
 
 @dataclass
 class PolicyNeuralAutoImmuneAgent(
-    AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent
+    AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent,
 ):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
 

@@ -23,17 +23,17 @@ def find_long_lines() -> None:
                         for line_num, line in enumerate(f, 1):
                             if len(line.rstrip()) > 100:
                                 ConfigurationService().violations.append(
-                                    f"{file}:{line_num} - {len(line.rstrip())} chars"
+                                    f"{file}:{line_num} - {len(line.rstrip())} chars",
                                 )
                                 ConfigurationService().Logger.info(
-                                    f"{file}:{line_num} - {len(line.rstrip())} chars"
+                                    f"{file}:{line_num} - {len(line.rstrip())} chars",
                                 )
                                 ConfigurationService().Logger.info(f"  {line[:150]}...")
                                 ConfigurationService().Logger.info("")
                 except Exception:
                     ConfigurationService().Logger.warning("Swallowed exception", exc_info=True)
     ConfigurationService().Logger.info(
-        f"\nTotal violations: {len(ConfigurationService().violations)}"
+        f"\nTotal violations: {len(ConfigurationService().violations)}",
     )
 
 

@@ -95,7 +95,7 @@ class ObservabilityToolInvoker:
         self._initialize_handlers()
 
     def register_tool(
-        self, tool_name: str, endpoint: ToolEndpoint, handler: Callable | None = None
+        self, tool_name: str, endpoint: ToolEndpoint, handler: Callable | None = None,
     ) -> None:
         """Register a tool endpoint.
 
@@ -164,7 +164,7 @@ class ObservabilityToolInvoker:
         except Exception as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             return self._create_error_response(
-                request.invocation_id, request.tool_name, str(e), start_time
+                request.invocation_id, request.tool_name, str(e), start_time,
             )
 
     def invoke_batch(self, requests: list[InvocationRequest]) -> list[InvocationResponse]:
@@ -307,7 +307,7 @@ class ObservabilityToolInvoker:
         )
 
     def _simulate_invocation(
-        self, request: InvocationRequest, proxy: bool = False, async_mode: bool = False
+        self, request: InvocationRequest, proxy: bool = False, async_mode: bool = False,
     ) -> InvocationResponse:
         """Simulate tool invocation."""
         # Simulate processing time
@@ -329,7 +329,7 @@ class ObservabilityToolInvoker:
                 "logs": [
                     {"message": "Sample log", "level": "info"},
                     {"message": "Error log", "level": "error"},
-                ]
+                ],
             }
         else:
             data = {"message": f"Mock response from {request.tool_name}"}
@@ -379,7 +379,7 @@ class ObservabilityToolInvoker:
         return f"tool_invoke_{hash(json.dumps(key_data, sort_keys=True))}"
 
     def _create_error_response(
-        self, invocation_id: str, tool_name: str, error: str, start_time: float
+        self, invocation_id: str, tool_name: str, error: str, start_time: float,
     ) -> InvocationResponse:
         """Create error response."""
         return InvocationResponse(
@@ -407,8 +407,8 @@ class ObservabilityToolInvoker:
             if method == "collect":
                 return {
                     "metrics": [
-                        {"name": "cpu", "value": 45.2, "timestamp": datetime.utcnow().isoformat()}
-                    ]
+                        {"name": "cpu", "value": 45.2, "timestamp": datetime.utcnow().isoformat()},
+                    ],
                 }
             elif method == "query":
                 return {"query_result": "metric_data"}

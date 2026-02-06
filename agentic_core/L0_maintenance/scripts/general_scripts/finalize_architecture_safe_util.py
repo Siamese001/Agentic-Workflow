@@ -89,7 +89,7 @@ def step_2_regenerate_manifest_simple():
                     "layer": layer,
                     "path": str(py_file.relative_to(PROJECT_ROOT)),
                     "sovereign_compliant": True,
-                }
+                },
             )
 
     manifest_data = {

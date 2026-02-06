@@ -106,7 +106,7 @@ class SubatomicHop:
             self.reflection_engine = self.container.resolve(ReflectionEngine)
         else:
             self.reflection_engine = get_reflection_engine(
-                **self.config.reflection_config.dict() if self.config.reflection_config else {}
+                **self.config.reflection_config.dict() if self.config.reflection_config else {},
             )
             # Register in container for future use
             self.container.register(ReflectionEngine, self.reflection_engine)
@@ -124,7 +124,7 @@ class SubatomicHop:
         # Initialize secure checkpoint manager
         if self.config.enable_checkpoints:
             self.checkpoint_manager = CheckpointManagerFactory.get_manager(
-                self.config.hop_id, self.config.checkpoint_dir, use_global_key=True
+                self.config.hop_id, self.config.checkpoint_dir, use_global_key=True,
             )
         else:
             self.checkpoint_manager = None
@@ -201,7 +201,7 @@ class SubatomicHop:
                 # Check for timeout
                 if time.time() - self.start_time > self.config.max_execution_time:
                     raise StageExecutionError(
-                        f"Hop timeout after {self.config.max_execution_time}s"
+                        f"Hop timeout after {self.config.max_execution_time}s",
                     )
 
             self.state = HopState.COMPLETED
@@ -277,7 +277,7 @@ class SubatomicHop:
                     delay *= 2 ** (retry_count - 1)
 
                 logger.warning(
-                    f"Stage {stage} failed, retry {retry_count}/{max_retries} in {delay}s: {e}"
+                    f"Stage {stage} failed, retry {retry_count}/{max_retries} in {delay}s: {e}",
                 )
                 await asyncio.sleep(delay)
 
@@ -372,7 +372,7 @@ class SubatomicHop:
         return plan
 
     async def _apply_stage_injections(
-        self, stage: MicroStage, kwargs: dict[str, Any]
+        self, stage: MicroStage, kwargs: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply instructional injections appropriate for the stage.
 
@@ -454,7 +454,7 @@ class SubatomicHop:
 
                 # Find matching injections
                 matches = loader.find_matching_injections(
-                    hop_type=hop_type, stage=stage.value, context=injection_context, content=content
+                    hop_type=hop_type, stage=stage.value, context=injection_context, content=content,
                 )
 
                 if matches:
@@ -476,7 +476,7 @@ class SubatomicHop:
                         ]
 
                         logger.debug(
-                            f"Applied {len(matches)} instructional injections for stage {stage.value}"
+                            f"Applied {len(matches)} instructional injections for stage {stage.value}",
                         )
 
                         return enhanced_kwargs
@@ -489,7 +489,7 @@ class SubatomicHop:
                             "types": [m.injection.type for m in matches],
                         }
                         logger.warning(
-                            "Failed to parse enhanced kwargs, keeping original with injection metadata"
+                            "Failed to parse enhanced kwargs, keeping original with injection metadata",
                         )
 
             return kwargs
@@ -558,7 +558,7 @@ class SubatomicHop:
             logger.warning(
                 f"Signal quality too low: {signal_assessment.quality_level.value} "
                 f"(score: {signal_assessment.composite_score:.2f}) "
-                f"Flags: {', '.join(signal_assessment.flags)}"
+                f"Flags: {', '.join(signal_assessment.flags)}",
             )
 
             # Store assessment for potential mutation
@@ -601,7 +601,7 @@ class SubatomicHop:
             )
         except asyncio.TimeoutError:
             logger.warning(
-                f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment."
+                f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment.",
             )
             # Create a result based on signal assessment
             from .reflection_engine import CritiqueResult
@@ -640,7 +640,7 @@ class SubatomicHop:
                             "signal_quality": signal_assessment.quality_level.value,
                             "signal_score": signal_assessment.composite_score,
                         },
-                    )
+                    ),
                 )
 
                 return {"mutation_request": critique_result.mutation_request}
@@ -649,7 +649,7 @@ class SubatomicHop:
             if self.critique_loop_count >= self.config.max_critique_retries:
                 logger.error(f"Max critique retries exceeded for hop {self.config.hop_id}")
                 raise QualityGateFailure(
-                    f"Validation failed after {self.config.max_critique_retries} attempts"
+                    f"Validation failed after {self.config.max_critique_retries} attempts",
                 )
 
             return {"retry": True}
@@ -663,7 +663,7 @@ class SubatomicHop:
             f"Hop {self.config.hop_id} passed validation: "
             f"Signal={signal_assessment.quality_level.value} "
             f"(SNR={signal_assessment.signal_to_noise_ratio:.1f}:1, "
-            f"Accuracy={signal_assessment.factual_accuracy:.2f})"
+            f"Accuracy={signal_assessment.factual_accuracy:.2f})",
         )
 
         return {"validated_output": validated_output}
@@ -714,7 +714,7 @@ class SubatomicHop:
         # Log structured event
         if self.config.enable_observability:
             transition = StageTransition(
-                hop_id=self.config.hop_id, from_stage=from_stage, to_stage=stage
+                hop_id=self.config.hop_id, from_stage=from_stage, to_stage=stage,
             )
             self.stage_history.append(transition)
 
@@ -757,7 +757,7 @@ class SubatomicHop:
                 self.checkpoints[latest_checkpoint.stage] = latest_checkpoint
 
                 logger.info(
-                    f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}"
+                    f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}",
                 )
         except CheckpointIntegrityError as e:
             logger.error(f"Checkpoint integrity validation failed: {e}")
@@ -803,7 +803,7 @@ class SubatomicHop:
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
 
     async def request_upstream_change(
-        self, upstream_hop_id: str, change_request: str, reason: str, **kwargs
+        self, upstream_hop_id: str, change_request: str, reason: str, **kwargs,
     ):
         """Request a change from an upstream node.
 
@@ -834,7 +834,7 @@ class SubatomicHop:
         )
 
     async def send_negotiation_message(
-        self, to_hop_id: str, message_type: str, payload: str, **kwargs
+        self, to_hop_id: str, message_type: str, payload: str, **kwargs,
     ) -> bool:
         """Send a negotiation message to another hop.
 
@@ -887,7 +887,7 @@ class SubatomicHop:
                 "type": "RECEIVED",
                 "from": request.get("from_hop"),
                 "message": request.get("request"),
-            }
+            },
         )
 
         logger.info(f"Hop {self.config.hop_id} received negotiation request")
@@ -895,7 +895,7 @@ class SubatomicHop:
 
 # Factory function for creating subatomic hops
 def create_subatomic_hop(
-    hop_function: Callable, config: SubatomicHopConfig | None = None, **kwargs
+    hop_function: Callable, config: SubatomicHopConfig | None = None, **kwargs,
 ) -> SubatomicHop:
     """Create a SubatomicHop from a regular function.
 

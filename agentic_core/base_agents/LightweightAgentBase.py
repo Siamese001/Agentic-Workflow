@@ -37,12 +37,6 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.caching_mixin import caching_mixin
-from agentic_core.base_agents.context_management_mixin import context_management_mixin
-from agentic_core.base_agents.cost_guardrail_mixin import cost_guardrail_mixin
-from agentic_core.base_agents.metrics_mixin import metrics_mixin
-from agentic_core.base_agents.tracing_mixin import tracing_mixin
-
 Logger = logging.getLogger(__name__)
 
 
@@ -117,7 +111,7 @@ class LightweightAgentBase(
         if not getattr(self, "_lightweight_initialized", False):
             errors.append(
                 f"{self.__class__.__name__}: _lightweight_initialized is False. "
-                "Did you forget to call super().__post_init__()?"
+                "Did you forget to call super().__post_init__()?",
             )
 
         if errors:

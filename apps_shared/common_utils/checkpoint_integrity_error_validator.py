@@ -215,7 +215,7 @@ class SecureCheckpointManager:
         # Validate hop ID matches
         if "hop_id" in checkpoint_dict and checkpoint_dict["hop_id"] != self.hop_id:
             raise CheckpointIntegrityError(
-                f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}"
+                f"Checkpoint hop ID mismatch: {checkpoint_dict['hop_id']}",
             )
 
         return MicroCheckpoint(**checkpoint_dict)
@@ -265,7 +265,7 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
-        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True
+        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True,
     ) -> SecureCheckpointManager:
         """Get or create a checkpoint manager.
 
@@ -284,7 +284,7 @@ class CheckpointManagerFactory:
                     logger.info("Generated global checkpoint encryption key")
 
                 manager = SecureCheckpointManager(
-                    hop_id, checkpoint_dir, encryption_key=cls._global_key
+                    hop_id, checkpoint_dir, encryption_key=cls._global_key,
                 )
             else:
                 manager = SecureCheckpointManager(hop_id, checkpoint_dir)

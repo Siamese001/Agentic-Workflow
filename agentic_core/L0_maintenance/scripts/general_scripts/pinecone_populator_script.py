@@ -93,7 +93,7 @@ class PineconePopulator:
             try:
                 self.index.upsert_records(namespace=namespace, records=batch)
                 print(
-                    f"  📤 Upserted batch {i // BATCH_SIZE + 1}/{(total + BATCH_SIZE - 1) // BATCH_SIZE} to '{namespace}'"
+                    f"  📤 Upserted batch {i // BATCH_SIZE + 1}/{(total + BATCH_SIZE - 1) // BATCH_SIZE} to '{namespace}'",
                 )
             except Exception as e:
                 print(f"  ❌ Error upserting batch: {e}")
@@ -152,7 +152,7 @@ class PineconePopulator:
                     "has_tests": agent.get("has_tests", False),
                     "loc": agent.get("loc", 0),
                     "type": "agent_definition",
-                }
+                },
             )
 
         self.batch_upsert(records, "agents")
@@ -211,7 +211,7 @@ class PineconePopulator:
                             "path": str(file_path.relative_to(PROJECT_ROOT)),
                             "layer": "L0",
                             "type": "mixin_definition",
-                        }
+                        },
                     )
 
         self.batch_upsert(records, "mixins")
@@ -269,7 +269,7 @@ class PineconePopulator:
                     "length": len(content),
                     "category": category,
                     "type": "documentation",
-                }
+                },
             )
 
         self.batch_upsert(records, "architecture-docs")
@@ -331,7 +331,7 @@ class PineconePopulator:
                     "source": filename,
                     "path": str(file_path.relative_to(PROJECT_ROOT)),
                     "type": "healing_pattern",
-                }
+                },
             )
 
         self.batch_upsert(records, "healing-patterns")
@@ -423,7 +423,7 @@ class PineconePopulator:
                                     "layer": layer,
                                     "path": str(file_path.relative_to(PROJECT_ROOT)),
                                     "type": "api_contract",
-                                }
+                                },
                             )
 
         # Deduplicate by _id (keep first occurrence)
@@ -493,7 +493,7 @@ class PineconePopulator:
                     "definitions": json.dumps(definitions[:30]),
                     "path": str(file_path.relative_to(PROJECT_ROOT)),
                     "type": "ssot_blueprint",
-                }
+                },
             )
 
         self.batch_upsert(records, "config-blueprints")

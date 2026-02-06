@@ -256,7 +256,7 @@ def main():
                         "domain": domain,
                         "target": target,
                         "loc": result["loc"],
-                    }
+                    },
                 )
 
     print(f"  Found {len(candidates)} unique files to restore")

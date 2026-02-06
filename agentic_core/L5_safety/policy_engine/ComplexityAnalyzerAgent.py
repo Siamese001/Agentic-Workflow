@@ -112,7 +112,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
                 "max_cyclomatic_complexity": self._complexity_config.max_cyclomatic_complexity,
                 "max_function_length": self._complexity_config.max_function_length,
                 "max_arguments": self._complexity_config.max_arguments,
-            }
+            },
         )
 
     def analyze_repository(self, target_path: Path = None) -> dict[str, Any]:
@@ -175,7 +175,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
                             max_allowed=self._complexity_config.max_function_length,
                             type="LENGTH",
                             severity="WARNING",
-                        )
+                        ),
                     )
 
                 # 3. Argument Count
@@ -190,7 +190,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
                             max_allowed=self._complexity_config.max_arguments,
                             type="ARGUMENTS",
                             severity="INFO",
-                        )
+                        ),
                     )
 
         with self._lock:

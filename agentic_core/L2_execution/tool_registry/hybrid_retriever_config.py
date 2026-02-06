@@ -66,7 +66,7 @@ class ASTAwareTokenizer:
             "an",
             "of",
             "to",
-        }
+        },
     )
 
     # Configurable boost multipliers
@@ -98,21 +98,21 @@ class ASTAwareTokenizer:
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
                     tokens.extend(
-                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
+                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1),
                     )
                 elif isinstance(node, ast.ClassDef):
                     tokens.extend(
-                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1)
+                        cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1),
                     )
                 elif isinstance(node, ast.Name):
                     tokens.extend(
-                        cls.split_identifier(node.id) * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
+                        cls.split_identifier(node.id) * (cls.BOOST_IDENTIFIER if boost_symbols else 1),
                     )
                 elif isinstance(node, ast.arg):
                     tokens.extend(cls.split_identifier(node.arg) * (cls.BOOST_ARG if boost_symbols else 1))
                 elif isinstance(node, ast.Attribute):
                     tokens.extend(
-                        cls.split_identifier(node.attr) * (cls.BOOST_IDENTIFIER if boost_symbols else 1)
+                        cls.split_identifier(node.attr) * (cls.BOOST_IDENTIFIER if boost_symbols else 1),
                     )
                 elif isinstance(node, ast.Constant) and isinstance(node.value, str):
                     # Docstrings and string literals
@@ -249,7 +249,7 @@ class HybridRetriever:
                         score=float(doc_scores[idx]),
                         source="local_bm25",
                         metadata=chunk.get("metadata", {}),
-                    )
+                    ),
                 )
         return results
 
@@ -264,7 +264,7 @@ class HybridRetriever:
         return unique
 
     def reciprocal_rank_fusion(
-        self, dense: list[RetrievalResult], sparse: list[RetrievalResult], k: int = 60
+        self, dense: list[RetrievalResult], sparse: list[RetrievalResult], k: int = 60,
     ) -> list[RetrievalResult]:
         """
         Fused rankings using optimized RRF (O(N) performance)

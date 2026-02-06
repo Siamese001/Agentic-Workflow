@@ -48,7 +48,7 @@ class EnvironmentConfig(BaseModel):
     # GitHub & MCP Configuration
     GITHUB_TOKEN: str | None = Field(default=None, description="GitHub personal access token")
     DATABASE_URL: str | None = Field(
-        default=None, description="PostgreSQL database URL for MCP server"
+        default=None, description="PostgreSQL database URL for MCP server",
     )
     FIGMA_TOKEN: str | None = Field(default=None, description="Figma API token")
 
@@ -231,7 +231,7 @@ class EnvironmentValidator:
 
             logger = logging.getLogger(__name__)
             logger.warning(
-                "Optional environment variables not set: %s", ", ".join(result.missing_optional)
+                "Optional environment variables not set: %s", ", ".join(result.missing_optional),
             )
 
 

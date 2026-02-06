@@ -17,7 +17,6 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
@@ -179,7 +178,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                         "param_types": [
                                             str(p.annotation) for p in params if p.annotation != p.empty
                                         ],
-                                    }
+                                    },
                                 )
                         except ValueError:
                             continue
@@ -250,7 +249,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 assert result is not None
 
                 {chr(10).join(common_templates + invariant_hints)}
-        """
+        """,
         )
         return test_path, "\n".join(imports) + "\n\n" + header + "\n" + decorator + "\n" + body
 
@@ -280,7 +279,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                     "module": module_name,
                                     "class": name,
                                     "methods": methods,
-                                }
+                                },
                             )
             except Exception:
                 continue
@@ -305,7 +304,7 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         rules = []
         for method in candidate["methods"][:5]:
             rules.append(
-                f"    @rule()\n    def call_{method}(self):\n        # TODO: Add strategies to arguments\n        result = self.model.{method}()\n        assert result is not None\n"
+                f"    @rule()\n    def call_{method}(self):\n        # TODO: Add strategies to arguments\n        result = self.model.{method}()\n        assert result is not None\n",
             )
 
         inv = "    @invariant()\n    def check_integrity(self):\n        # TODO: Define state invariants\n        assert True\n"
@@ -432,11 +431,11 @@ class TestCoverageGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "property_tests": prop_gen,
                 "property_candidates": total_candidates,
                 "stateful_tests": state_gen,
-            }
+            },
         )
 
         print(
-            f"   [METRICS] Line: {line_cov:.1f}% | Branch: {branch_cov if isinstance(branch_cov, int | float) else 'N/A'} | Mutation: {mut_score:.1f}% | New Stateful: {state_gen}"
+            f"   [METRICS] Line: {line_cov:.1f}% | Branch: {branch_cov if isinstance(branch_cov, int | float) else 'N/A'} | Mutation: {mut_score:.1f}% | New Stateful: {state_gen}",
         )
 
         return {
@@ -596,7 +595,7 @@ class Test{py_file.stem.title().replace("_", "")}:
                             errors += 1
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} gaps, {violations_fixed} stubs generated"
+                f"[{agent_name}] Complete: {violations_found} gaps, {violations_fixed} stubs generated",
             )
 
             return {

@@ -76,7 +76,7 @@ class ContrastiveSemanticCache:
 
         logger.info(
             f"Initialized ContrastiveSemanticCache: model={model_name}, "
-            f"threshold={similarity_threshold}, max_entries={max_entries}"
+            f"threshold={similarity_threshold}, max_entries={max_entries}",
         )
 
     @property
@@ -91,7 +91,7 @@ class ContrastiveSemanticCache:
             return True
         except ImportError:
             logger.warning(
-                "sentence_transformers or numpy not available, cache will be in fallback mode"
+                "sentence_transformers or numpy not available, cache will be in fallback mode",
             )
             return False
 
@@ -193,7 +193,7 @@ class ContrastiveSemanticCache:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
             cache_norm = self._embedding_matrix / np.linalg.norm(
-                self._embedding_matrix, axis=1, keepdims=True
+                self._embedding_matrix, axis=1, keepdims=True,
             )
 
             # Calculate cosine similarity

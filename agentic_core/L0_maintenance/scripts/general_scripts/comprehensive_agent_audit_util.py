@@ -57,7 +57,7 @@ def analyze_agents():
             # Skip empty files
             if size < 50:
                 agents_analysis.append(
-                    {"path": path_str, "name": name, "size": size, "status": "EMPTY", "detects": []}
+                    {"path": path_str, "name": name, "size": size, "status": "EMPTY", "detects": []},
                 )
                 continue
 
@@ -87,7 +87,7 @@ def analyze_agents():
                     "status": "ACTIVE" if has_validate else "PASSIVE",
                     "detects": detects,
                     "has_heal": has_heal,
-                }
+                },
             )
         except Exception:
             pass

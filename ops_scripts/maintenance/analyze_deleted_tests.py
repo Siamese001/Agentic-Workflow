@@ -222,7 +222,7 @@ def main():
             matches = fuzzy_match_module(module)
             if matches:
                 analysis["fuzzy_matches"].append(
-                    {"broken_module": module, "possible_matches": matches}
+                    {"broken_module": module, "possible_matches": matches},
                 )
 
         category = categorize_deletion(file_path, analysis)
@@ -272,7 +272,7 @@ def main():
             print("      Possible renamed modules:")
             for match in entry["analysis"]["fuzzy_matches"][:2]:
                 print(
-                    f"        - {match['broken_module']} -> {match['possible_matches'][0][0]} ({match['possible_matches'][0][1]:.0%})"
+                    f"        - {match['broken_module']} -> {match['possible_matches'][0][0]} ({match['possible_matches'][0][1]:.0%})",
                 )
     if len(needs_review) > 30:
         print(f"  ... and {len(needs_review) - 30} more")
