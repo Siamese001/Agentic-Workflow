@@ -364,7 +364,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                 SOVEREIGN_REGISTRY,
             )
         except ImportError:
-            from agentic_core.config.core.registry import SOVEREIGN_REGISTRY
+            from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 
             ROOT_PROTECTED_FILES = frozenset()
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES

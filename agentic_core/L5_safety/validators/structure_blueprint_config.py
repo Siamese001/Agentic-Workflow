@@ -210,7 +210,12 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "core": {"purpose": "Core configuration files, settings, constants, and registries."},
                 },
                 "allowed_extensions": [".py", ".json"],
-                "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags)\.py$",
+                "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags|loader)\.py$",
+                "forbidden_patterns": [
+                    r"^constants\.py$",  # Must be constants_config.py
+                    r"^registry\.py$",  # Must be registry_config.py
+                    r"^json_loader\.py$",  # Must be config_loader.py (domain-aligned)
+                ],
             },
             # DISSOLVED: "schemas" removed — contents deported to runtime/types, L4/contracts, L6/engine+types
             "prompt_governance": {
