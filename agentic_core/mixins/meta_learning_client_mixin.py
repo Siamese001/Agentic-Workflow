@@ -73,7 +73,7 @@ class MetaLearningClientMixin:
         """Ensure HealingMemoryEmbedder is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_embedder is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
+                from agentic_core.L1_cognition.meta_learning.engine.memory_embedder import (
                     get_healing_memory_embedder,
                 )
 

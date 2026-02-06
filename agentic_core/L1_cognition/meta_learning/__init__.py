@@ -5,18 +5,18 @@ Provides Meta-Learning capabilities for the Sovereign Architecture:
 - MetaLearningClient: Unified Redis/Pinecone wrapper for healing pattern memory
 - HealingMemoryEmbedder: Convert violation signatures to embeddings
 - CacheStrategyManager: TTL and similarity threshold guardrails
-- DomainContextManager: Handle apps_* domain-specific contexts
+- DomainContextManager: Handle domain-specific contexts
 
-[PHASE 1] Core Infrastructure Implementation
+V10 Standard: Files organized into engine/, validators/, types/, config/ subfolders.
 """
 
-from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+from agentic_core.L1_cognition.meta_learning.engine.cache_manager import (
     CacheStrategyManager,
 )
-from agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types import (
+from agentic_core.L1_cognition.meta_learning.engine.memory_embedder import (
     HealingMemoryEmbedder,
 )
-from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+from agentic_core.L1_cognition.meta_learning.engine.meta_client import (
     MetaLearningClient,
     get_meta_learning_client,
 )
