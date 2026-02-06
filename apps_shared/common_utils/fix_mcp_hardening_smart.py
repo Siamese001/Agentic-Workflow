@@ -6,6 +6,7 @@ Smart MCP hardening fix - handles edge cases like stub files, multiple classes, 
 import ast
 import json
 import re
+from pathlib import Path
 
 # Load agent discovery data
 data = json.load(open("agent_discovery_full.json"))
@@ -52,9 +53,7 @@ def add_mcp_import(content: str) -> str:
     if "MCPHardenedMixin" in content:
         return content
 
-    import_line = (
-        "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n"
-    )
+    import_line = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n"
 
     lines = content.split("\n")
     insert_idx = 0

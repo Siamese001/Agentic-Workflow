@@ -481,9 +481,7 @@ class TestOrphanAgentDetection:
         print("\n  Disposition Summary:")
         disposition_counts: dict[Disposition, int] = {}
         for orphan in self.detector.orphans:
-            disposition_counts[orphan.disposition] = (
-                disposition_counts.get(orphan.disposition, 0) + 1
-            )
+            disposition_counts[orphan.disposition] = disposition_counts.get(orphan.disposition, 0) + 1
 
         for disp, count in sorted(disposition_counts.items(), key=lambda x: -x[1]):
             print(f"    {disp.value}: {count} agents")

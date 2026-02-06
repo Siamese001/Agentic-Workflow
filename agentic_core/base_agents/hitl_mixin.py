@@ -542,7 +542,9 @@ class HITLMixin:
             return [req.to_dict() for req in self._pending_approvals.values()]
 
     def get_approval_history(
-        self, limit: int = 100, operation_name: str | None = None,
+        self,
+        limit: int = 100,
+        operation_name: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         Get approval history.
@@ -564,7 +566,9 @@ class HITLMixin:
             return [r.to_dict() for r in reversed(history[-limit:])]
 
     def register_approval_callback(
-        self, operation_name: str, callback: Callable[[ApprovalRequest], None],
+        self,
+        operation_name: str,
+        callback: Callable[[ApprovalRequest], None],
     ) -> None:
         """
         Register a callback for when an operation is approved.

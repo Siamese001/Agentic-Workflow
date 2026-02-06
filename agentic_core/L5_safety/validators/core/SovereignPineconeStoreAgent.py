@@ -76,7 +76,10 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
         Logger.info(f"[L4 ADAPTER] Routing legacy search to MCP: {query}")
         await self._ensure_initialized()
         result: Any = await self.McpClient.search(
-            query_text=query, top_k=k, namespace=self.namespace, rerank=kwargs.get("rerank", True),
+            query_text=query,
+            top_k=k,
+            namespace=self.namespace,
+            rerank=kwargs.get("rerank", True),
         )
         matches: Any = result.get("matches", []) if isinstance(result, dict) else []
         return matches
@@ -108,7 +111,10 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             _call_path.discard(agent_name)
 
     async def add_texts(
-        self, texts: list[str], metadatas: list[dict] | None = None, ids: list[str] | None = None,
+        self,
+        texts: list[str],
+        metadatas: list[dict] | None = None,
+        ids: list[str] | None = None,
     ) -> list[str]:
         """Legacy adapter for adding documents."""
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

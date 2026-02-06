@@ -5,6 +5,8 @@ Provides semantic similarity-based caching for query results.
 
 import hashlib
 from datetime import datetime, timedelta
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -42,7 +44,10 @@ class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
     def __init__(
-        self, max_size: int = 1000, ttl_seconds: int = 3600, similarity_threshold: float = 0.8,
+        self,
+        max_size: int = 1000,
+        ttl_seconds: int = 3600,
+        similarity_threshold: float = 0.8,
     ):
         """Initialize enhanced semantic cache.
 
@@ -60,7 +65,10 @@ class EnhancedSemanticCache:
         self.embedding_cache: dict[str, list[float]] = {}
 
     def get(
-        self, query: str, query_embedding: list[float] | None = None, top_k: int = 5,
+        self,
+        query: str,
+        query_embedding: list[float] | None = None,
+        top_k: int = 5,
     ) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
@@ -202,7 +210,11 @@ class EnhancedSemanticCache:
         return dot_product / (norm1 * norm2)
 
     def generate_fingerprint(
-        self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None,
+        self,
+        prompt: str,
+        model: str,
+        temperature: float = 0.7,
+        system_prompt: str | None = None,
     ) -> str:
         """Generate fingerprint for cache lookup.
 

@@ -148,9 +148,7 @@ def test_sovereign_root_whitelist():
     Verify that SovereignBaseAgent is explicitly whitelisted.
     """
     # Mock the compliance check to test the logic
-    with patch(
-        "agentic_core.L0_maintenance.scripts.compliance_gate.check_compliance"
-    ) as mock_check:
+    with patch("agentic_core.L0_maintenance.scripts.compliance_gate.check_compliance") as mock_check:
         mock_check.return_value = []
 
         # This would normally be called with discovered agents
@@ -166,20 +164,14 @@ def test_sovereign_root_whitelist():
 def test_boot_sequence_integrity_failure():
     """Test that boot sequence fails appropriately when integrity check fails."""
     # Mock the ManifestGuardian to simulate integrity failure
-    with patch(
-        "agentic_core.L0_maintenance.security.ManifestGuardian.verify_integrity", return_value=False
-    ):
+    with patch("agentic_core.L0_maintenance.security.ManifestGuardian.verify_integrity", return_value=False):
         with patch(
             "agentic_core.L0_maintenance.boot.boot_sequence.ManifestGuardian.verify_integrity",
             return_value=False,
         ):
             # Mock the boot sequence to avoid import issues
-            with patch(
-                "agentic_core.L0_maintenance.boot.boot_sequence.check_compliance", return_value=[]
-            ):
-                with patch(
-                    "agentic_core.L0_maintenance.boot.boot_sequence.AgentRegistry"
-                ) as mock_registry:
+            with patch("agentic_core.L0_maintenance.boot.boot_sequence.check_compliance", return_value=[]):
+                with patch("agentic_core.L0_maintenance.boot.boot_sequence.AgentRegistry") as mock_registry:
                     mock_instance = Mock()
                     mock_instance.discover_all.return_value = []
                     mock_registry.return_value = mock_instance
@@ -198,19 +190,13 @@ def test_boot_sequence_integrity_failure():
 def test_boot_sequence_successful_boot():
     """Test that boot sequence succeeds when all checks pass."""
     # Mock all checks to pass
-    with patch(
-        "agentic_core.L0_maintenance.security.ManifestGuardian.verify_integrity", return_value=True
-    ):
+    with patch("agentic_core.L0_maintenance.security.ManifestGuardian.verify_integrity", return_value=True):
         with patch(
             "agentic_core.L0_maintenance.boot.boot_sequence.ManifestGuardian.verify_integrity",
             return_value=True,
         ):
-            with patch(
-                "agentic_core.L0_maintenance.boot.boot_sequence.check_compliance", return_value=[]
-            ):
-                with patch(
-                    "agentic_core.L0_maintenance.boot.boot_sequence.AgentRegistry"
-                ) as mock_registry:
+            with patch("agentic_core.L0_maintenance.boot.boot_sequence.check_compliance", return_value=[]):
+                with patch("agentic_core.L0_maintenance.boot.boot_sequence.AgentRegistry") as mock_registry:
                     mock_instance = Mock()
                     mock_instance.discover_all.return_value = []
                     mock_registry.return_value = mock_instance

@@ -85,9 +85,7 @@ class TestExecutionFlow:
         if js_file.exists():
             content = js_file.read_text(encoding="utf-8")
             # Check for any execution flow related class
-            assert "Execution" in content or "Timeline" in content, (
-                "Execution flow classes not found"
-            )
+            assert "Execution" in content or "Timeline" in content, "Execution flow classes not found"
 
 
 @pytest.mark.dashboard

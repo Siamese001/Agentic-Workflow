@@ -10,6 +10,7 @@ Measures:
 
 import asyncio
 import sys
+from typing import Any
 
 sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
@@ -55,7 +56,8 @@ class L1HealthBenchmark:
             print(f"[{i}/{len(missions)}] {mission['name']:<40}", end=" ", flush=True)
 
             result = await self.node.process_async(
-                {"user_query": mission["query"]}, mission.get("context", {}),
+                {"user_query": mission["query"]},
+                mission.get("context", {}),
             )
 
             self.results.append(
@@ -137,13 +139,14 @@ class L1HealthBenchmark:
         meta_stats = self.node.meta_learner.get_statistics() if self.node.meta_learner else {}
 
         # Memory metrics
-        semantic_stats = (
-            self.node.semantic_memory.get_statistics() if self.node.semantic_memory else {}
-        )
+        semantic_stats = self.node.semantic_memory.get_statistics() if self.node.semantic_memory else {}
 
         # Calculate health score
         health_score = self._calculate_health_score(
-            avg_latency, avg_confidence, avg_plan_score, meta_stats,
+            avg_latency,
+            avg_confidence,
+            avg_plan_score,
+            meta_stats,
         )
 
         return {
@@ -194,12 +197,7 @@ class L1HealthBenchmark:
         learning_score = min(100, (experiences / 10) * 100)  # 10+ experiences = 100
 
         # Weighted average
-        health = (
-            speed_score * 0.30
-            + quality_score * 0.30
-            + planning_score * 0.20
-            + learning_score * 0.20
-        )
+        health = speed_score * 0.30 + quality_score * 0.30 + planning_score * 0.20 + learning_score * 0.20
 
         return min(100, max(0, health))
 

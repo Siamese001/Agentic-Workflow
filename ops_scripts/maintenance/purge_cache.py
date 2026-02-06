@@ -170,7 +170,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hardened Cache Purge Utility")
     parser.add_argument("--quiet", action="store_true", help="Suppress output (ideal for hooks)")
     parser.add_argument(
-        "--all", action="store_true", help="Purge pytest, mypy, and ruff caches as well",
+        "--all",
+        action="store_true",
+        help="Purge pytest, mypy, and ruff caches as well",
     )
     args = parser.parse_args()
 

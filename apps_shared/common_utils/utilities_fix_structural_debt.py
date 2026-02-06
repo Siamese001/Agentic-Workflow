@@ -7,6 +7,7 @@ import ast
 import os
 import shutil
 from datetime import datetime
+from typing import Any
 
 excluded_dirs: Any = {
     ".git",
@@ -57,8 +58,7 @@ def fix_globals(tree: Any, source_lines: Any) -> Any:
                         if 0 <= line_idx < len(lines):
                             if "# GLOBAL:" not in lines[line_idx]:
                                 lines[line_idx] = (
-                                    lines[line_idx]
-                                    + "  # GLOBAL: Review if this should be constant"
+                                    lines[line_idx] + "  # GLOBAL: Review if this should be constant"
                                 )
                                 fixed: Any = True
     return (fixed, lines)

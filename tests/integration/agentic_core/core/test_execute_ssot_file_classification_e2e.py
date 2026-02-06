@@ -103,8 +103,7 @@ class TestE2EPhase2ConfidenceCalculation:
         phase2_section = content[phase2_pos : phase2_pos + 1000]
 
         assert (
-            'state_mgr.state.get(\n                            "classification_violations"'
-            in phase2_section
+            'state_mgr.state.get(\n                            "classification_violations"' in phase2_section
         )
 
     def test_confidence_calc_combines_violations(self):

@@ -63,7 +63,10 @@ if response == "y":
     for old_path, new_path in renames:
         try:
             result = subprocess.run(
-                ["git", "mv", old_path, new_path], capture_output=True, text=True, check=True,
+                ["git", "mv", old_path, new_path],
+                capture_output=True,
+                text=True,
+                check=True,
             )
             print(f"✓ Renamed: {Path(old_path).name} -> {Path(new_path).name}")
         except subprocess.CalledProcessError as e:

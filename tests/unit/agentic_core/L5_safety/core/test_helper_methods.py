@@ -335,9 +335,9 @@ class TestMethodSignatures:
         params = list(sig.parameters.keys())
 
         assert params == ["self", "root"], f"Expected ['self', 'root'], got {params}"
-        assert (
-            sig.parameters["root"].annotation == Path
-        ), f"Expected Path annotation for root, got {sig.parameters['root'].annotation}"
+        assert sig.parameters["root"].annotation == Path, (
+            f"Expected Path annotation for root, got {sig.parameters['root'].annotation}"
+        )
 
     def test_update_file_header_signature(self):
         """Test update_file_header method signature."""
@@ -352,9 +352,9 @@ class TestMethodSignatures:
         params = list(sig.parameters.keys())
 
         assert params == ["self", "path", "old_name", "new_name"]
-        assert (
-            sig.parameters["path"].annotation == Path
-        ), f"Expected Path annotation for path, got {sig.parameters['path'].annotation}"
+        assert sig.parameters["path"].annotation == Path, (
+            f"Expected Path annotation for path, got {sig.parameters['path'].annotation}"
+        )
 
     def test_sync_companion_test_signature(self):
         """Test sync_companion_test method signature."""
@@ -369,9 +369,9 @@ class TestMethodSignatures:
         params = list(sig.parameters.keys())
 
         assert params == ["self", "src_path", "new_name"]
-        assert (
-            sig.parameters["src_path"].annotation == Path
-        ), f"Expected Path annotation for src_path, got {sig.parameters['src_path'].annotation}"
+        assert sig.parameters["src_path"].annotation == Path, (
+            f"Expected Path annotation for src_path, got {sig.parameters['src_path'].annotation}"
+        )
 
     def test_refactor_non_python_assets_signature(self):
         """Test refactor_non_python_assets method signature."""
@@ -400,9 +400,7 @@ class TestMethodSignatures:
         params = list(sig.parameters.keys())
 
         assert params == ["self", "name"]
-        assert (
-            sig.parameters["name"].annotation == str
-        ), f"Expected str annotation for name, got {sig.parameters['name'].annotation}"
-        assert (
-            sig.return_annotation == str
-        ), f"Expected str return annotation, got {sig.return_annotation}"
+        assert sig.parameters["name"].annotation == str, (
+            f"Expected str annotation for name, got {sig.parameters['name'].annotation}"
+        )
+        assert sig.return_annotation == str, f"Expected str return annotation, got {sig.return_annotation}"

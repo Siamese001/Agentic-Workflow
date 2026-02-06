@@ -203,7 +203,9 @@ class SubatomicHopAgent(SovereignBaseAgent):
         await self._check_past_failures(context.get("Task", ""))
         try:
             Verdict = await self.SupremeCourt.deliberate(
-                CONTEXT=str(context), GOAL=context.get("Task", ""), risk_level=risk_level,
+                CONTEXT=str(context),
+                GOAL=context.get("Task", ""),
+                risk_level=risk_level,
             )
             plan = AgentPlan(
                 reasoning=Verdict.reasoning,

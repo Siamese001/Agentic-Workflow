@@ -61,9 +61,7 @@ def _load_structure_blueprint() -> dict[str, Any]:
     This uses importlib to load the module at runtime, ensuring we always
     get the latest version of the blueprint.
     """
-    blueprint_path = (
-        PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
-    )
+    blueprint_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
 
     if not blueprint_path.exists():
         raise FileNotFoundError(f"structure_blueprint.py not found at {blueprint_path}")
@@ -213,9 +211,7 @@ class TestSSOTAlignment:
                         if not subfolder_path.exists():
                             # Check if it's a required subfolder
                             subfolder_def = subfolders[subfolder_name]
-                            if isinstance(subfolder_def, dict) and subfolder_def.get(
-                                "required_dirs"
-                            ):
+                            if isinstance(subfolder_def, dict) and subfolder_def.get("required_dirs"):
                                 missing_paths.append(f"{territory_name}/{subfolder_name}")
                             else:
                                 print(
@@ -240,15 +236,11 @@ class TestSSOTAlignment:
 
         if missing_paths:
             if len(missing_paths) <= KNOWN_MISSING_PATHS:
-                print(
-                    f"\n[TECH DEBT] {len(missing_paths)} missing blueprint paths (tracked, not blocking):"
-                )
+                print(f"\n[TECH DEBT] {len(missing_paths)} missing blueprint paths (tracked, not blocking):")
                 for path in missing_paths[:10]:
                     print(f"  - {path}")
             else:
-                error_msg = (
-                    f"BLUEPRINT REALITY CHECK FAILED ({len(missing_paths)} missing paths):\n"
-                )
+                error_msg = f"BLUEPRINT REALITY CHECK FAILED ({len(missing_paths)} missing paths):\n"
                 for path in missing_paths[:15]:
                     error_msg += f"  [X] {path}\n"
                 raise AssertionError(error_msg)
@@ -298,9 +290,7 @@ class TestSSOTAlignment:
                         continue
 
                     # Find all class definitions
-                    classes = [
-                        node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
-                    ]
+                    classes = [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 
                     # Check for Agent naming convention
                     agent_classes = [c for c in classes if c.endswith("Agent")]
@@ -353,9 +343,7 @@ class TestSSOTAlignment:
 
         if naming_violations:
             if len(naming_violations) <= KNOWN_NAMING_VIOLATIONS:
-                print(
-                    f"\n[TECH DEBT] {len(naming_violations)} naming violations (tracked, not blocking):"
-                )
+                print(f"\n[TECH DEBT] {len(naming_violations)} naming violations (tracked, not blocking):")
                 for v in naming_violations[:10]:
                     print(f"  - {v['file']}: {v['issue']}")
                 if len(naming_violations) > 10:
@@ -448,7 +436,9 @@ class TestSSOTAlignment:
                 for d in orphan_dirs:
                     print(f"  - {d}/")
             else:
-                error_msg = f"ORPHAN DIRECTORIES EXCEED THRESHOLD ({len(orphan_dirs)} > {KNOWN_ORPHAN_DIRS}):\n"
+                error_msg = (
+                    f"ORPHAN DIRECTORIES EXCEED THRESHOLD ({len(orphan_dirs)} > {KNOWN_ORPHAN_DIRS}):\n"
+                )
                 for d in orphan_dirs[:10]:
                     error_msg += f"  [X] {d}/\n"
                 raise AssertionError(error_msg)
@@ -461,9 +451,7 @@ class TestSSOTAlignment:
                 if len(orphan_files) > 10:
                     print(f"  ... and {len(orphan_files) - 10} more")
             else:
-                error_msg = (
-                    f"ORPHAN FILES EXCEED THRESHOLD ({len(orphan_files)} > {KNOWN_ORPHAN_FILES}):\n"
-                )
+                error_msg = f"ORPHAN FILES EXCEED THRESHOLD ({len(orphan_files)} > {KNOWN_ORPHAN_FILES}):\n"
                 for f in orphan_files[:15]:
                     error_msg += f"  [X] {f}\n"
                 raise AssertionError(error_msg)
@@ -536,9 +524,7 @@ class TestSSOTAlignment:
 
         if depth_violations:
             if len(depth_violations) <= KNOWN_DEPTH_VIOLATIONS:
-                print(
-                    f"\n[TECH DEBT] {len(depth_violations)} depth violations (tracked, not blocking):"
-                )
+                print(f"\n[TECH DEBT] {len(depth_violations)} depth violations (tracked, not blocking):")
                 for v in depth_violations[:10]:
                     print(f"  - {v['file']} (depth: {v['depth']})")
                 if len(depth_violations) > 10:
@@ -595,9 +581,8 @@ class TestSSOTAlignment:
                 print(f"  - {layer}")
 
         # Layers are critical - fail if any are missing
-        assert not missing_layers, (
-            f"MISSING LAYER DIRECTORIES ({len(missing_layers)}):\n"
-            + "\n".join(f"  [X] agentic_core/{layer}" for layer in missing_layers)
+        assert not missing_layers, f"MISSING LAYER DIRECTORIES ({len(missing_layers)}):\n" + "\n".join(
+            f"  [X] agentic_core/{layer}" for layer in missing_layers
         )
 
         print("\n[OK] Layer directory structure verified")
@@ -631,9 +616,7 @@ class TestSSOTAlignment:
                 violations.append(str(rel_path))
 
         # Report results
-        base_agent_count = (
-            len(list(canonical_dir.glob("*BaseAgent.py"))) if canonical_dir.exists() else 0
-        )
+        base_agent_count = len(list(canonical_dir.glob("*BaseAgent.py"))) if canonical_dir.exists() else 0
 
         print(f"\n  Base agents in canonical location: {base_agent_count}")
         print(f"  Constitutional violations: {len(violations)}")

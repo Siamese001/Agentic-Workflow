@@ -193,7 +193,11 @@ class ValidationOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         return "\n".join(parts)
 
     def _record_success(
-        self, file_path: str, violation_key: int, violation_desc: str, fixed_code: str,
+        self,
+        file_path: str,
+        violation_key: int,
+        violation_desc: str,
+        fixed_code: str,
     ) -> None:
         """Record a successful healing attempt."""
         self.ctx.record_healing_attempt(file_path, success=True)
@@ -202,7 +206,9 @@ class ValidationOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             self.ctx.healing_history[file_path] = []
         self.ctx.healing_history[file_path].append(f"Key{violation_key}")
         self.ctx.services.store_healing_pattern(
-            Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0,
+            Violation=violation_desc,
+            fix=fixed_code[:500],
+            success_rate=1.0,
         )
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:

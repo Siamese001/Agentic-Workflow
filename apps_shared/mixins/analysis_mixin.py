@@ -73,7 +73,9 @@ class AnalysisMixin:
         return results
 
     def calculate_trends(
-        self, time_series: list[tuple[Any, float]], window_size: int = 5,
+        self,
+        time_series: list[tuple[Any, float]],
+        window_size: int = 5,
     ) -> dict[str, Any]:
         """
         Calculate trends from time series data.
@@ -122,7 +124,10 @@ class AnalysisMixin:
         }
 
     def compare_datasets(
-        self, dataset_a: list[Any], dataset_b: list[Any], comparison_key: str | None = None,
+        self,
+        dataset_a: list[Any],
+        dataset_b: list[Any],
+        comparison_key: str | None = None,
     ) -> dict[str, Any]:
         """
         Compare two datasets and identify differences.
@@ -164,7 +169,9 @@ class AnalysisMixin:
         return results
 
     def generate_insights(
-        self, analysis_data: dict[str, Any], thresholds: dict[str, float] | None = None,
+        self,
+        analysis_data: dict[str, Any],
+        thresholds: dict[str, float] | None = None,
     ) -> list[str]:
         """
         Generate insights from analysis data.
@@ -199,7 +206,9 @@ class AnalysisMixin:
         return insights
 
     def calculate_score(
-        self, metrics: dict[str, float], weights: dict[str, float] | None = None,
+        self,
+        metrics: dict[str, float],
+        weights: dict[str, float] | None = None,
     ) -> float:
         """
         Calculate weighted score from metrics.

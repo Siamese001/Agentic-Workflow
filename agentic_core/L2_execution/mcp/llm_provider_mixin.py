@@ -37,7 +37,11 @@ class LLMProviderMixin:
         return self._llm_gateway
 
     async def llm_generate(
-        self, prompt: str, model: str | None = None, provider: Provider = "openai", **kwargs: Any,
+        self,
+        prompt: str,
+        model: str | None = None,
+        provider: Provider = "openai",
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Generate LLM response through gateway."""
         return await self.llm_gateway.generate(prompt, model=model, provider=provider, **kwargs)
@@ -51,5 +55,8 @@ class LLMProviderMixin:
     ) -> dict[str, Any]:
         """Generate with automatic provider fallback."""
         return await self.llm_gateway.generate(
-            prompt, model=model, fallback_providers=fallback_providers, **kwargs,
+            prompt,
+            model=model,
+            fallback_providers=fallback_providers,
+            **kwargs,
         )

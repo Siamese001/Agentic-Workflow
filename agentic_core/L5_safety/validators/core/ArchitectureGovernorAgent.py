@@ -1222,7 +1222,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return violations
 
     def _persist_audit_report(
-        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]],
+        self,
+        structural_results: dict[str, Any],
+        drift_violations: list[dict[str, Any]],
     ) -> None:
         """[PHASE 8] Saves immutable audit record."""
         self.audit_log_dir.mkdir(parents=True, exist_ok=True)

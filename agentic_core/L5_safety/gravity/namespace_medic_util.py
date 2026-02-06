@@ -117,7 +117,9 @@ def main() -> Any:
     )
     parser.add_argument("--target", default=AGENTIC_CORE_DIR, help="Target directory to scan")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without modifying files",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fixed without modifying files",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     args: Any = parser.parse_args()

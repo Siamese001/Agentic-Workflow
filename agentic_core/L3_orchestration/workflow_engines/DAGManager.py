@@ -1,4 +1,6 @@
 from __future__ import annotations
+from datetime import datetime
+from typing import Any, Callable, Optional
 
 """
 DAGManager - Extracted for one-class-per-file pattern.
@@ -15,10 +17,15 @@ Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 
 
 from agentic_core.base_agents.decorators import standard_heal
+import networkx as nx
 
 
 class DAGManager(
-    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin,
+    HealerMixin,
+    MCPHardenedMixin,
+    L3SubatomicTestingMixin,
+    RedisCacheMixin,
+    PineconeVectorMixin,
 ):
     """Manages the dynamic DAG with mutation capabilities.
 

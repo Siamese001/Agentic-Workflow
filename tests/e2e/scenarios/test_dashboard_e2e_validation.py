@@ -58,9 +58,7 @@ def test_dashboard_strategic_recommendations_present():
     html = dashboard_path.read_text(encoding="utf-8")
 
     # Check that placeholders are replaced
-    assert "<!-- STRATEGIC_REVIEW_INSERT -->" not in html, (
-        "Strategic review placeholder not replaced"
-    )
+    assert "<!-- STRATEGIC_REVIEW_INSERT -->" not in html, "Strategic review placeholder not replaced"
     assert "<!-- TOP_RECS_INSERT -->" not in html, "Top recommendations placeholder not replaced"
 
     # Check that recommendations section exists
@@ -76,9 +74,7 @@ def test_dashboard_territory_table_rendered():
     html = dashboard_path.read_text(encoding="utf-8")
 
     # Check for territory table function
-    assert "function renderTerritorySummaryTable" in html, (
-        "Territory table render function not found"
-    )
+    assert "function renderTerritorySummaryTable" in html, "Territory table render function not found"
 
     # Check for kpiGrid container
     assert 'id="kpiGrid"' in html, "Territory table container not found"

@@ -7,6 +7,9 @@ import json
 import logging
 import sys
 from datetime import datetime
+from typing import Any
+from pathlib import Path
+from apps_shared.common_utils.ConfigurationService import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -40,9 +43,7 @@ def save_false_positives(fp_data: Any) -> Any:
 def show_pending_reviews() -> Any:
     """Show unreviewed violations."""
     ConfigurationService().log = load_review_log()
-    ConfigurationService().pending = [
-        entry for entry in ConfigurationService().log if not entry["reviewed"]
-    ]
+    ConfigurationService().pending = [entry for entry in ConfigurationService().log if not entry["reviewed"]]
     if not ConfigurationService().pending:
         ConfigurationService().Logger.info("✅ No pending reviews!")
         return
@@ -111,9 +112,7 @@ def show_stats() -> Any:
     false_positives_count: Any = sum(
         1 for e in ConfigurationService().log if e.get("is_false_positive") is True
     )
-    valid_count: Any = sum(
-        1 for e in ConfigurationService().log if e.get("is_false_positive") is False
-    )
+    valid_count: Any = sum(1 for e in ConfigurationService().log if e.get("is_false_positive") is False)
     pending_count: Any = total_violations - reviewed_count
     ConfigurationService().Logger.info("\n📊 Review Statistics:")
     ConfigurationService().Logger.info(f"   Total violations: {total_violations}")

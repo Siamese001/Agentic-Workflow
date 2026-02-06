@@ -283,9 +283,7 @@ class TestSystemIntegration:
         client = MetaLearningClient()
 
         # Configure domain
-        csm.domain_configs["integration_domain"] = DomainConfig(
-            domain="integration_domain", ttl_seconds=1800
-        )
+        csm.domain_configs["integration_domain"] = DomainConfig(domain="integration_domain", ttl_seconds=1800)
 
         # Use TTL from strategy manager
         ttl = csm.get_ttl("integration_domain")

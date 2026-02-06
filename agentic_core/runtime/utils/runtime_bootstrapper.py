@@ -25,6 +25,8 @@ from agentic_core.L5_safety.validators.constitutional_overseer_validator import 
 from agentic_core.L5_safety.validators.cost_governor_validator import CostGovernor
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
+LOGGER = logging.getLogger(__name__)
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)

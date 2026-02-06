@@ -66,7 +66,9 @@ def has_standard_heal_decorator(func_node: ast.FunctionDef) -> bool:
 
 
 def check_function_return_schema(
-    func_node: ast.FunctionDef, file_path: Path, violations: list[str],
+    func_node: ast.FunctionDef,
+    file_path: Path,
+    violations: list[str],
 ):
     """Check if function returns proper canonical keys."""
     # This is a simplified check - in practice, we'd need more sophisticated analysis

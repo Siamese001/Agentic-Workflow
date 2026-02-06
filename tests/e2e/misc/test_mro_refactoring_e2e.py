@@ -39,19 +39,11 @@ class TestPhase1E2E:
                 "PII_SanitizerSpecialistAgent",
             ),
             (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "location_validator_agent.py",
+                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "location_validator_agent.py",
                 "LocationValidatorAgent",
             ),
             (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "HierarchyagentStrategy.py",
+                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "HierarchyagentStrategy.py",
                 "HierarchyAgent",
             ),
             (
@@ -74,9 +66,7 @@ class TestPhase1E2E:
                         elif isinstance(base, ast.Attribute):
                             bases.append(base.attr)
 
-                    assert len(bases) == 1, (
-                        f"{class_name} should have exactly 1 base. Found: {bases}"
-                    )
+                    assert len(bases) == 1, f"{class_name} should have exactly 1 base. Found: {bases}"
                     break
 
 

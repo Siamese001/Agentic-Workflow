@@ -213,7 +213,8 @@ class PascalSovereigntyFixer:
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if value != 1:

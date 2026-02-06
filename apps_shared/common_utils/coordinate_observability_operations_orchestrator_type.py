@@ -14,6 +14,9 @@ Implements L1 Cognitive Planning Layer for coordinate observability operations o
 
 
 import logging
+from abc import ABC, abstractmethod
+from dataclasses import field
+from enum import Enum
 
 logging.basicConfig(level=logging.INFO)
 
@@ -53,7 +56,8 @@ class CoordinateObservabilityOperationsOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(
-        self, input_data: dict[str, object],
+        self,
+        input_data: dict[str, object],
     ) -> CoordinateObservabilityOperationsOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
@@ -73,13 +77,15 @@ class CoordinateObservabilityOperationsOrchestratorImpl(
     """
 
     def __init__(
-        self, constraints: CoordinateObservabilityOperationsOrchestratorConstraints | None = None,
+        self,
+        constraints: CoordinateObservabilityOperationsOrchestratorConstraints | None = None,
     ):
         self.constraints = constraints or CoordinateObservabilityOperationsOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(
-        self, input_data: dict[str, object],
+        self,
+        input_data: dict[str, object],
     ) -> CoordinateObservabilityOperationsOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")

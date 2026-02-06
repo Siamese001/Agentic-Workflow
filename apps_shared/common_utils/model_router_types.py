@@ -7,6 +7,10 @@ LLM based on task type, complexity, and budget constraints.
 import asyncio
 import logging
 from datetime import datetime, timedelta
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -258,7 +262,10 @@ class ModelRouter:
         )
 
     def get_model_config(
-        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None,
+        self,
+        task_type: TaskType,
+        complexity_score: int = 1,
+        force_tier: ModelTier | None = None,
     ) -> dict[str, Any]:
         """Get model configuration for a task.
 
@@ -382,7 +389,11 @@ class ModelRouter:
         return FallbackClient(model_config, self)
 
     def record_usage(
-        self, model_name: str, input_tokens: int, output_tokens: int, cost: float,
+        self,
+        model_name: str,
+        input_tokens: int,
+        output_tokens: int,
+        cost: float,
     ) -> None:
         """Record model usage for budget tracking.
 
@@ -452,8 +463,7 @@ class ModelRouter:
 
         # Add model counts
         stats["available_models"] = {
-            tier.value: len([m for m in self._models.values() if m.tier == tier])
-            for tier in ModelTier
+            tier.value: len([m for m in self._models.values() if m.tier == tier]) for tier in ModelTier
         }
 
         return stats
@@ -595,7 +605,10 @@ class FallbackClient:
 
         # Record with router
         self.router.record_usage(
-            client.config.model_name, int(input_tokens), int(output_tokens), cost,
+            client.config.model_name,
+            int(input_tokens),
+            int(output_tokens),
+            cost,
         )
 
 
@@ -681,7 +694,10 @@ async def get_model_router() -> ModelRouter:
 
 # Helper functions
 async def route_and_generate(
-    task_type: TaskType, prompt: str, complexity_score: int = 1, **kwargs,
+    task_type: TaskType,
+    prompt: str,
+    complexity_score: int = 1,
+    **kwargs,
 ) -> str:
     """Route task and generate response.
 

@@ -334,7 +334,10 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         return mission_result
 
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
+        self,
+        agent_name: str,
+        dry_run: bool = True,
+        context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -372,7 +375,10 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
     def _run_compliance_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
+        self,
+        agent_name: str,
+        dry_run: bool,
+        context: ExecutionContext | None,
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -442,7 +448,10 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             )
 
     def _run_healing_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
+        self,
+        agent_name: str,
+        dry_run: bool,
+        context: ExecutionContext | None,
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")

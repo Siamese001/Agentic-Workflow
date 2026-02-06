@@ -5,6 +5,8 @@ Converts token budget inspector into active enforcement mechanism.
 """
 
 import logging
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -95,8 +97,7 @@ class TokenBudget:
 
         if prompt_tokens > self.config.max_tokens_per_request:
             raise BudgetExceededError(
-                f"Prompt exceeds per-request limit: "
-                f"{prompt_tokens} > {self.config.max_tokens_per_request}",
+                f"Prompt exceeds per-request limit: {prompt_tokens} > {self.config.max_tokens_per_request}",
                 current_tokens=prompt_tokens,
                 max_tokens=self.config.max_tokens_per_request,
                 budget_type="per_request",
@@ -106,8 +107,7 @@ class TokenBudget:
 
         if self.config.enforce_limits and projected_total > self.config.max_total_tokens:
             raise BudgetExceededError(
-                f"Request would exceed total budget: "
-                f"{projected_total} > {self.config.max_total_tokens}",
+                f"Request would exceed total budget: {projected_total} > {self.config.max_total_tokens}",
                 current_tokens=projected_total,
                 max_tokens=self.config.max_total_tokens,
                 budget_type="total",
@@ -154,8 +154,7 @@ class TokenBudget:
         if self.config.enforce_limits:
             if self._prompt_tokens > self.config.max_prompt_tokens:
                 raise BudgetExceededError(
-                    f"Prompt token budget exceeded: "
-                    f"{self._prompt_tokens} > {self.config.max_prompt_tokens}",
+                    f"Prompt token budget exceeded: {self._prompt_tokens} > {self.config.max_prompt_tokens}",
                     current_tokens=self._prompt_tokens,
                     max_tokens=self.config.max_prompt_tokens,
                     budget_type="prompt",
@@ -172,8 +171,7 @@ class TokenBudget:
 
             if self._total_tokens > self.config.max_total_tokens:
                 raise BudgetExceededError(
-                    f"Total token budget exceeded: "
-                    f"{self._total_tokens} > {self.config.max_total_tokens}",
+                    f"Total token budget exceeded: {self._total_tokens} > {self.config.max_total_tokens}",
                     current_tokens=self._total_tokens,
                     max_tokens=self.config.max_total_tokens,
                     budget_type="total",
@@ -194,8 +192,7 @@ class TokenBudget:
             "max_completion_tokens": self.config.max_completion_tokens,
             "max_total_tokens": self.config.max_total_tokens,
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
-            "completion_utilization": self._completion_tokens
-            / max(1, self.config.max_completion_tokens),
+            "completion_utilization": self._completion_tokens / max(1, self.config.max_completion_tokens),
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
 

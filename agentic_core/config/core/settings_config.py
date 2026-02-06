@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     APP_NAME: str = Field(default="AgenticCore", description="Application identifier")
     ENVIRONMENT: Literal["dev", "test", "prod"] = Field(default="dev", description="Runtime environment")
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
-        default="INFO", description="Logging verbosity",
+        default="INFO",
+        description="Logging verbosity",
     )
 
     # Security / Secrets (Placeholder for future phases)

@@ -9,6 +9,9 @@ import json
 import logging
 import time
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +108,9 @@ class ObservabilityOperationAdapter:
         self.logger.info(f"Registered handler for operation: {operation_type}")
 
     def perform_operation(
-        self, context: OperationContext, parameters: OperationParameters,
+        self,
+        context: OperationContext,
+        parameters: OperationParameters,
     ) -> OperationOutcome:
         """Perform observability operation.
 
@@ -155,7 +160,9 @@ class ObservabilityOperationAdapter:
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
     def perform_batch_operations(
-        self, contexts: list[OperationContext], parameters_list: list[OperationParameters],
+        self,
+        contexts: list[OperationContext],
+        parameters_list: list[OperationParameters],
     ) -> list[OperationOutcome]:
         """Perform multiple operations.
 
@@ -178,7 +185,9 @@ class ObservabilityOperationAdapter:
         return results
 
     def perform_aggregated_operation(
-        self, contexts: list[OperationContext], parameters: OperationParameters,
+        self,
+        contexts: list[OperationContext],
+        parameters: OperationParameters,
     ) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
 
@@ -230,7 +239,9 @@ class ObservabilityOperationAdapter:
         return outcome
 
     def get_operation_history(
-        self, operation_id: str | None = None, time_range: tuple[datetime, datetime] | None = None,
+        self,
+        operation_id: str | None = None,
+        time_range: tuple[datetime, datetime] | None = None,
     ) -> list[dict[str, Any]]:
         """Get history of operations.
 
@@ -270,7 +281,10 @@ class ObservabilityOperationAdapter:
         return len(to_remove)
 
     def _execute_with_retry(
-        self, handler: Callable, context: OperationContext, parameters: OperationParameters,
+        self,
+        handler: Callable,
+        context: OperationContext,
+        parameters: OperationParameters,
     ) -> OperationOutcome:
         """Execute operation with retry logic."""
         last_error = None
@@ -313,7 +327,9 @@ class ObservabilityOperationAdapter:
         return self._create_error_outcome(context.operation_id, last_error, time.time())
 
     def _get_from_cache(
-        self, context: OperationContext, parameters: OperationParameters,
+        self,
+        context: OperationContext,
+        parameters: OperationParameters,
     ) -> OperationOutcome | None:
         """Get result from cache."""
         cache_key = self._generate_cache_key(context, parameters)
@@ -330,14 +346,19 @@ class ObservabilityOperationAdapter:
         return None
 
     def _store_in_cache(
-        self, context: OperationContext, parameters: OperationParameters, result: OperationOutcome,
+        self,
+        context: OperationContext,
+        parameters: OperationParameters,
+        result: OperationOutcome,
     ) -> None:
         """Store result in cache."""
         cache_key = self._generate_cache_key(context, parameters)
         self._cache[cache_key] = (result, time.time())
 
     def _generate_cache_key(
-        self, context: OperationContext, parameters: OperationParameters,
+        self,
+        context: OperationContext,
+        parameters: OperationParameters,
     ) -> str:
         """Generate cache key for operation."""
         key_data = {
@@ -389,7 +410,9 @@ class ObservabilityOperationAdapter:
         return data
 
     def _aggregate_data(
-        self, data: list[Any], aggregation: str | None,
+        self,
+        data: list[Any],
+        aggregation: str | None,
     ) -> dict[str, Any] | list[Any]:
         """Aggregate data based on aggregation method."""
         if not aggregation:
@@ -416,7 +439,10 @@ class ObservabilityOperationAdapter:
         return values
 
     def _create_error_outcome(
-        self, operation_id: str, error: str, start_time: float,
+        self,
+        operation_id: str,
+        error: str,
+        start_time: float,
     ) -> OperationOutcome:
         """Create error outcome."""
         return OperationOutcome(
@@ -498,11 +524,17 @@ class ObservabilityOperationAdapter:
 
 # Factory function for easy instantiation
 def create_observability_operation_adapter(
-    timeout: float = 30.0, retry_attempts: int = 3, enable_caching: bool = True, **kwargs: object,
+    timeout: float = 30.0,
+    retry_attempts: int = 3,
+    enable_caching: bool = True,
+    **kwargs: object,
 ) -> ObservabilityOperationAdapter:
     """Create a configured observability operation adapter."""
     config = OperationConfig(
-        timeout=timeout, retry_attempts=retry_attempts, enable_caching=enable_caching, **kwargs,
+        timeout=timeout,
+        retry_attempts=retry_attempts,
+        enable_caching=enable_caching,
+        **kwargs,
     )
     return ObservabilityOperationAdapter(config)
 

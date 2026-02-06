@@ -77,6 +77,7 @@ class tool_template:
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 
 class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
@@ -156,7 +157,11 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
         dependencies: Any = self._identify_dependencies(code)
         test_code: Any = self._generate_test_code(spec)
         tool: Any = GeneratedTool(
-            spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code,
+            spec=spec,
+            code=code,
+            imports=imports,
+            dependencies=dependencies,
+            test_code=test_code,
         )
         self.tools[spec.name] = tool
         Logger.info(f"Created tool: {spec.name}")

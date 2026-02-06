@@ -2,6 +2,7 @@
 """Compare archived files against current codebase to identify restoration candidates."""
 
 import hashlib
+from pathlib import Path
 
 
 def file_hash(path: Path) -> str:

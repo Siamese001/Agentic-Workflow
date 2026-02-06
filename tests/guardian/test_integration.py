@@ -134,9 +134,7 @@ class TestAgent:
         assert scan_time < max_time, f"Agent scan took {scan_time:.2f}s, expected < {max_time}s"
 
         max_agents = guardian_performance_baseline["max_agents_to_scan"]
-        assert len(agent_files) <= max_agents, (
-            f"Found {len(agent_files)} agents, expected <= {max_agents}"
-        )
+        assert len(agent_files) <= max_agents, f"Found {len(agent_files)} agents, expected <= {max_agents}"
 
     def test_session_fixtures_available(self, agent_registry, layer_hierarchy, territories):
         """Test that session fixtures are available and functional."""

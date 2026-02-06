@@ -77,7 +77,10 @@ class IntegrityValidationGuardrail:
         self.gravity_violations = 0
 
     async def validate_integrity(
-        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None,
+        self,
+        data: Any,
+        expected_checksum: str | None = None,
+        data_id: str | None = None,
     ) -> IntegrityResult:
         """
         Validate data integrity.
@@ -138,7 +141,10 @@ class IntegrityValidationGuardrail:
         )
 
     async def validate_gravity(
-        self, source_layer: str, imported_layers: list[str], file_path: str | None = None,
+        self,
+        source_layer: str,
+        imported_layers: list[str],
+        file_path: str | None = None,
     ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
@@ -157,7 +163,9 @@ class IntegrityValidationGuardrail:
 
         if "gravity_compliance" not in self.enabled_rules:
             return IntegrityResult(
-                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000,
+                valid=True,
+                violations=[],
+                validation_time_ms=(time.time() - start_time) * 1000,
             )
 
         allowed_imports = self.gravity_rules.get(source_layer, [])

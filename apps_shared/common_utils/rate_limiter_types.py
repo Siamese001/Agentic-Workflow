@@ -12,6 +12,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+from typing import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +172,8 @@ class TokenBucketRateLimiter(RateLimiter):
             # Get or create client state
             if identifier not in self.clients:
                 self.clients[identifier] = ClientState(
-                    identifier=identifier, tokens=float(self.config.burst_size),
+                    identifier=identifier,
+                    tokens=float(self.config.burst_size),
                 )
 
             client = self.clients[identifier]
@@ -229,9 +231,7 @@ class TokenBucketRateLimiter(RateLimiter):
             cutoff = now - self.config.cleanup_interval
 
             inactive_clients = [
-                identifier
-                for identifier, client in self.clients.items()
-                if client.last_request < cutoff
+                identifier for identifier, client in self.clients.items() if client.last_request < cutoff
             ]
 
             for identifier in inactive_clients:
@@ -555,7 +555,10 @@ def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
 RATE_LIMIT_CONFIGS = {
     "api_default": RateLimitConfig(limit=100, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
     "api_heavy": RateLimitConfig(
-        limit=1000, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET, burst_size=2000,
+        limit=1000,
+        window=60,
+        strategy=RateLimitStrategy.TOKEN_BUCKET,
+        burst_size=2000,
     ),
     "api_strict": RateLimitConfig(limit=10, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
     "upload": RateLimitConfig(limit=5, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),

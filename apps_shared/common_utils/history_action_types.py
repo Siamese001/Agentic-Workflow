@@ -8,6 +8,10 @@ Follows the functional component pattern with proper logging.
 import json
 import logging
 from datetime import datetime, timedelta
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +175,10 @@ class SchemaHistoryFetcher:
         except Exception as e:
             self.logger.error(f"Failed to fetch schema history: {str(e)}")
             return SchemaHistoryResult(
-                records=[], total_count=0, query=query, metadata={"error": str(e)},
+                records=[],
+                total_count=0,
+                query=query,
+                metadata={"error": str(e)},
             )
 
     def add_change_record(self, record: SchemaChangeRecord) -> bool:
@@ -195,13 +202,8 @@ class SchemaHistoryFetcher:
             if len(self._history_records[record.schema_id]) > self.config.max_records_per_schema:
                 # Remove oldest records
                 self._history_records[record.schema_id].sort(key=lambda x: x.timestamp)
-                excess = (
-                    len(self._history_records[record.schema_id])
-                    - self.config.max_records_per_schema
-                )
-                self._history_records[record.schema_id] = self._history_records[record.schema_id][
-                    excess:
-                ]
+                excess = len(self._history_records[record.schema_id]) - self.config.max_records_per_schema
+                self._history_records[record.schema_id] = self._history_records[record.schema_id][excess:]
 
             # Save to disk
             self._save_schema_history(record.schema_id)
@@ -306,9 +308,7 @@ class SchemaHistoryFetcher:
                     stats[contributor]["schemas_modified"].add(schema_id)
 
                     action = record.action.value
-                    stats[contributor]["actions"][action] = (
-                        stats[contributor]["actions"].get(action, 0) + 1
-                    )
+                    stats[contributor]["actions"][action] = stats[contributor]["actions"].get(action, 0) + 1
 
         # Convert sets to counts
         for contributor in stats:
@@ -394,7 +394,9 @@ class SchemaHistoryFetcher:
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
     def _apply_filters(
-        self, records: list[SchemaChangeRecord], query: SchemaHistoryQuery,
+        self,
+        records: list[SchemaChangeRecord],
+        query: SchemaHistoryQuery,
     ) -> list[SchemaChangeRecord]:
         """Apply filters to history records."""
         filtered = records.copy()

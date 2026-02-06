@@ -35,7 +35,8 @@ def test_circuit_breaker():
     # 1.1 State Transitions
     print("\n1.1 Testing state transitions...")
     breaker = CircuitBreaker(
-        "test_1", CircuitBreakerConfig(failure_threshold=3, reset_timeout_seconds=0.1),
+        "test_1",
+        CircuitBreakerConfig(failure_threshold=3, reset_timeout_seconds=0.1),
     )
     assert breaker.state == CircuitState.CLOSED
     for _ in range(3):
@@ -48,7 +49,9 @@ def test_circuit_breaker():
     breaker2 = CircuitBreaker(
         "test_2",
         CircuitBreakerConfig(
-            failure_threshold=1, backoff_multiplier=2.0, reset_timeout_seconds=0.1,
+            failure_threshold=1,
+            backoff_multiplier=2.0,
+            reset_timeout_seconds=0.1,
         ),
     )
     breaker2.record_failure()  # Open
@@ -75,7 +78,8 @@ def test_circuit_breaker():
     # 1.4 Decorator
     print("\n1.4 Testing decorator...")
     breaker4 = CircuitBreaker(
-        "test_4", CircuitBreakerConfig(failure_threshold=2, execution_timeout_seconds=1.0),
+        "test_4",
+        CircuitBreakerConfig(failure_threshold=2, execution_timeout_seconds=1.0),
     )
     count = 0
 
@@ -158,7 +162,9 @@ def test_adapter_base():
 
     legacy = MockLegacyAgent()
     adapter = MockAdapter(
-        legacy, "mock_service", circuit_breaker_config={"execution_timeout_seconds": 2.0},
+        legacy,
+        "mock_service",
+        circuit_breaker_config={"execution_timeout_seconds": 2.0},
     )
 
     # Test successful execution

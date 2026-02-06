@@ -37,9 +37,7 @@ class TestConsolidatedMigration:
         """HealerMixin must exist and be importable."""
         try:
             assert HealerMixin is not None, "HealerMixin should be importable"
-            assert hasattr(HealerMixin, "heal_repository"), (
-                "HealerMixin should have heal_repository"
-            )
+            assert hasattr(HealerMixin, "heal_repository"), "HealerMixin should have heal_repository"
 
             self.passed += 1
             print("✅ test_healer_mixin_exists PASSED")
@@ -84,19 +82,13 @@ class TestConsolidatedMigration:
         """Verify jinja template does not contain Canon Key references."""
         try:
             template_path = (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "prompt_governance"
-                / "templates"
-                / "agent_autonomy_law.jinja"
+                PROJECT_ROOT / "agentic_core" / "prompt_governance" / "templates" / "agent_autonomy_law.jinja"
             )
 
             if template_path.exists():
                 with open(template_path, encoding="utf-8") as f:
                     content = f.read()
-                    assert "CANON KEY 51" not in content, (
-                        "Template should not contain 'CANON KEY 51'"
-                    )
+                    assert "CANON KEY 51" not in content, "Template should not contain 'CANON KEY 51'"
 
             self.passed += 1
             print("✅ test_template_cleaned PASSED")

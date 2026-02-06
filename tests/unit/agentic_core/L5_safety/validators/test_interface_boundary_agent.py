@@ -61,9 +61,7 @@ class TestInterfaceBoundaryAgent:
 
     def test_has_generate_interface_stub_method(self, agent_class):
         """Verify agent has generate_interface_stub method."""
-        assert hasattr(agent_class, "generate_interface_stub"), (
-            "Should have generate_interface_stub method"
-        )
+        assert hasattr(agent_class, "generate_interface_stub"), "Should have generate_interface_stub method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

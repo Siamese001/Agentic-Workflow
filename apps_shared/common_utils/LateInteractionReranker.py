@@ -89,7 +89,11 @@ class LateInteractionReranker:
             return False
 
     def rerank(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
+        batch_size: int = 32,
     ) -> list[str]:
         """Rerank documents based on query relevance.
 
@@ -166,7 +170,11 @@ class LateInteractionReranker:
             return documents[:top_k]
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
+        batch_size: int = 32,
     ) -> list[tuple[str, float]]:
         """Rerank documents and return with scores.
 
@@ -235,7 +243,9 @@ class LateInteractionReranker:
                     info.update(
                         {
                             "max_seq_length": getattr(
-                                self._model.config, "max_position_embeddings", "unknown",
+                                self._model.config,
+                                "max_position_embeddings",
+                                "unknown",
                             ),
                             "num_labels": getattr(self._model.config, "num_labels", "unknown"),
                         },
@@ -248,7 +258,10 @@ class LateInteractionReranker:
 
 # Convenience function for direct usage
 def rerank_documents(
-    query: str, documents: list[str], model_name: str = "ms-marco-MiniLM-L-6-v2", top_k: int = 5,
+    query: str,
+    documents: list[str],
+    model_name: str = "ms-marco-MiniLM-L-6-v2",
+    top_k: int = 5,
 ) -> list[str]:
     """Rerank documents using default settings.
 
@@ -278,7 +291,10 @@ class PassThroughReranker:
         return documents[:top_k] if top_k else documents
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
     ) -> list[tuple[str, float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]

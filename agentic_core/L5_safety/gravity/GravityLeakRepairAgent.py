@@ -81,7 +81,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         self.context = get_context_manager(self.project_root)
 
     def analyze_violation(
-        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str,
+        self,
+        file_path: Path,
+        import_statement: str,
+        file_layer: str,
+        import_layer: str,
     ) -> GravityFix:
         """
         Analyze a gravity violation and recommend a fix.
@@ -427,7 +431,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                             "line_number": fix.line_number,
                         }
                         self.context.store_healing_pattern(
-                            violation, healing_result, agent="GravityLeakRepairAgent",
+                            violation,
+                            healing_result,
+                            agent="GravityLeakRepairAgent",
                         )
                         return {
                             "violations_fixed": 1,

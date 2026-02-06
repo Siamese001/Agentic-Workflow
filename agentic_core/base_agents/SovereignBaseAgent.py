@@ -98,7 +98,8 @@ class SovereignBaseAgent(
 
         # 3. Telemetry Signal
         self.log_sovereign_event(
-            "BOOT", {"status": "initialized", "mode": "hardened", "integrity_verified": True},
+            "BOOT",
+            {"status": "initialized", "mode": "hardened", "integrity_verified": True},
         )
 
         self._initialized = True
@@ -189,7 +190,11 @@ class SovereignBaseAgent(
         logger.error(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
 
     def log_feedback(
-        self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None,
+        self,
+        workflow_id: str,
+        action: str,
+        status: str,
+        details: dict[str, Any] = None,
     ) -> None:
         """Log feedback for a workflow action."""
         logger.info(
@@ -222,17 +227,18 @@ class SovereignBaseAgent(
 
     def _do_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """
-        Actual healing implementation to be called by meta-learning enhanced heal.
+                Actual healing implementation to be called by meta-learning enhanced heal.
 
-        Subclasses should override this method instead of heal() to benefit
-        from meta-learning capabilities.
+                Subclasses should override this method instead of heal() to benefit
+                from meta-learning capabilities.
+        from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
-        Args:
-            violation: Dictionary detailing the detected violation.
-            **kwargs: Additional arguments for healing.
+                Args:
+                    violation: Dictionary detailing the detected violation.
+                    **kwargs: Additional arguments for healing.
 
-        Returns:
-            Dict containing healing result.
+                Returns:
+                    Dict containing healing result.
         """
         return {
             "status": "skipped",

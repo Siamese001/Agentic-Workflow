@@ -84,9 +84,7 @@ class NuclearAuditor:
     def _load_structure_blueprint(self) -> dict[str, Any]:
         """Load structure blueprint for namespace validation."""
         try:
-            blueprint_path = (
-                self.agentic_core_dir / "L5_safety" / "validators" / "structure_blueprint.py"
-            )
+            blueprint_path = self.agentic_core_dir / "L5_safety" / "validators" / "structure_blueprint.py"
             if blueprint_path.exists():
                 with open(blueprint_path, encoding="utf-8") as f:
                     content = f.read()
@@ -95,10 +93,7 @@ class NuclearAuditor:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Assign):
                         for target in node.targets:
-                            if (
-                                isinstance(target, ast.Name)
-                                and target.id == "SOVEREIGN_TERRITORIES"
-                            ):
+                            if isinstance(target, ast.Name) and target.id == "SOVEREIGN_TERRITORIES":
                                 return ast.literal_eval(node.value)
         except Exception as e:
             logger.warning(f"Failed to load structure blueprint: {e}")
@@ -144,7 +139,10 @@ class NuclearAuditor:
         return agents
 
     def _analyze_agent_class(
-        self, class_node: ast.ClassDef, file_path: Path, content: str,
+        self,
+        class_node: ast.ClassDef,
+        file_path: Path,
+        content: str,
     ) -> AgentTechnicalStatus:
         """Perform detailed analysis of a single agent class."""
         status = AgentTechnicalStatus(
@@ -439,9 +437,7 @@ class NuclearAuditor:
         table.append("")
 
         # Summary statistics
-        inheritance_broken = sum(
-            1 for a in self.agent_statuses if "[BROKEN]" in a.inheritance_status
-        )
+        inheritance_broken = sum(1 for a in self.agent_statuses if "[BROKEN]" in a.inheritance_status)
         heal_missing = sum(1 for a in self.agent_statuses if "[MISSING]" in a.heal_method_status)
         namespace_invalid = sum(1 for a in self.agent_statuses if "[INVALID]" in a.namespace_status)
         stub_agents = sum(1 for a in self.agent_statuses if a.agent_type == "Stub")
@@ -529,9 +525,7 @@ def main():
     broken = sum(1 for s in statuses if "[BROKEN]" in s.inheritance_status)
     missing_heal = sum(1 for s in statuses if "[MISSING]" in s.heal_method_status)
     valid = sum(
-        1
-        for s in statuses
-        if "[VALID]" in s.inheritance_status and "[VALID]" in s.heal_method_status
+        1 for s in statuses if "[VALID]" in s.inheritance_status and "[VALID]" in s.heal_method_status
     )
 
     print("\n*** NUCLEAR AUDIT COMPLETE ***")

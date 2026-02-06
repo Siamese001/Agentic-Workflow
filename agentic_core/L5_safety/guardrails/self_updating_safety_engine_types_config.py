@@ -143,7 +143,9 @@ class SelfUpdatingSafetyEngine:
     def __init__(self, rules_storage_path: str | None = None):
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(
-            os.getcwd(), ".canon_memory", "safety_rules.json",
+            os.getcwd(),
+            ".canon_memory",
+            "safety_rules.json",
         )
 
         self.rules: dict[str, SafetyRule] = {}

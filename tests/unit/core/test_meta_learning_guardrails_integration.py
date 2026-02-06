@@ -111,15 +111,11 @@ class TestMetaLearningGuardrails:
 
         # Test request rate limiting
         for i in range(100):  # Should be under 1000/min limit
-            assert agent._guardrails.check_rate_limit(domain, "request"), (
-                f"Request {i + 1} should be allowed"
-            )
+            assert agent._guardrails.check_rate_limit(domain, "request"), f"Request {i + 1} should be allowed"
 
         # Test pattern rate limiting
         for i in range(100):  # Should be under 100/min limit
-            assert agent._guardrails.check_rate_limit(domain, "pattern"), (
-                f"Pattern {i + 1} should be allowed"
-            )
+            assert agent._guardrails.check_rate_limit(domain, "pattern"), f"Pattern {i + 1} should be allowed"
 
     def test_domain_isolation(self):
         """Test domain isolation prevents cross-domain contamination."""
@@ -209,17 +205,13 @@ class TestCacheStrategyManagement:
         domain = "apps_rg"
 
         # Should allow caching under limit
-        assert agent._guardrails.check_cache_size_limit(domain), (
-            "Caching should be allowed under size limit"
-        )
+        assert agent._guardrails.check_cache_size_limit(domain), "Caching should be allowed under size limit"
 
         # Simulate cache at limit
         agent._guardrails.update_cache_size(domain, 10000)  # At limit
 
         # Should block when at limit
-        assert not agent._guardrails.check_cache_size_limit(domain), (
-            "Caching should be blocked at size limit"
-        )
+        assert not agent._guardrails.check_cache_size_limit(domain), "Caching should be blocked at size limit"
 
     def test_eviction_policies(self):
         """Test cache eviction policies work correctly."""

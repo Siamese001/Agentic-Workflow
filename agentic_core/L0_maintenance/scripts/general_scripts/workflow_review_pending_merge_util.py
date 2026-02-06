@@ -142,7 +142,8 @@ def _categorize_pending_file(f: Path, approved_by_name: dict[str, list[Path]]) -
 
 
 def _categorize_files(
-    pending_files: list[Path], approved_by_name: dict[str, list[Path]],
+    pending_files: list[Path],
+    approved_by_name: dict[str, list[Path]],
 ) -> dict[str, list[Path]]:
     """Categorize pending files into different buckets."""
     for f in pending_files:

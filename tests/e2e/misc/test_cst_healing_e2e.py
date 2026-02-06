@@ -42,9 +42,7 @@ def helper_function():
     return x
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -109,9 +107,7 @@ class TestClass:
 # Footer comment
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -173,9 +169,7 @@ class TestClass:
         temp_files = []
         try:
             for content in files_content:
-                with tempfile.NamedTemporaryFile(
-                    mode="w", suffix=".py", delete=False, encoding="utf-8"
-                ) as f:
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
                     f.write(content)
                     temp_files.append(Path(f.name))
 
@@ -205,9 +199,7 @@ class TestClass:
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -249,9 +241,7 @@ class TestClass:
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -288,9 +278,7 @@ class TestHealingPreservation:
         pass
 '''
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -329,9 +317,7 @@ class MyClass:
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 
@@ -375,9 +361,7 @@ class MyClass:
         pass
 """
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source_code)
             temp_path = Path(f.name)
 

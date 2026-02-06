@@ -64,7 +64,10 @@ class VerifiableCheckpointManager:
         return storage_etag
 
     async def load_checkpoint(
-        self, session_id: str, node_id: str, verify: bool = True,
+        self,
+        session_id: str,
+        node_id: str,
+        verify: bool = True,
     ) -> dict[str, Any] | None:
         """
         Loads and verifies a Checkpoint.

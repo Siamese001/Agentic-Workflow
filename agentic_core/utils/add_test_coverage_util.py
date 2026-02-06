@@ -11,6 +11,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )
+import ast
 
 TEST_METHOD = '''
     def _run_self_tests(self) -> dict:

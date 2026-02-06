@@ -71,9 +71,7 @@ class TestAppContentValidatorAgent:
 
     def test_has_calculate_similarity_method(self, agent_class):
         """Verify agent has calculate_similarity method."""
-        assert hasattr(agent_class, "calculate_similarity"), (
-            "Should have calculate_similarity method"
-        )
+        assert hasattr(agent_class, "calculate_similarity"), "Should have calculate_similarity method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

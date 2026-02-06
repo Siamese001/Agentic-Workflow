@@ -378,7 +378,9 @@ class ASTAnalyzer:
         return total_score / len(patterns) if patterns else 0, matched
 
     def analyze_class_capabilities(
-        self, class_info: dict[str, Any], component: ArchitectureComponent,
+        self,
+        class_info: dict[str, Any],
+        component: ArchitectureComponent,
     ) -> tuple[float, list[str], list[str]]:
         """Analyze a class for architecture component capabilities."""
         matched_capabilities = []
@@ -423,9 +425,7 @@ class ASTAnalyzer:
     def scan_repository(self) -> None:
         """Scan entire repository for Python files."""
         for py_file in self.repo_root.rglob("*.py"):
-            if any(
-                skip in str(py_file) for skip in [".venv", "node_modules", "__pycache__", ".git"]
-            ):
+            if any(skip in str(py_file) for skip in [".venv", "node_modules", "__pycache__", ".git"]):
                 continue
 
             tree = self.parse_file(py_file)
@@ -475,18 +475,20 @@ class ArchitectureGapAnalyzer:
         for _key, class_info in self.ast_analyzer.class_info.items():
             # Check pattern match in class name and content
             name_score, name_matches = self.ast_analyzer.fuzzy_match_score(
-                class_info["name"], component.key_patterns,
+                class_info["name"],
+                component.key_patterns,
             )
 
             doc_score, doc_matches = self.ast_analyzer.fuzzy_match_score(
-                class_info.get("docstring", ""), component.key_patterns,
+                class_info.get("docstring", ""),
+                component.key_patterns,
             )
 
             combined_score = max(name_score, doc_score)
 
             if combined_score > 0.2:  # Threshold for considering as potential match
-                cap_score, matched_caps, missing_caps = (
-                    self.ast_analyzer.analyze_class_capabilities(class_info, component)
+                cap_score, matched_caps, missing_caps = self.ast_analyzer.analyze_class_capabilities(
+                    class_info, component
                 )
 
                 if cap_score > 0 or combined_score > 0.5:
@@ -601,9 +603,7 @@ class ArchitectureGapAnalyzer:
 
             total_coverage += result.coverage_score
 
-        report["summary"]["overall_coverage"] = (
-            total_coverage / len(self.results) if self.results else 0
-        )
+        report["summary"]["overall_coverage"] = total_coverage / len(self.results) if self.results else 0
 
         return report
 

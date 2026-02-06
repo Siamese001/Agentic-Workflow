@@ -29,6 +29,7 @@ from typing import Any
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30

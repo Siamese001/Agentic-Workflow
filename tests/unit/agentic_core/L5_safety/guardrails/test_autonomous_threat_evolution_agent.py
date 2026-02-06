@@ -55,9 +55,7 @@ class TestAutonomousThreatEvolutionAgent:
 
     def test_has_threat_evolution_loop_method(self, agent_class):
         """Verify agent has threat_evolution_loop method."""
-        assert hasattr(agent_class, "threat_evolution_loop"), (
-            "Should have threat_evolution_loop method"
-        )
+        assert hasattr(agent_class, "threat_evolution_loop"), "Should have threat_evolution_loop method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

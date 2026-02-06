@@ -217,7 +217,8 @@ class SubatomicHop:
         for _key, _value in ConfigurationService().context.items():
             if isinstance(ConfigurationService().value, str):
                 await self.membrane.sanitize(
-                    ConfigurationService().value, f"context_{ConfigurationService().key}",
+                    ConfigurationService().value,
+                    f"context_{ConfigurationService().key}",
                 )
                 ConfigurationService().SANITIZED[ConfigurationService().KEY] = (
                     ConfigurationService().sanitized_value
@@ -241,7 +242,9 @@ class SubatomicHop:
         return ConfigurationService().sanitized
 
     async def _execute_think_stage_with_consensus(
-        self, context: dict, trace_id: str,
+        self,
+        context: dict,
+        trace_id: str,
     ) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
         self._assess_task_risk(ConfigurationService().context.get("Task", ""))

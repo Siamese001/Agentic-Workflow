@@ -19,6 +19,7 @@ from typing import Any
 @dataclass
 class SourceFile:
     """Represents a classified source file."""
+
     path: Path
     file_type: str
     class_name: str | None
@@ -28,6 +29,7 @@ class SourceFile:
 @dataclass
 class TestFile:
     """Represents a test file with its expected location."""
+
     path: Path
     current_territory: str
     expected_territory: str | None
@@ -39,6 +41,7 @@ class TestFile:
 @dataclass
 class MirrorAuditReport:
     """Report of mirror territory audit."""
+
     source_files: list[SourceFile] = field(default_factory=list)
     test_files: list[TestFile] = field(default_factory=list)
     violations: list[TestFile] = field(default_factory=list)
@@ -49,9 +52,17 @@ class MirrorAuditReport:
 def to_smart_snake_case(name: str) -> str:
     """Convert PascalCase to snake_case while preserving acronyms."""
     atomic_words = {
-        "Grounding": "grounding", "Routing": "routing", "Sender": "sender",
-        "Receiver": "receiver", "Planner": "planner", "Scheduler": "scheduler",
-        "RG": "rg", "PII": "pii", "LLM": "llm", "ATS": "ats", "API": "api",
+        "Grounding": "grounding",
+        "Routing": "routing",
+        "Sender": "sender",
+        "Receiver": "receiver",
+        "Planner": "planner",
+        "Scheduler": "scheduler",
+        "RG": "rg",
+        "PII": "pii",
+        "LLM": "llm",
+        "ATS": "ats",
+        "API": "api",
     }
 
     if name in atomic_words:
@@ -86,9 +97,10 @@ def classify_file_simple(path: Path) -> str:
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             name = node.name
-            bases = [b.id if isinstance(b, ast.Name) else
-                    b.attr if isinstance(b, ast.Attribute) else ""
-                    for b in node.bases]
+            bases = [
+                b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else ""
+                for b in node.bases
+            ]
 
             # Priority classification
             if any("Orchestrator" in b for b in bases) or "Orchestrator" in name:
@@ -195,12 +207,14 @@ def scan_source_files(project_root: Path) -> list[SourceFile]:
 
             expected_test = get_expected_test_territory(py_file, project_root)
 
-            source_files.append(SourceFile(
-                path=py_file,
-                file_type=file_type,
-                class_name=class_name,
-                expected_test_path=expected_test,
-            ))
+            source_files.append(
+                SourceFile(
+                    path=py_file,
+                    file_type=file_type,
+                    class_name=class_name,
+                    expected_test_path=expected_test,
+                )
+            )
 
     return source_files
 
@@ -208,7 +222,7 @@ def scan_source_files(project_root: Path) -> list[SourceFile]:
 def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[TestFile]:
     """
     Scan all test files and check for territory violations.
-    
+
     Mirror-Image Principle: Tests should mirror their SOURCE file locations.
     A test is only a violation if it's in an "Anarchy Zone" (misc, temp, etc.)
     or doesn't mirror any valid source structure.
@@ -224,17 +238,61 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
 
     # Valid source territory folders that tests CAN mirror
     valid_territories = {
-        "engines", "validators", "core", "config", "scripts", "tools",
-        "adapters", "strategies", "mixins", "base_agents", "guardrails",
-        "thought_engine", "workflow_engines", "red_teaming", "policy_engine",
-        "gravity", "security", "cognition", "utils", "helpers", "common_utils",
-        "domain", "shared", "logic_nodes", "asset_library", "validation",
-        "retrieval", "generation", "quality", "safety", "orchestration",
-        "fission_logic", "interfaces", "mcp", "tool_registry", "execution_bridge",
-        "validation_context", "ledger", "memory", "dashboards", "agents",
-        "reports", "telemetry", "models", "messages", "templates", "rendering",
-        "embeddings", "store", "document_loaders", "fixtures", "llm",
-        "core_components", "data", "integration",
+        "engines",
+        "validators",
+        "core",
+        "config",
+        "scripts",
+        "tools",
+        "adapters",
+        "strategies",
+        "mixins",
+        "base_agents",
+        "guardrails",
+        "thought_engine",
+        "workflow_engines",
+        "red_teaming",
+        "policy_engine",
+        "gravity",
+        "security",
+        "cognition",
+        "utils",
+        "helpers",
+        "common_utils",
+        "domain",
+        "shared",
+        "logic_nodes",
+        "asset_library",
+        "validation",
+        "retrieval",
+        "generation",
+        "quality",
+        "safety",
+        "orchestration",
+        "fission_logic",
+        "interfaces",
+        "mcp",
+        "tool_registry",
+        "execution_bridge",
+        "validation_context",
+        "ledger",
+        "memory",
+        "dashboards",
+        "agents",
+        "reports",
+        "telemetry",
+        "models",
+        "messages",
+        "templates",
+        "rendering",
+        "embeddings",
+        "store",
+        "document_loaders",
+        "fixtures",
+        "llm",
+        "core_components",
+        "data",
+        "integration",
     }
 
     # Build source lookup by expected test path
@@ -299,14 +357,16 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
                     pass
             # else: test is in a valid territory that mirrors source structure - OK
 
-            test_files.append(TestFile(
-                path=test_file,
-                current_territory=test_file.parent.name,  # Keep original case
-                expected_territory=expected_territory,
-                source_file=matched_source,
-                is_violation=is_violation,
-                target_path=target_path,
-            ))
+            test_files.append(
+                TestFile(
+                    path=test_file,
+                    current_territory=test_file.parent.name,  # Keep original case
+                    expected_territory=expected_territory,
+                    source_file=matched_source,
+                    is_violation=is_violation,
+                    target_path=target_path,
+                )
+            )
 
     return test_files
 
@@ -320,7 +380,9 @@ def move_test_file(test_file: TestFile, dry_run: bool = True) -> bool:
     dest = test_file.target_path
 
     if dry_run:
-        print(f"  [PLAN] MOVE {src.relative_to(src.parent.parent.parent.parent)} -> {dest.relative_to(dest.parent.parent.parent.parent)}")
+        print(
+            f"  [PLAN] MOVE {src.relative_to(src.parent.parent.parent.parent)} -> {dest.relative_to(dest.parent.parent.parent.parent)}"
+        )
         return True
 
     # Create target directory if needed
@@ -420,7 +482,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Test Territory Mirror Enforcer")
     parser.add_argument("--execute", action="store_true", help="Execute moves (default: dry run)")
-    parser.add_argument("--output", type=str, default="territory_mirror_report.json", help="Report output file")
+    parser.add_argument(
+        "--output", type=str, default="territory_mirror_report.json", help="Report output file"
+    )
     args = parser.parse_args()
 
     project_root = Path(__file__).parent.parent.parent

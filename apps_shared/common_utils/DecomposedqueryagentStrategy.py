@@ -71,17 +71,21 @@ class QueryDecomposer(SimpleAgentBase):
         # Simple patterns to detect complex queries
         self.complexity_indicators = {
             "comparison": re.compile(
-                r"\b(compare|vs|versus|against|difference|contrast)\b", re.IGNORECASE,
+                r"\b(compare|vs|versus|against|difference|contrast)\b",
+                re.IGNORECASE,
             ),
             "causation": re.compile(r"\b(why|cause|reason|impact|effect)\b", re.IGNORECASE),
             "temporal": re.compile(
-                r"\b(before|after|during|when|timeline|history)\b", re.IGNORECASE,
+                r"\b(before|after|during|when|timeline|history)\b",
+                re.IGNORECASE,
             ),
             "aggregation": re.compile(
-                r"\b(sum|total|average|count|aggregate|combine)\b", re.IGNORECASE,
+                r"\b(sum|total|average|count|aggregate|combine)\b",
+                re.IGNORECASE,
             ),
             "relationship": re.compile(
-                r"\b(relationship|correlation|between|and)\b", re.IGNORECASE,
+                r"\b(relationship|correlation|between|and)\b",
+                re.IGNORECASE,
             ),
         }
 
@@ -168,10 +172,7 @@ class QueryDecomposer(SimpleAgentBase):
         # Heuristic check: if gate says simple, skip LLM
         if self.gate:
             decision = self.gate.should_retrieve(query)
-            if (
-                decision.query_type in ["CONVERSATIONAL", "FACTUAL"]
-                and not decision.should_retrieve
-            ):
+            if decision.query_type in ["CONVERSATIONAL", "FACTUAL"] and not decision.should_retrieve:
                 logger.info(f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
@@ -258,7 +259,10 @@ Output: {{
             )
 
     async def execute_plan(
-        self, decomposed_query: DecomposedQuery, search_function: callable, **kwargs,
+        self,
+        decomposed_query: DecomposedQuery,
+        search_function: callable,
+        **kwargs,
     ) -> list[Any]:
         """Execute search for all sub-queries in parallel.
 

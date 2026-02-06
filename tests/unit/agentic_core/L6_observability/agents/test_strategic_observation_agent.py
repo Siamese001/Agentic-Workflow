@@ -58,9 +58,7 @@ class TestStrategicObservationAgent:
 
     def test_has_generate_observations_method(self, agent_class):
         """Verify agent has generate_observations method."""
-        assert hasattr(agent_class, "generate_observations"), (
-            "Should have generate_observations method"
-        )
+        assert hasattr(agent_class, "generate_observations"), "Should have generate_observations method"
 
     def test_has_analyze_method(self, agent_class):
         """Verify agent has analyze method."""
@@ -68,9 +66,7 @@ class TestStrategicObservationAgent:
 
     def test_has_run_observability_check_method(self, agent_class):
         """Verify agent has run_observability_check method."""
-        assert hasattr(agent_class, "run_observability_check"), (
-            "Should have run_observability_check method"
-        )
+        assert hasattr(agent_class, "run_observability_check"), "Should have run_observability_check method"
 
     def test_has_heal_repository_method(self, agent_class):
         """Verify agent has heal_repository method."""

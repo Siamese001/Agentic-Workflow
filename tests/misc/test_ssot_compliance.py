@@ -48,10 +48,7 @@ class TestSSOTCompliance:
             if classification == "SCRIPT":
                 filename = file_path.name
                 # Check if filename is snake_case
-                if (
-                    filename != filename.lower()
-                    or not filename.replace(".py", "").replace("_", "").isalpha()
-                ):
+                if filename != filename.lower() or not filename.replace(".py", "").replace("_", "").isalpha():
                     violations.append(str(file_path.relative_to(Path(__file__).parent)))
 
         assert not violations, f"SCRIPT naming violations found:\n{chr(10).join(violations[:10])}"
@@ -80,9 +77,7 @@ class TestSSOTCompliance:
                 if not filename.endswith("_validator.py"):
                     violations.append(str(file_path.relative_to(Path(__file__).parent)))
 
-        assert not violations, (
-            f"VALIDATOR naming violations found:\n{chr(10).join(violations[:10])}"
-        )
+        assert not violations, f"VALIDATOR naming violations found:\n{chr(10).join(violations[:10])}"
 
     def test_config_naming_compliance(self, classifier, all_python_files):
         """Test that CONFIG files end with _config.py."""
@@ -211,9 +206,7 @@ class TestSSOTCompliance:
                 if "base_agents" not in str(file_path):
                     violations.append(str(file_path))
 
-        assert not violations, (
-            f"Base agents not in base_agents directory:\n{chr(10).join(violations)}"
-        )
+        assert not violations, f"Base agents not in base_agents directory:\n{chr(10).join(violations)}"
 
     def test_no_duplicate_filenames_in_same_directory(self, all_python_files):
         """Test that no directory has duplicate filenames (case-insensitive)."""
@@ -243,9 +236,7 @@ class TestSpecificCases:
     def test_fileclassification_agent_classification(self):
         """Test that FileClassificationAgent.py is classified as AGENT."""
         agent = FileClassificationAgent(dry_run=True)
-        path = (
-            Path(__file__).parent / "agentic_core/L5_safety/validators/FileClassificationAgent.py"
-        )
+        path = Path(__file__).parent / "agentic_core/L5_safety/validators/FileClassificationAgent.py"
         classification = agent.classify_file(path)
         assert classification == "AGENT", f"Expected AGENT, got {classification}"
 

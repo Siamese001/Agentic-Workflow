@@ -124,7 +124,9 @@ class SubatomicHop:
         # Initialize secure checkpoint manager
         if self.config.enable_checkpoints:
             self.checkpoint_manager = CheckpointManagerFactory.get_manager(
-                self.config.hop_id, self.config.checkpoint_dir, use_global_key=True,
+                self.config.hop_id,
+                self.config.checkpoint_dir,
+                use_global_key=True,
             )
         else:
             self.checkpoint_manager = None
@@ -372,7 +374,9 @@ class SubatomicHop:
         return plan
 
     async def _apply_stage_injections(
-        self, stage: MicroStage, kwargs: dict[str, Any],
+        self,
+        stage: MicroStage,
+        kwargs: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply instructional injections appropriate for the stage.
 
@@ -454,7 +458,10 @@ class SubatomicHop:
 
                 # Find matching injections
                 matches = loader.find_matching_injections(
-                    hop_type=hop_type, stage=stage.value, context=injection_context, content=content,
+                    hop_type=hop_type,
+                    stage=stage.value,
+                    context=injection_context,
+                    content=content,
                 )
 
                 if matches:
@@ -471,9 +478,7 @@ class SubatomicHop:
                         enhanced_kwargs = json.loads(enhanced_prompt)
 
                         # Store injection info
-                        enhanced_kwargs["instructional_injections"] = [
-                            m.injection.id for m in matches
-                        ]
+                        enhanced_kwargs["instructional_injections"] = [m.injection.id for m in matches]
 
                         logger.debug(
                             f"Applied {len(matches)} instructional injections for stage {stage.value}",
@@ -570,9 +575,7 @@ class SubatomicHop:
             mutation_request = MutationRequest(
                 reason=f"Signal quality {signal_assessment.quality_level.value}. "
                 f"Recommendations: {'; '.join(signal_assessment.recommendations[:3])}",
-                priority="high"
-                if signal_assessment.quality_level == SignalQuality.POOR
-                else "medium",
+                priority="high" if signal_assessment.quality_level == SignalQuality.POOR else "medium",
                 context={
                     "quality_score": signal_assessment.composite_score,
                     "flags": signal_assessment.flags,
@@ -714,7 +717,9 @@ class SubatomicHop:
         # Log structured event
         if self.config.enable_observability:
             transition = StageTransition(
-                hop_id=self.config.hop_id, from_stage=from_stage, to_stage=stage,
+                hop_id=self.config.hop_id,
+                from_stage=from_stage,
+                to_stage=stage,
             )
             self.stage_history.append(transition)
 
@@ -803,7 +808,11 @@ class SubatomicHop:
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
 
     async def request_upstream_change(
-        self, upstream_hop_id: str, change_request: str, reason: str, **kwargs,
+        self,
+        upstream_hop_id: str,
+        change_request: str,
+        reason: str,
+        **kwargs,
     ):
         """Request a change from an upstream node.
 
@@ -834,7 +843,11 @@ class SubatomicHop:
         )
 
     async def send_negotiation_message(
-        self, to_hop_id: str, message_type: str, payload: str, **kwargs,
+        self,
+        to_hop_id: str,
+        message_type: str,
+        payload: str,
+        **kwargs,
     ) -> bool:
         """Send a negotiation message to another hop.
 
@@ -895,7 +908,9 @@ class SubatomicHop:
 
 # Factory function for creating subatomic hops
 def create_subatomic_hop(
-    hop_function: Callable, config: SubatomicHopConfig | None = None, **kwargs,
+    hop_function: Callable,
+    config: SubatomicHopConfig | None = None,
+    **kwargs,
 ) -> SubatomicHop:
     """Create a SubatomicHop from a regular function.
 

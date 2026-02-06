@@ -112,24 +112,16 @@ class TitaniumRAGPipeline:
         self.cache = cache or ContrastiveSemanticCache()
 
         # Initialize security layer
-        self.input_guardrail = input_guardrail or (
-            get_input_guardrail() if enable_security else None
-        )
+        self.input_guardrail = input_guardrail or (get_input_guardrail() if enable_security else None)
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
-        self.retrieval_grader = retrieval_grader or (
-            get_retrieval_grader() if enable_crag else None
-        )
-        self.web_search_fallback = web_search_fallback or (
-            get_web_search_fallback() if enable_crag else None
-        )
+        self.retrieval_grader = retrieval_grader or (get_retrieval_grader() if enable_crag else None)
+        self.web_search_fallback = web_search_fallback or (get_web_search_fallback() if enable_crag else None)
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
-        self.graphrag_fusion = graphrag_fusion or (
-            get_graphrag_fusion() if enable_graphrag else None
-        )
+        self.graphrag_fusion = graphrag_fusion or (get_graphrag_fusion() if enable_graphrag else None)
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
         # configuration
@@ -271,12 +263,16 @@ class TitaniumRAGPipeline:
         for sub_query in queries_to_process:
             # Retrieve dense and sparse results
             dense_results, sparse_results = await retrieval_function(
-                sub_query, max_docs=self.max_retrieved_docs, **kwargs,
+                sub_query,
+                max_docs=self.max_retrieved_docs,
+                **kwargs,
             )
 
             # Score with dynamic alpha
             scored = self.scorer.score_documents(
-                dense_results=dense_results, sparse_results=sparse_results, query=sub_query,
+                dense_results=dense_results,
+                sparse_results=sparse_results,
+                query=sub_query,
             )
 
             all_retrieved.extend(scored)
@@ -393,7 +389,8 @@ class TitaniumRAGPipeline:
 
                 # Execute GraphRAG fusion
                 fusion_result = await self.graphrag_fusion.query(
-                    query, max_results=self.top_k_final,
+                    query,
+                    max_results=self.top_k_final,
                 )
 
                 self.stats["graphrag_queries"] += 1
@@ -474,7 +471,9 @@ class TitaniumRAGPipeline:
 
             # Rerank
             reranked_texts = self.reranker.rerank(
-                query=query, documents=doc_texts, top_k=self.top_k_final,
+                query=query,
+                documents=doc_texts,
+                top_k=self.top_k_final,
             )
 
             # Map back to documents by text matching
@@ -548,7 +547,10 @@ class TitaniumRAGPipeline:
         }
 
     def _generate_response(
-        self, query: str, documents: list[Any], compressed_context: str | None = None,
+        self,
+        query: str,
+        documents: list[Any],
+        compressed_context: str | None = None,
     ) -> str:
         """Generate response from retrieved documents.
 

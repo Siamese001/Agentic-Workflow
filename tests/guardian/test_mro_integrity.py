@@ -89,9 +89,7 @@ def _module_name_from_path(project_root: Path, file_path: Path) -> str:
     return ".".join(rel.parts)
 
 
-def _get_all_python_files(
-    directories: list[str], excluded_dirs: set[str] | None = None
-) -> list[Path]:
+def _get_all_python_files(directories: list[str], excluded_dirs: set[str] | None = None) -> list[Path]:
     """
     Get all Python files from specified directories.
 
@@ -253,9 +251,7 @@ def test_redundant_mixin_check():
             (
                 b
                 for b in cls.__bases__
-                if inspect.isclass(b)
-                and issubclass(b, SovereignBaseAgent)
-                and b is not SovereignBaseAgent
+                if inspect.isclass(b) and issubclass(b, SovereignBaseAgent) and b is not SovereignBaseAgent
             ),
             None,
         )
@@ -300,9 +296,7 @@ def test_dataclass_initialization_fuzz(monkeypatch: pytest.MonkeyPatch):
 
     # All dataclass init failures are now BLOCKING
     if failures:
-        pytest.fail(
-            f"BLOCKING: {len(failures)} dataclass init failures:\n" + "\n".join(failures[:10])
-        )
+        pytest.fail(f"BLOCKING: {len(failures)} dataclass init failures:\n" + "\n".join(failures[:10]))
 
 
 def test_diamond_resolution_synthetic():
@@ -335,8 +329,7 @@ def test_diamond_resolution_synthetic():
     assert calls.get("_Left") == 1
     assert calls.get("_Right") == 1
     assert calls.get("_Base") == 1, (
-        "Diamond resolution failure: shared base __init__ executed more than once. "
-        f"Observed calls={calls}"
+        f"Diamond resolution failure: shared base __init__ executed more than once. Observed calls={calls}"
     )
 
 
@@ -435,11 +428,7 @@ def test_mixin_naming_convention_and_inheritance():
         rel_root = os.path.relpath(root, project_root)
 
         # Skip non-source / historical folders
-        if (
-            rel_root.startswith("archives")
-            or rel_root.startswith("tests")
-            or rel_root.startswith(".git")
-        ):
+        if rel_root.startswith("archives") or rel_root.startswith("tests") or rel_root.startswith(".git"):
             dirs[:] = []
             continue
 
@@ -514,9 +503,7 @@ def test_sovereign_seal_integrity(monkeypatch: pytest.MonkeyPatch):
     try:
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
-        sealed_instances.append(
-            ("apps_lic.engines.HOP1ProfileAnalysisAgent", HOP1ProfileAnalysisAgent())
-        )
+        sealed_instances.append(("apps_lic.engines.HOP1ProfileAnalysisAgent", HOP1ProfileAnalysisAgent()))
     except Exception:
         pass
 
@@ -549,9 +536,7 @@ def test_sovereign_seal_integrity(monkeypatch: pytest.MonkeyPatch):
         if hasattr(agent, "config"):
             try:
                 agent.config = None
-                failures.append(
-                    f"{name}: Sovereign seal failed to block existing attribute mutation"
-                )
+                failures.append(f"{name}: Sovereign seal failed to block existing attribute mutation")
             except AttributeError:
                 pass
 
@@ -673,9 +658,7 @@ class TestDiamondDefense:
                 sba_index = mro.index(SovereignBaseAgent)
             except ValueError:
                 # SovereignBaseAgent not in MRO - this shouldn't happen for subclasses
-                violations.append(
-                    f"{cls.__module__}.{cls.__name__}: SovereignBaseAgent not found in MRO"
-                )
+                violations.append(f"{cls.__module__}.{cls.__name__}: SovereignBaseAgent not found in MRO")
                 continue
 
             # Check that SovereignBaseAgent is the last non-object, non-mixin class
@@ -899,9 +882,7 @@ class TestDiamondDefense:
                 try:
                     cls_fields = fields(cls)
                 except Exception as e:
-                    field_ordering_issues.append(
-                        f"{cls.__module__}.{cls.__name__}: Cannot get fields - {e}"
-                    )
+                    field_ordering_issues.append(f"{cls.__module__}.{cls.__name__}: Cannot get fields - {e}")
                     continue
 
                 # Check field ordering: non-defaults must come before defaults
@@ -953,23 +934,17 @@ class TestDiamondDefense:
                 mro = inspect.getmro(cls)
             except TypeError as e:
                 # MRO computation failed - this is a critical error
-                inconsistencies.append(
-                    f"{cls.__module__}.{cls.__name__}: MRO computation failed - {e}"
-                )
+                inconsistencies.append(f"{cls.__module__}.{cls.__name__}: MRO computation failed - {e}")
                 continue
 
             # Verify MRO properties:
             # 1. Class itself is first
             if mro[0] is not cls:
-                inconsistencies.append(
-                    f"{cls.__module__}.{cls.__name__}: Class is not first in its own MRO"
-                )
+                inconsistencies.append(f"{cls.__module__}.{cls.__name__}: Class is not first in its own MRO")
 
             # 2. object is last
             if mro[-1] is not object:
-                inconsistencies.append(
-                    f"{cls.__module__}.{cls.__name__}: 'object' is not last in MRO"
-                )
+                inconsistencies.append(f"{cls.__module__}.{cls.__name__}: 'object' is not last in MRO")
 
             # 3. No duplicates
             if len(mro) != len(set(mro)):
@@ -982,9 +957,8 @@ class TestDiamondDefense:
                         f"{cls.__module__}.{cls.__name__}: Base '{base.__name__}' not in MRO"
                     )
 
-        assert not inconsistencies, (
-            f"MRO INCONSISTENCIES DETECTED ({len(inconsistencies)}):\n"
-            + "\n".join(f"  [X] {i}" for i in inconsistencies)
+        assert not inconsistencies, f"MRO INCONSISTENCIES DETECTED ({len(inconsistencies)}):\n" + "\n".join(
+            f"  [X] {i}" for i in inconsistencies
         )
 
         print(f"\n[OK] MRO consistency verified for {len(subclasses)} classes")

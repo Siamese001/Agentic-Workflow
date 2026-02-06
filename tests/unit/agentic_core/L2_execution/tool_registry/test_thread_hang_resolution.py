@@ -31,9 +31,7 @@ class TestThreadHangResolution(unittest.TestCase):
 
             # The test should take roughly 1s (timeout) + minor overhead.
             # If it takes > 3s, the executor is blocking.
-            self.assertLess(
-                duration, 2.5, "Main thread blocked on executor shutdown despite timeout."
-            )
+            self.assertLess(duration, 2.5, "Main thread blocked on executor shutdown despite timeout.")
 
     def test_retry_decorator_interaction_with_hang(self):
         """

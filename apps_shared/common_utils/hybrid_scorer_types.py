@@ -5,6 +5,9 @@ Combines multiple scoring strategies for optimal document ranking.
 
 import math
 import re
+from collections import Counter
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -68,9 +71,7 @@ class BM25Scorer:
                 self.doc_freqs[term] = self.doc_freqs.get(term, 0) + 1
 
         # Calculate average document length
-        self.avg_doc_length = (
-            sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
-        )
+        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
 
         # Store tokenized documents for scoring
         self.documents = all_terms
@@ -270,7 +271,10 @@ class HybridScorer:
         return score
 
     def _normalize_score(
-        self, score: float, min_score: float = 0.0, max_score: float = 1.0,
+        self,
+        score: float,
+        min_score: float = 0.0,
+        max_score: float = 1.0,
     ) -> float:
         """Normalize score to [0, 1] range.
 

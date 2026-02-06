@@ -53,9 +53,7 @@ class TestFilesystemSSOTReconcilerAgent:
 
     def test_has_run_ci_verification_sync_method(self, agent_class):
         """Verify agent has run_ci_verification_sync method."""
-        assert hasattr(agent_class, "run_ci_verification_sync"), (
-            "Should have run_ci_verification_sync method"
-        )
+        assert hasattr(agent_class, "run_ci_verification_sync"), "Should have run_ci_verification_sync method"
 
     def test_has_run_ci_verification_method(self, agent_class):
         """Verify agent has run_ci_verification method."""

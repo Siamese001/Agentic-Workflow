@@ -9,6 +9,9 @@ import json
 import logging
 import time
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +98,10 @@ class ObservabilityToolInvoker:
         self._initialize_handlers()
 
     def register_tool(
-        self, tool_name: str, endpoint: ToolEndpoint, handler: Callable | None = None,
+        self,
+        tool_name: str,
+        endpoint: ToolEndpoint,
+        handler: Callable | None = None,
     ) -> None:
         """Register a tool endpoint.
 
@@ -164,7 +170,10 @@ class ObservabilityToolInvoker:
         except Exception as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             return self._create_error_response(
-                request.invocation_id, request.tool_name, str(e), start_time,
+                request.invocation_id,
+                request.tool_name,
+                str(e),
+                start_time,
             )
 
     def invoke_batch(self, requests: list[InvocationRequest]) -> list[InvocationResponse]:
@@ -307,7 +316,10 @@ class ObservabilityToolInvoker:
         )
 
     def _simulate_invocation(
-        self, request: InvocationRequest, proxy: bool = False, async_mode: bool = False,
+        self,
+        request: InvocationRequest,
+        proxy: bool = False,
+        async_mode: bool = False,
     ) -> InvocationResponse:
         """Simulate tool invocation."""
         # Simulate processing time
@@ -379,7 +391,11 @@ class ObservabilityToolInvoker:
         return f"tool_invoke_{hash(json.dumps(key_data, sort_keys=True))}"
 
     def _create_error_response(
-        self, invocation_id: str, tool_name: str, error: str, start_time: float,
+        self,
+        invocation_id: str,
+        tool_name: str,
+        error: str,
+        start_time: float,
     ) -> InvocationResponse:
         """Create error response."""
         return InvocationResponse(

@@ -2,6 +2,8 @@
 Quick script to check _from_utils duplicates
 """
 
+from pathlib import Path
+
 project_root = Path(__file__).parent.parent.parent
 
 from_utils = list(project_root.rglob("*_from_utils.py"))

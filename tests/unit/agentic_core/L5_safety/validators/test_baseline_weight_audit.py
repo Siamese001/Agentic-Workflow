@@ -100,10 +100,7 @@ class TestBaselineWeightAudit:
                 expected_range = ranges["constitutional"]
             elif path.startswith("agentic_core/L5_safety"):
                 expected_range = ranges["critical_safety"]
-            elif any(
-                prefix in path
-                for prefix in ["L1_cognition", "L3_orchestration", "prompt_governance"]
-            ):
+            elif any(prefix in path for prefix in ["L1_cognition", "L3_orchestration", "prompt_governance"]):
                 expected_range = ranges["domain_logic"]
             elif any(prefix in path for prefix in ["L4_state", "schemas/models", "config"]):
                 expected_range = ranges["state_schema"]
@@ -133,10 +130,7 @@ class TestBaselineWeightAudit:
                 tier_weights["constitutional"].append(weight)
             elif path.startswith("agentic_core/L5_safety"):
                 tier_weights["critical_safety"].append(weight)
-            elif any(
-                prefix in path
-                for prefix in ["L1_cognition", "L3_orchestration", "prompt_governance"]
-            ):
+            elif any(prefix in path for prefix in ["L1_cognition", "L3_orchestration", "prompt_governance"]):
                 tier_weights["domain_logic"].append(weight)
             elif any(prefix in path for prefix in ["L4_state", "schemas/models", "config"]):
                 tier_weights["state_schema"].append(weight)
@@ -144,22 +138,12 @@ class TestBaselineWeightAudit:
                 tier_weights["generic_utilities"].append(weight)
 
         # Verify no overlaps between tiers
-        max_utility = (
-            max(tier_weights["generic_utilities"]) if tier_weights["generic_utilities"] else 0
-        )
-        min_state = (
-            min(tier_weights["state_schema"]) if tier_weights["state_schema"] else float("inf")
-        )
+        max_utility = max(tier_weights["generic_utilities"]) if tier_weights["generic_utilities"] else 0
+        min_state = min(tier_weights["state_schema"]) if tier_weights["state_schema"] else float("inf")
         max_state = max(tier_weights["state_schema"]) if tier_weights["state_schema"] else 0
-        min_domain = (
-            min(tier_weights["domain_logic"]) if tier_weights["domain_logic"] else float("inf")
-        )
+        min_domain = min(tier_weights["domain_logic"]) if tier_weights["domain_logic"] else float("inf")
         max_domain = max(tier_weights["domain_logic"]) if tier_weights["domain_logic"] else 0
-        min_safety = (
-            min(tier_weights["critical_safety"])
-            if tier_weights["critical_safety"]
-            else float("inf")
-        )
+        min_safety = min(tier_weights["critical_safety"]) if tier_weights["critical_safety"] else float("inf")
         max_safety = max(tier_weights["critical_safety"]) if tier_weights["critical_safety"] else 0
         min_constitutional = (
             min(tier_weights["constitutional"]) if tier_weights["constitutional"] else float("inf")

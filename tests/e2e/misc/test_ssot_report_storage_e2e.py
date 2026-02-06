@@ -263,15 +263,9 @@ class TestE2EDocumentation:
 
         if guide_path.exists():
             # Check referenced modules exist
+            assert (PROJECT_ROOT / "agentic_core" / "utils" / "report_location_validator_types.py").exists()
             assert (
-                PROJECT_ROOT / "agentic_core" / "utils" / "report_location_validator_types.py"
-            ).exists()
-            assert (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "L5_safety"
-                / "validators"
-                / "ReportLocationAgent.py"
+                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "ReportLocationAgent.py"
             ).exists()
             assert (PROJECT_ROOT / "scripts" / "hooks" / "validate_report_location.py").exists()
 

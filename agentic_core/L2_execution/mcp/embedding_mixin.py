@@ -38,14 +38,19 @@ class EmbeddingMixin:
         return self._embedding_gateway
 
     async def get_embedding(
-        self, content: str, provider: EmbeddingProvider = "gemini", use_cache: bool = True,
+        self,
+        content: str,
+        provider: EmbeddingProvider = "gemini",
+        use_cache: bool = True,
     ) -> list[float]:
         """Get embedding through gateway."""
         # return await self.embedding_gateway.get_embedding(content, provider, use_cache)
         return [0.0] * 1536  # Stub embedding
 
     async def get_embeddings_batch(
-        self, contents: list[str], provider: EmbeddingProvider = "gemini",
+        self,
+        contents: list[str],
+        provider: EmbeddingProvider = "gemini",
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
         # return await self.embedding_gateway.get_embeddings_batch(contents, provider)

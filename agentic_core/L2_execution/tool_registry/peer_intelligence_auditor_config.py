@@ -32,6 +32,8 @@ from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class PeerIntelligenceResult:
@@ -115,7 +117,9 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
 
     def analyze_competitive_landscape(
-        self, jd_keywords: list[str], context: dict[str, Any],
+        self,
+        jd_keywords: list[str],
+        context: dict[str, Any],
     ) -> PeerIntelligenceResult:
         """
         Execute multi-hop competitive analysis.
@@ -182,7 +186,10 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
         hops = []
         for hop_num in range(1, self.config.total_hops + 1):
             search_queries = self._generate_hop_queries(
-                jd_keywords=jd_keywords, context=context, hop_number=hop_num, previous_hops=hops,
+                jd_keywords=jd_keywords,
+                context=context,
+                hop_number=hop_num,
+                previous_hops=hops,
             )
             results = self._execute_searches(search_queries)
             keywords_found = self._extract_keywords_from_results(results)
@@ -252,7 +259,8 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
             keyword_lower = keyword.lower()
             frequency_score = sum(1 for hop in hops if keyword_lower in hop.keywords_found) / len(hops)
             competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / max(
-                len(all_keywords_found), 1,
+                len(all_keywords_found),
+                1,
             )
             if frequency_score > 0.6:
                 classification = KeywordClassification.TABLE_STAKES

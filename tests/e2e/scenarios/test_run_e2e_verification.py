@@ -11,9 +11,7 @@ def test_run_e2e_verification():
     test_path = "tests/e2e/test_rg_production_flow.py"
 
     # Run the specific test file
-    result = subprocess.run(
-        [sys.executable, "-m", "pytest", test_path, "-v"], capture_output=True, text=True
-    )
+    result = subprocess.run([sys.executable, "-m", "pytest", test_path, "-v"], capture_output=True, text=True)
 
     # Check for "Broken Link" failure (Signature propagation)
     if result.returncode != 0:

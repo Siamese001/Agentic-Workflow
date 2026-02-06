@@ -107,12 +107,8 @@ async def test_telemetry_fidelity_check():
     summary = ctx.trace.get_summary()
 
     # We expect at least 6 spans (Orch + 5 HOPs)
-    assert summary["total_spans"] >= 6, (
-        f"Telemetry gap detected. Only found {summary['total_spans']} spans."
-    )
-    assert summary["completed"] == summary["total_spans"], (
-        "Orphaned spans detected (did not close)."
-    )
+    assert summary["total_spans"] >= 6, f"Telemetry gap detected. Only found {summary['total_spans']} spans."
+    assert summary["completed"] == summary["total_spans"], "Orphaned spans detected (did not close)."
     print("✅ test_telemetry_fidelity_check PASSED")
 
 

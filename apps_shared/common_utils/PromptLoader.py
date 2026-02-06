@@ -4,6 +4,8 @@ Dynamic Prompt Loader for Canon Validator Agents
 Loads prompts from modularized markdown files based on agent role.
 """
 
+from pathlib import Path
+
 
 class PromptLoader:
     """Loads and caches prompts from markdown files."""
@@ -96,10 +98,12 @@ class PromptLoader:
         if global_constraints:
             # Replace placeholder with actual line count
             constraints_with_count = global_constraints.replace(
-                "{original_line_count}", str(original_line_count),
+                "{original_line_count}",
+                str(original_line_count),
             )
             constraints_with_count = constraints_with_count.replace(
-                "{int(original_line_count * 0.1)}", str(int(original_line_count * 0.1)),
+                "{int(original_line_count * 0.1)}",
+                str(int(original_line_count * 0.1)),
             )
             sections.append(constraints_with_count)
 
@@ -133,7 +137,11 @@ _loader = PromptLoader()
 
 
 def load_prompt_for_agent(
-    agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = "",
+    agent_role: str,
+    task: str,
+    code: str,
+    original_line_count: int,
+    lesson_learned: str = "",
 ) -> str:
     """
     Convenience function to load complete prompt for an agent.

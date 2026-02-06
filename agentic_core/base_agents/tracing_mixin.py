@@ -172,7 +172,9 @@ class TracingMixin:
 
     @contextmanager
     def start_span(
-        self, operation_name: str, attributes: dict[str, Any] | None = None,
+        self,
+        operation_name: str,
+        attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext, None, None]:
         """
         Start a new tracing span.

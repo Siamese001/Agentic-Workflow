@@ -36,9 +36,7 @@ def run_tests():
         leaked_ref["access_level"] = "hacker"
         leaked_ref["nested"]["param"] = 999
         safe_data = buffer.read("config")
-        assert safe_data["access_level"] == "admin", (
-            f"Expected 'admin', got '{safe_data['access_level']}'"
-        )
+        assert safe_data["access_level"] == "admin", f"Expected 'admin', got '{safe_data['access_level']}'"
         assert safe_data["nested"]["param"] == 1, f"Expected 1, got {safe_data['nested']['param']}"
         print("  ✅ PASSED")
         passed += 1
@@ -117,9 +115,7 @@ def run_tests():
         registry.end_span(span, status="SUCCESS")
         summary = registry.get_summary()
         assert summary["total_spans"] == 1, f"Expected 1 span, got {summary['total_spans']}"
-        assert summary["avg_latency_ms"] > 0, (
-            f"Expected latency > 0, got {summary['avg_latency_ms']}"
-        )
+        assert summary["avg_latency_ms"] > 0, f"Expected latency > 0, got {summary['avg_latency_ms']}"
         print("  ✅ PASSED")
         passed += 1
     except Exception as e:

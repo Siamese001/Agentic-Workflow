@@ -55,9 +55,7 @@ class TestMetaLearningAgent:
 
     def test_has_update_strategy_weights_method(self, agent_class):
         """Verify agent has update_strategy_weights method."""
-        assert hasattr(agent_class, "update_strategy_weights"), (
-            "Should have update_strategy_weights method"
-        )
+        assert hasattr(agent_class, "update_strategy_weights"), "Should have update_strategy_weights method"
 
     def test_has_extract_patterns_method(self, agent_class):
         """Verify agent has extract_patterns method."""

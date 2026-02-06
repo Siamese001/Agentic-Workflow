@@ -9,6 +9,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 

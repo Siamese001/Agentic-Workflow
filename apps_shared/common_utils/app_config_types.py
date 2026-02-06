@@ -538,7 +538,11 @@ ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
 
 # K4_TRADERSENSE_NARRATIVE: Unchanged
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=False,
 )
 
 # K5_EY_NARRATIVE: Reduced SC from 4 -> 3
@@ -552,7 +556,11 @@ ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
 
 # K6_EARLY_CAREER_NARRATIVE: Unchanged
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=False,
 )
 
 # K9_COMPETENCIES: Reduced SC from 6 -> 3
@@ -566,7 +574,11 @@ ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
 
 # K10_SKILLS: Unchanged (already minimal)
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False,
+    cot_min_paths=1,
+    tot_branches=2,
+    min_tot_depth=1,
+    self_consistency=1,
+    reflexion=False,
 )
 
 # K11_COVER_LETTER: Reduced SC from 6 -> 3

@@ -7,6 +7,11 @@ ambiguity and demonstrate proper adherence.
 
 import json
 import logging
+from dataclasses import dataclass
+from enum import Enum
+from pydantic import BaseModel, Field
+from typing import Any
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +61,10 @@ class FewShotRegistry(BaseModel):
         logger.debug(f"Added example for {example.instruction_id} ({example.context_tag.value})")
 
     def get_examples(
-        self, instruction_id: str, context: str = "general", max_examples: int = 3,
+        self,
+        instruction_id: str,
+        context: str = "general",
+        max_examples: int = 3,
     ) -> str:
         """Get formatted examples for an instruction.
 
@@ -123,10 +131,7 @@ class FewShotRegistry(BaseModel):
         context_lower = context.lower()
 
         # Check for engineering keywords
-        if any(
-            word in context_lower
-            for word in ["engineer", "developer", "technical", "code", "software"]
-        ):
+        if any(word in context_lower for word in ["engineer", "developer", "technical", "code", "software"]):
             return ContextType.ENGINEERING
 
         # Check for sales keywords
@@ -134,9 +139,7 @@ class FewShotRegistry(BaseModel):
             return ContextType.SALES
 
         # Check for executive keywords
-        if any(
-            word in context_lower for word in ["executive", "ceo", "cto", "leadership", "strategic"]
-        ):
+        if any(word in context_lower for word in ["executive", "ceo", "cto", "leadership", "strategic"]):
             return ContextType.EXECUTIVE
 
         # Check for marketing keywords
@@ -314,7 +317,9 @@ def _initialize_default_examples() -> None:
 
 
 def get_examples_for_injection(
-    instruction_id: str, context: str = "general", max_examples: int = 3,
+    instruction_id: str,
+    context: str = "general",
+    max_examples: int = 3,
 ) -> str:
     """Get few-shot examples for an instruction.
 
@@ -331,7 +336,9 @@ def get_examples_for_injection(
 
 
 def enhance_with_examples(
-    base_prompt: str, injections: list[InjectionPattern], context: str = "general",
+    base_prompt: str,
+    injections: list[InjectionPattern],
+    context: str = "general",
 ) -> str:
     """Enhance a prompt with few-shot examples for each injection.
 

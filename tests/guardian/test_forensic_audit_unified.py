@@ -127,9 +127,7 @@ class ForensicAuditScanner:
                 result.agents.append(agent_info)
 
                 result.total_agents += 1
-                result.agents_by_territory[territory] = (
-                    result.agents_by_territory.get(territory, 0) + 1
-                )
+                result.agents_by_territory[territory] = result.agents_by_territory.get(territory, 0) + 1
 
                 if agent_info.violation_patterns:
                     result.agents_with_violations += 1
@@ -137,9 +135,7 @@ class ForensicAuditScanner:
 
                     for violation in agent_info.violation_patterns:
                         vtype = self._categorize_violation(violation)
-                        result.violations_by_type[vtype] = (
-                            result.violations_by_type.get(vtype, 0) + 1
-                        )
+                        result.violations_by_type[vtype] = result.violations_by_type.get(vtype, 0) + 1
                 else:
                     result.clean_agents.append(agent_info.class_name)
 
@@ -165,9 +161,7 @@ class ForensicAuditScanner:
             )
 
         agent_classes = [
-            node
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
+            node for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
         ]
 
         if not agent_classes:

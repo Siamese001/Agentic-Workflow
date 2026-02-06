@@ -192,9 +192,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
             continue
 
         # Check if it inherits from HealerMixin or has heal_repository
-        has_healer = (
-            "HealerMixin" in class_info["bases"] or "heal_repository" in class_info["methods"]
-        )
+        has_healer = "HealerMixin" in class_info["bases"] or "heal_repository" in class_info["methods"]
         if not has_healer:
             continue
 
@@ -234,8 +232,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
             substantial_methods = [
                 name
                 for name, info in class_info["methods"].items()
-                if name
-                not in ("__init__", "__post_init__", "heal_repository", "__str__", "__repr__")
+                if name not in ("__init__", "__post_init__", "heal_repository", "__str__", "__repr__")
                 and info["lines"] > 5
                 and name not in heal_calls
             ]

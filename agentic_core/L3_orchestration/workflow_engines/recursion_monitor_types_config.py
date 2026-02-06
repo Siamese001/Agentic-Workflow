@@ -211,7 +211,11 @@ class RecursionMonitor:
         cache_hit_rate = cache_hits / max(cache_hits + cache_misses, 1)
 
         health_status = self._calculate_health_status(
-            active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate,
+            active_recursions,
+            success_rate,
+            avg_depth,
+            memory_bytes,
+            cache_hit_rate,
         )
 
         snapshot = RecursionSnapshot(

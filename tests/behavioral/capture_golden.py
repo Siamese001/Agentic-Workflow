@@ -128,9 +128,7 @@ class TestCaptureDomainPlannerGolden:
             agent = DomainPlannerAgent()
 
             # Get MRO depth
-            mro_depth = len(
-                [c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")]
-            )
+            mro_depth = len([c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")])
 
             # Try different execution methods
             result = None
@@ -216,9 +214,7 @@ class TestCaptureCodeHealerGolden:
 
         with deterministic_harness:
             agent = CodeHealerAgent()
-            mro_depth = len(
-                [c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")]
-            )
+            mro_depth = len([c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")])
 
             result = None
             if hasattr(agent, "heal"):

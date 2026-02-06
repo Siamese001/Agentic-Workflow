@@ -154,9 +154,7 @@ def test_confidence_thresholds():
     for i, (confidence_val, description) in enumerate(test_cases):
         print(f"\nTesting {description} ({confidence_val})...")
 
-        confidence = ConfidenceScore(
-            value=confidence_val, reasoning=f"Test confidence {confidence_val}"
-        )
+        confidence = ConfidenceScore(value=confidence_val, reasoning=f"Test confidence {confidence_val}")
 
         allowed, reason = decision_engine.should_proceed_with_healing(confidence, f"TestAgent{i}")
 

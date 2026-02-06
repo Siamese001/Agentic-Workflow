@@ -46,7 +46,11 @@ class RGSovereignAuditor:
 
             # Classification logic
             classification, details = self._classify_file_logic(
-                file_path.name, content, classes, imports, functions,
+                file_path.name,
+                content,
+                classes,
+                imports,
+                functions,
             )
 
             return {
@@ -73,9 +77,7 @@ class RGSovereignAuditor:
                         bases.append(base.id)
                     elif isinstance(base, ast.Attribute):
                         bases.append(
-                            f"{base.value.id}.{base.attr}"
-                            if hasattr(base.value, "id")
-                            else str(base),
+                            f"{base.value.id}.{base.attr}" if hasattr(base.value, "id") else str(base),
                         )
 
                 # Check for agent-like methods
@@ -106,9 +108,7 @@ class RGSovereignAuditor:
                         "is_base": "Base" in node.name,
                         "is_model": "Model" in node.name or "Schema" in node.name,
                         "is_enum": "Enum" in node.name or node.name.endswith("Type"),
-                        "line_count": node.end_lineno - node.lineno
-                        if hasattr(node, "end_lineno")
-                        else 0,
+                        "line_count": node.end_lineno - node.lineno if hasattr(node, "end_lineno") else 0,
                     },
                 )
 
@@ -208,8 +208,7 @@ class RGSovereignAuditor:
             "dispatch",
         ]
         has_agent_methods = any(
-            any(method in cls.get("methods", []) for method in agent_method_indicators)
-            for cls in classes
+            any(method in cls.get("methods", []) for method in agent_method_indicators) for cls in classes
         )
 
         # Check for agent naming patterns
@@ -241,9 +240,7 @@ class RGSovereignAuditor:
         has_stateful_classes = any(cls.get("has_state", False) for cls in classes)
         has_init_methods = any("__init__" in cls.get("methods", []) for cls in classes)
 
-        if is_tool_by_name or (
-            not has_stateful_classes and not has_init_methods and len(classes) == 0
-        ):
+        if is_tool_by_name or (not has_stateful_classes and not has_init_methods and len(classes) == 0):
             return "STATELESS_TOOL", {
                 "reason": "Stateless utility functions or tool-like naming",
                 "is_tool_by_name": is_tool_by_name,

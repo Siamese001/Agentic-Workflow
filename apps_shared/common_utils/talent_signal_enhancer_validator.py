@@ -7,6 +7,9 @@ AI leadership roles.
 
 import logging
 import re
+from pydantic import BaseModel, Field
+from typing import Any
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +19,8 @@ class TalentMetrics(BaseModel):
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
     pedigree_keywords: list[str] = Field(
-        default_factory=list, description="Prestige markers in team",
+        default_factory=list,
+        description="Prestige markers in team",
     )
     retention_rate: str | None = Field(None, description="Team retention rate")
     hiring_velocity: str | None = Field(None, description="Hiring speed metric")
@@ -149,7 +153,8 @@ class TalentSignalEnhancer:
                     )
                 else:
                     enhanced = enhanced.replace(
-                        f"team of {team_size}", f"high-performance team of {team_size}",
+                        f"team of {team_size}",
+                        f"high-performance team of {team_size}",
                     )
 
             # Add hiring velocity
@@ -363,10 +368,7 @@ class TalentSignalEnhancer:
                     return f"{match.group(1)}%"
 
             # Look for "no attrition", "zero turnover"
-            if any(
-                phrase in text.lower()
-                for phrase in ["no attrition", "zero turnover", "100% retained"]
-            ):
+            if any(phrase in text.lower() for phrase in ["no attrition", "zero turnover", "100% retained"]):
                 return "100%"
 
             return None
@@ -391,15 +393,18 @@ class TalentSignalEnhancer:
                 # Add prestige without making false claims
                 if team_size >= 20:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **senior engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **senior engineers**",
                     )
                 elif team_size >= 10:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **high-caliber engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **high-caliber engineers**",
                     )
                 else:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **specialized engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **specialized engineers**",
                     )
 
             # Add leadership emphasis
@@ -428,7 +433,8 @@ def create_talent_signal_enhancer(candidate_background: dict[str, Any]) -> Talen
 
 # Convenience function for quick enhancement
 def enhance_talent_signals(
-    bullets: list[str], candidate_background: dict[str, Any],
+    bullets: list[str],
+    candidate_background: dict[str, Any],
 ) -> tuple[list[str], str | None]:
     """Quickly enhance talent signals in bullets.
 

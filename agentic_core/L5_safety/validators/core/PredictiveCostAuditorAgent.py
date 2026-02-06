@@ -28,6 +28,7 @@ from typing import Any
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -173,7 +174,11 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         else:
             sink_severity = "none"
         Recommendation = self._generate_recommendation(
-            file_path, total_attempts, cost_usd, success_rate, sink_severity,
+            file_path,
+            total_attempts,
+            cost_usd,
+            success_rate,
+            sink_severity,
         )
         return FileAudit(
             file_path=file_path,
@@ -189,7 +194,12 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         )
 
     def _generate_recommendation(
-        self, file_path: str, attempts: int, cost_usd: float, success_rate: float, Severity: str,
+        self,
+        file_path: str,
+        attempts: int,
+        cost_usd: float,
+        success_rate: float,
+        Severity: str,
     ) -> str:
         """Generate Recommendation for file."""
         if Severity == "critical":
@@ -219,7 +229,9 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
             efficiency_score = 0
         estimated_cost_usd = total_tokens / 1000 * self.TOKEN_COST_PER_1K
         recommendations = self._generate_global_recommendations(
-            healing_sinks, efficiency_score, estimated_cost_usd,
+            healing_sinks,
+            efficiency_score,
+            estimated_cost_usd,
         )
         return CostReport(
             total_files=total_files,
@@ -234,7 +246,10 @@ class PredictiveCostAuditorAgent(SubatomicTestingMixin, SovereignBaseAgent, SubA
         )
 
     def _generate_global_recommendations(
-        self, healing_sinks: list[FileAudit], efficiency_score: float, cost_usd: float,
+        self,
+        healing_sinks: list[FileAudit],
+        efficiency_score: float,
+        cost_usd: float,
     ) -> list[str]:
         """Generate global recommendations."""
         recommendations = []

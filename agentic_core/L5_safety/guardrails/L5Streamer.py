@@ -91,7 +91,8 @@ class L5Streamer:
                         for client in self._websocket_clients:
                             try:
                                 asyncio.run_coroutine_threadsafe(
-                                    client.send(message), asyncio.get_event_loop(),
+                                    client.send(message),
+                                    asyncio.get_event_loop(),
                                 ).result(timeout=1.0)
                             except Exception:
                                 disconnected.add(client)

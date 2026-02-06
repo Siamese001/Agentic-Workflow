@@ -55,21 +55,15 @@ class TestLLMPromptGovernorAgent:
 
     def test_has_build_healing_prompt_method(self, agent_class):
         """Verify agent has build_healing_prompt method."""
-        assert hasattr(agent_class, "build_healing_prompt"), (
-            "Should have build_healing_prompt method"
-        )
+        assert hasattr(agent_class, "build_healing_prompt"), "Should have build_healing_prompt method"
 
     def test_has_build_fission_prompt_method(self, agent_class):
         """Verify agent has build_fission_prompt method."""
-        assert hasattr(agent_class, "build_fission_prompt"), (
-            "Should have build_fission_prompt method"
-        )
+        assert hasattr(agent_class, "build_fission_prompt"), "Should have build_fission_prompt method"
 
     def test_has_enforce_output_format_method(self, agent_class):
         """Verify agent has enforce_output_format method."""
-        assert hasattr(agent_class, "enforce_output_format"), (
-            "Should have enforce_output_format method"
-        )
+        assert hasattr(agent_class, "enforce_output_format"), "Should have enforce_output_format method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

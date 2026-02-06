@@ -8,6 +8,10 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
+from pydantic import BaseModel, Field
+from typing import Any
+from pydantic import confloat
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +109,9 @@ class EvidenceRanker:
         )
 
     def rank_evidence(
-        self, signals: list[dict[str, Any]], current_year: int | None = None,
+        self,
+        signals: list[dict[str, Any]],
+        current_year: int | None = None,
     ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
@@ -155,12 +161,15 @@ class EvidenceRanker:
 
                     # Calculate corroboration count
                     corroboration_count, key_entities = self._count_corroboration(
-                        content, all_entities, signals,
+                        content,
+                        all_entities,
+                        signals,
                     )
 
                     # Calculate final score
                     corroboration_normalized = min(
-                        1.0, corroboration_count / 3.0,
+                        1.0,
+                        corroboration_count / 3.0,
                     )  # Normalize to 0-1
                     final_score = (
                         semantic_score * self.semantic_weight
@@ -287,7 +296,10 @@ class EvidenceRanker:
             return None
 
     def _count_corroboration(
-        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]],
+        self,
+        content: str,
+        all_entities: dict[str, list[str]],
+        all_signals: list[dict[str, Any]],
     ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
@@ -314,9 +326,7 @@ class EvidenceRanker:
                     corroboration_counts[entity] = len(all_entities[entity])
 
             # Calculate total corroboration (sum of corroborating signals)
-            total_corroboration = sum(
-                count - 1 for count in corroboration_counts.values() if count > 1
-            )
+            total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count > 1)
 
             # Identify key entities (those with corroboration)
             key_entities = [entity for entity, count in corroboration_counts.items() if count > 1]
@@ -445,13 +455,10 @@ class EvidenceRanker:
                 "total": len(ranked_evidence),
                 "recent_count": recent_count,
                 "corroborated_count": corroborated_count,
-                "avg_freshness": sum(e.freshness_score for e in ranked_evidence)
-                / len(ranked_evidence),
+                "avg_freshness": sum(e.freshness_score for e in ranked_evidence) / len(ranked_evidence),
                 "avg_corroboration": sum(e.corroboration_count for e in ranked_evidence)
                 / len(ranked_evidence),
-                "year_range": (min(years_detected), max(years_detected))
-                if years_detected
-                else None,
+                "year_range": (min(years_detected), max(years_detected)) if years_detected else None,
                 "avg_year": avg_year,
                 "top_score": ranked_evidence[0].final_score,
                 "bottom_score": ranked_evidence[-1].final_score,

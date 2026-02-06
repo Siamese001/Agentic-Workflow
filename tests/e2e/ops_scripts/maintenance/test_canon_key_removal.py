@@ -122,9 +122,7 @@ class TestCanonKeyRemoval:
     def test_verify_canon_base_agent_is_hollow(self):
         """Verify CanonBaseAgent is hollowed out."""
         try:
-            target_file = (
-                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
-            )
+            target_file = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
 
             # Skip test if file is already deleted (Legacy extinction)
             if not target_file.exists():
@@ -145,10 +143,7 @@ class TestCanonKeyRemoval:
                     for item in node.body:
                         if isinstance(item, ast.Assign):
                             for target in item.targets:
-                                if (
-                                    isinstance(target, ast.Name)
-                                    and target.id == "VERIFICATION_REGISTRY"
-                                ):
+                                if isinstance(target, ast.Name) and target.id == "VERIFICATION_REGISTRY":
                                     raise AssertionError(
                                         "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY"
                                     )
@@ -164,11 +159,7 @@ class TestCanonKeyRemoval:
         """Verify Jinja templates cleansed of legacy Canon Key references."""
         try:
             path = (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "prompt_governance"
-                / "templates"
-                / "agent_autonomy_law.jinja"
+                PROJECT_ROOT / "agentic_core" / "prompt_governance" / "templates" / "agent_autonomy_law.jinja"
             )
             if path.exists():
                 with open(path, encoding="utf-8") as f:

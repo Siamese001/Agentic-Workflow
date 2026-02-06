@@ -33,7 +33,8 @@ from typing import Any
 
 
 def calculate_health_score(
-    violations: list[dict[str, Any]], weights: dict[str, float] | None = None,
+    violations: list[dict[str, Any]],
+    weights: dict[str, float] | None = None,
 ) -> float:
     """
     Calculate a normalized health score (0-100) from violation data.

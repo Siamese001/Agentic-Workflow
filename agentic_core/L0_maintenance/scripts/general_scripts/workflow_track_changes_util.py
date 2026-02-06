@@ -28,7 +28,10 @@ def main() -> None:
     Path(".").resolve()
     tracker_path: Any = root / ".git" / "CANON_CHANGE.staging"
     result: Any = safe_git_execute(
-        ["diff", "--cached", "--name-status"], repo_root=root, timeout=30, check=False,
+        ["diff", "--cached", "--name-status"],
+        repo_root=root,
+        timeout=30,
+        check=False,
     )
     if result.returncode != 0:
         sys.exit(1)

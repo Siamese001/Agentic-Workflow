@@ -301,7 +301,11 @@ def run_standard_mode():
 
             # L5 Human-in-the-Loop intervention check
             if await _check_intervention(
-                cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event,
+                cycle,
+                ctx,
+                FASTAPI_AVAILABLE,
+                start_intervention_server,
+                approval_event,
             ):
                 break
 
@@ -422,7 +426,11 @@ def _deduplicate_agenda(agenda: list) -> list:
 
 
 async def _check_intervention(
-    cycle: int, ctx, FASTAPI_AVAILABLE: bool, start_intervention_server, approval_event,
+    cycle: int,
+    ctx,
+    FASTAPI_AVAILABLE: bool,
+    start_intervention_server,
+    approval_event,
 ) -> bool:
     """Check if human intervention is required and handle it."""
     high_risk = (

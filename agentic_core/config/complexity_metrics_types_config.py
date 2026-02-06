@@ -80,7 +80,9 @@ class FlatteningPattern:
 
     @classmethod
     def analyze_method(
-        cls, method_code: str, method_name: str,
+        cls,
+        method_code: str,
+        method_name: str,
     ) -> tuple[ComplexityMetrics, list[ExtractionCandidate]]:
         """
         Analyze a method and identify extraction candidates.
@@ -200,7 +202,9 @@ class FlatteningPattern:
 
     @classmethod
     def generate_extraction_plan(
-        cls, metrics: ComplexityMetrics, candidates: list[ExtractionCandidate],
+        cls,
+        metrics: ComplexityMetrics,
+        candidates: list[ExtractionCandidate],
     ) -> dict:
         """
         Generate a step-by-step extraction plan.

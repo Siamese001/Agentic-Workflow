@@ -9,6 +9,9 @@ import logging
 import time
 import uuid
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +175,11 @@ class ObservabilityToolExecutor:
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
-                request.execution_id, request.tool_id, request.command, str(e), start_time,
+                request.execution_id,
+                request.tool_id,
+                request.command,
+                str(e),
+                start_time,
             )
 
     def execute_tool_stream(self, request: ToolExecutionRequest) -> object:
@@ -195,7 +202,8 @@ class ObservabilityToolExecutor:
         yield from implementation(request.command, request.parameters, stream=True)
 
     def execute_tools_batch(
-        self, requests: list[ToolExecutionRequest],
+        self,
+        requests: list[ToolExecutionRequest],
     ) -> list[ToolExecutionResult]:
         """Execute multiple tools.
 
@@ -382,7 +390,9 @@ class ObservabilityToolExecutor:
         }
 
     def _track_execution_complete(
-        self, request: ToolExecutionRequest, result: ToolExecutionResult,
+        self,
+        request: ToolExecutionRequest,
+        result: ToolExecutionResult,
     ) -> None:
         """Track execution completion."""
         if request.execution_id in self._active_executions:
@@ -392,7 +402,12 @@ class ObservabilityToolExecutor:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, tool_id: str, command: str, error: str, start_time: float,
+        self,
+        execution_id: str,
+        tool_id: str,
+        command: str,
+        error: str,
+        start_time: float,
     ) -> ToolExecutionResult:
         """Create error result."""
         return ToolExecutionResult(
@@ -418,7 +433,9 @@ class ObservabilityToolExecutor:
         )
 
         def _log_collector_impl(
-            command: str, params: dict[str, Any], **kwargs: object,
+            command: str,
+            params: dict[str, Any],
+            **kwargs: object,
         ) -> dict[str, Any]:
             if command == "collect":
                 return {
@@ -453,7 +470,9 @@ class ObservabilityToolExecutor:
         )
 
         def _metric_collector_impl(
-            command: str, params: dict[str, Any], **kwargs: object,
+            command: str,
+            params: dict[str, Any],
+            **kwargs: object,
         ) -> dict[str, Any]:
             if command == "collect":
                 return {
@@ -481,7 +500,9 @@ class ObservabilityToolExecutor:
         )
 
         def _trace_analyzer_impl(
-            command: str, params: dict[str, Any], **kwargs: object,
+            command: str,
+            params: dict[str, Any],
+            **kwargs: object,
         ) -> dict[str, Any]:
             trace_id = params.get("trace_id", "default")
             return {

@@ -527,9 +527,7 @@ def main():
         description="Hardened Dashboard E2E Test Suite",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--skip-regenerate", action="store_true", help="Skip auto-regeneration check"
-    )
+    parser.add_argument("--skip-regenerate", action="store_true", help="Skip auto-regeneration check")
     parser.add_argument(
         "--headless", action="store_true", default=True, help="Run Playwright headless (default)"
     )

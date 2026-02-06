@@ -129,9 +129,7 @@ class SchemaVectorSearcher:
             search_result = SchemaSearchResult(
                 entries=results,
                 scores=scores,
-                field_matches=field_matches
-                if query.search_mode == SchemaSearchMode.FIELD_BASED
-                else None,
+                field_matches=field_matches if query.search_mode == SchemaSearchMode.FIELD_BASED else None,
                 search_time_ms=search_time,
                 metadata={
                     "searched_at": datetime.utcnow().isoformat(),
@@ -206,9 +204,7 @@ class SchemaVectorSearcher:
             self._vector_index[schema_id] = np.array(vector)
 
             if field_vectors:
-                self._field_index[schema_id] = {
-                    field: np.array(vec) for field, vec in field_vectors.items()
-                }
+                self._field_index[schema_id] = {field: np.array(vec) for field, vec in field_vectors.items()}
 
             self.logger.debug(f"Added schema vector: {schema_id}")
             return True
@@ -232,7 +228,9 @@ class SchemaVectorSearcher:
 
         reference_entry = self._schema_vectors[schema_id]
         query = SchemaSearchQuery(
-            query_vector=reference_entry.vector, search_mode=SchemaSearchMode.SEMANTIC, top_k=top_k,
+            query_vector=reference_entry.vector,
+            search_mode=SchemaSearchMode.SEMANTIC,
+            top_k=top_k,
         )
 
         results, scores = self._semantic_search(query, list(self._schema_vectors.values()))
@@ -362,7 +360,9 @@ class SchemaVectorSearcher:
         return filtered
 
     def _semantic_search(
-        self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry],
+        self,
+        query: SchemaSearchQuery,
+        entries: list[SchemaVectorEntry],
     ) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform semantic search."""
         if not query.query_vector:
@@ -392,7 +392,9 @@ class SchemaVectorSearcher:
         return entries, scores
 
     def _structural_search(
-        self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry],
+        self,
+        query: SchemaSearchQuery,
+        entries: list[SchemaVectorEntry],
     ) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform structural similarity search."""
         if not query.query_schema:
@@ -425,7 +427,9 @@ class SchemaVectorSearcher:
         return entries, scores
 
     def _hybrid_search(
-        self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry],
+        self,
+        query: SchemaSearchQuery,
+        entries: list[SchemaVectorEntry],
     ) -> tuple[list[SchemaVectorEntry], list[float]]:
         """Perform hybrid search combining semantic and structural."""
         # Get semantic results
@@ -458,7 +462,9 @@ class SchemaVectorSearcher:
         return entries, scores
 
     def _field_based_search(
-        self, query: SchemaSearchQuery, entries: list[SchemaVectorEntry],
+        self,
+        query: SchemaSearchQuery,
+        entries: list[SchemaVectorEntry],
     ) -> tuple[list[SchemaVectorEntry], list[float], list[dict[str, Any]]]:
         """Perform field-based search."""
         if not query.query_schema or not self.config.enable_field_vectors:

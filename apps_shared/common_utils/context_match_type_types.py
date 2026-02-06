@@ -7,6 +7,9 @@ Follows the functional component pattern with proper logging.
 
 import logging
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +108,10 @@ class SchemaContextMatcher:
 
             for _schema_id, schema_def, schema_context in request.candidate_schemas:
                 match_result = self._compute_match_score(
-                    request.query_context, schema_def, schema_context, request.match_types,
+                    request.query_context,
+                    schema_def,
+                    schema_context,
+                    request.match_types,
                 )
 
                 # Filter by minimum score
@@ -122,7 +128,9 @@ class SchemaContextMatcher:
             if request.include_explanations:
                 for match in top_matches:
                     match.explanation = self._generate_explanation(
-                        request.query_context, match, request.match_types,
+                        request.query_context,
+                        match,
+                        request.match_types,
                     )
 
             result = SchemaContextMatchResult(
@@ -150,7 +158,10 @@ class SchemaContextMatcher:
             )
 
     def find_similar_contexts(
-        self, schema_context: SchemaContext, context_database: list[SchemaContext], top_k: int = 10,
+        self,
+        schema_context: SchemaContext,
+        context_database: list[SchemaContext],
+        top_k: int = 10,
     ) -> list[tuple[str, float]]:
         """Find schemas with similar contexts.
 
@@ -233,7 +244,8 @@ class SchemaContextMatcher:
         # Usage pattern matching
         if ContextMatchType.USAGE in match_types:
             usage_score = self._match_usage_patterns(
-                query_context.usage_patterns, schema_context.usage_patterns,
+                query_context.usage_patterns,
+                schema_context.usage_patterns,
             )
             match_details["usage"] = usage_score
             total_score += usage_score * self.config.usage_weight
@@ -253,7 +265,9 @@ class SchemaContextMatcher:
         )
 
     def _compute_context_similarity(
-        self, context1: SchemaContext, context2: SchemaContext,
+        self,
+        context1: SchemaContext,
+        context2: SchemaContext,
     ) -> float:
         """Compute similarity between two contexts."""
         scores = []
@@ -328,14 +342,16 @@ class SchemaContextMatcher:
         # Business context matching
         if context1.business_context and context2.business_context:
             business_score = self._match_purposes(
-                context1.business_context, context2.business_context,
+                context1.business_context,
+                context2.business_context,
             )
             scores.append(business_score)
 
         # Technical context matching
         if context1.technical_context and context2.technical_context:
             tech_score = self._match_purposes(
-                context1.technical_context, context2.technical_context,
+                context1.technical_context,
+                context2.technical_context,
             )
             scores.append(tech_score)
 
@@ -376,7 +392,9 @@ class SchemaContextMatcher:
         return len(intersection) / len(union)
 
     def _compute_compatibility_score(
-        self, context1: SchemaContext, context2: SchemaContext,
+        self,
+        context1: SchemaContext,
+        context2: SchemaContext,
     ) -> float:
         """Compute overall compatibility score."""
         factors = []
@@ -432,10 +450,7 @@ class SchemaContextMatcher:
         if "purpose" in match_result.match_details and match_result.match_details["purpose"] > 0.6:
             explanations.append(f"Similar purpose ({match_result.match_details['purpose']:.2f})")
 
-        if (
-            "semantic" in match_result.match_details
-            and match_result.match_details["semantic"] > 0.5
-        ):
+        if "semantic" in match_result.match_details and match_result.match_details["semantic"] > 0.5:
             explanations.append(
                 f"Semantic alignment ({match_result.match_details['semantic']:.2f})",
             )

@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 # NAMING FIXED: Consistent Logger usage
 Logger = logging.getLogger(__name__)

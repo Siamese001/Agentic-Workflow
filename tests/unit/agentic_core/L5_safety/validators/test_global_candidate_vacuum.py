@@ -86,9 +86,7 @@ class TestGlobalCandidateVacuum:
             SOVEREIGN_TERRITORIES,
         )
 
-        shared_w = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
-            "weight"
-        ]
+        shared_w = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"]["weight"]
         app_w = SOVEREIGN_TERRITORIES["apps_rg"]["ast_signals"]["apps_rg/engines"]["weight"]
 
         assert shared_w == 95

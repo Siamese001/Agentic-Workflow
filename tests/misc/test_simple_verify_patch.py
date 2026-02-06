@@ -15,9 +15,7 @@ def verify_patch():
     print("=" * 50)
 
     project_root = Path.cwd()
-    execute_ssot_path = (
-        project_root / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
-    )
+    execute_ssot_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
 
     if not execute_ssot_path.exists():
         print("❌ FAIL: execute_ssot.py not found")

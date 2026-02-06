@@ -55,9 +55,7 @@ class TestVectorSearchResult:
 
     def test_search_result_creation(self):
         """Test VectorSearchResult creation."""
-        result = VectorSearchResult(
-            id="test-id", score=0.95, metadata={"key": "value"}, text="test text"
-        )
+        result = VectorSearchResult(id="test-id", score=0.95, metadata={"key": "value"}, text="test text")
         assert result.id == "test-id"
         assert result.score == 0.95
         assert result.metadata == {"key": "value"}

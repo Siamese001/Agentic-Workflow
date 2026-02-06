@@ -7,6 +7,8 @@ Generated: 2025-12-07T12:07:59.860156
 
 import json
 import logging
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -52,12 +54,17 @@ class OtlpExporter(BaseExporter):
                     json.dump(items, f, default=str, indent=2)
 
             return ExportResult(
-                success=True, items_exported=len(items), destination=self.destination,
+                success=True,
+                items_exported=len(items),
+                destination=self.destination,
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
-                success=False, items_exported=0, destination=self.destination, errors=[str(e)],
+                success=False,
+                items_exported=0,
+                destination=self.destination,
+                errors=[str(e)],
             )
 
 

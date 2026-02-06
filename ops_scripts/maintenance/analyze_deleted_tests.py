@@ -32,9 +32,7 @@ def get_deleted_files_from_commit(commit_sha: str) -> list[str]:
         text=True,
         cwd=PROJECT_ROOT,
     )
-    return [
-        f for f in result.stdout.strip().split("\n") if f.endswith(".py") and f.startswith("tests/")
-    ]
+    return [f for f in result.stdout.strip().split("\n") if f.endswith(".py") and f.startswith("tests/")]
 
 
 def get_file_content_from_commit(commit_sha: str, file_path: str) -> str:

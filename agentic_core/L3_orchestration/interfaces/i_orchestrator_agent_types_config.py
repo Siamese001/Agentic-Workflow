@@ -221,7 +221,10 @@ class IOrchestratorAgent(Protocol):
         ...
 
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
+        self,
+        agent_name: str,
+        dry_run: bool = True,
+        context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.

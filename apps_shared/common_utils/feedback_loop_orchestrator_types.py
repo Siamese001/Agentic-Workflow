@@ -50,9 +50,7 @@ class RegenerationCheckpoint:
             "temperature": self.temperature,
             "failure_type": self.failure_type.value if self.failure_type else None,
             "score": self.score,
-            "validation_status": self.validation_result.status.value
-            if self.validation_result
-            else None,
+            "validation_status": self.validation_result.status.value if self.validation_result else None,
         }
 
 

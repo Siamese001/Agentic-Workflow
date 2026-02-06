@@ -88,7 +88,10 @@ class PromptEnhancer:
 
         # Step 1: Find relevant injections
         matches = self.injection_loader.find_matching_injections(
-            hop_type=hop_type, stage=stage, context=context, content=content,
+            hop_type=hop_type,
+            stage=stage,
+            context=context,
+            content=content,
         )
 
         metadata["injections_count"] = len(matches)
@@ -154,7 +157,9 @@ class PromptEnhancer:
 
                 # Apply contract wrapper
                 enhanced = enforce_cognitive_contract(
-                    enhanced, directives, contract_id=f"{hop_type}_{stage}",
+                    enhanced,
+                    directives,
+                    contract_id=f"{hop_type}_{stage}",
                 )
                 metadata["contract_enforced"] = True
                 metadata["strategies_applied"].append("cognitive_contracts")
@@ -194,7 +199,9 @@ class PromptEnhancer:
         return constraints
 
     def process_response(
-        self, response: str, contract_id: str | None = None,
+        self,
+        response: str,
+        contract_id: str | None = None,
     ) -> tuple[str, dict[str, Any]]:
         """Process a response, validating against any contracts.
 
@@ -217,7 +224,8 @@ class PromptEnhancer:
         if contract_id and "<PLAN>" in response:
             try:
                 content, contract_result = self.contract_manager.process_response(
-                    contract_id, response,
+                    contract_id,
+                    response,
                 )
 
                 result.update(contract_result)
@@ -239,7 +247,11 @@ class PromptEnhancer:
         return response, result
 
     def create_enhanced_template(
-        self, role: str, objective: str, hop_type: str, stages: list[str],
+        self,
+        role: str,
+        objective: str,
+        hop_type: str,
+        stages: list[str],
     ) -> dict[str, str]:
         """Create enhanced prompts for multiple stages.
 

@@ -133,7 +133,8 @@ class InterventionServer:
             self.decision_reason = "Human approved via UI"
             self.approval_event.set()
             return HTMLResponse(
-                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>", status_code=200,
+                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>",
+                status_code=200,
             )
 
         @self._app.post("/veto")

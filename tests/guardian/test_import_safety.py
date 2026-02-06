@@ -258,10 +258,7 @@ class TestImportSafety:
                 for module_b, imports_b in import_graph.items():
                     if module_b.endswith(import_b.replace(".", os.sep)) or import_b in module_b:
                         for import_back in imports_b:
-                            if (
-                                module_a.endswith(import_back.replace(".", os.sep))
-                                or import_back in module_a
-                            ):
+                            if module_a.endswith(import_back.replace(".", os.sep)) or import_back in module_a:
                                 pair = tuple(sorted([module_a, module_b]))
                                 if pair not in checked_pairs:
                                     checked_pairs.add(pair)
@@ -336,9 +333,7 @@ class TestImportSafety:
                         )
                         if import_path.startswith(project_prefixes):
                             # Check if the target exists
-                            if not any(
-                                existing.startswith(import_path) for existing in existing_modules
-                            ):
+                            if not any(existing.startswith(import_path) for existing in existing_modules):
                                 zombie_imports.append(
                                     {
                                         "file": str(file_path),
@@ -474,9 +469,7 @@ class TestImportSafety:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} SSOT dependency violations:\n"
-                + "\n".join(
-                    f"  - {v['file']}:{v['line']}: {v['violation']}" for v in violations[:10]
-                )
+                + "\n".join(f"  - {v['file']}:{v['line']}: {v['violation']}" for v in violations[:10])
             )
 
 
@@ -750,7 +743,9 @@ class TestNuclearImportSweep:
                 for a, b in cycles[:5]:
                     print(f"  - {Path(a).name} <-> {Path(b).name}")
             else:
-                error_msg = f"CIRCULAR DEPENDENCIES EXCEED THRESHOLD ({len(cycles)} > {KNOWN_CIRCULAR_DEPS}):\n"
+                error_msg = (
+                    f"CIRCULAR DEPENDENCIES EXCEED THRESHOLD ({len(cycles)} > {KNOWN_CIRCULAR_DEPS}):\n"
+                )
                 for a, b in cycles[:10]:
                     error_msg += f"  [CYCLE] {a} <-> {b}\n"
                 raise AssertionError(error_msg)
@@ -874,7 +869,9 @@ class TestNuclearImportSweep:
                 if len(missing_init) > 10:
                     print(f"  ... and {len(missing_init) - 10} more")
             else:
-                error_msg = f"MISSING __init__.py EXCEEDS THRESHOLD ({len(missing_init)} > {KNOWN_MISSING_INIT}):\n"
+                error_msg = (
+                    f"MISSING __init__.py EXCEEDS THRESHOLD ({len(missing_init)} > {KNOWN_MISSING_INIT}):\n"
+                )
                 for path in missing_init[:15]:
                     error_msg += f"  [X] {path}/\n"
                 raise AssertionError(error_msg)
@@ -1139,9 +1136,7 @@ class TestGravityCompliance:
                     # Check direct imports
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            if any(
-                                alias.name.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS
-                            ):
+                            if any(alias.name.startswith(app) for app in self.FORBIDDEN_APP_IMPORTS):
                                 violations.append(
                                     {
                                         "file": str(py_file.relative_to(PROJECT_ROOT)),
@@ -1277,12 +1272,8 @@ class TestGravityCompliance:
                 print(f"\n  ... and {len(by_type) - 10} more violation types")
 
             print("\n[REMEDIATION] Run HierarchyAgent:")
-            print(
-                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run"
-            )
-            print(
-                "  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply"
-            )
+            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run")
+            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply")
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#gravity-leaks")
         else:
             print(f"[OK] No gravity leaks detected ({len(core_files)} core files checked)")
@@ -1328,9 +1319,7 @@ class TestGravityCompliance:
 
                             for potential_file in potential_files:
                                 if potential_file.exists():
-                                    import_graph[file_key].add(
-                                        str(potential_file.relative_to(PROJECT_ROOT))
-                                    )
+                                    import_graph[file_key].add(str(potential_file.relative_to(PROJECT_ROOT)))
 
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
@@ -1342,9 +1331,7 @@ class TestGravityCompliance:
 
                             for potential_file in potential_files:
                                 if potential_file.exists():
-                                    import_graph[file_key].add(
-                                        str(potential_file.relative_to(PROJECT_ROOT))
-                                    )
+                                    import_graph[file_key].add(str(potential_file.relative_to(PROJECT_ROOT)))
 
             except (SyntaxError, UnicodeDecodeError):
                 continue
@@ -1383,9 +1370,7 @@ class TestGravityCompliance:
         circular_deps = find_circular_dependencies(import_graph)
 
         for cycle in circular_deps:
-            violations.append(
-                {"type": "circular_import", "cycle": " -> ".join(cycle), "length": len(cycle)}
-            )
+            violations.append({"type": "circular_import", "cycle": " -> ".join(cycle), "length": len(cycle)})
 
         # Second pass: Check other import patterns
         for file_path in python_files:

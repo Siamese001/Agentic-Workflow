@@ -8,6 +8,11 @@ import json
 import logging
 import re
 from datetime import datetime
+from dataclasses import dataclass
+from enum import Enum
+from pydantic import BaseModel
+from typing import Any
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +149,8 @@ class InputValidator:
         if errors:
             error_messages = [f"{e.field}: {e.message}" for e in errors]
             raise InputValidationError(
-                "multiple", f"Validation failed: {', '.join(error_messages)}",
+                "multiple",
+                f"Validation failed: {', '.join(error_messages)}",
             )
 
         return validated
@@ -193,7 +199,8 @@ class InputValidator:
             if isinstance(validated_value, str):
                 if not re.match(rule.pattern, validated_value):
                     raise InputValidationError(
-                        field, f"Value does not match pattern: {rule.pattern}",
+                        field,
+                        f"Value does not match pattern: {rule.pattern}",
                     )
 
         # Allowed values validation
@@ -412,10 +419,18 @@ COMMON_RULES = {
         max_length=1000,  # Max 1000 keys
     ),
     "retry_count": ValidationRule(
-        "retry_count", ValidationType.INTEGER, required=False, min_value=0, max_value=10,
+        "retry_count",
+        ValidationType.INTEGER,
+        required=False,
+        min_value=0,
+        max_value=10,
     ),
     "timeout": ValidationRule(
-        "timeout", ValidationType.FLOAT, required=False, min_value=0.1, max_value=300.0,
+        "timeout",
+        ValidationType.FLOAT,
+        required=False,
+        min_value=0.1,
+        max_value=300.0,
     ),
     "json_payload": ValidationRule(
         "json_payload",
@@ -479,7 +494,8 @@ class ValidatedInput(BaseModel):
 
 
 def validate_with_pydantic(
-    data: dict[str, Any], model_class: type[ValidatedInput],
+    data: dict[str, Any],
+    model_class: type[ValidatedInput],
 ) -> ValidatedInput:
     """Validate data using Pydantic model.
 

@@ -257,15 +257,22 @@ def main():
     parser.add_argument("--wave", type=int, required=True, help="Wave number (e.g., 2, 3, 4)")
 
     parser.add_argument(
-        "--agent", type=str, default="Unknown", help="Agent being modified (for manifest)",
+        "--agent",
+        type=str,
+        default="Unknown",
+        help="Agent being modified (for manifest)",
     )
 
     parser.add_argument(
-        "--restore", action="store_true", help="Restore from snapshot instead of creating one",
+        "--restore",
+        action="store_true",
+        help="Restore from snapshot instead of creating one",
     )
 
     parser.add_argument(
-        "--verify", action="store_true", help="Verify snapshot exists without modifying anything",
+        "--verify",
+        action="store_true",
+        help="Verify snapshot exists without modifying anything",
     )
 
     args = parser.parse_args()

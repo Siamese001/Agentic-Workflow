@@ -27,6 +27,8 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

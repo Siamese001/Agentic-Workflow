@@ -70,16 +70,12 @@ class TestAgentDistributionMetrics:
 
         # Calculate specialization diversity
         total_specializations = sum(len(specs) for specs in l5_specializations.values())
-        unique_specializations = len(
-            {spec for specs in l5_specializations.values() for spec in specs}
-        )
+        unique_specializations = len({spec for specs in l5_specializations.values() for spec in specs})
 
         # High specialization diversity indicates good separation of concerns
         specialization_ratio = unique_specializations / len(l5_specializations)
 
-        assert specialization_ratio >= 2.0, (
-            f"L5 specialization too low: {specialization_ratio:.1f} per agent"
-        )
+        assert specialization_ratio >= 2.0, f"L5 specialization too low: {specialization_ratio:.1f} per agent"
 
         print("\n=== L5 Specialization Analysis ===")
         print(f"Total Specializations: {total_specializations}")

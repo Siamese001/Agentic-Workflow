@@ -7,6 +7,8 @@ within the shared application layer.
 """
 
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Union
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,9 @@ class Settings:
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(
-        self, payload: Union[str, int, float, bool, list, dict], context: dict | None = None,
+        self,
+        payload: Union[str, int, float, bool, list, dict],
+        context: dict | None = None,
     ) -> ExecutionResult:
         """
         Execute the primary logic for this module.
@@ -58,7 +62,9 @@ class Settings:
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(
-        self, data: Union[str, int, float, bool, list, dict], context: dict | None,
+        self,
+        data: Union[str, int, float, bool, list, dict],
+        context: dict | None,
     ) -> Union[str, int, float, bool, list, dict]:
         """Internal execution executor to be implemented or extended."""
         return data

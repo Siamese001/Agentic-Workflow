@@ -47,12 +47,8 @@ def pytest_configure(config):
         "markers",
         "constitutional: marks tests that enforce constitutional rules (cannot be overridden)",
     )
-    config.addinivalue_line(
-        "markers", "ssot: marks tests that validate Single Source of Truth compliance"
-    )
-    config.addinivalue_line(
-        "markers", "mro: marks tests that validate Method Resolution Order integrity"
-    )
+    config.addinivalue_line("markers", "ssot: marks tests that validate Single Source of Truth compliance")
+    config.addinivalue_line("markers", "mro: marks tests that validate Method Resolution Order integrity")
     config.addinivalue_line(
         "markers", "import_safety: marks tests that validate import safety and dependencies"
     )

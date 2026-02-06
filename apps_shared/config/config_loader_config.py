@@ -106,7 +106,9 @@ class ConfigLoader:
         return yaml_path
 
     def _load_from_file(
-        self, config_path: Path, fallback_config: dict[str, Any] | None = None,
+        self,
+        config_path: Path,
+        fallback_config: dict[str, Any] | None = None,
     ) -> ConfigLoadResult:
         """Load configuration from file."""
         try:
@@ -147,7 +149,10 @@ class ConfigLoader:
                     )
 
             return ConfigLoadResult(
-                success=True, config=config or {}, errors=[], source=str(config_path),
+                success=True,
+                config=config or {},
+                errors=[],
+                source=str(config_path),
             )
 
         except Exception as e:
@@ -197,7 +202,9 @@ class ConfigLoader:
         return self.load_config(agent_name, config_file)
 
     def validate_config(
-        self, config: dict[str, Any], schema: dict[str, Any] | None = None,
+        self,
+        config: dict[str, Any],
+        schema: dict[str, Any] | None = None,
     ) -> ConfigLoadResult:
         """Validate configuration against optional schema."""
         errors = []
@@ -212,7 +219,10 @@ class ConfigLoader:
             errors.extend(self._validate_against_schema(config, schema))
 
         return ConfigLoadResult(
-            success=len(errors) == 0, config=config, errors=errors, source="validation",
+            success=len(errors) == 0,
+            config=config,
+            errors=errors,
+            source="validation",
         )
 
     def _validate_against_schema(self, config: dict[str, Any], schema: dict[str, Any]) -> list[str]:
@@ -224,8 +234,7 @@ class ConfigLoader:
                 errors.append(f"Missing required key: {key}")
             elif not isinstance(config[key], expected_type):
                 errors.append(
-                    f"Key {key} should be {expected_type.__name__}, "
-                    f"got {type(config[key]).__name__}",
+                    f"Key {key} should be {expected_type.__name__}, got {type(config[key]).__name__}",
                 )
 
         return errors

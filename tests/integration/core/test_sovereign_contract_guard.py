@@ -112,8 +112,7 @@ class SovereignContractGuard:
         self.mro_results: list[MROResult] = []
         self.mock_results: list[MockExecutionResult] = []
         self.json_output_path = (
-            json_output_path
-            or f"sovereign_contract_guard_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            json_output_path or f"sovereign_contract_guard_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         )
 
     def discover_validator_files(self) -> list[Path]:
@@ -277,12 +276,16 @@ class SovereignContractGuard:
             # Check for legacy signatures
             if "path" in params and "violation" not in params and len(params) == 1:
                 result.is_legacy = True
-                result.error = f"Class {class_name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation)."
+                result.error = (
+                    f"Class {class_name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation)."
+                )
                 return result
 
             # Check for violation parameter (primary requirement)
             if "violation" not in params and "kwargs" not in params:
-                result.error = f"Class {class_name} has INVALID SIGNATURE: {sig}. Expected heal(self, violation, ...)."
+                result.error = (
+                    f"Class {class_name} has INVALID SIGNATURE: {sig}. Expected heal(self, violation, ...)."
+                )
                 return result
 
             result.signature_valid = True
@@ -368,9 +371,7 @@ class SovereignContractGuard:
 
         This is the core of Pillar 4: Mock Execution.
         """
-        result = MockExecutionResult(
-            class_name=class_name, execution_success=False, result_dict=False
-        )
+        result = MockExecutionResult(class_name=class_name, execution_success=False, result_dict=False)
 
         try:
             # Import the class
@@ -561,8 +562,7 @@ class SovereignContractGuard:
                     "passes_100_percent_requirement": summary["overall_success_rate"] == 1.0,
                     "individual_pillar_status": {
                         "import_validation": summary["import_validation"]["success_rate"] == 1.0,
-                        "signature_enforcement": summary["signature_validation"]["success_rate"]
-                        == 1.0,
+                        "signature_enforcement": summary["signature_validation"]["success_rate"] == 1.0,
                         "mro_audit": summary["mro_validation"]["success_rate"] == 1.0,
                         "mock_execution": summary["mock_execution"]["success_rate"] == 1.0,
                     },
@@ -786,25 +786,19 @@ class TestSovereignContractGuard:
         logger.info(f"Total Classes Found: {summary['total_classes_found']}")
         logger.info(f"Total Classes Tested: {summary['total_classes_tested']}")
         logger.info(f"Import Success Rate: {summary['import_validation']['success_rate']:.2%}")
-        logger.info(
-            f"Signature Success Rate: {summary['signature_validation']['success_rate']:.2%}"
-        )
+        logger.info(f"Signature Success Rate: {summary['signature_validation']['success_rate']:.2%}")
         logger.info(f"MRO Success Rate: {summary['mro_validation']['success_rate']:.2%}")
         logger.info(f"Mock Execution Success Rate: {summary['mock_execution']['success_rate']:.2%}")
         logger.info(f"Overall Success Rate: {summary['overall_success_rate']:.2%}")
 
         # Individual pillar assertions
         assert summary["import_validation"]["success_rate"] == 1.0, "Import validation must be 100%"
-        assert summary["signature_validation"]["success_rate"] == 1.0, (
-            "Signature validation must be 100%"
-        )
+        assert summary["signature_validation"]["success_rate"] == 1.0, "Signature validation must be 100%"
         assert summary["mro_validation"]["success_rate"] == 1.0, "MRO validation must be 100%"
         assert summary["mock_execution"]["success_rate"] == 1.0, "Mock execution must be 100%"
 
         # Overall assertion
-        assert summary["overall_success_rate"] == 1.0, (
-            "Overall sovereign contract compliance must be 100%"
-        )
+        assert summary["overall_success_rate"] == 1.0, "Overall sovereign contract compliance must be 100%"
 
         logger.info("🎉 SOVEREIGN CONTRACT GUARD: 100% PASS REQUIREMENT SATISFIED")
 

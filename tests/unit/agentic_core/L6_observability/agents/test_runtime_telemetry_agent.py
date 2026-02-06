@@ -61,9 +61,7 @@ class TestRuntimeTelemetryAgent:
 
     def test_has_audit_security_overhead_method(self, agent_class):
         """Verify agent has audit_security_overhead method."""
-        assert hasattr(agent_class, "audit_security_overhead"), (
-            "Should have audit_security_overhead method"
-        )
+        assert hasattr(agent_class, "audit_security_overhead"), "Should have audit_security_overhead method"
 
     def test_has_report_performance_method(self, agent_class):
         """Verify agent has report_performance method."""

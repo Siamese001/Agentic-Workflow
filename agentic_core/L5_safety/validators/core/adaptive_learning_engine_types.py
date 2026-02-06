@@ -2,6 +2,7 @@
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: guardrail, healer, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
+import os
 
 # This boosts alignment detection — review and integrate appropriately
 
@@ -363,7 +364,8 @@ class AdaptiveLearningEngine:
 
 
 def create_adaptive_learning_engine(
-    storage_path: str | None = None, autonomous_mode: bool = True,
+    storage_path: str | None = None,
+    autonomous_mode: bool = True,
 ) -> AdaptiveLearningEngine:
     """Factory function to create adaptive learning engine."""
     return AdaptiveLearningEngine(pattern_storage_path=storage_path, autonomous_mode=autonomous_mode)

@@ -142,7 +142,10 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
     async def get_embedding(
-        self, content: str, provider: EmbeddingProvider = "gemini", use_cache: bool = True,
+        self,
+        content: str,
+        provider: EmbeddingProvider = "gemini",
+        use_cache: bool = True,
     ) -> list[float]:
         """
         Get embedding vector with optional caching.
@@ -196,7 +199,10 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
             raise
 
     async def get_embeddings_batch(
-        self, contents: list[str], provider: EmbeddingProvider = "gemini", use_cache: bool = True,
+        self,
+        contents: list[str],
+        provider: EmbeddingProvider = "gemini",
+        use_cache: bool = True,
     ) -> list[list[float]]:
         """
         Get embeddings for multiple contents.
@@ -221,7 +227,9 @@ class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignB
 
         # 'retrieval_document' is generally preferred for storage
         result = genai.embed_content(
-            model="models/text-embedding-004", content=content, task_type="retrieval_document",
+            model="models/text-embedding-004",
+            content=content,
+            task_type="retrieval_document",
         )
         return result["embedding"]
 

@@ -7,6 +7,10 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
+from pydantic import BaseModel, Field
+from typing import Any
+import numpy as np
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -193,7 +197,9 @@ class ContrastiveSemanticCache:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
             cache_norm = self._embedding_matrix / np.linalg.norm(
-                self._embedding_matrix, axis=1, keepdims=True,
+                self._embedding_matrix,
+                axis=1,
+                keepdims=True,
             )
 
             # Calculate cosine similarity

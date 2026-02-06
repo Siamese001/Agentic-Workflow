@@ -12,7 +12,7 @@ def fix_single_test_file(test_file: Path) -> bool:
         content = test_file.read_text(encoding="utf-8")
 
         # Check if file needs fixing
-        if content.startswith('"""') or content.startswith('import') or content.startswith('from'):
+        if content.startswith('"""') or content.startswith("import") or content.startswith("from"):
             return False  # Already has proper header
 
         # Extract class name from filename

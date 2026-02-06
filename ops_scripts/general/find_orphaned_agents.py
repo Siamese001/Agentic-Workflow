@@ -43,10 +43,7 @@ def find_orphaned_agents():
         # Search in active directories (exclude archives)
         for path in PROJECT_ROOT.rglob(agent_file):
             # Skip archives and backup directories
-            if any(
-                skip in str(path)
-                for skip in ["archives", ".sovereign_healing_backup", "__pycache__"]
-            ):
+            if any(skip in str(path) for skip in ["archives", ".sovereign_healing_backup", "__pycache__"]):
                 continue
 
             # Check if file is actually used (has imports or inheritance)
@@ -75,10 +72,7 @@ def check_if_used(file_path, agent_file):
 
     # Search in all Python files
     for py_file in PROJECT_ROOT.rglob("*.py"):
-        if any(
-            skip in str(py_file)
-            for skip in ["archives", ".sovereign_healing_backup", "__pycache__"]
-        ):
+        if any(skip in str(py_file) for skip in ["archives", ".sovereign_healing_backup", "__pycache__"]):
             continue
 
         if py_file == file_path:

@@ -220,7 +220,9 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             }
 
     def scan_for_credentials(
-        self, target_path: Path | None = None, file_patterns: list[str] | None = None,
+        self,
+        target_path: Path | None = None,
+        file_patterns: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Scan for hardcoded credentials in the codebase.

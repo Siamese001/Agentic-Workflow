@@ -49,9 +49,7 @@ def temp_python_file():
     """Create a temporary Python file for testing."""
 
     def _create_file(content: str) -> Path:
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(content)
             return Path(f.name)
 

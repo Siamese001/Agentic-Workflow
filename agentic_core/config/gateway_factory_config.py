@@ -169,12 +169,17 @@ class _StubEmbeddingGateway:
     """Stub embedding gateway for testing."""
 
     async def get_embedding(
-        self, content: str, provider: EmbeddingProvider = "gemini", use_cache: bool = True,
+        self,
+        content: str,
+        provider: EmbeddingProvider = "gemini",
+        use_cache: bool = True,
     ) -> list[float]:
         return [0.0] * 1536
 
     async def get_embeddings_batch(
-        self, contents: list[str], provider: EmbeddingProvider = "gemini",
+        self,
+        contents: list[str],
+        provider: EmbeddingProvider = "gemini",
     ) -> list[list[float]]:
         return [[0.0] * 1536 for _ in contents]
 

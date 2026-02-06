@@ -53,9 +53,7 @@ class TestTestGeneratorAgent:
 
     def test_has_generate_tests_for_agent_method(self, agent_class):
         """Verify agent has generate_tests_for_agent method."""
-        assert hasattr(agent_class, "generate_tests_for_agent"), (
-            "Should have generate_tests_for_agent method"
-        )
+        assert hasattr(agent_class, "generate_tests_for_agent"), "Should have generate_tests_for_agent method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

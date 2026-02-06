@@ -111,9 +111,7 @@ class TestCodeQualityMetrics:
                     code_lines += 1
 
                 if code_lines > MONOLITH_THRESHOLD:
-                    large_files.append(
-                        {"file": str(file_path.relative_to(PROJECT_ROOT)), "loc": code_lines}
-                    )
+                    large_files.append({"file": str(file_path.relative_to(PROJECT_ROOT)), "loc": code_lines})
 
             except (UnicodeDecodeError, PermissionError):
                 # Skip files that can't be read
@@ -470,9 +468,7 @@ class TestCodeQualityMetrics:
                                 "logging",
                             ]:
                                 stdlib_imports.append((line_num, import_stmt))
-                            elif module.startswith(
-                                ("agentic_core", "apps_rg", "apps_lic", "apps_shared")
-                            ):
+                            elif module.startswith(("agentic_core", "apps_rg", "apps_lic", "apps_shared")):
                                 local_imports.append((line_num, import_stmt))
                             else:
                                 thirdparty_imports.append((line_num, import_stmt))

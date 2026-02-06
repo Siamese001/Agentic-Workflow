@@ -116,7 +116,9 @@ def get_preserved_servers() -> list[str]:
 
 
 def merge_configs(
-    current_config: dict[str, Any], registry_servers: dict[str, Any], preserve_local: bool = True,
+    current_config: dict[str, Any],
+    registry_servers: dict[str, Any],
+    preserve_local: bool = True,
 ) -> dict[str, Any]:
     """
     Merge registry servers into current config.

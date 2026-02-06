@@ -4,6 +4,7 @@ Fix global variable violations by replacing with manager pattern
 
 import os
 import re
+from typing import Any
 
 
 def fix_global_variables(file_path: str) -> Any:

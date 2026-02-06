@@ -122,9 +122,7 @@ class MetricsCollector:
 
     def get_all_summaries(self) -> dict[str, MetricsSummary]:
         """Get summaries for all operations."""
-        return {
-            op: summary for op in self._metrics if (summary := self.get_summary(op)) is not None
-        }
+        return {op: summary for op in self._metrics if (summary := self.get_summary(op)) is not None}
 
     def clear(self, operation: str | None = None) -> None:
         """Clear collected metrics."""
@@ -267,9 +265,7 @@ class PerformanceMonitor:
                 }
                 for name, s in summaries.items()
             },
-            "violations": [
-                {"operation": op, "duration_ms": d, "threshold_ms": t} for op, d, t in violations
-            ],
+            "violations": [{"operation": op, "duration_ms": d, "threshold_ms": t} for op, d, t in violations],
             "total_operations": sum(s.count for s in summaries.values()),
         }
 

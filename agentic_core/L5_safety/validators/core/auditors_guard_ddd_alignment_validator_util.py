@@ -29,7 +29,8 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
     issues: Any = []
     file_str: Any = str(filepath).replace("\\", "/")
     current_context: Any = next(
-        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None,
+        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str),
+        None,
     )
     if not current_context:
         return []

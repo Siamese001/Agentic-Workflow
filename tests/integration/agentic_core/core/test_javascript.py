@@ -209,9 +209,7 @@ class TestComponentFiles:
             component_path = dashboard_dir / "js" / "components" / filename
             if component_path.exists():
                 content = component_path.read_text(encoding="utf-8")
-                has_constructor = (
-                    "constructor(" in content or "init(" in content or "init:" in content
-                )
+                has_constructor = "constructor(" in content or "init(" in content or "init:" in content
                 assert has_constructor, f"No constructor/init in {filename}"
 
 
@@ -222,30 +220,22 @@ class TestHTMLJavaScriptIntegrity:
         """Test that dashboardData is not declared multiple times."""
         # Count declarations (not references)
         declarations = re.findall(r"const\s+dashboardData\s*=", html_content)
-        assert len(declarations) <= 1, (
-            f"Multiple dashboardData declarations found: {len(declarations)}"
-        )
+        assert len(declarations) <= 1, f"Multiple dashboardData declarations found: {len(declarations)}"
 
     def test_no_duplicate_real_agent_data(self, html_content):
         """Test that realAgentData is not declared multiple times."""
         declarations = re.findall(r"const\s+realAgentData\s*=", html_content)
-        assert len(declarations) <= 1, (
-            f"Multiple realAgentData declarations found: {len(declarations)}"
-        )
+        assert len(declarations) <= 1, f"Multiple realAgentData declarations found: {len(declarations)}"
 
     def test_no_duplicate_recommendations_data(self, html_content):
         """Test that recommendationsData is not declared multiple times."""
         declarations = re.findall(r"const\s+recommendationsData\s*=", html_content)
-        assert len(declarations) <= 1, (
-            f"Multiple recommendationsData declarations found: {len(declarations)}"
-        )
+        assert len(declarations) <= 1, f"Multiple recommendationsData declarations found: {len(declarations)}"
 
     def test_single_html_closing_tag(self, html_content):
         """Test that HTML has only one closing tag (not corrupted)."""
         html_end_count = html_content.count("</html>")
-        assert html_end_count == 1, (
-            f"HTML file appears corrupted: {html_end_count} </html> tags found"
-        )
+        assert html_end_count == 1, f"HTML file appears corrupted: {html_end_count} </html> tags found"
 
     def test_html_size_reasonable(self, html_content):
         """Test that HTML file is not bloated (corruption indicator)."""
@@ -274,9 +264,7 @@ class TestDataStructures:
     def test_dashboard_data_is_valid_json(self, html_content):
         """Test that dashboardData can be parsed as JSON."""
         # Extract dashboardData
-        match = re.search(
-            r"const\s+dashboardData\s*=\s*(?:window\.dashboardData\s*\|\|\s*)?\[", html_content
-        )
+        match = re.search(r"const\s+dashboardData\s*=\s*(?:window\.dashboardData\s*\|\|\s*)?\[", html_content)
         if match:
             start = match.end() - 1  # Include the [
             bracket_count = 0
@@ -306,9 +294,7 @@ class TestDataStructures:
 
     def test_real_agent_data_is_valid_json(self, html_content):
         """Test that realAgentData can be parsed as JSON."""
-        match = re.search(
-            r"const\s+realAgentData\s*=\s*(?:window\.realAgentData\s*\|\|\s*)?\{", html_content
-        )
+        match = re.search(r"const\s+realAgentData\s*=\s*(?:window\.realAgentData\s*\|\|\s*)?\{", html_content)
         if match:
             start = match.end() - 1  # Include the {
             brace_count = 0
@@ -390,6 +376,4 @@ class TestExternalDataFiles:
         data_file = dashboard_dir / "data" / "agent_data.js"
         if data_file.exists():
             content = data_file.read_text(encoding="utf-8")
-            assert "window.realAgentData" in content, (
-                "agent_data.js should assign to window.realAgentData"
-            )
+            assert "window.realAgentData" in content, "agent_data.js should assign to window.realAgentData"

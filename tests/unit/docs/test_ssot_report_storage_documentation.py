@@ -38,16 +38,12 @@ class TestReferencedFilesExist:
 
     def test_validator_module_exists(self) -> None:
         """Test that report_location_validator module exists."""
-        validator_path = (
-            PROJECT_ROOT / "agentic_core" / "utils" / "report_location_validator_types.py"
-        )
+        validator_path = PROJECT_ROOT / "agentic_core" / "utils" / "report_location_validator_types.py"
         assert validator_path.exists()
 
     def test_agent_module_exists(self) -> None:
         """Test that ReportLocationAgent exists."""
-        agent_path = (
-            PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "ReportLocationAgent.py"
-        )
+        agent_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "ReportLocationAgent.py"
         assert agent_path.exists()
 
     def test_hook_script_exists(self) -> None:

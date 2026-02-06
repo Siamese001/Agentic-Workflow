@@ -15,6 +15,7 @@ This script:
 """
 
 import sys
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -104,7 +105,8 @@ def analyze_duplicates(
 
 
 def remove_duplicates(
-    safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool = True,
+    safe_to_delete: list[tuple[Path, Path, str, bool]],
+    dry_run: bool = True,
 ) -> int:
     """Remove duplicate files that have canonical versions."""
     removed_count = 0

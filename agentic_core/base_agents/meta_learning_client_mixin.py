@@ -168,7 +168,9 @@ class MetaLearningClientMixin:
 
         try:
             patterns = MetaLearningClientMixin._ml_client.retrieve_healing_patterns(
-                violation, domain, top_k=1,
+                violation,
+                domain,
+                top_k=1,
             )
 
             if patterns:
@@ -241,7 +243,9 @@ class MetaLearningClientMixin:
 
         try:
             pattern_id = MetaLearningClientMixin._ml_client.store_healing_pattern(
-                violation, healing_result, domain,
+                violation,
+                healing_result,
+                domain,
             )
 
             if pattern_id:
@@ -371,7 +375,8 @@ class MetaLearningClientMixin:
             return True  # Allow healing if guardrails unavailable
 
         return MetaLearningClientMixin._ml_guardrails.check_healing_depth(
-            self.__class__.__name__, violation_id,
+            self.__class__.__name__,
+            violation_id,
         )
 
     def ml_increment_healing_depth(self, violation_id: str) -> int:
@@ -390,7 +395,8 @@ class MetaLearningClientMixin:
             return 0
 
         return MetaLearningClientMixin._ml_guardrails.increment_healing_depth(
-            self.__class__.__name__, violation_id,
+            self.__class__.__name__,
+            violation_id,
         )
 
     def ml_reset_healing_depth(self, violation_id: str) -> None:

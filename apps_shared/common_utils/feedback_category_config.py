@@ -7,6 +7,10 @@ engines to share insights, learn from each other, and maintain consistent qualit
 import logging
 import threading
 from datetime import datetime, timedelta
+from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -207,14 +211,17 @@ class FeedbackAggregator:
                 "avg_rating": sum(ratings) / len(ratings) if ratings else 0,
                 "total_feedback": len(ratings),
                 "top_categories": sorted(
-                    data["categories"].items(), key=lambda x: x[1], reverse=True,
+                    data["categories"].items(),
+                    key=lambda x: x[1],
+                    reverse=True,
                 )[:3],
             }
 
         return result
 
     def _find_transferable_insights(
-        self, feedback: list[CrossEngineFeedback],
+        self,
+        feedback: list[CrossEngineFeedback],
     ) -> list[dict[str, Any]]:
         """Find insights that can be transferred between engines.
 
@@ -266,8 +273,7 @@ class FeedbackAggregator:
         for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True):
             if count / total > 0.2:  # More than 20% of feedback
                 recommendations.append(
-                    f"High volume of {category} feedback ({count}/{total}). "
-                    f"Review and improve in this area.",
+                    f"High volume of {category} feedback ({count}/{total}). Review and improve in this area.",
                 )
 
         # Check for low ratings
@@ -438,9 +444,7 @@ class UnifiedFeedbackSystem:
         """
         # Get engine-specific feedback
         engine_feedback = [
-            f
-            for f in self._cross_feedback
-            if f.target_engine == engine_type or f.target_engine is None
+            f for f in self._cross_feedback if f.target_engine == engine_type or f.target_engine is None
         ]
 
         # Get transferable insights from other engines
@@ -468,9 +472,7 @@ class UnifiedFeedbackSystem:
                     {
                         "category": category,
                         "feedback_count": count,
-                        "avg_rating": sum(
-                            f.rating for f in engine_feedback if f.category.value == category
-                        )
+                        "avg_rating": sum(f.rating for f in engine_feedback if f.category.value == category)
                         / count,
                     },
                 )
@@ -487,8 +489,7 @@ class UnifiedFeedbackSystem:
                     {
                         "category": category,
                         "source_engines": list({f.source_engine.value for f in feedback_list}),
-                        "transfer_score": sum(f.transfer_score for f in feedback_list)
-                        / len(feedback_list),
+                        "transfer_score": sum(f.transfer_score for f in feedback_list) / len(feedback_list),
                         "suggested_actions": list(
                             {action for f in feedback_list for action in f.suggested_actions},
                         ),

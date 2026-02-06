@@ -152,7 +152,9 @@ def main():
     parser = argparse.ArgumentParser(description="Check @standard_heal schema compliance")
     parser.add_argument("--strict", action="store_true", help="Exit with error code on violations")
     parser.add_argument(
-        "--path", default="agentic_core", help="Path to scan (default: agentic_core)",
+        "--path",
+        default="agentic_core",
+        help="Path to scan (default: agentic_core)",
     )
     args = parser.parse_args()
 

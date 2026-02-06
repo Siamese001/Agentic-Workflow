@@ -51,9 +51,7 @@ class TestCognitiveDispositionAgent:
 
     def test_has_analyze_violation_async_method(self, agent_class):
         """Verify agent has analyze_violation_async method."""
-        assert hasattr(agent_class, "analyze_violation_async"), (
-            "Should have analyze_violation_async method"
-        )
+        assert hasattr(agent_class, "analyze_violation_async"), "Should have analyze_violation_async method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

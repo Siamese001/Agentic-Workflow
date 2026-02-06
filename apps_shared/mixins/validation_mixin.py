@@ -28,7 +28,10 @@ class ValidationMixin:
     """
 
     def validate_with_result(
-        self, data: Any, validation_func: callable, context: dict[str, Any] | None = None,
+        self,
+        data: Any,
+        validation_func: callable,
+        context: dict[str, Any] | None = None,
     ) -> ValidationResult:
         """
         Execute validation with standardized result format.
@@ -57,7 +60,10 @@ class ValidationMixin:
             elif isinstance(result, bool):
                 passed = result
                 return ValidationResult(
-                    passed=passed, issues=issues, suggestions=suggestions, metadata=metadata,
+                    passed=passed,
+                    issues=issues,
+                    suggestions=suggestions,
+                    metadata=metadata,
                 )
 
             passed = len(issues) == 0
@@ -67,7 +73,10 @@ class ValidationMixin:
             passed = False
 
         return ValidationResult(
-            passed=passed, issues=issues, suggestions=suggestions, metadata=metadata,
+            passed=passed,
+            issues=issues,
+            suggestions=suggestions,
+            metadata=metadata,
         )
 
     def record_validation_result(self, result: ValidationResult, signal_name: str) -> None:
@@ -80,7 +89,8 @@ class ValidationMixin:
         """
         if result.passed:
             self.record_pass(
-                "Validation passed", data={"suggestions": result.suggestions, **result.metadata},
+                "Validation passed",
+                data={"suggestions": result.suggestions, **result.metadata},
             )
             if hasattr(self, "remove_signal"):
                 self.remove_signal(signal_name)
@@ -97,7 +107,9 @@ class ValidationMixin:
                 self.add_signal(signal_name)
 
     def batch_validate(
-        self, validators: list[tuple[str, callable, Any]], stop_on_first_failure: bool = False,
+        self,
+        validators: list[tuple[str, callable, Any]],
+        stop_on_first_failure: bool = False,
     ) -> dict[str, ValidationResult]:
         """
         Run multiple validators in batch.
@@ -121,7 +133,9 @@ class ValidationMixin:
         return results
 
     def validate_required_fields(
-        self, data: dict[str, Any], required_fields: list[str],
+        self,
+        data: dict[str, Any],
+        required_fields: list[str],
     ) -> ValidationResult:
         """
         Validate that required fields are present in data.
@@ -146,7 +160,9 @@ class ValidationMixin:
         return ValidationResult(passed=len(issues) == 0, issues=issues, suggestions=[], metadata={})
 
     def validate_field_types(
-        self, data: dict[str, Any], field_types: dict[str, type],
+        self,
+        data: dict[str, Any],
+        field_types: dict[str, type],
     ) -> ValidationResult:
         """
         Validate that fields have expected types.

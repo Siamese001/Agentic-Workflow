@@ -152,7 +152,9 @@ def run_verification():
         # Test decision engine functionality
         decision_engine = AutonomousDecisionEngine(enable_llm=False)
         confidence = decision_engine.calculate_healing_confidence(
-            violations_count=5, violation_types=["NAMING"], territory="prompt_governance",
+            violations_count=5,
+            violation_types=["NAMING"],
+            territory="prompt_governance",
         )
         print(f"✅ PASS: Decision engine working (confidence: {confidence.value:.2f})")
 

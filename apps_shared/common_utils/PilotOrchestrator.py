@@ -5,7 +5,10 @@
 
 
 class PilotOrchestrator(
-    RateLimitMixin, StateValidationMixin, event_emission_mixin, ContextPropagationMixin,
+    RateLimitMixin,
+    StateValidationMixin,
+    event_emission_mixin,
+    ContextPropagationMixin,
 ):
     """
     Pilot L3 Agent demonstrating the fully hardened stack.

@@ -45,7 +45,9 @@ class EnvelopeFactory:
 
     @staticmethod
     def create_envelope(
-        data: Any, metadata: dict[str, Any] | None = None, envelope_id: str | None = None,
+        data: Any,
+        metadata: dict[str, Any] | None = None,
+        envelope_id: str | None = None,
     ) -> envelope:
         """Create a new envelope."""
         import uuid

@@ -74,9 +74,7 @@ def benchmark_batch_vs_immediate():
 
         # Calculate improvements
         write_reduction = (write_count_immediate - write_count_batch) / write_count_immediate * 100
-        time_improvement = (
-            (immediate_time - batch_time) / immediate_time * 100 if immediate_time > 0 else 0
-        )
+        time_improvement = (immediate_time - batch_time) / immediate_time * 100 if immediate_time > 0 else 0
 
         print("🎯 PERFORMANCE GAINS:")
         print(
@@ -154,9 +152,7 @@ def demonstrate_location_agent_scenario():
 
         # Verify batching effectiveness
         expected_writes = 1  # Only one write at the end
-        assert write_count == expected_writes, (
-            f"Expected {expected_writes} write, got {write_count}"
-        )
+        assert write_count == expected_writes, f"Expected {expected_writes} write, got {write_count}"
         assert guard.get_metric("files_scanned") == num_files
 
         print("✅ LocationAgent batching verified - disk thrashing prevented!")

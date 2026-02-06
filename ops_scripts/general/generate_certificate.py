@@ -66,8 +66,7 @@ def generate():
                         if (
                             cls.__module__ == module.__name__
                             and any(x in cls_name for x in ["Agent", "Specialist", "Architect"])
-                            and cls_name
-                            not in ["BaseAgent", "OutreachAgent", "OutreachAgentFactory"]
+                            and cls_name not in ["BaseAgent", "OutreachAgent", "OutreachAgentFactory"]
                             and not cls_name.startswith("_")
                         ):
                             # Analyze

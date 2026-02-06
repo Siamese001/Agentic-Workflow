@@ -22,15 +22,15 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Basic PascalCase
         result = agent._to_smart_snake_case("MyClass")
         assert result == "my_class"
-        
+
         # Single word
         result = agent._to_smart_snake_case("Class")
         assert result == "class"
-        
+
         # Short word
         result = agent._to_smart_snake_case("Agent")
         assert result == "agent"
@@ -42,7 +42,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Test common acronyms
         test_cases = [
             ("PDFLoader", "pdf_loader"),
@@ -61,7 +61,7 @@ class TestToSmartSnakeCase:
             ("OSInterface", "os_interface"),
             ("APIGateway", "api_gateway"),
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"
@@ -73,7 +73,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         test_cases = [
             ("PDFDocumentProcessor", "pdf_document_processor"),
             ("HTMLToPDFConverter", "html_to_pdf_converter"),
@@ -86,7 +86,7 @@ class TestToSmartSnakeCase:
             ("PIIDataExtractor", "pii_data_extractor"),
             ("IDValueGenerator", "id_value_generator"),
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"
@@ -98,7 +98,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         test_cases = [
             ("Class2Processor", "class2_processor"),
             ("Type3Converter", "type3_converter"),
@@ -107,7 +107,7 @@ class TestToSmartSnakeCase:
             ("PDF3Reader", "pdf3_reader"),
             ("HTTP2Server", "http2_server"),
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"
@@ -119,7 +119,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         test_cases = [
             "my_class",
             "already_snake_case",
@@ -128,7 +128,7 @@ class TestToSmartSnakeCase:
             "html_parser",
             "api_gateway",
         ]
-        
+
         for input_name in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == input_name, f"Failed for {input_name}: expected {input_name}, got {result}"
@@ -140,7 +140,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         test_cases = [
             "myclass",
             "lowercase",
@@ -148,7 +148,7 @@ class TestToSmartSnakeCase:
             "pdfloader",
             "htmlparser",
         ]
-        
+
         for input_name in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == input_name, f"Failed for {input_name}: expected {input_name}, got {result}"
@@ -160,23 +160,23 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Empty string
         result = agent._to_smart_snake_case("")
         assert result == ""
-        
+
         # Single character
         result = agent._to_smart_snake_case("A")
         assert result == "a"
-        
+
         # Single acronym
         result = agent._to_smart_snake_case("PDF")
         assert result == "pdf"
-        
+
         # All uppercase acronym
         result = agent._to_smart_snake_case("API")
         assert result == "api"
-        
+
         # Mixed single letters
         result = agent._to_smart_snake_case("ABC")
         assert result == "abc"
@@ -188,15 +188,15 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         test_cases = [
             ("PDFHTMLConverter", "pdfhtml_converter"),  # Consecutive acronyms not separated
-            ("XMLJSONParser", "xmljson_parser"),        # Consecutive acronyms not separated
-            ("HTTPSQLBridge", "httpsql_bridge"),        # Consecutive acronyms not separated
-            ("APIURLBuilder", "apiurl_builder"),        # Consecutive acronyms not separated
-            ("CSVXMLTransformer", "csvxml_transformer"), # Consecutive acronyms not separated
+            ("XMLJSONParser", "xmljson_parser"),  # Consecutive acronyms not separated
+            ("HTTPSQLBridge", "httpsql_bridge"),  # Consecutive acronyms not separated
+            ("APIURLBuilder", "apiurl_builder"),  # Consecutive acronyms not separated
+            ("CSVXMLTransformer", "csvxml_transformer"),  # Consecutive acronyms not separated
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"
@@ -208,14 +208,14 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Input with underscores should remain unchanged
         test_cases = [
             "my_class_name",
             "pdf_loader_helper",
             "already_snake_case_input",
         ]
-        
+
         for input_name in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == input_name, f"Failed for {input_name}: expected {input_name}, got {result}"
@@ -227,14 +227,14 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Note: The regex patterns might not handle all special characters
         # This test documents current behavior
         test_cases = [
             ("MyClass-Test", "my_class-_test"),  # Dash treated as separator before uppercase
             ("MyClass_Test", "my_class__test"),  # Underscore preserved
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"
@@ -246,7 +246,7 @@ class TestToSmartSnakeCase:
         )
 
         agent = object.__new__(FileClassificationAgent)
-        
+
         # Real-world examples from the codebase
         test_cases = [
             ("FileClassificationAgent", "file_classification_agent"),
@@ -260,7 +260,7 @@ class TestToSmartSnakeCase:
             ("CSVDataImporter", "csv_data_importer"),
             ("PIIDataMasker", "pii_data_masker"),
         ]
-        
+
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"

@@ -193,7 +193,10 @@ class ReflectionEngine:
             else:
                 # Wrap LLM call with circuit breaker
                 result = await self.circuit_breaker.call(
-                    self._llm_path_evaluate, content, normalized_criteria, context,
+                    self._llm_path_evaluate,
+                    content,
+                    normalized_criteria,
+                    context,
                 )
                 self.stats["llm_critiques"] += 1
 
@@ -247,7 +250,10 @@ class ReflectionEngine:
         return True
 
     async def _fast_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
+        self,
+        content: Any,
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using fast regex/built-in validators."""
         results = []
@@ -288,7 +294,10 @@ class ReflectionEngine:
         )
 
     async def _llm_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
+        self,
+        content: Any,
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using LLM for semantic validation."""
         # Build prompt

@@ -37,12 +37,8 @@ class TestSovereignValidationE2E:
         (tmp_path / "apps_shared" / "common_utils").mkdir(parents=True)
 
         # Create test files
-        (tmp_path / "agentic_core" / "base_agents" / "SovereignBaseAgent.py").write_text(
-            "# Base agent"
-        )
-        (tmp_path / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py").write_text(
-            "# Location"
-        )
+        (tmp_path / "agentic_core" / "base_agents" / "SovereignBaseAgent.py").write_text("# Base agent")
+        (tmp_path / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py").write_text("# Location")
         (tmp_path / "apps_lic" / "engines" / "HOP1ProfileAnalysisAgent.py").write_text("# HOP1")
 
         return tmp_path

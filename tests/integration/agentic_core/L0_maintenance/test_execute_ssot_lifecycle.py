@@ -70,9 +70,7 @@ class TestSovereignLifecycle(unittest.TestCase):
         """
         # Create state manager with real project root
         state_mgr = execute_ssot.RuntimeStateManager(self.root)
-        decision_engine = execute_ssot.AutonomousDecisionEngine(
-            enable_llm=False, state_mgr=state_mgr
-        )
+        decision_engine = execute_ssot.AutonomousDecisionEngine(enable_llm=False, state_mgr=state_mgr)
 
         # Test confidence calculation with real territory
         conf = decision_engine.calculate_healing_confidence(
@@ -133,9 +131,7 @@ class TestSovereignLifecycle(unittest.TestCase):
         INTEGRATION TEST: Verify decision engine correctly tracks all decisions in state.
         """
         state_mgr = execute_ssot.RuntimeStateManager(self.root)
-        decision_engine = execute_ssot.AutonomousDecisionEngine(
-            enable_llm=True, state_mgr=state_mgr
-        )
+        decision_engine = execute_ssot.AutonomousDecisionEngine(enable_llm=True, state_mgr=state_mgr)
 
         # Make multiple decisions at different confidence levels
         test_cases = [
@@ -270,9 +266,7 @@ class TestSovereignLifecycle(unittest.TestCase):
 
         # 2. SETUP EXECUTION CONTEXT
         state_mgr = execute_ssot.RuntimeStateManager(self.root)
-        decision_engine = execute_ssot.AutonomousDecisionEngine(
-            enable_llm=True, state_mgr=state_mgr
-        )
+        decision_engine = execute_ssot.AutonomousDecisionEngine(enable_llm=True, state_mgr=state_mgr)
 
         # 3. MOCK AGENTS
         mock_loc_agent = MagicMock()

@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
 
 """
 LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
@@ -29,6 +30,7 @@ import re
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -98,7 +100,11 @@ QUALITY REQUIREMENTS:
 - Keep import statements at the top of each file""".strip()
 
     def build_healing_prompt(
-        self, Task: str, code: str, file_path: str = "unknown", context: str = "",
+        self,
+        Task: str,
+        code: str,
+        file_path: str = "unknown",
+        context: str = "",
     ) -> dict[str, str]:
         """
         Build a hardened healing prompt with safety guards.

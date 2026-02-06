@@ -270,7 +270,8 @@ def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
 
 
 def calculate_uniqueness(
-    analysis: FileAnalysis, codebase_index: dict[str, set[str]],
+    analysis: FileAnalysis,
+    codebase_index: dict[str, set[str]],
 ) -> tuple[float, list[str]]:
     """Calculate how unique the file's entities are compared to codebase."""
     if not analysis.entities:

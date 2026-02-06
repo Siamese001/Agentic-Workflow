@@ -283,7 +283,9 @@ def upgrade_heal_method(
 
                 if detection_results:
                     context = adapter.create_batch_context(
-                        file_path, detection_results, original_method.__name__,
+                        file_path,
+                        detection_results,
+                        original_method.__name__,
                     )
                     if context:
                         # Log that we're using surgical healing

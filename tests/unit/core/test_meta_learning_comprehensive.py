@@ -233,9 +233,7 @@ class TestSovereignBaseAgentIntegration:
             patch.object(MetaLearningClient, "_initialize_redis"),
             patch.object(MetaLearningClient, "_initialize_pinecone"),
             patch.object(HealingMemoryEmbedder, "_initialize_embedding_agent"),
-            patch(
-                "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
-            ),
+            patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"),
         ):
             from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
 

@@ -28,6 +28,7 @@ Non-responsibilities:
 """
 from dataclasses import dataclass
 from typing import Any
+from pydantic import ValidationError as ValidationResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -262,7 +263,9 @@ class SpecificityProseEngine:
         )
 
     def _extract_company_specifics(
-        self, cover_letter: str, company_research: dict[str, Any],
+        self,
+        cover_letter: str,
+        company_research: dict[str, Any],
     ) -> list[CompanySpecificDetail]:
         """Extract company-specific details from cover letter"""
         SPECIFICS = []
@@ -272,7 +275,9 @@ class SpecificityProseEngine:
             for _i in range(COUNT):
                 SPECIFICS.append(
                     CompanySpecificDetail(
-                        DETAIL=company_name, CATEGORY="COMPANY_NAME", SOURCE="company_research",
+                        DETAIL=company_name,
+                        CATEGORY="COMPANY_NAME",
+                        SOURCE="company_research",
                     ),
                 )
         for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
@@ -318,7 +323,9 @@ class SpecificityProseEngine:
         )
 
     def _execute_find_replace_test(
-        self, cover_letter: str, company_specifics: list[CompanySpecificDetail],
+        self,
+        cover_letter: str,
+        company_specifics: list[CompanySpecificDetail],
     ) -> bool:
         """
         Execute find-replace test - letter should break if specifics removed.

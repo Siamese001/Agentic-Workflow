@@ -1787,7 +1787,10 @@ def main():
             # SSOT: Use centralized territory name function
             path_str = str(rel_path).replace("\\", "/").lower()
             territory = get_territory_from_path(
-                layer=layer, path_str=path_str, is_base_class=is_base_class, class_name=node.name,
+                layer=layer,
+                path_str=path_str,
+                is_base_class=is_base_class,
+                class_name=node.name,
             )
 
             # SSOT: Refine high-count territories using AST analysis

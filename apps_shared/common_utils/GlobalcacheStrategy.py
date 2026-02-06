@@ -8,6 +8,10 @@ everywhere through semantic similarity matching.
 import hashlib
 import logging
 import time
+from collections import OrderedDict
+from pydantic import BaseModel, Field
+from typing import Any
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +180,10 @@ class L2VectorStore:
             self.embeddings = self.embeddings[1:]
 
     def search(
-        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5,
+        self,
+        query_embedding: list[float],
+        threshold: float = 0.92,
+        max_results: int = 5,
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
@@ -361,7 +368,10 @@ class GlobalCache:
         return None
 
     def get_semantic(
-        self, query_text: str, threshold: float | None = None, max_results: int = 1,
+        self,
+        query_text: str,
+        threshold: float | None = None,
+        max_results: int = 1,
     ) -> list[Any]:
         """Get values by semantic similarity.
 
@@ -497,9 +507,7 @@ class GlobalCache:
 
         # Calculate overall hit rate
         if stats["total_requests"] > 0:
-            stats["overall_hit_rate"] = (stats["l1_hits"] + stats["l2_hits"]) / stats[
-                "total_requests"
-            ]
+            stats["overall_hit_rate"] = (stats["l1_hits"] + stats["l2_hits"]) / stats["total_requests"]
         else:
             stats["overall_hit_rate"] = 0.0
 
@@ -620,7 +628,9 @@ def cache_put(
 
 
 def cache_search_semantic(
-    query_text: str, threshold: float | None = None, max_results: int = 1,
+    query_text: str,
+    threshold: float | None = None,
+    max_results: int = 1,
 ) -> list[Any]:
     """Search cache semantically.
 

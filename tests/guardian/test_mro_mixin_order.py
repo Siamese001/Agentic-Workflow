@@ -153,9 +153,7 @@ class TestMROMixinOrder:
         print(f"  MRO: {' -> '.join(mro[:5])}...")
 
         # Verify AtomicExecutionMixin is present
-        assert "AtomicExecutionMixin" in mro, (
-            "DomainPlannerAgent should have AtomicExecutionMixin in MRO"
-        )
+        assert "AtomicExecutionMixin" in mro, "DomainPlannerAgent should have AtomicExecutionMixin in MRO"
 
     def test_all_agents_have_correct_mro_order(self, all_agents):
         """
@@ -212,8 +210,7 @@ class TestMROMixinOrder:
 
                 if mixin_index > base_index:
                     violations.append(
-                        f"{agent_class.__name__}: {mixin_name} @ {mixin_index}, "
-                        f"{base} @ {base_index}"
+                        f"{agent_class.__name__}: {mixin_name} @ {mixin_index}, {base} @ {base_index}"
                     )
 
         if violations:

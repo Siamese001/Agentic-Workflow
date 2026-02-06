@@ -55,9 +55,7 @@ class TestTypeHintFixerAgent:
 
     def test_has_visit_AsyncFunctionDef_method(self, agent_class):
         """Verify agent has visit_AsyncFunctionDef method."""
-        assert hasattr(agent_class, "visit_AsyncFunctionDef"), (
-            "Should have visit_AsyncFunctionDef method"
-        )
+        assert hasattr(agent_class, "visit_AsyncFunctionDef"), "Should have visit_AsyncFunctionDef method"
 
     def test_has_visit_Assign_method(self, agent_class):
         """Verify agent has visit_Assign method."""

@@ -57,9 +57,7 @@ class TestGovernanceShieldAgent:
 
     def test_has_generate_safety_protocol_method(self, agent_class):
         """Verify agent has generate_safety_protocol method."""
-        assert hasattr(agent_class, "generate_safety_protocol"), (
-            "Should have generate_safety_protocol method"
-        )
+        assert hasattr(agent_class, "generate_safety_protocol"), "Should have generate_safety_protocol method"
 
     def test_has_audit_outreach_method(self, agent_class):
         """Verify agent has audit_outreach method."""

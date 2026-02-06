@@ -2,6 +2,9 @@
 
 import ast
 import logging
+from pathlib import Path
+
+LOGGER = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -13,9 +16,7 @@ def count_top_level_defs(filepath: Path) -> int:
     try:
         tree: Any = ast.parse(filepath.read_text(encoding="utf-8"))
         return sum(
-            1
-            for n in tree.body
-            if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
+            1 for n in tree.body if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
         )
     except Exception:
         return 0
@@ -36,11 +37,7 @@ def split_file_by_type(filepath: Path) -> None:
             elif any(
                 isinstance(d, ast.Name)
                 and d.id == "dataclass"
-                or (
-                    isinstance(d, ast.Call)
-                    and isinstance(d.func, ast.Name)
-                    and (d.func.id == "dataclass")
-                )
+                or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and (d.func.id == "dataclass"))
                 for d in node.decorator_list
             ):
                 dataclasses.append(node)

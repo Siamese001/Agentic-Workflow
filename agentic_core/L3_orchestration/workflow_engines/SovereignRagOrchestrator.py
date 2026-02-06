@@ -304,13 +304,15 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, Sove
         avg_faithfulness: Any = sum(faithfulness_scores) / len(faithfulness_scores)
         if avg_faithfulness > 0.94:
             self.faithfulness_threshold = min(
-                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate,
+                0.95,
+                self.faithfulness_threshold + self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}")
         elif avg_faithfulness < 0.85:
             self.faithfulness_threshold = max(
-                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate,
+                0.7,
+                self.faithfulness_threshold - self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}")

@@ -87,10 +87,11 @@ class MemorySyncError(CanonError):
 
 class SwarmInitializationError(CanonError):
     """
-    Raised when the swarm fails to initialize properly.
+        Raised when the swarm fails to initialize properly.
 
-    This is a startup error that prevents the swarm
-    from becoming operational.
+        This is a startup error that prevents the swarm
+        from becoming operational.
+    from typing import Any
     """
 
     def __init__(self, message: str, failed_component: str, context: dict[str, Any] | None = None):

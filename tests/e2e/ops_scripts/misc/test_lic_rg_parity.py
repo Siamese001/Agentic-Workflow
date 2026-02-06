@@ -243,9 +243,7 @@ def test_gap_closure_validation():
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="gap_test")
 
-        assert hasattr(orch, "run_subatomic_test"), (
-            "Gap 4 not closed: Missing SubatomicTestingMixin"
-        )
+        assert hasattr(orch, "run_subatomic_test"), "Gap 4 not closed: Missing SubatomicTestingMixin"
         gaps_closed += 1
         print("   ✅ Gap 4 (Subatomic Testing): CLOSED")
     except Exception as e:

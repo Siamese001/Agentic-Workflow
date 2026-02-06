@@ -53,7 +53,10 @@ class SovereignReport:
             self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
         def with_dimension(
-            self, name: str, score: float, issues: list[str] = None,
+            self,
+            name: str,
+            score: float,
+            issues: list[str] = None,
         ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
             if name not in self._dimensions:

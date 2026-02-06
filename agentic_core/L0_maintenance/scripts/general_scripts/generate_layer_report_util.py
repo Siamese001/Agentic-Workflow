@@ -2,6 +2,7 @@ from pathlib import Path
 
 """Generate agent report by L0-L6 layers from agent_discovery_full.json."""
 import json
+from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).parent.parent
 with open(PROJECT_ROOT / "agent_discovery_full.json") as f:

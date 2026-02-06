@@ -74,7 +74,8 @@ def test_basic_functionality():
         print("\n📋 Test 5: Risk Assessment")
         for src in discovered_files:
             import_changes = guardian.analyze_import_changes(
-                src, guardian.calculate_mirrored_path(src),
+                src,
+                guardian.calculate_mirrored_path(src),
             )
             risk_level = guardian.assess_risk_level(src, import_changes)
             print(f"   ✅ {src.name} → {risk_level} risk")

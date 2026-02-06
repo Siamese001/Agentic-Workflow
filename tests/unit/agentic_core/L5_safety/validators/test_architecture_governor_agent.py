@@ -29,9 +29,7 @@ class TestArchitectureGovernorAgentActivation:
 
         # Create valid files
         (tmp_path / "agentic_core" / "L0_maintenance" / "util.py").write_text("# Valid L0 file")
-        (tmp_path / "agentic_core" / "L5_safety" / "TestAgent.py").write_text(
-            "class TestAgent: pass"
-        )
+        (tmp_path / "agentic_core" / "L5_safety" / "TestAgent.py").write_text("class TestAgent: pass")
 
         return tmp_path
 
@@ -432,10 +430,7 @@ class BadOrchestrator:
         violation = {
             "type": "GRAVITY",
             "file": str(
-                mock_project_with_gravity_violation
-                / "agentic_core"
-                / "L3_orchestration"
-                / "bad_import.py"
+                mock_project_with_gravity_violation / "agentic_core" / "L3_orchestration" / "bad_import.py"
             ),
             "message": "Layer violation: L3 cannot import from L5",
             "severity": "error",
@@ -545,9 +540,7 @@ class TestPhase3CleanupEmptyDirs:
         """Setup project with ghost directories (empty after healing)."""
         # Create sovereign structure
         (tmp_path / "agentic_core" / "L5_safety" / "validators").mkdir(parents=True)
-        (tmp_path / "agentic_core" / "L5_safety" / "validators" / "real_file.py").write_text(
-            "# Real file"
-        )
+        (tmp_path / "agentic_core" / "L5_safety" / "validators" / "real_file.py").write_text("# Real file")
 
         # Create ghost directory (empty except for sentinels)
         ghost_path = tmp_path / "agentic_core" / "L1_cognition" / "ghost_subfolder"
@@ -580,9 +573,7 @@ class TestPhase3CleanupEmptyDirs:
 
         agent = ArchitectureGovernorAgent(project_root=mock_project_with_ghost_dirs)
 
-        ghost_path = (
-            mock_project_with_ghost_dirs / "agentic_core" / "L1_cognition" / "ghost_subfolder"
-        )
+        ghost_path = mock_project_with_ghost_dirs / "agentic_core" / "L1_cognition" / "ghost_subfolder"
         assert ghost_path.exists(), "Ghost path should exist before cleanup"
 
         # Run cleanup
@@ -838,9 +829,7 @@ class TestPhase4CentralizedASTEngine:
         )
 
         gov_agent = ArchitectureGovernorAgent(project_root=mock_project_with_violation)
-        val_agent = StructuralValidatorAgent(
-            config=StructureConfig(project_root=mock_project_with_violation)
-        )
+        val_agent = StructuralValidatorAgent(config=StructureConfig(project_root=mock_project_with_violation))
 
         # Both should detect violations
         gov_result = gov_agent.heal_repository(dry_run=True)

@@ -381,6 +381,8 @@ from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
     DependencyGraphArgs,
 )
 
+LOGGER = logging.getLogger(__name__)
+
 
 def dependency_graph_tool(args: DependencyGraphArgs) -> dict[str, Any]:
     """

@@ -82,7 +82,11 @@ class HealerMixin:
         try:
             self._healing_count += 1
             summary: dict[str, Any] = self._perform_healing_chain(
-                dry_run, execute, depth, max_depth, _call_path,
+                dry_run,
+                execute,
+                depth,
+                max_depth,
+                _call_path,
             )
             return summary
         except Exception as e:
@@ -91,7 +95,12 @@ class HealerMixin:
             self._healing_count -= 1
 
     def _perform_healing_chain(
-        self, dry_run: bool, execute: bool, depth: int, max_depth: int, _call_path: set[str],
+        self,
+        dry_run: bool,
+        execute: bool,
+        depth: int,
+        max_depth: int,
+        _call_path: set[str],
     ) -> dict[str, Any]:
         """
         Execute the actual healing chain with proper error boundaries.

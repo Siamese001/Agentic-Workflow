@@ -114,7 +114,9 @@ class TerritoryCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _map_territory(self, territory: str, context: WorkflowContext) -> dict:
@@ -180,7 +182,9 @@ class MCPCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _route_tool(self, tool: str, context: WorkflowContext) -> dict:
@@ -242,7 +246,9 @@ class MissionCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _run_mission(self, mission_id: str, context: WorkflowContext) -> dict:
@@ -309,7 +315,9 @@ class ModelCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _route_model(self, model: str, context: WorkflowContext) -> dict:
@@ -371,7 +379,9 @@ class HealthCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _health_check(self, context: WorkflowContext) -> dict:
@@ -435,7 +445,9 @@ class GovernanceCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _validate_registry(self, context: WorkflowContext) -> dict:
@@ -497,7 +509,9 @@ class UtilityCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _conversation_repair(self, context: WorkflowContext) -> dict:
@@ -557,7 +571,9 @@ class CachingCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     def get_capabilities(self) -> list[CoordinatorCapability]:
@@ -596,7 +612,9 @@ class SecurityCoordinator(WorkflowCoordinator):
             result = {"error": f"Unknown operation: {operation}"}
 
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _validate_security(self, context: WorkflowContext) -> dict:

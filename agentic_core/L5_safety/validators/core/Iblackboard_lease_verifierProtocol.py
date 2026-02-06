@@ -37,7 +37,11 @@ class blackboard_lease_verifier(Protocol):
 
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool: ...
     def log_security_event(
-        self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any],
+        self,
+        agent_id: str,
+        event_type: str,
+        file_path: str,
+        details: dict[str, Any],
     ) -> None: ...
 
 
@@ -376,7 +380,9 @@ def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = No
     # DELEGATION: Use ArchivalGatekeeper for safe delete (soft delete to archive)
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
     result = gatekeeper.safe_delete(
-        resolved_path, agent_id or "filesystem.delete_file", "Filesystem delete operation",
+        resolved_path,
+        agent_id or "filesystem.delete_file",
+        "Filesystem delete operation",
     )
 
     if not result.success:

@@ -118,7 +118,9 @@ def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -
 
 
 def analyze_function(
-    node: ast.FunctionDef, file_path: str, source_lines: list[str],
+    node: ast.FunctionDef,
+    file_path: str,
+    source_lines: list[str],
 ) -> FunctionInfo:
     """Analyze a function definition."""
     params = [arg.arg for arg in node.args.args if arg.arg != "self"]
@@ -157,9 +159,7 @@ def analyze_file(file_path: Path) -> FileInfo | None:
                 functions.append(analyze_function(node, str(file_path), source_lines))
 
     # Calculate quality score
-    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(
-        1 for f in functions if f.has_docstring
-    )
+    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(1 for f in functions if f.has_docstring)
     total_entities = len(classes) + len(functions)
     docstring_ratio = has_docstrings / max(total_entities, 1)
 
@@ -203,11 +203,7 @@ def find_duplicate_functions(all_files: list[FileInfo]) -> dict[str, list[Functi
 
     # Filter to only duplicates (ignore common names)
     common_names = {"main", "test", "run", "execute", "process", "validate", "init"}
-    return {
-        name: funcs
-        for name, funcs in func_map.items()
-        if len(funcs) > 1 and name not in common_names
-    }
+    return {name: funcs for name, funcs in func_map.items() if len(funcs) > 1 and name not in common_names}
 
 
 def find_exact_duplicate_files(all_files: list[FileInfo]) -> dict[str, list[FileInfo]]:

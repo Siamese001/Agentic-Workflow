@@ -10,6 +10,11 @@ import json
 import logging
 import time
 from datetime import datetime
+from abc import ABC, abstractmethod
+from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +107,9 @@ class LLMExecutionStrategy(ExecutionStrategy):
         """
         self.model_name = model_name
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
-            f"llm_{model_name}", failure_threshold=5, recovery_timeout=60,
+            f"llm_{model_name}",
+            failure_threshold=5,
+            recovery_timeout=60,
         )
         self.rate_limiter = get_rate_limiter("llm_calls", "10/minute")
         self.resource_manager = get_resource_manager()
@@ -139,7 +146,10 @@ class LLMExecutionStrategy(ExecutionStrategy):
             }
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics,
+                status=ExecutionStatus.COMPLETED,
+                data=result,
+                context=context,
+                metrics=metrics,
             )
 
         except CircuitOpenError:
@@ -151,7 +161,10 @@ class LLMExecutionStrategy(ExecutionStrategy):
             )
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED, data=None, context=context, error=str(e),
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e),
             )
 
     async def _execute_llm(self, context: ExecutionContext) -> Any:
@@ -237,7 +250,9 @@ class APIExecutionStrategy(ExecutionStrategy):
         self.api_endpoint = api_endpoint
         self.timeout = timeout
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
-            f"api_{api_endpoint}", failure_threshold=3, recovery_timeout=30,
+            f"api_{api_endpoint}",
+            failure_threshold=3,
+            recovery_timeout=30,
         )
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
@@ -258,7 +273,10 @@ class APIExecutionStrategy(ExecutionStrategy):
             metrics = {"api_calls": 1, "response_time": time.time() - start_time}
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics,
+                status=ExecutionStatus.COMPLETED,
+                data=result,
+                context=context,
+                metrics=metrics,
             )
 
         except CircuitOpenError:
@@ -270,7 +288,10 @@ class APIExecutionStrategy(ExecutionStrategy):
             )
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED, data=None, context=context, error=str(e),
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e),
             )
 
     async def _execute_api(self, context: ExecutionContext) -> Any:
@@ -325,16 +346,15 @@ class BatchExecutionStrategy(ExecutionStrategy):
 
         try:
             # Get input items
-            items = (
-                context.input_data if isinstance(context.input_data, list) else [context.input_data]
-            )
+            items = context.input_data if isinstance(context.input_data, list) else [context.input_data]
 
             # Process in batches
             results = []
             for i in range(0, len(items), self.batch_size):
                 batch = items[i : i + self.batch_size]
                 batch_results = await asyncio.gather(
-                    *[self._process_item(item, context) for item in batch], return_exceptions=True,
+                    *[self._process_item(item, context) for item in batch],
+                    return_exceptions=True,
                 )
                 results.extend(batch_results)
 
@@ -345,12 +365,18 @@ class BatchExecutionStrategy(ExecutionStrategy):
             }
 
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=results, context=context, metrics=metrics,
+                status=ExecutionStatus.COMPLETED,
+                data=results,
+                context=context,
+                metrics=metrics,
             )
 
         except Exception as e:
             return ExecutionResult(
-                status=ExecutionStatus.FAILED, data=None, context=context, error=str(e),
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e),
             )
 
     async def _process_item(self, item: Any, context: ExecutionContext) -> Any:
@@ -503,7 +529,10 @@ class EngineExecutor:
         logger.info(f"Initialized {engine_type.value} executor")
 
     async def generate_content(
-        self, input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None,
+        self,
+        input_data: Any,
+        content_type: str = "default",
+        config: dict[str, Any] | None = None,
     ) -> ExecutionResult:
         """Generate content using unified executor.
 
@@ -520,21 +549,29 @@ class EngineExecutor:
 
         # Execute with LLM strategy
         result = await self.unified_executor.execute(
-            input_data, "llm", self.engine_type, merged_config,
+            input_data,
+            "llm",
+            self.engine_type,
+            merged_config,
         )
 
         # Format output if successful
         if result.status == ExecutionStatus.COMPLETED:
             format_type = self._get_format_type(content_type)
             formatted = self.formatter.format(
-                result.data, format_type, self.engine_type, merged_config,
+                result.data,
+                format_type,
+                self.engine_type,
+                merged_config,
             )
             result.data = formatted.data
 
         return result
 
     async def process_batch(
-        self, items: list[Any], config: dict[str, Any] | None = None,
+        self,
+        items: list[Any],
+        config: dict[str, Any] | None = None,
     ) -> ExecutionResult:
         """Process batch of items.
 
@@ -546,7 +583,10 @@ class EngineExecutor:
             Execution result
         """
         return await self.unified_executor.execute(
-            items, "batch", self.engine_type, config or self.config,
+            items,
+            "batch",
+            self.engine_type,
+            config or self.config,
         )
 
     def _get_engine_config(self) -> dict[str, Any]:
@@ -613,7 +653,9 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
 
 # Convenience functions
 async def execute_resume_generation(
-    input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None,
+    input_data: Any,
+    content_type: str = "default",
+    config: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     """Execute resume generation.
 
@@ -630,7 +672,9 @@ async def execute_resume_generation(
 
 
 async def execute_outreach_generation(
-    input_data: Any, content_type: str = "message", config: dict[str, Any] | None = None,
+    input_data: Any,
+    content_type: str = "message",
+    config: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     """Execute outreach generation.
 

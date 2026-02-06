@@ -18,6 +18,8 @@ from typing import Any
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 from agentic_core.utils.security import safe_execute
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -124,7 +126,11 @@ class DeterministicCleaner:
         """Apply autopep8 for PEP8 formatting."""
         try:
             result = safe_execute(
-                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True,
+                ["autopep8", "--", "-"],
+                input=code,
+                capture_output=True,
+                text=True,
+                check=True,
             )
             return result.stdout
         except subprocess.CalledProcessError as e:

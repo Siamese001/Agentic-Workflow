@@ -128,7 +128,8 @@ class ProactiveFissionScanner:
         try:
             query: Any = f"best modular architecture for python {file_name}"
             design_patterns: Any = await self.router.call_mcp(
-                "brave_search", {"query": query, "purpose": "Find modular design patterns"},
+                "brave_search",
+                {"query": query, "purpose": "Find modular design patterns"},
             )
             structural_twins: Any = await self.router.call_mcp(
                 "pinecone",

@@ -25,9 +25,7 @@ class TestSharedLayerRigor:
 
     def test_shared_gravity_dominance(self):
         """100% PASS: Generic detector logic must route to apps_shared/utils (95)."""
-        shared_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
-            "weight"
-        ]
+        shared_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"]["weight"]
         # apps_rg engine weight is currently 90, apps_lic has no weight defined
         assert shared_weight > 90, "FAIL: Specific app gravity is overshadowing global utilities!"
         print("✅ Shared gravity dominance check: PASSED")
@@ -100,9 +98,7 @@ class TestSharedLayerRigor:
 
     def test_core_components_base_classes(self):
         """100% PASS: Validates base class detection for core components."""
-        core_signals = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"][
-            "apps_shared/core_components"
-        ]
+        core_signals = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/core_components"]
         base_classes = core_signals["base_classes"]
 
         # Should match generic base classes
@@ -114,9 +110,9 @@ class TestSharedLayerRigor:
 
     def test_weight_hierarchy_integrity(self):
         """100% PASS: Ensures shared weights maintain proper hierarchy."""
-        shared_utils_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"][
-            "apps_shared/utils"
-        ]["weight"]
+        shared_utils_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
+            "weight"
+        ]
         shared_core_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"][
             "apps_shared/core_components"
         ]["weight"]

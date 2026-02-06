@@ -99,7 +99,10 @@ class autonomous_execution_engine:
             }
             # Sovereign Pattern: Temp file + Atomic Rename
             with tempfile.NamedTemporaryFile(
-                "w", delete=False, dir=self.state_path.parent, encoding="utf-8",
+                "w",
+                delete=False,
+                dir=self.state_path.parent,
+                encoding="utf-8",
             ) as tf:
                 json.dump(data, tf, indent=2)
                 temp_name = tf.name

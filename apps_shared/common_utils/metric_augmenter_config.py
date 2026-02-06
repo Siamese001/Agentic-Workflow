@@ -7,6 +7,10 @@ metrics (Revenue, OpEx, Retention).
 
 import logging
 import re
+from enum import Enum
+from pydantic import BaseModel, Field
+from typing import Any
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +155,9 @@ class MetricAugmenter:
 
             # Estimate business impact
             business_impact = self._estimate_impact(
-                selected_metric["type"], selected_metric["value"], bullet_text,
+                selected_metric["type"],
+                selected_metric["value"],
+                bullet_text,
             )
 
             if not business_impact:
@@ -208,7 +214,9 @@ class MetricAugmenter:
 
         # Sort by impact priority
         sorted_metrics = sorted(
-            metrics, key=lambda m: impact_priority.get(m["type"], 0), reverse=True,
+            metrics,
+            key=lambda m: impact_priority.get(m["type"], 0),
+            reverse=True,
         )
 
         return sorted_metrics[0] if sorted_metrics else metrics[0]
@@ -242,7 +250,10 @@ class MetricAugmenter:
             logger.error(f"Error augmenting batch: {str(e)}")
             return [
                 AugmentedBullet(
-                    original_text=b, technical_metric=None, business_impact=None, final_text=b,
+                    original_text=b,
+                    technical_metric=None,
+                    business_impact=None,
+                    final_text=b,
                 )
                 for b in bullets
                 if isinstance(b, str)
@@ -336,7 +347,10 @@ class MetricAugmenter:
             return []
 
     def _estimate_impact(
-        self, metric_type: str, metric_value: str, context: str,
+        self,
+        metric_type: str,
+        metric_value: str,
+        context: str,
     ) -> BusinessImpact | None:
         """Estimate business impact for a metric.
 
@@ -372,7 +386,8 @@ class MetricAugmenter:
                     # Every 5% accuracy ~ 2% revenue
                     revenue_lift = min(20, (accuracy / 5) * 2)
                     multiplier = self.industry_multipliers.get(self.industry, {}).get(
-                        "revenue", 1.0,
+                        "revenue",
+                        1.0,
                     )
                     revenue_lift *= multiplier
                     value_statement = f"enabling est. {revenue_lift:.0f}% revenue growth"
@@ -390,12 +405,11 @@ class MetricAugmenter:
                     cost_reduction = self._extract_number(metric_value)
                     if cost_reduction and cost_reduction > 0:
                         multiplier = self.industry_multipliers.get(self.industry, {}).get(
-                            "cost", 1.0,
+                            "cost",
+                            1.0,
                         )
                         cost_reduction *= multiplier
-                        value_statement = (
-                            f"slashing monthly cloud spend by est. {cost_reduction:.0f}%"
-                        )
+                        value_statement = f"slashing monthly cloud spend by est. {cost_reduction:.0f}%"
                         confidence = 0.7
                     else:
                         value_statement = "optimizing operational efficiency"
@@ -422,7 +436,9 @@ class MetricAugmenter:
                 confidence = 0.3
 
             return BusinessImpact(
-                category=category, value_statement=value_statement, confidence=confidence,
+                category=category,
+                value_statement=value_statement,
+                confidence=confidence,
             )
 
         except Exception as e:

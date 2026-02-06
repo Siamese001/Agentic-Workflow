@@ -5,6 +5,7 @@ Provides high-performance cache key generation for LLM requests.
 
 import hashlib
 import json
+from typing import Any
 
 # Version for cache key format to ensure compatibility
 CACHE_KEY_VERSION = "v1.0"
@@ -31,7 +32,9 @@ def generate_llm_cache_key(model: str, messages: list[dict[str, Any]]) -> str:
 
 
 def generate_llm_cache_key_with_fingerprint(
-    model: str, messages: list[dict[str, Any]], fingerprint: str,
+    model: str,
+    messages: list[dict[str, Any]],
+    fingerprint: str,
 ) -> str:
     """Generate a cache key with additional fingerprint.
 

@@ -10,6 +10,9 @@ import logging
 import re
 import time
 import unicodedata
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -126,9 +129,7 @@ class InputGuardrail:
         ]
 
         # Compile injection patterns
-        self.compiled_injection_patterns = [
-            re.compile(pattern) for pattern in self.injection_patterns
-        ]
+        self.compiled_injection_patterns = [re.compile(pattern) for pattern in self.injection_patterns]
 
         # Unicode homoglyph patterns (common substitutions)
         self.unicode_homoglyphs = {
@@ -231,12 +232,8 @@ class InputGuardrail:
                 unicode_result = self._check_unicode_attacks(input_text)
                 if unicode_result[0]:  # Found suspicious Unicode
                     if result.action == GuardAction.ALLOW:
-                        result.action = (
-                            GuardAction.WARN if not self.strict_mode else GuardAction.BLOCK
-                        )
-                        result.reason = (
-                            f"Suspicious Unicode characters detected: {unicode_result[1]}"
-                        )
+                        result.action = GuardAction.WARN if not self.strict_mode else GuardAction.BLOCK
+                        result.reason = f"Suspicious Unicode characters detected: {unicode_result[1]}"
                     result.confidence = max(result.confidence, 0.7)
 
             # Check for encoded payloads
@@ -369,9 +366,7 @@ class InputGuardrail:
         confidence = min(keyword_count / len(self.malicious_keywords), 1.0)
 
         # Boost confidence if multiple injection patterns are found
-        injection_count = sum(
-            1 for pattern in self.compiled_injection_patterns if pattern.search(text)
-        )
+        injection_count = sum(1 for pattern in self.compiled_injection_patterns if pattern.search(text))
         if injection_count > 2:
             confidence = min(confidence + 0.3, 1.0)
 

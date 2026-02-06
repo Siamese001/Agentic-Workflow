@@ -346,7 +346,8 @@ class DashboardVerifier:
             with sync_playwright() as p:
                 print("\n12. Launching browser...")
                 browser = p.chromium.launch(
-                    headless=True, args=["--disable-cache", "--disable-application-cache"],
+                    headless=True,
+                    args=["--disable-cache", "--disable-application-cache"],
                 )
 
                 context = browser.new_context(viewport={"width": 1920, "height": 1080})
@@ -444,7 +445,9 @@ Examples:
     group.add_argument("--quick", action="store_true", help="Run quick verification (no browser)")
     group.add_argument("--full", action="store_true", help="Run full verification (no browser)")
     group.add_argument(
-        "--deployment", action="store_true", help="Run deployment verification with Playwright",
+        "--deployment",
+        action="store_true",
+        help="Run deployment verification with Playwright",
     )
 
     args = parser.parse_args()

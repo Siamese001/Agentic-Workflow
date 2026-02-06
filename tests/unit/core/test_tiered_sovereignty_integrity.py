@@ -44,9 +44,7 @@ class TestTieredSovereigntyIntegrity(unittest.TestCase):
         engine.should_proceed_with_healing(conf_low, "AgentB")
         self.assertEqual(engine.decisions_made[-1]["model"], "test-pro-v2")
 
-    @patch.dict(
-        os.environ, {"SOVEREIGN_HIGH_CONFIDENCE": "0.90", "SOVEREIGN_MEDIUM_CONFIDENCE": "0.60"}
-    )
+    @patch.dict(os.environ, {"SOVEREIGN_HIGH_CONFIDENCE": "0.90", "SOVEREIGN_MEDIUM_CONFIDENCE": "0.60"})
     def test_custom_threshold_boundaries(self):
         """Case 3: Test boundary conditions with custom thresholds."""
         # Test exact boundary values
@@ -81,9 +79,7 @@ class TestTieredSovereigntyIntegrity(unittest.TestCase):
             self.assertTrue(score_med.is_medium_confidence)  # 0.60 >= 0.50 and <= 0.75
             self.assertFalse(score_med.is_low_confidence)  # 0.60 >= 0.50
 
-    @patch.dict(
-        os.environ, {"GEMINI_MODEL": "custom-flash-model", "GEMINI_PRO_MODEL": "custom-pro-model"}
-    )
+    @patch.dict(os.environ, {"GEMINI_MODEL": "custom-flash-model", "GEMINI_PRO_MODEL": "custom-pro-model"})
     def test_model_fallback_values(self):
         """Case 5: Test model fallback when environment variables are set."""
         engine = SovereignDecisionEngine(enable_llm=True)

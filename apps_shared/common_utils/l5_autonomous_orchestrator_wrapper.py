@@ -14,6 +14,7 @@ by routing all orchestration through the consolidated AtomicBlackboard-integrate
 
 import asyncio
 import logging
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -62,7 +63,8 @@ async def run_l5_outreach_orchestrator(
         enable_intervention=enable_intervention,
     )
     results: Any = await orchestrator.execute_workflow(
-        workflow_id=f"outreach_{campaign_id}", agents=[outreach_agent],
+        workflow_id=f"outreach_{campaign_id}",
+        agents=[outreach_agent],
     )
     return results
 
@@ -77,6 +79,8 @@ if __name__ == "__main__":
     args: Any = parser.parse_args()
     asyncio.run(
         run_l5_outreach_orchestrator(
-            campaign_id=args.campaign_id, Archetype=args.Archetype, max_cycles=args.max_cycles,
+            campaign_id=args.campaign_id,
+            Archetype=args.Archetype,
+            max_cycles=args.max_cycles,
         ),
     )

@@ -67,9 +67,7 @@ class DeadLetterItem:
             Dictionary representation
         """
         return {
-            "envelope": self.envelope.dict()
-            if hasattr(self.envelope, "dict")
-            else self.envelope.to_dict(),
+            "envelope": self.envelope.dict() if hasattr(self.envelope, "dict") else self.envelope.to_dict(),
             "failure_reason": self.failure_reason.value,
             "failure_stage": self.failure_stage,
             "error_message": self.error_message,
@@ -138,7 +136,9 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def list(
-        self, status: DeadLetterStatus | None = None, limit: int = 100,
+        self,
+        status: DeadLetterStatus | None = None,
+        limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List items in queue.
 
@@ -153,7 +153,10 @@ class DeadLetterStorage(ABC):
 
     @abstractmethod
     async def update_status(
-        self, item_id: str, status: DeadLetterStatus, notes: str | None = None,
+        self,
+        item_id: str,
+        status: DeadLetterStatus,
+        notes: str | None = None,
     ) -> bool:
         """Update item status.
 
@@ -281,7 +284,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
         return None
 
     async def list(
-        self, status: DeadLetterStatus | None = None, limit: int = 100,
+        self,
+        status: DeadLetterStatus | None = None,
+        limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List items in queue.
 
@@ -334,7 +339,10 @@ class FileDeadLetterStorage(DeadLetterStorage):
         return items[:limit]
 
     async def update_status(
-        self, item_id: str, status: DeadLetterStatus, notes: str | None = None,
+        self,
+        item_id: str,
+        status: DeadLetterStatus,
+        notes: str | None = None,
     ) -> bool:
         """Update item status.
 
@@ -503,7 +511,9 @@ class DeadLetterQueue:
         return await self.storage.get(trace_id)
 
     async def list_failed_envelopes(
-        self, status: DeadLetterStatus | None = None, limit: int = 100,
+        self,
+        status: DeadLetterStatus | None = None,
+        limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List failed envelopes.
 
@@ -544,7 +554,9 @@ class DeadLetterQueue:
             True if updated successfully
         """
         success = await self.storage.update_status(
-            trace_id, DeadLetterStatus.RESOLVED, f"Resolved by {resolved_by}: {resolution}",
+            trace_id,
+            DeadLetterStatus.RESOLVED,
+            f"Resolved by {resolved_by}: {resolution}",
         )
 
         if success:
@@ -647,7 +659,8 @@ async def get_dead_letter_queue() -> DeadLetterQueue:
 
 # Decorator for automatic dead letter handling
 def dead_letter_handler(
-    failure_reason: FailureReason = FailureReason.UNKNOWN, include_payload: bool = True,
+    failure_reason: FailureReason = FailureReason.UNKNOWN,
+    include_payload: bool = True,
 ):
     """Decorator to automatically send failed envelopes to DLQ.
 

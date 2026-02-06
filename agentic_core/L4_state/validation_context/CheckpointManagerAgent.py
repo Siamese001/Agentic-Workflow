@@ -235,7 +235,8 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
             # Run sync in executor to not block
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+                None,
+                lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
             )
             return checkpoint_id
         else:
@@ -317,7 +318,8 @@ class CheckpointManagerAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Offload I/O to thread pool
         loop = asyncio.get_event_loop()
         file_path = await loop.run_in_executor(
-            None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+            None,
+            lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
         )
 
         # Trigger background mirroring in AUTONOMOUS mode
@@ -902,6 +904,7 @@ if __name__ == "__main__":
     else:
         # Demo: Create a test checkpoint
         cp_id = manager.create_checkpoint(
-            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()}, label="demo",
+            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()},
+            label="demo",
         )
         print(f"Created checkpoint: {cp_id}")

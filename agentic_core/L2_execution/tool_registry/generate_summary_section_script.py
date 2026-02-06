@@ -10,6 +10,8 @@ import logging
 import time
 from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 

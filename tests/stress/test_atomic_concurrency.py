@@ -222,16 +222,13 @@ class TestAtomicConcurrency:
 
         # Verify all operations are recorded
         assert len(final_state["operations"]) == self.NUM_THREADS, (
-            f"Operations mismatch: expected {self.NUM_THREADS}, "
-            f"got {len(final_state['operations'])}"
+            f"Operations mismatch: expected {self.NUM_THREADS}, got {len(final_state['operations'])}"
         )
 
         # Verify all thread IDs are present
         thread_ids = {op["thread_id"] for op in final_state["operations"]}
         expected_ids = set(range(self.NUM_THREADS))
-        assert thread_ids == expected_ids, (
-            f"Thread ID mismatch: expected {expected_ids}, got {thread_ids}"
-        )
+        assert thread_ids == expected_ids, f"Thread ID mismatch: expected {expected_ids}, got {thread_ids}"
 
     def test_rollback_on_failure(self, test_file: Path, atomic_mixin: MockAtomicExecutionMixin):
         """
@@ -330,9 +327,7 @@ class TestAtomicConcurrency:
 
         def thread_1():
             try:
-                results["thread_1"] = atomic_mixin.execute_atomic(
-                    long_operation, target_file=test_file
-                )
+                results["thread_1"] = atomic_mixin.execute_atomic(long_operation, target_file=test_file)
             except Exception as e:
                 results["thread_1_error"] = str(e)
 
@@ -366,9 +361,7 @@ class TestAtomicConcurrency:
             f"Thread 2 should have timed out, got: {results.get('thread_2')}"
         )
 
-    def test_domain_planner_concurrency(
-        self, test_file: Path, atomic_mixin: MockAtomicExecutionMixin
-    ):
+    def test_domain_planner_concurrency(self, test_file: Path, atomic_mixin: MockAtomicExecutionMixin):
         """
         v3.1: Test DomainPlannerAgent specifically (Wave 2 requirement).
 
@@ -408,9 +401,7 @@ class TestAtomicConcurrency:
                     lambda tid=i: ConcurrencyResult(
                         thread_id=tid,
                         success=True,
-                        final_state=atomic_mixin.execute_atomic(
-                            make_operation(tid), target_file=test_file
-                        ),
+                        final_state=atomic_mixin.execute_atomic(make_operation(tid), target_file=test_file),
                     )
                 )
                 futures.append((i, future))

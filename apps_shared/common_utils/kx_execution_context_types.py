@@ -9,6 +9,8 @@ Phase 1C - Knowledge Extraction Integration
 import logging
 
 from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
+from dataclasses import dataclass, field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +137,8 @@ class KXNodeExecutor:
         # Search vector store
         try:
             collection = create_chroma_collection(
-                context.vector_store, context.metadata.get("collection_name", "knowledge_base"),
+                context.vector_store,
+                context.metadata.get("collection_name", "knowledge_base"),
             )
 
             results = search_vectors_chroma(
@@ -149,7 +152,8 @@ class KXNodeExecutor:
             if results and "documents" in results:
                 for i, doc in enumerate(results["documents"][0]):
                     source_type = results.get("metadatas", [[{}]])[0][i].get(
-                        "source_type", "generic",
+                        "source_type",
+                        "generic",
                     )
                     weight = config.rag_config.source_weighting.get(source_type, 1.0)
 

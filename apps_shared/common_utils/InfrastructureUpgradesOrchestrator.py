@@ -6,6 +6,7 @@ performance, and brand compliance across all engines.
 """
 
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,8 @@ class InfrastructureUpgradesOrchestrator:
         """Setup event subscriptions for component coordination."""
         # Subscribe to content generation events for fact checking
         await self.infrastructure.event_bus.subscribe(
-            "events.content_generated", self._handle_content_generated,
+            "events.content_generated",
+            self._handle_content_generated,
         )
 
         # Subscribe to cache events
@@ -57,7 +59,8 @@ class InfrastructureUpgradesOrchestrator:
 
         # Subscribe to tone violations
         await self.infrastructure.event_bus.subscribe(
-            "events.tone_violation", self._handle_tone_violation,
+            "events.tone_violation",
+            self._handle_tone_violation,
         )
 
         logger.info("Setup infrastructure upgrades event subscriptions")
@@ -170,9 +173,7 @@ class InfrastructureUpgradesOrchestrator:
                         payload={
                             "claim": sentence,
                             "correction": result.correction_suggestion,
-                            "verified_value": result.verified_fact.value
-                            if result.verified_fact
-                            else None,
+                            "verified_value": result.verified_fact.value if result.verified_fact else None,
                         },
                     ),
                 )
@@ -248,7 +249,10 @@ class InfrastructureUpgradesOrchestrator:
         try:
             # Generate base content
             result = await self.infrastructure.execute_with_infrastructure(
-                task_type, prompt, complexity_score=5, trace_id=trace_id,
+                task_type,
+                prompt,
+                complexity_score=5,
+                trace_id=trace_id,
             )
 
             content = result["result"]
@@ -413,7 +417,13 @@ async def generate_with_consistency(
     """
     orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
-        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id,
+        task_type,
+        prompt,
+        tone_voice,
+        verify_facts,
+        enforce_tone,
+        True,
+        trace_id,
     )
 
 

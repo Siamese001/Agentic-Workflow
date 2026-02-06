@@ -45,7 +45,9 @@ class BaggagePropagator:
 
 
 def inject_context(
-    context: dict[str, object], carrier: dict[str, str], config: dict | None = None,
+    context: dict[str, object],
+    carrier: dict[str, str],
+    config: dict | None = None,
 ) -> None:
     """Inject context into carrier."""
     BaggagePropagator(config).inject(context, carrier)

@@ -17,6 +17,7 @@ import argparse
 import re
 import shutil
 import sys
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / "archives" / "hierarchy_violations" / "apps_depth"
@@ -93,7 +94,9 @@ def remove_violation_header(file_path: Path) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Restore incorrectly archived app agents")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be done without moving files",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without moving files",
     )
     args = parser.parse_args()
 

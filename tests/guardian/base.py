@@ -70,18 +70,14 @@ class GuardianTestBase:
     def find_agent_classes(tree: ast.Module) -> list[ast.ClassDef]:
         """Find all agent classes in AST."""
         return [
-            node
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
+            node for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
         ]
 
     @staticmethod
     def get_class_methods(class_node: ast.ClassDef) -> list[str]:
         """Get all method names from a class."""
         return [
-            node.name
-            for node in class_node.body
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+            node.name for node in class_node.body if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
         ]
 
     @staticmethod

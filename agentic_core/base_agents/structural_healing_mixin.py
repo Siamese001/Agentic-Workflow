@@ -25,7 +25,10 @@ class StructuralHealingMixin:
     enable_tree_sitter: bool = False  # Set to True if libraries available
 
     def _salvaged_file_relocation(
-        self, source_path: Path, target_path: Path, dry_run: bool = True,
+        self,
+        source_path: Path,
+        target_path: Path,
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         SALVAGED: Advanced file relocation.

@@ -82,9 +82,7 @@ class TestSSOTE2EReporting:
 
         # Assertions
         assert len(results["violations_found"]) > 0, "Should detect violation"
-        assert os.path.getmtime(bad_file) == mtime_initial, (
-            "File timestamp should not change in dry run"
-        )
+        assert os.path.getmtime(bad_file) == mtime_initial, "File timestamp should not change in dry run"
         assert results["status"] == "success"
 
     # =========================================================================

@@ -7,6 +7,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 """
 SemanticMapperAgent - Extracted for one-class-per-file pattern.
