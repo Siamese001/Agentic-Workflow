@@ -6,7 +6,7 @@ import uuid
 from typing import Any
 
 from agentic_core.runtime.core.telemetry import TraceEvent
-from agentic_core.schemas.models.core_contracts import AgentPlan
+from agentic_core.runtime.types.core_contracts import AgentPlan
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class SovereignDependencyError(Exception):
     pass
 
 
-# models migrated to SSOT: agentic_core/schemas/models/core_contracts.py
+# models migrated to SSOT: agentic_core/runtime/types/core_contracts.py
 
 
 class SubatomicHop:

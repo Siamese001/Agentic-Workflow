@@ -15,7 +15,7 @@ from typing import Any
 
 import redis
 
-from agentic_core.schemas.models.anomaly_report import AnomalyReport
+from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
 
 # NAMING FIXED: CachedStateLedgerAgent → CachedStateLedgerAgent

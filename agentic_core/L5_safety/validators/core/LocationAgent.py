@@ -49,7 +49,7 @@ from typing import Any
 from agentic_core.L5_safety.validators.core.location_utils import (
     compute_module_path,
 )
-from agentic_core.schemas.models.heal_result import HealResult, HealStatus
+from agentic_core.runtime.types.heal_result import HealResult, HealStatus
 
 Logger = logging.getLogger(__name__)
 

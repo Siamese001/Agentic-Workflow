@@ -227,7 +227,7 @@ class TypeErasureDetector(AntiPatternDetector):
         """Generate a fix suggestion for the violation."""
         if "heal" in method_name.lower():
             return """Use HealResult dataclass:
-    from agentic_core.schemas.models.heal_result import HealResult, HealStatus
+    from agentic_core.runtime.types.heal_result import HealResult, HealStatus
 
     def heal(self, violation: dict) -> HealResult:
         return HealResult(

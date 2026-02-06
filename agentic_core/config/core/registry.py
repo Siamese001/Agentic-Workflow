@@ -27,7 +27,6 @@ SOVEREIGN_REGISTRY: dict = {
             "L5_safety",
             "L6_observability",
             "config",
-            "schemas",
             "prompt_governance",
             "runtime",
             "utils",
@@ -153,7 +152,7 @@ CORE_SUBFOLDER_MAP: dict = {
         "compliance",
         "agents",
     ],
-    "schemas": ["models", "messages", "types", "validators"],
+    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
     "config": ["core", "environments", "feature_flags", "secrets_manager"],
     "prompt_governance": ["meta_prompts", "version_registry", "rendering", "templates"],
     "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management"],
@@ -180,7 +179,6 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
         "L2_execution",
         "L4_state",
         "L5_safety",
-        "schemas",
         "prompt_governance",
         "runtime",
         "patterns",
@@ -203,7 +201,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L2_execution/tool_registry",
     "agentic_core/L2_execution/mcp",
     "agentic_core/L4_state/validation_context",
-    "agentic_core/schemas/models",
+    # DISSOLVED: "agentic_core/schemas/models" removed
     "agentic_core/utils/core_extensions",
     "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
 }
@@ -297,9 +295,9 @@ L2_TO_L1_MAP: dict = {
     "tracing": "observability",
     "telemetry": "observability",
     "compliance": "observability",
-    "models": "schemas",
-    "messages": "schemas",
-    "types": "schemas",
+    "models": "runtime",
+    "messages": "runtime",
+    "types": "runtime",
     "templates": "prompt_governance",
     "meta_prompts": "prompt_governance",
     "rendering": "prompt_governance",

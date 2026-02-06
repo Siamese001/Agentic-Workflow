@@ -30,7 +30,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
 from agentic_core.mixins.configuration_mixin import ConfigMixin
 # Import schemas from SSOT
-from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
+from agentic_core.runtime.types.consensus import ConsensusVerdict, ModelOpinion
 
 Logger = logging.getLogger(__name__)
 

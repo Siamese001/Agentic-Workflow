@@ -46,7 +46,7 @@ PATH_TO_SSOT_MAP = {
     # Critical subdirectories
     r'["\']agentic_core/L6_observability/dashboards["\']': "DASHBOARD_DIR",
     r'["\']agentic_core/config/blueprint_sovereign["\']': "BLUEPRINT_SOVEREIGN_DIR",
-    r'["\']agentic_core/schemas["\']': "SCHEMAS_DIR",
+    r'["\\']agentic_core/runtime/types["\\']': "SCHEMAS_DIR",
     r'["\']agentic_core/prompt_governance["\']': "PROMPT_GOVERNANCE_DIR",
     r'["\']agentic_core/utils["\']': "UTILS_DIR",
     r'["\']agentic_core/runtime["\']': "RUNTIME_DIR",

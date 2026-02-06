@@ -1,53 +1,23 @@
 """
-Unified Agent Monitor - Phase 7 Deployment & Monitoring
+Unified Agent Monitor - Execution monitoring engine.
 
-Provides monitoring and observability for the unified agent consolidation:
-- Strategy execution tracking
-- Performance metrics collection
-- Health check endpoints
-- Facade usage statistics
+Extracted from schemas/unified_agent_monitor_types.py during Schema Dissolution.
+Logic components: UnifiedAgentMonitor, ExecutionTimer, get_monitor.
 """
 
 from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
+from agentic_core.L6_observability.types.monitor_types import (
+    AggregatedMetrics,
+    ExecutionMetrics,
+)
+
 Logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ExecutionMetrics:
-    """Metrics for a single execution."""
-
-    agent_name: str
-    category: str
-    strategy_type: str
-    execution_time_ms: float
-    success: bool
-    timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class AggregatedMetrics:
-    """Aggregated metrics for monitoring."""
-
-    total_executions: int = 0
-    successful_executions: int = 0
-    failed_executions: int = 0
-    total_execution_time_ms: float = 0.0
-    avg_execution_time_ms: float = 0.0
-    min_execution_time_ms: float = float("inf")
-    max_execution_time_ms: float = 0.0
-    executions_by_category: dict[str, int] = field(default_factory=dict)
-    executions_by_strategy: dict[str, int] = field(default_factory=dict)
-    # Phase 4: Facade migration tracking
-    facade_executions: int = 0
-    facade_agents: dict[str, int] = field(default_factory=dict)
 
 
 class UnifiedAgentMonitor:
@@ -273,8 +243,6 @@ def get_monitor() -> UnifiedAgentMonitor:
 
 
 __all__ = [
-    "ExecutionMetrics",
-    "AggregatedMetrics",
     "UnifiedAgentMonitor",
     "ExecutionTimer",
     "get_monitor",
