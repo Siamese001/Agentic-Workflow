@@ -86,7 +86,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
                 "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",
             },
-            "domain": {"purpose": "Pure domain entities and business objects"},
+            # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
             "L0_maintenance": {
                 "purpose": "Reflexive system health, boot integrity, and compliance checks.",
                 "forbidden_capabilities": [
@@ -494,7 +494,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             ],
                             "L6_observability": ["dashboards", "agents", "reports", "telemetry", "core"],
                             "base_agents": [],
-                            "domain": [],
+                            # DISSOLVED: "domain" removed
                             # DEPRECATED: "patterns" removed - evacuate to base_agents
                             "utils": [],
                         },
@@ -741,7 +741,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
     {
         "base_agents",  # Flat folder - foundational classes at depth 2
-        "domain",  # Flat folder - domain entities at depth 2
+        # DISSOLVED: "domain" removed
         "utils",  # utils/sovereign_index.py at depth 2
         "config",  # config/core/* variable depth
         "common",  # common/healing/* variable depth
@@ -989,7 +989,7 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
 CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     # === LAYERED ARCHITECTURE (L0-L6) ===
     "base_agents": [],  # Pure library domain - foundational classes and mixins only
-    "domain": [],  # Pure domain entities and business objects - no subfolders currently
+    # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
     "L0_maintenance": [
         "agents",
         "utils",
@@ -1084,12 +1084,7 @@ SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "execution_allowed": False,
         "notes": "Pure library domain - no executable scripts or operational logic",
     },
-    "domain": {
-        "purpose": "Pure domain entities and business objects",
-        "content_types": ["domain_entities", "domain_models", "domain_exceptions", "domain_types"],
-        "execution_allowed": False,
-        "notes": "Contains only pure domain objects - no validation or infrastructure logic. Accepts *_types.py files.",
-    },
+    # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
     "L0_maintenance": {
         "purpose": "System maintenance, healing, and operational tasks",
         "content_types": ["maintenance_scripts", "healing_tools", "logs", "benchmarks", "mixins"],

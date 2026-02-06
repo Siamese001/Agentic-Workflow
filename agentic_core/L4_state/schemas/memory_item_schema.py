@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from agentic_core.domain.entities import BaseEntity
+from agentic_core.config.base_entity_config import BaseEntity
 
 
 class MemoryItem(BaseEntity):

@@ -1,5 +1,5 @@
 """
-agentic_core/domain/sovereign_error_types.py - Sovereign Exception Hierarchy
+agentic_core/runtime/exceptions/sovereign_errors.py - Sovereign Exception Hierarchy
 
 Zero-Ambiguity Standard: Renamed from SovereignError.py to sovereign_error_types.py
 Category: TYPES (Exception hierarchy)

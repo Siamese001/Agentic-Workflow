@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.domain.exceptions import HealerError
+from agentic_core.runtime.exceptions.sovereign_errors import HealerError
 
 Logger = logging.getLogger(__name__)
 

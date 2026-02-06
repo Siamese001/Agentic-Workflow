@@ -1,7 +1,7 @@
 # Prompt Injection Heuristics
 # Strategy: Keyword blocking (heuristic) for speed. Phase 5 adds model-based checks.
 
-from agentic_core.domain.exceptions import SecurityViolationError
+from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
 
 
 class InjectionDetector:

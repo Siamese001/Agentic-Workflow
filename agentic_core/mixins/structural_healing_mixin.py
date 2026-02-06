@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.domain.exceptions import StructuralError
+from agentic_core.runtime.exceptions.sovereign_errors import StructuralError
 
 
 @dataclass

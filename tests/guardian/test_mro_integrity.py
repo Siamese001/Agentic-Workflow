@@ -41,7 +41,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.domain.core_integrity_verifier_validator import CoreIntegrityVerifier
+from agentic_core.L0_maintenance.integrity.core_integrity_util import CoreIntegrityVerifier
 from tests.guardian.guardian_report import (
     FixAction,
     GuardianReportBuilder,

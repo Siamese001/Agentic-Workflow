@@ -1,5 +1,5 @@
 """
-agentic_core/domain/legacy_artifacts_types.py
+agentic_core/config/core/legacy_artifacts_config.py
 
 Zero-Ambiguity Standard: Renamed from LegacyArtifacts.py to legacy_artifacts_types.py
 Category: TYPES (Registry of domain constants/patterns)

@@ -13,7 +13,7 @@ class TestHardenedCoreSynthesis:
     def test_domain_exceptions_exist(self):
         """Test that domain exceptions hierarchy exists and is correct."""
         try:
-            from agentic_core.domain.exceptions import (
+            from agentic_core.runtime.exceptions.sovereign_errors import (
                 CircularDependencyError,
                 ConfigurationError,
                 HealerError,
@@ -38,7 +38,7 @@ class TestHardenedCoreSynthesis:
                 pytest.fail("HealerError not caught properly")
 
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"CRITICAL: agentic_core.domain.exceptions missing! {e}")
+            pytest.fail(f"CRITICAL: agentic_core.runtime.exceptions.sovereign_errors missing! {e}")
 
     def test_healer_mixin_is_dataclass(self):
         """Test that HealerMixin is properly converted to @dataclass."""
@@ -91,7 +91,7 @@ class TestHardenedCoreSynthesis:
             assert "get_sovereign_capabilities" in content, "Missing get_sovereign_capabilities method"
 
             # Test proper imports
-            assert "from agentic_core.domain.exceptions import" in content, "Missing domain exceptions import"
+            assert "from agentic_core.runtime.exceptions.sovereign_errors import" in content, "Missing sovereign errors import"
 
         except Exception as e:
             pytest.fail(f"CRITICAL: SovereignBaseAgent test failed: {e}")
@@ -280,7 +280,7 @@ class TestHardenedCoreSynthesis:
                 structural_healing_mixin,  # noqa: F401
             )
             from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
-            from agentic_core.domain.exceptions import (  # noqa: F401
+            from agentic_core.runtime.exceptions.sovereign_errors import (  # noqa: F401
                 HealerError,
                 HygieneError,
                 StructuralError,
