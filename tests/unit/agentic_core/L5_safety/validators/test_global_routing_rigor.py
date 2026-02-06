@@ -38,7 +38,7 @@ class TestGlobalRoutingRigor:
             "agentic_core/L3_orchestration/workflow_engines"
         ]["weight"]
         exec_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L2_execution/tool_registry"
+            "agentic_core/L2_execution/engine"
         ]["weight"]
         assert orch_w > exec_w, "FATAL: Simple tool logic is shadowing workflow orchestration!"
         assert orch_w == 16, f"FAIL: Orchestration expected weight 16, got {orch_w}"
@@ -106,7 +106,7 @@ class TestGlobalRoutingRigor:
             14: ["agentic_core/L4_state/validation_context"],
             12: ["agentic_core/prompt_governance/scripts"],
             10: ["agentic_core/prompt_governance/version_registry"],
-            9: ["agentic_core/L2_execution/tool_registry"],
+            9: ["agentic_core/L2_execution/engine"],
         }
 
         signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]
@@ -170,7 +170,7 @@ class TestGlobalRoutingRigor:
     def test_generic_utilities_weight_range(self):
         """100% PASS: Generic utilities must be in 5-9 range."""
         execution_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L2_execution/tool_registry"
+            "agentic_core/L2_execution/engine"
         ]["weight"]
 
         assert 5 <= execution_w <= 9, (

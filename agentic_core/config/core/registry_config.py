@@ -198,7 +198,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L5_safety/guardrails",
     "agentic_core/L5_safety/validators",
     "agentic_core/L5_safety/gravity",
-    "agentic_core/L2_execution/tool_registry",
+    "agentic_core/L2_execution/engine",
     "agentic_core/L2_execution/mcp",
     "agentic_core/L4_state/validation_context",
     # DISSOLVED: "agentic_core/schemas/models" removed

@@ -26,7 +26,7 @@ TARGETS = [
     "agentic_core/L5_safety/guardrails/StructureHealerAgent.py",
     "agentic_core/L5_safety/guardrails/StructureValidatorAgent.py",
     # 2. The Duplicate Model router (from tool_registry)
-    "agentic_core/L2_execution/tool_registry/ModelRouterAgent.py",
+    "agentic_core/L2_execution/engine/ModelRouterAgent.py",
     # 3. The Duplicate Hygiene Agent (from apps_shared)
     "apps_shared/base_agents/HygieneGuardianAgent.py",
 ]

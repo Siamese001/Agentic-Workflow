@@ -198,9 +198,9 @@ except Exception as e:
             # Force reimport to trigger the warning
             import importlib
 
-            import agentic_core.L2_execution.mcp.mcp_hardened_mixin
+            import agentic_core.mixins.mcp_hardened_mixin
 
-            importlib.reload(agentic_core.L2_execution.mcp.mcp_hardened_mixin)
+            importlib.reload(agentic_core.mixins.mcp_hardened_mixin)
 
     # =========================================================================
     # Test 5: L1CognitionBase Type Annotation

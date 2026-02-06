@@ -172,7 +172,7 @@ MISSING_TESTS = [
     },
     {
         "class": "CognitiveContractManagerAgent",
-        "path": "agentic_core\\L2_execution\\tool_registry\\CognitiveContractManagerAgent.py",
+        "path": "agentic_core\\L2_execution\\engine\\CognitiveContractManagerAgent.py",
     },
     {
         "class": "DocstringComplianceAgent",
@@ -216,11 +216,11 @@ MISSING_TESTS = [
     },
     {
         "class": "PromptGovernorAgent",
-        "path": "agentic_core\\L2_execution\\tool_registry\\PromptGovernorAgent.py",
+        "path": "agentic_core\\L2_execution\\engine\\PromptGovernorAgent.py",
     },
     {
         "class": "SovereignFigmaClient",
-        "path": "agentic_core\\L2_execution\\tool_registry\\figma_client_sovereign.py",
+        "path": "agentic_core\\L2_execution\\engine\\figma_client_sovereign.py",
     },
     {"class": "SovereignGitClient", "path": "agentic_core\\utils\\core_extensions\\git.py"},
     {"class": "SovereignHttpClient", "path": "agentic_core\\utils\\core_extensions\\http.py"},

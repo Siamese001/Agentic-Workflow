@@ -15,7 +15,7 @@ import os
 import re
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.engine.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -188,4 +188,4 @@ Return ONLY the python code for {primary}.
 
 
 # Legacy classes removed 2026-01-06 - use standalone TestPilotAgent.py and ToolsmithAgent.py
-# from agentic_core.L2_execution.tool_registry.toolsmith_agent_types import ToolsmithAgent
+# from agentic_core.L2_execution.engine.toolsmith_agent_types import ToolsmithAgent

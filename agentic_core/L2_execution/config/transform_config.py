@@ -6,7 +6,7 @@ Code Transformation Engine (CTE) — Deterministic AST-Based Transforms
 Phase 1 Tool: Enables agents to perform safe, deterministic code transformations
 without LLM overhead. Supports rename, extract, inline, and move operations.
 
-LAYER: L2_execution/tool_registry/tools
+LAYER: L2_execution/tools
 CATEGORY: code_manipulation
 PRIORITY: Critical (★★★★★)
 """

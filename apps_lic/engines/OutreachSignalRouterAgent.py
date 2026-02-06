@@ -19,7 +19,7 @@ from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Import mixins with fallbacks
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass

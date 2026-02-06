@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.engine.base import SubAtomicAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

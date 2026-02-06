@@ -22,7 +22,7 @@ class TestStressHarden:
     # --- 3. The "Depth-5" Sprawl ---
     def test_l4_specialization_enforces_hard_cutoff(self):
         """100% PASS: tool_registry allows depth 4, but depth 5 must be blocked."""
-        path = "agentic_core/L2_execution/tool_registry/core/extra/file.py"
+        path = "agentic_core/L2_execution/engine/core/extra/file.py"
         assert is_path_allowed(path) is False
 
     # --- 4. The "L3 Phishing" Attack ---
@@ -51,7 +51,7 @@ class TestStressHarden:
     # --- 8. The "Casing Ambiguity" ---
     def test_case_sensitivity_enforcement(self):
         """100% PASS: Ensures 'l2_execution' (lowercase) is rejected."""
-        assert is_path_allowed("agentic_core/l2_execution/tool_registry") is False
+        assert is_path_allowed("agentic_core/l2_execution/engine") is False
 
     # --- 9. The "Volatile Root" Check ---
     def test_root_files_outside_whitelist(self):

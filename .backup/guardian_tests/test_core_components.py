@@ -12,7 +12,7 @@ CRITICAL_FILES = [
     "agentic_core/L5_safety/guardrails/MCPSovereignAuthority.py",
     "agentic_core/L2_execution/mcp/SovereignPineconeMcpClientAgent.py",
     "agentic_core/L2_execution/mcp/SovereignMCPGatewayAgent.py",
-    "agentic_core/L2_execution/tool_registry/WebSearchTools.py",
+    "agentic_core/L2_execution/engine/WebSearchTools.py",
     "agentic_core/base_agents/SovereignBaseAgent.py",
 ]
 

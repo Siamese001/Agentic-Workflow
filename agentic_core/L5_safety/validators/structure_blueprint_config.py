@@ -176,7 +176,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
             "L2_execution": {
                 "purpose": "The Hands: Tool execution, MCP clients, and sandboxed environments.",
-                "notes": "Standard V10 structure. tool_registry/ is legacy — migrate to engine/, tools/, types/, config/, sandbox/.",
+                "notes": "Standard V10 structure. Migration complete — tool_registry/ dissolved.",
                 "subfolders": {
                     "engine": {
                         "purpose": "Execution engines, registries, orchestrators, and client managers.",
@@ -201,9 +201,6 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Sandboxed execution environments (Docker, Firecracker, etc.).",
                         "allowed_suffixes": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
                     },
-                    "utils": {"purpose": "Execution utility functions."},
-                    # LEGACY: "tool_registry" — files being migrated to engine/, tools/, types/, config/, sandbox/
-                    "tool_registry": {"purpose": "LEGACY: Pending migration to specialized subdirectories."},
                 },
                 "allowed_suffixes": {
                     "engine": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
@@ -451,7 +448,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "weight": 11,
             },
             # --- L0/L2 BASELINE: GENERIC UTILITIES (Weight 9) ---
-            "agentic_core/L2_execution/tool_registry": {
+            "agentic_core/L2_execution/engine": {
                 "class_patterns": [".*Agent$"],
                 "weight": 9,
             },
@@ -1001,7 +998,7 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "mcp": ["mcp_security", "mcp_guards"],
         "detection": ["duplicate_detectors", "threat_detectors"],
     },
-    # L2_execution/tool_registry/ - 145 .py files, 1 subdir
+    # L2_execution/engine/ - 145 .py files, 1 subdir
     "tool_registry": {
         "core": ["registry_core", "registry_types"],
         "tools": ["tool_implementations"],
@@ -1047,7 +1044,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L5_safety/guardrails",
         "agentic_core/L5_safety/validators",  # 135 files - added per SSOT review
         "agentic_core/L5_safety/gravity",  # 22 files - added per SSOT review
-        "agentic_core/L2_execution/tool_registry",
+        "agentic_core/L2_execution/engine",
         "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
         "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
         # DISSOLVED: "agentic_core/schemas/models" removed
@@ -1588,7 +1585,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
         "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"}),
     },
     # DISSOLVED: "L1_cognition/intent_analysis" removed
-    "L2_execution/tool_registry": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
+    "L2_execution/engine": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/workflow_engines": {
         "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}),
@@ -1621,7 +1618,7 @@ MIN_ALIGNMENT_SCORE: Final[float] = 1.5
 # === ULTRA HEALING DEFAULTS (2026-01-02 Reliability Hardening) ===
 # Fallback targets when AST scoring is inconclusive
 DEFAULT_APP_HEALING_TARGET: Final[str] = "apps_rg/engines"  # Most common leak destination
-DEFAULT_CORE_HEALING_TERRITORY: Final[str] = "L2_execution/tool_registry"  # Safe neutral territory
+DEFAULT_CORE_HEALING_TERRITORY: Final[str] = "L2_execution/engine"  # Safe neutral territory
 
 # Violation severity levels for prioritized healing
 VIOLATION_SEVERITY: Final[Mapping[str, int]] = {
@@ -2977,7 +2974,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 15,
     },
     # L2_execution placements
-    "agentic_core/L2_execution/tool_registry": {
+    "agentic_core/L2_execution/engine": {
         "class_patterns": [".*Agent$", ".*Tool$", ".*Handler$"],
         "base_classes": ["SubAtomicAgent", "BaseTool", "ToolHandler"],
         "function_patterns": ["execute_.*", "run_tool.*", "invoke_.*"],
@@ -3296,79 +3293,79 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L2": [
         {
             "name": "CanonBaseAgent",
-            "file": "agentic_core/L2_execution/tool_registry/ExecutionCanonBaseAgent.py",
+            "file": "agentic_core/L2_execution/engine/ExecutionCanonBaseAgent.py",
             "methods": 13,
             "fingerprint": "00b4b4376214468b",
         },
         {
             "name": "CodeDeduplicationAgent",
-            "file": "agentic_core/L2_execution/tool_registry/CodeDeduplicationAgent.py",
+            "file": "agentic_core/L2_execution/engine/CodeDeduplicationAgent.py",
             "methods": 11,
             "fingerprint": "1c26bf7b92ef3fb8",
         },
         {
             "name": "CodeJanitorAgent",
-            "file": "agentic_core/L2_execution/tool_registry/CodeJanitorAgent.py",
+            "file": "agentic_core/L2_execution/engine/CodeJanitorAgent.py",
             "methods": 12,
             "fingerprint": "ae825674e1abeb55",
         },
         {
             "name": "ContextCuratorAgent",
-            "file": "agentic_core/L2_execution/tool_registry/ContextCuratorAgent.py",
+            "file": "agentic_core/L2_execution/engine/ContextCuratorAgent.py",
             "methods": 13,
             "fingerprint": "b55bbeb3cc150054",
         },
         {
             "name": "DependencyDiplomatAgent",
-            "file": "agentic_core/L2_execution/tool_registry/DependencyDiplomatAgent.py",
+            "file": "agentic_core/L2_execution/engine/DependencyDiplomatAgent.py",
             "methods": 11,
             "fingerprint": "15bc567d77279e31",
         },
         {
             "name": "DynamicModelRouterAgent",
-            "file": "agentic_core/L2_execution/tool_registry/DynamicModelRouterAgent.py",
+            "file": "agentic_core/L2_execution/engine/DynamicModelRouterAgent.py",
             "methods": 11,
             "fingerprint": "e6532e4040366631",
         },
         {
             "name": "GitAgent",
-            "file": "agentic_core/L2_execution/tool_registry/GitAgent.py",
+            "file": "agentic_core/L2_execution/engine/GitAgent.py",
             "methods": 12,
             "fingerprint": "82c9b049e6fd5597",
         },
         {
             "name": "IntegrityGateExecutorAgent",
-            "file": "agentic_core/L2_execution/tool_registry/IntegrityGateExecutorAgent.py",
+            "file": "agentic_core/L2_execution/engine/IntegrityGateExecutorAgent.py",
             "methods": 8,
             "fingerprint": "cc6465bde4266c9f",
         },
         {
             "name": "MemoryArchitectAgent",
-            "file": "agentic_core/L2_execution/tool_registry/MemoryArchitectAgent.py",
+            "file": "agentic_core/L2_execution/engine/MemoryArchitectAgent.py",
             "methods": 13,
             "fingerprint": "b07bc5ecfbb20791",
         },
         {
             "name": "SovereignActionPlaneAgent",
-            "file": "agentic_core/L2_execution/tool_registry/SovereignActionPlaneAgent.py",
+            "file": "agentic_core/L2_execution/engine/SovereignActionPlaneAgent.py",
             "methods": 11,
             "fingerprint": "91faa15364d0a1a5",
         },
         {
             "name": "StructuralEngineerAgent",
-            "file": "agentic_core/L2_execution/tool_registry/StructuralEngineerAgent.py",
+            "file": "agentic_core/L2_execution/engine/StructuralEngineerAgent.py",
             "methods": 8,
             "fingerprint": "37d55e1531ee303e",
         },
         {
             "name": "SystemArchitectAgent",
-            "file": "agentic_core/L2_execution/tool_registry/SystemArchitectAgent.py",
+            "file": "agentic_core/L2_execution/engine/SystemArchitectAgent.py",
             "methods": 8,
             "fingerprint": "e340d23c73eb4451",
         },
         {
             "name": "ToolsmithAgent",
-            "file": "agentic_core/L2_execution/tool_registry/ToolsmithAgent.py",
+            "file": "agentic_core/L2_execution/engine/ToolsmithAgent.py",
             "methods": 17,
             "fingerprint": "920d8dc7ea2d38d4",
         },
@@ -3967,7 +3964,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "available_tools",
                 "toolset",
             ],
-            "imports": ["agentic_core.L2_execution.tool_registry", "pydantic", "typing"],
+            "imports": ["agentic_core.L2_execution.engine", "pydantic", "typing"],
             "bases": ["BaseTool", "tool_registry"],
             "examples": ["tool_registry", "register_tool", "AvailableToolsList", "ToolMetadata"],
         },

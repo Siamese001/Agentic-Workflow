@@ -66,10 +66,10 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 
 # GRAVITY FIXED (Upward Leak):
-# from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin
+# from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 # Use correct MCP mixin location
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
+    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
     # Fallback for testing
     class MCPHardenedMixin:

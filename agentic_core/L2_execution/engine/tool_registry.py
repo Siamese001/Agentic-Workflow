@@ -376,10 +376,14 @@ predefined_tool_categories["code_manipulation"] = "AST-based code transformation
 # =============================================================================
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
-from agentic_core.L2_execution.tool_registry.tools.DependencyGraph import (
-    DependencyGraph,
-    DependencyGraphArgs,
-)
+try:
+    from agentic_core.L2_execution.tools.dependency_graph_tool import (
+        DependencyGraph,
+        DependencyGraphArgs,
+    )
+except ImportError:
+    DependencyGraph = None  # type: ignore[misc,assignment]
+    DependencyGraphArgs = None  # type: ignore[misc,assignment]
 
 LOGGER = logging.getLogger(__name__)
 

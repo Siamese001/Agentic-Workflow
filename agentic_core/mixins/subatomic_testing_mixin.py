@@ -8,7 +8,7 @@ SubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents
 Provides automatic self-testing capabilities for all L2 execution-layer agents.
 This mixin enforces the sovereign requirement that L2-L4 agents must be "Self" testing.
 
-Location: agentic_core/L2_execution/tool_registry/subatomic_testing_mixin.py
+Location: agentic_core/L2_execution/engine/subatomic_testing_mixin.py
 Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 """
 import logging

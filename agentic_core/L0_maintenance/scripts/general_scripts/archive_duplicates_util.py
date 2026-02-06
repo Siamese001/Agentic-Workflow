@@ -18,7 +18,7 @@ TARGETS = [
     "agentic_core/L5_safety/guardrails/StructureEnforcerAgent.py",
     "agentic_core/L5_safety/guardrails/StructureHealerAgent.py",
     "agentic_core/L5_safety/guardrails/StructureValidatorAgent.py",
-    "agentic_core/L2_execution/tool_registry/ModelRouterAgent.py",
+    "agentic_core/L2_execution/engine/ModelRouterAgent.py",
     "apps_shared/base_agents/HygieneGuardianAgent.py",
 ]
 

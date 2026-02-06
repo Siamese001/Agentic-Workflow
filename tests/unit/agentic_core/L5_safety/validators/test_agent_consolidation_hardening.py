@@ -34,7 +34,7 @@ CANONICAL_HYGIENE_PATH = "agentic_core.L5_safety.validators"
 # Deprecated Paths (Forbidden)
 DEPRECATED_PATHS = {
     "agentic_core.L5_safety.guardrails": UNIFIED_AGENTS,
-    "agentic_core.L2_execution.tool_registry": ["ModelRouterAgent"],
+    "agentic_core.L2_execution.engine": ["ModelRouterAgent"],
     "apps_shared.base_agents": ["HygieneGuardianAgent"],
 }
 

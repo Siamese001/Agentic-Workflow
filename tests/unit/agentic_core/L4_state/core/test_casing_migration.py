@@ -26,7 +26,7 @@ class TestCasingMigration:
             # Setup Import Consumer
             consumer = root / "main.py"
             consumer.write_text(
-                "from agentic_core.L2_execution.tool_registry import tool\n"
+                "from agentic_core.L2_execution.engine import tool\n"
                 "from agentic_core.L4_state.validation_context import context"
             )
 
@@ -48,7 +48,7 @@ class TestCasingMigration:
         # 3. Import Fix
         f = mock_fs / "main.py"
         content = f.read_text()
-        content = content.replace("L2_execution.tool_registry", "L2_execution.tool_registry")
+        content = content.replace("L2_execution.engine", "L2_execution.engine")
         content = content.replace("L4_state.validation_context", "L4_state.validation_context")
         f.write_text(content)
 
@@ -59,5 +59,5 @@ class TestCasingMigration:
         assert not vc_old.exists()
 
         updated_code = f.read_text()
-        assert "L2_execution.tool_registry" in updated_code
+        assert "L2_execution.engine" in updated_code
         assert "L4_state.validation_context" in updated_code

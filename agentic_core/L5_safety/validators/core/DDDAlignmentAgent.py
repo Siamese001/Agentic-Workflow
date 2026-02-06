@@ -24,7 +24,7 @@ from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.L2_execution.mcp.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
+    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:
 
     class MCPHardenedMixin:

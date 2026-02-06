@@ -87,7 +87,7 @@ def repair_file(file_path: Path):
     # 4. Fix Broken Module Paths
     content = content.replace("apps_shared.base_agents", "agentic_core.base_agents")
     content = content.replace(
-        "agentic_core.L2_execution.mcp.mcp_hardened_mixin",
+        "agentic_core.mixins.mcp_hardened_mixin",
         "agentic_core.mixins.infrastructure_mixin",
     )
 
