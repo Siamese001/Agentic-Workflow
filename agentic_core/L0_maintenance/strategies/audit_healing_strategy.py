@@ -18,7 +18,7 @@ from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_file
 Logger: Any = logging.getLogger(__name__)
 
 
-class L6AuditHealingStrategy:
+class AuditHealingStrategy:
     """
     Autonomous healing for L6 observability audit trail gaps.
 
@@ -176,11 +176,11 @@ class L6AuditHealingStrategy:
         Logger.info("[L0 L6 AUDIT HEALING] Daily counter reset")
 
 
-async def create_l6_audit_healing_strategy() -> L6AuditHealingStrategy:
+async def create_audit_healing_strategy() -> AuditHealingStrategy:
     """
-    Factory function to create an L6 audit healing strategy.
+    Factory function to create an audit healing strategy.
 
     Returns:
-        Initialized L6AuditHealingStrategy instance
+        Initialized AuditHealingStrategy instance
     """
-    return L6AuditHealingStrategy()
+    return AuditHealingStrategy()

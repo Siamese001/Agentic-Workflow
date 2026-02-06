@@ -110,6 +110,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         },
                     },
                     "integrity": {"purpose": "Core system verification, checksums, and sovereign locks."},
+                    "strategies": {
+                        "purpose": "L0 healing strategy implementations (deterministic repair procedures).",
+                        "allowed_suffixes": ["_healing_strategy.py", "_strategy.py"],
+                    },
                     "sensors": {"purpose": "System monitoring and health checks"},
                     "bootstrap": {
                         "purpose": "Boot sequence scripts and initialization logic only",
@@ -901,7 +905,7 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
     },
     # L0_maintenance/strategies/ - Healing strategy implementations
     "strategies": {
-        "healing": ["deep_wiki_strategy", "l6_audit_strategy", "knowledge_graph_strategy"],
+        "healing": ["audit_healing_strategy"],
     },
     # L0_maintenance/scripts/ - 181 .py files, flat structure (simplified)
     "scripts": {
