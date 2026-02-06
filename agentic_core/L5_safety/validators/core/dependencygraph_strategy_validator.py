@@ -164,7 +164,7 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
                 except Exception as e:
                     if attempt < max_attempts:
                         print(
-                            f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s..."
+                            f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s...",
                         )
                         await asyncio.sleep(delay_seconds)
                     else:
@@ -278,7 +278,7 @@ class ValidationContext:
     file_hashes: dict[str, str] = field(default_factory=dict)
     skip_files: set[str] = field(default_factory=set)
     flapping_files: list[str] = field(
-        default_factory=list
+        default_factory=list,
     )  # Changed from set to list to match default_factory
     successful_traces: list[str] = field(default_factory=list)
 
@@ -381,7 +381,7 @@ class ValidationContext:
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
-                self._client.models.generate_content, model=self.model_id, contents=[prompt]
+                self._client.models.generate_content, model=self.model_id, contents=[prompt],
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)  # Refactored

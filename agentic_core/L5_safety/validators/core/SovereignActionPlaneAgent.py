@@ -107,7 +107,7 @@ class SovereignSandbox:
         try:
             cmd: Any = [tool_path] + (args or [])
             process: Any = safe_popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.getcwd()
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.getcwd(),
             )
             try:
                 stdout, stderr = process.communicate(timeout=30)
@@ -221,7 +221,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             return result
         except Exception as e:
             result: Any = ActionResult(
-                success=False, output="", error=str(e), execution_time=time.time() - start_time
+                success=False, output="", error=str(e), execution_time=time.time() - start_time,
             )
             await self._log_to_signal_ledger(request, result)
             return result
@@ -254,7 +254,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
         """Execute multiple action requests."""
         if parallel:
             results: Any = await asyncio.gather(
-                *[self.execute(req) for req in requests], return_exceptions=True
+                *[self.execute(req) for req in requests], return_exceptions=True,
             )
             return [
                 r
@@ -377,11 +377,11 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             else:
                 raise ValueError(f"Unknown operation: {operation}")
             return ActionResult(
-                success=True, output=output, error="", execution_time=time.time() - start_time
+                success=True, output=output, error="", execution_time=time.time() - start_time,
             )
         except Exception as e:
             return ActionResult(
-                success=False, output="", error=str(e), execution_time=time.time() - start_time
+                success=False, output="", error=str(e), execution_time=time.time() - start_time,
             )
 
     async def cleanup(self) -> Any:

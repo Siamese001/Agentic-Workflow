@@ -154,7 +154,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
                         methods=methods,
                         line_number=node.lineno,
                         docstring=class_docstring,
-                    )
+                    ),
                 )
 
             # Imports
@@ -571,13 +571,13 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
     report.append("| Issue | Count | Files |")
     report.append("|-------|-------|-------|")
     report.append(
-        f"| Snake_case Classes | {len(snake_case)} | {', '.join(a.path.name for a in snake_case[:3])}{'...' if len(snake_case) > 3 else ''} |"
+        f"| Snake_case Classes | {len(snake_case)} | {', '.join(a.path.name for a in snake_case[:3])}{'...' if len(snake_case) > 3 else ''} |",
     )
     report.append(
-        f"| Hardcoded Credentials | {len(hardcoded)} | {'SECURITY RISK' if hardcoded else 'None'} |"
+        f"| Hardcoded Credentials | {len(hardcoded)} | {'SECURITY RISK' if hardcoded else 'None'} |",
     )
     report.append(
-        f"| Raw Prompt Strings | {len(raw_prompts)} | {', '.join(a.path.name for a in raw_prompts[:3])}{'...' if len(raw_prompts) > 3 else ''} |"
+        f"| Raw Prompt Strings | {len(raw_prompts)} | {', '.join(a.path.name for a in raw_prompts[:3])}{'...' if len(raw_prompts) > 3 else ''} |",
     )
 
     # Detailed file table by archive
@@ -588,7 +588,7 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
 
         report.append(f"\n## archives/{archive}/ Analysis\n")
         report.append(
-            f"**Files:** {len(archive_files)} | **LOC:** {sum(a.line_count for a in archive_files):,}\n"
+            f"**Files:** {len(archive_files)} | **LOC:** {sum(a.line_count for a in archive_files):,}\n",
         )
 
         report.append("| Path | Size | LOC | Classes | Action | Target | Risk |")
@@ -600,7 +600,7 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
                 class_names += "..."
 
             report.append(
-                f"| `{a.relative_path}` | {a.size_bytes:,}B | {a.line_count} | {class_names or '-'} | **{a.recommended_action}** | `{a.target_path}` | {a.risk_level} |"
+                f"| `{a.relative_path}` | {a.size_bytes:,}B | {a.line_count} | {class_names or '-'} | **{a.recommended_action}** | `{a.target_path}` | {a.risk_level} |",
             )
 
     # High-value migration candidates
@@ -621,7 +621,7 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
         report.append("|--------------|-----|-------------------|--------|")
         for a in merge_files:
             report.append(
-                f"| `{a.relative_path}` | {a.line_count} | `{a.modern_equivalent}` | Merge unique features |"
+                f"| `{a.relative_path}` | {a.line_count} | `{a.modern_equivalent}` | Merge unique features |",
             )
 
     # Delete candidates
@@ -721,7 +721,7 @@ def main():
                     "mcp_usage": a.mcp_usage,
                     "llm_calls": a.llm_calls,
                 },
-            }
+            },
         )
 
     json_path = PROJECT_ROOT / "archive_migration_data.json"

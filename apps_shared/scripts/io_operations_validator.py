@@ -89,7 +89,7 @@ class FileOperations:
 
     @staticmethod
     def list_files(
-        directory: str | Path, pattern: str = "*", recursive: bool = False
+        directory: str | Path, pattern: str = "*", recursive: bool = False,
     ) -> list[Path]:
         """
         List files in directory.
@@ -147,7 +147,7 @@ class DataCollectionOperations:
 
     @staticmethod
     def collect_metrics(
-        data_points: list[dict[str, Any]], metric_keys: list[str]
+        data_points: list[dict[str, Any]], metric_keys: list[str],
     ) -> dict[str, list[Any]]:
         """
         Collect metrics from data points.
@@ -170,7 +170,7 @@ class DataCollectionOperations:
 
     @staticmethod
     def aggregate_results(
-        results: list[dict[str, Any]], group_by: str
+        results: list[dict[str, Any]], group_by: str,
     ) -> dict[str, list[dict[str, Any]]]:
         """
         Aggregate results by key.
@@ -273,7 +273,7 @@ class MonitoringOperations:
 
     @staticmethod
     def get_recent_events(
-        event_log: str | Path, count: int = 10, event_type: str | None = None
+        event_log: str | Path, count: int = 10, event_type: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         Get recent events from log.

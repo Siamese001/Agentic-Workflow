@@ -107,7 +107,7 @@ class HealingMemoryEmbedder:
             "fallback_hashes": 0,
             "batch_operations": 0,
             "errors": 0,
-        }
+        },
     )
 
     def __new__(cls, *args, **kwargs):

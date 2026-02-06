@@ -380,7 +380,7 @@ class UnifiedCSTHealer:
                         "type": "cst_modification",
                         "modifications_made": total_modifications,
                         "preserved_formatting": True,
-                    }
+                    },
                 ],
             }
 

@@ -133,7 +133,7 @@ class InterventionServer:
             self.decision_reason = "Human approved via UI"
             self.approval_event.set()
             return HTMLResponse(
-                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>", status_code=200
+                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>", status_code=200,
             )
 
         @self._app.post("/veto")
@@ -152,7 +152,7 @@ class InterventionServer:
                     "pending": self.current_context is not None,
                     "context": self.current_context.to_dict() if self.current_context else None,
                     "decision": self.decision,
-                }
+                },
             )
 
         @self._app.post("/api/approve")

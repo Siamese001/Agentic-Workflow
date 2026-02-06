@@ -98,7 +98,7 @@ def analyze_file_with_ast(file_path: Path) -> dict:
                         "name": node.name,
                         "bases": bases,
                         "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
-                    }
+                    },
                 )
 
             elif isinstance(node, ast.Import):

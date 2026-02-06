@@ -94,7 +94,7 @@ class SpecificityProseEngine:
         SELF.CONFIG = config or SpecificityProseConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.temperature,
         )
 
     def generate_cover_letter(
@@ -239,11 +239,11 @@ class SpecificityProseEngine:
             word_count = len(para.split())
             if word_count < self.config.min_words_per_paragraph:
                 VIOLATIONS.append(
-                    f"Paragraph {i}: {word_count} words (min {self.config.min_words_per_paragraph})"
+                    f"Paragraph {i}: {word_count} words (min {self.config.min_words_per_paragraph})",
                 )
             elif word_count > self.config.max_words_per_paragraph:
                 VIOLATIONS.append(
-                    f"Paragraph {i}: {word_count} words (max {self.config.max_words_per_paragraph})"
+                    f"Paragraph {i}: {word_count} words (max {self.config.max_words_per_paragraph})",
                 )
         if VIOLATIONS:
             return ValidationResult(
@@ -262,7 +262,7 @@ class SpecificityProseEngine:
         )
 
     def _extract_company_specifics(
-        self, cover_letter: str, company_research: dict[str, Any]
+        self, cover_letter: str, company_research: dict[str, Any],
     ) -> list[CompanySpecificDetail]:
         """Extract company-specific details from cover letter"""
         SPECIFICS = []
@@ -272,8 +272,8 @@ class SpecificityProseEngine:
             for _i in range(COUNT):
                 SPECIFICS.append(
                     CompanySpecificDetail(
-                        DETAIL=company_name, CATEGORY="COMPANY_NAME", SOURCE="company_research"
-                    )
+                        DETAIL=company_name, CATEGORY="COMPANY_NAME", SOURCE="company_research",
+                    ),
                 )
         for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
             for keyword in keywords:
@@ -285,7 +285,7 @@ class SpecificityProseEngine:
                                     DETAIL=value,
                                     CATEGORY=category,
                                     SOURCE=f"company_research.{key}",
-                                )
+                                ),
                             )
         return SPECIFICS[:10]
 
@@ -318,7 +318,7 @@ class SpecificityProseEngine:
         )
 
     def _execute_find_replace_test(
-        self, cover_letter: str, company_specifics: list[CompanySpecificDetail]
+        self, cover_letter: str, company_specifics: list[CompanySpecificDetail],
     ) -> bool:
         """
         Execute find-replace test - letter should break if specifics removed.

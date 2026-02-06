@@ -21,7 +21,7 @@ class SafetyGuardrail:
         self.deletion_limit = deletion_limit
 
     def verify_change(
-        self, original_code: str, new_code: str, fission_active: bool = False
+        self, original_code: str, new_code: str, fission_active: bool = False,
     ) -> tuple[bool, str]:
         """
         Verify that code changes are safe and don't violate zero-loss principles.

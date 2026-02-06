@@ -35,7 +35,6 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.UnifiedAgent import (
     StructureHealingStrategy,
@@ -129,7 +128,7 @@ class StructureHealerAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 "enable_naming": self._agent_config.enable_naming,
                 "enable_territory": self._agent_config.enable_territory,
                 "dry_run": self._agent_config.dry_run,
-            }
+            },
         )
 
         Logger.info("StructureHealerAgent initialized")

@@ -112,7 +112,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         self._archival_gatekeeper = None  # Lazy-loaded
         self._cognitive_agent = None  # Lazy-loaded (Phase 11)
         Logger.info(
-            f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})"
+            f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})",
         )
 
     def _get_structure_validator(self):
@@ -373,7 +373,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             # Summary
             if dry_run:
                 Logger.info(
-                    f"[DRY-RUN] Found {violations_found} violations across {len(roots_scanned)} territories"
+                    f"[DRY-RUN] Found {violations_found} violations across {len(roots_scanned)} territories",
                 )
             else:
                 Logger.info(f"Found {violations_found} violations, fixed {violations_fixed}")
@@ -381,7 +381,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             # Phase 9/10: Categorical Audit Reporting - Shield Alert
             if violations_found > 0 and not execute:
                 Logger.warning(
-                    f"[{agent_name}] SHIELD ALERT: {violations_found} violations blocking baseline purity."
+                    f"[{agent_name}] SHIELD ALERT: {violations_found} violations blocking baseline purity.",
                 )
 
             # Phase 10: Convergence - Categorical Drift Analysis
@@ -416,7 +416,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
                     if cleanup_stats.get("errors", 0) > 0:
                         Logger.warning(
-                            f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
+                            f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}",
                         )
 
                 except Exception as e:
@@ -467,7 +467,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             target_territories: [STRICT SCOPE] Optional list of specific paths/domains to audit.
         """
         Logger.info(
-            f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})"
+            f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})",
         )
 
         # [EFFICIENCY] Logic consolidated to scan all L5 Guardians in one pass
@@ -488,7 +488,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 "violations_found": total_violations,
                 "drift_detected": len(drift_violations),
                 "errors": structural_results.get("total_errors", 0),
-            }
+            },
         )
 
         # [PHASE 8] Observability - Persist audit report
@@ -499,7 +499,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         if self.ci_mode and not success:
             Logger.critical(
-                f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})"
+                f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})",
             )
 
         return {
@@ -570,7 +570,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "message": "File sitting in territory root. Should be in SSOT subfolder.",
                                 "severity": "ERROR",
                                 "suggestion": "Relocate to approved subfolder (agents/, registry/, etc.)",
-                            }
+                            },
                         )
                 except Exception as e:
                     Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
@@ -933,7 +933,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         "message": dup.message,
                         "file": str(dup.file_path) if dup.file_path else None,
                         "violation": dup,  # Keep original for resolution
-                    }
+                    },
                 )
 
         # Phase 6: Collision Resolution
@@ -948,7 +948,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         if collisions:
             Logger.warning(
-                f"  [DEDUP] Found {len(collisions)} potential collisions, fixed {collisions_fixed}"
+                f"  [DEDUP] Found {len(collisions)} potential collisions, fixed {collisions_fixed}",
             )
         else:
             Logger.info(f"  [DEDUP] No collisions found across {len(roots)} roots")
@@ -1210,7 +1210,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "expected": expected_hash,
                             "actual": current_hash,
                             "severity": "CRITICAL",
-                        }
+                        },
                     )
 
             # Check for Ghost Files (Files on disk but not in baseline)
@@ -1222,7 +1222,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return violations
 
     def _persist_audit_report(
-        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]]
+        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]],
     ) -> None:
         """[PHASE 8] Saves immutable audit record."""
         self.audit_log_dir.mkdir(parents=True, exist_ok=True)
@@ -1478,7 +1478,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "file": v.get("file"),
                             "message": "File sitting in territory root; must be in SSOT subfolder.",
                             "severity": "ERROR",
-                        }
+                        },
                     )
         except Exception as e:
             Logger.warning(f"Unified Audit: Hierarchy ingestion failed: {e}")
@@ -1499,7 +1499,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "file": territory,
                                 "message": f"Circular dependency detected: {circ}",
                                 "severity": "CRITICAL",
-                            }
+                            },
                         )
         except Exception as e:
             Logger.warning(f"Unified Audit: Architecture ingestion failed: {e}")

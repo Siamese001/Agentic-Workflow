@@ -123,7 +123,7 @@ class ConfigPlanningOrchestrator:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
         self.logger.info(
-            f"Starting config planning for: {config_request.get('service', 'unknown')}"
+            f"Starting config planning for: {config_request.get('service', 'unknown')}",
         )
 
         try:
@@ -155,7 +155,7 @@ class ConfigPlanningOrchestrator:
             )
 
             self.logger.info(
-                f"Successfully planned configuration: {len(validated_configs)} configs validated"
+                f"Successfully planned configuration: {len(validated_configs)} configs validated",
             )
             return result
 
@@ -218,7 +218,7 @@ class ConfigPlanningOrchestrator:
         return configs
 
     def _create_deployment_plan(
-        self, request: dict[str, Any], configs: list[ConfigDefinition]
+        self, request: dict[str, Any], configs: list[ConfigDefinition],
     ) -> DeploymentPlan | None:
         """Create deployment plan for configurations."""
         if not configs:
@@ -285,7 +285,7 @@ class ConfigPlanningOrchestrator:
             content_size = len(str(config.get("content", {})))
             if content_size > self.config.max_config_size:
                 errors.append(
-                    f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}"
+                    f"Config exceeds maximum size: {content_size} > {self.config.max_config_size}",
                 )
 
         return errors
@@ -293,11 +293,11 @@ class ConfigPlanningOrchestrator:
 
 # Factory function for easy instantiation
 def create_config_planning_orchestrator(
-    enable_validation: bool = True, enable_versioning: bool = True, **kwargs: object
+    enable_validation: bool = True, enable_versioning: bool = True, **kwargs: object,
 ) -> ConfigPlanningOrchestrator:
     """Create a configured config planning orchestrator."""
     config = ConfigPlanningConfig(
-        enable_validation=enable_validation, enable_versioning=enable_versioning, **kwargs
+        enable_validation=enable_validation, enable_versioning=enable_versioning, **kwargs,
     )
     return ConfigPlanningOrchestrator(config)
 
@@ -376,7 +376,7 @@ if __name__ == "__main__":
             "format": "json",
             "content": {"host": "localhost", "port": 5432},
             "version": "1.0.0",
-        }
+        },
     ]
 
     result = plan_config_deployment(

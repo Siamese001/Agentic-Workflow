@@ -26,7 +26,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
@@ -70,7 +69,7 @@ class InterfaceBoundaryAgent(SubatomicTestingMixin, SovereignBaseAgent):
             metrics = self._analyze_file_complexity(py_file)
             if metrics["method_count"] > self.threshold:
                 self.violations.append(
-                    {"file": str(py_file), "complexity": metrics, "action": "EXTRACT_INTERFACE"}
+                    {"file": str(py_file), "complexity": metrics, "action": "EXTRACT_INTERFACE"},
                 )
         return self.violations
 
@@ -118,7 +117,7 @@ class InterfaceBoundaryAgent(SubatomicTestingMixin, SovereignBaseAgent):
         print(f"⚠️  ARCHITECTURAL DRIFT: Found {len(self.violations)} heavy L0 utilities.")
         for v in self.violations:
             print(
-                f"   [!] {v['file']} exceeds method threshold ({v['complexity']['method_count']}/{self.threshold})"
+                f"   [!] {v['file']} exceeds method threshold ({v['complexity']['method_count']}/{self.threshold})",
             )
             print(f"   Recommended: Extract to utils/core_extensions/Interface_{Path(v['file']).stem}.py")
 

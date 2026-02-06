@@ -4,7 +4,6 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -107,7 +106,7 @@ class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
         recommended_actions: list[str] = []
         if not focus_matches:
             recommended_actions.append(
-                "Introduce a focus area that explicitly references the job title or company priorities."
+                "Introduce a focus area that explicitly references the job title or company priorities.",
             )
 
         rationale = (
@@ -498,7 +497,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                     else "Lack of metrics may slow stakeholder buy-in."
                 ),
                 mitigation_actions=adoption_mitigations,
-            )
+            ),
         )
 
         technical_risk = "low" if technical_focus else "medium"
@@ -517,7 +516,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                     else "Potential technical grilling may expose gaps in focus areas."
                 ),
                 mitigation_actions=technical_mitigations,
-            )
+            ),
         )
 
         cross_functional_risk = "low" if leadership_focus else "medium"
@@ -536,7 +535,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                     else "Missing leadership signal may reduce collaboration confidence."
                 ),
                 mitigation_actions=cross_functional_mitigations,
-            )
+            ),
         )
 
         self.log_feedback(
@@ -661,7 +660,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             weighted_votes += vote_value * assessment.confidence
             total_confidence += assessment.confidence
             rationale_parts.append(
-                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})"
+                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})",
             )
 
         aggregated_decision = "undecided"
@@ -720,7 +719,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                         if keyword not in plan.focus_areas:
                             plan.focus_areas.append(keyword)
                     signals.append(
-                        "Augmented focus areas with QA missing keywords: " + ", ".join(missing_keywords[:5])
+                        "Augmented focus areas with QA missing keywords: " + ", ".join(missing_keywords[:5]),
                     )
 
         hil_feedback = downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None

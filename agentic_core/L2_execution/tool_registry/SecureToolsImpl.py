@@ -46,7 +46,7 @@ class SecureToolsImpl:
         target: Path = (self.work_dir / filename).resolve()
         if not str(target).startswith(str(self.work_dir)):
             raise ValueError(
-                f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'."
+                f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'.",
             )
         return target
 
@@ -131,12 +131,12 @@ class SecureToolsImpl:
         if any(b in command for b in self.BLACKLIST_COMMANDS):
             Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
             raise ValueError(
-                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute."
+                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.",
             )
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:
             result: Any = subprocess.run(
-                command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30
+                command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30,
             )
             if result.returncode != 0:
                 Logger.error(f"Command failed with return code {result.returncode}: {result.stderr}")

@@ -108,7 +108,7 @@ def migrate_and_audit_scripts():
         source_dir.rmdir()
 
     print(
-        f"[*] Scripts Migration Complete. Core: {moved_to_core}, Ops: {moved_to_ops}, Violations: {violations_found}"
+        f"[*] Scripts Migration Complete. Core: {moved_to_core}, Ops: {moved_to_ops}, Violations: {violations_found}",
     )
     return {
         "moved_to_core": moved_to_core,
@@ -128,7 +128,7 @@ def audit_logs():
         return {"moved_count": 0}
 
     print(
-        f"[*] WARNING: Root logs/ directory exists (should be decommissioned). Scanning {logs_dir} for non-trace artifacts..."
+        f"[*] WARNING: Root logs/ directory exists (should be decommissioned). Scanning {logs_dir} for non-trace artifacts...",
     )
 
     moved_count = 0

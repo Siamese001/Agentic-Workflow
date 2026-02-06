@@ -143,7 +143,7 @@ class SelfUpdatingSafetyEngine:
     def __init__(self, rules_storage_path: str | None = None):
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(
-            os.getcwd(), ".canon_memory", "safety_rules.json"
+            os.getcwd(), ".canon_memory", "safety_rules.json",
         )
 
         self.rules: dict[str, SafetyRule] = {}
@@ -266,7 +266,7 @@ class SelfUpdatingSafetyEngine:
         confidence = 0.0
         if matched_rules:
             confidence = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(
-                matched_rules
+                matched_rules,
             )
 
         recommendations = self._generate_recommendations(matched_rules)
@@ -285,7 +285,7 @@ class SelfUpdatingSafetyEngine:
                 "detected": detection.detected,
                 "ThreatLevel": detection.ThreatLevel.value,
                 "rules_matched": len(matched_rules),
-            }
+            },
         )
 
         if detection.detected:

@@ -39,7 +39,7 @@ class RateLimitExceeded(Exception):
         """
         super().__init__(
             f"Rate limit exceeded for {identifier}: {limit} requests per {window}s. "
-            f"Retry after {retry_after:.1f}s"
+            f"Retry after {retry_after:.1f}s",
         )
         self.identifier = identifier
         self.limit = limit
@@ -171,7 +171,7 @@ class TokenBucketRateLimiter(RateLimiter):
             # Get or create client state
             if identifier not in self.clients:
                 self.clients[identifier] = ClientState(
-                    identifier=identifier, tokens=float(self.config.burst_size)
+                    identifier=identifier, tokens=float(self.config.burst_size),
                 )
 
             client = self.clients[identifier]
@@ -555,7 +555,7 @@ def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
 RATE_LIMIT_CONFIGS = {
     "api_default": RateLimitConfig(limit=100, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
     "api_heavy": RateLimitConfig(
-        limit=1000, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET, burst_size=2000
+        limit=1000, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET, burst_size=2000,
     ),
     "api_strict": RateLimitConfig(limit=10, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
     "upload": RateLimitConfig(limit=5, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),

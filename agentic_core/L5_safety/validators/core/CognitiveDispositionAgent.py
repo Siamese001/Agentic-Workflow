@@ -77,7 +77,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         }
 
     async def analyze_violation_async(
-        self, file_path: Path, violation_type: str, context: dict = None
+        self, file_path: Path, violation_type: str, context: dict = None,
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
         context = context or {}

@@ -26,7 +26,6 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -186,7 +185,7 @@ class GitSafetyHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         Logger.info(f"📜 Getting commit history for {file_path}")
         try:
             result: Any = await self.router.call_mcp(
-                "gitkraken", {"action": "log", "file": file_path, "limit": limit}
+                "gitkraken", {"action": "log", "file": file_path, "limit": limit},
             )
             commits: Any = result.get("commits", [])
             Logger.info(f"   [OK] Retrieved {len(commits)} commits")

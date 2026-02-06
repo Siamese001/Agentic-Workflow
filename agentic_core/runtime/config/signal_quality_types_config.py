@@ -223,7 +223,7 @@ class signal_enhancer:
 
         # Generate flags and recommendations
         flags, recommendations = self._generate_flags_and_recommendations(
-            content, composite, hallucination_risk, repetition, claims
+            content, composite, hallucination_risk, repetition, claims,
         )
 
         assessment = SignalAssessment(
@@ -287,7 +287,7 @@ class signal_enhancer:
             "applicable",
         ]
         semantic_score = sum(1 for indicator in relevance_indicators if indicator in content_lower) / len(
-            relevance_indicators
+            relevance_indicators,
         )
 
         # Calculate score
@@ -819,7 +819,7 @@ _enhancers: dict[str, signal_enhancer] = {}
 
 
 def get_signal_enhancer(
-    name: str = "default", thresholds: QualityThresholds | None = None
+    name: str = "default", thresholds: QualityThresholds | None = None,
 ) -> signal_enhancer:
     """Get or create a signal enhancer.
 

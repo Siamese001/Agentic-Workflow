@@ -248,7 +248,7 @@ class ContextualRouter:
                 base_agent_rule,
                 external_touch_rule,
                 complexity_rule,
-            ]
+            ],
         )
 
     def _on_guardian_signal(self, signal: dict[str, Any]) -> None:

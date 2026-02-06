@@ -58,7 +58,7 @@ def check_imports(file_path: Path) -> list[str]:
                 for forbidden in FORBIDDEN_IMPORTS:
                     if forbidden in alias.name:
                         violations.append(
-                            f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'"
+                            f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'",
                         )
 
     return violations

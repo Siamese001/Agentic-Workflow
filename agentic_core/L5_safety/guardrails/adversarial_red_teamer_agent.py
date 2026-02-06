@@ -30,7 +30,6 @@ import textwrap
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -244,7 +243,7 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
         test_id = "PRES-001"
         original_code = textwrap.dedent()
         modified_code = textwrap.dedent(
-            "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        "
+            "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        ",
         )
         original_lines = len([l for l in original_code.split("\n") if l.strip()])
         modified_lines = len([l for l in modified_code.split("\n") if l.strip()])
@@ -282,10 +281,10 @@ class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAt
         """Attempt to preserve line count with only comments."""
         test_id = "PRES-003"
         original_code = textwrap.dedent(
-            "\n            def process_data(data):\n                result = []\n                for item in data:\n                    result.append(item * 2)\n                return result\n        "
+            "\n            def process_data(data):\n                result = []\n                for item in data:\n                    result.append(item * 2)\n                return result\n        ",
         )
         modified_code = textwrap.dedent(
-            "\n            def process_data(data):\n                # result = []\n                # for item in data:\n                #     result.append(item * 2)\n                # return result\n                pass\n        "
+            "\n            def process_data(data):\n                # result = []\n                # for item in data:\n                #     result.append(item * 2)\n                # return result\n                pass\n        ",
         )
         try:
             original_tree = ast.parse(original_code)

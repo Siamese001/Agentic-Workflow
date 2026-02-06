@@ -142,7 +142,7 @@ class MetaLearningClient:
             "agentic_core": 0.85,
             "apps_lic": 0.92,
             "apps_rg": 0.85,
-        }
+        },
     )
 
     # Domain-specific TTLs
@@ -151,7 +151,7 @@ class MetaLearningClient:
             "agentic_core": 3600,  # 1 hour
             "apps_lic": 7200,  # 2 hours
             "apps_rg": 3600,  # 1 hour
-        }
+        },
     )
 
     # State
@@ -170,7 +170,7 @@ class MetaLearningClient:
             "pattern_stores": 0,
             "healing_cycles_prevented": 0,
             "by_domain": {},
-        }
+        },
     )
 
     def __new__(cls, *args, **kwargs):
@@ -408,7 +408,7 @@ class MetaLearningClient:
                                 "id": pattern_id,
                                 "values": embedding,
                                 "metadata": pattern.to_dict(),
-                            }
+                            },
                         ],
                         namespace=f"{PINECONE_NAMESPACE_PREFIX}:{domain}",
                     )
@@ -457,7 +457,7 @@ class MetaLearningClient:
 
         # Use domain-specific threshold if not overridden
         effective_threshold = min_similarity or self.domain_thresholds.get(
-            domain, DEFAULT_SIMILARITY_THRESHOLD
+            domain, DEFAULT_SIMILARITY_THRESHOLD,
         )
 
         # Query Pinecone with namespace
@@ -486,7 +486,7 @@ class MetaLearningClient:
 
             Logger.info(
                 f"[MetaLearningClient] Retrieved {len(patterns)} patterns for {domain} "
-                f"(threshold={effective_threshold:.2f})"
+                f"(threshold={effective_threshold:.2f})",
             )
 
             return patterns

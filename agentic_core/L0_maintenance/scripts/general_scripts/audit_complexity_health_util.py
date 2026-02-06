@@ -36,7 +36,7 @@ def main():
             health = max(0, 100 - (cc - 10) * 7)
 
         complexity_data.append(
-            {"name": a["class_name"], "path": a["path"], "complexity": cc, "health": health}
+            {"name": a["class_name"], "path": a["path"], "complexity": cc, "health": health},
         )
 
     # Sort by health (lowest first)

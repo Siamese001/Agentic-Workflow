@@ -216,7 +216,7 @@ class AppsLicASTAuditor:
             # StateManager usage
             if c.has_state_manager and not c.has_immutable_buffer:
                 recommendations.append(
-                    f"REFACTOR: {c.path.name} - Replace StateManager with ImmutableStagingBuffer"
+                    f"REFACTOR: {c.path.name} - Replace StateManager with ImmutableStagingBuffer",
                 )
 
             # Missing V2AgentBase

@@ -237,7 +237,7 @@ class HealValidatorAgent(SovereignBaseAgent):
 
         if detected_patterns:
             Logger.warning(
-                f"[HealValidatorAgent] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found"
+                f"[HealValidatorAgent] Dangerous patterns in {file_path.name}: {len(detected_patterns)} found",
             )
             return {
                 "valid": False,
@@ -271,7 +271,7 @@ class HealValidatorAgent(SovereignBaseAgent):
 
                 if high_severity_issues:
                     Logger.warning(
-                        f"[HealValidatorAgent] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}"
+                        f"[HealValidatorAgent] Bandit found {len(high_severity_issues)} high-Severity issues in {file_path.name}",
                     )
                     return {
                         "valid": False,
@@ -286,7 +286,7 @@ class HealValidatorAgent(SovereignBaseAgent):
                                     "text": issue.text[:100],
                                 }
                                 for issue in high_severity_issues[:5]
-                            ]
+                            ],
                         },
                     }
 
@@ -325,7 +325,7 @@ class HealValidatorAgent(SovereignBaseAgent):
             retention_ratio = healed_loc / original_loc
             if retention_ratio < self.min_code_retention:
                 Logger.warning(
-                    f"[HealValidatorAgent] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained"
+                    f"[HealValidatorAgent] Excessive deletion in {file_path.name}: {retention_ratio:.1%} retained",
                 )
                 return {
                     "valid": False,

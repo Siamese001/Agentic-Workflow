@@ -22,7 +22,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.utils.file_cache import FileCache
 
 logger = logging.getLogger(__name__)
@@ -125,7 +124,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "high",
                 0.9,
             ),
-        }
+        },
     )
 
     # File extensions to scan
@@ -156,7 +155,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             ".ini",
             ".toml",
             ".properties",
-        }
+        },
     )
 
     # Paths to exclude from scanning
@@ -173,7 +172,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             "coverage_html",
             ".pytest_cache",
             ".mypy_cache",
-        }
+        },
     )
 
     def __post_init__(self):
@@ -221,7 +220,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             }
 
     def scan_for_credentials(
-        self, target_path: Path | None = None, file_patterns: list[str] | None = None
+        self, target_path: Path | None = None, file_patterns: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Scan for hardcoded credentials in the codebase.
@@ -312,7 +311,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                 pattern_type=pattern_name,
                                 severity=severity,
                                 confidence=confidence,
-                            )
+                            ),
                         )
         except Exception as e:
             logger.debug(f"[CREDENTIAL SCAN] Error scanning {file_path}: {e}")
@@ -365,12 +364,12 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
         if any(m.severity == "high" for m in self.matches):
             recommendations.append("🚨 HIGH PRIORITY: Remove all hardcoded credentials immediately")
             recommendations.append(
-                "Use environment variables or secure secret management (e.g., AWS Secrets Manager, Azure Key Vault)"
+                "Use environment variables or secure secret management (e.g., AWS Secrets Manager, Azure Key Vault)",
             )
 
         if any("private_key" in m.pattern_type for m in self.matches):
             recommendations.append(
-                "⚠️ Private keys detected - move to secure key storage and rotate compromised keys"
+                "⚠️ Private keys detected - move to secure key storage and rotate compromised keys",
             )
 
         if any("aws" in m.pattern_type.lower() for m in self.matches):
@@ -472,7 +471,7 @@ class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 self.logger.info("  No credential leaks detected")
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} potential leaks (manual review required)"
+                f"[{agent_name}] Complete: {violations_found} potential leaks (manual review required)",
             )
 
             return {

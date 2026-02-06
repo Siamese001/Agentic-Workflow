@@ -56,10 +56,10 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
         "garbled_class": re.compile(r"clas[A-Z][a-zA-Z]*\s+[A-Z]"),  # clasAtomicExecutionMixin
         "garbled_def": re.compile(r"de[fF]\s+[^a-z_]"),  # def with non-standard start
         "mangled_identifier": re.compile(
-            r"\b[a-zA-Z]{3,}[A-Z]{2,}[a-z]+[A-Z]{2,}"
+            r"\b[a-zA-Z]{3,}[A-Z]{2,}[a-z]+[A-Z]{2,}",
         ),  # CAreOnchtstrat
         "corrupted_import": re.compile(
-            r"from\s+[a-zA-Z0-9_.]+\s+impor[^t]"
+            r"from\s+[a-zA-Z0-9_.]+\s+impor[^t]",
         ),  # impor instead of import
     }
 
@@ -75,7 +75,7 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
                 for pattern_name, pattern in patterns.items():
                     if pattern.search(line):
                         suspicious.append(
-                            (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}")
+                            (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}"),
                         )
         except Exception:
             pass

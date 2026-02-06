@@ -230,7 +230,7 @@ class AtomicExecutionMixin:
             txn.committed = True
             logger.info(
                 f"Transaction {txn_id} committed successfully. "
-                f"Modified: {len(txn.modified_files)}, Created: {len(txn.created_files)}"
+                f"Modified: {len(txn.modified_files)}, Created: {len(txn.created_files)}",
             )
 
             if cleanup_on_success:

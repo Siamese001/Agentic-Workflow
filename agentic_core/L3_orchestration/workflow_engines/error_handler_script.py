@@ -57,7 +57,7 @@ class ErrorHandler:
         self.max_retries = 3
 
     async def handle_error(
-        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry"
+        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry",
     ) -> WorkflowResult:
         """Handle workflow error with recovery strategy."""
         strategy = self.recovery_strategies.get(recovery_type, self._abort_strategy)
@@ -96,7 +96,7 @@ class ErrorHandler:
     async def _abort_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
         """Abort workflow."""
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error)
+            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error),
         )
 
 

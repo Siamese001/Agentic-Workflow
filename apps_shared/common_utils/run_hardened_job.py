@@ -56,7 +56,7 @@ def create_test_workflow_spec() -> None:
                 "id": "test_hop",
                 "script": "echo 'Test hop executed successfully'",
                 "description": "Test hop for acceptance test",
-            }
+            },
         ],
     }
 
@@ -69,7 +69,7 @@ def _initialize_orchestrator() -> None:
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
 
     HardenedWorkflowOrchestrator(
-        workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage"
+        workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage",
     )
     logger.info("✅ Orchestrator initialized successfully")
     return orchestrator
@@ -152,7 +152,7 @@ async def main() -> None:
         _prepare_workflow_context()
 
         updated_context = orchestrator.initialize_or_resume_workflow(
-            workflow_id=TEST_JOB_ID, total_k_nodes=5, context=context
+            workflow_id=TEST_JOB_ID, total_k_nodes=5, context=context,
         )
 
         if updated_context.get("resumed_from_checkpoint"):

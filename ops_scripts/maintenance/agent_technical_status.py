@@ -144,7 +144,7 @@ class NuclearAuditor:
         return agents
 
     def _analyze_agent_class(
-        self, class_node: ast.ClassDef, file_path: Path, content: str
+        self, class_node: ast.ClassDef, file_path: Path, content: str,
     ) -> AgentTechnicalStatus:
         """Perform detailed analysis of a single agent class."""
         status = AgentTechnicalStatus(
@@ -457,10 +457,10 @@ class NuclearAuditor:
         table.append("## Detailed Technical Status")
         table.append("")
         table.append(
-            "| Agent | Layer | File | Inheritance | heal() | Namespace | Type | Complexity | Issues |"
+            "| Agent | Layer | File | Inheritance | heal() | Namespace | Type | Complexity | Issues |",
         )
         table.append(
-            "|-------|-------|------|-------------|--------|-----------|------|------------|--------|"
+            "|-------|-------|------|-------------|--------|-----------|------|------------|--------|",
         )
 
         for status in sorted_agents:
@@ -474,7 +474,7 @@ class NuclearAuditor:
                 f"| {status.class_name} | {status.layer} | {status.file_path} | "
                 f"{status.inheritance_status} | {status.heal_method_status} | "
                 f"{status.namespace_status} | {status.agent_type} | "
-                f"{status.complexity_score:.1f} | {issues_str} |"
+                f"{status.complexity_score:.1f} | {issues_str} |",
             )
 
         # Critical issues section

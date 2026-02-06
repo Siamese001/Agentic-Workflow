@@ -18,7 +18,6 @@ from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeC
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol
-from agentic_core.L5_safety.guardrails.membrane import input_membrane_agent
 from agentic_core.L5_safety.guardrails.PiiVault import PIIVault
 from agentic_core.L5_safety.validators.constitutional_overseer_validator import (
     ConstitutionalOverseer,

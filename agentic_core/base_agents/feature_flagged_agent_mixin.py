@@ -10,11 +10,13 @@ import logging
 from collections.abc import Callable
 from typing import Any, TypeVar
 
+from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.detection_protocol import (
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
 )
+from agentic_core.utils.feature_flags import FeatureFlagManager
 from agentic_core.utils.meta_learning_protocol import (
     LearningContext,
     LearningResult,
@@ -31,8 +33,6 @@ from agentic_core.utils.verification_protocol import (
     VerificationRequest,
     VerificationResult,
 )
-from agentic_core.utils.dependency_resolver import DynamicLoader
-from agentic_core.utils.feature_flags import FeatureFlagManager
 
 logger = logging.getLogger(__name__)
 
@@ -450,7 +450,7 @@ class FeatureFlaggedAgentMixin:
 
         event_id = f"AUDIT-{int(time.time() * 1000)}"
         logger.info(
-            f"[AUDIT] {event_id} | {self.__class__.__name__} | {event_type} | {json.dumps(data, default=str)}"
+            f"[AUDIT] {event_id} | {self.__class__.__name__} | {event_type} | {json.dumps(data, default=str)}",
         )
         return event_id
 

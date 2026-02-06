@@ -88,7 +88,7 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
                             is_agent=visitor.is_agent,
                             confidence="HIGH" if visitor.signals else "LOW",
                             signals=visitor.signals,
-                        )
+                        ),
                     )
                 except Exception as e:
                     results.append(
@@ -97,7 +97,7 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
                             is_agent=False,
                             confidence="ERROR",
                             signals=[f"Parse Error: {str(e)}"],
-                        )
+                        ),
                     )
     return results
 

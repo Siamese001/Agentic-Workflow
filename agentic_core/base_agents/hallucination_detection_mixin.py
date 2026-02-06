@@ -67,7 +67,7 @@ class HallucinationDetectionMixin:
             self._hallucination_cache[cache_key] = result
             if not result:
                 logger.warning(
-                    f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}"
+                    f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}",
                 )
             return result
 

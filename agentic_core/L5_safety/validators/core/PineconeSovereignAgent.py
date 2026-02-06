@@ -194,7 +194,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         # [ETERNAL QUALITY VALIDATION]
         # Skip recursive sanity check if we are currently IN a sanity check
         validated_embedding = self._validate_and_repair_embedding(
-            embedding, text, skip_sanity=is_sanity_check
+            embedding, text, skip_sanity=is_sanity_check,
         )
 
         if self.redis:
@@ -203,7 +203,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         return validated_embedding
 
     def _validate_and_repair_embedding(
-        self, embedding: list[float], source_text: str, skip_sanity: bool = False
+        self, embedding: list[float], source_text: str, skip_sanity: bool = False,
     ) -> list[float]:
         """
         Sovereign embedding quality gate: Correct length, Non-zero variance, Reasonable norm.
@@ -316,7 +316,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         sparse_vec = self._get_sparse_vector(query)
 
         return self.index.query(
-            vector=dense_vec, sparse_vector=sparse_vec, top_k=top_k, include_metadata=True
+            vector=dense_vec, sparse_vector=sparse_vec, top_k=top_k, include_metadata=True,
         ).to_dict()
 
     def purge_ghost_vector(self, file_path: Path) -> Any:
@@ -343,7 +343,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
                     "id": vec_id,
                     "values": emb,
                     "metadata": {"territory": territory, "type": "bootstrap"},
-                }
+                },
             )
 
         if vectors:
@@ -368,7 +368,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
                         "source": chunk["metadata"].get("source", "unknown"),
                         "ingested_at": chunk["metadata"].get("ingested_at"),
                     },
-                }
+                },
             )
 
         # Batch upsert in sizes of 100
@@ -449,7 +449,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
 
         if len(filtered) < 1:
             print(
-                f"   [INFO] No relevant vectors (threshold={relevance_threshold}) - proceeding without memory"
+                f"   [INFO] No relevant vectors (threshold={relevance_threshold}) - proceeding without memory",
             )
             return []
 
@@ -505,7 +505,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
 
             health = self.health_check()
             print(
-                f"   [OK] PineconeSovereignAgent: {health['vectors']} vectors online (quality: {health['sample_quality']})"
+                f"   [OK] PineconeSovereignAgent: {health['vectors']} vectors online (quality: {health['sample_quality']})",
             )
 
             if ctx:

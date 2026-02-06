@@ -57,7 +57,7 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
 
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning(
-                "Constitutional review is disabled. Passing by default."
+                "Constitutional review is disabled. Passing by default.",
             )  # now real implementation
             return ConstitutionalReviewResult(
                 review_passed=True,
@@ -91,7 +91,7 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
         )
         if error:
             self.log_error(  # now real implementation
-                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
+                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft).",
             )
             return ConstitutionalReviewResult(
                 review_passed=True,
@@ -101,7 +101,7 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
 
         if not validated_output.review_passed:
             self.log_warning(  # now real implementation
-                f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}"
+                f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}",
             )
 
         return validated_output

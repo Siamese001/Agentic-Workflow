@@ -140,7 +140,7 @@ def fuse_ranked_groups(groups: list[list[dict[str, object]]]) -> list[dict[str, 
         key=lambda x: (
             int(x.get("rank", 9_999_999)),
             str(x.get("evidence", "")).lower(),
-        )
+        ),
     )
 
     # Reassign clean ranks
@@ -175,6 +175,6 @@ def rank_documents(
         key=lambda x: (
             int(x.get("rank", 9_999_999)),
             x.get("evidence", ""),
-        )
+        ),
     )
     return RANKED

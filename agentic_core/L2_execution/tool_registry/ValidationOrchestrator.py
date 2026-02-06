@@ -20,7 +20,6 @@ import os
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L1_cognition.thought_engine.validation_protocol_types import IValidationProtocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -194,7 +193,7 @@ class ValidationOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         return "\n".join(parts)
 
     def _record_success(
-        self, file_path: str, violation_key: int, violation_desc: str, fixed_code: str
+        self, file_path: str, violation_key: int, violation_desc: str, fixed_code: str,
     ) -> None:
         """Record a successful healing attempt."""
         self.ctx.record_healing_attempt(file_path, success=True)
@@ -203,7 +202,7 @@ class ValidationOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             self.ctx.healing_history[file_path] = []
         self.ctx.healing_history[file_path].append(f"Key{violation_key}")
         self.ctx.services.store_healing_pattern(
-            Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0
+            Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0,
         )
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
@@ -402,7 +401,7 @@ class ValidationOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                     errors += 1
 
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed"
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed",
             )
 
             return {

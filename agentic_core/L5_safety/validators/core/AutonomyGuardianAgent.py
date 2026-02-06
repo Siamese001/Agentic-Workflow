@@ -19,7 +19,6 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
@@ -208,7 +207,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
 
     def _save_modular_markdown_report(
-        self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]]
+        self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]],
     ) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
         report_path = (
@@ -223,15 +222,15 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
         md += "| Territory | Total | % Heal Cap | % Heal Inv | % Test | CC | Health |\n|---|---|---|---|---|---|---|\n"
         for row in dashboard_rows:
             md += "| {Territory} | {Total} | {Heal Cap %} | {Heal Invocation %} | {Test %} | {Avg CC} | {Health} |\n".format(
-                **row
+                **row,
             )
         md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(
-            **total_row
+            **total_row,
         )
         report_path.write_text(md, encoding="utf-8")
 
     def _generate_dashboard_v2_with_rows(
-        self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any]
+        self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any],
     ) -> None:
         """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
         renderer = DashboardRenderer(self.project_root)
@@ -417,7 +416,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                 except Exception as write_error:
                                     summary["errors"] += 1
                                     log.error(
-                                        f"[AutonomyGuardian] Failed to write {agent_path}: {write_error}"
+                                        f"[AutonomyGuardian] Failed to write {agent_path}: {write_error}",
                                     )
 
                 except Exception as e:
@@ -473,7 +472,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                                     "agent": "AutonomyGuardianAgent",
                                     "description": healing_description,
                                 },
-                            )
+                            ),
                         )
 
                         log.info(f"[META-LEARNING] Semantic fix signature persisted to Pinecone: {vector_id}")
@@ -485,7 +484,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     log.info("[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert")
                     log.info(f"[META-LEARNING] Description: {healing_description}")
                     log.info(
-                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=HealRepositoryStub, fixed={summary['fixed']}"
+                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=HealRepositoryStub, fixed={summary['fixed']}",
                     )
 
             except Exception as meta_error:
@@ -523,7 +522,7 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     query_embedding=query_embedding,
                     top_k=1,
                     filter={"action": "inject_heal_repository_stub"},
-                )
+                ),
             )
 
             if results and len(results) > 0:

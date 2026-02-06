@@ -182,7 +182,7 @@ class CircuitBreaker:
         if self.state.state == "OPEN":
             raise CircuitBreakerOpenError(
                 f"Circuit breaker is open. {self.failure_threshold} failures occurred. "
-                f"Retry after {self.recovery_timeout} seconds."
+                f"Retry after {self.recovery_timeout} seconds.",
             )
 
 
@@ -213,7 +213,7 @@ class HardenedGeminiExecutor:
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(
-            failure_threshold=5, recovery_timeout=60.0, half_open_max_calls=3
+            failure_threshold=5, recovery_timeout=60.0, half_open_max_calls=3,
         )
 
     def _setup_client(self):
@@ -240,17 +240,17 @@ class HardenedGeminiExecutor:
 
             return [
                 types.SafetySetting(
-                    category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_ONLY_HIGH"
+                    category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_ONLY_HIGH",
                 ),
                 types.SafetySetting(
                     category="HARM_CATEGORY_HARASSMENT",
                     threshold="BLOCK_NONE",  # Allow robust professional critique
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HATE_SPEECH", threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    category="HARM_CATEGORY_HATE_SPEECH", threshold="BLOCK_MEDIUM_AND_ABOVE",
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="BLOCK_MEDIUM_AND_ABOVE",
                 ),
             ]
         except ImportError:
@@ -281,7 +281,7 @@ class HardenedGeminiExecutor:
             # Try v1beta count_tokens API
             if hasattr(self._client, "models"):
                 token_resp = await self._client.aio.models.count_tokens(
-                    model=self.config.model, contents=input_payload
+                    model=self.config.model, contents=input_payload,
                 )
                 token_count = token_resp.total_tokens
             else:
@@ -296,7 +296,7 @@ class HardenedGeminiExecutor:
         if token_count > self.config.safety_threshold_tokens:
             raise ContextOverflowError(
                 f"Payload {token_count} tokens exceeds safety threshold "
-                f"({self.config.safety_threshold_tokens} tokens for {self.config.model})"
+                f"({self.config.safety_threshold_tokens} tokens for {self.config.model})",
             )
 
         return token_count
@@ -315,7 +315,7 @@ class HardenedGeminiExecutor:
         return total_chars // 4
 
     def _build_payload(
-        self, messages: list[AgentMessage], system_prompt: str | None = None
+        self, messages: list[AgentMessage], system_prompt: str | None = None,
     ) -> list[dict[str, Any]]:
         """Build payload for interactions.create.
 
@@ -373,7 +373,7 @@ class HardenedGeminiExecutor:
             retry=retry_if_exception_type(retry_exception),
             stop=stop_after_attempt(self.config.max_retries),
             wait=wait_exponential(
-                multiplier=1, min=self.config.retry_min_wait, max=self.config.retry_max_wait
+                multiplier=1, min=self.config.retry_min_wait, max=self.config.retry_max_wait,
             ),
             before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error"),
         )
@@ -392,7 +392,7 @@ class HardenedGeminiExecutor:
 
                 loop = asyncio.get_event_loop()
                 return await loop.run_in_executor(
-                    None, lambda: self._client.interactions.create(**request_params)
+                    None, lambda: self._client.interactions.create(**request_params),
                 )
 
         try:
@@ -466,7 +466,7 @@ class HardenedGeminiExecutor:
 
             # 4. Execute with Retry
             response = self._execute_with_retry(
-                self.config.model, config, payload, previous_interaction_id
+                self.config.model, config, payload, previous_interaction_id,
             )
 
             # 5. Extract response
@@ -547,21 +547,21 @@ class HardenedGeminiExecutor:
                 future = executor.submit(
                     asyncio.run,
                     self.execute_k_node(
-                        messages, system_prompt, response_schema, previous_interaction_id
+                        messages, system_prompt, response_schema, previous_interaction_id,
                     ),
                 )
                 return future.result()
         else:
             return asyncio.run(
                 self.execute_k_node(
-                    messages, system_prompt, response_schema, previous_interaction_id
-                )
+                    messages, system_prompt, response_schema, previous_interaction_id,
+                ),
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_gemini_executor(
-    model: str = "gemini-3-pro-preview", temperature: float = 0.3, **kwargs
+    model: str = "gemini-3-pro-preview", temperature: float = 0.3, **kwargs,
 ) -> HardenedGeminiExecutor:
     """Create a hardened Gemini executor.
 
@@ -599,7 +599,7 @@ def create_agent_executor(
     """
     if provider == Provider.GOOGLE and hardened:
         return create_hardened_gemini_executor(
-            model=model or "gemini-3-pro-preview", temperature=temperature, **kwargs
+            model=model or "gemini-3-pro-preview", temperature=temperature, **kwargs,
         )
 
     # Use standard executor for other providers

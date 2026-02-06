@@ -133,7 +133,7 @@ for layer in layer_order:
         desc = (a["description"][:35] if a["description"] else "-").replace("|", "-")
 
         lines.append(
-            f"| {name} | {inherit} | {tools_v} | {memory_v} | {healing_v} | {testing_v} | {loc} | {desc} |"
+            f"| {name} | {inherit} | {tools_v} | {memory_v} | {healing_v} | {testing_v} | {loc} | {desc} |",
         )
 
     lines.append("")
@@ -213,10 +213,10 @@ lines.append("")
 lines.append("- **Expected agents**: 63+ core + apps")
 lines.append(f"- **Discovered agents**: {total}")
 lines.append(
-    f"- **Core agents (L0-L5)**: {sum(len(by_layer[l]) for l in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'])}"
+    f"- **Core agents (L0-L5)**: {sum(len(by_layer[l]) for l in ['L0', 'L1', 'L2', 'L3', 'L4', 'L5'])}",
 )
 lines.append(
-    f"- **Apps agents**: {sum(len(by_layer[l]) for l in [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR])}"
+    f"- **Apps agents**: {sum(len(by_layer[l]) for l in [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR])}",
 )
 lines.append(f"- **Test agents**: {len(by_layer[TESTS_DIR])}")
 lines.append(f"- **Misc agents**: {len(by_layer['misc'])}")

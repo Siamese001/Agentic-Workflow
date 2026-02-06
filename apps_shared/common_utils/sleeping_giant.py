@@ -183,7 +183,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
 
     # Check for print() usage for errors
     uses_print_for_errors = bool(
-        re.search(r'print\s*\(\s*["\'].*(?:error|Error|ERROR|fail|Fail|FAIL)', content)
+        re.search(r'print\s*\(\s*["\'].*(?:error|Error|ERROR|fail|Fail|FAIL)', content),
     )
 
     # Find agent classes
@@ -321,7 +321,7 @@ def main():
     for giant in giants:
         if giant.risk_score in ("CRITICAL", "High"):
             print(
-                f"{giant.agent_name:<40} {giant.risk_score:<10} {len(giant.orphaned_methods):<5} {giant.latent_capability[:40]}"
+                f"{giant.agent_name:<40} {giant.risk_score:<10} {len(giant.orphaned_methods):<5} {giant.latent_capability[:40]}",
             )
             if giant.risk_score == "CRITICAL":
                 critical_giants.append(giant)
@@ -341,7 +341,7 @@ def main():
         print(f"   Latent Capability: {giant.latent_capability}")
         print(f"   Disconnect Status: {giant.disconnect_status}")
         print(
-            f"   heal_repository lines: {giant.heal_repo_lines} (Trivial: {giant.heal_repo_is_trivial})"
+            f"   heal_repository lines: {giant.heal_repo_lines} (Trivial: {giant.heal_repo_is_trivial})",
         )
         if giant.orphaned_methods:
             print(f"   Orphaned Methods: {', '.join(giant.orphaned_methods[:10])}")

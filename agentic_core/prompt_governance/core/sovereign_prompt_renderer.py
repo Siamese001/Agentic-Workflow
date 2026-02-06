@@ -143,7 +143,7 @@ class SovereignPromptRenderer:
             raise TemplateValidationError(
                 f"Template '{template_name}' requires variables {missing_vars} "
                 f"but only {provided_vars} were provided. "
-                f"Description: {schema.description}"
+                f"Description: {schema.description}",
             )
 
     def render(
@@ -238,7 +238,7 @@ class SovereignPromptRenderer:
                     self.validate_context(frag, context)
                 fragment_text = self.env.get_template(frag).render(**context)
                 assembled.append(
-                    f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>"
+                    f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>",
                 )
             except TemplateNotFound:
                 # Skip missing fragments (non-critical)

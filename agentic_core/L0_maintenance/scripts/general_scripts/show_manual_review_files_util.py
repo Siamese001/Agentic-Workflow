@@ -64,7 +64,7 @@ def analyze_diff(file1: Path, file2: Path) -> dict:
             fromfile=str(file1.name),
             tofile=str(file2.name),
             lineterm="",
-        )
+        ),
     )
 
     # Count changes
@@ -109,7 +109,7 @@ def scan_for_duplicates():
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
-        get_data_files(project_root, extensions=[".json", ".md"])
+        get_data_files(project_root, extensions=[".json", ".md"]),
     )
 
     for file_path in all_files:
@@ -187,7 +187,7 @@ def main():
                 print(f"      ✗ Error: {diff_analysis['error']}")
             else:
                 print(
-                    f"      Changes: +{diff_analysis['additions']} lines, -{diff_analysis['deletions']} lines"
+                    f"      Changes: +{diff_analysis['additions']} lines, -{diff_analysis['deletions']} lines",
                 )
                 print(f"      Total changes: {diff_analysis['total_changes']} lines")
                 print()
@@ -226,7 +226,7 @@ def main():
         if "LIC_APP" in locations and "RG_APP" in locations:
             print("      → Files in different apps (LIC vs RG) - likely intentional variants")
             print(
-                f"      → RENAME to app-specific names (e.g., {filename.replace('.py', '_lic.py')} and {filename.replace('.py', '_rg.py')})"
+                f"      → RENAME to app-specific names (e.g., {filename.replace('.py', '_lic.py')} and {filename.replace('.py', '_rg.py')})",
             )
         elif "L1_COGNITION" in locations and any(loc in locations for loc in ["LIC_APP", "RG_APP"]):
             print("      → Files in L1 Cognition and Apps - check if app-specific override")

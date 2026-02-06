@@ -113,7 +113,7 @@ class ObservabilityExecutionEngine:
         self.logger.info(f"Registered operation: {operation_type}")
 
     def execute(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None = None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None = None,
     ) -> ExecutionResult:
         """Execute an observability operation.
 
@@ -170,11 +170,11 @@ class ObservabilityExecutionEngine:
         except Exception as e:
             self.logger.error(f"Execution failed: {str(e)}")
             return self._create_error_result(
-                request.request_id, request.operation_type, str(e), start_time
+                request.request_id, request.operation_type, str(e), start_time,
             )
 
     def execute_batch(
-        self, requests: list[ExecutionRequest], environment: ExecutionEnvironment | None = None
+        self, requests: list[ExecutionRequest], environment: ExecutionEnvironment | None = None,
     ) -> list[ExecutionResult]:
         """Execute multiple operations.
 
@@ -189,7 +189,7 @@ class ObservabilityExecutionEngine:
 
         # Sort by priority
         sorted_requests = sorted(
-            requests, key=lambda r: self._priority_value(r.priority), reverse=True
+            requests, key=lambda r: self._priority_value(r.priority), reverse=True,
         )
 
         for request in sorted_requests:
@@ -216,7 +216,7 @@ class ObservabilityExecutionEngine:
         return True
 
     def process_queue(
-        self, environment: ExecutionEnvironment | None = None
+        self, environment: ExecutionEnvironment | None = None,
     ) -> list[ExecutionResult]:
         """Process queued executions.
 
@@ -296,13 +296,13 @@ class ObservabilityExecutionEngine:
         return self._execution_history
 
     def _execute_immediate(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None,
     ) -> ExecutionResult:
         """Execute immediately."""
         return self._execute_with_handler(request, environment)
 
     def _execute_queued(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None,
     ) -> ExecutionResult:
         """Execute from queue."""
         # For queued execution, we execute immediately but with queue metadata
@@ -311,7 +311,7 @@ class ObservabilityExecutionEngine:
         return result
 
     def _execute_scheduled(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None,
     ) -> ExecutionResult:
         """Execute scheduled execution."""
         # Check if scheduled time has arrived
@@ -329,7 +329,7 @@ class ObservabilityExecutionEngine:
         return self._execute_with_handler(request, environment)
 
     def _execute_conditional(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None,
     ) -> ExecutionResult:
         """Execute based on conditions."""
         # Check conditions
@@ -348,7 +348,7 @@ class ObservabilityExecutionEngine:
         return self._execute_with_handler(request, environment)
 
     def _execute_with_handler(
-        self, request: ExecutionRequest, environment: ExecutionEnvironment | None
+        self, request: ExecutionRequest, environment: ExecutionEnvironment | None,
     ) -> ExecutionResult:
         """Execute with registered handler."""
         handler = self._operation_handlers[request.operation_type]
@@ -394,7 +394,7 @@ class ObservabilityExecutionEngine:
         return True
 
     def _evaluate_condition(
-        self, condition: str, environment: ExecutionEnvironment | None
+        self, condition: str, environment: ExecutionEnvironment | None,
     ) -> object:
         """Evaluate a condition."""
         if environment:
@@ -444,7 +444,7 @@ class ObservabilityExecutionEngine:
             del self._active_executions[request.request_id]
 
     def _create_error_result(
-        self, request_id: str, operation_type: str, error: str, start_time: float
+        self, request_id: str, operation_type: str, error: str, start_time: float,
     ) -> ExecutionResult:
         """Create error result."""
         return ExecutionResult(

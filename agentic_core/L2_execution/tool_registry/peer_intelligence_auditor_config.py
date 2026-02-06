@@ -7,7 +7,6 @@ import logging
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -28,7 +27,6 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
@@ -117,7 +115,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
 
     def analyze_competitive_landscape(
-        self, jd_keywords: list[str], context: dict[str, Any]
+        self, jd_keywords: list[str], context: dict[str, Any],
     ) -> PeerIntelligenceResult:
         """
         Execute multi-hop competitive analysis.
@@ -184,7 +182,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
         hops = []
         for hop_num in range(1, self.config.total_hops + 1):
             search_queries = self._generate_hop_queries(
-                jd_keywords=jd_keywords, context=context, hop_number=hop_num, previous_hops=hops
+                jd_keywords=jd_keywords, context=context, hop_number=hop_num, previous_hops=hops,
             )
             results = self._execute_searches(search_queries)
             keywords_found = self._extract_keywords_from_results(results)
@@ -254,7 +252,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
             keyword_lower = keyword.lower()
             frequency_score = sum(1 for hop in hops if keyword_lower in hop.keywords_found) / len(hops)
             competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / max(
-                len(all_keywords_found), 1
+                len(all_keywords_found), 1,
             )
             if frequency_score > 0.6:
                 classification = KeywordClassification.TABLE_STAKES
@@ -272,7 +270,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
                     frequency_score=frequency_score,
                     competitive_density=competitive_density,
                     REASONING=reasoning,
-                )
+                ),
             )
         return analyses
 
@@ -344,7 +342,7 @@ class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, 
 
             # Diagnostic: Create a dummy hop structure that fails the check (simple test)
             dummy_hops = [
-                RagHop(hop_number=1, search_queries=["test_query"], RESULTS=[], keywords_found=set())
+                RagHop(hop_number=1, search_queries=["test_query"], RESULTS=[], keywords_found=set()),
             ]
 
             # Run validation logic

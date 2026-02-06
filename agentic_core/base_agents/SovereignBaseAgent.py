@@ -30,19 +30,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.audit_trail_mixin import audit_trail_mixin
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
-from agentic_core.base_agents.meta_learning_client_mixin import meta_learning_client_mixin
-from agentic_core.base_agents.runtime_safety_mixin import runtime_safety_mixin
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.config.core.config_mixin_config import ConfigMixin
-from agentic_core.utils.core_integrity_verifier_validator import (
-    CoreIntegrityVerifier,
-    emergency_shutdown,
-)
-from agentic_core.utils.HealerError import ConfigurationError, SovereignError
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.L1_cognition.memory.golden_context_mixin import GoldenContextMixin
@@ -51,6 +42,11 @@ from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
 from agentic_core.L5_safety.validators.core.healing_strategy_mixin import HealingStrategyMixin
 from agentic_core.L5_safety.validators.core.validator_mixin import ValidatorMixin
+from agentic_core.utils.core_integrity_verifier_validator import (
+    CoreIntegrityVerifier,
+    emergency_shutdown,
+)
+from agentic_core.utils.HealerError import ConfigurationError, SovereignError
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +98,7 @@ class SovereignBaseAgent(
 
         # 3. Telemetry Signal
         self.log_sovereign_event(
-            "BOOT", {"status": "initialized", "mode": "hardened", "integrity_verified": True}
+            "BOOT", {"status": "initialized", "mode": "hardened", "integrity_verified": True},
         )
 
         self._initialized = True
@@ -193,12 +189,12 @@ class SovereignBaseAgent(
         logger.error(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
 
     def log_feedback(
-        self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None
+        self, workflow_id: str, action: str, status: str, details: dict[str, Any] = None,
     ) -> None:
         """Log feedback for a workflow action."""
         logger.info(
             f"[{getattr(self, 'name', 'SovereignAgent')}] Workflow {workflow_id}: "
-            f"{action} - {status} - {details or {}}"
+            f"{action} - {status} - {details or {}}",
         )
 
     def heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:

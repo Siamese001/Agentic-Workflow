@@ -93,11 +93,11 @@ def mine_workflows():
                     if isinstance(step, dict):
                         sid = step.get("id", step.get("step_id", step.get("name", "Unknown")))
                         agent = step.get(
-                            "agent", step.get("tool", step.get("node", step.get("type", "Unknown")))
+                            "agent", step.get("tool", step.get("node", step.get("type", "Unknown"))),
                         )
                         desc = step.get("description", step.get("desc", ""))[:60]
                         next_s = step.get(
-                            "next_step", step.get("next", step.get("transitions", "End"))
+                            "next_step", step.get("next", step.get("transitions", "End")),
                         )
                         if isinstance(next_s, list):
                             next_s = ", ".join(str(n) for n in next_s[:3])
@@ -105,7 +105,7 @@ def mine_workflows():
                 report.write("\n")
             else:
                 report.write(
-                    "> ⚠️ **WARNING:** No explicit step list found. Scanning for K-nodes...\n\n"
+                    "> ⚠️ **WARNING:** No explicit step list found. Scanning for K-nodes...\n\n",
                 )
 
                 # Look for K-node pattern (K.1, K.2, etc.)
@@ -125,7 +125,7 @@ def mine_workflows():
             report.write("*Exact text extraction of all detected prompt templates.*\n\n")
 
             prompts = extract_keys_recursive(
-                data, ["prompt", "system_prompt", "user_prompt", "template", "instruction"]
+                data, ["prompt", "system_prompt", "user_prompt", "template", "instruction"],
             )
             prompt_count = 0
 
@@ -139,7 +139,7 @@ def mine_workflows():
 
             if prompt_count == 0:
                 report.write(
-                    "> ⚠️ No prompts found with standard keys. Scanning for text blocks...\n\n"
+                    "> ⚠️ No prompts found with standard keys. Scanning for text blocks...\n\n",
                 )
                 text_blocks = extract_long_text_blocks(data)
                 for key, content in list(text_blocks.items())[:20]:

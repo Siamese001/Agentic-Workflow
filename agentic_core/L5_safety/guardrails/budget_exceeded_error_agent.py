@@ -79,7 +79,7 @@ class CostGovernorAgent(SovereignBaseAgent):
         logging.info(f"Governor: Current Spend ${self.spend:.4f} / Limit ${self.limit:.2f}")
         if self.spend > self.limit:
             raise BudgetExceededError(
-                f"BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}"
+                f"BUDGET EXCEEDED: ${self.spend:.2f} exceeds limit of ${self.limit:.2f}",
             )
         return cost
 

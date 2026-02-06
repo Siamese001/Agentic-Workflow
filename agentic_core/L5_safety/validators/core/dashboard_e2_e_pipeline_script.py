@@ -306,7 +306,7 @@ class DashboardE2EPipeline:
 
         print("┃  Heal Invocation Coverage:                                              ┃")
         print(
-            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃"
+            f"┃    Before: {before:5.1f}%  →  After: {after:5.1f}%  (Δ +{improvement:4.1f}%)                    ┃",
         )
 
         if after >= 100.0:
@@ -315,18 +315,18 @@ class DashboardE2EPipeline:
             print(f"┃    ⚠️  Nearly complete: {100 - after:.1f}% gap remaining                             ┃")
         else:
             print(
-                f"┃    ⚠️  Gap: {100 - after:.1f}% ({int((100 - after) / 100 * self.stats['agents_discovered'])} agents)                                      ┃"
+                f"┃    ⚠️  Gap: {100 - after:.1f}% ({int((100 - after) / 100 * self.stats['agents_discovered'])} agents)                                      ┃",
             )
 
         print("┃                                                                              ┃")
         print(
-            f"┃  Agents Fixed: {self.stats['heal_fixes']:3d}                                                      ┃"
+            f"┃  Agents Fixed: {self.stats['heal_fixes']:3d}                                                      ┃",
         )
         print(
-            f"┃  Agents Discovered: {self.stats['agents_discovered']:3d}                                                ┃"
+            f"┃  Agents Discovered: {self.stats['agents_discovered']:3d}                                                ┃",
         )
         print(
-            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃"
+            f"┃  Dashboard Rows: {self.stats['dashboard_rows']:2d}                                                   ┃",
         )
         print("┃                                                                              ┃")
         print("┃  Dashboard Location:                                                         ┃")

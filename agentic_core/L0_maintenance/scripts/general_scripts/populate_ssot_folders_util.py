@@ -60,7 +60,7 @@ LAYER_BEST_PRACTICES = {
         "embedding_logic": "Gemini-only embedding pipeline. No fallback to other providers.",
     },
     "prompt_governance": {
-        "meta_prompts": "Sovereign prompt constitution and system prompts. No raw strings outside this folder."
+        "meta_prompts": "Sovereign prompt constitution and system prompts. No raw strings outside this folder.",
     },
 }
 

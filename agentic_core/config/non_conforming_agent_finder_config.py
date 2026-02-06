@@ -81,7 +81,7 @@ class NonConformingAgentFinder(ast.NodeVisitor):
                             "name": class_name,
                             "line": node.lineno,
                             "reason": prev_line,
-                        }
+                        },
                     )
                     self.generic_visit(node)
                     return
@@ -99,7 +99,7 @@ class NonConformingAgentFinder(ast.NodeVisitor):
                     "name": class_name,
                     "line": node.lineno,
                     "methods": suspicious_methods,
-                }
+                },
             )
 
         self.generic_visit(node)
@@ -136,7 +136,7 @@ def main():
                     "line": suspect["line"],
                     "class_name": suspect["name"],
                     "suspicious_methods": ", ".join(suspect["methods"]),
-                }
+                },
             )
 
     # Output table

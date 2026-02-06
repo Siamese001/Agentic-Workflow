@@ -93,8 +93,8 @@ def run_tests():
                 "hop2_enrichment",
                 {
                     "experience_sections": [
-                        {"bullets": [{"bullet_text": "Responsible for nothing"}]}
-                    ]
+                        {"bullets": [{"bullet_text": "Responsible for nothing"}]},
+                    ],
                 },
                 "SETUP",
             )

@@ -64,7 +64,7 @@ class KnowledgeGraphHealingStrategy:
                         "reason": "Knowledge graph drift detected (Missing/Stale Entities)",
                         "priority": self.priority,
                         "strategy": self.name,
-                    }
+                    },
                 )
         Logger.info(f"[L0 KG HEALING] Diagnosed {len(fixes)} knowledge graph drift issues")
         return fixes
@@ -114,13 +114,13 @@ class KnowledgeGraphHealingStrategy:
             ]
             if entities or relations:
                 Logger.info(
-                    f"[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations"
+                    f"[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations",
                 )
                 persist_result: Any = await self._persist_kg_data(entities, relations, source_id)
                 if persist_result:
                     self.processed_today += 1
                     Logger.info(
-                        f"[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r"
+                        f"[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r",
                     )
                     return True
                 else:
@@ -128,7 +128,7 @@ class KnowledgeGraphHealingStrategy:
                     return False
             else:
                 Logger.warning(
-                    f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}"
+                    f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}",
                 )
                 return False
         except Exception as e:

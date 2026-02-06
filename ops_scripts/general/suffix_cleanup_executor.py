@@ -182,7 +182,7 @@ def execute_suffix_cleanup(project_root: Path, dry_run: bool = False) -> dict[st
                     "source": str(source_path),
                     "target": new_filename,
                     "dry_run": True,
-                }
+                },
             )
         else:
             result = rename_file_and_refactor(source_path, new_filename, project_root)

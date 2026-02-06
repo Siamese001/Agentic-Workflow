@@ -24,7 +24,7 @@ class CognitiveRecoveryMixin:
         return SemanticKnowledgeClient()
 
     def consult_knowledge_base(
-        self, query: str, namespace: str = "architecture-docs"
+        self, query: str, namespace: str = "architecture-docs",
     ) -> list[dict[str, Any]]:
         """
         Generic query to the semantic brain.
@@ -82,11 +82,11 @@ Suggested Fix Context:
                 return advice
             else:
                 logger.info(
-                    f"[{self.__class__.__name__}] No high-confidence healing patterns found (Best: {best_match.score:.2f})."
+                    f"[{self.__class__.__name__}] No high-confidence healing patterns found (Best: {best_match.score:.2f}).",
                 )
         else:
             logger.info(
-                f"[{self.__class__.__name__}] This appears to be a novel error (No memory records found)."
+                f"[{self.__class__.__name__}] This appears to be a novel error (No memory records found).",
             )
 
         return None

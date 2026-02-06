@@ -356,7 +356,7 @@ class ThreeTierComplianceChecker:
                 "",
                 f"Found {len(result.guardian_tests)} Guardian tests:",
                 "",
-            ]
+            ],
         )
         for test in sorted(result.guardian_tests):
             lines.append(f"- {test}")
@@ -371,7 +371,7 @@ class ThreeTierComplianceChecker:
                     "",
                     "| Agent | Layer | Suggested Test Path |",
                     "|-------|-------|---------------------|",
-                ]
+                ],
             )
             for compliance in missing_soul[:30]:
                 agent = compliance.agent
@@ -392,7 +392,7 @@ class ThreeTierComplianceChecker:
                     "",
                     f"Found {len(compliant)} agents with full three-tier coverage.",
                     "",
-                ]
+                ],
             )
 
         return "\n".join(lines)

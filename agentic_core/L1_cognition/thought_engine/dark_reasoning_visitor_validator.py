@@ -58,7 +58,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                 # Check for calls to reasoning methods
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(
-                        f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}"
+                        f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}",
                     )
 
                 # Check for direct LLM usage (L5 Bypass)

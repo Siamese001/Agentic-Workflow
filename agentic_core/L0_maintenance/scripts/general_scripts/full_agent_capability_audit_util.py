@@ -43,7 +43,7 @@ def analyze_all_agents():
 
             if methods:
                 agents_with_methods.append(
-                    {"path": path_str, "name": py_file.name, "methods": methods, "size": size}
+                    {"path": path_str, "name": py_file.name, "methods": methods, "size": size},
                 )
         except:
             pass

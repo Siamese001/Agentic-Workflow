@@ -50,7 +50,7 @@ class SovereigntyAuditor:
             # Rule: Primary class must match filename
             if module_name not in classes:
                 self.naming_violations.append(
-                    f"{path.name}: Expected class '{module_name}' not found. Found: {classes}"
+                    f"{path.name}: Expected class '{module_name}' not found. Found: {classes}",
                 )
         except Exception as e:
             self.naming_violations.append(f"{path.name}: AST Parse Error - {e}")

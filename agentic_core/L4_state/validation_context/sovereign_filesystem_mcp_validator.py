@@ -89,7 +89,7 @@ class SovereignFilesystemMcp:
                         "source": monolith_path,
                         "targets": list(files.keys()),
                         "ts": datetime.utcnow().isoformat(),
-                    }
+                    },
                 ),
             )
 

@@ -130,9 +130,9 @@ try:
                     WEIGHT_HEALTH_TEST,
                     WEIGHT_HEALTH_OBSERVABLE,
                     WEIGHT_HEALTH_COMPLEXITY,
-                ]
+                ],
             )
-            - 1.0
+            - 1.0,
         )
         < 0.001
     )
@@ -148,9 +148,9 @@ try:
                     WEIGHT_CODE_QUALITY_DOCUMENTED,
                     WEIGHT_CODE_QUALITY_SCHEMA_STRICTNESS,
                     WEIGHT_CODE_QUALITY_CANONICAL_INHERITANCE,
-                ]
+                ],
             )
-            - 1.0
+            - 1.0,
         )
         < 0.001
     )

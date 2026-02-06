@@ -22,7 +22,7 @@ def extract_monolithic_data():
 
     # Find the dashboardData JSON in the HTML (handles both formats)
     match = re.search(
-        r"const dashboardData = (?:window\.dashboardData \|\| )?(\[.*?\]);", html_content, re.DOTALL
+        r"const dashboardData = (?:window\.dashboardData \|\| )?(\[.*?\]);", html_content, re.DOTALL,
     )
     if not match:
         print("❌ Could not find dashboardData in monolithic HTML")

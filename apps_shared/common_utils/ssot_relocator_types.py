@@ -136,7 +136,7 @@ class SSOTRelocator:
                 report.failed += 1
 
         logger.info(
-            f"Orphan relocation complete: {report.successful}/{report.total_operations} successful"
+            f"Orphan relocation complete: {report.successful}/{report.total_operations} successful",
         )
 
         return report
@@ -181,7 +181,7 @@ class SSOTRelocator:
 
             # Move contents to flattened location
             result = self._flatten_folder(
-                source=source, target=target, max_depth=violation.max_depth
+                source=source, target=target, max_depth=violation.max_depth,
             )
 
             report.results.append(result)
@@ -196,7 +196,7 @@ class SSOTRelocator:
 
         logger.info(
             f"Hierarchy enforcement complete: "
-            f"{report.successful}/{report.total_operations} successful"
+            f"{report.successful}/{report.total_operations} successful",
         )
 
         return report
@@ -221,7 +221,7 @@ class SSOTRelocator:
 
             # Calculate target path (replace actual layer with assigned layer)
             target_path = violation.file_path.replace(
-                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/"
+                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/",
             )
             target = self.project_root / target_path
 
@@ -238,7 +238,7 @@ class SSOTRelocator:
                 report.failed += 1
 
         logger.info(
-            f"Agent relocation complete: {report.successful}/{report.total_operations} successful"
+            f"Agent relocation complete: {report.successful}/{report.total_operations} successful",
         )
 
         return report
@@ -294,7 +294,7 @@ class SSOTRelocator:
         return result
 
     def _relocate_folder(
-        self, source: Path, target: Path, action: str = "MOVED"
+        self, source: Path, target: Path, action: str = "MOVED",
     ) -> RelocationResult:
         """
         Relocate an entire folder with safety checks.

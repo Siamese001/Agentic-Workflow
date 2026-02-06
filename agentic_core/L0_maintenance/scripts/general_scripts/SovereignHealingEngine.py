@@ -242,10 +242,10 @@ class SovereignHealingEngine:
             if fix["new_client"] not in content:
                 content = f"{fix['import_path']}\n{content}"
             content = content.replace(
-                "open(", f"# TODO: Use {fix['new_client']}.read_text() or write_text()\n# open("
+                "open(", f"# TODO: Use {fix['new_client']}.read_text() or write_text()\n# open(",
             )
             content = content.replace(
-                "Path(", f"# TODO: Use {fix['new_client']} for file operations\n# Path("
+                "Path(", f"# TODO: Use {fix['new_client']} for file operations\n# Path(",
             )
             return await self.fs_client.write_text(file_path, content)
         except Exception as e:
@@ -271,7 +271,7 @@ class SovereignHealingEngine:
                 "# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.tool_registry.fetch_mcp_client",
             )
             new_content = new_content.replace(
-                "requests.get(", "# await get_fetch_client().get_clean_content("
+                "requests.get(", "# await get_fetch_client().get_clean_content(",
             )
             new_content = new_content.replace("requests.post(", "# await get_fetch_client().fetch_url(")
         if "Redis" in message:
@@ -315,7 +315,7 @@ class SovereignHealingEngine:
             pr_title = f"{config.GITKRAKEN_PR_TITLE_PREFIX} Autonomous Sovereignty Restoration"
             pr_description = f"\n# Autonomous Sovereignty Restoration\n\nThis PR contains automated corrections for {self.applied_fixes} constitutional violations detected by the Sovereignty Auditor.\n\n## Healing Summary\n- **Fixes Applied:** {self.applied_fixes}\n- **Healing Mode:** Autonomous\n- **Transaction:** Committed with rollback safety\n\n## Review Notes\nAll fixes were applied using the Sovereign Healing Engine with:\n- Transactional safety (rollback on failure)\n- MCP-routed file operations (Filesystem MCP)\n- MCP-routed version control (GitKraken MCP)\n\nPlease review the changes to ensure they align with sovereignty requirements.\n"
             await self.git_client.create_pull_request(
-                title=pr_title, description=pr_description, branch=config.GITKRAKEN_HEALING_BRANCH
+                title=pr_title, description=pr_description, branch=config.GITKRAKEN_HEALING_BRANCH,
             )
             Logger.info("[L0 HEALING] Created healing PR for review")
         except Exception as e:

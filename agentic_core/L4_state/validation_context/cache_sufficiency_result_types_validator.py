@@ -42,7 +42,7 @@ class semantic_cache:
         cached: Any = self.get(query)
         if cached:
             return CacheSufficiencyResult(
-                is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit"
+                is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit",
             )
         return CacheSufficiencyResult(is_sufficient=False, reason="cache miss")
 
@@ -172,7 +172,7 @@ class FewShotInjector:
         if not examples:
             return prompt
         example_str: Any = "\n\n".join(
-            [f"Example {i + 1}:\nInput: {ex.input}\nOutput: {ex.output}" for i, ex in enumerate(examples)]
+            [f"Example {i + 1}:\nInput: {ex.input}\nOutput: {ex.output}" for i, ex in enumerate(examples)],
         )
         return f"{example_str}\n\n{prompt}"
 

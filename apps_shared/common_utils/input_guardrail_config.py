@@ -90,7 +90,7 @@ class InputGuardrail:
             f"InputGuardrail initialized - Injection: {enable_injection_detection}, "
             f"PII: {enable_pii_detection}, Semantic: {enable_semantic_check}, "
             f"Unicode: {enable_unicode_check}, Encoding: {enable_encoding_check}, "
-            f"Rate Limit: {enable_rate_limit}, Strict: {strict_mode}"
+            f"Rate Limit: {enable_rate_limit}, Strict: {strict_mode}",
         )
 
     def _compile_patterns(self):
@@ -147,20 +147,20 @@ class InputGuardrail:
 
         # Base64 detection patterns
         self.base64_pattern = re.compile(
-            r"(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?"
+            r"(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?",
         )
 
         # PII detection patterns
         self.pii_patterns = {
             "email": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
             "phone": re.compile(
-                r"\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b"
+                r"\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b",
             ),
             "ssn": re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
             "credit_card": re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b"),
             "ip_address": re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b"),
             "url": re.compile(
-                r"https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?"
+                r"https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?",
             ),
         }
 
@@ -272,7 +272,7 @@ class InputGuardrail:
             scan_time = (time.time() - start_time) * 1000
             logger.info(
                 f"Input scan completed in {scan_time:.2f}ms - "
-                f"Action: {result.action.value}, Confidence: {result.confidence:.2f}"
+                f"Action: {result.action.value}, Confidence: {result.confidence:.2f}",
             )
 
             return result

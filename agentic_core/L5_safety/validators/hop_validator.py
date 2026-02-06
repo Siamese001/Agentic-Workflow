@@ -239,7 +239,7 @@ class HOP6PlaceholderDeterministic:
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP6 placeholder patterns."""
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$\{.*?\}"]
+            "placeholder_patterns", [r"\[.*?\]", r"\{.*?\}", r"<.*?>", r"\$\{.*?\}"],
         )
 
     def validate_placeholders(self, content: str) -> HOPValidationResult:

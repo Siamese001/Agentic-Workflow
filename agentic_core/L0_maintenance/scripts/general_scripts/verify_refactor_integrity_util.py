@@ -84,7 +84,7 @@ def main():
                             # Check if it's already updated? No, we are looking for the OLD name
                             errors.append(
                                 f"[BROKEN IMPORT] {path.relative_to(ROOT_DIR)}:{i + 1} "
-                                f"references '{old_stem}' -> '{line.strip()}'"
+                                f"references '{old_stem}' -> '{line.strip()}'",
                             )
 
             except Exception as e:
@@ -115,7 +115,7 @@ def main():
                     pass
 
     print(
-        f"  Found {len(pascal_violations)} potential PascalCase violations (Files without matching Classes)."
+        f"  Found {len(pascal_violations)} potential PascalCase violations (Files without matching Classes).",
     )
     if len(pascal_violations) > 0:
         with open(ROOT_DIR / "pascal_case_audit_log.txt", "w") as f:

@@ -44,7 +44,7 @@ class InputValidator:
         return isinstance(value, expected_type)
 
     def validate_range(
-        self, value: int | float, min_val: float | None = None, max_val: float | None = None
+        self, value: int | float, min_val: float | None = None, max_val: float | None = None,
     ) -> bool:
         """Validate that value is within range."""
         if min_val is not None and value < min_val:
@@ -54,7 +54,7 @@ class InputValidator:
         return True
 
     def validate_length(
-        self, value: str | list, min_len: int | None = None, max_len: int | None = None
+        self, value: str | list, min_len: int | None = None, max_len: int | None = None,
     ) -> bool:
         """Validate that value length is within bounds."""
         length = len(value)

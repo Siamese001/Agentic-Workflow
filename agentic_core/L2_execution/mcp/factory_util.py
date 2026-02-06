@@ -98,7 +98,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     except Exception as exc:
         if spec.optional:
             logger.warning(
-                f"Optional MCP client '{spec.name}' module '{module_name}' not available, using stub: {exc}"
+                f"Optional MCP client '{spec.name}' module '{module_name}' not available, using stub: {exc}",
             )
             return MCPClientStub(spec.name, {"error": f"Module not available: {exc}"})
 
@@ -114,7 +114,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         if spec.optional:
             logger.warning(
                 f"Optional MCP client '{spec.name}' class '{class_name}' "
-                f"not found in '{module_name}', using stub"
+                f"not found in '{module_name}', using stub",
             )
             return MCPClientStub(spec.name, {"error": f"Class not found: {class_name}"})
 

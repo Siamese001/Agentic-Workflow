@@ -85,11 +85,11 @@ class AchvBulletSynthesizer:
         SELF.CONFIG = config or BulletSynthesizerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.temperature,
         )
 
     def generate_bullets(
-        self, experience_data: dict[str, Any], context: dict[str, Any]
+        self, experience_data: dict[str, Any], context: dict[str, Any],
     ) -> BulletSynthesizerResult:
         """
         Generate achievement bullets with provenance tracking.
@@ -254,7 +254,7 @@ class AchvBulletSynthesizer:
         )
 
     def _validate_provenance_pattern(
-        self, provenance_log: BulletProvenanceLog, bullet_num: int
+        self, provenance_log: BulletProvenanceLog, bullet_num: int,
     ) -> ValidationResult:
         """
         Validate provenance pattern matches expected pattern.
@@ -287,7 +287,7 @@ class AchvBulletSynthesizer:
         )
 
     def _generate_qa_report(
-        self, bullets: list[str], provenance_logs: list[BulletProvenanceLog]
+        self, bullets: list[str], provenance_logs: list[BulletProvenanceLog],
     ) -> dict[str, Any]:
         """Generate QA Report with provenance tracking"""
         return {

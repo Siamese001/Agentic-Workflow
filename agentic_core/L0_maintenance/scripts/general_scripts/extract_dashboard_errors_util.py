@@ -26,7 +26,7 @@ for i, script in enumerate(scripts, 1):
         if re.search(r"\b(dashboardData|recommendationsData|gaugeData|lastUpdatedStr)\b", line):
             if "const" not in line and "=" not in line:
                 issues.append(
-                    f"Script {i}, Line {line_num}: Possible use before declaration: {line.strip()[:80]}"
+                    f"Script {i}, Line {line_num}: Possible use before declaration: {line.strip()[:80]}",
                 )
 
 # 2. Check for missing function definitions

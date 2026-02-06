@@ -123,10 +123,10 @@ def fix_imports(content: str) -> str:
     for pascal, snake in replacements.items():
         # Fix import paths
         fixed_content = re.sub(
-            rf"from (agentic_core\.[^\s]*){pascal}(\s+import)", rf"from \1{snake}\2", fixed_content
+            rf"from (agentic_core\.[^\s]*){pascal}(\s+import)", rf"from \1{snake}\2", fixed_content,
         )
         fixed_content = re.sub(
-            rf"import (agentic_core\.[^\s]*){pascal}", rf"import \1{snake}", fixed_content
+            rf"import (agentic_core\.[^\s]*){pascal}", rf"import \1{snake}", fixed_content,
         )
 
     return fixed_content

@@ -69,7 +69,7 @@ def analyze_archive_file(file_path: Path, existing_classes: set[str], existing_f
                         "is_agent": node.name.endswith("Agent"),
                         "lineno": node.lineno,
                         "end_lineno": getattr(node, "end_lineno", node.lineno + 50),
-                    }
+                    },
                 )
             else:
                 existing_in_file.append(node.name)
@@ -83,7 +83,7 @@ def analyze_archive_file(file_path: Path, existing_classes: set[str], existing_f
                         "params": params,
                         "lineno": node.lineno,
                         "end_lineno": getattr(node, "end_lineno", node.lineno + 20),
-                    }
+                    },
                 )
             else:
                 existing_in_file.append(node.name)
@@ -196,7 +196,7 @@ def main():
                     "unique_agents": [a["name"] for a in unique_agents],
                     "unique_classes": [c["name"] for c in unique_other],
                     "unique_functions": [f["name"] for f in unique_functions],
-                }
+                },
             )
             print(f"  [RESTORE FULL] {file_path.name} - {len(unique_agents)} unique agents")
         elif unique_other or unique_functions:
@@ -208,17 +208,17 @@ def main():
                     "unique_classes": [c["name"] for c in unique_other],
                     "unique_functions": [f["name"] for f in unique_functions],
                     "existing": existing,
-                }
+                },
             )
             print(
-                f"  [EXTRACT] {file_path.name} - {len(unique_other)} classes, {len(unique_functions)} functions"
+                f"  [EXTRACT] {file_path.name} - {len(unique_other)} classes, {len(unique_functions)} functions",
             )
         else:
             skip_files.append(
                 {
                     "source": archive_path,
                     "existing": existing,
-                }
+                },
             )
             print(f"  [SKIP] {file_path.name} - all content exists")
 

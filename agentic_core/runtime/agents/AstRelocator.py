@@ -41,7 +41,7 @@ class AstRelocator(ast.NodeVisitor):
                 "end_lineno": getattr(node, "end_lineno", node.lineno),
                 "node": node,
                 "suggested_location": self._suggest_placement(node, node.name, "Class"),
-            }
+            },
         )
         # Track context to skip inner functions
         old_class = self.current_class
@@ -63,7 +63,7 @@ class AstRelocator(ast.NodeVisitor):
                 "end_lineno": getattr(node, "end_lineno", node.lineno),
                 "node": node,
                 "suggested_location": self._suggest_placement(node, node.name, "Function"),
-            }
+            },
         )
         self.generic_visit(node)
 
@@ -109,7 +109,7 @@ class AstRelocator(ast.NodeVisitor):
                     for base in node.bases:
                         # Handle simple names (class A(B)) and attributes (class A(mod.B))
                         base_name = getattr(base, "id", "") or getattr(
-                            getattr(base, "attr", None), "value", ""
+                            getattr(base, "attr", None), "value", "",
                         )
                         if base_name and any(base_name in b for b in meta.get("bases", [])):
                             score += 4.0  # Massive boost for explicit inheritance match

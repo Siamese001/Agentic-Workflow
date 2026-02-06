@@ -38,7 +38,7 @@ def run_tests():
                     "module_path": "path.to.module",
                     "inputs": [],
                     "outputs": [],
-                }
+                },
             },
         }
         topology = OrchestrationTopology(**data)

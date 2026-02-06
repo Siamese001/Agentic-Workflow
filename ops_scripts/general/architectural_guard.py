@@ -35,7 +35,7 @@ def scan_for_violations() -> list[str]:
                 # Check if file ends with suffix (ignoring case)
                 if file.lower().endswith(suffix.lower() + ".py"):
                     violations.append(
-                        f"[Filename Violation] {file} contains banned suffix '{suffix}'"
+                        f"[Filename Violation] {file} contains banned suffix '{suffix}'",
                     )
 
             # Rule 2: Content policing via AST
@@ -50,12 +50,12 @@ def scan_for_violations() -> list[str]:
                         for name in node.names:
                             if any(banned in name.name for banned in BANNED_IMPORTS):
                                 violations.append(
-                                    f"[Import Violation] {file} imports banned module '{name.name}'"
+                                    f"[Import Violation] {file} imports banned module '{name.name}'",
                                 )
                     elif isinstance(node, ast.ImportFrom):
                         if node.module and any(banned in node.module for banned in BANNED_IMPORTS):
                             violations.append(
-                                f"[Import Violation] {file} imports from banned module '{node.module}'"
+                                f"[Import Violation] {file} imports from banned module '{node.module}'",
                             )
 
                     # Check Class Inheritance
@@ -63,7 +63,7 @@ def scan_for_violations() -> list[str]:
                         for base in node.bases:
                             if isinstance(base, ast.Name) and base.id in BANNED_BASES:
                                 violations.append(
-                                    f"[Inheritance Violation] {file} defines class '{node.name}' inheriting from '{base.id}'"
+                                    f"[Inheritance Violation] {file} defines class '{node.name}' inheriting from '{base.id}'",
                                 )
 
             except Exception as e:

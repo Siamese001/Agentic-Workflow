@@ -58,7 +58,7 @@ class AtsValidator:
         self.stop_words: set[str] = set(self.keyword_config.get("stop_words", []))
 
     def validate_ats_compatibility(
-        self, resume: dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None,
     ) -> ATSValidationResult:
         """
         Validate ATS compatibility using purely deterministic logic.

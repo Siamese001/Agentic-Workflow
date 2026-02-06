@@ -31,7 +31,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 
 Logger: logging.Logger = logging.getLogger(__name__)
@@ -71,7 +70,7 @@ class ConstitutionalOverseer:
         ]
         self._compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self._forbidden_commands]
         LOGGER.info(
-            f"Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns"
+            f"Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns",
         )
 
     async def validate_action(self, request: ActionRequest) -> ViolationCheck:

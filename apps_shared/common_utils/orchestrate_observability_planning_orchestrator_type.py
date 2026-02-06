@@ -53,7 +53,7 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
@@ -65,7 +65,7 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
 
 class OrchestrateObservabilityPlanningOrchestratorImpl(
-    OrchestrateObservabilityPlanningOrchestratorProcessor
+    OrchestrateObservabilityPlanningOrchestratorProcessor,
 ):
     """
     L5 Implementation - L1 Cognitive Planning Layer
@@ -73,13 +73,13 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(
     """
 
     def __init__(
-        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None
+        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None,
     ):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(
-        self, input_data: dict[str, object]
+        self, input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")
@@ -181,7 +181,7 @@ class OrchestrateObservabilityPlanningOrchestratorFactory:
     ) -> OrchestrateObservabilityPlanningOrchestratorInterface:
         """Create configured engine"""
         constraints = OrchestrateObservabilityPlanningOrchestratorConstraints(
-            safety_level=safety_level
+            safety_level=safety_level,
         )
         engine = OrchestrateObservabilityPlanningOrchestratorImpl(constraints)
         return OrchestrateObservabilityPlanningOrchestratorInterface(engine)

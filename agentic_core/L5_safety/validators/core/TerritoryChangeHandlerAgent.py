@@ -22,7 +22,6 @@ except ImportError:
     FileSystemEventHandler = object
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 
 
 # Mock/Placeholder for internal timeout decorator if not available
@@ -64,7 +63,7 @@ class TerritoryChangeHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent, Fil
                 self.last_trigger = current_time
                 if self.daemon and hasattr(self.daemon, "loop"):
                     self.daemon.loop.call_soon_threadsafe(
-                        lambda: asyncio.create_task(self.daemon.trigger_reindex())
+                        lambda: asyncio.create_task(self.daemon.trigger_reindex()),
                     )
 
     @timeout(300)
@@ -129,7 +128,7 @@ class AutonomousRagDaemon:
                         "query": query,
                         "faithfulness": faithfulness,
                         "timestamp": time.time(),
-                    }
+                    },
                 )
 
                 if faithfulness < 0.75:

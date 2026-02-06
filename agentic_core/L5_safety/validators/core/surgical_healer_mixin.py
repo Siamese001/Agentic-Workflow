@@ -47,7 +47,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
                     # Insert docstring after function signature
                     if not ast.get_docstring(node):
                         docstring = ast.Expr(
-                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring")
+                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring"),
                         )
                         node.body.insert(0, docstring)
                         self.modifications_made += 1
@@ -63,7 +63,7 @@ class SurgicalASTTransformer(ast.NodeTransformer):
                     # Insert docstring after class signature
                     if not ast.get_docstring(node):
                         docstring = ast.Expr(
-                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring")
+                            value=ast.Constant(value=violation.expected_pattern or "TODO: Add docstring"),
                         )
                         node.body.insert(0, docstring)
                         self.modifications_made += 1
@@ -135,7 +135,7 @@ class SurgicalHealerMixin:
                             "type": "surgical_fix",
                             "file": str(context.file_path),
                             "modifications": transformer.modifications_made,
-                        }
+                        },
                     ],
                 }
             else:
@@ -174,7 +174,7 @@ class SurgicalHealerMixin:
                 from .surgical_context_types import SurgicalContextBuilder
 
                 builder = SurgicalContextBuilder(
-                    Path(violation["file_path"]), self.__class__.__name__, "heal"
+                    Path(violation["file_path"]), self.__class__.__name__, "heal",
                 )
 
                 # Extract violations from legacy format

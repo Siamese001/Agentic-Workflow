@@ -121,7 +121,7 @@ class EpisodicMemory:
                     "summary": episode_obj.summary,
                     "type": episode_obj.mission_type,
                     "outcome": episode_obj.outcome,
-                }
+                },
             )
 
         # Check capacity and evict if needed

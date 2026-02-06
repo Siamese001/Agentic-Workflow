@@ -70,7 +70,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         return self._apply_modifications_if_needed(original_node, updated_node, "ClassDef")
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Handle FunctionDef nodes."""
         return self._apply_modifications_if_needed(original_node, updated_node, "FunctionDef")
@@ -84,13 +84,13 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         return self._apply_modifications_if_needed(original_node, updated_node, "ImportFrom")
 
     def leave_SimpleStatementLine(
-        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine
+        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine,
     ) -> cst.SimpleStatementLine:
         """Handle SimpleStatementLine nodes (for bare except, etc.)."""
         return self._apply_modifications_if_needed(original_node, updated_node, "SimpleStatementLine")
 
     def _apply_modifications_if_needed(
-        self, original_node: cst.CSTNode, updated_node: cst.CSTNode, node_type: str
+        self, original_node: cst.CSTNode, updated_node: cst.CSTNode, node_type: str,
     ) -> cst.CSTNode:
         """Apply modifications if this node matches any violation."""
         if not hasattr(original_node, "position") or not original_node.position:
@@ -125,7 +125,7 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         if isinstance(node, cst.ClassDef) or isinstance(node, cst.FunctionDef):
             # Insert docstring as first statement in body
             docstring = cst.SimpleStatementLine(
-                body=[cst.Expr(value=cst.SimpleString(value=f'"{modification.new_content}"'))]
+                body=[cst.Expr(value=cst.SimpleString(value=f'"{modification.new_content}"'))],
             )
 
             new_body = [docstring] + list(node.body.body)
@@ -154,8 +154,8 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
             if "bare_except" in modification.node_type:
                 except_handler = cst.ExceptHandler(
                     body=cst.IndentBlock(
-                        body=[cst.SimpleStatementLine(body=[cst.Expr(value=cst.Name(value="pass"))])]
-                    )
+                        body=[cst.SimpleStatementLine(body=[cst.Expr(value=cst.Name(value="pass"))])],
+                    ),
                 )
                 return cst.SimpleStatementLine(body=[except_handler])
 
@@ -189,7 +189,7 @@ class SurgicalCSTHealerMixin:
                     target_node = self._extract_target_node(violation)
 
                     if target_node and not self.gate.verify_action(
-                        context.file_path, action_type, target_node
+                        context.file_path, action_type, target_node,
                     ):
                         return {
                             "status": "skipped",
@@ -204,7 +204,7 @@ class SurgicalCSTHealerMixin:
                                     "action_type": action_type,
                                     "target_node": target_node,
                                     "reason": "Target not found in AST",
-                                }
+                                },
                             ],
                         }
 
@@ -277,7 +277,7 @@ class SurgicalCSTHealerMixin:
                             "type": "cst_modification",
                             "modifications_made": total_modifications,
                             "preserved_formatting": True,
-                        }
+                        },
                     ],
                 }
             else:
@@ -303,7 +303,7 @@ class SurgicalCSTHealerMixin:
                     {
                         "type": "error",
                         "error": str(e),
-                    }
+                    },
                 ],
             }
 

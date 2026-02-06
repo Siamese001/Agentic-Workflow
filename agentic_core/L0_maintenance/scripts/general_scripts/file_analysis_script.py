@@ -56,7 +56,7 @@ def analyze_class(node: ast.ClassDef) -> dict[str, Any]:
                     "params": params,
                     "is_async": isinstance(item, ast.AsyncFunctionDef),
                     "docstring": extract_docstring(item)[:100] if extract_docstring(item) else "",
-                }
+                },
             )
 
     # Detect class type
@@ -184,7 +184,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
             if module.startswith(("agentic_core", "apps_")):
                 analysis.internal_deps.append(module)
             elif not module.startswith(
-                ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum")
+                ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum"),
             ):
                 analysis.external_deps.append(module)
 
@@ -262,7 +262,7 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: list[str]) ->
                         "func_overlap": list(func_overlap),
                         "method_overlap": list(method_overlap)[:5],
                         "similarity_score": similarity_score,
-                    }
+                    },
                 )
 
     return sorted(similar, key=lambda x: -x["similarity_score"])[:5]
@@ -339,7 +339,7 @@ def main():
             for s in similar[:3]:
                 print(f"    - {s['file']}")
                 print(
-                    f"      Score: {s['similarity_score']}, Classes: {s['class_overlap']}, Funcs: {s['func_overlap'][:3]}"
+                    f"      Score: {s['similarity_score']}, Classes: {s['class_overlap']}, Funcs: {s['func_overlap'][:3]}",
                 )
         else:
             print("\n  NO SIMILAR FILES FOUND - UNIQUE FUNCTIONALITY")

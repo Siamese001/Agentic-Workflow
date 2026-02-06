@@ -36,7 +36,7 @@ VERB_PATTERN = re.compile(
     r"Test|Signal|Semantic|Sandbox|Runtime|Restore|Refine|Query|P[0-9]|Orchestrate|"
     r"observability|Metacognition|Load|Legacy|Instructional|Infrastructure|"
     r"Hardened|Golden|Functional|Fix|Fetch|Execute|Event|Etl|Check|Brand|Batch|"
-    r"Atomic|Archive|Analyze)(?=[A-Z0-9])"
+    r"Atomic|Archive|Analyze)(?=[A-Z0-9])",
 )
 
 # Expanded Protection: partial matches allowed

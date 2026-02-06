@@ -225,7 +225,7 @@ class ContextManagementMixin:
 
         Logger.debug(
             f"[CONTEXT] Added {token_count} tokens (priority={priority.name}). "
-            f"Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}"
+            f"Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}",
         )
 
         return item
@@ -317,7 +317,7 @@ class ContextManagementMixin:
         if tokens_freed > 0:
             Logger.info(
                 f"[CONTEXT] Pruned {tokens_freed} tokens (priority={priority.name}). "
-                f"Remaining: {self._total_context_tokens}"
+                f"Remaining: {self._total_context_tokens}",
             )
 
         return tokens_freed
@@ -356,7 +356,7 @@ class ContextManagementMixin:
         self._last_summarization_time = time.time()
 
         Logger.info(
-            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens"
+            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens",
         )
 
     def _create_summary(self, content: str) -> str:

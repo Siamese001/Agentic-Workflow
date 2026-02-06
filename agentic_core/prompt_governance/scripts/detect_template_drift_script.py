@@ -64,7 +64,7 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
                         "registry_hash": prompt_data.get("content_hash", "N/A"),
                         "disk_hash": "MISSING",
                         "status": "DRIFT",
-                    }
+                    },
                 )
                 continue
 
@@ -81,7 +81,7 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
                         "registry_hash": "MISSING",
                         "disk_hash": disk_hash,
                         "status": "DRIFT",
-                    }
+                    },
                 )
                 continue
 
@@ -95,7 +95,7 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
                         "registry_hash": registry_hash,
                         "disk_hash": disk_hash,
                         "status": "DRIFT",
-                    }
+                    },
                 )
             else:
                 synchronized.append(
@@ -105,7 +105,7 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
                         "registry_hash": registry_hash,
                         "disk_hash": disk_hash,
                         "status": "SYNCHRONIZED",
-                    }
+                    },
                 )
 
     return synchronized, drifted

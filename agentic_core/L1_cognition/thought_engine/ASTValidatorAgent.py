@@ -21,7 +21,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -42,7 +41,7 @@ class ASTValidatorBase(ast.NodeVisitor):
                 "line": getattr(node, "lineno", 0),
                 "col": getattr(node, "col_offset", 0),
                 "file": self._current_file,
-            }
+            },
         )
 
     def visit_If(self, node: ast.If) -> Any:
@@ -80,7 +79,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
 
     # configuration constants
     DANGEROUS_BUILTINS: set[str] = field(
-        default_factory=lambda: {"compile", "__import__", "globals", "locals", "vars"}
+        default_factory=lambda: {"compile", "__import__", "globals", "locals", "vars"},
     )
     FORBIDDEN_CALLS: set[str] = field(default_factory=lambda: {"eval", "exec"})
 
@@ -274,7 +273,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_bare_except_detection", "status": "failed", "error": str(e)}
+                {"name": "test_bare_except_detection", "status": "failed", "error": str(e)},
             )
 
         # Test 3: Empty except detection
@@ -288,7 +287,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_empty_except_detection", "status": "failed", "error": str(e)}
+                {"name": "test_empty_except_detection", "status": "failed", "error": str(e)},
             )
 
         # Test 4: eval/exec detection
@@ -314,7 +313,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
         except AssertionError as e:
             results["failed"] += 1
             results["tests"].append(
-                {"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)}
+                {"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)},
             )
 
         # Test 6: Debugger detection

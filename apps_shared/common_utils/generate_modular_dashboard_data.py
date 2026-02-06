@@ -377,7 +377,7 @@ def generate_agent_data(agents, territories):
                     "mcp_summary": f"Shield: {'✓' if mcp_hardened else '✗'} | @hardened: {'✓' if hardened_pct > 40 else '✗'} | Safe: {'✓' if hardened_pct > 20 else '✗'}",
                     # Typing summary
                     "typing_summary": f"Init: {'✓' if typed_pct > 70 else '✗'} | Methods: {int(typed_pct)}% | Returns: {'✓' if typed_pct > 50 else '✗'}",
-                }
+                },
             )
 
         # Store territory data with both agent objects AND metric arrays
@@ -406,7 +406,7 @@ def generate_agent_data(agents, territories):
         f.write(" * Per-Agent Distribution Data\n")
         f.write(" * Loaded as global variable for file:// protocol compatibility\n")
         f.write(
-            " * Structure matches monolithic globalAgentData for full tooltip/drill-down support\n"
+            " * Structure matches monolithic globalAgentData for full tooltip/drill-down support\n",
         )
         f.write(" */\n")
         f.write("window.realAgentData = ")

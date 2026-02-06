@@ -70,7 +70,7 @@ class SovereignImportSurgeon:
                         match.group(2)
                         suggested: Any = self._convert_relative_to_absolute(import_stmt, file_path)
                         violations.append(
-                            ImportViolation(str(file_path), line_num, line, "COMMENTED_IMPORT", suggested)
+                            ImportViolation(str(file_path), line_num, line, "COMMENTED_IMPORT", suggested),
                         )
                 if "apps_shared" in str(file_path) and "P1_core" in str(file_path):
                     if not line.strip().startswith("#") and self.relative_import_pattern.search(line):
@@ -83,15 +83,15 @@ class SovereignImportSurgeon:
                                     line,
                                     "RELATIVE_TO_ABSOLUTE",
                                     suggested,
-                                )
+                                ),
                             )
                 if not line.strip().startswith("#") and self.apps_shared_pattern.search(line):
                     suggested: Any = line.replace(
-                        "from apps_shared import", "from apps_shared.P1_core import"
+                        "from apps_shared import", "from apps_shared.P1_core import",
                     )
                     if suggested != line:
                         violations.append(
-                            ImportViolation(str(file_path), line_num, line, "APP_STAGING", suggested.strip())
+                            ImportViolation(str(file_path), line_num, line, "APP_STAGING", suggested.strip()),
                         )
         except Exception as e:
             print(f"⚠️  Error scanning {file_path}: {e}")

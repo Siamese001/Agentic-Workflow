@@ -211,7 +211,7 @@ def refactor_repository(dry_run: bool = False) -> dict[str, int]:
     print("=" * 80)
     print(f"\n📂 Project: {PROJECT_ROOT}")
     print(
-        f"🔄 Mode: {'DRY RUN - No files will be modified' if dry_run else 'LIVE - Files will be modified'}\n"
+        f"🔄 Mode: {'DRY RUN - No files will be modified' if dry_run else 'LIVE - Files will be modified'}\n",
     )
 
     stats = {

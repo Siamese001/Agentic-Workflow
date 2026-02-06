@@ -210,7 +210,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                             message=f"Class '{class_name}' must end with 'Agent' suffix",
                             suggested_fix=f"class {class_name}Agent",
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
         return violations
@@ -230,7 +230,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                             enforcement_type=EnforcementType.PATTERN,
                             severity=ViolationSeverity.WARNING,
                             message=f"Forbidden pattern '{pattern_name}' detected",
-                        )
+                        ),
                     )
 
         return violations
@@ -255,7 +255,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                             enforcement_type=EnforcementType.TYPE_HINTS,
                             severity=ViolationSeverity.INFO,
                             message=f"Function '{node.name}' missing return type hint",
-                        )
+                        ),
                     )
 
         return violations
@@ -286,7 +286,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                             enforcement_type=EnforcementType.SOVEREIGNTY,
                             severity=ViolationSeverity.CRITICAL,
                             message=f"Sovereignty violation: {file_layer} importing from {import_layer}",
-                        )
+                        ),
                     )
 
         return violations
@@ -403,7 +403,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
 
                 try:
                     self._ssot_registry = json.loads(
-                        self._agent_config.ssot_registry_path.read_text(encoding="utf-8")
+                        self._agent_config.ssot_registry_path.read_text(encoding="utf-8"),
                     )
                     Logger.info(f"SSOT registry synced: {len(self._ssot_registry.get('agents', []))} agents")
                 except Exception as e:

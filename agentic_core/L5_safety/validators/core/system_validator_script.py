@@ -253,7 +253,7 @@ class SystemValidator:
                 f"  {layer}: {stats['total']} agents | "
                 f"Testing: {stats['testing']} | "
                 f"Healing: {stats['healing']} | "
-                f"MCP: {stats['mcp']}"
+                f"MCP: {stats['mcp']}",
             )
         Logger.info("")
 

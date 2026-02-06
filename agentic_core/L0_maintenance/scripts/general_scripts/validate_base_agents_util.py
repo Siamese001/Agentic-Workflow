@@ -161,7 +161,7 @@ def suggest_fixes() -> list[str]:
                 for agent in agents:
                     if agent["class_name"] != canonical:
                         fixes.append(
-                            f"Deprecate {agent['class_name']} at {agent['path']} (duplicate of canonical {canonical})"
+                            f"Deprecate {agent['class_name']} at {agent['path']} (duplicate of canonical {canonical})",
                         )
             else:
                 # No canonical found - rename first, deprecate rest

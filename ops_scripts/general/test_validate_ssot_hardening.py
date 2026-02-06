@@ -45,7 +45,7 @@ def validate_safe_dictionary_access():
     normal_report = {"layer_violations": ["v1", "v2"], "naming_violations": ["n1"]}
 
     count = len(normal_report.get("layer_violations", [])) + len(
-        normal_report.get("naming_violations", [])
+        normal_report.get("naming_violations", []),
     )
     logger.info(f"✅ Normal Report Count: {count}")
 
@@ -56,14 +56,14 @@ def validate_safe_dictionary_access():
     }
 
     count = len(evolved_report.get("layer_violations", [])) + len(
-        evolved_report.get("naming_violations", [])
+        evolved_report.get("naming_violations", []),
     )
     logger.info(f"✅ Evolved Schema Count: {count}")
 
     # Test 3: Empty report
     empty_report = {}
     count = len(empty_report.get("layer_violations", [])) + len(
-        empty_report.get("naming_violations", [])
+        empty_report.get("naming_violations", []),
     )
     logger.info(f"✅ Empty Report Count: {count}")
 
@@ -89,7 +89,7 @@ def validate_healing_illusion_protection():
     success_report = {"layer_violations": [], "naming_violations": []}
 
     post_count = len(success_report.get("layer_violations", [])) + len(
-        success_report.get("naming_violations", [])
+        success_report.get("naming_violations", []),
     )
     healing_worked = post_count == 0
     logger.info(f"✅ Successful Healing Detection: {healing_worked}")
@@ -98,7 +98,7 @@ def validate_healing_illusion_protection():
     illusion_report = {"layer_violations": ["persistent_violation"], "naming_violations": []}
 
     post_count = len(illusion_report.get("layer_violations", [])) + len(
-        illusion_report.get("naming_violations", [])
+        illusion_report.get("naming_violations", []),
     )
     illusion_detected = post_count > 0
     logger.info(f"✅ Healing Illusion Detection: {illusion_detected}")

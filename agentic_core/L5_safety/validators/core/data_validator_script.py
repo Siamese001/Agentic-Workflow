@@ -108,7 +108,7 @@ class DataValidator:
                     self.warnings.append(f"{layer}: Found {agents[0]['class_name']}, expected {canonical}")
             else:
                 self.errors.append(
-                    f"{layer}: Multiple base agents ({len(agents)}) - {[a['class_name'] for a in agents]}"
+                    f"{layer}: Multiple base agents ({len(agents)}) - {[a['class_name'] for a in agents]}",
                 )
                 issues_found = True
 

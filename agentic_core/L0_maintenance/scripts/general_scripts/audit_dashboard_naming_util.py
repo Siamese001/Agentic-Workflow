@@ -245,7 +245,7 @@ def generate_fix_report(data_findings, mismatches, mappings):
                 "file": "data/dashboard_data.js",
                 "issue": "Variable uses const instead of window",
                 "fix": 'Change "const dashboardData" to "window.dashboardData"',
-            }
+            },
         )
 
     # Renderer column fixes
@@ -255,7 +255,7 @@ def generate_fix_report(data_findings, mismatches, mappings):
                 "file": f"js/renderers/{file}",
                 "issue": f'Column reference "{col}" not in schema',
                 "fix": "Update to correct column name from schema",
-            }
+            },
         )
 
     # Mapping fixes
@@ -266,7 +266,7 @@ def generate_fix_report(data_findings, mismatches, mappings):
                     "file": "js/main.js",
                     "issue": f"Missing polyfill mapping: {mapping}",
                     "fix": "Add mapping in checkDependencies()",
-                }
+                },
             )
 
     if fixes_needed:

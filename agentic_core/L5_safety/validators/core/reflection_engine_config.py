@@ -146,7 +146,7 @@ class ReflectionEngine:
 
         # Initialize circuit breaker for LLM calls
         self.circuit_breaker = get_breaker(
-            "reflection_engine", failure_threshold=3, reset_after_s=60, half_open_max_calls=3
+            "reflection_engine", failure_threshold=3, reset_after_s=60, half_open_max_calls=3,
         )
 
         Logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
@@ -249,7 +249,7 @@ class ReflectionEngine:
         return True
 
     async def _fast_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None
+        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using fast regex/built-in validators."""
         results = []
@@ -290,12 +290,12 @@ class ReflectionEngine:
         )
 
     async def _llm_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None
+        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using LLM for semantic validation."""
         # Build prompt
         criteria_text = "\n".join(
-            [f"- {c.name}: {c.description}{' (Required)' if c.is_required else ''}" for c in criteria]
+            [f"- {c.name}: {c.description}{' (Required)' if c.is_required else ''}" for c in criteria],
         )
 
         context_text = f"\nContext: {json.dumps(context, indent=2)}" if context else ""
@@ -365,7 +365,7 @@ Respond in JSON format:
                     "confidence": 0.9,
                     "reasoning": "Output is valid JSON format",
                     "suggested_fix": None,
-                }
+                },
             )
         elif "required" in prompt.lower():
             return json.dumps(
@@ -374,7 +374,7 @@ Respond in JSON format:
                     "confidence": 0.3,
                     "reasoning": "Missing required fields",
                     "suggested_fix": "Add all required fields to the output",
-                }
+                },
             )
         else:
             return json.dumps(
@@ -383,7 +383,7 @@ Respond in JSON format:
                     "confidence": 0.8,
                     "reasoning": "Output meets general quality standards",
                     "suggested_fix": None,
-                }
+                },
             )
 
     def _validate_regex(self, content: Any, pattern: str) -> bool:

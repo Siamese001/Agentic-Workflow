@@ -235,7 +235,7 @@ def run_deep_audit():
         # Check Total
         if actual.get("Total", 0) != expected["Total"]:
             issues.append(
-                f"Total: Dashboard={actual.get('Total', 'MISSING')} vs Expected={expected['Total']}"
+                f"Total: Dashboard={actual.get('Total', 'MISSING')} vs Expected={expected['Total']}",
             )
 
         # Check percentages match counts
@@ -243,43 +243,43 @@ def run_deep_audit():
             # Heal Cap %
             if abs(actual.get("Heal Cap %", 0) - expected["Heal Cap %"]) > 1:
                 issues.append(
-                    f"Heal Cap %: Dashboard={actual.get('Heal Cap %', 0)}% but {expected['Heal Cap Count']}/{expected['Total']} = {expected['Heal Cap %']}%"
+                    f"Heal Cap %: Dashboard={actual.get('Heal Cap %', 0)}% but {expected['Heal Cap Count']}/{expected['Total']} = {expected['Heal Cap %']}%",
                 )
 
             # Hardened %
             if abs(actual.get("Hardened %", 0) - expected["Hardened %"]) > 1:
                 issues.append(
-                    f"Hardened %: Dashboard={actual.get('Hardened %', 0)}% but {expected['Hardened Count']}/{expected['Total']} = {expected['Hardened %']}%"
+                    f"Hardened %: Dashboard={actual.get('Hardened %', 0)}% but {expected['Hardened Count']}/{expected['Total']} = {expected['Hardened %']}%",
                 )
 
             # MCP Capable %
             if abs(actual.get("MCP Capable %", 0) - expected["MCP Capable %"]) > 1:
                 issues.append(
-                    f"MCP Capable %: Dashboard={actual.get('MCP Capable %', 0)}% but {expected['MCP Capable Count']}/{expected['Total']} = {expected['MCP Capable %']}%"
+                    f"MCP Capable %: Dashboard={actual.get('MCP Capable %', 0)}% but {expected['MCP Capable Count']}/{expected['Total']} = {expected['MCP Capable %']}%",
                 )
 
             # Test %
             if abs(actual.get("Test %", 0) - expected["Test %"]) > 1:
                 issues.append(
-                    f"Test %: Dashboard={actual.get('Test %', 0)}% but {expected['Test Count']}/{expected['Total']} = {expected['Test %']}%"
+                    f"Test %: Dashboard={actual.get('Test %', 0)}% but {expected['Test Count']}/{expected['Total']} = {expected['Test %']}%",
                 )
 
             # Observable %
             if abs(actual.get("Observable %", 0) - expected["Observable %"]) > 1:
                 issues.append(
-                    f"Observable %: Dashboard={actual.get('Observable %', 0)}% but {expected['Observable Count']}/{expected['Total']} = {expected['Observable %']}%"
+                    f"Observable %: Dashboard={actual.get('Observable %', 0)}% but {expected['Observable Count']}/{expected['Total']} = {expected['Observable %']}%",
                 )
 
             # Typed %
             if abs(actual.get("Typed %", 0) - expected["Typed %"]) > 1:
                 issues.append(
-                    f"Typed %: Dashboard={actual.get('Typed %', 0)}% but {expected['Typed Count']}/{expected['Total']} = {expected['Typed %']}%"
+                    f"Typed %: Dashboard={actual.get('Typed %', 0)}% but {expected['Typed Count']}/{expected['Total']} = {expected['Typed %']}%",
                 )
 
             # Documented %
             if abs(actual.get("Documented %", 0) - expected["Documented %"]) > 1:
                 issues.append(
-                    f"Documented %: Dashboard={actual.get('Documented %', 0)}% but {expected['Documented Count']}/{expected['Total']} = {expected['Documented %']}%"
+                    f"Documented %: Dashboard={actual.get('Documented %', 0)}% but {expected['Documented Count']}/{expected['Total']} = {expected['Documented %']}%",
                 )
 
         # Print territory results
@@ -313,7 +313,7 @@ def run_deep_audit():
     print("\nHardened Analysis:")
     print(f"  - is_hardened=True: {l2_hardened_count}")
     print(
-        f"  - Expected Hardened %: {round(l2_hardened_count / len(l2_agents) * 100, 1) if l2_agents else 0}%"
+        f"  - Expected Hardened %: {round(l2_hardened_count / len(l2_agents) * 100, 1) if l2_agents else 0}%",
     )
 
     # Show L2 dashboard data
@@ -327,7 +327,7 @@ def run_deep_audit():
     print("\nSample L2 agents (first 10):")
     for agent in l2_agents[:10]:
         print(
-            f"  - {agent['class_name']}: has_mcp={agent.get('has_mcp')}, is_hardened={agent.get('is_hardened')}, has_heal={agent.get('has_heal')}"
+            f"  - {agent['class_name']}: has_mcp={agent.get('has_mcp')}, is_hardened={agent.get('is_hardened')}, has_heal={agent.get('has_heal')}",
         )
 
     # Summary

@@ -138,11 +138,11 @@ class ExecutionOrchestrator:
             self.current_trace.validation_failures.extend(failed_results)
 
     def add_artifact(
-        self, artifact_type: str, content: str, metadata: dict[str, Any] | None = None
+        self, artifact_type: str, content: str, metadata: dict[str, Any] | None = None,
     ) -> None:
         """Add generated artifact to execution trace"""
         artifact = ExecutionArtifact(
-            artifact_type=artifact_type, content=content, metadata=metadata or {}
+            artifact_type=artifact_type, content=content, metadata=metadata or {},
         )
 
         self.artifacts.append(artifact)
@@ -260,7 +260,7 @@ class ExecutionOrchestrator:
 
 
 def create_execution_orchestrator(
-    output_dir: Path | None = None, silent_mode: bool = True
+    output_dir: Path | None = None, silent_mode: bool = True,
 ) -> ExecutionOrchestrator:
     """Factory function to create ExecutionOrchestrator instance"""
     return ExecutionOrchestrator(output_dir=output_dir, silent_mode=silent_mode)

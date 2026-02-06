@@ -86,7 +86,7 @@ def main() -> Any:
     """Brief description of functionality and purpose."""
     parser: Any = argparse.ArgumentParser(description="Move files to sovereign silos")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be moved without actually moving"
+        "--dry-run", action="store_true", help="Show what would be moved without actually moving",
     )
     args: Any = parser.parse_args()
     if args.dry_run:

@@ -267,7 +267,7 @@ class JudgeEvaluator:
                     "EXPECTED OUTPUT:",
                     expected,
                     "",
-                ]
+                ],
             )
 
         if context:
@@ -278,7 +278,7 @@ class JudgeEvaluator:
                         "TASK:",
                         task,
                         "",
-                    ]
+                    ],
                 )
 
         prompt_parts.extend(
@@ -295,7 +295,7 @@ class JudgeEvaluator:
                 "REASONING: <explanation>",
                 "EVIDENCE: <bullet points>",
                 "SUGGESTIONS: <bullet points>",
-            ]
+            ],
         )
 
         return "\n".join(prompt_parts)
@@ -321,7 +321,7 @@ class JudgeEvaluator:
         for line in lines:
             line = line.strip()
             score_value, reasoning, current_section = self._parse_line(
-                line, score_value, reasoning, current_section, evidence, suggestions
+                line, score_value, reasoning, current_section, evidence, suggestions,
             )
 
         return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
@@ -359,7 +359,7 @@ class JudgeEvaluator:
             return default
 
     def _parse_list_item(
-        self, line: str, section: str | None, evidence: list[str], suggestions: list[str]
+        self, line: str, section: str | None, evidence: list[str], suggestions: list[str],
     ) -> None:
         """Parse list item into appropriate list."""
         item = line.lstrip("-•").strip()

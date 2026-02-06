@@ -45,7 +45,7 @@ MOCK_RESUME = {
                 "Responsible for maintaining legacy codebases.",  # Trap: Weak Verb
                 "Managed a budget of $500k and reduced costs by 20%.",  # Trap: Metric Extraction
             ],
-        }
+        },
     ],
     "education": [{"degree": "BS CS", "school": "State U"}],
     "skills": ["Python", "Java", "SQL"],
@@ -112,7 +112,7 @@ async def main():
         # 5. Telemetry Audit
         summary = ctx.trace.get_summary()
         Logger.info(
-            f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}"
+            f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}",
         )
 
     except Exception as e:

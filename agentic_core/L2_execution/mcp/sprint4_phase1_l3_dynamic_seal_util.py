@@ -22,7 +22,7 @@ REPO = Path(__file__).parent.parent
 TARGET_FILES = {
     "L3OrchestrationBaseAgent.py": {
         "static_imports": [
-            "from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent"
+            "from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent",
         ],
         "already_dynamic": True,  # Already uses dynamic import in method
     },
@@ -101,7 +101,7 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
 
         # Remove static imports
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent"
+            content, "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
         )
         content = remove_static_import(
             content,
@@ -144,7 +144,7 @@ def refactor_mission_controller(file_path: Path) -> bool:
             "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine",
         )
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail"
+            content, "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail",
         )
 
         if content != original:
@@ -165,10 +165,10 @@ def refactor_mcp_router(file_path: Path) -> bool:
 
         # Remove static imports
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
+            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
         )
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield"
+            content, "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield",
         )
 
         # Add lazy loader helper at class level if mcp_authority is used
@@ -192,7 +192,7 @@ def refactor_mcp_marketplace(file_path: Path) -> bool:
 
         # Remove static import
         content = remove_static_import(
-            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority"
+            content, "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
         )
 
         if content != original:

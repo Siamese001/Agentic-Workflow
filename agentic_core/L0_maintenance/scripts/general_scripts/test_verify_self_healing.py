@@ -24,7 +24,7 @@ def test_checksum_immutability():
             return True
         else:
             print(
-                f"❌ Checksum mismatch: expected {SEALED_CHECKSUM[:16]}..., got {calculated_checksum[:16]}..."
+                f"❌ Checksum mismatch: expected {SEALED_CHECKSUM[:16]}..., got {calculated_checksum[:16]}...",
             )
             return False
     else:

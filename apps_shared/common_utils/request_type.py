@@ -144,7 +144,7 @@ class ObservabilityLoadPlanner:
             ObservabilityLoadResult: Complete planning result with load plan
         """
         self.logger.info(
-            f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}"
+            f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}",
         )
 
         try:
@@ -170,7 +170,7 @@ class ObservabilityLoadPlanner:
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, request_type, data_source, metrics, log_queries, trace_queries
+                load_request, request_type, data_source, metrics, log_queries, trace_queries,
             )
 
             # Estimate data points
@@ -203,7 +203,7 @@ class ObservabilityLoadPlanner:
 
             self.logger.info(
                 f"Successfully planned observability load: "
-                f"{query_count} queries, ~{estimated_data_points} data points"
+                f"{query_count} queries, ~{estimated_data_points} data points",
             )
             return result
 
@@ -275,7 +275,7 @@ class ObservabilityLoadPlanner:
                         "percentile": AggregationType.PERCENTILE,
                     }
                     aggregation = agg_mapping.get(
-                        raw_metric.get("aggregation"), AggregationType.AVG
+                        raw_metric.get("aggregation"), AggregationType.AVG,
                     )
 
                 metric = MetricDefinition(
@@ -292,7 +292,7 @@ class ObservabilityLoadPlanner:
         if len(metrics) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of metrics ({len(metrics)}) exceeds maximum "
-                f"({self.config.max_queries_per_plan})"
+                f"({self.config.max_queries_per_plan})",
             )
 
         return metrics
@@ -319,7 +319,7 @@ class ObservabilityLoadPlanner:
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of log queries ({len(queries)}) exceeds maximum "
-                f"({self.config.max_queries_per_plan})"
+                f"({self.config.max_queries_per_plan})",
             )
 
         return queries
@@ -345,7 +345,7 @@ class ObservabilityLoadPlanner:
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
                 f"Number of trace queries ({len(queries)}) exceeds maximum "
-                f"({self.config.max_queries_per_plan})"
+                f"({self.config.max_queries_per_plan})",
             )
 
         return queries

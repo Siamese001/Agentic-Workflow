@@ -56,14 +56,14 @@ def scan_for_stale_imports():
                     # Pattern 1: from ... import Agent
                     if f"from {FORBIDDEN_PATH}" in line and agent in line:
                         print(
-                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Importing '{agent}' from old path"
+                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Importing '{agent}' from old path",
                         )
                         stale_count += 1
 
                     # Pattern 2: import ...Agent
                     elif f"import {FORBIDDEN_PATH}.{agent}" in line:
                         print(
-                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Direct import of '{agent}' from old path"
+                            f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Direct import of '{agent}' from old path",
                         )
                         stale_count += 1
 

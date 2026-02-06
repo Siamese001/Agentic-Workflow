@@ -25,7 +25,7 @@ class StructuralHealingMixin:
     enable_tree_sitter: bool = False  # Set to True if libraries available
 
     def _salvaged_file_relocation(
-        self, source_path: Path, target_path: Path, dry_run: bool = True
+        self, source_path: Path, target_path: Path, dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         SALVAGED: Advanced file relocation.
@@ -140,7 +140,7 @@ class StructuralHealingMixin:
                     "strategy": "split_by_classes",
                     "description": "Split file into separate class files",
                     "priority": "high",
-                }
+                },
             )
 
         # Suggest splitting by functions
@@ -150,7 +150,7 @@ class StructuralHealingMixin:
                     "strategy": "split_by_functions",
                     "description": "Group related functions into modules",
                     "priority": "medium",
-                }
+                },
             )
 
         return suggestions
@@ -191,13 +191,13 @@ class StructuralHealingMixin:
                                 "file": str(py_file.relative_to(self.project_root)),
                                 "issues": structure["issues"],
                                 "complexity": structure["complexity_score"],
-                            }
+                            },
                         )
 
                 except Exception as e:
                     results["errors"] += 1
                     results["details"].append(
-                        {"file": str(py_file.relative_to(self.project_root)), "error": str(e)}
+                        {"file": str(py_file.relative_to(self.project_root)), "error": str(e)},
                     )
 
         except Exception as e:

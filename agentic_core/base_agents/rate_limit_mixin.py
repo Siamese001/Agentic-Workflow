@@ -157,7 +157,7 @@ class RateLimitMixin:
             if self._violation_count[key] >= 5:
                 wait_time *= 1.5 ** (self._violation_count[key] - 4)
                 self._rl_logger.warning(
-                    f"Rate limit short-circuit: {key} - {self._violation_count[key]} violations"
+                    f"Rate limit short-circuit: {key} - {self._violation_count[key]} violations",
                 )
 
             msg = f"Rate limit hit for '{key}'. Allowed: {config['rate']}/{config['per']}s. Wait: {wait_time:.2f}s"

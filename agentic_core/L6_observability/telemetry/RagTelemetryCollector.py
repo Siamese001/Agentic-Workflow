@@ -37,7 +37,7 @@ class RagMetrics:
             "100-200ms": 0,
             "200-500ms": 0,
             "500ms+": 0,
-        }
+        },
     )
 
 
@@ -135,7 +135,7 @@ class RagTelemetryCollector:
 
         if self._faithfulness_samples:
             self.metrics.avg_faithfulness_score = sum(self._faithfulness_samples) / len(
-                self._faithfulness_samples
+                self._faithfulness_samples,
             )
 
     def record_hallucination_warning(self) -> None:

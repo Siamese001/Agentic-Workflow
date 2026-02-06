@@ -155,7 +155,7 @@ def _save_runtime_state(project_root_path: Path):
 def _add_event(event_type: str, message: str):
     """Add timestamped event to runtime state."""
     _runtime_state["events"].append(
-        {"time": datetime.now().isoformat(), "type": event_type, "message": message}
+        {"time": datetime.now().isoformat(), "type": event_type, "message": message},
     )
 
 
@@ -175,7 +175,7 @@ def _update_meta_learning_state(experience_data: dict):
 
     if "pattern" in experience_data:
         ml["pattern_history"].append(
-            {"pattern": experience_data["pattern"], "timestamp": datetime.now().isoformat()}
+            {"pattern": experience_data["pattern"], "timestamp": datetime.now().isoformat()},
         )
 
 
@@ -198,7 +198,7 @@ def _update_redis_state(operation: str, key: str, hit: bool = None):
         redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
 
     redis["recent_operations"].insert(
-        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()}
+        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
     )
     redis["recent_operations"] = redis["recent_operations"][:20]  # Keep last 20
 
@@ -247,7 +247,7 @@ def _update_agent_execution(agent_name: str, layer: str, start_time: float, end_
             "end": end_time,
             "duration": end_time - start_time,
             "success": success,
-        }
+        },
     )
 
 
@@ -329,7 +329,7 @@ def main():
     )
     parser.add_argument("--reset", action="store_true", help="Reset sovereign state before validation")
     parser.add_argument(
-        "--heal", action="store_true", help="Run autonomous domain healing (dry-run by default)"
+        "--heal", action="store_true", help="Run autonomous domain healing (dry-run by default)",
     )
     parser.add_argument("--execute-heal", action="store_true", help="Execute heal changes (use with --heal)")
     parser.add_argument(
@@ -534,7 +534,7 @@ def main():
             if not hasattr(agent, method_name):
                 print(f"   [!] Method '{method_name}' not found on {agent.__class__.__name__}")
                 print(
-                    f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}"
+                    f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}",
                 )
                 sys.exit(1)
 
@@ -661,7 +661,7 @@ def main():
                     import importlib.util
 
                     spec = importlib.util.find_spec(
-                        "agentic_core.L6_observability.agents.PerformanceAnalystAgentSimple"
+                        "agentic_core.L6_observability.agents.PerformanceAnalystAgentSimple",
                     )
                     if spec:
                         perf_module = importlib.util.module_from_spec(spec)
@@ -681,7 +681,7 @@ def main():
             else:
                 print("\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = Orchestrator(
-                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator"
+                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator",
             )
 
             checkpoint_manager = get_checkpoint_manager(project_root)
@@ -724,7 +724,7 @@ def main():
                     "completed_agents": [],
                     "events": [],
                     "execution_timeline": [],
-                }
+                },
             )
             _add_event("info", f"Heal mode started ({mode_str}) - Unified Engine")
             _add_event("meta", f"Meta-learning {'ACTIVE' if gemini_active else 'INACTIVE'}")
@@ -746,7 +746,7 @@ def main():
                         "fixes": agent_result.get("violations_fixed", 0),
                         "violations": agent_result.get("violations_found", 0),
                         "duration_ms": agent_result.get("execution_time_ms", 0),
-                    }
+                    },
                 )
             _save_runtime_state(project_root)
 
@@ -764,7 +764,7 @@ def main():
                     "compliance_score": 100
                     if (total_fixes + total_violations) == 0
                     else int((1 - total_violations / max(total_fixes + total_violations, 1)) * 100),
-                }
+                },
             ]
 
             # Log abort info if mission was aborted
@@ -805,7 +805,7 @@ def report_consolidated_summary(results, gemini_active):
 
     print("\n" + "=" * 60)
     print(
-        f"{Colors.BRIGHT_CYAN if COLORS_AVAILABLE else ''}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{Colors.RESET if COLORS_AVAILABLE else ''}"
+        f"{Colors.BRIGHT_CYAN if COLORS_AVAILABLE else ''}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{Colors.RESET if COLORS_AVAILABLE else ''}",
     )
     print("=" * 60)
 

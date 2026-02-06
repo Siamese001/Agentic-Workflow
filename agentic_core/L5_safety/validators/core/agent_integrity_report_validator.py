@@ -134,7 +134,7 @@ class AgentIntegrityReporter:
                     optimal_state="Registered in agent_discovery_full.json",
                     gap_description="Agent exists in filesystem but not in registry",
                     priority="high",
-                )
+                ),
             )
 
         # Gap items from Phase 1: Orphan agents
@@ -148,7 +148,7 @@ class AgentIntegrityReporter:
                     optimal_state="File exists or removed from registry",
                     gap_description=orphan["reason"],
                     priority="critical",
-                )
+                ),
             )
 
         # Gap items from Phase 2: Missing Soul tier (unit tests)
@@ -163,7 +163,7 @@ class AgentIntegrityReporter:
                         optimal_state="Has dedicated unit test file",
                         gap_description="Agent lacks Soul tier coverage",
                         priority="medium",
-                    )
+                    ),
                 )
 
         # Gap items from Phase 3: Structure violations
@@ -183,7 +183,7 @@ class AgentIntegrityReporter:
                     optimal_state=violation.suggested_fix or "Compliant with SSOT",
                     gap_description=f"{violation.violation_type}: {violation.message}",
                     priority=priority,
-                )
+                ),
             )
 
         return gaps
@@ -260,7 +260,7 @@ class AgentIntegrityReporter:
                     f"| Path Mismatches | {len(reg.path_mismatches)} |",
                     f"| Coverage | {reg.coverage_percentage:.1f}% |",
                     "",
-                ]
+                ],
             )
 
         # Phase 2 Summary
@@ -281,7 +281,7 @@ class AgentIntegrityReporter:
                     f"**Fully Compliant Agents:** {comp.fully_compliant} "
                     f"({comp.overall_compliance_pct:.1f}%)",
                     "",
-                ]
+                ],
             )
 
         # Phase 3 Summary
@@ -301,7 +301,7 @@ class AgentIntegrityReporter:
                     f"| Territory Violations | {len(struct.territory_violations)} |",
                     f"| Compliance | {struct.compliance_percentage:.1f}% |",
                     "",
-                ]
+                ],
             )
 
         # Gap Analysis
@@ -311,7 +311,7 @@ class AgentIntegrityReporter:
                 "",
                 "## Gap Analysis: Current State vs Optimal Target State",
                 "",
-            ]
+            ],
         )
 
         # Group gaps by priority
@@ -326,12 +326,12 @@ class AgentIntegrityReporter:
                     "",
                     "| Agent | Category | Current State | Optimal State |",
                     "|-------|----------|---------------|---------------|",
-                ]
+                ],
             )
             for gap in critical_gaps[:15]:
                 lines.append(
                     f"| {gap.agent_class} | {gap.category} | "
-                    f"{gap.current_state[:40]} | {gap.optimal_state[:40]} |"
+                    f"{gap.current_state[:40]} | {gap.optimal_state[:40]} |",
                 )
             if len(critical_gaps) > 15:
                 lines.append(f"| ... | ({len(critical_gaps) - 15} more) | ... | ... |")
@@ -344,7 +344,7 @@ class AgentIntegrityReporter:
                     "",
                     f"Found {len(high_gaps)} high priority gaps.",
                     "",
-                ]
+                ],
             )
 
         if medium_gaps:
@@ -354,7 +354,7 @@ class AgentIntegrityReporter:
                     "",
                     f"Found {len(medium_gaps)} medium priority gaps (unit test coverage).",
                     "",
-                ]
+                ],
             )
 
         # Validation Script Result
@@ -368,7 +368,7 @@ class AgentIntegrityReporter:
                 f"Registry Coverage: {'100% Pass' if result.registry_coverage_pass else 'FAIL'}",
                 "```",
                 "",
-            ]
+            ],
         )
 
         return "\n".join(lines)

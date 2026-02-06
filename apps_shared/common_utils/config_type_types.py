@@ -142,7 +142,7 @@ class ConfigLoadPlanner:
             ConfigLoadResult: Complete planning result with load plan
         """
         self.logger.info(
-            f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}"
+            f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}",
         )
 
         try:
@@ -162,7 +162,7 @@ class ConfigLoadPlanner:
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, sources, validation_rules, transformations
+                load_request, sources, validation_rules, transformations,
             )
 
             # Estimate config size
@@ -192,7 +192,7 @@ class ConfigLoadPlanner:
 
             self.logger.info(
                 f"Successfully planned config load: "
-                f"{len(sources)} sources, {len(validation_rules)} validations"
+                f"{len(sources)} sources, {len(validation_rules)} validations",
             )
             return result
 
@@ -254,7 +254,7 @@ class ConfigLoadPlanner:
                     id=raw_source.get("id", f"source_{len(sources)}"),
                     name=raw_source.get("name", "unnamed"),
                     config_type=config_type_mapping.get(
-                        raw_source.get("config_type", "environment"), ConfigType.ENVIRONMENT
+                        raw_source.get("config_type", "environment"), ConfigType.ENVIRONMENT,
                     ),
                     format=format_mapping.get(raw_source.get("format", "json"), ConfigFormat.JSON),
                     location=raw_source.get("location", ""),
@@ -269,7 +269,7 @@ class ConfigLoadPlanner:
         if len(sources) > self.config.max_sources_per_plan:
             raise ValueError(
                 f"Number of sources ({len(sources)}) exceeds maximum "
-                f"({self.config.max_sources_per_plan})"
+                f"({self.config.max_sources_per_plan})",
             )
 
         return sources

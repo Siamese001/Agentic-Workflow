@@ -305,7 +305,7 @@ class ReportMigrator:
                     status=entry_data["status"],
                     error=entry_data.get("error"),
                     git_tracked=entry_data.get("git_tracked", False),
-                )
+                ),
             )
 
         return manifest

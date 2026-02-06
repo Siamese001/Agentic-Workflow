@@ -6,7 +6,6 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -99,7 +98,7 @@ QUALITY REQUIREMENTS:
 - Keep import statements at the top of each file""".strip()
 
     def build_healing_prompt(
-        self, Task: str, code: str, file_path: str = "unknown", context: str = ""
+        self, Task: str, code: str, file_path: str = "unknown", context: str = "",
     ) -> dict[str, str]:
         """
         Build a hardened healing prompt with safety guards.

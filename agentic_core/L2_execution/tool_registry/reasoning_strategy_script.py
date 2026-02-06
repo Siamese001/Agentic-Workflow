@@ -210,7 +210,7 @@ class ReasoningStrategyFactory:
 
     @classmethod
     def create(
-        cls, strategy_type: str, max_steps: int = 8, config: dict[str, Any] | None = None
+        cls, strategy_type: str, max_steps: int = 8, config: dict[str, Any] | None = None,
     ) -> ReasoningStrategy:
         """
         Create reasoning strategy instance.
@@ -230,7 +230,7 @@ class ReasoningStrategyFactory:
 
         if not strategy_class:
             raise ValueError(
-                f"Unknown reasoning strategy: {strategy_type}. Available: {', '.join(cls._strategies.keys())}"
+                f"Unknown reasoning strategy: {strategy_type}. Available: {', '.join(cls._strategies.keys())}",
             )
 
         return strategy_class(max_steps=max_steps, config=config)

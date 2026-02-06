@@ -189,7 +189,7 @@ def validate_unified_config(config: dict[str, Any], category: str) -> ConfigLoad
             expected_type = type(defaults[key])
             if not isinstance(value, expected_type):
                 errors.append(
-                    f"Field {key} should be {expected_type.__name__}, got {type(value).__name__}"
+                    f"Field {key} should be {expected_type.__name__}, got {type(value).__name__}",
                 )
 
     return ConfigLoadResult(

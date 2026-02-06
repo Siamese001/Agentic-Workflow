@@ -229,7 +229,7 @@ def regenerate_data_only():
     with open(dashboard_data_file, "w", encoding="utf-8") as f:
         f.write("// Auto-generated dashboard data\n")
         f.write(
-            "// DO NOT EDIT MANUALLY - regenerate with scripts/regenerate_dashboard_util.py --data-only\n\n"
+            "// DO NOT EDIT MANUALLY - regenerate with scripts/regenerate_dashboard_util.py --data-only\n\n",
         )
         f.write("window.dashboardData = ")
         json.dump(rows, f, indent=2)

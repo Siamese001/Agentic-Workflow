@@ -37,7 +37,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
                 "type": pattern_type,
                 "evidence": evidence,
                 "recommendation": recommendation,
-            }
+            },
         )
 
     def _is_docstring(self, node: ast.stmt) -> bool:

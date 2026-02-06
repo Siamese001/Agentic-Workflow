@@ -48,7 +48,7 @@ DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
         ".coverage",
         "htmlcov",
         ".hypothesis",
-    }
+    },
 )
 
 

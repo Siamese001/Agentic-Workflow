@@ -35,7 +35,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.base_agents.UnifiedAgent import (
@@ -298,7 +297,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                         errors=1,
                         status="CRITICAL_IMPORT_FAILURE",
                         message=f"Agent {agent_name} failed pre-flight import validation",
-                    )
+                    ),
                 )
                 total_errors += 1
                 continue
@@ -335,7 +334,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         return mission_result
 
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None
+        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -373,7 +372,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
     def _run_compliance_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -443,7 +442,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             )
 
     def _run_healing_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")
@@ -525,7 +524,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 agent_paths = get_agent_paths(project_root)
                 self._available_agents = [Path(p).stem for p in agent_paths]
                 self.logger.debug(
-                    f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery"
+                    f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery",
                 )
             except Exception as e:
                 self.logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
@@ -598,7 +597,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
                 self.logger.critical(
                     f"[GATE] SECURITY BLOCK: Agent '{agent_name}' "
-                    f"({module_path}) is outside allowed namespaces."
+                    f"({module_path}) is outside allowed namespaces.",
                 )
                 self._import_cache[module_path] = False
                 return False
@@ -614,7 +613,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
             if result.returncode != 0:
                 self.logger.error(
-                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}"
+                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}",
                 )
                 self._import_cache[module_path] = False
                 return False

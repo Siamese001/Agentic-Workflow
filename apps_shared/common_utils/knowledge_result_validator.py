@@ -57,7 +57,7 @@ class L5ConsolidatedKnowledge:
                     "phone": "(555) 123-4567",
                     "linkedin": "linkedin.com/in/johndoe",
                 },
-            }
+            },
         }
 
     def _load_fallback_templates(self) -> dict[str, Any]:
@@ -113,7 +113,7 @@ class L5ConsolidatedKnowledge:
         if types is None:
             types: Any = ["profile", "template"]
         result: Any = KnowledgeResult(
-            user_profile=None, template=None, metadata={"query": query, "types": types}
+            user_profile=None, template=None, metadata={"query": query, "types": types},
         )
         if "profile" in types:
             result.user_profile = self._get_user_profile(query)
@@ -141,7 +141,7 @@ class L5ConsolidatedKnowledge:
         if self.pinecone_client:
             try:
                 templates = self.pinecone_client.query(
-                    vector=self._embed_query(query), top_k=1, include_metadata=True
+                    vector=self._embed_query(query), top_k=1, include_metadata=True,
                 )
                 if templates:
                     Logger.info("Retrieved template from Pinecone")
@@ -205,8 +205,8 @@ class L5ConsolidatedKnowledge:
                             "id": template.get("id", "custom"),
                             "values": embedding,
                             "metadata": template,
-                        }
-                    ]
+                        },
+                    ],
                 )
                 Logger.info("Template added to Pinecone")
                 return True
@@ -238,7 +238,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if brand_score >= 0.7 else "FAIL",
                 "score": brand_score,
                 "reason": "Brand tone and style analysis",
-            }
+            },
         )
         spam_score: Any = self._check_spam_indicators(pitch)
         evaluations.append(
@@ -247,7 +247,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if spam_score <= 0.3 else "FAIL",
                 "score": spam_score,
                 "reason": "Spam and promotional content analysis",
-            }
+            },
         )
         professionalism_score: Any = self._check_professionalism(pitch)
         evaluations.append(
@@ -256,7 +256,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if professionalism_score >= 0.6 else "FAIL",
                 "score": professionalism_score,
                 "reason": "Professional tone and language analysis",
-            }
+            },
         )
         pass_count: Any = sum(1 for e in evaluations if e["status"] == "PASS")
         total_count: Any = len(evaluations)
@@ -269,7 +269,7 @@ class L5ConsolidatedKnowledge:
             "reason": "; ".join(failure_reasons) if failure_reasons else "All checks passed",
         }
         Logger.info(
-            f"P6_CONSENSUS_COMPLETE: Status={consensus_status}, Score={result['consensus_score']}"
+            f"P6_CONSENSUS_COMPLETE: Status={consensus_status}, Score={result['consensus_score']}",
         )
         return result
 
@@ -326,7 +326,7 @@ _consolidated_knowledge = None
 
 
 def get_consolidated_knowledge(
-    memory_client: Any = None, pinecone_client: Any = None
+    memory_client: Any = None, pinecone_client: Any = None,
 ) -> L5ConsolidatedKnowledge:
     """Get singleton instance of consolidated knowledge."""
     global _consolidated_knowledge

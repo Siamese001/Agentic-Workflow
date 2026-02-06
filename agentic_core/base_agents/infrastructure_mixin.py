@@ -32,15 +32,6 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.base_agents.context_management_mixin import context_management_mixin
-from agentic_core.base_agents.cost_guardrail_mixin import cost_guardrail_mixin
-from agentic_core.base_agents.healer_mixin import healer_mixin
-from agentic_core.base_agents.hitl_mixin import hitl_mixin
-from agentic_core.base_agents.performance_mixin import performance_mixin
-from agentic_core.base_agents.pinecone_vector_mixin import pinecone_vector_mixin
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
-from agentic_core.base_agents.tool_reliability_mixin import tool_reliability_mixin
-from agentic_core.base_agents.tracing_mixin import tracing_mixin
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
@@ -129,14 +120,14 @@ class InfrastructureMixin(
         if not getattr(self, "_infra_initialized", False):
             errors.append(
                 f"{self.__class__.__name__}: _infra_initialized is False. "
-                "Did you forget to call super().__init__()?"
+                "Did you forget to call super().__init__()?",
             )
 
         # Check 2: HealerMixin initialization
         if not hasattr(self, "_healer_metrics"):
             errors.append(
                 f"{self.__class__.__name__}: _healer_metrics is missing. "
-                "HealerMixin was not properly initialized."
+                "HealerMixin was not properly initialized.",
             )
 
         # Check 3: MCP initialization (optional - may not be present in all cases)

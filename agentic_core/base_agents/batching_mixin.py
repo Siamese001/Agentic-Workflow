@@ -112,7 +112,7 @@ class BatchingMixin:
             if len(self._batch_queues[queue_name]) >= self._batching_config.max_batch_queue_size:
                 raise ValueError(
                     f"Batch queue '{queue_name}' size limit "
-                    f"({self._batching_config.max_batch_queue_size}) exceeded"
+                    f"({self._batching_config.max_batch_queue_size}) exceeded",
                 )
 
             self._batch_queues[queue_name].append(item)

@@ -57,7 +57,7 @@ def main():
         # Calculate new health score
         new_health = round(
             calculate_health_score(
-                heal_cap=heal_cap, invoc=invoc, test_cov=test_cov, obs=obs, comp_health=comp_health
+                heal_cap=heal_cap, invoc=invoc, test_cov=test_cov, obs=obs, comp_health=comp_health,
             ),
             1,
         )

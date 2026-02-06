@@ -45,7 +45,7 @@ class ConvergenceEngine:
             # Sort violations so Toxic Hubs (highest impact) are healed first
             # Formula: Impact = (100 - Metric) * (1 + ln(FanIn))
             prioritized_violations = sorted(
-                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True
+                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True,
             )
 
             for violation in prioritized_violations:
@@ -53,7 +53,7 @@ class ConvergenceEngine:
                 # If an agent fails to heal over multiple cycles, escalate priority
                 if violation.get("audit_fail_count", 0) > 3:
                     print(
-                        f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor..."
+                        f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...",
                     )
 
                 # Fission-Aware Healing: Snapshot before healing
@@ -72,7 +72,7 @@ class ConvergenceEngine:
                     post_hash = self.get_file_hash(file_path)
                     if self.detect_fission(pre_hash, post_hash, file_size):
                         print(
-                            f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size // 1024}KB) - Terminating mission for this file."
+                            f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size // 1024}KB) - Terminating mission for this file.",
                         )
 
             # Re-validate state

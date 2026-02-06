@@ -53,7 +53,7 @@ class CoverageValidator:
                     "target": self.target_coverage,
                     "impact_score": 50,  # Medium impact
                     "audit_fail_count": 0,
-                }
+                },
             )
 
         return violations

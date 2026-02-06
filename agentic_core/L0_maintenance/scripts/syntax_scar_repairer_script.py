@@ -139,7 +139,7 @@ class SyntaxScarRepairer:
                         "file": file_rel_path,
                         "status": repair_result["status"],
                         "lines_removed": repair_result.get("lines_removed", 0),
-                    }
+                    },
                 )
 
             except Exception as e:

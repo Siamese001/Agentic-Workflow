@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 # ruff: noqa: E501, E402
-
 import os
 import re
 from collections.abc import Mapping, Sequence
@@ -124,7 +123,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                                     "scrub",
                                 ],
                                 "methods": ["sanitize", "scrub", "redact", "block", "heal", "execute"],
-                            }
+                            },
                         },
                         "forbidden_patterns": [
                             "*Agent.py",
@@ -162,7 +161,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
             "runtime": {"purpose": "Runtime environment setup and resource management"},
             "utils": {
-                "purpose": "General utility functions - home for *_util.py files (Zero-Ambiguity Standard)"
+                "purpose": "General utility functions - home for *_util.py files (Zero-Ambiguity Standard)",
             },
             # DEPRECATED: "patterns" territory removed - evacuate to base_agents
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
@@ -577,7 +576,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "purpose": "Categorized assessment and execution reports.",
                 "subfolders": {
                     "assessments": {
-                        "purpose": "Gap analyses, architectural assessments, and strategic reports"
+                        "purpose": "Gap analyses, architectural assessments, and strategic reports",
                     },
                     "coverage": {"purpose": "Test coverage reports and code quality metrics"},
                     "telemetry": {"purpose": "System telemetry, performance metrics, and observability data"},
@@ -656,7 +655,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         ".gravity_state",  # State files at territory root
         ".backup",  # Backup files at territory root
         "knowledge",  # document_loaders at variable depth
-    }
+    },
 )
 # ============================================================================
 # === SSOT: CRITICAL FILE AND DIRECTORY PATHS ===
@@ -843,7 +842,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/prompt_governance/templates",
         "agentic_core/prompt_governance/scripts",
         "agentic_core/prompt_governance/version_registry",
-    }
+    },
 )
 
 # ============================================================================
@@ -1262,7 +1261,7 @@ APP_RG_AST_TERMS: Final[frozenset[str]] = frozenset(
         "summary",
         "achievement",
         "certification",
-    }
+    },
 )
 APP_LIC_AST_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -1279,7 +1278,7 @@ APP_LIC_AST_TERMS: Final[frozenset[str]] = frozenset(
         "scrap",
         "navigate",
         "browser",
-    }
+    },
 )
 APP_RG_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -1298,7 +1297,7 @@ APP_RG_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
         "candidate",
         "position",
         "role",
-    }
+    },
 )
 APP_LIC_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -1314,7 +1313,7 @@ APP_LIC_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
         "contact",
         "person",
         "url",
-    }
+    },
 )
 VARIABLE_HIT_WEIGHT: Final[float] = 0.5
 STRING_HIT_WEIGHT: Final[float] = 0.25
@@ -1333,7 +1332,7 @@ APP_RG_STRING_TERMS: Final[frozenset[str]] = frozenset(
         "outreach",
         "candidate",
         "applicant",
-    }
+    },
 )
 APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -1343,7 +1342,7 @@ APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset(
         "invite",
         "campaign",
         "cadence",
-    }
+    },
 )
 
 # ============================================================================
@@ -1381,19 +1380,19 @@ LAYER_FORBIDDEN_IMPORTS: Final[Mapping[str, frozenset[str]]] = {
 # === STRUCTURED TERRITORY KEYWORDS FOR ALIGNMENT SCORING ===
 CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L1_cognition/thought_engine": {
-        "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"})
+        "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"}),
     },
     "L1_cognition/intent_analysis": {"primary": frozenset({"intent", "goal", "understand", "parse", "user"})},
     "L2_execution/tool_registry": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/workflow_engines": {
-        "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"})
+        "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}),
     },
     "L3_orchestration/fission_logic": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
     "L4_state/validation_context": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
-        "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"})
+        "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"}),
     },
     "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
@@ -1401,7 +1400,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
     "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
     "prompt_governance/L3_templates": {
-        "primary": frozenset({"template", "prompt", "persona", "instructional"})
+        "primary": frozenset({"template", "prompt", "persona", "instructional"}),
     },
     "prompt_governance/L3_security": {"primary": frozenset({"security", "injection", "pii", "compliance"})},
     "prompt_governance/L3_integrity": {"primary": frozenset({"validate", "optimize", "test", "quality"})},
@@ -1471,7 +1470,7 @@ PROJECT_ROOT_MARKERS: frozenset[str] = frozenset(
         "canon_validator_agentic_v2_thin.py",
         "agentic_core",
         ".git",
-    }
+    },
 )
 
 
@@ -1714,7 +1713,7 @@ VALIDATED_FILE_EXTENSIONS: frozenset[str] = frozenset(
         ".css",
         ".js",
         ".ts",
-    }
+    },
 )
 
 # Files exempt from naming validation (infrastructure files)
@@ -1746,7 +1745,7 @@ NAMING_EXEMPT_FILES: frozenset[str] = frozenset(
         ".eslintrc",
         # Git
         ".gitattributes",
-    }
+    },
 )
 
 # Directories exempt from naming validation
@@ -1768,7 +1767,7 @@ NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
         "build",
         ".tox",
         "logs",
-    }
+    },
 )
 FORBIDDEN_PATTERNS: Final[Sequence[Pattern]] = [
     re.compile("^utils\\.py$"),
@@ -1809,7 +1808,7 @@ _STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
         "git.code-workspace",
         "current_test_status.txt",
         "mission_audit.csv",
-    }
+    },
 )
 
 # Dynamic protected files derived from SSOT constants
@@ -1818,7 +1817,7 @@ _DYNAMIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
         AGENT_DISCOVERY_JSON,
         AGENT_DISCOVERY_MANIFEST_JSON,
         RUNTIME_STATE_JSON,
-    }
+    },
 )
 
 # Final combined immutable set - Single Source of Truth for all root-level protection
@@ -1842,7 +1841,7 @@ PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         ".gravity_state",
         ".backup",
         ".vscode",
-    }
+    },
 )
 
 # [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns
@@ -1900,14 +1899,14 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         ".vscode",
         ".DS_Store",
         "Thumbs.db",
-    }
+    },
 )
 FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r"^\d+_")
 FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset(
-    {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"}
+    {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"},
 )
 TESTS_ROOT_FILE_WHITELIST: frozenset[str] = frozenset(
-    {"conftest.py", "pytest.ini", "sovereign_smoke_test.py", "test_autonomous_improvements.py"}
+    {"conftest.py", "pytest.ini", "sovereign_smoke_test.py", "test_autonomous_improvements.py"},
 )
 AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset(
     {
@@ -1915,7 +1914,7 @@ AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset(
         "autonomous_state_guardian.py",
         "self_updating_safety_engine.py",
         "neural_auto_immune_agent.py",
-    }
+    },
 )
 protected_folders: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
 ignore_dirs: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
@@ -1924,7 +1923,7 @@ HEALING_CONFIG: Final[Mapping[str, int]] = {
     "max_rounds": int(os.getenv("MAX_HEALING_ROUNDS", "10")),
     "max_per_file": int(os.getenv("MAX_HEALING_PER_FILE", "8")),
     "global_budget": int(
-        os.getenv("GLOBAL_HEALING_BUDGET", "500")
+        os.getenv("GLOBAL_HEALING_BUDGET", "500"),
     ),  # [TEMP BOOST] Unblock 10k Violation backlog
     "max_moves_per_run": 250,
     "max_shared_upgrades_per_run": 10,  # [CIRCUIT BREAKER] Prevent mass-migration to apps_shared
@@ -1990,7 +1989,7 @@ ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset(
         # Prompt patterns (per-domain prompts)
         "prompts.py",
         "templates.py",
-    }
+    },
 )
 
 
@@ -2053,7 +2052,7 @@ def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
 
 
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset(
-    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"}
+    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"},
 )
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
     {
@@ -2091,7 +2090,7 @@ PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
         "importlib",
         "warnings",
         "pickle",
-    }
+    },
 )
 ROOT_WHITELIST: set[str] = set(SOVEREIGN_TERRITORIES.keys())
 
@@ -2127,7 +2126,7 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
         ".sovereign_healing_backup",
         # Test directories (Production Lens)
         "tests",
-    }
+    },
 )
 
 
@@ -2491,7 +2490,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
 
 
 def validate_artifact_routing(
-    filename: str, content: str | None = None
+    filename: str, content: str | None = None,
 ) -> tuple[bool, str | None, str | None]:
     """
     Validate file against ARTIFACT_ROUTING_MAP negative logic.
@@ -2639,7 +2638,7 @@ LEGACY_AST_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "class_patterns": [".*Legacy.*", ".*Old$", ".*V1$"],
         "function_calls": ["warnings.warn"],
         "variable_markers": ["DEPRECATION_WARNING"],
-    }
+    },
 }
 
 # === AST PLACEMENT SIGNAL REGISTRY ===
@@ -3014,7 +3013,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "file": "agentic_core/L0_maintenance/scripts/BootstrapAgent.py",
             "methods": 6,
             "fingerprint": "fcfd5e27416abb4c",
-        }
+        },
     ],
     "L1": [
         {

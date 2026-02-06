@@ -232,7 +232,7 @@ class GraphMemoryBridge:
                 "name": agent_name,
                 "entityType": agent_type,
                 "observations": observations or [f"Agent {agent_name} registered in Knowledge Graph"],
-            }
+            },
         ]
 
         result = self._safe_call(
@@ -283,7 +283,7 @@ class GraphMemoryBridge:
                     f"Task mastered by {agent_name} with score {feedback_score:.2f}",
                     f"Description hash: {task_hash}",
                 ],
-            }
+            },
         ]
 
         self._safe_call(
@@ -298,7 +298,7 @@ class GraphMemoryBridge:
                 "from": agent_name,
                 "to": task_entity_name,
                 "relationType": self.RELATION_MASTERED_TASK,
-            }
+            },
         ]
 
         result = self._safe_call(
@@ -311,7 +311,7 @@ class GraphMemoryBridge:
             with self._lock:
                 self.stats["relations_created"] += 1
             Logger.info(
-                f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}"
+                f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}",
             )
             return True
 
@@ -339,7 +339,7 @@ class GraphMemoryBridge:
                 "from": from_entity,
                 "to": to_entity,
                 "relationType": relation_type,
-            }
+            },
         ]
 
         result = self._safe_call(
@@ -380,7 +380,7 @@ class GraphMemoryBridge:
             {
                 "entityName": entity_name,
                 "contents": [observation],
-            }
+            },
         ]
 
         result = self._safe_call(

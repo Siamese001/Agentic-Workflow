@@ -79,7 +79,7 @@ class SafetyConfig:
     enable_adversarial_defense: bool = True
     entity_support_threshold: float = 0.5  # 50% of entities must be in docs
     forbidden_keywords: list[str] = field(
-        default_factory=lambda: ["password", "secret", "api_key", "private_key", "token"]
+        default_factory=lambda: ["password", "secret", "api_key", "private_key", "token"],
     )
 
 

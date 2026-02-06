@@ -83,7 +83,7 @@ class CoreIntegrityVerifier:
                     f"CRITICAL: CORE INTEGRITY COMPROMISED!\n"
                     f"Expected: {expected_hash}\n"
                     f"Found: {current_hash}\n"
-                    f"The Sovereign Core has been tampered with!"
+                    f"The Sovereign Core has been tampered with!",
                 )
         else:
             # Create golden seal for first run

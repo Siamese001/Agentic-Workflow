@@ -100,7 +100,7 @@ def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[di
                             "complexity": complexity,
                             "max_allowed": max_complexity,
                             "message": f"Function '{node.name}' has complexity {complexity} (max {max_complexity})",
-                        }
+                        },
                     )
     except (SyntaxError, FileNotFoundError, OSError):
         pass

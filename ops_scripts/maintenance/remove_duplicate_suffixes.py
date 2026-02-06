@@ -104,7 +104,7 @@ def analyze_duplicates(
 
 
 def remove_duplicates(
-    safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool = True
+    safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool = True,
 ) -> int:
     """Remove duplicate files that have canonical versions."""
     removed_count = 0
@@ -202,7 +202,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Remove duplicate files with _flat and _1 suffixes"
+        description="Remove duplicate files with _flat and _1 suffixes",
     )
     parser.add_argument(
         "--execute",

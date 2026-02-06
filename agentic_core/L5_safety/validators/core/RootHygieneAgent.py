@@ -221,7 +221,7 @@ class RootHygieneAgent(SovereignBaseAgent):
                     "severity": "high",
                     "recommended_action": "Move scripts to ops_scripts/ or agentic_core/L0_maintenance/scripts/",
                     "confidence": 0.9,
-                }
+                },
             )
 
         # Check for illegal coverage_html directory
@@ -235,7 +235,7 @@ class RootHygieneAgent(SovereignBaseAgent):
                     "severity": "medium",
                     "recommended_action": "Move coverage_html to reports/coverage_html/",
                     "confidence": 0.8,
-                }
+                },
             )
 
         # Check for other common root violations
@@ -251,7 +251,7 @@ class RootHygieneAgent(SovereignBaseAgent):
                         "severity": "low",
                         "recommended_action": f"Add {pattern} to .gitignore and remove from root",
                         "confidence": 0.6,
-                    }
+                    },
                 )
 
         return {"violations": violations}

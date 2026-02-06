@@ -38,7 +38,7 @@ def get_staged_files() -> list[str]:
     """Get list of staged files from git."""
     try:
         result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except subprocess.CalledProcessError:
@@ -70,7 +70,7 @@ def normalize_path(path: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Gatekeeper Lock - Protect critical files")
     parser.add_argument(
-        "--commit-msg-filename", help="Path to commit message file (for commit-msg stage)"
+        "--commit-msg-filename", help="Path to commit message file (for commit-msg stage)",
     )
     args = parser.parse_args()
 

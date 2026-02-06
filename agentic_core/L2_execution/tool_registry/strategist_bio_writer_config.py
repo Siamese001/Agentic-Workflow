@@ -79,7 +79,7 @@ class StrategistBioWriter:
         self.config = config or BioWriterConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.temperature,
         )
 
     def generate_summary(self, bullet_pool: list[str], context: dict[str, Any]) -> BioWriterResult:
@@ -141,7 +141,7 @@ class StrategistBioWriter:
                     break
                 continue
             grounding_result: Any = self.gate_executor.execute_grounding_check(
-                content=summary, evidence_pool=bullet_pool, gate_id="VG_SUMMARY_GROUNDING_CHECK"
+                content=summary, evidence_pool=bullet_pool, gate_id="VG_SUMMARY_GROUNDING_CHECK",
             )
             validation_results.append(grounding_result)
             if not grounding_result.passed:
@@ -172,7 +172,7 @@ class StrategistBioWriter:
         )
 
     def _generate_content(
-        self, bullet_pool: list[str], context: dict[str, Any], temperature: float, attempt: int
+        self, bullet_pool: list[str], context: dict[str, Any], temperature: float, attempt: int,
     ) -> str:
         """
         Generate summary content using LLM.
@@ -201,7 +201,7 @@ class StrategistBioWriter:
                         "pronoun": match.group(),
                         "position": match.start(),
                         "context": content[max(0, match.start() - 20) : match.end() + 20],
-                    }
+                    },
                 )
         if violations:
             return ValidationResult(

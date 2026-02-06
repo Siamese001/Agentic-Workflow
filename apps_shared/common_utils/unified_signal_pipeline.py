@@ -131,7 +131,7 @@ class InputProcessingStage(PipelineStage):
                 # Update payload with cached data
                 self._update_payload_with_processed_data(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
 
@@ -146,7 +146,7 @@ class InputProcessingStage(PipelineStage):
 
             # Mark complete
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
 
             return envelope
@@ -173,7 +173,7 @@ class InputProcessingStage(PipelineStage):
         elif hasattr(payload, "recipient_info"):
             # Extract text from outreach data
             return json.dumps(
-                {"recipient": payload.recipient_info, "campaign": payload.campaign_context}
+                {"recipient": payload.recipient_info, "campaign": payload.campaign_context},
             )
         elif hasattr(payload, "data"):
             return json.dumps(payload.data)
@@ -203,14 +203,14 @@ class InputProcessingStage(PipelineStage):
             query = f"outreach personalization {content[:100]}"
 
         expanded = self.hyde_processor.expand_query_with_hyde(
-            query, envelope.payload.payload_type.value
+            query, envelope.payload.payload_type.value,
         )
         result["expanded_query"] = expanded
 
         return result
 
     def _update_payload_with_processed_data(
-        self, envelope: SignalEnvelope, processed: dict[str, Any]
+        self, envelope: SignalEnvelope, processed: dict[str, Any],
     ) -> None:
         """Update payload with processed data.
 
@@ -279,18 +279,18 @@ class ContextEnrichmentStage(PipelineStage):
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
 
             # RAG retrieval
             rag_results = self.rag_processor.retrieve_and_rerank(
-                expanded_query, top_k=10, filters={"engine": envelope.payload.payload_type.value}
+                expanded_query, top_k=10, filters={"engine": envelope.payload.payload_type.value},
             )
 
             # Knowledge graph injection
             kg_context = self.kg_injector.inject_context(
-                expanded_query, envelope.payload.payload_type.value
+                expanded_query, envelope.payload.payload_type.value,
             )
 
             # Combine results
@@ -308,7 +308,7 @@ class ContextEnrichmentStage(PipelineStage):
 
             # Mark complete
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
 
             return envelope
@@ -338,7 +338,7 @@ class ContextEnrichmentStage(PipelineStage):
         return ""
 
     def _update_envelope_with_context(
-        self, envelope: SignalEnvelope, enriched: dict[str, Any]
+        self, envelope: SignalEnvelope, enriched: dict[str, Any],
     ) -> None:
         """Update envelope with enriched context.
 
@@ -423,7 +423,7 @@ class SignalAugmentationStage(PipelineStage):
             if cached:
                 self._update_envelope_with_augmented(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
 
@@ -438,7 +438,7 @@ class SignalAugmentationStage(PipelineStage):
 
             # Mark complete
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
 
             return envelope
@@ -463,7 +463,7 @@ class SignalAugmentationStage(PipelineStage):
             return json.dumps(payload.sections)
         elif hasattr(payload, "recipient_info"):
             return json.dumps(
-                {"recipient": payload.recipient_info, "campaign": payload.campaign_context}
+                {"recipient": payload.recipient_info, "campaign": payload.campaign_context},
             )
         elif hasattr(payload, "data"):
             return json.dumps(payload.data)
@@ -492,7 +492,7 @@ class SignalAugmentationStage(PipelineStage):
         # Prompt optimization
         if envelope.payload.payload_type.value == "resume_data":
             optimized = optimize_prompt(
-                content, strategy="achievement_focused", constraints=["use_metrics", "action_verbs"]
+                content, strategy="achievement_focused", constraints=["use_metrics", "action_verbs"],
             )
         else:
             optimized = optimize_prompt(
@@ -544,7 +544,7 @@ class SignalAugmentationStage(PipelineStage):
         return {}
 
     def _update_envelope_with_augmented(
-        self, envelope: SignalEnvelope, augmented: dict[str, Any]
+        self, envelope: SignalEnvelope, augmented: dict[str, Any],
     ) -> None:
         """Update envelope with augmented data.
 
@@ -604,7 +604,7 @@ class QualityValidationStage(PipelineStage):
             # Run through signal quality pipeline
             content = self._extract_content_from_payload(envelope.payload)
             quality_result = self.signal_pipeline.process_signal(
-                content, envelope.payload.payload_type.value, self._get_enriched_context(envelope)
+                content, envelope.payload.payload_type.value, self._get_enriched_context(envelope),
             )
 
             # Determine if passes validation
@@ -692,7 +692,7 @@ class QualityValidationStage(PipelineStage):
         return {}
 
     def _update_envelope_with_validation(
-        self, envelope: SignalEnvelope, validation: dict[str, Any]
+        self, envelope: SignalEnvelope, validation: dict[str, Any],
     ) -> None:
         """Update envelope with validation results.
 
@@ -999,7 +999,7 @@ class OutputFormattingStage(PipelineStage):
             return str(payload)
 
     def _update_envelope_with_formatted(
-        self, envelope: SignalEnvelope, formatted: dict[str, Any]
+        self, envelope: SignalEnvelope, formatted: dict[str, Any],
     ) -> None:
         """Update envelope with formatted output.
 
@@ -1143,7 +1143,7 @@ class UnifiedSignalPipeline:
 
                 # Re-raise exception
                 raise PipelineExecutionError(
-                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e
+                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e,
                 )
 
         return envelope

@@ -45,7 +45,7 @@ class SovereignLLMGateway:
             "total": 0,
             "errors": 0,
             "fallbacks": 0,
-        }
+        },
     )
 
     audit_log: list[dict[str, Any]] = field(default_factory=list)
@@ -82,7 +82,7 @@ class SovereignLLMGateway:
                 "latency_ms": latency_ms,
                 "tokens": tokens,
                 "ts": time.time(),
-            }
+            },
         )
 
         self.operation_stats["total"] += 1
@@ -172,7 +172,7 @@ class SovereignLLMGateway:
                         current_model = self.config.openai_model
 
                 result = await self._call_provider(
-                    current_provider, prompt, current_model, temperature, max_tokens, **kwargs
+                    current_provider, prompt, current_model, temperature, max_tokens, **kwargs,
                 )
 
                 latency = (time.time() - start) * 1000
@@ -213,7 +213,7 @@ class SovereignLLMGateway:
             raise ValueError(f"Unknown provider: {provider}")
 
     async def _call_openai(
-        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
+        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs,
     ) -> dict:
         response = await self.openai.chat.completions.create(
             model=model,
@@ -230,7 +230,7 @@ class SovereignLLMGateway:
         }
 
     async def _call_anthropic(
-        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
+        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs,
     ) -> dict:
         response = await self.anthropic.messages.create(
             model=model,
@@ -247,7 +247,7 @@ class SovereignLLMGateway:
         }
 
     async def _call_google(
-        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs
+        self, prompt: str, model: str, temperature: float, max_tokens: int, **kwargs,
     ) -> dict:
         """Call Google Gemini API with Phase 13 generation_config support and Phase 21 tool adapter."""
         gen_model = self.google.GenerativeModel(model)
@@ -263,7 +263,7 @@ class SovereignLLMGateway:
             call_kwargs["tools"] = kwargs["tools"]
 
         response = await gen_model.generate_content_async(
-            prompt, generation_config=config_params, **call_kwargs
+            prompt, generation_config=config_params, **call_kwargs,
         )
 
         # Handle tokens if available

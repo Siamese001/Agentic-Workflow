@@ -109,7 +109,7 @@ class SymbolRenamer(ast.NodeTransformer):
         """Handle function definitions with scope tracking."""
         if node.name == self.old_name:
             self.changes.append(
-                f"Renamed function '{self.old_name}' to '{self.new_name}' at line {node.lineno}"
+                f"Renamed function '{self.old_name}' to '{self.new_name}' at line {node.lineno}",
             )
             node.name = self.new_name
 
@@ -124,7 +124,7 @@ class SymbolRenamer(ast.NodeTransformer):
         """Handle async function definitions."""
         if node.name == self.old_name:
             self.changes.append(
-                f"Renamed async function '{self.old_name}' to '{self.new_name}' at line {node.lineno}"
+                f"Renamed async function '{self.old_name}' to '{self.new_name}' at line {node.lineno}",
             )
             node.name = self.new_name
 
@@ -149,7 +149,7 @@ class SymbolRenamer(ast.NodeTransformer):
         """Handle function arguments."""
         if node.arg == self.old_name:
             self.changes.append(
-                f"Renamed argument '{self.old_name}' to '{self.new_name}' at line {node.lineno}"
+                f"Renamed argument '{self.old_name}' to '{self.new_name}' at line {node.lineno}",
             )
             node.arg = self.new_name
         return node
@@ -350,7 +350,7 @@ def extract_function(code: str, line_start: int, line_end: int, function_name: s
             "True",
             "False",
             "None",
-        }
+        },
     )
     params_str = ", ".join(params)
 
@@ -450,7 +450,7 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
     tree, error = _parse_code(code)
     if error:
         return TransformResult(
-            success=False, transformed_code=code, operation="remove_decorator", error=error
+            success=False, transformed_code=code, operation="remove_decorator", error=error,
         )
 
     modifier = DecoratorModifier(target_name, decorator_name, add=False)

@@ -66,7 +66,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     "type": "Parse Error",
                     "description": f"Invalid syntax: {e}",
                     "Severity": "LOW",
-                }
+                },
             )
             continue
         except Exception as e:
@@ -77,7 +77,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     "type": "Read Error",
                     "description": f"Failed to read/parse: {e}",
                     "Severity": "LOW",
-                }
+                },
             )
             continue
 
@@ -170,7 +170,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Anemic Domain Model",
                             "description": f"Class '{node.name}' has {total_attrs} attributes but only {total_methods} behaviors — probable data holder without domain logic",
                             "Severity": "HIGH",
-                        }
+                        },
                     )
 
             # 2. God Class Detection
@@ -183,7 +183,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                         "type": "God Class",
                         "description": f"Class '{node.name}' has {total_methods} methods — potential Violation of Single Responsibility Principle",
                         "Severity": "MEDIUM",
-                    }
+                    },
                 )
 
             # 3. Mutable Value Object Detection
@@ -213,7 +213,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Mutable Value Object",
                             "description": f"Value Object '{node.name}' contains mutating methods ({[m.name for m in setters_or_mutators]}) — VOs must be immutable",
                             "Severity": "CRITICAL",
-                        }
+                        },
                     )
 
             # 4. Service Layer Bloat (heuristic)
@@ -224,7 +224,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     # Rough complexity: nested loops, conditionals, long body
                     # Count flow control statements
                     method_complexity = len(
-                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)]
+                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)],
                     )
                     if method_complexity > 8:  # Slightly relaxed threshold
                         complex_methods += 1
@@ -237,7 +237,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Fat Service",
                             "description": f"Service '{node.name}' has {complex_methods} complex methods — likely containing domain logic instead of orchestration",
                             "Severity": "MEDIUM",
-                        }
+                        },
                     )
 
     return violations

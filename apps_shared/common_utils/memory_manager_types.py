@@ -98,7 +98,7 @@ class MemoryManager:
 
         self._monitoring = True
         self._monitor_thread = threading.Thread(
-            target=self._monitor_loop, args=(interval_seconds,), daemon=True
+            target=self._monitor_loop, args=(interval_seconds,), daemon=True,
         )
         self._monitor_thread.start()
         logger.info(f"Started memory monitoring for {self.name}")
@@ -111,7 +111,7 @@ class MemoryManager:
         logger.info(f"Stopped memory monitoring for {self.name}")
 
     def add_context(
-        self, key: str, value: Any, priority: int = 0, max_size: int | None = None
+        self, key: str, value: Any, priority: int = 0, max_size: int | None = None,
     ) -> bool:
         """Add an item to context with size limits.
 
@@ -197,7 +197,7 @@ class MemoryManager:
             return False
 
     def prune_context(
-        self, strategy: PruningStrategy = PruningStrategy.LRU, target_size: int | None = None
+        self, strategy: PruningStrategy = PruningStrategy.LRU, target_size: int | None = None,
     ) -> int:
         """Prune context items based on strategy.
 
@@ -327,7 +327,7 @@ class MemoryManager:
         # Check item count limit
         while self._stats["item_count"] >= self.limits.max_context_items and self._context:
             self.prune_context(
-                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size
+                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size,
             )
 
         # Check size limit
@@ -336,7 +336,7 @@ class MemoryManager:
             and self._context
         ):
             self.prune_context(
-                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size
+                PruningStrategy.LRU, target_size=self.limits.max_context_size - required_size,
             )
 
     def _check_memory_limits(self) -> None:
@@ -348,12 +348,12 @@ class MemoryManager:
             if memory_mb > self.limits.max_memory_mb:
                 self._stats["memory_violations"] += 1
                 logger.warning(
-                    f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB"
+                    f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB",
                 )
 
                 # Aggressive pruning
                 self.prune_context(
-                    PruningStrategy.SIZE_BASED, target_size=int(self.limits.max_context_size * 0.5)
+                    PruningStrategy.SIZE_BASED, target_size=int(self.limits.max_context_size * 0.5),
                 )
 
                 # Force garbage collection
@@ -482,6 +482,6 @@ def memory_bound(manager: MemoryManager, max_memory_mb: float):
         current_memory = manager.get_stats().get("process_memory_mb", 0)
         if current_memory - initial_memory > max_memory_mb:
             logger.warning(
-                f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}MB"
+                f"Operation exceeded memory bound: {current_memory - initial_memory:.1f}MB",
             )
             manager.prune_context(PruningStrategy.SIZE_BASED)

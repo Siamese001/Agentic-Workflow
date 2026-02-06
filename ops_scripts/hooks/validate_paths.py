@@ -38,7 +38,7 @@ VALID_TERRITORIES = frozenset(
         ".windsurf",
         ".gravity_state",
         ".backup",
-    }
+    },
 )
 
 # Valid subfolders for apps_* directories (depth 2)
@@ -64,7 +64,7 @@ APPS_VALID_SUBFOLDERS = frozenset(
         "core_components",
         "data",
         "utils",
-    }
+    },
 )
 
 # Forbidden patterns that indicate "Path Rot"

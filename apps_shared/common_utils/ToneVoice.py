@@ -229,7 +229,7 @@ class ToneEnforcer:
                         message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
                         location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
                         suggestion="Consider breaking into shorter sentences",
-                    )
+                    ),
                 )
 
             elif word_count < settings.min_sentence_length:
@@ -240,7 +240,7 @@ class ToneEnforcer:
                         message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
                         location=sentence,
                         suggestion="Consider expanding with more detail",
-                    )
+                    ),
                 )
 
         return violations
@@ -271,7 +271,7 @@ class ToneEnforcer:
                         message=f"Banned word detected: '{word}'",
                         location=match.group() if match else word,
                         suggestion="Replace with stronger alternative",
-                    )
+                    ),
                 )
 
         return violations
@@ -301,7 +301,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Missing required keywords: {', '.join(missing_keywords)}",
                     suggestion="Consider incorporating these keywords",
-                )
+                ),
             )
 
         return violations
@@ -340,7 +340,7 @@ class ToneEnforcer:
                         severity="warning",
                         message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
                         suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}",
-                    )
+                    ),
                 )
 
         # Check if enough preferred patterns found
@@ -351,7 +351,7 @@ class ToneEnforcer:
                     severity="info",
                     message=f"Weak {voice.value} voice: no preferred patterns detected",
                     suggestion=f"Consider using: {', '.join(patterns['verbs'][:3])}",
-                )
+                ),
             )
 
         return violations
@@ -393,7 +393,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
                     suggestion="Use more active voice construction",
-                )
+                ),
             )
 
         return violations
@@ -428,7 +428,7 @@ class ToneEnforcer:
                             severity="warning",
                             message="Informal language detected in formal tone",
                             suggestion="Use formal language",
-                        )
+                        ),
                     )
 
         elif settings.formality_level == "professional":
@@ -443,7 +443,7 @@ class ToneEnforcer:
                             severity="error",
                             message="Overly casual language detected",
                             suggestion="Use professional language",
-                        )
+                        ),
                     )
 
         return violations

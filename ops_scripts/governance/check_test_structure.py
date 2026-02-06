@@ -78,7 +78,7 @@ def check_mirror_depth(category_path: Path, violations: list):
         if sub.is_file():
             if sub.name not in {"__init__.py", "conftest.py"} and not sub.name.endswith(".pyc"):
                 violations.append(
-                    f"[DEPTH VIOLATION] Test file found too shallow: {sub.relative_to(PROJECT_ROOT)}"
+                    f"[DEPTH VIOLATION] Test file found too shallow: {sub.relative_to(PROJECT_ROOT)}",
                 )
         elif sub.is_dir():
             # Check if this directory corresponds to a source root?

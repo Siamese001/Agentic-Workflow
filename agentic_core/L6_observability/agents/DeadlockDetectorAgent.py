@@ -12,7 +12,6 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # NAMING FIXED: Consistent Logger usage
@@ -105,7 +104,7 @@ class DeadlockDetectorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     Logger.warning(f"[HEALTH] Task Timeout Detected: {monitor.name} (TID: {tid})")
                     if monitor.timeout_count >= deadlock_threshold:
                         Logger.error(
-                            f"[DEADLOCK] Potential deadlock in {monitor.name}! Stack: {monitor.get_stack_trace()}"
+                            f"[DEADLOCK] Potential deadlock in {monitor.name}! Stack: {monitor.get_stack_trace()}",
                         )
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:

@@ -43,7 +43,7 @@ EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
         "node_modules",
         ".venv",
         "venv",
-    }
+    },
 )
 
 
@@ -231,7 +231,7 @@ class RegistryVerifier:
                         "class_name": class_name,
                         "registry_path": reg_path,
                         "reason": "Class not found in filesystem",
-                    }
+                    },
                 )
             elif reg_path not in fs_by_path:
                 # Path mismatch - class exists but at different location
@@ -242,7 +242,7 @@ class RegistryVerifier:
                         "registry_path": reg_path,
                         "actual_path": actual_agent.relative_path.replace("\\", "/"),
                         "reason": "Path mismatch between registry and filesystem",
-                    }
+                    },
                 )
 
         # Check for missing agents (in filesystem but not in registry)
@@ -289,7 +289,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | Registry Path | Reason |",
                     "|------------|---------------|--------|",
-                ]
+                ],
             )
             for orphan in result.orphan_agents:
                 cls = orphan["class_name"]
@@ -305,7 +305,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | Registry Path | Actual Path |",
                     "|------------|---------------|-------------|",
-                ]
+                ],
             )
             for mismatch in result.path_mismatches:
                 cls = mismatch["class_name"]
@@ -321,7 +321,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | File Path | Layer |",
                     "|------------|-----------|-------|",
-                ]
+                ],
             )
             for agent in result.missing_agents[:50]:
                 lines.append(f"| {agent.class_name} | {agent.relative_path} | {agent.layer} |")

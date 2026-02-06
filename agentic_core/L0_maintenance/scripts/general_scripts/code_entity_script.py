@@ -169,7 +169,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
                 if alias.name.startswith(("agentic_core", "apps_")):
                     analysis.internal_deps.append(alias.name)
                 elif not alias.name.startswith(
-                    ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses")
+                    ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses"),
                 ):
                     analysis.external_deps.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
@@ -178,7 +178,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
             if module.startswith(("agentic_core", "apps_")):
                 analysis.internal_deps.append(module)
             elif not module.startswith(
-                ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum")
+                ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum"),
             ):
                 analysis.external_deps.append(module)
 
@@ -270,7 +270,7 @@ def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
 
 
 def calculate_uniqueness(
-    analysis: FileAnalysis, codebase_index: dict[str, set[str]]
+    analysis: FileAnalysis, codebase_index: dict[str, set[str]],
 ) -> tuple[float, list[str]]:
     """Calculate how unique the file's entities are compared to codebase."""
     if not analysis.entities:
@@ -326,7 +326,7 @@ def main():
     current_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
     codebase_index = build_current_codebase_index(current_dirs)
     print(
-        f"  Indexed: {len(codebase_index['classes'])} classes, {len(codebase_index['agents'])} agents, {len(codebase_index['functions'])} functions"
+        f"  Indexed: {len(codebase_index['classes'])} classes, {len(codebase_index['agents'])} agents, {len(codebase_index['functions'])} functions",
     )
 
     # Scan archives
@@ -418,7 +418,7 @@ def main():
     report.append("\nAnalysis Date: 2026-01-20")
     report.append(f"Total Files Analyzed: {len(all_analyses)}")
     report.append(
-        f"Current Codebase: {len(codebase_index['agents'])} agents, {len(codebase_index['classes'])} classes"
+        f"Current Codebase: {len(codebase_index['agents'])} agents, {len(codebase_index['classes'])} classes",
     )
 
     # Archive summary
@@ -428,7 +428,7 @@ def main():
     for archive_name, stats in sorted(archive_stats.items(), key=lambda x: -x[1]["unique"]):
         report.append(f"\n  {archive_name}:")
         report.append(
-            f"    Files: {stats['files']}, Agents: {stats['agents']}, High-Unique: {stats['unique']}"
+            f"    Files: {stats['files']}, Agents: {stats['agents']}, High-Unique: {stats['unique']}",
         )
 
     # HIGH PRIORITY RESTORATIONS

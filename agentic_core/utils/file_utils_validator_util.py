@@ -37,7 +37,7 @@ def ensure_directory(path: str | Path) -> bool:
 
 
 def safe_read_file(
-    path: str | Path, encoding: str = "utf-8", default=None, errors: str = "replace"
+    path: str | Path, encoding: str = "utf-8", default=None, errors: str = "replace",
 ) -> str | None:
     """
     Safely read a file with proper error handling.

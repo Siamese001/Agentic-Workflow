@@ -19,8 +19,6 @@ from pathlib import Path
 from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
@@ -157,7 +155,7 @@ class MetricsWitnessAgent(
         return None
 
     async def _execute_conservative(
-        self, ctx: Any, **context: dict[str, Any]
+        self, ctx: Any, **context: dict[str, Any],
     ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in conservative mode with cached/fallback scores.
@@ -190,7 +188,7 @@ class MetricsWitnessAgent(
         return {"status": "minimal_standby", "reason": "resource_preservation"}
 
     async def _execute_standard(
-        self, ctx: Any, **context: dict[str, Any]
+        self, ctx: Any, **context: dict[str, Any],
     ) -> dict[str, tuple[float, list[str]]]:
         """
         Execute in standard mode with full metrics calculation.

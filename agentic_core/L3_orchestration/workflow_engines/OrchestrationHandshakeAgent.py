@@ -21,7 +21,6 @@ from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 
@@ -58,7 +57,7 @@ class OrchestrationHandshakeAgent(SubatomicTestingMixin, SovereignBaseAgent, Cor
                         "method": meta["method"],
                         "confidence": r["score"],
                         "docstring": meta["docstring"][:200],
-                    }
+                    },
                 )
         if self.redis and capable:
             try:
@@ -91,7 +90,7 @@ class OrchestrationHandshakeAgent(SubatomicTestingMixin, SovereignBaseAgent, Cor
             }
         best: Any = capable[0]
         print(
-            f"   [HANDSHAKE] {self.requesting_agent} -> {best['agent_class']}.{best['method']} ({best['confidence']:.2f})"
+            f"   [HANDSHAKE] {self.requesting_agent} -> {best['agent_class']}.{best['method']} ({best['confidence']:.2f})",
         )
         try:
             method_meta: Any = {"agent_class": best["agent_class"], "method": best["method"]}

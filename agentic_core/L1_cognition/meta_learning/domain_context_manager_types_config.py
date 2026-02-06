@@ -100,7 +100,7 @@ class DomainContextManager:
             "sharing_denials": 0,
             "context_lookups": 0,
             "by_domain": {},
-        }
+        },
     )
 
     def __post_init__(self) -> None:

@@ -120,7 +120,7 @@ class ReasoningMemory:
                         "type": evicted.thought_type,
                         "context": evicted.context,
                         "confidence": evicted.confidence,
-                    }
+                    },
                 )
 
         # Persist if enabled
@@ -265,7 +265,7 @@ class ReasoningMemory:
                             confidence=thought_dict.get("confidence", 0.8),
                             timestamp=thought_dict.get("timestamp", time.time()),
                             metadata=thought_dict.get("metadata", {}),
-                        )
+                        ),
                     )
         except (ImportError, Exception):
             # No persistent storage available

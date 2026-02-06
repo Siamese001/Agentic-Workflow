@@ -135,7 +135,7 @@ class KXNodeExecutor:
         # Search vector store
         try:
             collection = create_chroma_collection(
-                context.vector_store, context.metadata.get("collection_name", "knowledge_base")
+                context.vector_store, context.metadata.get("collection_name", "knowledge_base"),
             )
 
             results = search_vectors_chroma(
@@ -149,7 +149,7 @@ class KXNodeExecutor:
             if results and "documents" in results:
                 for i, doc in enumerate(results["documents"][0]):
                     source_type = results.get("metadatas", [[{}]])[0][i].get(
-                        "source_type", "generic"
+                        "source_type", "generic",
                     )
                     weight = config.rag_config.source_weighting.get(source_type, 1.0)
 
@@ -160,7 +160,7 @@ class KXNodeExecutor:
                             "distance": results.get("distances", [[0]])[0][i],
                             "weight": weight,
                             "weighted_score": weight / (1 + results.get("distances", [[0]])[0][i]),
-                        }
+                        },
                     )
 
             # Sort by weighted score
@@ -197,11 +197,11 @@ class KXNodeExecutor:
                 [
                     f"Source {i + 1} ({src['metadata'].get('source_type', 'unknown')}):\n{src['document']}"
                     for i, src in enumerate(rag_sources[:3])
-                ]
+                ],
             )
 
             messages.append(
-                AgentMessage(role="user", content=f"Context from knowledge base:\n\n{rag_context}")
+                AgentMessage(role="user", content=f"Context from knowledge base:\n\n{rag_context}"),
             )
 
         # Add main generation prompt
@@ -243,7 +243,7 @@ class KXNodeExecutor:
         # Add source data
         if context.source_data:
             source_info = "\n".join(
-                [f"{key}: {value}" for key, value in context.source_data.items() if key != "query"]
+                [f"{key}: {value}" for key, value in context.source_data.items() if key != "query"],
             )
             if source_info:
                 prompt_parts.append(f"\nSource Data:\n{source_info}")
@@ -253,11 +253,11 @@ class KXNodeExecutor:
             prompt_parts.append("\nUse step-by-step reasoning to generate the content.")
         elif config.reasoning_strategy == ReasoningStrategy.TOT:
             prompt_parts.append(
-                f"\nExplore {config.tot_branches} different approaches and select the best."
+                f"\nExplore {config.tot_branches} different approaches and select the best.",
             )
         elif config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT:
             prompt_parts.append(
-                "\nUse step-by-step reasoning with multiple branches to find the optimal solution."
+                "\nUse step-by-step reasoning with multiple branches to find the optimal solution.",
             )
 
         return "\n".join(prompt_parts)

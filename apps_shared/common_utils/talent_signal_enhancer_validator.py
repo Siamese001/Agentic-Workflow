@@ -16,7 +16,7 @@ class TalentMetrics(BaseModel):
 
     team_size: int = Field(..., ge=0, description="Size of team managed")
     pedigree_keywords: list[str] = Field(
-        default_factory=list, description="Prestige markers in team"
+        default_factory=list, description="Prestige markers in team",
     )
     retention_rate: str | None = Field(None, description="Team retention rate")
     hiring_velocity: str | None = Field(None, description="Hiring speed metric")
@@ -113,7 +113,7 @@ class TalentSignalEnhancer:
         }
 
         logger.info(
-            f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}"
+            f"Initialized TalentSignalEnhancer with management experience: {self.has_management_experience}",
         )
 
     def enhance_management_bullet(self, bullet_text: str) -> str:
@@ -149,7 +149,7 @@ class TalentSignalEnhancer:
                     )
                 else:
                     enhanced = enhanced.replace(
-                        f"team of {team_size}", f"high-performance team of {team_size}"
+                        f"team of {team_size}", f"high-performance team of {team_size}",
                     )
 
             # Add hiring velocity
@@ -199,7 +199,7 @@ class TalentSignalEnhancer:
             hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often follow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
 
             logger.info(
-                f"Generated network hook for {target_role} with network size {role_network}"
+                f"Generated network hook for {target_role} with network size {role_network}",
             )
 
             return hook
@@ -391,15 +391,15 @@ class TalentSignalEnhancer:
                 # Add prestige without making false claims
                 if team_size >= 20:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **senior engineers**"
+                        f"team of {team_size}", f"team of {team_size} **senior engineers**",
                     )
                 elif team_size >= 10:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **high-caliber engineers**"
+                        f"team of {team_size}", f"team of {team_size} **high-caliber engineers**",
                     )
                 else:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **specialized engineers**"
+                        f"team of {team_size}", f"team of {team_size} **specialized engineers**",
                     )
 
             # Add leadership emphasis
@@ -428,7 +428,7 @@ def create_talent_signal_enhancer(candidate_background: dict[str, Any]) -> Talen
 
 # Convenience function for quick enhancement
 def enhance_talent_signals(
-    bullets: list[str], candidate_background: dict[str, Any]
+    bullets: list[str], candidate_background: dict[str, Any],
 ) -> tuple[list[str], str | None]:
     """Quickly enhance talent signals in bullets.
 

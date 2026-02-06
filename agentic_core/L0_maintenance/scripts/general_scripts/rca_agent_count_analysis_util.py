@@ -45,7 +45,7 @@ def main():
                         "name": name,
                         "path": a.get("rel_path", "unknown"),
                         "layer": a.get("layer", "unknown"),
-                    }
+                    },
                 )
                 print(f"  - {name}: {a.get('rel_path', 'unknown')}")
                 break

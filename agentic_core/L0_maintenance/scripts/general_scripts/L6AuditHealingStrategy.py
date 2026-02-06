@@ -62,7 +62,7 @@ class L6AuditHealingStrategy:
                     "reason": "L6 observability Gap: Action detected without corresponding audit event.",
                     "priority": self.priority,
                     "strategy": self.name,
-                }
+                },
             )
         Logger.info(f"[L0 L6 AUDIT HEALING] Diagnosed {len(fixes)} audit trail gaps")
         return fixes
@@ -143,7 +143,7 @@ class L6AuditHealingStrategy:
             if result:
                 self.processed_today += 1
                 Logger.info(
-                    f"[L0 L6 AUDIT HEALING] Reconstructed Audit Event: {event_data.get('event_type')}"
+                    f"[L0 L6 AUDIT HEALING] Reconstructed Audit Event: {event_data.get('event_type')}",
                 )
                 return True
             else:

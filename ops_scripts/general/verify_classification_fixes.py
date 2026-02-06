@@ -15,52 +15,58 @@ from agentic_core.L5_safety.validators.core.FileClassificationAgent import FileC
 
 def verify_classifications():
     """Verify that the classification fixes work correctly."""
-    
-    agent = FileClassificationAgent(
-        project_root=project_root,
-        dry_run=True,
-        validate_only=True
-    )
-    
+
+    agent = FileClassificationAgent(project_root=project_root, dry_run=True, validate_only=True)
+
     test_files = [
-        ("DecompositionOrchestratorAgent.py", 
-         project_root / "agentic_core" / "L3_orchestration" / "workflow_engines" / "DecompositionOrchestratorAgent.py",
-         ["ORCHESTRATOR", "AGENT"]),
-        ("DagEngineAgent.py",
-         project_root / "agentic_core" / "L3_orchestration" / "workflow_engines" / "DagEngineAgent.py",
-         ["AGENT", "CLASS"]),
-        ("code_healer_agent.py",
-         project_root / "agentic_core" / "L5_safety" / "policy_engine" / "code_healer_agent.py",
-         ["AGENT"]),
+        (
+            "DecompositionOrchestratorAgent.py",
+            project_root
+            / "agentic_core"
+            / "L3_orchestration"
+            / "workflow_engines"
+            / "DecompositionOrchestratorAgent.py",
+            ["ORCHESTRATOR", "AGENT"],
+        ),
+        (
+            "DagEngineAgent.py",
+            project_root / "agentic_core" / "L3_orchestration" / "workflow_engines" / "DagEngineAgent.py",
+            ["AGENT", "CLASS"],
+        ),
+        (
+            "code_healer_agent.py",
+            project_root / "agentic_core" / "L5_safety" / "policy_engine" / "code_healer_agent.py",
+            ["AGENT"],
+        ),
     ]
-    
+
     print("=" * 70)
     print("CLASSIFICATION VERIFICATION TEST")
     print("=" * 70)
-    
+
     results = []
     for name, path, expected in test_files:
         if not path.exists():
             print(f"\n❌ {name}: FILE NOT FOUND")
             results.append(False)
             continue
-            
+
         classification = agent.classify_file(path)
         is_correct = classification in expected
-        
+
         status = "✅" if is_correct else "❌"
         print(f"\n{status} {name}")
         print(f"   Path: {path.relative_to(project_root)}")
         print(f"   Classification: {classification}")
         print(f"   Expected: {' or '.join(expected)}")
         print(f"   Result: {'PASS' if is_correct else 'FAIL - Should NOT be TYPES or SCRIPT'}")
-        
+
         results.append(is_correct)
-    
+
     print("\n" + "=" * 70)
     print(f"SUMMARY: {sum(results)}/{len(results)} tests passed")
     print("=" * 70)
-    
+
     return all(results)
 
 

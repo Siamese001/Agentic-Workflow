@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any
 import networkx as nx
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
@@ -135,7 +134,7 @@ class GraphTransaction:
             # Source should have lower depth than target
             if source_depth >= target_depth:
                 raise ValueError(
-                    f"Depth ordering Violation: {source}({source_depth}) -> {target}({target_depth})"
+                    f"Depth ordering Violation: {source}({source_depth}) -> {target}({target_depth})",
                 )
 
 
@@ -252,7 +251,7 @@ class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if self.config.enable_mutation_logging:
                     Logger.info(
                         f"Applied mutation {mutation.mutation_id}: {mutation.action.value} "
-                        f"on {mutation.target_hop_id} - {mutation.reason}"
+                        f"on {mutation.target_hop_id} - {mutation.reason}",
                     )
 
                 # Store in history
@@ -292,7 +291,7 @@ class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             successors = list(graph.successors(mutation.target_hop_id))
             if len(successors) >= self.config.max_fan_out:
                 raise ValueError(
-                    f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}"
+                    f"Cannot spawn successor: would exceed max fan-out {self.config.max_fan_out}",
                 )
 
     def _spawn_predecessor(self, graph: nx.DiGraph, mutation: DAGMutation) -> MutationResult:

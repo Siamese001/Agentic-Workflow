@@ -223,7 +223,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
                 # Check warning threshold
                 if budget.utilization >= budget.warning_threshold:
                     Logger.warning(
-                        f"WARNING: {resource_type.name} at {budget.utilization * 100:.1f}% utilization"
+                        f"WARNING: {resource_type.name} at {budget.utilization * 100:.1f}% utilization",
                     )
 
                 Logger.debug(f"Allocated {amount} {resource_type.name} to {agent_id}")

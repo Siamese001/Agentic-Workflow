@@ -56,7 +56,7 @@ def analyze_color_bug():
 
     # Find getGradientBg function
     gradient_match = re.search(
-        r"const getGradientBg = \(value, target = \d+\) => \{(.*?)\};", html, re.DOTALL
+        r"const getGradientBg = \(value, target = \d+\) => \{(.*?)\};", html, re.DOTALL,
     )
     if gradient_match:
         print("\n🎨 getGradientBg Function Found:")
@@ -83,7 +83,7 @@ def analyze_color_bug():
 
     # Find outlier badge logic
     outlier_match = re.search(
-        r"function formatOutlierBadge\(countAtZero, countBelowThreshold, threshold = \d+\)", html
+        r"function formatOutlierBadge\(countAtZero, countBelowThreshold, threshold = \d+\)", html,
     )
     if outlier_match:
         print("\n🏷️  Outlier Badge Logic:")
@@ -98,7 +98,7 @@ def analyze_color_bug():
     )
     if badge_match:
         print(
-            "\n   Line ~2526: formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)"
+            "\n   Line ~2526: formatOutlierBadge(healCapOutliers.atZero, healCapOutliers.belowThreshold, 50)",
         )
         print("   This adds the outlier badges to cells")
 

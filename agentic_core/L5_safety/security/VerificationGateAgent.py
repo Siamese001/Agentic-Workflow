@@ -12,7 +12,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.hallucination_detection_mixin import (
     HallucinationDetectionMixin,
 )
@@ -213,7 +212,7 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
             if not self._verify_target_in_ast(tree, action_type, target_node):
                 Logger.warning(
                     f"Hallucination detected: {action_type} target '{target_node}' "
-                    f"not found in {context.file_path}"
+                    f"not found in {context.file_path}",
                 )
                 return False
 

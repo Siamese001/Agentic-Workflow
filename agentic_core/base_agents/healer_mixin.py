@@ -19,8 +19,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Final
 
-from agentic_core.utils.HealerError import CircularDependencyError, HealerError
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.utils.HealerError import CircularDependencyError, HealerError
 
 Logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class HealerMixin:
         # Budget checking
         if self._healing_count >= self._max_healing_operations:
             raise HealerError(
-                f"Healing budget exceeded: {self._healing_count} >= {self._max_healing_operations}"
+                f"Healing budget exceeded: {self._healing_count} >= {self._max_healing_operations}",
             )
 
         # Add current agent to call path
@@ -82,7 +82,7 @@ class HealerMixin:
         try:
             self._healing_count += 1
             summary: dict[str, Any] = self._perform_healing_chain(
-                dry_run, execute, depth, max_depth, _call_path
+                dry_run, execute, depth, max_depth, _call_path,
             )
             return summary
         except Exception as e:
@@ -91,7 +91,7 @@ class HealerMixin:
             self._healing_count -= 1
 
     def _perform_healing_chain(
-        self, dry_run: bool, execute: bool, depth: int, max_depth: int, _call_path: set[str]
+        self, dry_run: bool, execute: bool, depth: int, max_depth: int, _call_path: set[str],
     ) -> dict[str, Any]:
         """
         Execute the actual healing chain with proper error boundaries.

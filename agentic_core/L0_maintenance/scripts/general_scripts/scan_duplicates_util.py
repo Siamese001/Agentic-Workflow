@@ -68,7 +68,7 @@ async def main():
             headers=headers,
             tablefmt="grid",
             maxcolwidths=[None, None, None, 50, 50, 40],
-        )
+        ),
     )
 
     print()

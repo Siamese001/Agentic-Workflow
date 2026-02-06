@@ -121,7 +121,7 @@ class BulkheadHealthChecker(HealthChecker):
                     issues.append(f"{name}: High utilization ({utilization:.1f}%)")
                 if bulkhead_metrics.queued_tasks > bulkhead_metrics.queue_size * 0.8:
                     issues.append(
-                        f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})"
+                        f"{name}: Queue buildup ({bulkhead_metrics.queued_tasks}/{bulkhead_metrics.queue_size})",
                     )
 
             # Determine status

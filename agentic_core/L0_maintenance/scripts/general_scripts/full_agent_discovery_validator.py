@@ -129,7 +129,7 @@ def safe_unparse(node: ast.AST) -> str:
 def get_git_commit(root: Path) -> str:
     try:
         out = subprocess.check_output(
-            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL,
         )
         return out.decode("utf-8").strip()
     except Exception:
@@ -155,7 +155,7 @@ def main() -> bool:
         # Load agent discovery data from SSOT (The List)
         raw_agents = load_agent_discovery(project_root, force_reload=True)
         raw_agents = sorted(
-            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", ""))
+            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", "")),
         )
         Logger.info(f"[DISCOVERY] Loaded {len(raw_agents)} candidates from SSOT registry")
 
@@ -324,7 +324,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
 
 def perform_deep_integrity_scan(
-    agents: list[dict[str, Any]], project_root: Path
+    agents: list[dict[str, Any]], project_root: Path,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """
     Iterates over discovered agents and validates them using AST analysis.
@@ -441,7 +441,7 @@ def check_compliance_gate(scan_stats: dict[str, int] | None = None) -> bool:
             ghosts = scan_stats.get("ghosts", 0)
             if ghosts > 0:
                 Logger.error(
-                    f"[COMPLIANCE] FAILED: {ghosts} ghost agents detected in registry. Run refresh_cache."
+                    f"[COMPLIANCE] FAILED: {ghosts} ghost agents detected in registry. Run refresh_cache.",
                 )
                 return False
 
@@ -472,7 +472,7 @@ def discover_all_agents(strict_mode: bool = True) -> list[dict[str, Any]]:
         project_root = get_validated_project_root()
         raw_agents = load_agent_discovery(project_root)
         raw_agents = sorted(
-            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", ""))
+            raw_agents, key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", "")),
         )
 
         if not strict_mode:
@@ -634,7 +634,7 @@ def cli_interface() -> None:
                         "rejection_reason": report.rejection_reason,
                     },
                     indent=2,
-                )
+                ),
             )
 
         elif args.json:

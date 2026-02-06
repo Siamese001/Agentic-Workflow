@@ -142,7 +142,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
             ConfigurationService().is_import = CONTENT.strip().startswith("import")
             if not ConfigurationService().is_import and ", " in CONTENT:
                 ConfigurationService().result = _break_at_commas(
-                    CONTENT, ConfigurationService().indent
+                    CONTENT, ConfigurationService().indent,
                 )
             if (
                 not ConfigurationService().result
@@ -150,7 +150,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 and (" and " in CONTENT)
             ):
                 ConfigurationService().result = _break_at_boolean_operator(
-                    CONTENT, ConfigurationService().indent, "and"
+                    CONTENT, ConfigurationService().indent, "and",
                 )
             if (
                 not ConfigurationService().result
@@ -158,7 +158,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 and (" or " in CONTENT)
             ):
                 ConfigurationService().result = _break_at_boolean_operator(
-                    CONTENT, ConfigurationService().indent, "or"
+                    CONTENT, ConfigurationService().indent, "or",
                 )
             if (
                 not ConfigurationService().result
@@ -166,11 +166,11 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 and ("." in CONTENT)
             ):
                 ConfigurationService().result = _break_at_method_chain(
-                    CONTENT, ConfigurationService().indent
+                    CONTENT, ConfigurationService().indent,
                 )
             if not ConfigurationService().result and (not ConfigurationService().is_import):
                 ConfigurationService().result = _break_at_operators(
-                    CONTENT, ConfigurationService().indent
+                    CONTENT, ConfigurationService().indent,
                 )
             if ConfigurationService().result:
                 ConfigurationService().new_lines.append(ConfigurationService().result)

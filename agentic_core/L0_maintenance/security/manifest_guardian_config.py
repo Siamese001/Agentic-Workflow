@@ -67,7 +67,7 @@ class ManifestGuardian:
 
         if stored_checksum != current_checksum:
             logger.critical(
-                f"SSOT CORRUPTION DETECTED. \nExpected: {stored_checksum}\nActual:   {current_checksum}"
+                f"SSOT CORRUPTION DETECTED. \nExpected: {stored_checksum}\nActual:   {current_checksum}",
             )
             return False
 

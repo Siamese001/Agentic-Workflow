@@ -234,7 +234,7 @@ class CognitiveBatchProcessor:
                 }
 
                 Logger.info(
-                    f"    Decision: {decision.action} -> {decision.target_path or 'N/A'} ({decision.confidence:.2f})"
+                    f"    Decision: {decision.action} -> {decision.target_path or 'N/A'} ({decision.confidence:.2f})",
                 )
                 return True
 

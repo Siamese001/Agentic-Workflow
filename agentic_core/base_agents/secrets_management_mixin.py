@@ -38,7 +38,7 @@ class SecretsManagementMixin:
         self._sm_logger.info(
             f"AUDIT: Secret access | Key='{secret_key}' | "
             f"Agent='{self.__class__.__name__}' | "
-            f"Env='{self._env_context}' | Status='{status}'"
+            f"Env='{self._env_context}' | Status='{status}'",
         )
 
     async def get_secret(self, key: str, default: str | None = None) -> str:
@@ -78,7 +78,7 @@ class SecretsManagementMixin:
             self._audit_access(key, success=False)
             raise SecretAccessError(
                 f"Secret '{key}' not found for agent '{self.__class__.__name__}' "
-                f"in environment '{self._env_context}'"
+                f"in environment '{self._env_context}'",
             )
 
         # 3. Success Audit

@@ -212,7 +212,7 @@ def get_compliant_name(path: Path, file_type: str) -> str | None:
 
 
 def find_imports_to_update(
-    project_root: Path, old_name: str, new_name: str
+    project_root: Path, old_name: str, new_name: str,
 ) -> list[dict[str, Any]]:
     """Find all files that import the old module name"""
     old_mod = old_name.replace(".py", "")
@@ -240,7 +240,7 @@ def find_imports_to_update(
                             "file": str(path.relative_to(project_root)),
                             "old_module": old_mod,
                             "new_module": new_mod,
-                        }
+                        },
                     )
                     break
         except:
@@ -286,7 +286,7 @@ def main():
                     "relative_path": str(path.relative_to(project_root)),
                     "import_updates": import_updates,
                     "import_count": len(import_updates),
-                }
+                },
             )
         else:
             stats["compliant"] += 1

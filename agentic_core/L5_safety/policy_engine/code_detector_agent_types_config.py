@@ -185,7 +185,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
                         line_number=lineno,
                         severity=Severity.WARNING.name,
                         message=f"Potentially unused definition: {name}",
-                    )
+                    ),
                 )
         except SyntaxError:
             pass
@@ -213,7 +213,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
                             severity=Severity.ERROR.name,
                             message="Potential nested lock acquisition (Deadlock Risk)",
                             details={"nested_lines": [l1, l2]},
-                        )
+                        ),
                     )
         return detections
 
@@ -231,7 +231,7 @@ class CodeDetectorAgent(SovereignBaseAgent):
                             severity=Severity.WARNING.name,
                             message="Potential memory leak pattern",
                             details={"pattern": pattern},
-                        )
+                        ),
                     )
         return detections
 

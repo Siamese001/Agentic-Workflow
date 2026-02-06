@@ -335,14 +335,14 @@ class ToolReliabilityMixin:
                     health.circuit_state = CircuitState.OPEN
                     self._circuit_opened_at[tool_name] = time.time()
                     Logger.warning(
-                        f"[RELIABILITY] Circuit for '{tool_name}' reopened after half-open failure"
+                        f"[RELIABILITY] Circuit for '{tool_name}' reopened after half-open failure",
                     )
                 elif health.consecutive_failures >= config.failure_threshold:
                     health.circuit_state = CircuitState.OPEN
                     self._circuit_opened_at[tool_name] = time.time()
                     Logger.warning(
                         f"[RELIABILITY] Circuit for '{tool_name}' OPENED after "
-                        f"{health.consecutive_failures} consecutive failures"
+                        f"{health.consecutive_failures} consecutive failures",
                     )
 
     async def with_retry(
@@ -392,7 +392,7 @@ class ToolReliabilityMixin:
                     delay = self._calculate_delay(tool_name, attempt)
                     Logger.warning(
                         f"[RELIABILITY] '{tool_name}' attempt {attempt + 1} failed: {e}. "
-                        f"Retrying in {delay:.2f}s"
+                        f"Retrying in {delay:.2f}s",
                     )
 
                     if on_retry:
@@ -452,7 +452,7 @@ class ToolReliabilityMixin:
                     delay = self._calculate_delay(tool_name, attempt)
                     Logger.warning(
                         f"[RELIABILITY] '{tool_name}' attempt {attempt + 1} failed: {e}. "
-                        f"Retrying in {delay:.2f}s"
+                        f"Retrying in {delay:.2f}s",
                     )
                     time.sleep(delay)
 

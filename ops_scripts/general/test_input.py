@@ -87,10 +87,10 @@ def validate_hop_engines():
                     "role": "Engineer",
                     "duration": "2020-2023",
                     "bullets": ["Led team", "Built system"],
-                }
+                },
             ],
             "skills": ["Python", "AWS"],
-        }
+        },
     )
 
     clerk_output = clerk.execute(clerk_input)
@@ -131,8 +131,8 @@ def validate_orchestrator():
                     "role": "Developer",
                     "duration": "2019-2023",
                     "bullets": ["Developed APIs"],
-                }
-            ]
+                },
+            ],
         },
     )
 
@@ -205,7 +205,7 @@ def validate_pydantic_models():
 
     # Valid ExperienceSection
     exp = ExperienceSection(
-        company="TestCo", role="Engineer", duration="2020-2023", bullets=["Task 1", "Task 2"]
+        company="TestCo", role="Engineer", duration="2020-2023", bullets=["Task 1", "Task 2"],
     )
     print(f"✅ Valid ExperienceSection with {len(exp.bullets)} bullets")
 

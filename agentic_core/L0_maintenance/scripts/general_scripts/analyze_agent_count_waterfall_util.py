@@ -88,7 +88,7 @@ def main():
         if abs(entry["delta"]) >= 10:
             delta_str = f"+{entry['delta']}" if entry["delta"] > 0 else str(entry["delta"])
             print(
-                f"{entry['date']:<12} {entry['count']:>6} {delta_str:>7}  {entry['hash']:<10} {entry['message']}"
+                f"{entry['date']:<12} {entry['count']:>6} {delta_str:>7}  {entry['hash']:<10} {entry['message']}",
             )
 
     # Build waterfall summary by date

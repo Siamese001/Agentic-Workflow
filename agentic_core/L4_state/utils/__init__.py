@@ -9,13 +9,13 @@ SSOT for common functionality used across L5 agents:
 These utilities were extracted from L5 agents to eliminate code duplication.
 """
 
-from agentic_core.L4_state.utils.context_manager import (
-    L4ContextManager,
-    get_context_manager,
-)
 from agentic_core.L4_state.utils.complexity_analyzer import (
     calculate_mccabe_complexity,
     check_function_complexity,
+)
+from agentic_core.L4_state.utils.context_manager import (
+    L4ContextManager,
+    get_context_manager,
 )
 from agentic_core.L4_state.utils.layer_gravity import (
     GRAVITY_RULES,

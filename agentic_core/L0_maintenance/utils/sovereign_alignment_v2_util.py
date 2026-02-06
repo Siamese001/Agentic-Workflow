@@ -57,7 +57,7 @@ def flush_and_align() -> Any:
         (
             "agentic_core\\.L5_safety\\.P1_red_team\\.analysis",
             "agentic_core.L2_execution.tool_registry.analysis",
-        )
+        ),
     ]
     count: Any = 0
     # Phase 6.8: Use ssot_discovery instead of rglob

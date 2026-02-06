@@ -29,7 +29,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
     issues: Any = []
     file_str: Any = str(filepath).replace("\\", "/")
     current_context: Any = next(
-        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None
+        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None,
     )
     if not current_context:
         return []
@@ -73,7 +73,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
                     if target_path.replace("/", ".") in node.module:
                         if "contracts" not in node.module and "interfaces" not in node.module:
                             issues.append(
-                                f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}"
+                                f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}",
                             )
     except Exception:
         pass

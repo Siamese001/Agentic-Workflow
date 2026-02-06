@@ -78,19 +78,19 @@ class ClaimExtractor:
         # Patterns for extracting different types of claims
         self.patterns = {
             "percentage": re.compile(
-                r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b", re.IGNORECASE
+                r"(\d+(?:\.\d+)?)%|\b(\d+(?:\.\d+)?\s*percent)\b", re.IGNORECASE,
             ),
             "currency": re.compile(
                 r"\$(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(dollars?|usd)",
                 re.IGNORECASE,
             ),
             "multiplier": re.compile(
-                r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)", re.IGNORECASE
+                r"(\d+(?:\.\d+)?)x|(\d+(?:\.\d+)?)\s*(times|fold)", re.IGNORECASE,
             ),
             "number": re.compile(r"\b(\d+(?:,\d{3})*(?:\.\d+)?)\b"),
             "year": re.compile(r"\b(20\d{2})\b"),
             "duration": re.compile(
-                r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE
+                r"(\d+(?:\.\d+)?)\s*(years?|months?|weeks?|days?)", re.IGNORECASE,
             ),
         }
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
@@ -87,7 +86,7 @@ class CachedStateLedgerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         # [L4 TELEMETRY] Record successful cache operation for GeminiSpy
         self._record_successful_trace(
-            {"operation": "cache_validation_context", "key": key, "timestamp": time.time()}
+            {"operation": "cache_validation_context", "key": key, "timestamp": time.time()},
         )
 
     def get_cached_validation_context(self, key: str) -> dict | None:
@@ -103,7 +102,7 @@ class CachedStateLedgerAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             "key": key,
                             "hit": True,
                             "timestamp": time.time(),
-                        }
+                        },
                     )
                     return json.loads(data)
             else:
@@ -115,7 +114,7 @@ class CachedStateLedgerAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             "key": key,
                             "hit": True,
                             "timestamp": time.time(),
-                        }
+                        },
                     )
                 return result
         except Exception:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Implementation for ContextCurator."""

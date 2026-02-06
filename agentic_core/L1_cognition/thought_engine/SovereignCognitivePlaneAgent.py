@@ -7,7 +7,6 @@ import asyncio
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """Brief description of functionality and purpose."""
@@ -117,7 +116,7 @@ class SovereignCognitivePlaneAgent(AtomicExecutionMixin, SovereignBaseAgent):
                     LOGGER.info("L5 Streamer integrated with SovereignCognitivePlaneAgent via factory")
                 except Exception as e:
                     LOGGER.warning(
-                        f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled"
+                        f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled",
                     )
             else:
                 LOGGER.warning("L5 Streamer not provided via factory - reasoning broadcast disabled")

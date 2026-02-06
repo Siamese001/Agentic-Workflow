@@ -211,7 +211,7 @@ class RecursionMonitor:
         cache_hit_rate = cache_hits / max(cache_hits + cache_misses, 1)
 
         health_status = self._calculate_health_status(
-            active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate
+            active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate,
         )
 
         snapshot = RecursionSnapshot(
@@ -281,7 +281,7 @@ class RecursionMonitor:
                 duration_ms=(time.time() - start) * 1000,
                 timestamp=datetime.now().isoformat(),
                 metadata={"consecutive_failures": self._consecutive_failures},
-            )
+            ),
         )
 
         # Check 2: Memory usage
@@ -300,7 +300,7 @@ class RecursionMonitor:
                     duration_ms=(time.time() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"memory_mb": mem_mb},
-                )
+                ),
             )
 
         # Check 3: Success rate
@@ -320,7 +320,7 @@ class RecursionMonitor:
                     duration_ms=(time.time() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"success_rate": latest.success_rate},
-                )
+                ),
             )
 
         # Check 4: Response time
@@ -336,7 +336,7 @@ class RecursionMonitor:
                     duration_ms=(time.time() - start) * 1000,
                     timestamp=datetime.now().isoformat(),
                     metadata={"avg_response_ms": avg_response},
-                )
+                ),
             )
 
         self._health_checks = checks

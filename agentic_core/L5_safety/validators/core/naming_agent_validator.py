@@ -19,7 +19,6 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.validators.structure_blueprint_config import PROJECT_ROOT_METADATA
 
@@ -59,7 +58,7 @@ class NamingAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
 
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any,
     ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
         try:

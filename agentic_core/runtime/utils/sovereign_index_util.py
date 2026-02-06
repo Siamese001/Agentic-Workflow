@@ -143,7 +143,7 @@ class SovereignIndex:
                 if resolved != cls._instance._project_root:
                     Logger.warning(
                         f"[INDEX] Project root mismatch: {resolved} vs {cls._instance._project_root}. "
-                        "Creating new instance."
+                        "Creating new instance.",
                     )
                     cls._instance = cls(project_root)
             return cls._instance
@@ -178,13 +178,13 @@ class SovereignIndex:
         # Check cache first
         if pattern in self._cache:
             Logger.info(
-                f"[INDEX] cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)"
+                f"[INDEX] cache Hit: Pattern '{pattern}' -> {len(self._cache[pattern])} files (from cache)",
             )
             return self._cache[pattern].copy()
 
         # cache miss - need to scan
         Logger.info(
-            f"[INDEX] cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files"
+            f"[INDEX] cache Miss: Pattern '{pattern}' -> scanning {len(self._all_files)} indexed files",
         )
 
         # Filter files by pattern

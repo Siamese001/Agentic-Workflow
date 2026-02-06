@@ -86,7 +86,7 @@ def validate_totals():
             for r in territory_rows[:5]:  # Show first 5
                 contrib = r[metric_key] * r["Total"] / expected_total
                 print(
-                    f"        {r['Territory']:30s}: {r[metric_key]:5.1f}% × {r['Total']:3d} agents = {contrib:5.2f}% contribution"
+                    f"        {r['Territory']:30s}: {r[metric_key]:5.1f}% × {r['Total']:3d} agents = {contrib:5.2f}% contribution",
                 )
 
     # 3. Validate Health Score calculation
@@ -102,7 +102,7 @@ def validate_totals():
             points = comp["points"]
             calculated_health += points
             print(
-                f"     {comp['component']:20s}: {comp['raw']:5.1f}% × {comp['weight'] * 100:2.0f}% = {points:5.1f} pts"
+                f"     {comp['component']:20s}: {comp['raw']:5.1f}% × {comp['weight'] * 100:2.0f}% = {points:5.1f} pts",
             )
 
         print(f"\n   Calculated Health: {calculated_health:.1f}%")

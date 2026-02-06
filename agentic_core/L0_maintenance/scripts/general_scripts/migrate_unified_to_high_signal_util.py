@@ -89,7 +89,7 @@ def migrate_unified():
             else:
                 remaining = list(old_path.iterdir())
                 print(
-                    f"  [RETAIN] Directory still contains {len(remaining)} items: {[i.name for i in remaining]}"
+                    f"  [RETAIN] Directory still contains {len(remaining)} items: {[i.name for i in remaining]}",
                 )
         else:
             print(f"[SKIP] {old_rel} does not exist")

@@ -386,17 +386,17 @@ def main():
     # Scan command
     scan_parser = subparsers.add_parser("scan", help="Scan and list all discovered agents")
     scan_parser.add_argument(
-        "--summary", action="store_true", help="Show summary by layer instead of full listing"
+        "--summary", action="store_true", help="Show summary by layer instead of full listing",
     )
     scan_parser.add_argument(
-        "--violations-only", action="store_true", help="Show only agents with gravity violations"
+        "--violations-only", action="store_true", help="Show only agents with gravity violations",
     )
     scan_parser.add_argument("--limit", type=int, help="Limit number of agents displayed")
 
     # Validate command
     validate_parser = subparsers.add_parser("validate", help="Run comprehensive SSOT validation")
     validate_parser.add_argument(
-        "--summary", action="store_true", help="Show brief summary instead of full report"
+        "--summary", action="store_true", help="Show brief summary instead of full report",
     )
     validate_parser.add_argument("--markdown", action="store_true", help="Save report as Markdown file")
     validate_parser.add_argument("--json", action="store_true", help="Output report as JSON")
@@ -405,14 +405,14 @@ def main():
     # Enforce command
     enforce_parser = subparsers.add_parser("enforce", help="Apply automated remediation")
     enforce_parser.add_argument(
-        "--execute", action="store_true", help="Execute enforcement (default is dry-run)"
+        "--execute", action="store_true", help="Execute enforcement (default is dry-run)",
     )
     enforce_parser.add_argument("--yes", "-y", action="store_true", help="Skip confirmation prompt")
     enforce_parser.add_argument("--gravity", action="store_true", help="Fix gravity violations only")
     enforce_parser.add_argument("--drift", action="store_true", help="Fix drift violations only")
     enforce_parser.add_argument("--hierarchy", action="store_true", help="Fix hierarchy violations only")
     enforce_parser.add_argument(
-        "--all", action="store_true", default=True, help="Fix all violations (default)"
+        "--all", action="store_true", default=True, help="Fix all violations (default)",
     )
 
     # Status command

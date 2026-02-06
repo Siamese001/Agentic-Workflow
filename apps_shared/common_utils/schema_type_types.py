@@ -111,7 +111,7 @@ class InternalSchemaConverter:
         """Process a single field mapping."""
         try:
             external_value = self._extract_and_transform_value(
-                mapping, external_data, errors, warnings
+                mapping, external_data, errors, warnings,
             )
             self._set_converted_value(mapping, external_value, converted_data, errors, warnings)
         except Exception as e:
@@ -136,13 +136,13 @@ class InternalSchemaConverter:
 
         if mapping.type_conversion:
             external_value = self._convert_with_error_handling(
-                external_value, mapping, errors, warnings
+                external_value, mapping, errors, warnings,
             )
 
         return external_value
 
     def _convert_with_error_handling(
-        self, value: Any, mapping: FieldMapping, errors: list[str], warnings: list[str]
+        self, value: Any, mapping: FieldMapping, errors: list[str], warnings: list[str],
     ) -> object:
         """Convert type with error handling."""
         try:
@@ -184,7 +184,7 @@ class InternalSchemaConverter:
             errors.append(f"Missing required field: {mapping.internal_path}")
 
     def _finalize_conversion(
-        self, converted_data: dict[str, object], internal_schema: InternalSchema, errors: list[str]
+        self, converted_data: dict[str, object], internal_schema: InternalSchema, errors: list[str],
     ) -> None:
         """Finalize conversion with validation and cleanup."""
         if not self.config.preserve_unknown:
@@ -213,7 +213,7 @@ class InternalSchemaConverter:
 
             for mapping in field_mappings:
                 self._process_field_mapping(
-                    mapping, external_data, converted_data, errors, warnings
+                    mapping, external_data, converted_data, errors, warnings,
                 )
 
             self._finalize_conversion(converted_data, internal_schema, errors)
@@ -233,7 +233,7 @@ class InternalSchemaConverter:
             )
 
             self.logger.info(
-                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings"
+                f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings",
             )
             return result
 
@@ -248,7 +248,7 @@ class InternalSchemaConverter:
             )
 
     def auto_generate_mappings(
-        self, external_schema: dict[str, object], internal_schema: InternalSchema
+        self, external_schema: dict[str, object], internal_schema: InternalSchema,
     ) -> list[FieldMapping]:
         """Automatically generate field mappings between schemas.
 
@@ -271,7 +271,7 @@ class InternalSchemaConverter:
                         internal_path=internal_field,
                         type_conversion=internal_def.get("type"),
                         required=internal_def.get("required", False),
-                    )
+                    ),
                 )
                 continue
 
@@ -284,7 +284,7 @@ class InternalSchemaConverter:
                         internal_path=internal_field,
                         type_conversion=internal_def.get("type"),
                         required=internal_def.get("required", False),
-                    )
+                    ),
                 )
                 continue
 
@@ -317,7 +317,7 @@ class InternalSchemaConverter:
         for i, external_data in enumerate(external_data_list):
             self.logger.debug(f"Converting item {i + 1}/{len(external_data_list)}")
             result = self.convert_to_internal(
-                external_data, external_schema, internal_schema, field_mappings
+                external_data, external_schema, internal_schema, field_mappings,
             )
             results.append(result)
 
@@ -534,7 +534,7 @@ def convert_to_internal_schema(
 
     # Convert
     result = converter.convert_to_internal(
-        external_data, external_schema, internal_schema, mappings
+        external_data, external_schema, internal_schema, mappings,
     )
 
     return {

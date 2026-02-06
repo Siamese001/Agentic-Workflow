@@ -258,7 +258,7 @@ class ModelRouter:
         )
 
     def get_model_config(
-        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None
+        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None,
     ) -> dict[str, Any]:
         """Get model configuration for a task.
 
@@ -382,7 +382,7 @@ class ModelRouter:
         return FallbackClient(model_config, self)
 
     def record_usage(
-        self, model_name: str, input_tokens: int, output_tokens: int, cost: float
+        self, model_name: str, input_tokens: int, output_tokens: int, cost: float,
     ) -> None:
         """Record model usage for budget tracking.
 
@@ -595,7 +595,7 @@ class FallbackClient:
 
         # Record with router
         self.router.record_usage(
-            client.config.model_name, int(input_tokens), int(output_tokens), cost
+            client.config.model_name, int(input_tokens), int(output_tokens), cost,
         )
 
 
@@ -681,7 +681,7 @@ async def get_model_router() -> ModelRouter:
 
 # Helper functions
 async def route_and_generate(
-    task_type: TaskType, prompt: str, complexity_score: int = 1, **kwargs
+    task_type: TaskType, prompt: str, complexity_score: int = 1, **kwargs,
 ) -> str:
     """Route task and generate response.
 

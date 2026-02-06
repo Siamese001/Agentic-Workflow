@@ -16,7 +16,6 @@ import logging
 import time
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
         if not hasattr(self, "audit_log"):
             self.audit_log = []
         self.audit_log.append(
-            {"op": operation, "success": success, "latency_ms": latency_ms, "ts": time.time()}
+            {"op": operation, "success": success, "latency_ms": latency_ms, "ts": time.time()},
         )
         self.operation_stats["total"] += 1
         if not success:

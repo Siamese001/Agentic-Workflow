@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
@@ -72,7 +71,7 @@ class SprawlInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         "type": "Breadth Violation",
                         "count": len(dirs),
                         "msg": f"Found {len(dirs)} subfolders. Violates 'Magic 7' rule.",
-                    }
+                    },
                 )
             if 0 < len(py_files) < self.MIN_FILES and (not dirs) and (p != self.root):
                 self.report["flattening_candidates"].append(
@@ -81,7 +80,7 @@ class SprawlInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
                         "files": py_files,
                         "file_count": len(py_files),
                         "reason": "Low Signal Density (Fragmented)",
-                    }
+                    },
                 )
         return self.report
 

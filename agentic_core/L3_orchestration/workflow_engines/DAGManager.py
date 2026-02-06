@@ -18,7 +18,7 @@ from agentic_core.base_agents.decorators import standard_heal
 
 
 class DAGManager(
-    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
+    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin,
 ):
     """Manages the dynamic DAG with mutation capabilities.
 
@@ -232,7 +232,7 @@ class DAGManager(
                     "state": hop.state.value if hop else None,
                     "skipped": node_data.get("skipped", False),
                     "replaced": node_data.get("replaced", False),
-                }
+                },
             )
 
         for edge in self.graph.edges:
@@ -242,7 +242,7 @@ class DAGManager(
                     "source": edge[0],
                     "target": edge[1],
                     "bridge": edge_data.get("bridge_created", False),
-                }
+                },
             )
 
         return {"nodes": nodes, "edges": edges}

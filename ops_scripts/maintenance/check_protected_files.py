@@ -37,7 +37,7 @@ def get_staged_files() -> list[str]:
     """Get list of files staged for commit."""
     try:
         result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except subprocess.CalledProcessError:

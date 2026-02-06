@@ -131,7 +131,7 @@ class CoreSynthesisExecutor:
 
                         if self._merge_logic_into_target(target_path, extracted_logic, file_info):
                             print(
-                                f"🔄 Synthesized: {file_info['file_path']} -> {file_info['synthesis_target']}"
+                                f"🔄 Synthesized: {file_info['file_path']} -> {file_info['synthesis_target']}",
                             )
 
                             # Archive original after successful synthesis

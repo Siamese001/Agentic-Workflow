@@ -53,7 +53,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
                     "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
                 )
                 changes_made.append(
-                    f"Import: {import_pattern} -> from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"
+                    f"Import: {import_pattern} -> from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
                 )
                 modified = True
 
@@ -65,7 +65,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
                     "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
                 )
                 changes_made.append(
-                    f"Import: {relative_import_pattern} -> from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"
+                    f"Import: {relative_import_pattern} -> from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
                 )
                 modified = True
 
@@ -78,7 +78,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
                 content = inheritance_pattern.sub(r"class \1(SovereignBaseAgent):", content)
                 for class_name in matches:
                     changes_made.append(
-                        f"Inheritance: class {class_name}({legacy_name}) -> class {class_name}(SovereignBaseAgent)"
+                        f"Inheritance: class {class_name}({legacy_name}) -> class {class_name}(SovereignBaseAgent)",
                     )
                 modified = True
 

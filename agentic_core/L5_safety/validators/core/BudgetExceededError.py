@@ -102,7 +102,7 @@ class CostGovernor:
                         total_gb: Any = total_kb / 1024**2
                 if available_gb < self.min_memory_gb:
                     LOGGER.error(
-                        f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required"
+                        f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required",
                     )
                     raise MemoryPressureError(
                         f"Insufficient memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required",

@@ -122,7 +122,7 @@ class ErrorRecoveryGuardrail:
         self.error_log: list[ErrorContext] = []
 
     async def handle_error(
-        self, error: Exception, context: dict[str, Any] | None = None, max_retries: int = 3
+        self, error: Exception, context: dict[str, Any] | None = None, max_retries: int = 3,
     ) -> RecoveryResult:
         """
         Handle error with classification and recovery.
@@ -202,7 +202,7 @@ class ErrorRecoveryGuardrail:
         return self.recovery_map.get(error_ctx.category, RecoveryStrategy.ESCALATE)
 
     async def _execute_recovery(
-        self, error_ctx: ErrorContext, strategy: RecoveryStrategy, max_retries: int
+        self, error_ctx: ErrorContext, strategy: RecoveryStrategy, max_retries: int,
     ) -> RecoveryResult:
         """Execute recovery strategy."""
         if strategy == RecoveryStrategy.RETRY:

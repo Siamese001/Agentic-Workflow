@@ -129,7 +129,7 @@ class SovereignRagOrchestrator:
                     [
                         {"id": f"{doc_id}_{i}", "text": chunk, "metadata": metadata or {}}
                         for i, chunk in enumerate(text_chunks)
-                    ]
+                    ],
                 )
             print(f"Indexed {len(text_chunks)} chunks for {doc_id}")
         except Exception as e:
@@ -180,7 +180,7 @@ class SovereignRagOrchestrator:
                     "source": "static_index.action_verbs",
                     "content": json.dumps(self.static_knowledge["action_verbs"], indent=2),
                     "score": 0.95,
-                }
+                },
             )
         if any(skill.lower() in query_lower for skill in ALL_SKILLS[:50]):
             static_boost.append(
@@ -189,7 +189,7 @@ class SovereignRagOrchestrator:
                     "source": "static_index.skill_taxonomy",
                     "content": json.dumps(SKILL_TAXONOMY, indent=2),
                     "score": 0.95,
-                }
+                },
             )
 
         # 2. Reciprocal Rank Fusion (RRF)
@@ -202,7 +202,7 @@ class SovereignRagOrchestrator:
         final_results = await self._llm_rerank(query, all_candidates[: top_k * 2], top_k)
 
         return final_results or [
-            {"source": "fallback", "content": "No relevant knowledge found.", "score": 0.0}
+            {"source": "fallback", "content": "No relevant knowledge found.", "score": 0.0},
         ]
 
     def _rrf_fusion(self, vector_list: list[dict], bm25_list: list[dict], k: int = 60) -> list[dict]:

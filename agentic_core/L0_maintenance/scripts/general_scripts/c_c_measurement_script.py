@@ -238,13 +238,13 @@ class CCMeasurement:
 
         print("\nHigh Complexity Functions:")
         print(
-            f"  CC > 20: {len(baseline['functions_cc_gt_20'])} → {len(current['functions_cc_gt_20'])} ({comparison['functions_cc_gt_20_change']:+d})"
+            f"  CC > 20: {len(baseline['functions_cc_gt_20'])} → {len(current['functions_cc_gt_20'])} ({comparison['functions_cc_gt_20_change']:+d})",
         )
         print(
-            f"  CC > 15: {len(baseline['functions_cc_gt_15'])} → {len(current['functions_cc_gt_15'])} ({comparison['functions_cc_gt_15_change']:+d})"
+            f"  CC > 15: {len(baseline['functions_cc_gt_15'])} → {len(current['functions_cc_gt_15'])} ({comparison['functions_cc_gt_15_change']:+d})",
         )
         print(
-            f"  CC > 10: {len(baseline['functions_cc_gt_10'])} → {len(current['functions_cc_gt_10'])} ({comparison['functions_cc_gt_10_change']:+d})"
+            f"  CC > 10: {len(baseline['functions_cc_gt_10'])} → {len(current['functions_cc_gt_10'])} ({comparison['functions_cc_gt_10_change']:+d})",
         )
 
         # Success criteria

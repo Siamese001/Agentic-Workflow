@@ -51,7 +51,7 @@ class LegacyArtifacts:
     # SALVAGED REGEX: From StructuralHealerAgent (Phase 27 Harvest)
     # Used for detecting complex circular import chains in stack traces
     CIRCULAR_IMPORT_PATTERN: Final[Pattern] = re.compile(
-        r"ImportError:\s*cannot import name\s*'(\w+)'\s*from\s*'([\w\.]+)'"
+        r"ImportError:\s*cannot import name\s*'(\w+)'\s*from\s*'([\w\.]+)'",
     )
 
     # SALVAGED REGEX: From SyntaxValidatorAgent (Phase 27 Harvest)
@@ -86,7 +86,7 @@ class LegacyArtifacts:
     # SALVAGED REGEX: From utils_lic_v12.py (Phase 29)
     # Used for detecting metric placeholders and numbers
     METRIC_PLACEHOLDER_PATTERN: Final[Pattern] = re.compile(
-        r"\b\d+%|\b\d+x\b|\b\d+\s*(million|billion|thousand|k)\b|\bPLACEHOLDER\b"
+        r"\b\d+%|\b\d+x\b|\b\d+\s*(million|billion|thousand|k)\b|\bPLACEHOLDER\b",
     )
 
     # SALVAGED PROMPT: From ProfileAnalysisAgent.py (Phase 29)
@@ -157,7 +157,7 @@ class LegacyArtifacts:
                 "Source: {source}\n"
                 "Draft: {draft}"
             ),
-        }
+        },
     )
 
     @classmethod

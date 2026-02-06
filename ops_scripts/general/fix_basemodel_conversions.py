@@ -48,7 +48,7 @@ def convert_basemodel_to_dataclass(file_path: Path) -> bool:
 
     # Remove @validator decorators (convert to __post_init__ if needed)
     content = re.sub(
-        r"\s*@validator\([^)]+\)\s*\n\s*def [^:]+:[^}]+", "", content, flags=re.MULTILINE
+        r"\s*@validator\([^)]+\)\s*\n\s*def [^:]+:[^}]+", "", content, flags=re.MULTILINE,
     )
 
     # Remove ge/le constraints from field (move to metadata)

@@ -55,11 +55,11 @@ class L1HealthBenchmark:
             print(f"[{i}/{len(missions)}] {mission['name']:<40}", end=" ", flush=True)
 
             result = await self.node.process_async(
-                {"user_query": mission["query"]}, mission.get("context", {})
+                {"user_query": mission["query"]}, mission.get("context", {}),
             )
 
             self.results.append(
-                {"mission": mission["name"], "query": mission["query"], "result": result}
+                {"mission": mission["name"], "query": mission["query"], "result": result},
             )
 
             self.latencies.append(result.latency_ms)
@@ -143,7 +143,7 @@ class L1HealthBenchmark:
 
         # Calculate health score
         health_score = self._calculate_health_score(
-            avg_latency, avg_confidence, avg_plan_score, meta_stats
+            avg_latency, avg_confidence, avg_plan_score, meta_stats,
         )
 
         return {

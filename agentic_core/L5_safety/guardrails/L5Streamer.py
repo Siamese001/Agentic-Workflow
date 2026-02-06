@@ -91,7 +91,7 @@ class L5Streamer:
                         for client in self._websocket_clients:
                             try:
                                 asyncio.run_coroutine_threadsafe(
-                                    client.send(message), asyncio.get_event_loop()
+                                    client.send(message), asyncio.get_event_loop(),
                                 ).result(timeout=1.0)
                             except Exception:
                                 disconnected.add(client)
@@ -117,8 +117,8 @@ class L5Streamer:
                             "type": "connected",
                             "message": "Connected to L5 Stream",
                             "agent": self._current_agent,
-                        }
-                    )
+                        },
+                    ),
                 )
                 await websocket.wait_closed()
             except Exception as e:

@@ -329,7 +329,7 @@ class CoreSynthesisAnalyzer:
             print(f"   🔄 Circular Dependencies: {len(result.circular_deps)}")
             print(f"   ✅ Contract Compliance: {result.contract_compliance}")
             print(
-                f"   🛡️ Sovereign Requirements: {', '.join(result.sovereign_requirements) if result.sovereign_requirements else 'None'}"
+                f"   🛡️ Sovereign Requirements: {', '.join(result.sovereign_requirements) if result.sovereign_requirements else 'None'}",
             )
             print(f"   🎯 Disposition: {result.disposition.value}")
             if result.synthesis_target:
@@ -360,10 +360,10 @@ class CoreSynthesisAnalyzer:
         report.append(f"- **Total Files Analyzed:** {total_files}")
         report.append(f"- **KEEP Disposition:** {keep_count} files ({keep_count / total_files * 100:.1f}%)")
         report.append(
-            f"- **ARCHIVE Disposition:** {archive_count} files ({archive_count / total_files * 100:.1f}%)"
+            f"- **ARCHIVE Disposition:** {archive_count} files ({archive_count / total_files * 100:.1f}%)",
         )
         report.append(
-            f"- **SYNTHESIZE Disposition:** {synthesize_count} files ({synthesize_count / total_files * 100:.1f}%)"
+            f"- **SYNTHESIZE Disposition:** {synthesize_count} files ({synthesize_count / total_files * 100:.1f}%)",
         )
         report.append("")
 
@@ -392,7 +392,7 @@ class CoreSynthesisAnalyzer:
             report.append(f"- Circular Dependencies: {len(result.circular_deps)}")
             report.append(f"- Contract Compliance: {result.contract_compliance}")
             report.append(
-                f"- Sovereign Requirements: {', '.join(result.sovereign_requirements) if result.sovereign_requirements else 'None'}"
+                f"- Sovereign Requirements: {', '.join(result.sovereign_requirements) if result.sovereign_requirements else 'None'}",
             )
             report.append("")
 
@@ -449,7 +449,7 @@ def main():
                 "circular_deps": result.circular_deps,
                 "contract_compliance": result.contract_compliance,
                 "sovereign_requirements": result.sovereign_requirements,
-            }
+            },
         )
 
     with open("core_refinery_analysis_results.json", "w") as f:

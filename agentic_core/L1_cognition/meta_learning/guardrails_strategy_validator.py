@@ -316,7 +316,7 @@ class MetaLearningGuardrails:
         if depth >= self.guardrails.max_healing_depth:
             self.logger.warning(
                 f"Healing depth limit reached for {agent_name}:{violation_id} "
-                f"(depth={depth}, max={self.guardrails.max_healing_depth})"
+                f"(depth={depth}, max={self.guardrails.max_healing_depth})",
             )
             return False
 
@@ -370,7 +370,7 @@ class MetaLearningGuardrails:
         # Check pattern has domain metadata
         if "domain" in pattern and pattern["domain"] != domain:
             self.logger.warning(
-                f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}"
+                f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}",
             )
             return False
 

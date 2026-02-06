@@ -117,7 +117,7 @@ class ReasoningNode:
         return strategy_map.get(intent, "balanced")
 
     def _generate_thoughts(
-        self, query: str, strategy: str, perceived: dict[str, Any]
+        self, query: str, strategy: str, perceived: dict[str, Any],
     ) -> list[dict[str, Any]]:
         """
         Generate prioritized thoughts using strategy.

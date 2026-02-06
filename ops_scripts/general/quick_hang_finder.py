@@ -47,7 +47,7 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 suspicious.append(
-                                    f"Line {node.lineno}: {target.id} = {func_name}(...)"
+                                    f"Line {node.lineno}: {target.id} = {func_name}(...)",
                                 )
 
             # Top-level function calls (not in if __name__ == "__main__")
@@ -174,7 +174,7 @@ def main():
             print(f"   - {rel}: {err}")
 
     print(
-        f"\n[OK] Completed: {len(files) - len(hangs)} OK, {len(hangs)} hangs, {len(errors)} errors"
+        f"\n[OK] Completed: {len(files) - len(hangs)} OK, {len(hangs)} hangs, {len(errors)} errors",
     )
 
 

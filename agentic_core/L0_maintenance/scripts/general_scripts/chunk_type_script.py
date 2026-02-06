@@ -87,7 +87,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                 text=module_doc,
                 start_line=1,
                 end_line=doc_lines,
-            )
+            ),
         )
 
     # Import block as single chunk
@@ -102,7 +102,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                 text=_get_source_segment(lines, start, end),
                 start_line=start,
                 end_line=end,
-            )
+            ),
         )
 
     # Classes, functions, methods
@@ -117,7 +117,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                     start_line=node.lineno,
                     end_line=end_line,
                     docstring=_extract_docstring(node),
-                )
+                ),
             )
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             # Check if method (inside class)
@@ -139,7 +139,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                     end_line=end_line,
                     parent=parent_class,
                     docstring=_extract_docstring(node),
-                )
+                ),
             )
 
     return chunks
@@ -161,7 +161,7 @@ def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
                     text=chunk_text,
                     start_line=i + 1,
                     end_line=min(i + chunk_size, len(lines)),
-                )
+                ),
             )
     return chunks
 

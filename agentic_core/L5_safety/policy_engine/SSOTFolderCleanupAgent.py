@@ -496,7 +496,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                         "target": triage["target_path"],
                         "reason": triage["reason"],
                         "confidence": triage["confidence"],
-                    }
+                    },
                 )
             elif triage["action"] == "ARCHIVE":
                 move_plan.append(
@@ -506,7 +506,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                         "reason": triage["reason"],
                         "confidence": triage["confidence"],
                         "archive": True,
-                    }
+                    },
                 )
             else:
                 Logger.info(f"Skipping {file_path}: {triage['action']} - {triage['reason']}")

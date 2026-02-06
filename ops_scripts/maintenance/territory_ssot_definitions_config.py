@@ -114,7 +114,7 @@ def get_base_agent_territory(layer: str) -> str:
 
 
 def get_territory_from_path(
-    layer: str, path_str: str, is_base_class: bool, class_name: str = ""
+    layer: str, path_str: str, is_base_class: bool, class_name: str = "",
 ) -> str:
     """Determine the canonical territory name based on layer, path, and class type."""
     if class_name == "SovereignBaseAgent" or layer == "Base":

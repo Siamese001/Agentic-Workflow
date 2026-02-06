@@ -78,7 +78,7 @@ class DriftDetector(ast.NodeVisitor):
                         "class": node.name,
                         "line": node.lineno,
                         "detected": detected_name,
-                    }
+                    },
                 )
 
 

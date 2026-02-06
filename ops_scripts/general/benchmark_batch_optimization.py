@@ -80,10 +80,10 @@ def benchmark_batch_vs_immediate():
 
         print("🎯 PERFORMANCE GAINS:")
         print(
-            f"  Disk I/O reduction: {write_reduction:.1f}% ({write_count_immediate} → {write_count_batch})"
+            f"  Disk I/O reduction: {write_reduction:.1f}% ({write_count_immediate} → {write_count_batch})",
         )
         print(
-            f"  Time improvement:   {time_improvement:.1f}% ({immediate_time:.4f}s → {batch_time:.4f}s)"
+            f"  Time improvement:   {time_improvement:.1f}% ({immediate_time:.4f}s → {batch_time:.4f}s)",
         )
 
         # Verify correctness

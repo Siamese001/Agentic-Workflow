@@ -69,7 +69,7 @@ def audit_discovery():
                     "inheritance": list(inheritance),
                     "has_healing": has_healing,
                     "reason": [],
-                }
+                },
             )
             if not ends_with_agent:
                 categories["NOT_TRUE_SOVEREIGN"][-1]["reason"].append("No 'Agent' suffix")
@@ -81,15 +81,15 @@ def audit_discovery():
         # Track path-based categories
         if in_scripts:
             categories["IN_SCRIPTS"].append(
-                {"name": name, "path": path, "is_true": is_true_sovereign}
+                {"name": name, "path": path, "is_true": is_true_sovereign},
             )
         if in_utils:
             categories["IN_UTILS"].append(
-                {"name": name, "path": path, "is_true": is_true_sovereign}
+                {"name": name, "path": path, "is_true": is_true_sovereign},
             )
         if is_mixin:
             categories["IS_MIXIN"].append(
-                {"name": name, "path": path, "is_true": is_true_sovereign}
+                {"name": name, "path": path, "is_true": is_true_sovereign},
             )
 
     # Print findings

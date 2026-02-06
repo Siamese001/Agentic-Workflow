@@ -53,7 +53,7 @@ def analyze_archive(archive_path: Path):
                         "first_line": first_sig_line,
                         "has_resume": has_resume,
                         "has_outreach": has_outreach,
-                    }
+                    },
                 )
         except Exception:
             continue

@@ -163,7 +163,7 @@ class SchemaHistoryFetcher:
             )
 
             self.logger.info(
-                f"schema history fetched: {len(paginated_records)} records (total: {total_count})"
+                f"schema history fetched: {len(paginated_records)} records (total: {total_count})",
             )
 
             return result
@@ -171,7 +171,7 @@ class SchemaHistoryFetcher:
         except Exception as e:
             self.logger.error(f"Failed to fetch schema history: {str(e)}")
             return SchemaHistoryResult(
-                records=[], total_count=0, query=query, metadata={"error": str(e)}
+                records=[], total_count=0, query=query, metadata={"error": str(e)},
             )
 
     def add_change_record(self, record: SchemaChangeRecord) -> bool:
@@ -387,14 +387,14 @@ class SchemaHistoryFetcher:
 
             total_records = sum(len(records) for records in self._history_records.values())
             self.logger.info(
-                f"Loaded {total_records} history records for {len(self._history_records)} schemas"
+                f"Loaded {total_records} history records for {len(self._history_records)} schemas",
             )
 
         except Exception as e:
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
     def _apply_filters(
-        self, records: list[SchemaChangeRecord], query: SchemaHistoryQuery
+        self, records: list[SchemaChangeRecord], query: SchemaHistoryQuery,
     ) -> list[SchemaChangeRecord]:
         """Apply filters to history records."""
         filtered = records.copy()

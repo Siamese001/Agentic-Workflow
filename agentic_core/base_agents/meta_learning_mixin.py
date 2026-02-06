@@ -127,7 +127,7 @@ class MetaLearningMixin(BaseMetaLearner):
                         MetaLearningMixin._lobotomized = True
                         Logger.critical(
                             f"[{self.__class__.__name__}] LOBOTOMY PROTOCOL ACTIVE: "
-                            f"Hive Mind unavailable ({e})"
+                            f"Hive Mind unavailable ({e})",
                         )
 
     def _ensure_kg_connection(self) -> None:
@@ -148,7 +148,7 @@ class MetaLearningMixin(BaseMetaLearner):
 
                         # Register this agent as an entity
                         MetaLearningMixin._kg_bridge.register_agent(
-                            self.__class__.__name__, agent_type="Agent"
+                            self.__class__.__name__, agent_type="Agent",
                         )
 
                         Logger.debug(f"[{self.__class__.__name__}] Connected to Knowledge Graph")
@@ -217,7 +217,7 @@ class MetaLearningMixin(BaseMetaLearner):
             if context.get("observations"):
                 Logger.info(
                     f"[{self.__class__.__name__}] Discovered {len(context['observations'])} "
-                    f"observations from Knowledge Graph"
+                    f"observations from Knowledge Graph",
                 )
 
             return context
@@ -550,7 +550,7 @@ class MetaLearningMixin(BaseMetaLearner):
             if feedback_score >= promotion_threshold:
                 # Promote to Long-Term DNA
                 promoted = MetaLearningMixin._memory.promote_to_long_term(
-                    context, self._namespace, result, feedback_score
+                    context, self._namespace, result, feedback_score,
                 )
 
                 if promoted:
@@ -564,7 +564,7 @@ class MetaLearningMixin(BaseMetaLearner):
                     self._create_mastered_task_relation(sanitized_context, feedback_score)
                     Logger.info(
                         f"[{self._namespace}] DNA PROMOTION: Memory promoted with "
-                        f"feedback_score={feedback_score:.2f}"
+                        f"feedback_score={feedback_score:.2f}",
                     )
                     return True
 

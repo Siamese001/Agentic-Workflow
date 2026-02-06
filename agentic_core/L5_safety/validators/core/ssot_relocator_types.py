@@ -205,7 +205,7 @@ class SSOTRelocator:
                 report.failed += 1
 
         logger.info(
-            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful"
+            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful",
         )
 
         return report
@@ -230,7 +230,7 @@ class SSOTRelocator:
 
             # Calculate target path (replace actual layer with assigned layer)
             target_path = violation.file_path.replace(
-                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/"
+                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/",
             )
             target = self.project_root / target_path
 
@@ -289,7 +289,7 @@ class SSOTRelocator:
             try:
                 # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action}"
+                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action}",
                 )
 
                 if gk_result.success:
@@ -349,7 +349,7 @@ class SSOTRelocator:
             try:
                 # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action} folder"
+                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action} folder",
                 )
 
                 if gk_result.success:

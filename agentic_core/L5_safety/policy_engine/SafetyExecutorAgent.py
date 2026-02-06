@@ -146,7 +146,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                 check_fn=lambda ctx: ctx is not None,
                 severity="HIGH",
                 blocking=True,
-            )
+            ),
         )
 
     def add_gate(

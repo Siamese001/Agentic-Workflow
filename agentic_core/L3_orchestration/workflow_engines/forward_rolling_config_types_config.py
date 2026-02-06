@@ -249,7 +249,7 @@ class ForwardRollingConfig:
                 enable_monitoring=self._config.enable_monitoring,
                 fallback_on_error=self._config.fallback_on_error,
                 sticky_routing=self._config.sticky_routing,
-            )
+            ),
         )
 
         self._config.stage = stage
@@ -351,7 +351,7 @@ class ForwardRollingConfig:
 
         Logger.info(
             f"[ForwardRollingConfig] Feature flag '{name}' "
-            f"set to enabled={enabled}, rollout={rollout_percentage}%"
+            f"set to enabled={enabled}, rollout={rollout_percentage}%",
         )
         return flag
 

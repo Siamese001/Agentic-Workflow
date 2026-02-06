@@ -174,7 +174,7 @@ class SovereignHealthReport:
             lines.append("|------|------|-----------------|--------|")
             for v in self.import_violations[:10]:
                 lines.append(
-                    f"| `{v.file_path}` | {v.line_number} | L{v.source_layer} → L{v.target_layer} | `{v.import_line[:50]}...` |"
+                    f"| `{v.file_path}` | {v.line_number} | L{v.source_layer} → L{v.target_layer} | `{v.import_line[:50]}...` |",
                 )
             if len(self.import_violations) > 10:
                 lines.append(f"| ... and {len(self.import_violations) - 10} more | | | |")
@@ -322,7 +322,7 @@ class UnifiedSSOTValidator:
                     actual_layer=agent.layer,
                     assigned_layer=agent.assigned_layer,
                     agent_name=agent.class_name,
-                )
+                ),
             )
 
         return violations
@@ -366,7 +366,7 @@ class UnifiedSSOTValidator:
                                         import_line=import_line,
                                         line_number=node.lineno,
                                         severity=8,
-                                    )
+                                    ),
                                 )
             except (SyntaxError, UnicodeDecodeError):
                 continue
@@ -409,7 +409,7 @@ class UnifiedSSOTValidator:
                                 actual_depth=actual_depth,
                                 max_depth=max_depth,
                                 root_folder=root_name,
-                            )
+                            ),
                         )
                 except ValueError:
                     continue
@@ -446,7 +446,7 @@ class UnifiedSSOTValidator:
                         folder_path=str(folder.relative_to(self.project_root)),
                         parent_folder="agentic_core",
                         violation_type="orphaned",
-                    )
+                    ),
                 )
             else:
                 # Check L2 subfolders
@@ -469,7 +469,7 @@ class UnifiedSSOTValidator:
                                 folder_path=str(subfolder.relative_to(self.project_root)),
                                 parent_folder=folder_name,
                                 violation_type="orphaned",
-                            )
+                            ),
                         )
 
         return violations

@@ -153,7 +153,7 @@ class CanaryDefense:
         return (len(issues) == 0, issues)
 
     def create_hardened_prompt(
-        self: Any, system_prompt: str, user_input: str, canary: CanaryToken
+        self: Any, system_prompt: str, user_input: str, canary: CanaryToken,
     ) -> tuple[str, str, CanaryToken]:
         """
         Create a fully hardened prompt with canary and wrapped input.

@@ -225,7 +225,7 @@ class ReportLocationAgent:
                 result["status"] = "healed"
                 Logger.info(
                     f"[ReportLocationAgent] Healed: {violation.current_location} "
-                    f"-> {violation.expected_location}"
+                    f"-> {violation.expected_location}",
                 )
             else:
                 result["status"] = "failed"

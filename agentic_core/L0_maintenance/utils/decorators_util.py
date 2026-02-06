@@ -224,7 +224,7 @@ def standard_heal(func: F) -> F:
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
 
             Logger.debug(
-                f"[standard_heal] {agent_name}.{func.__name__} (dry_run={dry_run}, execute={execute})"
+                f"[standard_heal] {agent_name}.{func.__name__} (dry_run={dry_run}, execute={execute})",
             )
 
             # Call the actual method
@@ -238,7 +238,7 @@ def standard_heal(func: F) -> F:
                 f"[standard_heal] {agent_name}.{func.__name__} completed: "
                 f"status={normalized['status']}, "
                 f"violations={normalized['violations_found']}, "
-                f"fixed={normalized['violations_fixed']}"
+                f"fixed={normalized['violations_fixed']}",
             )
 
             return normalized
@@ -248,7 +248,7 @@ def standard_heal(func: F) -> F:
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
-                f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}"
+                f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
             )
 
             return {
@@ -288,7 +288,7 @@ def standard_heal_async(func: F) -> F:
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
 
             Logger.debug(
-                f"[standard_heal_async] {agent_name}.{func.__name__} (dry_run={dry_run}, execute={execute})"
+                f"[standard_heal_async] {agent_name}.{func.__name__} (dry_run={dry_run}, execute={execute})",
             )
 
             # Call the actual async method
@@ -304,7 +304,7 @@ def standard_heal_async(func: F) -> F:
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
-                f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}"
+                f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
             )
 
             return {

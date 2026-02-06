@@ -74,7 +74,7 @@ class VectorHealingStrategy:
                         "reason": "Vector drift detected (L4 state inconsistency)",
                         "priority": self.priority,
                         "strategy": self.name,
-                    }
+                    },
                 )
         Logger.info(f"[L0 VECTOR HEALING] Diagnosed {len(fixes)} vector drift issues")
         return fixes
@@ -123,11 +123,11 @@ class VectorHealingStrategy:
                         "healing_id": f"heal_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
                         "content_hash": vector_id[:16],
                     },
-                }
+                },
             ]
             Logger.info(f"[L0 VECTOR HEALING] Upserting vector for {file_path}")
             result: Any = await self.pinecone_client.upsert(
-                vectors=payload, namespace=config.PINECONE_DEFAULT_NAMESPACE
+                vectors=payload, namespace=config.PINECONE_DEFAULT_NAMESPACE,
             )
             if result and result.get("upserted_count", 0) > 0:
                 self.processed_today += 1

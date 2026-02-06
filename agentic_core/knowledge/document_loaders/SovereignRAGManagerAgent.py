@@ -89,7 +89,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                     [
                         {"id": f"{doc_id}_chunk_{i}", "text": chunk, "metadata": {"doc_id": doc_id}}
                         for i, chunk in enumerate(chunks)
-                    ]
+                    ],
                 )
             except Exception as e:
                 self.logger.warning(f"BM25 indexing failed: {e}")

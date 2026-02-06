@@ -76,7 +76,7 @@ class AdaptiveThresholds:
         self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.70, "marginal": 0.55}
 
     def adjust_thresholds(
-        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75
+        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75,
     ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
@@ -118,12 +118,12 @@ class AdaptiveThresholds:
                 "acceptance_rate": acceptance_rate,
                 "adjustment_factor": adjustment_factor,
                 "new_thresholds": self.thresholds.copy(),
-            }
+            },
         )
 
         logger.info(
             f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, "
-            f"adjustment={adjustment_factor:.3f}"
+            f"adjustment={adjustment_factor:.3f}",
         )
 
         return self.thresholds
@@ -154,7 +154,7 @@ class FeedbackLoop:
 
         # Adaptive thresholds
         self.adaptive_thresholds = AdaptiveThresholds(
-            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4}
+            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4},
         )
 
         # Thread safety
@@ -364,13 +364,13 @@ class FeedbackLoop:
                 if poor_rate > 0.2:
                     recommendations.append(
                         "High rate of poor quality outputs (>20%). "
-                        "Consider strengthening input validation and prompt engineering."
+                        "Consider strengthening input validation and prompt engineering.",
                     )
 
                 if marginal_rate > 0.3:
                     recommendations.append(
                         "Many outputs are only marginal quality. "
-                        "Review factual accuracy requirements and add more specific guidelines."
+                        "Review factual accuracy requirements and add more specific guidelines.",
                     )
 
         # Check common flags
@@ -380,19 +380,19 @@ class FeedbackLoop:
             if flags.get("LOW_QUALITY", 0) > 5:
                 recommendations.append(
                     "Frequent LOW_QUALITY flags detected. "
-                    "Increase minimum quality thresholds or enhance training data."
+                    "Increase minimum quality thresholds or enhance training data.",
                 )
 
             if flags.get("HALLUCINATION_RISK", 0) > 3:
                 recommendations.append(
                     "Hallucination risks detected. "
-                    "Add stronger fact-checking and source verification."
+                    "Add stronger fact-checking and source verification.",
                 )
 
             if flags.get("HIGHLY_REPETITIVE", 0) > 5:
                 recommendations.append(
                     "High repetition in outputs. "
-                    "Implement diversity constraints and content variety checks."
+                    "Implement diversity constraints and content variety checks.",
                 )
 
         # Check trends
@@ -403,14 +403,14 @@ class FeedbackLoop:
                 if trend.trend_direction == "declining" and trend.confidence > 0.7:
                     recommendations.append(
                         f"{metric.title()} quality is declining with high confidence. "
-                        f"Review recent changes and consider targeted improvements."
+                        f"Review recent changes and consider targeted improvements.",
                     )
 
         # Check hallucination risk
         if insights.get("high_hallucination_risk_rate", 0) > 0.15:
             recommendations.append(
                 "High hallucination risk rate (>15%). "
-                "Implement stricter source verification and reduce speculative language."
+                "Implement stricter source verification and reduce speculative language.",
             )
 
         return recommendations
@@ -441,7 +441,7 @@ class FeedbackLoop:
 
             # Adjust thresholds
             new_thresholds = self.adaptive_thresholds.adjust_thresholds(
-                quality_scores, acceptance_rate
+                quality_scores, acceptance_rate,
             )
 
             return new_thresholds

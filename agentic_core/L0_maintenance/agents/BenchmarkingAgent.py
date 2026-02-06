@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -306,7 +305,7 @@ class BenchmarkingAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return result
 
     async def time_function_async(
-        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs
+        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs,
     ) -> Any:
         """
         Time an async function execution.

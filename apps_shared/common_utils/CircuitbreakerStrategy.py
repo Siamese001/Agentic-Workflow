@@ -82,7 +82,7 @@ class CircuitBreaker:
         }
 
         logger.info(
-            f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}"
+            f"Initialized CircuitBreaker '{name}' with threshold {self.config.failure_threshold}",
         )
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:

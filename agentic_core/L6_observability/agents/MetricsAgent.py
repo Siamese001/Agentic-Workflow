@@ -6,7 +6,6 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -38,7 +37,6 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, List, Tuple
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import List, Tuple, timeout
 
 Logger = logging.getLogger(__name__)

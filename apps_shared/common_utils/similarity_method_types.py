@@ -82,10 +82,10 @@ class SchemaSimilarityConfig:
             "array": {"array", "list"},
             "object": {"object", "dict"},
             "null": {"null", "any"},
-        }
+        },
     )
     similarity_thresholds: dict[str, float] = field(
-        default_factory=lambda: {"identical": 0.95, "compatible": 0.7, "partially_compatible": 0.4}
+        default_factory=lambda: {"identical": 0.95, "compatible": 0.7, "partially_compatible": 0.4},
     )
 
 
@@ -121,7 +121,7 @@ class SchemaSimilarityRetriever:
                 similarity = self._compute_field_overlap_similarity(source_fields, target_fields)
             elif request.method == SimilarityMethod.TYPE_COMPATIBILITY:
                 similarity = self._compute_type_compatibility_similarity(
-                    source_fields, target_fields
+                    source_fields, target_fields,
                 )
             else:  # HYBRID
                 similarity = self._compute_hybrid_similarity(
@@ -160,7 +160,7 @@ class SchemaSimilarityRetriever:
             )
 
             self.logger.info(
-                f"schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})"
+                f"schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})",
             )
 
             return result
@@ -196,7 +196,7 @@ class SchemaSimilarityRetriever:
 
         for target_schema in target_schemas:
             request = SchemaSimilarityRequest(
-                source_schema=source_schema, target_schema=target_schema, method=method
+                source_schema=source_schema, target_schema=target_schema, method=method,
             )
             result = self.retrieve_similarity(request)
             results.append(result)
@@ -254,7 +254,7 @@ class SchemaSimilarityRetriever:
         return compatible_schemas
 
     def _extract_from_properties(
-        self, obj: dict[str, Any], prefix: str, fields: dict[str, str]
+        self, obj: dict[str, Any], prefix: str, fields: dict[str, str],
     ) -> None:
         """Extract fields from properties format."""
         for key, value in obj["properties"].items():
@@ -264,7 +264,7 @@ class SchemaSimilarityRetriever:
             self._extract_fields_recursive(value, field_name, fields)
 
     def _extract_from_fields(
-        self, obj: dict[str, Any], prefix: str, fields: dict[str, str]
+        self, obj: dict[str, Any], prefix: str, fields: dict[str, str],
     ) -> None:
         """Extract fields from fields format."""
         for key, value in obj["fields"].items():
@@ -274,7 +274,7 @@ class SchemaSimilarityRetriever:
             self._extract_fields_recursive(value, field_name, fields)
 
     def _extract_direct_fields(
-        self, obj: dict[str, Any], prefix: str, fields: dict[str, str]
+        self, obj: dict[str, Any], prefix: str, fields: dict[str, str],
     ) -> None:
         """Extract direct fields from object."""
         for key, value in obj.items():
@@ -305,7 +305,7 @@ class SchemaSimilarityRetriever:
         return fields
 
     def _compute_structural_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute structural similarity based on field hierarchy."""
         # Compare field paths
@@ -334,7 +334,7 @@ class SchemaSimilarityRetriever:
         return path_similarity * 0.6 + type_similarity * 0.4
 
     def _compute_semantic_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute semantic similarity based on field names."""
         source_names = {path.split(".")[-1] for path in source_fields.keys()}
@@ -350,7 +350,7 @@ class SchemaSimilarityRetriever:
         return len(intersection) / len(union)
 
     def _compute_field_overlap_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on field overlap."""
         source_paths = set(source_fields.keys())
@@ -367,7 +367,7 @@ class SchemaSimilarityRetriever:
         return len(intersection) / min_size
 
     def _compute_type_compatibility_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on type compatibility."""
         source_paths = set(source_fields.keys())
@@ -428,7 +428,7 @@ class SchemaSimilarityRetriever:
             return CompatibilityLevel.INCOMPATIBLE
 
     def _analyze_field_differences(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> dict[str, list[str]]:
         """Analyze differences between schemas."""
         source_paths = set(source_fields.keys())
@@ -447,7 +447,7 @@ class SchemaSimilarityRetriever:
         return {"missing": missing, "extra": extra, "conflicts": conflicts}
 
     def _create_field_matches(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> list[FieldMatch]:
         """Create detailed field match information."""
         matches = []
@@ -487,7 +487,7 @@ class SchemaSimilarityRetriever:
 
 # Factory function for easy instantiation
 def create_schema_similarity_retriever(
-    default_method: str = "hybrid", **kwargs: object
+    default_method: str = "hybrid", **kwargs: object,
 ) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(default_method=SimilarityMethod(default_method), **kwargs)

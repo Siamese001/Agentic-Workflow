@@ -349,7 +349,7 @@ class SemanticAnalyzer:
         self._analyses: list[dict[str, Any]] = []
 
     def analyze_content(
-        self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT
+        self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT,
     ) -> dict[str, Any]:
         """
         Analyze content for quality metrics.
@@ -389,7 +389,7 @@ class SemanticAnalyzer:
                     "type": "weak_language",
                     "words": weak_found,
                     "message": f"Found {len(weak_found)} weak word(s)",
-                }
+                },
             )
             result["suggestions"].append("Replace weak words with strong action verbs")
 
@@ -411,7 +411,7 @@ class SemanticAnalyzer:
                 {
                     "type": "no_metrics",
                     "message": "No quantified achievements found",
-                }
+                },
             )
             result["suggestions"].append("Add specific metrics (e.g., 'increased revenue by 25%')")
 
@@ -728,7 +728,7 @@ class OmniContext:
                         content_preview=info["content"][:200],
                         similarity_score=score,
                         metadata={"section": section_name},
-                    )
+                    ),
                 )
 
         # Sort by score and return top_k

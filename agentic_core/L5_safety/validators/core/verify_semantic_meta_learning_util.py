@@ -192,7 +192,7 @@ if __name__ == "__main__":
 
     if not os.getenv("GOOGLE_API_KEY"):
         print(
-            "❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode."
+            "❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode.",
         )
         print("   → Set GOOGLE_API_KEY environment variable to activate Gemini embedder")
         print("   → Without this key, healing events will be logged but not embedded")

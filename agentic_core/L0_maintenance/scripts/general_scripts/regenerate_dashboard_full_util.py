@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(
-    __file__
+    __file__,
 ).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
 DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
 DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
@@ -198,7 +198,7 @@ def build_real_agent_data(agents: list[dict], territory_mapping: dict[str, str])
                     "has_base_violation": not has_proper_base,  # For row highlighting
                     "quality": quality,
                     "loc": agent.get("loc", 50),
-                }
+                },
             )
 
         real_agent_data[territory] = {
@@ -398,7 +398,7 @@ def inject_strategic_observations(content: str, recommendations: dict[str, Any])
                 "description": description,
                 "impact": "HIGH" if i <= 3 else "MEDIUM" if i <= 7 else "LOW",
                 "effort": "MEDIUM",
-            }
+            },
         )
 
     # Build the observations data structure

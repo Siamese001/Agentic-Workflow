@@ -376,7 +376,7 @@ class SSOTStructureValidator:
                     "",
                     "| Agent | Current Path | Suggested Fix |",
                     "|-------|--------------|---------------|",
-                ]
+                ],
             )
             for v in result.base_agent_violations:
                 lines.append(f"| {v.agent_class} | {v.agent_path} | {v.suggested_fix} |")
@@ -390,7 +390,7 @@ class SSOTStructureValidator:
                     "",
                     "| Agent | Path | Issue |",
                     "|-------|------|-------|",
-                ]
+                ],
             )
             for v in result.territory_violations[:20]:
                 lines.append(f"| {v.agent_class} | {v.agent_path} | {v.message} |")
@@ -407,7 +407,7 @@ class SSOTStructureValidator:
                     "",
                     "| Agent | Path | Issue |",
                     "|-------|------|-------|",
-                ]
+                ],
             )
             for v in result.layer_violations[:20]:
                 lines.append(f"| {v.agent_class} | {v.agent_path} | {v.message} |")
@@ -424,7 +424,7 @@ class SSOTStructureValidator:
                     "",
                     "| Agent | Path | Issue |",
                     "|-------|------|-------|",
-                ]
+                ],
             )
             for v in result.depth_violations[:20]:
                 lines.append(f"| {v.agent_class} | {v.agent_path} | {v.message} |")

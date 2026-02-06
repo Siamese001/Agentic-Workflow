@@ -329,7 +329,7 @@ class Phase5Validator:
         for layer in sorted(layer_stats.keys()):
             s = layer_stats[layer]
             print(
-                f"  {layer}: {s['total']} | Inst: {s['inst']} | Test: {s['test']} | Heal: {s['heal']} | MCP: {s['mcp']}"
+                f"  {layer}: {s['total']} | Inst: {s['inst']} | Test: {s['test']} | Heal: {s['heal']} | MCP: {s['mcp']}",
             )
         print()
 

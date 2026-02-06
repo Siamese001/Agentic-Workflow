@@ -44,9 +44,6 @@ class RetrievalBroadness(Enum):
     EXHAUSTIVE = 50  # Maximum retrieval for meta-learning
 
 
-from agentic_core.base_agents.redis_cache_mixin import redis_cache_mixin
-
-
 class PineconeVectorMixin(RedisCacheMixin):
     """
     ULTRA-HARDENED Pinecone Vector Mixin with Redis Caching
@@ -149,7 +146,7 @@ class PineconeVectorMixin(RedisCacheMixin):
             effective_top_k = min(top_k, self.MAX_QUERY_TOP_K)
             if top_k != broadness.value:
                 log.debug(
-                    f"Manual top_k ({top_k}) overriding broadness ({broadness.name}: {broadness.value})"
+                    f"Manual top_k ({top_k}) overriding broadness ({broadness.name}: {broadness.value})",
                 )
         else:
             effective_top_k = min(broadness.value, self.MAX_QUERY_TOP_K)
@@ -251,7 +248,7 @@ class PineconeVectorMixin(RedisCacheMixin):
                     "id": vid,
                     "score": 0.5,  # Placeholder score for local
                     "metadata": vdata.get("metadata", {}) if include_metadata else {},
-                }
+                },
             )
 
         return results[:effective_top_k]

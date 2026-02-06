@@ -108,7 +108,7 @@ class DashboardQA:
 
         # Count setInterval calls for countdown display (allow multiline)
         countdown_intervals = len(
-            re.findall(r"setInterval\([^)]*function\(\)|setInterval\(\(\)", content, re.DOTALL)
+            re.findall(r"setInterval\([^)]*function\(\)|setInterval\(\(\)", content, re.DOTALL),
         )
         # More lenient check - just ensure we have setInterval calls
         if countdown_intervals < 1:
@@ -217,7 +217,7 @@ class DashboardQA:
             sparkline_svg_count = dashboard_content.count('class="sparkline-svg"')
             if sparkline_svg_count == 0:
                 self.errors.append(
-                    "No sparkline SVGs found in generated dashboard - sparklines may have been removed!"
+                    "No sparkline SVGs found in generated dashboard - sparklines may have been removed!",
                 )
                 return False
 
@@ -280,7 +280,7 @@ class DashboardQA:
 
         if not discovery_path.exists():
             self.errors.append(
-                "agent_discovery_full.json not found - run: python scripts/full_agent_discovery.py"
+                "agent_discovery_full.json not found - run: python scripts/full_agent_discovery.py",
             )
             return False
 
@@ -294,7 +294,7 @@ class DashboardQA:
 
                 if not validation_passed:
                     self.errors.append(
-                        f"Discovery validation failed: {agent_count} agents (minimum: {minimum})"
+                        f"Discovery validation failed: {agent_count} agents (minimum: {minimum})",
                     )
                     return False
 
@@ -308,7 +308,7 @@ class DashboardQA:
                         age_hours = (datetime.now(gen_time.tzinfo) - gen_time).total_seconds() / 3600
                         if age_hours > 24:
                             self.warnings.append(
-                                f"Discovery JSON is {age_hours:.1f} hours old - consider re-running"
+                                f"Discovery JSON is {age_hours:.1f} hours old - consider re-running",
                             )
                     except (ValueError, TypeError):
                         pass
@@ -328,7 +328,7 @@ class DashboardQA:
             MINIMUM_AGENT_COUNT = 300
             if agent_count < MINIMUM_AGENT_COUNT:
                 self.errors.append(
-                    f"Discovery has only {agent_count} agents (minimum: {MINIMUM_AGENT_COUNT})"
+                    f"Discovery has only {agent_count} agents (minimum: {MINIMUM_AGENT_COUNT})",
                 )
                 return False
 

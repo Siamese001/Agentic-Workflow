@@ -41,7 +41,7 @@ def test_ssot_import():
         print("  ✅ PASS: ARCHIVES_DIR imported successfully")
         print(f"     ARCHIVES_DIR = '{ARCHIVES_DIR}'")
         print(
-            f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'"
+            f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'",
         )
         return True
     except Exception as e:

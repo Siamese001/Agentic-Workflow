@@ -160,7 +160,7 @@ dashboard_data = json.loads(content)
 base_class_count = sum(1 for a in discovery_data if "Base Class" in a.get("territory", ""))
 if base_class_count > 0:
     print(
-        f"❌ SSOT VIOLATION: {base_class_count} agents with 'Base Class' in territory (should be 'Base Agent')"
+        f"❌ SSOT VIOLATION: {base_class_count} agents with 'Base Class' in territory (should be 'Base Agent')",
     )
 else:
     print("✅ No 'Base Class' territories in discovery data")
@@ -223,7 +223,7 @@ for row in sample_rows:
 
     if abs(heal_cap_expected - heal_cap_actual) > 0.1:
         calculation_mismatches.append(
-            f"{territory}: Heal Cap % mismatch (expected {heal_cap_expected:.1f}, got {heal_cap_actual:.1f})"
+            f"{territory}: Heal Cap % mismatch (expected {heal_cap_expected:.1f}, got {heal_cap_actual:.1f})",
         )
 
 if calculation_mismatches:
@@ -271,7 +271,7 @@ for prefix in layer_prefixes:
             sort_violations.append(f"{prefix}: No Base Agent found")
         elif base_agent_positions[0] != layer_rows[0][0]:
             sort_violations.append(
-                f"{prefix}: Base Agent not first (position {base_agent_positions[0]}, should be {layer_rows[0][0]})"
+                f"{prefix}: Base Agent not first (position {base_agent_positions[0]}, should be {layer_rows[0][0]})",
             )
 
 if sort_violations:

@@ -17,13 +17,13 @@ async def test_l5_validation() -> Any:
     """Test L5 safety validation directly."""
     safety_layer: Any = create_l5_safety_layer(cost_limit_usd=5.0)
     safe_request: Any = ActionRequest(
-        action_type="tool_execution", parameters={"tool_path": "python", "args": ["--version"]}
+        action_type="tool_execution", parameters={"tool_path": "python", "args": ["--version"]},
     )
     Logger.info("Testing SAFE action validation...")
     is_safe: Any = await safety_layer.validate_action(safe_request)
     Logger.info(f"Safe action result: {is_safe}")
     dangerous_request: Any = ActionRequest(
-        action_type="tool_execution", parameters={"tool_path": "rm", "args": ["-rf", "/"]}
+        action_type="tool_execution", parameters={"tool_path": "rm", "args": ["-rf", "/"]},
     )
     Logger.info("Testing DANGEROUS action validation...")
     is_safe: Any = await safety_layer.validate_action(dangerous_request)

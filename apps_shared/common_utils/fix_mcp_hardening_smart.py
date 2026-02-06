@@ -167,7 +167,7 @@ new_coverage = new_hardened / total_agents * 100
 
 print("MCP Hardening Coverage:")
 print(
-    f"  Before: {originally_hardened}/{total_agents} ({originally_hardened / total_agents * 100:.1f}%)"
+    f"  Before: {originally_hardened}/{total_agents} ({originally_hardened / total_agents * 100:.1f}%)",
 )
 print(f"  After:  {new_hardened}/{total_agents} ({new_coverage:.1f}%)")
 print(f"  Improvement: +{fixed_count} agents (+{fixed_count / total_agents * 100:.1f}%)")

@@ -123,7 +123,7 @@ class TemplateRenderVisitor(ast.NodeVisitor):
                     "required_vars": schema["required_vars"],
                     "provided_vars": sorted(context_keys),
                     "missing_vars": sorted(missing_vars),
-                }
+                },
             )
 
 

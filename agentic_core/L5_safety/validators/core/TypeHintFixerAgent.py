@@ -16,7 +16,6 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 

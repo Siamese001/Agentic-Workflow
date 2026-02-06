@@ -71,17 +71,17 @@ class QueryDecomposer(SimpleAgentBase):
         # Simple patterns to detect complex queries
         self.complexity_indicators = {
             "comparison": re.compile(
-                r"\b(compare|vs|versus|against|difference|contrast)\b", re.IGNORECASE
+                r"\b(compare|vs|versus|against|difference|contrast)\b", re.IGNORECASE,
             ),
             "causation": re.compile(r"\b(why|cause|reason|impact|effect)\b", re.IGNORECASE),
             "temporal": re.compile(
-                r"\b(before|after|during|when|timeline|history)\b", re.IGNORECASE
+                r"\b(before|after|during|when|timeline|history)\b", re.IGNORECASE,
             ),
             "aggregation": re.compile(
-                r"\b(sum|total|average|count|aggregate|combine)\b", re.IGNORECASE
+                r"\b(sum|total|average|count|aggregate|combine)\b", re.IGNORECASE,
             ),
             "relationship": re.compile(
-                r"\b(relationship|correlation|between|and)\b", re.IGNORECASE
+                r"\b(relationship|correlation|between|and)\b", re.IGNORECASE,
             ),
         }
 
@@ -230,7 +230,7 @@ Output: {{
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
                 logger.warning(
-                    f"LLM generated too many sub-queries ({len(sub_queries)}), truncating"
+                    f"LLM generated too many sub-queries ({len(sub_queries)}), truncating",
                 )
                 sub_queries = sub_queries[: self.max_sub_queries]
 
@@ -258,7 +258,7 @@ Output: {{
             )
 
     async def execute_plan(
-        self, decomposed_query: DecomposedQuery, search_function: callable, **kwargs
+        self, decomposed_query: DecomposedQuery, search_function: callable, **kwargs,
     ) -> list[Any]:
         """Execute search for all sub-queries in parallel.
 
@@ -292,7 +292,7 @@ Output: {{
                     processed_results.append(result)
 
             logger.info(
-                f"Completed execution: {sum(len(r) for r in processed_results)} total results"
+                f"Completed execution: {sum(len(r) for r in processed_results)} total results",
             )
             return processed_results
 

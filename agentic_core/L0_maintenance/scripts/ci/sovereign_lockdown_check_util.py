@@ -80,7 +80,7 @@ def main() -> int:
                         print(f"  - {v}")
 
             print(
-                "\nTo fix: Run `python -m agentic_core.L5_safety.validators.ArchitectureGovernorAgent --heal`"
+                "\nTo fix: Run `python -m agentic_core.L5_safety.validators.ArchitectureGovernorAgent --heal`",
             )
             print("=" * 60)
             return 1

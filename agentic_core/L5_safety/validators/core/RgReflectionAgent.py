@@ -338,7 +338,7 @@ class RgReflectionAgent(SovereignBaseAgent):
             return f"Research synthesis for {topic}: Insufficient data collected across hops."
 
         return f"Research synthesis for {topic}: {len(findings)} hops completed successfully. " + " ".join(
-            findings
+            findings,
         )
 
     @timeout(300)

@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - [MIGRATE] - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - [MIGRATE] - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -117,7 +117,7 @@ class MigrationExecutor:
         # Per review: Do not move unknowns blindly. Just log them.
         unknowns = self.manifest.get("actions", {}).get("unknown_require_manual_review", [])
         logger.info(
-            f"PENDING REVIEW: {len(unknowns)} files remain in engines/ for manual classification."
+            f"PENDING REVIEW: {len(unknowns)} files remain in engines/ for manual classification.",
         )
 
     def patch_imports(self):

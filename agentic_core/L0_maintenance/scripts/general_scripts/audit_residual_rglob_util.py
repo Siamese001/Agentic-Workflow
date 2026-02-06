@@ -70,7 +70,7 @@ def audit_residual_rglob_calls(project_root: Path) -> dict[str, Any]:
                             "context": context[:100],
                             "pattern": pattern,
                             "directory": str(py_file.parent.relative_to(project_root)),
-                        }
+                        },
                     )
 
         except SyntaxError:

@@ -153,7 +153,7 @@ class MagicConfigDetector(AntiPatternDetector):
                             f"Hardcoded {param_name}={value}",
                             str(value),
                             default.lineno if hasattr(default, "lineno") else node.lineno,
-                        )
+                        ),
                     )
 
                 # Check for model names
@@ -165,7 +165,7 @@ class MagicConfigDetector(AntiPatternDetector):
                             f"Hardcoded model name '{value}'",
                             value,
                             default.lineno if hasattr(default, "lineno") else node.lineno,
-                        )
+                        ),
                     )
 
         return violations
@@ -215,7 +215,7 @@ class MagicConfigDetector(AntiPatternDetector):
                         f"Hardcoded model name '{value}'",
                         value,
                         node.lineno,
-                    )
+                    ),
                 )
 
             # Check for API endpoints
@@ -227,7 +227,7 @@ class MagicConfigDetector(AntiPatternDetector):
                         "Hardcoded API endpoint",
                         value[:50] + "..." if len(value) > 50 else value,
                         node.lineno,
-                    )
+                    ),
                 )
 
         # Check for hardcoded numeric config values
@@ -241,7 +241,7 @@ class MagicConfigDetector(AntiPatternDetector):
                         f"Hardcoded {var_name}={value}",
                         str(value),
                         node.lineno,
-                    )
+                    ),
                 )
 
         return violations
@@ -283,7 +283,7 @@ class MagicConfigDetector(AntiPatternDetector):
                             f"Hardcoded {param_name}={value} in function call",
                             str(value),
                             node.lineno,
-                        )
+                        ),
                     )
 
         return violations

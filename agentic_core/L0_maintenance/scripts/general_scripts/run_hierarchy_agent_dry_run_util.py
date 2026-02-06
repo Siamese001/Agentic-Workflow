@@ -40,7 +40,7 @@ def main():
     print("=" * 80)
     print("\nTo apply these changes, run with healing_enabled=True")
     print(
-        "Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/"
+        "Note: There is an older HierarchyAgent in validators/ - this uses the new unified version in guardrails/",
     )
 
 

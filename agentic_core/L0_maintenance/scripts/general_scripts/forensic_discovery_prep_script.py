@@ -222,7 +222,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
 def get_git_commit(root: Path) -> str:
     try:
         out = subprocess.check_output(
-            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+            ["git", "-C", str(root), "rev-parse", "HEAD"], stderr=subprocess.DEVNULL,
         )
         return out.decode("utf-8").strip()
     except Exception:
@@ -242,7 +242,7 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
     # 1. Load the Candidate List from SSOT
     raw_candidates = load_agent_discovery(project_root, force_reload=True)
     raw_candidates = sorted(
-        raw_candidates, key=lambda c: (c.get("layer", ""), c.get("name", ""), c.get("path", ""))
+        raw_candidates, key=lambda c: (c.get("layer", ""), c.get("name", ""), c.get("path", "")),
     )
 
     manifest = {
@@ -306,10 +306,10 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
 
     # 3. Deterministic ordering and counts
     manifest["environment_under_test"] = sorted(
-        manifest["environment_under_test"], key=lambda r: (r["agent_name"], r["file_path"])
+        manifest["environment_under_test"], key=lambda r: (r["agent_name"], r["file_path"]),
     )
     manifest["ignored_artifacts"] = sorted(
-        manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"])
+        manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"]),
     )
 
     counts: dict[str, int] = {}

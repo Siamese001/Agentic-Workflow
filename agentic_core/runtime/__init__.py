@@ -8,7 +8,7 @@ Standard Kernel structure:
 - agents/: Agent classes
 """
 
-from .utils import *
+from .agents import *
 from .config import *
 from .domain import *
-from .agents import *
+from .utils import *

@@ -70,7 +70,7 @@ def analyze_impact(report: dict[str, Any]) -> bool:
     # Check A: High modification count (e.g., > 20% of repo) - Placeholder threshold
     if blast_radius > 50:
         logging.warning(
-            f"🚨 HIGH BLAST RADIUS: {blast_radius} files would be modified. Manual review required."
+            f"🚨 HIGH BLAST RADIUS: {blast_radius} files would be modified. Manual review required.",
         )
         safety_pass = False
 

@@ -27,12 +27,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
-from agentic_core.utils.core_extensions.healer_mixin import healer_mixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -66,7 +63,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
         passed, violations = self.check_no_large_functions()
         if not passed:
             print(
-                f"   [{self.name}] ❌ Large Functions: FAIL ({len(violations)} violations) - Large functions detected"
+                f"   [{self.name}] ❌ Large Functions: FAIL ({len(violations)} violations) - Large functions detected",
             )
             await self._heal_violations("large_functions", violations)
         else:
@@ -102,11 +99,11 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
                             class_lines: Any = 0
                         if method_count > max_methods:
                             violations.append(
-                                f"{file_path}:{node.lineno}: Class '{node.name}' has {method_count} methods (max {max_methods})"
+                                f"{file_path}:{node.lineno}: Class '{node.name}' has {method_count} methods (max {max_methods})",
                             )
                         if class_lines > max_lines:
                             violations.append(
-                                f"{file_path}:{node.lineno}: Class '{node.name}' has {class_lines} lines (max {max_lines})"
+                                f"{file_path}:{node.lineno}: Class '{node.name}' has {class_lines} lines (max {max_lines})",
                             )
             except Exception:
                 continue
@@ -135,7 +132,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
                             func_lines: Any = node.end_lineno - node.lineno + 1
                             if func_lines > max_lines:
                                 violations.append(
-                                    f"{file_path}:{node.lineno}: Function '{node.name}' has {func_lines} lines (max {max_lines})"
+                                    f"{file_path}:{node.lineno}: Function '{node.name}' has {func_lines} lines (max {max_lines})",
                                 )
             except Exception:
                 continue
@@ -160,7 +157,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
                         complexity: Any = self._calculate_complexity(node)
                         if complexity > max_complexity:
                             violations.append(
-                                f"{file_path}:{node.lineno}: Function '{node.name}' has complexity {complexity} (max {max_complexity})"
+                                f"{file_path}:{node.lineno}: Function '{node.name}' has complexity {complexity} (max {max_complexity})",
                             )
             except Exception:
                 continue
@@ -221,7 +218,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
         previous_failure = None
         for round_num in range(1, max_rounds + 1):
             print(
-                f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}"
+                f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}",
             )
             mutated_code = await self.resilient_mutation(
                 Task=Task,

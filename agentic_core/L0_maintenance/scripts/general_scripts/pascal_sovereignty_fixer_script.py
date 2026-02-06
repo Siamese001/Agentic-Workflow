@@ -126,7 +126,7 @@ class PascalSovereigntyFixer:
         # in hierarchical multi-agent systems where local package imports are standard.
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
         # Note: The \.* in regex_from captures any number of leading dots for relative paths,
         # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
@@ -213,7 +213,7 @@ class PascalSovereigntyFixer:
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem"
+                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if value != 1:
@@ -264,7 +264,7 @@ class PascalSovereigntyFixer:
                 else:
                     # Divergent content: Rename to .CONFLICT to preserve data
                     print(
-                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename."
+                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename.",
                     )
                     timestamp = int(time.time())
                     conflict_name = f"{dest_name}.CONFLICT_{timestamp}"

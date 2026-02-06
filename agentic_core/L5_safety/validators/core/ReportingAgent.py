@@ -162,7 +162,7 @@ class ReportingAgent(SovereignBaseAgent):
 
         _walk_directory(start_path, depth=1)
         return "\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
-            tree_lines
+            tree_lines,
         )
 
     def _get_compliance_metrics(self) -> dict[str, Any]:

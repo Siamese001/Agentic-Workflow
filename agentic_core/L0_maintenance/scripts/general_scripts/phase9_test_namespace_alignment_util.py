@@ -49,7 +49,7 @@ def phase9_test_namespace_alignment():
                 {
                     "old": str(test_file.relative_to(project_root)),
                     "new": str(new_path.relative_to(project_root)),
-                }
+                },
             )
             files_renamed += 1
         else:

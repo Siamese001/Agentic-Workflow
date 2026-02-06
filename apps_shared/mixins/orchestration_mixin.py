@@ -72,7 +72,7 @@ class OrchestrationMixin:
                 completed_steps.append(step)
 
                 results["steps"].append(
-                    {"name": step.name, "status": "completed", "result": step.result}
+                    {"name": step.name, "status": "completed", "result": step.result},
                 )
 
             except Exception as e:
@@ -106,7 +106,7 @@ class OrchestrationMixin:
                         self.log(f"Rollback failed for {step.name}: {e}")
 
     def orchestrate_parallel(
-        self, tasks: list[tuple[str, Callable, tuple, dict[str, Any]]]
+        self, tasks: list[tuple[str, Callable, tuple, dict[str, Any]]],
     ) -> dict[str, Any]:
         """
         Orchestrate parallel task execution.
@@ -131,7 +131,7 @@ class OrchestrationMixin:
         return results
 
     def coordinate_agents(
-        self, agent_tasks: dict[str, Callable], dependencies: dict[str, list[str]] | None = None
+        self, agent_tasks: dict[str, Callable], dependencies: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
         """
         Coordinate multiple agents with dependency management.

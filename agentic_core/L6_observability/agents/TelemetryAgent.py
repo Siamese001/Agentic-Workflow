@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
-from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
@@ -41,7 +40,6 @@ from threading import Lock
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger = logging.getLogger(__name__)
@@ -144,7 +142,7 @@ class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseA
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 
     def get_events(
-        self, event_type: str | None = None, level: str | None = None, limit: int | None = None
+        self, event_type: str | None = None, level: str | None = None, limit: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         Query in-memory event buffer.
@@ -217,7 +215,7 @@ class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseA
         )
 
     def emit_agent_action(
-        self, agent: str, action: str, success: bool, details: dict[str, Any] | None = None
+        self, agent: str, action: str, success: bool, details: dict[str, Any] | None = None,
     ) -> None:
         """Emit agent action event."""
         self.emit(

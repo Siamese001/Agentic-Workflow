@@ -49,7 +49,7 @@ class InfrastructureUpgradesOrchestrator:
         """Setup event subscriptions for component coordination."""
         # Subscribe to content generation events for fact checking
         await self.infrastructure.event_bus.subscribe(
-            "events.content_generated", self._handle_content_generated
+            "events.content_generated", self._handle_content_generated,
         )
 
         # Subscribe to cache events
@@ -57,7 +57,7 @@ class InfrastructureUpgradesOrchestrator:
 
         # Subscribe to tone violations
         await self.infrastructure.event_bus.subscribe(
-            "events.tone_violation", self._handle_tone_violation
+            "events.tone_violation", self._handle_tone_violation,
         )
 
         logger.info("Setup infrastructure upgrades event subscriptions")
@@ -248,7 +248,7 @@ class InfrastructureUpgradesOrchestrator:
         try:
             # Generate base content
             result = await self.infrastructure.execute_with_infrastructure(
-                task_type, prompt, complexity_score=5, trace_id=trace_id
+                task_type, prompt, complexity_score=5, trace_id=trace_id,
             )
 
             content = result["result"]
@@ -358,7 +358,7 @@ class InfrastructureUpgradesOrchestrator:
             "fact_ledger": self.fact_ledger.get_stats() if self.fact_ledger else {},
             "global_cache": self.global_cache.get_stats() if self.global_cache else {},
             "tone_enforcer": {
-                "profiles_loaded": len(self.tone_enforcer.profiles) if self.tone_enforcer else 0
+                "profiles_loaded": len(self.tone_enforcer.profiles) if self.tone_enforcer else 0,
             },
         }
 
@@ -413,7 +413,7 @@ async def generate_with_consistency(
     """
     orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
-        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id
+        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id,
     )
 
 

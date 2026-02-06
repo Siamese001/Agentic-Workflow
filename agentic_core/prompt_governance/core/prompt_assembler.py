@@ -146,7 +146,7 @@ You are {role}. Your objective is {objective}.
                 template_name = file_path.stem
 
                 self.templates[template_name] = PromptTemplate(
-                    name=template_name, template=template_content, description="Custom template"
+                    name=template_name, template=template_content, description="Custom template",
                 )
 
                 Logger.debug(f"Loaded template: {template_name}")
@@ -337,7 +337,7 @@ You are {role}. Your objective is {objective}.
 
         # Sort by priority
         sorted_injections = sorted(
-            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True
+            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True,
         )
 
         for match in sorted_injections:
@@ -508,7 +508,7 @@ def assemble_prompt(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble(
-        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs
+        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
     )
 
 

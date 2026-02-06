@@ -58,7 +58,7 @@ class DeepWikiHealingStrategy:
                     "reason": "Territory expansion detected: File undocumented in DeepWiki",
                     "priority": self.priority,
                     "strategy": self.name,
-                }
+                },
             )
         Logger.info(f"[L0 DEEPWIKI HEALING] Diagnosed {len(fixes)} undocumented files")
         return fixes
@@ -96,7 +96,7 @@ class DeepWikiHealingStrategy:
         """
         try:
             Logger.info(
-                f"[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}"
+                f"[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}",
             )
             return set()
         except Exception as e:
@@ -142,7 +142,7 @@ class DeepWikiHealingStrategy:
                 return False
         except Exception as e:
             Logger.error(
-                f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}"
+                f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}",
             )
             return False
 

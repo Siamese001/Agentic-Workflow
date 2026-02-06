@@ -40,7 +40,7 @@ class CacheMetrics:
         self._initialized = True
         self._stats_lock = threading.Lock()
         self.stats: dict[str, dict[str, Any]] = defaultdict(
-            lambda: {"hits": 0, "misses": 0, "latency_sum": 0.0, "ops": 0, "errors": 0}
+            lambda: {"hits": 0, "misses": 0, "latency_sum": 0.0, "ops": 0, "errors": 0},
         )
         self._start_time = time.time()
 

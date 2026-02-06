@@ -79,7 +79,7 @@ def fix_test_structure():
                     # Default to agentic_core if we can't determine
                     domain = "agentic_core"
                     print(
-                        f"  [WARNING] Could not determine domain for {item.name}, defaulting to {domain}"
+                        f"  [WARNING] Could not determine domain for {item.name}, defaulting to {domain}",
                     )
 
                 # Create target directory

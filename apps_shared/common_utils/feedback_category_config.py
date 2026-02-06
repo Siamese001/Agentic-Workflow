@@ -207,14 +207,14 @@ class FeedbackAggregator:
                 "avg_rating": sum(ratings) / len(ratings) if ratings else 0,
                 "total_feedback": len(ratings),
                 "top_categories": sorted(
-                    data["categories"].items(), key=lambda x: x[1], reverse=True
+                    data["categories"].items(), key=lambda x: x[1], reverse=True,
                 )[:3],
             }
 
         return result
 
     def _find_transferable_insights(
-        self, feedback: list[CrossEngineFeedback]
+        self, feedback: list[CrossEngineFeedback],
     ) -> list[dict[str, Any]]:
         """Find insights that can be transferred between engines.
 
@@ -240,7 +240,7 @@ class FeedbackAggregator:
                         "engines": list({fb.source_engine.value for fb in items}),
                         "common_issues": list({fb.comments or "" for fb in items if fb.comments}),
                         "transfer_score": sum(fb.transfer_score for fb in items) / len(items),
-                    }
+                    },
                 )
 
         return sorted(insights, key=lambda x: x["transfer_score"], reverse=True)
@@ -267,7 +267,7 @@ class FeedbackAggregator:
             if count / total > 0.2:  # More than 20% of feedback
                 recommendations.append(
                     f"High volume of {category} feedback ({count}/{total}). "
-                    f"Review and improve in this area."
+                    f"Review and improve in this area.",
                 )
 
         # Check for low ratings
@@ -275,7 +275,7 @@ class FeedbackAggregator:
         if len(low_rating_feedback) / total > 0.3:
             recommendations.append(
                 "High rate of low ratings. Consider reviewing quality standards "
-                "and providing additional guidance."
+                "and providing additional guidance.",
             )
 
         # Check for transferable improvements
@@ -283,7 +283,7 @@ class FeedbackAggregator:
         if transferable_issues:
             recommendations.append(
                 f"Found {len(transferable_issues)} transferable improvement opportunities. "
-                "Implement cross-engine solutions."
+                "Implement cross-engine solutions.",
             )
 
         return recommendations
@@ -472,7 +472,7 @@ class UnifiedFeedbackSystem:
                             f.rating for f in engine_feedback if f.category.value == category
                         )
                         / count,
-                    }
+                    },
                 )
 
         # Identify cross-engine opportunities
@@ -490,9 +490,9 @@ class UnifiedFeedbackSystem:
                         "transfer_score": sum(f.transfer_score for f in feedback_list)
                         / len(feedback_list),
                         "suggested_actions": list(
-                            {action for f in feedback_list for action in f.suggested_actions}
+                            {action for f in feedback_list for action in f.suggested_actions},
                         ),
-                    }
+                    },
                 )
 
         # Generate action items
@@ -504,7 +504,7 @@ class UnifiedFeedbackSystem:
                     "estimated_impact": "high",
                     "cross_pollination": area["category"]
                     in [opp["category"] for opp in plan["cross_engine_opportunities"]],
-                }
+                },
             )
 
         return plan

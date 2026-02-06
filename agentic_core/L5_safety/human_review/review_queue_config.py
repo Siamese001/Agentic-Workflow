@@ -206,7 +206,7 @@ class HumanReviewQueue:
 
         Logger.info(
             f"[REVIEW_QUEUE] Submitted review request {request.request_id} "
-            f"for {context_bundle.proposed_diff.file_path}"
+            f"for {context_bundle.proposed_diff.file_path}",
         )
 
         return request

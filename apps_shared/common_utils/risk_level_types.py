@@ -63,7 +63,7 @@ class SentimentProfile(BaseModel):
     mood: SentimentMood = Field(..., description="Detected mood")
     risk_level: RiskLevel = Field(..., description="Associated risk level")
     keywords_detected: list[str] = Field(
-        default_factory=list, description="Keywords that determined mood"
+        default_factory=list, description="Keywords that determined mood",
     )
 
     @property
@@ -294,7 +294,7 @@ class MicroHookGenerator:
                     phrase="I came across your profile and was impressed...",
                     trigger_type="fallback",
                     relevance=0.2,
-                )
+                ),
             ]
 
 
@@ -369,7 +369,7 @@ class SentimentAnalyzer:
             # Validate input
             if not text_samples or not isinstance(text_samples, list):
                 return SentimentProfile(
-                    mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=[]
+                    mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=[],
                 )
 
             # Combine and tokenize text
@@ -415,7 +415,7 @@ class SentimentAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
-                mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=["error"]
+                mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=["error"],
             )
 
 
@@ -442,7 +442,7 @@ class WarmthManager:
         logger.info("Initialized WarmthManager with formality mappings")
 
     def determine_warmth(
-        self, archetype: str, relationship_stage: str, sentiment: SentimentMood
+        self, archetype: str, relationship_stage: str, sentiment: SentimentMood,
     ) -> WarmthSetting:
         """Determine warmth settings based on context.
 
@@ -489,7 +489,7 @@ class WarmthManager:
                 max_emojis = 1
 
             warmth = WarmthSetting(
-                formality_level=base_formality, strategy_name=strategy, max_emojis=max_emojis
+                formality_level=base_formality, strategy_name=strategy, max_emojis=max_emojis,
             )
 
             logger.debug(f"Determined warmth: {strategy} (formality: {base_formality:.2f})")
@@ -499,7 +499,7 @@ class WarmthManager:
         except Exception as e:
             logger.error(f"Error determining warmth: {str(e)}")
             return WarmthSetting(
-                formality_level=0.6, strategy_name="Professional Default", max_emojis=1
+                formality_level=0.6, strategy_name="Professional Default", max_emojis=1,
             )
 
 
@@ -507,7 +507,7 @@ class TemperatureEngine:
     """Facade class that orchestrates all temperature components."""
 
     def __init__(
-        self, target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None
+        self, target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None,
     ):
         """Initialize the temperature engine.
 
@@ -523,7 +523,7 @@ class TemperatureEngine:
         logger.info("Initialized TemperatureEngine with all components")
 
     def analyze_temperature(
-        self, profile: dict[str, Any], context: dict[str, Any]
+        self, profile: dict[str, Any], context: dict[str, Any],
     ) -> dict[str, Any]:
         """Analyze all temperature aspects for a recipient.
 
@@ -544,7 +544,7 @@ class TemperatureEngine:
             sentiment_profile = self.sentiment_analyzer.assess_sentiment(text_samples)
             if sentiment_profile.risk_level == RiskLevel.CRITICAL:
                 logger.warning(
-                    f"Hostile sentiment detected for {profile.get('name', 'Unknown')}, aborting further analysis"
+                    f"Hostile sentiment detected for {profile.get('name', 'Unknown')}, aborting further analysis",
                 )
                 return {
                     "depth_score": {
@@ -567,7 +567,7 @@ class TemperatureEngine:
             depth_score = self.depth_scorer.calculate_depth(profile)
             hooks = self.hook_generator.generate_hooks(profile)
             warmth_setting = self.warmth_manager.determine_warmth(
-                archetype, relationship_stage, sentiment_profile.mood
+                archetype, relationship_stage, sentiment_profile.mood,
             )
 
             # Aggregate results
@@ -577,7 +577,7 @@ class TemperatureEngine:
                 "sentiment": sentiment_profile.dict(),
                 "warmth": warmth_setting.dict(),
                 "recommendations": self._generate_recommendations(
-                    depth_score, sentiment_profile, warmth_setting
+                    depth_score, sentiment_profile, warmth_setting,
                 ),
                 "abort": False,
             }
@@ -603,7 +603,7 @@ class TemperatureEngine:
             }
 
     def _generate_recommendations(
-        self, depth: DepthScore, sentiment: SentimentProfile, warmth: WarmthSetting
+        self, depth: DepthScore, sentiment: SentimentProfile, warmth: WarmthSetting,
     ) -> list[str]:
         """Generate recommendations based on analysis.
 
@@ -642,7 +642,7 @@ class TemperatureEngine:
 
 # Factory functions for easy instantiation
 def create_temperature_engine(
-    target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None
+    target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None,
 ) -> TemperatureEngine:
     """Create a TemperatureEngine instance."""
     return TemperatureEngine(target_keywords, my_education)

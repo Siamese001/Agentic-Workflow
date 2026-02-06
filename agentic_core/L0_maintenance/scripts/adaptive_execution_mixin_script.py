@@ -103,7 +103,7 @@ class AdaptiveExecutionMixin:
 
         # Final fallback — must be implemented by concrete agent
         raise NotImplementedError(
-            f"{self.__class__.__name__} must implement either mode-specific _execute_* or _execute_standard"
+            f"{self.__class__.__name__} must implement either mode-specific _execute_* or _execute_standard",
         )
 
     # === Mode Implementations — Agents override as needed ===

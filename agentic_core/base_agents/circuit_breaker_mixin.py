@@ -129,7 +129,7 @@ class CircuitBreakerMixin:
                 if fallback:
                     return fallback(*args, **kwargs)
                 raise CircuitOpenError(
-                    f"Circuit is OPEN. Rejected call. Recovery in {self._time_until_recovery()}s"
+                    f"Circuit is OPEN. Rejected call. Recovery in {self._time_until_recovery()}s",
                 )
 
         # Execute operation

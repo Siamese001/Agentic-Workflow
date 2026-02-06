@@ -88,7 +88,7 @@ class ProactiveFissionScanner:
                                 "line_count": line_count,
                                 "Severity": self._calculate_severity(line_count),
                                 "relative_path": os.path.relpath(path, target_dir),
-                            }
+                            },
                         )
                         Logger.info(f"   [ALERT] Bloat detected: {file} ({line_count} lines)")
         Logger.info(f"   [OK] Scan complete: {len(candidates)} candidates found")
@@ -128,7 +128,7 @@ class ProactiveFissionScanner:
         try:
             query: Any = f"best modular architecture for python {file_name}"
             design_patterns: Any = await self.router.call_mcp(
-                "brave_search", {"query": query, "purpose": "Find modular design patterns"}
+                "brave_search", {"query": query, "purpose": "Find modular design patterns"},
             )
             structural_twins: Any = await self.router.call_mcp(
                 "pinecone",

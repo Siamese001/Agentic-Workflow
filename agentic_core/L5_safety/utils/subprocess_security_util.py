@@ -138,7 +138,7 @@ def safe_execute(
     if not isinstance(args, list):
         raise TypeError(
             f"safe_execute requires args as List[str], got {type(args).__name__}. "
-            f"This prevents accidental shell injection via string commands."
+            f"This prevents accidental shell injection via string commands.",
         )
 
     if not args:
@@ -155,7 +155,7 @@ def safe_execute(
             raise SecurityViolationError(
                 f"Shell injection pattern detected in argument {i}: '{truncated}'\n"
                 f"Blocked patterns: | && || ` $( > /path < /path & (at end)\n"
-                f"This is a security violation. Use safe alternatives or file-based I/O."
+                f"This is a security violation. Use safe alternatives or file-based I/O.",
             )
 
     # 3. Path validation: Ensure cwd is safe if provided
@@ -203,7 +203,7 @@ def safe_execute(
         Logger.error(
             f"[Security] Command failed: {cmd_str}\n"
             f"Exit code: {e.returncode}\n"
-            f"Stderr: {e.stderr[:500] if e.stderr else 'N/A'}"
+            f"Stderr: {e.stderr[:500] if e.stderr else 'N/A'}",
         )
         raise
 

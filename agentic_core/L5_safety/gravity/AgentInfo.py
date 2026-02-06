@@ -246,7 +246,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 line_number=line_number,
                                 method_count=method_count,
                                 method_names=method_names,
-                            )
+                            ),
                         )
                     except SyntaxError:
                         # Still record the agent even if parsing fails
@@ -258,7 +258,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 line_number=line_number,
                                 method_count=0,
                                 method_names=[],
-                            )
+                            ),
                         )
             except Exception as e:
                 print(f"Error reading {py_file}: {e}")

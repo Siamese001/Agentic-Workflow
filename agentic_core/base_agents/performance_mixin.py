@@ -568,7 +568,7 @@ class PerformanceMixin:
             if len(self._batch_queues[queue_name]) >= self._perf_config.max_batch_queue_size:
                 raise ValueError(
                     f"Batch queue '{queue_name}' size limit "
-                    f"({self._perf_config.max_batch_queue_size}) exceeded"
+                    f"({self._perf_config.max_batch_queue_size}) exceeded",
                 )
 
             self._batch_queues[queue_name].append(item)
