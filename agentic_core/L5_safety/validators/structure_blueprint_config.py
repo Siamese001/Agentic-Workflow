@@ -210,7 +210,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
             # DEPRECATED: "patterns" territory removed - evacuate to base_agents
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
-            "knowledge": {"purpose": "Knowledge management and RAG systems"},
+            "knowledge": {
+                "purpose": "Knowledge management and RAG systems.",
+                "notes": "Domain root must NOT contain logic files. Only sub-directories (Leaf Node Rule).",
+                "subfolders": {
+                    "document_loaders": {"purpose": "Document ingestion and loader implementations."},
+                    "research_cache": {"purpose": "Cached research results and retrieval data."},
+                    "static_index": {"purpose": "Static knowledge indices and pre-built lookups."},
+                    "engine": {"purpose": "RAG orchestration and retrieval logic."},
+                },
+                "naming_convention": r"^[a-z][a-z0-9_]*_(loader|cache|index|orchestrator|engine)\.py$",
+            },
             "interfaces": {
                 "purpose": "Standardized internal API contracts and protocols",
                 "weight": 100,
@@ -2803,7 +2813,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
     # [NEW] Knowledge Management (RAG, Document Loaders, Orchestrators)
     "agentic_core/knowledge": {
         "class_patterns": [".*Orchestrator$", ".*Manager$", ".*Loader$", ".*Cache$"],
-        "base_classes": ["SovereignRagOrchestrator", "BaseDocumentLoader"],
+        "base_classes": ["BaseDocumentLoader"],
         "function_patterns": ["retrieve_.*", "ingest_.*", "index_.*"],
         "import_signals": ["knowledge", "rag", "document_loaders"],
         "keyword_signals": ["rag", "retrieval", "knowledge", "document", "ingest", "orchestrator"],

@@ -352,6 +352,14 @@ class FileClassificationAgent(*BASE_CLASSES):
                     f"{ba_violation['message']}"
                 )
 
+            # [DOMAIN ROOT PURITY] Leaf Node Rule + PascalCase in knowledge/
+            domain_violation = self.check_domain_root_purity(path)
+            if domain_violation:
+                self.logger.warning(
+                    f"[{domain_violation['type']}] {path.name}: "
+                    f"{domain_violation['message']}"
+                )
+
             # [NEW] Territory Enforcement (Move before Rename)
             target_territory_path = self.check_territory_violation(path, ftype)
             if target_territory_path:
@@ -2060,6 +2068,56 @@ class FileClassificationAgent(*BASE_CLASSES):
                         f"{active_methods[:3]}. This is a utility, not a config file."
                     ),
                     "suggested_suffix": "_util.py",
+                }
+
+        return None
+
+    def check_domain_root_purity(self, path: Path) -> dict[str, str] | None:
+        """
+        Enforce the Leaf Node Rule: domain roots must NOT contain logic files.
+
+        Domain directories like knowledge/, semantic_memory/ must only contain
+        sub-directories. Python files (except __init__.py) at the root level
+        are violations that must be moved into appropriate sub-directories.
+
+        Also enforces snake_case naming within knowledge/ domain.
+
+        Args:
+            path: File path being checked
+
+        Returns:
+            Violation dict or None if clean.
+        """
+        # Domain roots that enforce the leaf node rule
+        domain_roots = {"knowledge", "semantic_memory"}
+
+        parts = path.parts
+        if path.name == "__init__.py":
+            return None
+
+        for i, part in enumerate(parts):
+            if part in domain_roots and i + 1 < len(parts):
+                # Check if this file is directly in the domain root (not a subfolder)
+                if parts[i + 1] == path.name:
+                    return {
+                        "type": "LEAF_NODE_VIOLATION",
+                        "message": (
+                            f"{path.name} is in {part}/ root. "
+                            f"Domain roots must only contain sub-directories (Leaf Node Rule)."
+                        ),
+                        "suggested_destination": f"agentic_core/{part}/engine/",
+                    }
+
+        # Check PascalCase in knowledge domain
+        if "knowledge" in parts and path.suffix == ".py":
+            if any(c.isupper() for c in path.stem):
+                return {
+                    "type": "KNOWLEDGE_PASCAL_CASE",
+                    "message": (
+                        f"{path.name} uses PascalCase in knowledge/ domain. "
+                        f"Must be snake_case per naming convention."
+                    ),
+                    "suggested_destination": "Rename to snake_case",
                 }
 
         return None
