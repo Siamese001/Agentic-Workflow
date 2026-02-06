@@ -174,7 +174,60 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "I*.py": "types",
                 },
             },
-            "L2_execution": {"purpose": "Tool execution and action handling"},
+            "L2_execution": {
+                "purpose": "The Hands: Tool execution, MCP clients, and sandboxed environments.",
+                "notes": "Standard V10 structure. tool_registry/ is legacy — migrate to engine/, tools/, types/, config/, sandbox/.",
+                "subfolders": {
+                    "engine": {
+                        "purpose": "Execution engines, registries, orchestrators, and client managers.",
+                        "allowed_suffixes": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
+                    },
+                    "config": {
+                        "purpose": "Execution configuration and settings.",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                        "forbidden_suffixes": ["_types.py"],
+                    },
+                    "types": {
+                        "purpose": "Execution data models, schemas, protocols, and error types.",
+                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                        "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
+                    },
+                    "tools": {
+                        "purpose": "Concrete tool implementations (capabilities the agent can invoke).",
+                        "allowed_suffixes": ["_tool.py", "_function.py", "_skill.py"],
+                    },
+                    "mcp": {"purpose": "Model Context Protocol clients, gateways, and sovereign agents."},
+                    "sandbox": {
+                        "purpose": "Sandboxed execution environments (Docker, Firecracker, etc.).",
+                        "allowed_suffixes": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
+                    },
+                    "utils": {"purpose": "Execution utility functions."},
+                    # LEGACY: "tool_registry" — files being migrated to engine/, tools/, types/, config/, sandbox/
+                    "tool_registry": {"purpose": "LEGACY: Pending migration to specialized subdirectories."},
+                },
+                "allowed_suffixes": {
+                    "engine": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
+                    "config": ["_config.py", "_settings.py"],
+                    "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                    "tools": ["_tool.py", "_function.py", "_skill.py"],
+                    "sandbox": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
+                },
+                "forbidden_suffixes": {
+                    "engine": ["_config.py", "_types.py"],
+                    "config": ["_types.py", "_tool.py"],
+                    "types": ["_config.py", "_engine.py", "_agent.py"],
+                    "tools": ["_config.py", "_types.py"],
+                },
+                "routing_rules": {
+                    "*_tool.py": "tools",
+                    "*_config.py": "config",
+                    "*_types.py": "types",
+                    "*_protocol.py": "types",
+                    "*_client.py": "engine",
+                    "*_executor.py": "engine",
+                    "*_registry.py": "engine",
+                },
+            },
             "L3_orchestration": {
                 "purpose": "Workflow orchestration, strategy patterns, and multi-agent coordination.",
                 "subfolders": {
