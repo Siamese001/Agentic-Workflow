@@ -32,7 +32,7 @@ except ImportError:
     L2ExecutionBase = None
 MockL2ExecutionBase = None  # Stub
 try:
-    from agentic_core.config.blueprint_sovereign.sovereign_config_1 import (
+    from agentic_core.config.core.sovereign_config_1 import (
         OrchestratorConfig,  # noqa: F401
     )
 except ImportError:

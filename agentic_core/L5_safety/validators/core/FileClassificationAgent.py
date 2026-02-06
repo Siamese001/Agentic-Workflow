@@ -2327,7 +2327,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "core",  # config/core/ for foundational settings
                 "manifests",  # config/manifests/ for system metadata
                 "engines",  # config/engines/ for layer-specific parameters
-                "blueprint_sovereign",
+                "core",  # DISSOLVED: was blueprint_sovereign
             },
             "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
             "TYPES": {"schemas", "models", "domain", "types"},

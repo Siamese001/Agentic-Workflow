@@ -31,7 +31,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.agents.UnifiedAgent import (
     LocationHealingStrategy,
 )
-from agentic_core.config.blueprint_sovereign.registry import SOVEREIGN_REGISTRY
+from agentic_core.config.core.registry import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.core.location_utils import (
     compute_module_path,

@@ -189,7 +189,7 @@ class FilesystemSSOTReconcilerAgent(
                 "errors": [str(e)],
             }
 
-    BLUEPRINT_PATH = Path("agentic_core/config/blueprint_sovereign/structure_blueprint.py")
+    BLUEPRINT_PATH = Path("agentic_core/L5_safety/validators/structure_blueprint_config.py")
     # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/ (gitignored, not indexed)
     ARCHIVE_ROOT = Path(".healing_backups/unmapped_drift/")
 
