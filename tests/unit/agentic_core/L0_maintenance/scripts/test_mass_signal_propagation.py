@@ -33,7 +33,7 @@ def test_case_1_long_chain_propagation():
     print("=" * 70)
 
     try:
-        from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
+        from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
         from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (

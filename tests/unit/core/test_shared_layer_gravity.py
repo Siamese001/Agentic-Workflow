@@ -119,7 +119,7 @@ class TestExtractLayerFromModule:
 
     def test_extract_layer_starting_with_layer(self):
         """Should detect layer at start of module."""
-        module = "L1_cognition.thought_engine"
+        module = "L1_cognition.engine"
         assert extract_layer_from_module(module) == "L1"
 
 

@@ -68,6 +68,15 @@ class TerritoryDefinition(TypedDict):
     naming_convention: str | None  # e.g., "snake_case_agent" or "PascalCase_Agent"
 
 
+STANDARD_LAYER_STRUCTURE: Final[list[str]] = [
+    "agents",      # Active Sovereign Entities (inherit from SovereignBaseAgent)
+    "engine",      # Core logic loops / pipelines (stateless processing)
+    "types",       # Passive Pydantic Models, Enums, Dataclasses
+    "validators",  # Domain-specific validation logic
+    "utils",       # Helper functions specific to that layer
+    "strategies",  # Strategy pattern implementations
+]
+
 SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "agentic_core": {
         "depth": 3,
@@ -110,7 +119,21 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     },
                 },
             },
-            "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
+            "L1_cognition": {
+                "purpose": "Cognitive processing, reasoning, and thought patterns.",
+                "notes": "Standard V10 structure. thought_engine/ is DISSOLVED — use agents/, engine/, types/, validators/, utils/.",
+                "subfolders": {
+                    "agents": {"purpose": "Active cognitive agents (reasoning, planning, budgeting)."},
+                    "engine": {"purpose": "Core cognitive logic loops and processing pipelines."},
+                    "types": {"purpose": "Cognitive data models, enums, and type definitions."},
+                    "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
+                    "utils": {"purpose": "Cognitive helper functions."},
+                    "generators": {"purpose": "Content and response generators."},
+                    "intent_analysis": {"purpose": "Intent classification and analysis."},
+                    "memory": {"purpose": "Memory systems (golden context, episodic, semantic)."},
+                    "meta_learning": {"purpose": "Meta-learning and self-improvement systems."},
+                },
+            },
             "L2_execution": {"purpose": "Tool execution and action handling"},
             "L3_orchestration": {
                 "purpose": "Workflow orchestration, strategy patterns, and multi-agent coordination.",
@@ -164,11 +187,13 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "config": {
-                "purpose": "Configuration management and environment settings",
+                "purpose": "Static configuration, feature flags, and default constants.",
                 "subfolders": {
                     "blueprint_sovereign": {"purpose": "Sovereign blueprint configurations"},
-                    "core": {"purpose": "Core configuration files and settings"},
+                    "core": {"purpose": "Core configuration files, settings, and feature flags."},
                 },
+                "allowed_extensions": [".py", ".json"],
+                "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags)\.py$",
             },
             "schemas": {"purpose": "Data models, message schemas, and validation rules"},
             "prompt_governance": {
@@ -3761,7 +3786,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "contemplate",
                 "self_reflect",
             ],
-            "imports": ["agentic_core.L1_cognition.thought_engine", "pydantic", "typing"],
+            "imports": ["agentic_core.L1_cognition.engine", "pydantic", "typing"],
             "bases": [
                 "ThoughtNode",
                 "ReasoningStep",

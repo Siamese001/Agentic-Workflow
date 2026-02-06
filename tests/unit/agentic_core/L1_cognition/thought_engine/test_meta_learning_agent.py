@@ -34,7 +34,7 @@ class TestMetaLearningAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
+            from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
 
             return MetaLearningAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -91,7 +91,7 @@ class TestMetaLearningAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import (
+                from agentic_core.L1_cognition.agents.MetaLearningAgent import (
                     MetaLearningAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

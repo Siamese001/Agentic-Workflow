@@ -60,7 +60,7 @@ class AutonomousPromptEvolutionAgent(AtomicExecutionMixin, SubatomicTestingMixin
         """Lazy-load MetaLearningAgent to avoid circular imports."""
         if self._meta_learning is None:
             try:
-                from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
+                from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
 
                 self._meta_learning = MetaLearningAgent()
             except ImportError as e:

@@ -18,7 +18,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import mixins with fallbacks
 try:
-    from agentic_core.L1_cognition.thought_engine.meta_learning_mixin import meta_learning_mixin
+    from agentic_core.L1_cognition.meta_learning.meta_learning_mixin import meta_learning_mixin
 except ImportError:
 
     class MetaLearningMixin:

@@ -35,7 +35,7 @@ def test_case_1_signal_saturation_sweep():
 
     try:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
+        from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
         from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
@@ -223,7 +223,7 @@ def test_case_3_depth_constraint_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
+        from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
         from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
