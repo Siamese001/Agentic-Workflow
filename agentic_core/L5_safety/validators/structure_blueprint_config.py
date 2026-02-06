@@ -128,7 +128,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "types": {"purpose": "Cognitive data models, enums, and type definitions."},
                     "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
                     "utils": {"purpose": "Cognitive helper functions."},
-                    "generators": {"purpose": "Content and response generators."},
+                    # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
                     "intent_analysis": {"purpose": "Intent classification and analysis."},
                     "memory": {"purpose": "Memory systems (golden context, episodic, semantic)."},
                     "meta_learning": {"purpose": "Meta-learning and self-improvement systems."},
@@ -995,7 +995,7 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
         "prompts",
         "patterns",
         "thought_engine",
-        "generators",
+        # DISSOLVED: "generators" removed
     ],  # Standard Kernel + L1 Extensions
     "L2_execution": [
         "agents",
