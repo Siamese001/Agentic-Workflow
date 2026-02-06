@@ -748,10 +748,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         elif is_factory:
             return "FACTORY"
 
-        # [PRIORITY 12] TYPES Detection: HARDENED for schemas/ and models/
-        # Files in schemas/ or models/ are TYPES even with minor config/validation logic
+        # [PRIORITY 12] TYPES Detection: HARDENED for runtime/types/ and models/
+        # Files in runtime/types/ or models/ are TYPES even with minor config/validation logic
         # This prevents hybrid names like _types_config.py - enforce pure _types.py suffix
-        if "schemas" in path.parts or "models" in path.parts:
+        if "models" in path.parts or ("runtime" in path.parts and "types" in path.parts):
             # Force TYPES classification for data structure files in these folders
             if not is_agent and not is_orchestrator:
                 return "TYPES"
@@ -2333,7 +2333,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "core",  # DISSOLVED: was blueprint_sovereign
             },
             "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
-            "TYPES": {"schemas", "models", "domain", "types"},
+            "TYPES": {"models", "domain", "types"},  # schemas DISSOLVED
             "MIXIN": {"mixins"},  # Strict: mixins ONLY in mixins/ folder (migrated from base_agents)
             "CLASS": {"base_agents", "core", "shared_runtime"},  # Base classes allowed here
             "SCRIPT": {"scripts", "L0_maintenance"},  # Scripts only in scripts/ or L0_maintenance/
@@ -2404,7 +2404,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             target_folder = {
                                 "CONFIG": "config",
                                 "PROTOCOL": "L3_orchestration/interfaces",
-                                "TYPES": "schemas",
+                                "TYPES": "runtime/types",
                                 "STRATEGY": "L3_orchestration/utils",
                                 "ADAPTER": "L2_execution/mcp",
                             }.get(file_type, "utils")
@@ -2456,8 +2456,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "VALIDATOR": "validators",
                             "CONFIG": "config",
                             "PROTOCOL": "interfaces",
-                            "TYPES": "schemas",
-                            "MIXIN": "base_agents",
+                            "TYPES": "runtime/types",
+                            "MIXIN": "mixins",
                             "CLASS": "base_agents",  # Classes evacuate to base_agents
                             "SCRIPT": "L0_maintenance/scripts",  # Scripts evacuate to L0
                             "UTILITY": "L0_maintenance/scripts",  # Utilities evacuate to L0
@@ -2475,7 +2475,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "CONFIG": "config",
                             "SCRIPT": "L0_maintenance/scripts",
                             "UTILITY": "L0_maintenance/scripts",
-                            "TYPES": "schemas",
+                            "TYPES": "runtime/types",
                         }
                         target_folder = type_to_folder.get(file_type, "base_agents")
 

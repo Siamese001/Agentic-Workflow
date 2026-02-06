@@ -190,6 +190,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "subfolders": {
                     "agents": {"purpose": "Active healing and debate synthesis agents."},
                     "dashboards": {"purpose": "Operational dashboards and visualizations."},
+                    "engine": {"purpose": "Monitoring engines (UnifiedAgentMonitor, ExecutionTimer)."},
+                    "types": {"purpose": "Observability data models (ExecutionMetrics, AggregatedMetrics)."},
                     "telemetry": {"purpose": "System telemetry and metrics collection."},
                     "reports": {"purpose": "Compliance and audit reports."},
                 },
@@ -202,7 +204,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "allowed_extensions": [".py", ".json"],
                 "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags)\.py$",
             },
-            "schemas": {"purpose": "Data models, message schemas, and validation rules"},
+            # DISSOLVED: "schemas" removed — contents deported to runtime/types, L4/contracts, L6/engine+types
             "prompt_governance": {
                 "purpose": "Template lifecycle and persona management.",
                 "l4_specializations": {
@@ -733,7 +735,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "L2_execution",  # mcp at variable depth
         "L4_state",  # ValidationContext at variable depth
         "L5_safety",  # validators/guardrails at variable depth
-        "schemas",  # models at variable depth
+        # DISSOLVED: "schemas" removed
         "prompt_governance",  # meta_prompts at variable depth
         "runtime",  # shared_runtime at variable depth
         # DEPRECATED: "patterns" removed - evacuate to base_agents
@@ -800,7 +802,7 @@ L6_OBSERVABILITY_DIR: str = "agentic_core/L6_observability"
 # === Critical Subdirectories ===
 DASHBOARD_DIR: str = "agentic_core/L6_observability/dashboards"
 BLUEPRINT_SOVEREIGN_DIR: str = "agentic_core/config/core"  # DISSOLVED: was blueprint_sovereign
-SCHEMAS_DIR: str = "agentic_core/schemas"
+SCHEMAS_DIR: str = "agentic_core/runtime/types"  # DISSOLVED: was agentic_core/schemas
 PROMPT_GOVERNANCE_DIR: str = "agentic_core/prompt_governance"
 UTILS_DIR: str = "agentic_core/utils"
 RUNTIME_DIR: str = "agentic_core/runtime"
@@ -937,7 +939,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L2_execution/tool_registry",
         "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
         "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
-        "agentic_core/schemas/models",  # 42 files - added per SSOT review
+        # DISSOLVED: "agentic_core/schemas/models" removed
         # agentic_core/utils/core_extensions EVICTED - deprecated system removed
         "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
         "agentic_core/prompt_governance/meta_prompts",
@@ -1010,10 +1012,10 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
         "utils",
         "config",
         "memory",
-        "schemas",
+        "contracts",
         "migrations",
         "ledger",
-    ],  # Standard Kernel + L4 Extensions
+    ],  # Standard Kernel + L4 Extensions (schemas DISSOLVED)
     "L5_safety": [
         "agents",
         "utils",
@@ -1030,7 +1032,7 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
         "telemetry",
     ],  # Standard Kernel + L6 Extensions
     # === SPECIALIZED DOMAINS ===
-    "schemas": [],  # Passive data contracts only - FLAT STRUCTURE (models subfolder DEPRECATED)
+    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
     "config": ["core"],  # Configuration management - blueprint_sovereign DISSOLVED into core
     "prompt_governance": [
         "domain",
@@ -1134,12 +1136,7 @@ SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "notes": "Observability domain - core contains fundamental monitoring abstractions",
     },
     # === SPECIALIZED DOMAINS ===
-    "schemas": {
-        "purpose": "Data models, message schemas, and validation rules",
-        "content_types": ["data_models", "message_schemas", "type_definitions", "validation_tools"],
-        "execution_allowed": True,
-        "notes": "Schema domain - scripts for validation and schema generation",
-    },
+    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
     "config": {
         "purpose": "Configuration management and environment settings",
         "content_types": [
@@ -2816,7 +2813,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
     },
     # [NEW] Pydantic Domain Modeling (Schema Separation)
     # Zero-Ambiguity: Also routes *_types.py files here
-    "agentic_core/schemas/models": {
+    "agentic_core/runtime/types": {
         "class_patterns": [".*Model$", ".*Schema$", ".*DTO$", ".*Types$"],
         "base_classes": ["BaseModel", "pydantic.BaseModel"],
         "import_signals": ["pydantic", "typing", "typing_extensions"],
@@ -3116,9 +3113,9 @@ L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "tracing": "observability",
     "telemetry": "observability",
     "compliance": "observability",
-    "models": "schemas",
-    "messages": "schemas",
-    "types": "schemas",
+    "models": "runtime",
+    "messages": "runtime",
+    "types": "runtime",
     "templates": "prompt_governance",
     "meta_prompts": "prompt_governance",
     "rendering": "prompt_governance",
@@ -3142,7 +3139,7 @@ EXERCISER_REGISTRY: Final[Mapping[str, str]] = {
     "observability": "GeneralExerciserAgent",
     "utils": "GeneralExerciserAgent",
     "config": "GeneralExerciserAgent",
-    "schemas": "GeneralExerciserAgent",
+    # DISSOLVED: "schemas" removed
     "prompt_governance": "GeneralExerciserAgent",
     "patterns": "GeneralExerciserAgent",
     "semantic_memory": "GeneralExerciserAgent",
@@ -4371,22 +4368,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "examples": ["ResearchResultCache", "KnowledgeSnapshot", "QueryHistoryLog"],
         },
     },
-    "schemas": {
-        "models": {
-            "purpose": "Pydantic data models, domain objects, and structured data contracts",
-            "entity_types": ["Class"],
-            "keywords": ["model", "pydantic", "dataclass", "schema", "dto", "definition"],
-            "imports": ["pydantic"],
-            "bases": ["BaseModel"],
-        },
-        "messages": {
-            "purpose": "API message formats, request/response schemas, and protocol buffers",
-            "entity_types": ["Class"],
-            "keywords": ["message", "request", "response", "payload", "packet"],
-            "imports": ["pydantic"],
-            "bases": ["BaseModel"],
-        },
-    },
+    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
     "prompt_governance": {
         "templates": {
             "description": "Atomic instructional fragments and Jinja2 partials.",

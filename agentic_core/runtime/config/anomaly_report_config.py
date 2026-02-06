@@ -6,7 +6,7 @@ AnomalyReport - Sovereign Anomaly Detection schema
 Provides standardized anomaly propagation across layers (L2-L5, apps).
 Integrates with HealerMixin for audited healing decisions.
 
-Location: agentic_core/schemas/anomaly_report.py
+Location: agentic_core/runtime/config/anomaly_report_config.py
 """
 import time
 from enum import Enum

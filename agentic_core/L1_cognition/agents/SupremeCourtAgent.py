@@ -12,7 +12,7 @@ import os
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import schemas from SSOT
-from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
+from agentic_core.runtime.types.consensus import ConsensusVerdict, ModelOpinion
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)

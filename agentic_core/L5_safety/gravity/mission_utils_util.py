@@ -102,7 +102,7 @@ def get_placement_guidance(content_preview: str) -> str:
     if any(x in content_lower for x in ["prompt", "persona", "instruct"]):
         return "agentic_core/prompt_governance"
     if any(x in content_lower for x in ["schema", "model", "request", "response"]):
-        return "agentic_core/schemas"
+        return "agentic_core/runtime/types"
 
     # Default fallback
     return "agentic_core/L1_cognition"

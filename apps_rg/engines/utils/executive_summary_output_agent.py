@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any
 
 # Previous: from runtime.config import ReasoningConfig
-from agentic_core.schemas.models.reasoning_config import ReasoningConfig
+from agentic_core.runtime.types.reasoning_config import ReasoningConfig
 
 # [Diff Start: Fix Inheritance and Config]
 # Previous: from agent_core.agent import Agent
