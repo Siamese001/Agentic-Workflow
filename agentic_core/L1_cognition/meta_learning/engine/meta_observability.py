@@ -19,28 +19,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
+from agentic_core.L1_cognition.meta_learning.types.observability_types import (
+    HealthStatus,
+    MetricPoint,
+)
+
 Logger = logging.getLogger(__name__)
-
-
-@dataclass
-class MetricPoint:
-    """A single metric data point."""
-
-    name: str
-    value: float
-    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    tags: dict[str, str] = field(default_factory=dict)
-
-
-@dataclass
-class HealthStatus:
-    """Health status for a component."""
-
-    component: str
-    healthy: bool
-    message: str
-    last_check: str = field(default_factory=lambda: datetime.now().isoformat())
-    details: dict[str, Any] = field(default_factory=dict)
 
 
 # Module-level singleton
