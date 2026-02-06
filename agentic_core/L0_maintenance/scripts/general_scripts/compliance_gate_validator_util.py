@@ -15,7 +15,7 @@ Critical Rules:
 import logging
 from typing import Any
 
-from agentic_core.discovery import DiscoveredAgent
+from agentic_core.runtime.utils.discovery_util import DiscoveredAgent
 
 logger = logging.getLogger(__name__)
 

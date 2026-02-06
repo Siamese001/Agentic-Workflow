@@ -321,6 +321,37 @@ class FileClassificationAgent(*BASE_CLASSES):
             for fv in forbidden_violations:
                 self.logger.warning(f"[FORBIDDEN] {path.name}: {fv['reason']}")
 
+            # [LAYER PURITY] Detect cognitive contamination and passive agent naming
+            # [FAKE CONFIG] Detect _config.py files with active logic
+            try:
+                file_content = path.read_text(encoding="utf-8")
+                purity_violation = self.check_layer_purity(path, file_content, ftype)
+                if purity_violation:
+                    self.logger.warning(
+                        f"[{purity_violation['type']}] {path.name}: "
+                        f"{purity_violation['message']}"
+                    )
+                    # Force reclassification for passive agents
+                    if purity_violation["type"] == "PASSIVE_AGENT_NAMING":
+                        ftype = "UTILITY"
+
+                fake_config = self.check_fake_config(path, file_content)
+                if fake_config:
+                    self.logger.warning(
+                        f"[{fake_config['type']}] {path.name}: "
+                        f"{fake_config['message']}"
+                    )
+            except Exception:
+                pass  # File read failure — skip purity/config check
+
+            # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
+            ba_violation = self.check_base_agents_purity(path)
+            if ba_violation:
+                self.logger.warning(
+                    f"[{ba_violation['type']}] {path.name}: "
+                    f"{ba_violation['message']}"
+                )
+
             # [NEW] Territory Enforcement (Move before Rename)
             target_territory_path = self.check_territory_violation(path, ftype)
             if target_territory_path:
@@ -1970,6 +2001,190 @@ class FileClassificationAgent(*BASE_CLASSES):
             print(f"  [CRITICAL] Manual intervention required - file may be at {temp_path}")
 
             return False
+
+    def check_fake_config(self, path: Path, content: str) -> dict[str, str] | None:
+        """
+        Detect files ending in _config.py that contain active logic (classes with methods).
+
+        A genuine config file should only contain constants, dataclasses, or simple assignments.
+        If it has class definitions with non-trivial methods (beyond __init__), it's a
+        misnamed utility masquerading as config.
+
+        Also classifies Verifier/Guardian/Lock classes as UTILITY unless they inherit
+        from SovereignBaseAgent.
+
+        Args:
+            path: File path being checked
+            content: File content as string
+
+        Returns:
+            Violation dict with 'type', 'message', 'suggested_suffix' or None if clean.
+        """
+        stem = path.stem
+
+        # Only check *_config.py files
+        if not stem.endswith("_config"):
+            return None
+
+        try:
+            tree = ast.parse(content)
+        except SyntaxError:
+            return None
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+
+            # Skip pure dataclasses — they're legitimate config containers
+            is_dataclass = any(
+                (isinstance(d, ast.Name) and d.id == "dataclass")
+                or (isinstance(d, ast.Attribute) and d.attr == "dataclass")
+                for d in node.decorator_list
+            )
+            if is_dataclass:
+                continue
+
+            # Check for non-trivial methods (beyond __init__, __repr__, __str__)
+            trivial_methods = {"__init__", "__repr__", "__str__", "__post_init__"}
+            active_methods = [
+                item.name
+                for item in node.body
+                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and item.name not in trivial_methods
+            ]
+            if active_methods:
+                return {
+                    "type": "MISNAMED_UTILITY",
+                    "message": (
+                        f"{path.name} contains class '{node.name}' with active methods "
+                        f"{active_methods[:3]}. This is a utility, not a config file."
+                    ),
+                    "suggested_suffix": "_util.py",
+                }
+
+        return None
+
+    def check_base_agents_purity(self, path: Path) -> dict[str, str] | None:
+        """
+        Enforce STRICT IDENTITY ONLY rule for base_agents/.
+
+        Only SovereignBaseAgent.py, L*Base.py, *_mixin.py, __init__.py, and
+        CanonBaseAgentInterface.py are allowed. Everything else (types, utils,
+        exceptions, engines) is a CRITICAL VIOLATION.
+
+        Args:
+            path: File path being checked
+
+        Returns:
+            Violation dict or None if clean.
+        """
+        parts = path.parts
+        if "base_agents" not in parts:
+            return None
+
+        name = path.name
+        stem = path.stem
+
+        # Whitelist: identity files
+        if name == "__init__.py":
+            return None
+        if name == "SovereignBaseAgent.py":
+            return None
+        if name == "CanonBaseAgentInterface.py":
+            return None
+        if stem.startswith("L") and stem.endswith("Base"):
+            return None  # L0MaintenanceBase, L1CognitionBase, etc.
+        if name == "LightweightBase.py":
+            return None
+        if name.endswith("_mixin.py"):
+            return None  # Mixins are still allowed during migration
+        if name == "decorators.py":
+            return None  # Core decorators
+
+        # Everything else is a violation
+        return {
+            "type": "BASE_AGENTS_IMPURITY",
+            "message": (
+                f"{name} violates STRICT IDENTITY ONLY rule for base_agents/. "
+                f"Only SovereignBaseAgent, L*Base, and *_mixin.py are allowed."
+            ),
+            "suggested_destination": "runtime/ or mixins/",
+        }
+
+    def check_layer_purity(self, path: Path, content: str, classification: str) -> dict[str, Any] | None:
+        """
+        Detect cognitive contamination in L0 and passive-agent naming violations.
+
+        Rules:
+        1. L0 agents must be reflexive/deterministic — no debate, synthesis, or LLM generation.
+        2. Classes named *Agent that are dataclasses/BaseModel with no run/execute/heal method
+           are "passive agents" and should be classified as UTILITY or TYPES.
+
+        Args:
+            path: File path being checked
+            content: File content as string
+            classification: Current file type classification
+
+        Returns:
+            Violation dict with 'type', 'message', 'suggested_destination' or None if clean.
+        """
+        content_lower = content.lower()
+        parts = path.parts
+
+        # --- Rule 1: L0 Cognitive Pollution Detection ---
+        if "L0_maintenance" in parts:
+            cognitive_signals = ["debate", "synthesis", "conversation", "llm_generate", "multi_agent"]
+            found_signals = [s for s in cognitive_signals if s in content_lower]
+            if found_signals:
+                return {
+                    "type": "L0_COGNITIVE_POLLUTION",
+                    "message": (
+                        f"Cognitive signals {found_signals} detected in L0 file {path.name}. "
+                        f"L0 must be reflexive/deterministic only."
+                    ),
+                    "suggested_destination": "agentic_core/L6_observability/agents/",
+                }
+
+        # --- Rule 2: Passive Agent Detection ---
+        if classification == "AGENT" and path.stem.endswith("Agent"):
+            try:
+                tree = ast.parse(content)
+            except SyntaxError:
+                return None
+
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
+                    # Check if it's a dataclass or BaseModel
+                    is_passive = False
+                    for decorator in node.decorator_list:
+                        if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                            is_passive = True
+                        elif isinstance(decorator, ast.Attribute) and decorator.attr == "dataclass":
+                            is_passive = True
+
+                    # Also check inheritance for BaseModel
+                    for base in node.bases:
+                        if isinstance(base, ast.Name) and base.id == "BaseModel":
+                            is_passive = True
+
+                    if is_passive:
+                        # Verify no active methods exist
+                        active_methods = {"run", "execute", "heal", "process", "validate"}
+                        has_active = any(
+                            isinstance(item, ast.FunctionDef) and item.name in active_methods
+                            for item in node.body
+                        )
+                        if not has_active:
+                            return {
+                                "type": "PASSIVE_AGENT_NAMING",
+                                "message": (
+                                    f"{node.name} is a dataclass/BaseModel with no active methods. "
+                                    f"Rename to *_util.py or *_types.py."
+                                ),
+                                "suggested_destination": "UTILITY or TYPES reclassification",
+                            }
+
+        return None
 
     def check_territory_violation(self, path: Path, file_type: str) -> Path | None:
         """

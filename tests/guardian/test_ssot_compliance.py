@@ -195,7 +195,7 @@ class TestSSOTCompliance:
                     )
             elif path.suffix == ".py":
                 # Python files at agentic_core root are allowed (e.g., __init__.py)
-                if path.name not in {"__init__.py", "DiscoveredAgent.py"}:
+                if path.name not in {"__init__.py"}:
                     violations.append({"file": path.name, "type": "root_file"})
                     report_builder.add_violation(
                         code=ViolationCode.SSOT_GHOST_FILE,

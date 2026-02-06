@@ -73,10 +73,20 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "depth": 3,
         "purpose": "Core agentic logic and safety layers.",
         "subfolders": {
-            "base_agents": {"purpose": "Foundational agent classes and mixins for inheritance"},
+            "base_agents": {
+                "purpose": "STRICT IDENTITY ONLY. Sovereign base classes and layer bases.",
+                "notes": "No types, utils, or exceptions. Only SovereignBaseAgent and L*Base files.",
+            },
             "domain": {"purpose": "Pure domain entities and business objects"},
             "L0_maintenance": {
-                "purpose": "System maintenance and healing operations",
+                "purpose": "Reflexive system health, boot integrity, and compliance checks.",
+                "forbidden_capabilities": [
+                    "debate",
+                    "synthesis",
+                    "complex_reasoning",
+                    "multi_agent_coordination",
+                ],
+                "notes": "L0 agents must be low-level and deterministic. No high-level cognition.",
                 "subfolders": {
                     "deterministic": {"purpose": "Deterministic healing and validation"},
                     "logs": {"purpose": "Runtime logs and execution traces"},
@@ -90,7 +100,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "general_scripts": {"purpose": "General maintenance scripts"},
                         },
                     },
-                    "security": {"purpose": "Security scanning and enforcement"},
+                    "integrity": {"purpose": "Core system verification, checksums, and sovereign locks."},
                     "sensors": {"purpose": "System monitoring and health checks"},
                     "bootstrap": {
                         "purpose": "Boot sequence scripts and initialization logic only",
@@ -135,7 +145,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "validators": {"purpose": "Structural and runtime validators"},
                 },
             },
-            "L6_observability": {"purpose": "Monitoring, telemetry, and compliance reporting"},
+            "L6_observability": {
+                "purpose": "System-wide monitoring, audit, and cognitive repair (debate/synthesis).",
+                "subfolders": {
+                    "agents": {"purpose": "Active healing and debate synthesis agents."},
+                    "dashboards": {"purpose": "Operational dashboards and visualizations."},
+                    "telemetry": {"purpose": "System telemetry and metrics collection."},
+                    "reports": {"purpose": "Compliance and audit reports."},
+                },
+            },
             "config": {
                 "purpose": "Configuration management and environment settings",
                 "subfolders": {
@@ -159,7 +177,25 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "agentic_core/prompt_governance/version_registry",
                 ],
             },
-            "runtime": {"purpose": "Runtime environment setup and resource management"},
+            "runtime": {
+                "purpose": "Active execution engine and primitives.",
+                "subfolders": {
+                    "engine": {"purpose": "Core execution engine and agent runtime."},
+                    "types": {"purpose": "Shared type definitions, enums, and data models."},
+                    "exceptions": {"purpose": "Exception hierarchies for runtime errors."},
+                    "utils": {"purpose": "Shared runtime utilities and discovery logic."},
+                    "config": {"purpose": "Runtime configuration and environment settings."},
+                },
+                "naming_convention": r"^[a-z][a-z0-9_]*_(util|types|exceptions|engine|config)\.py$",
+            },
+            "mixins": {
+                "purpose": "Shared capabilities and behavioral contracts.",
+                "subfolders": {
+                    "contracts": {"purpose": "Abstract interfaces and behavioral contracts."},
+                    "capabilities": {"purpose": "Reusable capability mixins."},
+                },
+                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract)\.py$",
+            },
             "utils": {
                 "purpose": "General utility functions - home for *_util.py files (Zero-Ambiguity Standard)",
             },
