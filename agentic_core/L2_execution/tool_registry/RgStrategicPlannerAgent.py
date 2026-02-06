@@ -20,7 +20,7 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: L2 core planning vs L1 strategic vs apps_rg implementations)
@@ -41,7 +41,7 @@ class RgStrategicPlannerAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     async def execute(self) -> None:
         print(
-            f"\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.base_agents.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...",
+            f"\nfrom agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.mixins.healer_mixin import HealerMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...",
         )
         if not self.ctx.intelligence_enabled:
             return

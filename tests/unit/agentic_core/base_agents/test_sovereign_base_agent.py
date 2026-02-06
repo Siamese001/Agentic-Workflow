@@ -111,7 +111,7 @@ class TestSovereignBaseAgentMixins:
     def test_infrastructure_mixin_provides_logging(self):
         """Verify infrastructure_mixin provides logging capability."""
         try:
-            from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+            from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
 
             assert hasattr(infrastructure_mixin, "__init__") or True  # Mixin exists
         except (ImportError, NameError, AttributeError):
@@ -120,7 +120,7 @@ class TestSovereignBaseAgentMixins:
     def test_subatomic_testing_mixin_exists(self):
         """Verify SubatomicTestingMixin is available."""
         try:
-            from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+            from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
             assert SubatomicTestingMixin is not None
         except (ImportError, NameError, AttributeError):

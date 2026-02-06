@@ -15,7 +15,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Import mixins with fallbacks
 try:

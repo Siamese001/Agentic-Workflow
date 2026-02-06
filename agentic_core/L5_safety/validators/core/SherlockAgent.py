@@ -33,7 +33,7 @@ except ImportError:
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.schemas.models.anomaly_report import AnomalyReport
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

@@ -134,7 +134,7 @@ def test_infrastructure_mixin_init_chain():
     print("\n[TEST 4] infrastructure_mixin __init__ Chain...")
 
     try:
-        from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+        from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
 
         # Track init calls
         init_calls = []

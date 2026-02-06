@@ -21,7 +21,7 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
     get_sovereign_prompt_renderer,
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"

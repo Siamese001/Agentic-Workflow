@@ -67,7 +67,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
 )
-from agentic_core.base_agents.healer_mixin import healer_mixin
+from agentic_core.mixins.healer_mixin import healer_mixin
 
 Logger: Any = logging.getLogger(__name__)
 

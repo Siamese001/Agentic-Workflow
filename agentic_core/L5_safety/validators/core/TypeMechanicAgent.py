@@ -15,7 +15,7 @@ import ast
 from typing import Any
 
 from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for type enforcement and precision engineering

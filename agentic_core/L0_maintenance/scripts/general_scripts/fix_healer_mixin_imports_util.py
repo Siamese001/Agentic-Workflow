@@ -2,18 +2,18 @@
 Script to fix all incorrect healer_mixin import paths.
 
 Changes:
-    from agentic_core.base_agents.healer_mixin import healer_mixin
+    from agentic_core.mixins.healer_mixin import healer_mixin
 from pathlib import Path
 to:
-    from agentic_core.base_agents.healer_mixin import healer_mixin
+    from agentic_core.mixins.healer_mixin import healer_mixin
 """
 
 
 def fix_healer_mixin_imports(project_root: Path):
     """Fix all healer_mixin imports in the codebase."""
 
-    old_import = "from agentic_core.base_agents.healer_mixin import"
-    new_import = "from agentic_core.base_agents.healer_mixin import"
+    old_import = "from agentic_core.mixins.healer_mixin import"
+    new_import = "from agentic_core.mixins.healer_mixin import"
 
     fixed_count = 0
 

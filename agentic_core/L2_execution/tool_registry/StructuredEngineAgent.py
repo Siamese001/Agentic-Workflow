@@ -10,7 +10,7 @@ import os
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 

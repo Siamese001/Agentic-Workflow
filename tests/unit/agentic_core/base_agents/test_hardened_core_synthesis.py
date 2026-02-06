@@ -43,7 +43,7 @@ class TestHardenedCoreSynthesis:
     def test_healer_mixin_is_dataclass(self):
         """Test that HealerMixin is properly converted to @dataclass."""
         try:
-            from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
+            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
 
             assert is_dataclass(HealerMixin), "HealerMixin must be @dataclass"
 
@@ -113,7 +113,7 @@ class TestHardenedCoreSynthesis:
     def test_structural_healing_mixin_exists(self):
         """Test that StructuralHealingMixin exists and has salvaged methods."""
         try:
-            from agentic_core.base_agents.structural_healing_mixin import (
+            from agentic_core.mixins.structural_healing_mixin import (
                 structural_healing_mixin,  # noqa: F401
             )
 
@@ -154,7 +154,7 @@ class TestHardenedCoreSynthesis:
         """Test that all critical methods have proper type hints."""
         try:
             # Test HealerMixin directly
-            from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
+            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
 
             methods = inspect.getmembers(HealerMixin, predicate=inspect.isfunction)
             for name, func in methods:
@@ -230,7 +230,7 @@ class TestHardenedCoreSynthesis:
     def test_canonical_schema_compliance(self):
         """Test that heal_repository methods use canonical schema."""
         try:
-            from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
+            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
             from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
 
             # Test HealerMixin
@@ -275,8 +275,8 @@ class TestHardenedCoreSynthesis:
     def test_error_boundary_integration(self):
         """Test that proper exception hierarchy is integrated."""
         try:
-            from agentic_core.base_agents.healer_mixin import healer_mixin  # noqa: F401
-            from agentic_core.base_agents.structural_healing_mixin import (
+            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
+            from agentic_core.mixins.structural_healing_mixin import (
                 structural_healing_mixin,  # noqa: F401
             )
             from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401

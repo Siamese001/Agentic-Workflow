@@ -305,7 +305,7 @@ repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
 from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import subatomic_testing_mixin
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 
 if __name__ == "__main__":
     agent = PreCommitSovereignAgent(root_dir=str(repo_root))

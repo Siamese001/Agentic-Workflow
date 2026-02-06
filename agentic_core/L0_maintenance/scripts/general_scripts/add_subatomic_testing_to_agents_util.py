@@ -71,7 +71,7 @@ for agent in agents_without_tests:
         if modified:
             # Add import if not present
             if (
-                "from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin"
+                "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin"
                 not in content
             ):
                 # Find best place to add import
@@ -80,7 +80,7 @@ for agent in agents_without_tests:
                     last_import = content.rfind("from agentic_core")
                     end_of_line = content.find("\n", last_import)
                     import_line = (
-                        "\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin"
+                        "\nfrom agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin"
                     )
                     content = content[:end_of_line] + import_line + content[end_of_line:]
                 elif "import " in content:
@@ -92,7 +92,7 @@ for agent in agents_without_tests:
                             last_import_idx = i
                     lines.insert(
                         last_import_idx + 1,
-                        "from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin",
+                        "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin",
                     )
                     content = "\n".join(lines)
                 else:
@@ -101,12 +101,12 @@ for agent in agents_without_tests:
                         end_docstring = content.find('"""', 3) + 3
                         content = (
                             content[:end_docstring]
-                            + "\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\n"
+                            + "\nfrom agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n"
                             + content[end_docstring:]
                         )
                     else:
                         content = (
-                            "from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\n"
+                            "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin\n"
                             + content
                         )
 

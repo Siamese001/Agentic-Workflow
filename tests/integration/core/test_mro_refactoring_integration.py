@@ -37,9 +37,9 @@ class TestCrossPhaseImports:
 
     def test_phase3_split_mixins_import(self):
         """Phase 3 split mixins should import cleanly."""
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
-        from agentic_core.base_agents.caching_mixin import CachingMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsMixin
+        from agentic_core.mixins.batching_mixin import BatchingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
+        from agentic_core.mixins.metrics_mixin import MetricsMixin
 
         assert CachingMixin is not None
         assert MetricsMixin is not None
@@ -65,7 +65,7 @@ class TestCrossPhaseImports:
 
     def test_all_phases_import_together(self):
         """All phase components should import without conflicts."""
-        from agentic_core.base_agents.caching_mixin import CachingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
         from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.base_agents.trait_system import with_traits
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
@@ -82,7 +82,7 @@ class TestGatewayFactoryWithMixins:
 
     def test_gateway_factory_with_caching_mixin(self):
         """GatewayFactory should work with CachingMixin agents."""
-        from agentic_core.base_agents.caching_mixin import CachingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         class TestAgent(CachingMixin):
@@ -155,9 +155,9 @@ class TestSplitMixinsCombined:
 
     def test_all_split_mixins_combined(self):
         """CachingMixin, MetricsMixin, BatchingMixin should combine."""
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
-        from agentic_core.base_agents.caching_mixin import CachingMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsMixin
+        from agentic_core.mixins.batching_mixin import BatchingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
+        from agentic_core.mixins.metrics_mixin import MetricsMixin
 
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
@@ -176,9 +176,9 @@ class TestSplitMixinsCombined:
 
     def test_split_mixins_no_conflicts(self):
         """Split mixins should have no attribute conflicts."""
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
-        from agentic_core.base_agents.caching_mixin import CachingMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsMixin
+        from agentic_core.mixins.batching_mixin import BatchingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
+        from agentic_core.mixins.metrics_mixin import MetricsMixin
 
         class TestAgent(CachingMixin, MetricsMixin, BatchingMixin):
             pass
@@ -281,7 +281,7 @@ class TestThreadSafety:
         """CachingMixin should be thread-safe."""
         import threading
 
-        from agentic_core.base_agents.caching_mixin import CachingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
 
         class TestAgent(CachingMixin):
             pass

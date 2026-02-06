@@ -319,7 +319,7 @@ class TestHealingDepthTracking:
 class TestEnhancedSovereignBaseAgent:
     """Test enhanced SovereignBaseAgent with meta-learning integration."""
 
-    @patch("agentic_core.base_agents.meta_learning_client_mixin.MetaLearningClientMixin._ensure_ml_client")
+    @patch("agentic_core.mixins.meta_learning_client_mixin.MetaLearningClientMixin._ensure_ml_client")
     def test_enhanced_heal_integration(self, mock_ensure_client):
         """Test that enhanced heal uses meta-learning when available."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -370,7 +370,7 @@ class TestCacheStrategyManager:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_healing_depth_via_manager(self):
         """Test healing depth tracking through CacheStrategyManager."""
-        from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
+        from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 
         # Create mixin instance
         class TestAgent(MetaLearningClientMixin):

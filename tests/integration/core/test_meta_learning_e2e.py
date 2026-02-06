@@ -258,7 +258,7 @@ class TestSystemIntegration:
 
     def test_mixin_client_integration(self):
         """Test MetaLearningClientMixin integrates with client."""
-        from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
+        from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 
         class TestAgent(MetaLearningClientMixin):
             pass
@@ -295,7 +295,7 @@ class TestSystemIntegration:
 
     def test_all_components_healthy(self):
         """Test all components initialize and operate correctly."""
-        from agentic_core.base_agents.meta_learning_client_mixin import MetaLearningClientMixin
+        from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
         from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
             get_cache_strategy_manager,
         )

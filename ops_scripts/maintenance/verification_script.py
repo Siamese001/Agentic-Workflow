@@ -220,7 +220,7 @@ def test_atomic_execution():
     print("TEST 3: Atomic Execution")
     print("=" * 60)
 
-    from agentic_core.base_agents.atomic_execution_mixin import (
+    from agentic_core.mixins.atomic_execution_mixin import (
         AtomicExecutionError,
         AtomicExecutionMixin,
     )

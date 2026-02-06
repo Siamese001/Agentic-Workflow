@@ -14,7 +14,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.base_agents.feature_flagged_agent_mixin import (
+from agentic_core.mixins.feature_flagged_agent_mixin import (
     FeatureFlaggedAgentMixin,
 )
 from agentic_core.integration.component_factory import ComponentFactory

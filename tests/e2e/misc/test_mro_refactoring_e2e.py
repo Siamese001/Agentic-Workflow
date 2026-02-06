@@ -102,9 +102,9 @@ class TestPhase3E2E:
 
     def test_split_mixins_work_independently(self):
         """Split mixins should work without full PerformanceMixin."""
-        from agentic_core.base_agents.batching_mixin import BatchingMixin
-        from agentic_core.base_agents.caching_mixin import CachingMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsMixin
+        from agentic_core.mixins.batching_mixin import BatchingMixin
+        from agentic_core.mixins.caching_mixin import CachingMixin
+        from agentic_core.mixins.metrics_mixin import MetricsMixin
 
         class CacheOnlyAgent(CachingMixin):
             pass
@@ -223,7 +223,7 @@ class TestBackwardCompatibility:
     def test_original_performance_mixin_still_works(self):
         """Original PerformanceMixin should still be usable."""
         try:
-            from agentic_core.base_agents.performance_mixin import PerformanceMixin
+            from agentic_core.mixins.performance_mixin import PerformanceMixin
 
             class TestAgent(PerformanceMixin):
                 pass

@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
 

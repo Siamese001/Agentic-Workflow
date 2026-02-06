@@ -28,8 +28,8 @@ L6ObservabilityBase = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # [SOVEREIGN FACTORY]

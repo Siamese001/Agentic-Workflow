@@ -39,7 +39,7 @@ def reset_all_singletons():
     csm._cache_strategy_manager = None
     csm._csm_singleton = None
 
-    from agentic_core.base_agents.meta_learning_client_mixin import (
+    from agentic_core.mixins.meta_learning_client_mixin import (
         MetaLearningClientMixin,
     )
 
@@ -81,7 +81,7 @@ class TestMetaLearningClientMixin:
 
     def test_mixin_provides_ml_methods(self):
         """Test that mixin provides all expected methods."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
 
@@ -103,7 +103,7 @@ class TestMetaLearningClientMixin:
 
     def test_domain_detection_from_class_name(self):
         """Test domain detection from class name."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
 
@@ -126,7 +126,7 @@ class TestMetaLearningClientMixin:
 
     def test_explicit_domain_override(self):
         """Test explicit domain override."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
 
@@ -138,7 +138,7 @@ class TestMetaLearningClientMixin:
 
     def test_cache_operations(self):
         """Test cache get/set operations through mixin."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
@@ -160,7 +160,7 @@ class TestMetaLearningClientMixin:
 
     def test_healing_depth_tracking(self):
         """Test healing depth tracking through mixin."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
 
@@ -182,7 +182,7 @@ class TestMetaLearningClientMixin:
 
     def test_violation_signature_generation(self):
         """Test violation signature generation."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder import (
@@ -263,7 +263,7 @@ class TestDomainIsolation:
 
     def test_lic_domain_isolation(self):
         """Test LIC domain isolation."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
@@ -285,7 +285,7 @@ class TestDomainIsolation:
 
     def test_rg_domain_isolation(self):
         """Test RG domain isolation."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
@@ -307,7 +307,7 @@ class TestDomainIsolation:
 
     def test_cross_domain_isolation(self):
         """Test that domains are properly isolated."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
@@ -358,7 +358,7 @@ class MockLicHealingOrchestrator:
     )
 
     def __post_init__(self):
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
 

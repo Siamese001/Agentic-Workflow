@@ -25,7 +25,7 @@ from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     TESTS_DIR,
 )
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 
 class GuardrailResult(Enum):
