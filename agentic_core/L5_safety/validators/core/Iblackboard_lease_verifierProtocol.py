@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.tool_registry.definitions import (
+from agentic_core.L2_execution.engine.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,

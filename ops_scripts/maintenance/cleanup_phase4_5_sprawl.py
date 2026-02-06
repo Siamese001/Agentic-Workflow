@@ -24,7 +24,7 @@ OBSOLETE_FILES = [
     "agentic_core/L1_cognition/thought_engine/llm_engine.py",
     "agentic_core/L2_execution/mcp/inference_engine.py",
     "agentic_core/L2_execution/unified/ModelRouterAgent.py",
-    "agentic_core/L2_execution/tool_registry/format_llm_prompt.py",
+    "agentic_core/L2_execution/engine/format_llm_prompt.py",
     "agentic_core/semantic_memory/embeddings/gemini_embedder.py",
     "agentic_core/semantic_memory/embeddings/core_embedder.py",
     # --- Phase 5: Healing ---

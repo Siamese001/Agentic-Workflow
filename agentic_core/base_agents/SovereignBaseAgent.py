@@ -37,8 +37,8 @@ from agentic_core.mixins.configuration_mixin import ConfigMixin
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
-from agentic_core.L2_execution.mcp.embedding_mixin import EmbeddingMixin
-from agentic_core.L2_execution.mcp.llm_provider_mixin import LLMProviderMixin
+from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
 from agentic_core.L5_safety.validators.core.healing_strategy_mixin import HealingStrategyMixin
 from agentic_core.L5_safety.validators.core.validator_mixin import ValidatorMixin

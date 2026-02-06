@@ -20,7 +20,7 @@ class TestToolRegistryMigration:
 
             # Create a consumer file with the old import
             consumer = root / "consumer.py"
-            consumer.write_text("from agentic_core.L2_execution.tool_registry import dummy_tool")
+            consumer.write_text("from agentic_core.L2_execution.engine import dummy_tool")
 
             yield root
 
@@ -53,5 +53,5 @@ class TestToolRegistryMigration:
 
         # Check Import Update
         updated_content = consumer.read_text()
-        assert "from agentic_core.L2_execution.tool_registry" in updated_content
+        assert "from agentic_core.L2_execution.engine" in updated_content
         assert "ToolRegistry" not in updated_content

@@ -11,7 +11,7 @@ from agentic_core.L0_maintenance.logs.TelemetryRecorder import TelemetryRecorder
 from agentic_core.L1_cognition.boundaries.semantic_gatekeeper_validator import semantic_gatekeeper
 from agentic_core.L1_cognition.engine.StructuredEngineAgent import StructuredEngineAgent
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
-from agentic_core.L2_execution.tool_registry.mcp_manager import MCPConnectionManager
+from agentic_core.L2_execution.engine.mcp_manager import MCPConnectionManager
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt

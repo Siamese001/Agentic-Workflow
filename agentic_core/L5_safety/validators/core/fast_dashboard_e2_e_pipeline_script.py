@@ -178,7 +178,7 @@ class FastDashboardE2EPipeline:
 
                 # Add import if needed
                 if (
-                    "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
+                    "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
                     not in content
                 ):
                     lines = content.split("\n")
@@ -188,7 +188,7 @@ class FastDashboardE2EPipeline:
                             insert_idx = i + 1
                     lines.insert(
                         insert_idx,
-                        "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin",
+                        "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin",
                     )
                     content = "\n".join(lines)
 

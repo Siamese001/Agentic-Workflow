@@ -148,7 +148,7 @@ async def main():
                 status = "[STALE - Blueprint]"
             elif "observability/dashboard" in path:
                 status = "[STALE - Old Location]"
-            elif "L5_safety/validators" in path or "L2_execution/tool_registry" in path:
+            elif "L5_safety/validators" in path or "L2_execution/engine" in path:
                 status = "[CANONICAL]"
             else:
                 status = "[REVIEW]"

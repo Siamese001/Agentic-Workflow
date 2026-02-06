@@ -269,7 +269,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, L0Maint
         print("   python scripts/ssot.py validate --summary")
         print()
         print("4. Use DynamicSealAgent for automated refactoring:")
-        print("   python -m agentic_core.L2_execution.tool_registry.DynamicSealAgent --dry-run")
+        print("   python -m agentic_core.L2_execution.engine.DynamicSealAgent --dry-run")
         print()
         print("!" * 80 + "\n")
 

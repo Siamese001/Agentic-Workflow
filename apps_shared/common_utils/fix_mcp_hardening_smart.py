@@ -53,7 +53,7 @@ def add_mcp_import(content: str) -> str:
     if "MCPHardenedMixin" in content:
         return content
 
-    import_line = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin\n"
+    import_line = "from agentic_core.mixins.mcp_hardened_mixin_1 import MCPHardenedMixin\n"
 
     lines = content.split("\n")
     insert_idx = 0

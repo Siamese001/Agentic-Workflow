@@ -28,9 +28,12 @@ class PeerIntelligenceConfig:
 
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L2_execution.tool_registry.IntegrityGateExecutorAgent import (
-    IntegrityGateExecutorAgent,
-)
+try:
+    from agentic_core.L2_execution.engine.integrity_gate_executor import (
+        IntegrityGateExecutorAgent,
+    )
+except ImportError:
+    IntegrityGateExecutorAgent = None  # type: ignore[misc,assignment]
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin

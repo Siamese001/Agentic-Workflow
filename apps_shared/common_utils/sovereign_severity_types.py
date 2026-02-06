@@ -1497,7 +1497,7 @@ CORE_CONTRACTS_REGISTRY.update(
     },
 )
 
-# Data models (from L2_execution/tool_registry/data_models_models.py)
+# Data models (from L2_execution/engine/data_models_models.py)
 
 
 @dataclass

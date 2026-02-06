@@ -3,7 +3,7 @@ import time
 import unittest
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L2_execution.tool_registry.query_runtime import run_hardened_query
+from agentic_core.L2_execution.engine.query_runtime import run_hardened_query
 
 
 class TestQueryTerminalHardening(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
                 time.sleep(10)
 
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=infinite_wait,
         ):
             with self.assertRaises((concurrent.futures.TimeoutError, TimeoutError)):
@@ -33,11 +33,11 @@ class TestQueryTerminalHardening(unittest.TestCase):
             return [{"id": 1}]
 
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=transient_failure,
         ):
             with patch(
-                "agentic_core.L2_execution.tool_registry.query_runtime.time.sleep"
+                "agentic_core.L2_execution.engine.query_runtime.time.sleep"
             ):  # Fast forward retries
                 result = run_hardened_query("SELECT retry_test")
                 self.assertEqual(result, [{"id": 1}])
@@ -51,7 +51,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
             return [{"id": 1}]
 
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=slow_db_call,
         ):
             result = run_hardened_query("SELECT * FROM users")
@@ -60,7 +60,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
     def test_malformed_query_ui_recovery(self):
         """Confirm that a database error does not lock the terminal display."""
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=ValueError("Syntax Error"),
         ):
             with self.assertRaises(ValueError):
@@ -68,7 +68,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
 
     def test_high_frequency_execution(self):
         """Stress test: Ensure the Progress context manager handles rapid open/close cycles."""
-        with patch("agentic_core.L2_execution.tool_registry.query_runtime.execute_sql", return_value="ok"):
+        with patch("agentic_core.L2_execution.engine.query_runtime.execute_sql", return_value="ok"):
             for _ in range(10):
                 run_hardened_query("SELECT 1")
             self.assertTrue(True)
@@ -83,7 +83,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
         def mock_progress_add_task(*args, **kwargs):
             return "mock_task_id"
 
-        with patch("agentic_core.L2_execution.tool_registry.query_runtime.Progress") as mock_progress_class:
+        with patch("agentic_core.L2_execution.engine.query_runtime.Progress") as mock_progress_class:
             mock_progress = MagicMock()
             mock_progress_class.return_value.__enter__.return_value = mock_progress
             mock_progress.add_task.side_effect = mock_progress_add_task
@@ -93,7 +93,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
                 return [{"result": "quick"}]
 
             with patch(
-                "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+                "agentic_core.L2_execution.engine.query_runtime.execute_sql",
                 side_effect=quick_db_call,
             ):
                 result = run_hardened_query("SELECT quick")
@@ -103,7 +103,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
 
     def test_graceful_error_handling_with_cleanup(self):
         """Test that errors don't leave the progress bar in a broken state."""
-        with patch("agentic_core.L2_execution.tool_registry.query_runtime.Progress") as mock_progress_class:
+        with patch("agentic_core.L2_execution.engine.query_runtime.Progress") as mock_progress_class:
             mock_progress = MagicMock()
             mock_progress_class.return_value.__enter__.return_value = mock_progress
 
@@ -111,7 +111,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
                 raise RuntimeError("Connection lost")
 
             with patch(
-                "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+                "agentic_core.L2_execution.engine.query_runtime.execute_sql",
                 side_effect=failing_db_call,
             ):
                 with self.assertRaises(RuntimeError):

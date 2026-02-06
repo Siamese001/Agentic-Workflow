@@ -55,8 +55,8 @@ SYNTAX_FILES = {
 # Files with module path errors
 MODULE_PATH_FIXES = {
     "DispatchOutreachToolsAgent.py": {
-        "old": "from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import",
-        "new": "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import",
+        "old": "from agentic_core.mixins.mcp_hardened_mixin_1 import",
+        "new": "from agentic_core.mixins.mcp_hardened_mixin import",
     },
     "OutreachTestPilotAgent.py": {
         "old": "from apps_lic.engines.OutreachAgent import",

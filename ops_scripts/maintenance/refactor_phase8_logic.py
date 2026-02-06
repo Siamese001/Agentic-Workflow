@@ -27,7 +27,7 @@ import re
 from typing import Any, List
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
+from agentic_core.mixins.llm_provider_mixin import llm_provider_mixin
 from agentic_core.mixins.configuration_mixin import ConfigMixin
 # Import schemas from SSOT
 from agentic_core.runtime.types.consensus import ConsensusVerdict, ModelOpinion
@@ -136,7 +136,7 @@ StructuredEngine - Intent to Plan Converter
 import logging
 from typing import Any, List, Dict
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.mcp.llm_provider_mixin import llm_provider_mixin
+from agentic_core.mixins.llm_provider_mixin import llm_provider_mixin
 from agentic_core.mixins.configuration_mixin import ConfigMixin
 
 Logger = logging.getLogger(__name__)
@@ -189,7 +189,7 @@ def apply_refactors():
 
     # 2. Structured Engine
     # Note: Phase 7 archived the L1 stub, so we target the L2 implementation or recreate it
-    se_path = PROJECT_ROOT / "agentic_core/L2_execution/tool_registry/structured_engine.py"
+    se_path = PROJECT_ROOT / "agentic_core/L2_execution/engine/structured_engine.py"
     # Ensure dir exists
     se_path.parent.mkdir(parents=True, exist_ok=True)
 

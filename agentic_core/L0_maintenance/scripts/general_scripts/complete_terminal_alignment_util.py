@@ -23,9 +23,9 @@ def add_missing_imports_comprehensive(file_path: Path) -> bool:
 
     # Check for missing imports
     if "MCPHardenedMixin" in content and "class MCPHardenedMixin" not in content:
-        if "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin" not in content:
+        if "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin" not in content:
             imports_to_add.append(
-                "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin",
+                "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin",
             )
 
     if "Tuple" in content and "from typing import" in content:

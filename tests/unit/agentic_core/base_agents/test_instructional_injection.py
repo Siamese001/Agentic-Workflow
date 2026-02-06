@@ -31,7 +31,7 @@ def get_project_root() -> Path:
 SSOT_AGENT_FOLDERS = [
     "agentic_core/L0_maintenance/scripts",
     "agentic_core/L1_cognition/thought_engine",
-    "agentic_core/L2_execution/tool_registry",
+    "agentic_core/L2_execution/engine",
     "agentic_core/L3_orchestration/fission_logic",
     "agentic_core/L3_orchestration/workflow_engines",
     "agentic_core/L4_state/validation_context",

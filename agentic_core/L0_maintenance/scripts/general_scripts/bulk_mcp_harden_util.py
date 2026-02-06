@@ -17,7 +17,7 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 
-MCP_IMPORT = "from agentic_core.L2_execution.mcp.mcp_hardened_mixin import MCPHardenedMixin"
+MCP_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
 
 
 def load_discovery():

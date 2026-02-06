@@ -3,7 +3,7 @@ import time
 import unittest
 from unittest.mock import patch
 
-from agentic_core.L2_execution.tool_registry.query_runtime import run_hardened_query
+from agentic_core.L2_execution.engine.query_runtime import run_hardened_query
 
 
 class TestThreadHangResolution(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestThreadHangResolution(unittest.TestCase):
                 time.sleep(1)
 
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=infinite_worker,
         ):
             start_time = time.time()
@@ -43,7 +43,7 @@ class TestThreadHangResolution(unittest.TestCase):
             time.sleep(100)
 
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=hang_on_first,
         ):
             with self.assertRaises(TimeoutError):
@@ -52,7 +52,7 @@ class TestThreadHangResolution(unittest.TestCase):
     def test_normal_completion_with_explicit_shutdown(self):
         """Verify that successful queries still return results correctly with explicit shutdown."""
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             return_value="success",
         ):
             result = run_hardened_query("SELECT 1")
@@ -61,7 +61,7 @@ class TestThreadHangResolution(unittest.TestCase):
     def test_clean_error_propagation(self):
         """Verify that standard errors still propagate without executor interference."""
         with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql",
+            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
             side_effect=ValueError("Test"),
         ):
             with self.assertRaises(ValueError):

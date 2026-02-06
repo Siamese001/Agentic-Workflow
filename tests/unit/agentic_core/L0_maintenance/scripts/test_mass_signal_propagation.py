@@ -36,7 +36,7 @@ def test_case_1_long_chain_propagation():
         from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+        from agentic_core.L2_execution.engine.L2ExecutionBase import (
             L2ExecutionBase,
         )
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
@@ -117,7 +117,7 @@ def test_case_2_multi_agent_cycle_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+        from agentic_core.L2_execution.engine.L2ExecutionBase import (
             L2ExecutionBase,
         )
         from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (

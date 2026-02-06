@@ -33,7 +33,7 @@ from typing import Any
 from agentic_core.base_agents.timeout_decorator import timeout
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L2_execution.engine.base import SubAtomicAgent
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
