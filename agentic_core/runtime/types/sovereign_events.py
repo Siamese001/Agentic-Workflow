@@ -1,5 +1,5 @@
 """
-agentic_core/domain/sovereign_event_types.py - Sovereign Event Schema
+agentic_core/runtime/types/sovereign_events.py - Sovereign Event Schema
 
 Zero-Ambiguity Standard: Renamed from SovereignEvent.py to sovereign_event_types.py
 Category: TYPES (Event schema definition)

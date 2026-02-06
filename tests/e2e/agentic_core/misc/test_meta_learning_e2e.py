@@ -35,7 +35,7 @@ sys.modules["agentic_core.L5_safety.validators.PascalSovereigntyAgent"] = MagicM
 class TestEndToEndHealingCycle:
     """Test complete healing cycles across multiple agents."""
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_full_healing_cycle_with_caching(self, mock_integrity):
         """Test complete healing cycle: detect -> cache check -> heal -> store."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -89,7 +89,7 @@ class TestEndToEndHealingCycle:
         # Step 8: Reset healing depth
         client.reset_healing_depth(agent.__class__.__name__, signature)
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_multi_agent_healing_coordination(self, mock_integrity):
         """Test multiple agents coordinating healing through shared cache."""
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
@@ -194,7 +194,7 @@ class TestCrossDomainIntegration:
 class TestPerformanceIntegration:
     """Test performance across the full system."""
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_healing_performance_at_scale(self, mock_integrity):
         """Test healing performance with many violations."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -329,7 +329,7 @@ class TestGuardrailsIntegration:
 class TestFullSystemIntegration:
     """Test the full meta-learning system integration."""
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -386,7 +386,7 @@ class TestFullSystemIntegration:
         # Cleanup
         client.clear_local_cache()
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_system_stability_under_load(self, mock_integrity):
         """Test system remains stable under sustained load."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

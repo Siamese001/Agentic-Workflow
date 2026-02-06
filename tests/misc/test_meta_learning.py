@@ -325,7 +325,7 @@ class TestEnhancedSovereignBaseAgent:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Mock the integrity check to prevent shutdown
-        with patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"):
+        with patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"):
             # Create test agent
             agent = SovereignBaseAgent(project_root=Path.cwd())
 
@@ -347,7 +347,7 @@ class TestEnhancedSovereignBaseAgent:
             assert result["source"] == "meta_learning_cache"
             agent.ml_enhanced_heal.assert_called_once()
 
-    @patch("agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity")
+    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
     def test_fallback_to_default_heal(self, mock_integrity):
         """Test fallback to default heal when meta-learning unavailable."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

@@ -29,7 +29,7 @@ class TestLocationAgentSmartRouting:
             with patch.object(LocationAgent, "_validate_project_root"):
                 # Mock core integrity verification to avoid sovereign lock
                 with patch(
-                    "agentic_core.domain.CoreIntegrityVerifier.CoreIntegrityVerifier.verify_core_integrity"
+                    "agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
                 ):
                     with patch(
                         "agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__post_init__"
