@@ -2244,7 +2244,7 @@ Examples:
             RootHygieneAgent,  # noqa: F401
         )
         from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
-        from agentic_core.L6_observability.DebateSynthesisAgent import (
+        from agentic_core.L6_observability.agents.DebateSynthesisAgent import (
             DebateSynthesisAgent,
         )
         # Note: NamingAgent is a dependency for FileClassificationAgent, checked during instantiation
