@@ -40,7 +40,7 @@ except ImportError:
 
 # Import L1 Agent Classes with fallbacks
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_core import (
+    from agentic_core.L1_cognition.engine.canon_agents_core import (
         SystemArchitect as SystemArchitect,
     )
 except ImportError:
@@ -48,7 +48,7 @@ except ImportError:
 HealerAgent = GenerativeGuard = None  # Stubs
 
 try:
-    from agentic_core.L1_cognition.thought_engine.canon_agents_syntax import (
+    from agentic_core.L1_cognition.engine.canon_agents_syntax import (
         CodeJanitor as CodeJanitor,
     )
 except ImportError:

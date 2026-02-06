@@ -17,12 +17,12 @@ import pytest
 
 # --- configuration ---
 RESTORED_AGENTS_MAP = [
-    ("MetaLearningAgent", "agentic_core.L1_cognition.thought_engine.MetaLearningAgent"),
+    ("MetaLearningAgent", "agentic_core.L1_cognition.agents.MetaLearningAgent"),
     (
         "StrategicRecommendationAgent",
-        "agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.agents.StrategicRecommendationAgent",
     ),
-    ("BudgetAgent", "agentic_core.L1_cognition.thought_engine.BudgetAgent"),
+    ("BudgetAgent", "agentic_core.L1_cognition.agents.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
     ("DeadlockDetectorAgent", "agentic_core.L5_safety.validators.DeadlockDetectorAgent"),
@@ -93,7 +93,7 @@ except Exception as e:
         field(default_factory=dict) fix).
         """
         try:
-            from agentic_core.L1_cognition.thought_engine.MetaLearningAgent import MetaLearningAgent
+            from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
         except (ImportError, NameError, AttributeError):
             pytest.skip("MetaLearningAgent not available for isolation test")
 
@@ -113,7 +113,7 @@ except Exception as e:
         # We verify the fix by checking the dataclass field definition
         import dataclasses
 
-        from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
+        from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
 
@@ -211,7 +211,7 @@ except Exception as e:
         """
         import dataclasses
 
-        from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
+        from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
 

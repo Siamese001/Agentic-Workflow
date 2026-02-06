@@ -51,7 +51,7 @@ def _get_unified_agent_mapping() -> dict[str, type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
     """
     # Import unified agents lazily to avoid circular dependencies
-    from agentic_core.L1_cognition.thought_engine.ast_validator_agent_validator import (
+    from agentic_core.L1_cognition.agents.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
     from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (

@@ -85,7 +85,7 @@ def phase9_test_namespace_alignment():
         ),
         (
             re.compile(r"agentic_core\.L1_cognition\.thought_engine\.UnifiedASTValidatorAgent"),
-            "agentic_core.L1_cognition.thought_engine.ASTValidatorAgent",
+            "agentic_core.L1_cognition.agents.ASTValidatorAgent",
         ),
     ]
 

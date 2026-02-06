@@ -33,7 +33,7 @@ class TestStrategicRecommendationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent import (
+            from agentic_core.L1_cognition.agents.StrategicRecommendationAgent import (
                 StrategicRecommendationAgent,
             )
 
@@ -88,7 +88,7 @@ class TestStrategicRecommendationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L1_cognition.thought_engine.StrategicRecommendationAgent import (
+                from agentic_core.L1_cognition.agents.StrategicRecommendationAgent import (
                     StrategicRecommendationAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

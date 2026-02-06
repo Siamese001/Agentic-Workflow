@@ -62,7 +62,7 @@ def test_instantiation():
         ("L5_safety.validators.NeuralAutoImmuneAgent", "NeuralAutoImmuneAgent"),
         ("L0_maintenance.scripts.DependencyDiplomatAgent", "DependencyDiplomatAgent"),
         (
-            "L1_cognition.thought_engine.SemanticTerritoryMapperAgent",
+            "L1_cognition.agents.SemanticTerritoryMapperAgent",
             "SemanticTerritoryMapperAgent",
         ),
         ("L0_maintenance.scripts.BootstrapAgent", "BootstrapAgent"),

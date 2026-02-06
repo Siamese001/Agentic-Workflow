@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Legacy to SovereignBaseAgent mapping
 LEGACY_IMPORTS = {
-    "L1CognitionBase": "agentic_core.L1_cognition.thought_engine.L1CognitionBase",
+    "L1CognitionBase": "agentic_core.base_agents.L1CognitionBase",
     "L2ExecutionBase": "agentic_core.L2_execution.L2ExecutionBase",
     "L3OrchestrationBase": "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase",
     "L4StateBase": "agentic_core.L4_state.validation_context.L4StateBase",

@@ -44,7 +44,7 @@ Logger = logging.getLogger(__name__)
 
 # Import mixins with fallbacks
 try:
-    from agentic_core.L1_cognition.thought_engine.meta_learning_mixin import (
+    from agentic_core.L1_cognition.meta_learning.meta_learning_mixin import (
         MetaLearningMixin,
     )
 except ImportError:
