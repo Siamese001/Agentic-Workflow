@@ -39,7 +39,7 @@ class ImpactScope(Enum):
     """Scope of impact for detected issues."""
 
     SYSTEM_WIDE = "system_wide"  # Affects entire system
-    DOMAIN = "domain"  # Affects specific domain (apps_lic, apps_rg)
+    DOMAIN = "domain"  # Affects a specific business domain or vertical
     COMPONENT = "component"  # Affects single component
     FILE = "file"  # Affects single file
     ISOLATED = "isolated"  # No broader impact
