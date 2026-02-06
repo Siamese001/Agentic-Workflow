@@ -9,7 +9,7 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from agentic_core.base_agents.CircuitBreakerState import CircuitBreakerState
+from agentic_core.base_agents.circuit_breaker_types import CircuitBreakerState
 from agentic_core.L6_observability.telemetry.system_telemetry_util import SystemTelemetry
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor

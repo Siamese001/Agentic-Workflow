@@ -756,6 +756,10 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "css": ["themes", "layouts"],
         "config": ["dashboard_config"],
     },
+    # L0_maintenance/strategies/ - Healing strategy implementations
+    "strategies": {
+        "healing": ["deep_wiki_strategy", "l6_audit_strategy", "knowledge_graph_strategy"],
+    },
     # L0_maintenance/scripts/ - 181 .py files, flat structure (simplified)
     "scripts": {
         "healing": ["healing_strategies", "healing_engines"],
@@ -837,6 +841,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
     {
         "agentic_core/L6_observability/dashboards",
         "agentic_core/L0_maintenance/scripts",
+        "agentic_core/L0_maintenance/strategies",
         "agentic_core/L3_orchestration/workflow_engines",
         "agentic_core/L1_cognition/thought_engine",
         "agentic_core/L5_safety/guardrails",
@@ -1536,6 +1541,33 @@ def safe_path_join(project_root, *parts):
     return result
 
 
+# === GLOBAL NAMING RESTRICTIONS (Root Cause Prevention) ===
+# These patterns are FORBIDDEN in all filenames across the repository.
+# They target the root causes of naming violations discovered during the Great Sanitization.
+FORBIDDEN_FILENAME_PATTERNS: Final[Sequence[Mapping[str, str]]] = [
+    {
+        # Detects stuttering acronyms caused by naive CamelCase splitting
+        # e.g., "s_s_o_t" (from SSOT), "h_t_t_p" (from HTTP)
+        "pattern": r"(?<![a-z])[a-z]_[a-z]_[a-z]_[a-z]",
+        "reason": "Stuttering Acronym Violation (naive CamelCase split). "
+        "Fix: collapse single-char segments (e.g., s_s_o_t → ssot).",
+    },
+    {
+        # Detects double/triple underscores caused by unsanitized concatenation
+        # Excludes __init__.py and __pycache__ which are Python conventions
+        "pattern": r"(?<!^)_{2,}(?!init__|pycache__)",
+        "reason": "Multiple Underscore Violation (unsanitized concatenation). "
+        "Fix: collapse to single underscore (e.g., setup___init___ → setup_init).",
+    },
+    {
+        # Detects filenames starting with underscore (except __init__.py)
+        # Root cause: legacy convention leaking into sovereign territory
+        "pattern": r"^_[a-z]",
+        "reason": "Leading Underscore Violation (non-__init__ file). "
+        "Fix: remove leading underscore or rename to descriptive name.",
+    },
+]
+
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
 # All naming rules for all file types in the repository
 
@@ -1572,6 +1604,14 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
         "description": "snake_case ending with '_types.py' for type definitions/schemas",
         "examples": ["user_profile_types.py", "api_response_types.py", "action_request_types.py"],
         "anti_examples": ["types.py", "models.py", "schemas.py"],
+        "extensions": [".py"],
+    },
+    # Python exceptions - snake_case, MUST end with _exceptions.py (Zero-Ambiguity Standard)
+    "exception": {
+        "pattern": r"^[a-z][a-z0-9_]*_exceptions\.py$",
+        "description": "snake_case ending with '_exceptions.py'",
+        "examples": ["runtime_exceptions.py", "healer_exceptions.py", "core_exceptions.py"],
+        "anti_examples": ["AgentRuntimeError.py", "HealerError.py", "Errors.py", "exceptions.py"],
         "extensions": [".py"],
     },
     # Strategy pattern - PascalCase ending with Strategy (Zero-Ambiguity Standard)
@@ -3031,7 +3071,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L0": [
         {
             "name": "BootstrapAgent",
-            "file": "agentic_core/L0_maintenance/scripts/BootstrapAgent.py",
+            "file": "agentic_core/L0_maintenance/agents/BootstrapAgent.py",
             "methods": 6,
             "fingerprint": "fcfd5e27416abb4c",
         },

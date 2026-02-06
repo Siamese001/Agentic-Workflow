@@ -134,7 +134,7 @@ class TestPhase4E2E:
 
     def test_lightweight_base_has_reduced_mro(self):
         """LightweightAgentBase should have MRO depth < 15."""
-        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         class TestAgent(LightweightAgentBase):
             pass
@@ -144,7 +144,7 @@ class TestPhase4E2E:
 
     def test_lightweight_base_is_functional(self):
         """LightweightAgentBase should provide working capabilities."""
-        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         class TestAgent(LightweightAgentBase):
             def __post_init__(self):
@@ -291,7 +291,7 @@ class TestAllPhasesIntegrated:
         """Test recommended combined usage pattern."""
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
 
         @dataclass
@@ -321,7 +321,7 @@ class TestPerformanceImprovements:
 
     def test_lightweight_instantiation_time(self):
         """LightweightAgentBase should instantiate quickly."""
-        from agentic_core.base_agents.lightweight_agent_base import LightweightAgentBase
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         class TestAgent(LightweightAgentBase):
             def __post_init__(self):

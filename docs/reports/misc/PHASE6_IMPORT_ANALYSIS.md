@@ -39,7 +39,7 @@ apps_rg/shared/core/__init__.py
 **File:** `agentic_core/base_agents/TokenLimitError.py:16`
 **Import:** `from .circuit_breaker import CircuitBreakerOpenError, get_breaker`
 **Actual Files:**
-- `agentic_core/base_agents/CircuitBreakerState.py`
+- `agentic_core/base_agents/circuit_breaker_types.py`
 - `agentic_core/L4_state/ledger/CircuitBreaker.py`
 
 **Resolution:** Update import to use correct module path.
