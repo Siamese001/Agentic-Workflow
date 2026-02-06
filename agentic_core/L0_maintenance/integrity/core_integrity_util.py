@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
-from agentic_core.utils.SovereignError import ConfigurationError
+from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
 
 
 class CoreIntegrityVerifier:
