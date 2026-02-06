@@ -112,7 +112,16 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
             "L1_cognition": {"purpose": "Cognitive processing and thought patterns"},
             "L2_execution": {"purpose": "Tool execution and action handling"},
-            "L3_orchestration": {"purpose": "Workflow orchestration and coordination"},
+            "L3_orchestration": {
+                "purpose": "Workflow orchestration, strategy patterns, and multi-agent coordination.",
+                "subfolders": {
+                    "agents": {"purpose": "Orchestration agents and unified strategy framework."},
+                    "fission_logic": {"purpose": "Task decomposition and fission logic."},
+                    "interfaces": {"purpose": "Orchestration interfaces and protocols."},
+                    "utils": {"purpose": "Orchestration utility functions."},
+                    "workflow_engines": {"purpose": "Workflow execution engines."},
+                },
+            },
             "L4_state": {"purpose": "State management and persistence"},
             "L5_safety": {
                 "purpose": "L5 sovereign safety layer - guardrails and validators",

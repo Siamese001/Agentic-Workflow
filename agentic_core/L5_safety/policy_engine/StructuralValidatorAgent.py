@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.UnifiedAgent import (
+from agentic_core.L3_orchestration.agents.UnifiedAgent import (
     StructuralValidatorStrategy,
 )
 from agentic_core.L4_state.utils.layer_gravity import (

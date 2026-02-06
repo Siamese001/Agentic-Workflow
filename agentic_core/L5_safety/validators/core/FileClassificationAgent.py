@@ -2134,15 +2134,26 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- Rule 1: L0 Cognitive Pollution Detection ---
         if "L0_maintenance" in parts:
             cognitive_signals = ["debate", "synthesis", "conversation", "llm_generate", "multi_agent"]
-            found_signals = [s for s in cognitive_signals if s in content_lower]
-            if found_signals:
+            orchestration_signals = ["strategy", "orchestrat", "coordination", "workflow_engine"]
+            found_cognitive = [s for s in cognitive_signals if s in content_lower]
+            found_orchestration = [s for s in orchestration_signals if s in content_lower]
+            if found_cognitive:
                 return {
                     "type": "L0_COGNITIVE_POLLUTION",
                     "message": (
-                        f"Cognitive signals {found_signals} detected in L0 file {path.name}. "
+                        f"Cognitive signals {found_cognitive} detected in L0 file {path.name}. "
                         f"L0 must be reflexive/deterministic only."
                     ),
                     "suggested_destination": "agentic_core/L6_observability/agents/",
+                }
+            if found_orchestration:
+                return {
+                    "type": "L0_ORCHESTRATION_LEAK",
+                    "message": (
+                        f"Orchestration signals {found_orchestration} detected in L0 file {path.name}. "
+                        f"Strategy/orchestration belongs in L3_orchestration."
+                    ),
+                    "suggested_destination": "agentic_core/L3_orchestration/agents/",
                 }
 
         # --- Rule 2: Passive Agent Detection ---

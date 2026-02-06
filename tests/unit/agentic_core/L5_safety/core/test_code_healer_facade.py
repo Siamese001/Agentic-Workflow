@@ -15,7 +15,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.base_agents.UnifiedAgent import HealingResult
+from agentic_core.L3_orchestration.agents.UnifiedAgent import HealingResult
 
 
 class TestCodeHealingStrategy:
