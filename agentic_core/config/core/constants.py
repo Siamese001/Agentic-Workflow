@@ -4,7 +4,7 @@ Blueprint Sovereign Constants - SSOT for configuration Constants
 This module provides centralized configuration constants used across the codebase.
 All feature flags, default values, and configuration constants should be defined here.
 
-SSOT Location: agentic_core/config/blueprint_sovereign/constants_util.py
+SSOT Location: agentic_core/config/core/constants.py
 """
 
 import os

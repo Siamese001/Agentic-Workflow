@@ -253,7 +253,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         """Validate depth requirements from sovereign registry.
 
         SSOT FIX: Allow variable depth for certain subfolders that legitimately
-        have deeper structures (e.g., utils/core_extensions/, config/blueprint_sovereign/).
+        have deeper structures (e.g., utils/core_extensions/, config/core/).
         """
         from agentic_core.L5_safety.validators.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,

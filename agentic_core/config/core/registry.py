@@ -154,7 +154,7 @@ CORE_SUBFOLDER_MAP: dict = {
         "agents",
     ],
     "schemas": ["models", "messages", "types", "validators"],
-    "config": ["blueprint_sovereign", "environments", "feature_flags", "secrets_manager"],
+    "config": ["core", "environments", "feature_flags", "secrets_manager"],
     "prompt_governance": ["meta_prompts", "version_registry", "rendering", "templates"],
     "runtime": ["shared_runtime", "environment_setup", "shared", "resource_management"],
     "utils": ["core_extensions", "wrappers", "general_helpers", "naming", "deduplicated"],
@@ -205,7 +205,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L4_state/validation_context",
     "agentic_core/schemas/models",
     "agentic_core/utils/core_extensions",
-    "agentic_core/config/blueprint_sovereign",
+    "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
 }
 
 # ============================================================================
@@ -304,7 +304,6 @@ L2_TO_L1_MAP: dict = {
     "meta_prompts": "prompt_governance",
     "rendering": "prompt_governance",
     "version_registry": "prompt_governance",
-    "blueprint_sovereign": "config",
     "environments": "config",
     "feature_flags": "config",
     "scripts": "L0_maintenance",

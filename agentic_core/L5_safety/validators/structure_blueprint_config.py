@@ -145,7 +145,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "workflow_engines": {"purpose": "Workflow execution engines."},
                 },
             },
-            "L4_state": {"purpose": "State management and persistence"},
+            "L4_state": {
+                "purpose": "State management, persistence, and graph storage.",
+                "subfolders": {
+                    "graph": {"purpose": "Graph database connectors and store drivers."},
+                    "validation_context": {"purpose": "Validation context and state tracking."},
+                    "audit_trails": {"purpose": "Audit trail and genealogy tracking."},
+                    "session_manager": {"purpose": "Session management and disk adapters."},
+                },
+            },
             "L5_safety": {
                 "purpose": "L5 sovereign safety layer - guardrails and validators",
                 "subfolders": {
@@ -189,8 +197,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "config": {
                 "purpose": "Static configuration, feature flags, and default constants.",
                 "subfolders": {
-                    "blueprint_sovereign": {"purpose": "Sovereign blueprint configurations"},
-                    "core": {"purpose": "Core configuration files, settings, and feature flags."},
+                    "core": {"purpose": "Core configuration files, settings, constants, and registries."},
                 },
                 "allowed_extensions": [".py", ".json"],
                 "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags)\.py$",
@@ -716,7 +723,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "base_agents",  # Flat folder - foundational classes at depth 2
         "domain",  # Flat folder - domain entities at depth 2
         "utils",  # utils/sovereign_index.py at depth 2
-        "config",  # config/blueprint_sovereign/* variable depth
+        "config",  # config/core/* variable depth
         "common",  # common/healing/* variable depth
         "observability",  # observability/* at depth 2 (legacy)
         "L6_observability",  # L6ObservabilityBase.py at depth 2
@@ -792,7 +799,7 @@ L6_OBSERVABILITY_DIR: str = "agentic_core/L6_observability"
 
 # === Critical Subdirectories ===
 DASHBOARD_DIR: str = "agentic_core/L6_observability/dashboards"
-BLUEPRINT_SOVEREIGN_DIR: str = "agentic_core/config/blueprint_sovereign"
+BLUEPRINT_SOVEREIGN_DIR: str = "agentic_core/config/core"  # DISSOLVED: was blueprint_sovereign
 SCHEMAS_DIR: str = "agentic_core/schemas"
 PROMPT_GOVERNANCE_DIR: str = "agentic_core/prompt_governance"
 UTILS_DIR: str = "agentic_core/utils"
@@ -932,7 +939,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
         "agentic_core/schemas/models",  # 42 files - added per SSOT review
         # agentic_core/utils/core_extensions EVICTED - deprecated system removed
-        "agentic_core/config/blueprint_sovereign",  # 20 files - added per SSOT review
+        "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
         "agentic_core/prompt_governance/meta_prompts",
         "agentic_core/prompt_governance/templates",
         "agentic_core/prompt_governance/scripts",
@@ -1024,7 +1031,7 @@ CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     ],  # Standard Kernel + L6 Extensions
     # === SPECIALIZED DOMAINS ===
     "schemas": [],  # Passive data contracts only - FLAT STRUCTURE (models subfolder DEPRECATED)
-    "config": ["blueprint_sovereign"],  # Configuration management - currently only blueprint_sovereign exists
+    "config": ["core"],  # Configuration management - blueprint_sovereign DISSOLVED into core
     "prompt_governance": [
         "domain",
         "security",
@@ -1491,7 +1498,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     },
     "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
-    "config/blueprint_sovereign": {"primary": frozenset({"blueprint", "registry", "sovereign", "canon"})},
+    "config/core": {"primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"})},
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
     "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
     "prompt_governance/L3_templates": {
@@ -3116,7 +3123,6 @@ L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "meta_prompts": "prompt_governance",
     "rendering": "prompt_governance",
     "version_registry": "prompt_governance",
-    "blueprint_sovereign": "config",
     "environments": "config",
     "feature_flags": "config",
     "scripts": "L0_maintenance",
@@ -4142,8 +4148,8 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "config": {
-        "blueprint_sovereign": {
-            "purpose": "Sovereign structure blueprints, constitution enforcement, and registry of registries",
+        "core": {
+            "purpose": "Core configuration, constants, registries, and settings",
             "entity_types": ["Dict", "Class"],
             "keywords": [
                 "blueprint",
@@ -4154,7 +4160,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "map",
                 "ssot",
             ],
-            "imports": ["agentic_core.config.blueprint_sovereign"],
+            "imports": ["agentic_core.config.core"],
             "bases": ["BaseConfiguration", "Constitution"],
             "examples": ["StructureBlueprint", "CanonRegistry", "SovereignConstitution"],
         },

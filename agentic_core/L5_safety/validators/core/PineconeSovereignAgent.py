@@ -29,7 +29,7 @@ from pinecone import Pinecone
 
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.agent_defaults import AgentDefaults
-from agentic_core.config.blueprint_sovereign.SovereignEnv import get_env
+from agentic_core.config.env_loader import get_env
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
