@@ -352,6 +352,14 @@ class FileClassificationAgent(*BASE_CLASSES):
                     f"{ba_violation['message']}"
                 )
 
+            # [UTILS PURITY] Ban tests, utilities_ prefix, misplaced scripts in core
+            utils_violation = self.check_utils_purity(path, content)
+            if utils_violation:
+                self.logger.warning(
+                    f"[{utils_violation['type']}] {path.name}: "
+                    f"{utils_violation['message']}"
+                )
+
             # [DOMAIN ROOT PURITY] Leaf Node Rule + PascalCase in knowledge/
             domain_violation = self.check_domain_root_purity(path)
             if domain_violation:
@@ -2171,6 +2179,56 @@ class FileClassificationAgent(*BASE_CLASSES):
             ),
             "suggested_destination": "runtime/ or mixins/",
         }
+
+    def check_utils_purity(self, path: Path, content: str | None = None) -> dict[str, str] | None:
+        """
+        Enforce sanitization rules for agentic_core/ directories.
+
+        Rules:
+        1. test_*.py files must NOT exist inside agentic_core/ (except tests/).
+        2. utilities_* prefix is banned (redundant naming).
+        3. Scripts (if __name__ == '__main__') in utils/ must move to L0_maintenance/scripts.
+
+        Args:
+            path: File path being checked
+            content: Optional file content for script detection
+
+        Returns:
+            Violation dict or None if clean.
+        """
+        parts = path.parts
+        name = path.name
+
+        # Only check inside agentic_core (not tests/)
+        if "agentic_core" not in parts or "tests" in parts:
+            return None
+
+        # Rule 1: test_ files in agentic_core are violations
+        if name.startswith("test_") and name.endswith(".py"):
+            return {
+                "type": "TEST_IN_CORE_VIOLATION",
+                "message": f"Test file '{name}' must reside in tests/ directory, not agentic_core/.",
+                "suggested_destination": "tests/unit/",
+            }
+
+        # Rule 2: utilities_ prefix is banned
+        if name.startswith("utilities_"):
+            return {
+                "type": "MALFORMED_NAME_VIOLATION",
+                "message": f"'{name}' uses banned 'utilities_' prefix. Use simple snake_case.",
+                "suggested_destination": "Rename: strip 'utilities_' prefix.",
+            }
+
+        # Rule 3: Scripts in utils/ should be in L0_maintenance/scripts
+        if "utils" in parts and content:
+            if 'if __name__ ==' in content or "if __name__==" in content:
+                return {
+                    "type": "MISPLACED_SCRIPT",
+                    "message": f"'{name}' in utils/ contains __main__ guard. Move to L0_maintenance/scripts/.",
+                    "suggested_destination": "agentic_core/L0_maintenance/scripts/",
+                }
+
+        return None
 
     def check_layer_purity(self, path: Path, content: str, classification: str) -> dict[str, Any] | None:
         """
