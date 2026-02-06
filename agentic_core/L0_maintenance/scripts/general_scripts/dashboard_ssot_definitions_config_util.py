@@ -180,12 +180,12 @@ L0_HEALING_NA = True
 MCP_HARDENED_BASES = {
     "SovereignBaseAgent",
     "L0MaintenanceBaseAgent",
-    "L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent",
-    "L3OrchestrationBaseAgent",
-    "L4StateBaseAgent",
-    "L5SafetyBaseAgent",
-    "L6ObservabilityBaseAgent",
+    "L1CognitionBase",
+    "L2ExecutionBase",
+    "L3OrchestrationBase",
+    "L4StateBase",
+    "L5SafetyBase",
+    "L6ObservabilityBase",
     "MCPHardenedMixin",
 }
 
@@ -194,12 +194,12 @@ HEALER_BASES = {
     "HealerMixin",
     "SovereignBaseAgent",
     "L0MaintenanceBaseAgent",
-    "L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent",
-    "L3OrchestrationBaseAgent",
-    "L4StateBaseAgent",
-    "L5SafetyBaseAgent",
-    "L6ObservabilityBaseAgent",
+    "L1CognitionBase",
+    "L2ExecutionBase",
+    "L3OrchestrationBase",
+    "L4StateBase",
+    "L5SafetyBase",
+    "L6ObservabilityBase",
 }
 
 

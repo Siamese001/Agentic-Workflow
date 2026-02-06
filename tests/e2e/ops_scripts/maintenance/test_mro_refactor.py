@@ -30,12 +30,12 @@ def test_tc_mro_001_reporting_agent_initialization():
 
 
 def test_tc_mro_002_l4_state_base_agent_mro():
-    """TC-MRO-002: L4StateBaseAgent MRO Check"""
-    print("\n[TC-MRO-002] Testing L4StateBaseAgent MRO...")
+    """TC-MRO-002: L4StateBase MRO Check"""
+    print("\n[TC-MRO-002] Testing L4StateBase MRO...")
     try:
-        from agentic_core.L4_state.validation_context.L4StateBaseAgent import L4StateBaseAgent
+        from agentic_core.L4_state.validation_context.L4StateBase import L4StateBase
 
-        mro = L4StateBaseAgent.mro()
+        mro = L4StateBase.mro()
         mro_names = [cls.__name__ for cls in mro]
 
         print(f"   MRO: {' -> '.join(mro_names[:8])}...")

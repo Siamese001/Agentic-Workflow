@@ -145,8 +145,8 @@ def generate_layer_tests():
     # SovereignBaseAgent
     try:
         tests = generator.generate_agent_tests(
-            L5SafetyBaseAgent,
-            "agentic_core.L5_safety.guardrails.L5SafetyBaseAgent",
+            L5SafetyBase,
+            "agentic_core.L5_safety.guardrails.L5SafetyBase",
         )
         generator.write_test_file(
             "safety_base_agent",
@@ -154,7 +154,7 @@ def generate_layer_tests():
             ["from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"],
         )
     except Exception as e:
-        print(f"⚠️  Could not generate L5SafetyBaseAgent tests: {e}")
+        print(f"⚠️  Could not generate L5SafetyBase tests: {e}")
 
     print(f"\n✅ Generated {len(generator.generated_tests)} test files")
 

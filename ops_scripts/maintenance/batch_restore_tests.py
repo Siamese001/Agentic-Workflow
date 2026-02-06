@@ -111,9 +111,9 @@ def fix_imports(content: str) -> str:
         # Base agents
         "SovereignBaseAgent": "sovereign_base_agent",
         "L0MaintenanceBaseAgent": "l0_maintenance_base_agent",
-        "L1CognitionBaseAgent": "l1_cognition_base_agent",
-        "L5SafetyBaseAgent": "l5_safety_base_agent",
-        "L6ObservabilityBaseAgent": "l6_observability_base_agent",
+        "L1CognitionBase": "l1_cognition_base_agent",
+        "L5SafetyBase": "l5_safety_base_agent",
+        "L6ObservabilityBase": "l6_observability_base_agent",
         # Other common patterns
         "structure_blueprint": "structure_blueprint_config",
     }

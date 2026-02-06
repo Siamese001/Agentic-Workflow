@@ -5,7 +5,7 @@
 ### 1. Base Agent Location Lock [2026-01-22]
 **CRITICAL: All base agents MUST reside in `agentic_core/base_agents/`**
 
-- **Scope:** Any file ending in `BaseAgent.py` (e.g., `SovereignBaseAgent.py`, `L1CognitionBaseAgent.py`)
+- **Scope:** Any file ending in `Base.py` or `BaseAgent.py` (e.g., `SovereignBaseAgent.py`, `L1CognitionBase.py`)
 - **Enforcement:** `LocationAgent.validate_file_location()` has a constitutional override that short-circuits validation
 - **Rationale:** Base agents are the foundational inheritance hierarchy. Misplacement breaks imports across 200+ files.
 - **Test Coverage:** `tests/unit/test_location_semantic_lock.py` (5 tests)
@@ -14,9 +14,9 @@
 **Examples:**
 ```
 ✅ VALID:   agentic_core/base_agents/SovereignBaseAgent.py
-✅ VALID:   agentic_core/base_agents/L1CognitionBaseAgent.py
+✅ VALID:   agentic_core/base_agents/L1CognitionBase.py
 ❌ INVALID: agentic_core/observability/SovereignBaseAgent.py
-❌ INVALID: agentic_core/L1_cognition/L1CognitionBaseAgent.py
+❌ INVALID: agentic_core/L1_cognition/L1CognitionBase.py
 ```
 
 **If you need to create or move a base agent:**

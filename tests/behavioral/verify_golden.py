@@ -173,23 +173,23 @@ class TestVerifyDomainPlannerGolden:
             "V10 refactoring incomplete: AtomicExecutionMixin not in MRO"
         )
 
-        # Verify L3OrchestrationBaseAgent is in MRO
-        assert "L3OrchestrationBaseAgent" in mro_names, (
-            "V10 refactoring incomplete: L3OrchestrationBaseAgent not in MRO"
+        # Verify L3OrchestrationBase is in MRO
+        assert "L3OrchestrationBase" in mro_names, (
+            "V10 refactoring incomplete: L3OrchestrationBase not in MRO"
         )
 
-        # Verify MRO order: AtomicExecutionMixin before L3OrchestrationBaseAgent
+        # Verify MRO order: AtomicExecutionMixin before L3OrchestrationBase
         atomic_idx = mro_names.index("AtomicExecutionMixin")
-        l3_idx = mro_names.index("L3OrchestrationBaseAgent")
+        l3_idx = mro_names.index("L3OrchestrationBase")
 
         assert atomic_idx < l3_idx, (
             f"MRO order violation: AtomicExecutionMixin ({atomic_idx}) "
-            f"should come before L3OrchestrationBaseAgent ({l3_idx})"
+            f"should come before L3OrchestrationBase ({l3_idx})"
         )
 
         print("\n[PASS] MRO change verified")
         print(f"  AtomicExecutionMixin: index {atomic_idx}")
-        print(f"  L3OrchestrationBaseAgent: index {l3_idx}")
+        print(f"  L3OrchestrationBase: index {l3_idx}")
         print(f"  MRO: {' -> '.join(mro_names[:6])}...")
 
 

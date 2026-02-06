@@ -3745,7 +3745,7 @@
     "territory": "L5 Safety/Guardrails/Core",
     "category": "Guardian",
     "inheritance": [
-      "L5SafetyBaseAgent",
+      "L5SafetyBase",
       "SovereignBaseAgent"
     ],
     "key_methods": [

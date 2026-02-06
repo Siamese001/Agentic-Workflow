@@ -484,9 +484,9 @@ class MyHealer(
 - SovereignBaseAgent
 
 ### Phase 2 Agents (7)
-- L0MaintenanceBaseAgent, L1CognitionBaseAgent, L2ExecutionBaseAgent
-- L3OrchestrationBaseAgent, L4StateBaseAgent, L5SafetyBaseAgent
-- L6ObservabilityBaseAgent
+- L0MaintenanceBaseAgent, L1CognitionBase, L2ExecutionBase
+- L3OrchestrationBase, L4StateBase, L5SafetyBase
+- L6ObservabilityBase
 
 ### Phase 3 Agents (85)
 - All agents in `agentic_core/L5_safety/`

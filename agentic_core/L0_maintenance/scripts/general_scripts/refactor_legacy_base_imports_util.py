@@ -14,12 +14,12 @@ from pathlib import Path
 
 # Legacy to SovereignBaseAgent mapping
 LEGACY_IMPORTS = {
-    "L1CognitionBaseAgent": "agentic_core.L1_cognition.thought_engine.L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent": "agentic_core.L2_execution.L2ExecutionBaseAgent",
-    "L3OrchestrationBaseAgent": "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent",
-    "L4StateBaseAgent": "agentic_core.L4_state.validation_context.L4StateBaseAgent",
-    "L5SafetyBaseAgent": "agentic_core.L5_safety.validators.L5SafetyBaseAgent",
-    "L6ObservabilityBaseAgent": "agentic_core.L6_observability.L6ObservabilityBaseAgent",
+    "L1CognitionBase": "agentic_core.L1_cognition.thought_engine.L1CognitionBase",
+    "L2ExecutionBase": "agentic_core.L2_execution.L2ExecutionBase",
+    "L3OrchestrationBase": "agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase",
+    "L4StateBase": "agentic_core.L4_state.validation_context.L4StateBase",
+    "L5SafetyBase": "agentic_core.L5_safety.validators.L5SafetyBase",
+    "L6ObservabilityBase": "agentic_core.L6_observability.L6ObservabilityBase",
     "MaintenanceBaseAgent": "agentic_core.L5_safety.validators.MaintenanceBaseAgent",
 }
 
@@ -57,7 +57,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
                 )
                 modified = True
 
-            # Pattern: relative imports like from .L5SafetyBaseAgent import L5SafetyBaseAgent
+            # Pattern: relative imports like from .L5SafetyBase import L5SafetyBase
             relative_import_pattern = f"from .{legacy_name} import {legacy_name}"
             if relative_import_pattern in content:
                 content = content.replace(

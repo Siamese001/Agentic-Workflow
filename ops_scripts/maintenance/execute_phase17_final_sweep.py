@@ -8,7 +8,7 @@ Solves the "File Not Found" and "Zombie Violation" issues.
 Targets:
 1. reasoning_memory.py (Redis Refactor)
 2. mcp_hardened_mixin.py (Redis Refactor)
-3. L2ExecutionBaseAgent.py (Force Update / Ghost Check)
+3. L2ExecutionBase.py (Force Update / Ghost Check)
 """
 
 import os
@@ -168,7 +168,7 @@ def get_subatomic_engine() -> Any:
     return SubAtomicEngineImpl()
 
 @dataclass
-class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L2ExecutionBase(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """Unified L2 base class - Phase 17 Hardened."""
     ctx: Any
     enable_gemini: bool = True
@@ -218,7 +218,7 @@ def sweep_and_refactor():
     targets = {
         "reasoning_memory.py": REASONING_MEMORY_CONTENT,
         "mcp_hardened_mixin.py": MCP_MIXIN_CONTENT,
-        "L2ExecutionBaseAgent.py": L2_AGENT_CONTENT,
+        "L2ExecutionBase.py": L2_AGENT_CONTENT,
     }
 
     found_counts = {k: 0 for k in targets}

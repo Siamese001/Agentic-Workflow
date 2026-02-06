@@ -92,7 +92,7 @@ class IOrchestratorAgent(Protocol):
 
 ```python
 # agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py
-class UnifiedOrchestratorAgent(L3OrchestrationBaseAgent):
+class UnifiedOrchestratorAgent(L3OrchestrationBase):
     """
     Single entry point for all orchestration needs.
 
@@ -165,14 +165,14 @@ The codebase has **11 different BaseAgent files** creating a fragmented inherita
 SovereignBaseAgent.py (root)
   L0MaintenanceBaseAgent.py
   MaintenanceBaseAgent.py (duplicate?)
-  L1CognitionBaseAgent.py
-  L2ExecutionBaseAgent.py
+  L1CognitionBase.py
+  L2ExecutionBase.py
   ExecutionCanonBaseAgent.py (duplicate?)
   CanonBaseAgent.py (duplicate?)
-  L3OrchestrationBaseAgent.py
-  L4StateBaseAgent.py
-  L5SafetyBaseAgent.py
-  L6ObservabilityBaseAgent.py
+  L3OrchestrationBase.py
+  L4StateBase.py
+  L5SafetyBase.py
+  L6ObservabilityBase.py
 ```
 
 **Friction:**
@@ -187,8 +187,8 @@ SovereignBaseAgent.py (root)
 
 ```
 DELETE: agentic_core/L0_maintenance/scripts/MaintenanceBaseAgent.py (duplicate of L0MaintenanceBaseAgent)
-DELETE: agentic_core/L2_execution/ToolRegistry/CanonBaseAgent.py (merge into L2ExecutionBaseAgent)
-DELETE: agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py (merge into L2ExecutionBaseAgent)
+DELETE: agentic_core/L2_execution/ToolRegistry/CanonBaseAgent.py (merge into L2ExecutionBase)
+DELETE: agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py (merge into L2ExecutionBase)
 ```
 
 **Files to Standardize:**
@@ -196,12 +196,12 @@ DELETE: agentic_core/L2_execution/ToolRegistry/ExecutionCanonBaseAgent.py (merge
 ```
 agentic_core/utils/core_extensions/SovereignBaseAgent.py - ROOT (keep)
 agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py - Layer 0 (keep)
-agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py - Layer 1 (keep)
-agentic_core/L2_execution/ToolRegistry/L2ExecutionBaseAgent.py - Layer 2 (keep, absorb others)
-agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBaseAgent.py - Layer 3 (keep)
-agentic_core/L4_state/ValidationContext/L4StateBaseAgent.py - Layer 4 (keep)
-agentic_core/L5_safety/guardrails/L5SafetyBaseAgent.py - Layer 5 (keep)
-agentic_core/L6_observability/L6ObservabilityBaseAgent.py - Layer 6 (keep)
+agentic_core/L1_cognition/thought_engine/L1CognitionBase.py - Layer 1 (keep)
+agentic_core/L2_execution/ToolRegistry/L2ExecutionBase.py - Layer 2 (keep, absorb others)
+agentic_core/L3_orchestration/workflow_engines/L3OrchestrationBase.py - Layer 3 (keep)
+agentic_core/L4_state/ValidationContext/L4StateBase.py - Layer 4 (keep)
+agentic_core/L5_safety/guardrails/L5SafetyBase.py - Layer 5 (keep)
+agentic_core/L6_observability/L6ObservabilityBase.py - Layer 6 (keep)
 ```
 
 ### Detailed Implementation Plan
@@ -219,7 +219,7 @@ grep -r "CanonBaseAgent\|ExecutionCanonBaseAgent\|MaintenanceBaseAgent" agentic_
 from agentic_core.L2_execution.ToolRegistry.CanonBaseAgent import CanonBaseAgent
 
 # After
-from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2ExecutionBaseAgent
+from agentic_core.L2_execution.ToolRegistry.L2ExecutionBase import L2ExecutionBase
 ```
 
 **Step 3:** Merge unique functionality from deprecated bases into layer bases
@@ -247,12 +247,12 @@ from agentic_core.L2_execution.ToolRegistry.L2ExecutionBaseAgent import L2Execut
 # scripts/validate_base_inheritance.py
 ALLOWED_BASES = {
     "L0": "L0MaintenanceBaseAgent",
-    "L1": "L1CognitionBaseAgent",
-    "L2": "L2ExecutionBaseAgent",
-    "L3": "L3OrchestrationBaseAgent",
-    "L4": "L4StateBaseAgent",
-    "L5": "L5SafetyBaseAgent",
-    "L6": "L6ObservabilityBaseAgent",
+    "L1": "L1CognitionBase",
+    "L2": "L2ExecutionBase",
+    "L3": "L3OrchestrationBase",
+    "L4": "L4StateBase",
+    "L5": "L5SafetyBase",
+    "L6": "L6ObservabilityBase",
 }
 
 def validate_agent_base(file_path: Path) -> bool:

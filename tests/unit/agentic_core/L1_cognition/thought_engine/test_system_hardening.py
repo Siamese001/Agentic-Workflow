@@ -1,6 +1,6 @@
 """
 file: tests/maintenance/test_system_hardening.py
-description: Verifies system hardening fixes for L1CognitionBaseAgent, CodeDeduplicationAgent,
+description: Verifies system hardening fixes for L1CognitionBase, CodeDeduplicationAgent,
              and MCPHardenedMixin deprecation.
 
 Tests:
@@ -86,7 +86,7 @@ except Exception as e:
     # =========================================================================
     def test_base_agent_registry_isolation(self):
         """
-        TC-002: Instantiate two L1CognitionBaseAgent-derived objects.
+        TC-002: Instantiate two L1CognitionBase-derived objects.
         Modify VERIFICATION_REGISTRY in Agent A.
 
         Validation: Assert Agent B's registry remains empty (verifies the
@@ -114,11 +114,11 @@ except Exception as e:
         import dataclasses
 
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
-            L1CognitionBaseAgent,
+            L1CognitionBase,
         )
 
         # Get the fields of the dataclass
-        fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
+        fields = {f.name: f for f in dataclasses.fields(L1CognitionBase)}
 
         # Verify VERIFICATION_REGISTRY uses default_factory
         assert "VERIFICATION_REGISTRY" in fields, "VERIFICATION_REGISTRY field not found"
@@ -203,7 +203,7 @@ except Exception as e:
             importlib.reload(agentic_core.L2_execution.mcp.mcp_hardened_mixin)
 
     # =========================================================================
-    # Test 5: L1CognitionBaseAgent Type Annotation
+    # Test 5: L1CognitionBase Type Annotation
     # =========================================================================
     def test_l1_cognition_base_agent_type_annotation(self):
         """
@@ -212,10 +212,10 @@ except Exception as e:
         import dataclasses
 
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
-            L1CognitionBaseAgent,
+            L1CognitionBase,
         )
 
-        fields = {f.name: f for f in dataclasses.fields(L1CognitionBaseAgent)}
+        fields = {f.name: f for f in dataclasses.fields(L1CognitionBase)}
         registry_field = fields.get("VERIFICATION_REGISTRY")
 
         assert registry_field is not None, "VERIFICATION_REGISTRY field not found"

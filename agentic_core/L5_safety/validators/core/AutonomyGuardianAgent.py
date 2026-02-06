@@ -342,10 +342,10 @@ class AutonomyGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
                     SOVEREIGN_BASE_CLASSES = {
                         "SovereignBaseAgent",
                         "infrastructure_mixin",
-                        "L3OrchestrationBaseAgent",
-                        "L4StateBaseAgent",
-                        "L5SafetyBaseAgent",
-                        "L6ObservabilityBaseAgent",
+                        "L3OrchestrationBase",
+                        "L4StateBase",
+                        "L5SafetyBase",
+                        "L6ObservabilityBase",
                         "HealerMixin",
                     }
 

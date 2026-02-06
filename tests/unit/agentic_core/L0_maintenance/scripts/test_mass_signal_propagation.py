@@ -34,17 +34,17 @@ def test_case_1_long_chain_propagation():
 
     try:
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
-            L1CognitionBaseAgent,
+            L1CognitionBase,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
-            L2ExecutionBaseAgent,
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+            L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
 
         # Step 1: Create Orchestrator
-        orchestrator = L3OrchestrationBaseAgent()
+        orchestrator = L3OrchestrationBase()
         print("✓ Step 1: Orchestration Agent instantiated")
 
         # Step 2: Call with unique global audit ID
@@ -70,7 +70,7 @@ def test_case_1_long_chain_propagation():
 
         # Step 3: Test Execution → Cognition → Sovereign
         print("\n✓ Step 3: Testing Execution → Cognition → Sovereign chain")
-        executor = L2ExecutionBaseAgent(ctx=None)
+        executor = L2ExecutionBase(ctx=None)
         exec_result = executor.heal_repository(
             dry_run=True, global_audit_id="2026-X1", layer_test="Execution"
         )
@@ -78,7 +78,7 @@ def test_case_1_long_chain_propagation():
 
         # Step 4: Test Cognition → Sovereign chain
         print("\n✓ Step 4: Testing Cognition → Sovereign chain")
-        cognition = L1CognitionBaseAgent()
+        cognition = L1CognitionBase()
         cog_result = cognition.heal_repository(
             dry_run=True, global_audit_id="2026-X1", layer_test="Cognition"
         )
@@ -117,28 +117,28 @@ def test_case_2_multi_agent_cycle_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
-            L2ExecutionBaseAgent,
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+            L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
 
         # Step 1: Create agents
-        orchestrator = L3OrchestrationBaseAgent()
-        executor = L2ExecutionBaseAgent(ctx=None)
+        orchestrator = L3OrchestrationBase()
+        executor = L2ExecutionBase(ctx=None)
         print("✓ Step 1: Created Orchestrator and Executor")
 
         # Step 2: Simulate Orchestrator in call path
         call_path = set()
-        call_path.add("L3OrchestrationBaseAgent")
+        call_path.add("L3OrchestrationBase")
 
         # Step 3: Executor tries to call with Orchestrator already in path
         result_exec = executor.heal_repository(dry_run=True, _call_path=call_path, cycle_test="multi_agent")
         print(f"✓ Step 3: Executor called with existing path: {result_exec}")
 
         # Step 4: Simulate cycle
-        call_path.add("L2ExecutionBaseAgent")
+        call_path.add("L2ExecutionBase")
         result_orch = orchestrator.heal_repository(
             dry_run=True, _call_path=call_path, cycle_test="return_call"
         )
@@ -206,13 +206,13 @@ def test_case_3_gatekeeper_automation_sweep():
         print(f"✓ Approval granted without stdin prompt: {approval}")
 
         # Step 3: Test with multiple agents
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
-        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
 
-        orchestrator = L3OrchestrationBaseAgent()
-        safety_agent = L5SafetyBaseAgent()
+        orchestrator = L3OrchestrationBase()
+        safety_agent = L5SafetyBase()
 
         orch_result = orchestrator.heal_repository(
             dry_run=True, auto_approve=True, sweep_test="Orchestration"

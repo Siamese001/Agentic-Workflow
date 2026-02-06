@@ -20,7 +20,7 @@ REPO = Path(__file__).parent.parent
 
 # Files requiring Dynamic Seal pattern based on grep results
 TARGET_FILES = {
-    "L3OrchestrationBaseAgent.py": {
+    "L3OrchestrationBase.py": {
         "static_imports": [
             "from agentic_core.L5_safety.validators.TestSovereigntyAgent import TestSovereigntyAgent",
         ],

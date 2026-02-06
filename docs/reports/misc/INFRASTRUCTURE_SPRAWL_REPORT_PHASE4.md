@@ -62,7 +62,7 @@ agentic_core/
 inference_engine.py                    - 4 imports (openai, anthropic, google)
 runtime_shared_multi_provider_clients.py - 3 imports
 subatomic_engine.py                    - 3 imports
-L2ExecutionBaseAgent.py                - 2 imports
+L2ExecutionBase.py                - 2 imports
 FissionManagerAgent.py                 - 2 imports
 CognitiveDispositionAgent.py           - 2 imports
 HallucinationHunterAgent.py            - 2 imports

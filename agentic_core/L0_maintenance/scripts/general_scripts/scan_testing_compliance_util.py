@@ -35,9 +35,9 @@ DISCOVERY_SCRIPT = PROJECT_ROOT / SCRIPTS_DIR / "full_agent_discovery.py"
 SELF_TESTING_BASES = {
     "SubAtomicAgent",  # L2
     "SubatomicTestingMixin",  # L2
-    "L3OrchestrationBaseAgent",  # L3
+    "L3OrchestrationBase",  # L3
     "L3SubatomicTestingMixin",  # L3
-    "L4StateBaseAgent",  # L4
+    "L4StateBase",  # L4
     "L4SubatomicTestingMixin",  # L4
     "CanonBaseAgent",  # Has testing
 }
@@ -51,9 +51,9 @@ DELEGATION_BASES = {
 HEALING_BASES = {
     "HealerMixin",
     "SubAtomicAgent",  # L2 - has HealerMixin
-    "L3OrchestrationBaseAgent",  # L3 - has HealerMixin
-    "L4StateBaseAgent",  # L4 - has HealerMixin
-    "L5SafetyBaseAgent",  # L5 - has HealerMixin
+    "L3OrchestrationBase",  # L3 - has HealerMixin
+    "L4StateBase",  # L4 - has HealerMixin
+    "L5SafetyBase",  # L5 - has HealerMixin
     "CanonBaseAgent",  # Parent - child bases have HealerMixin
     "L3SubatomicTestingMixin",  # L3 agents inherit healing via base
     "L4SubatomicTestingMixin",  # L4 agents inherit healing via base
@@ -215,9 +215,9 @@ def main():
                     "SubAtomicAgent",
                     "CanonBaseAgent",
                     "MaintenanceBaseAgent",
-                    "L3OrchestrationBaseAgent",
-                    "L4StateBaseAgent",
-                    "L5SafetyBaseAgent",
+                    "L3OrchestrationBase",
+                    "L4StateBase",
+                    "L5SafetyBase",
                     "HealerMixin",
                     "SubatomicTestingMixin",
                     "L3SubatomicTestingMixin",
@@ -239,9 +239,9 @@ def main():
                     "SubAtomicAgent",
                     "CanonBaseAgent",
                     "MaintenanceBaseAgent",
-                    "L3OrchestrationBaseAgent",
-                    "L4StateBaseAgent",
-                    "L5SafetyBaseAgent",
+                    "L3OrchestrationBase",
+                    "L4StateBase",
+                    "L5SafetyBase",
                     "IActionPlane",
                     "IValidationProtocol",
                 }

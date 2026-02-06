@@ -23,7 +23,7 @@
 5. **DagEngineAgent** (14KB) - DAG execution
 6. **SelfRecoveringOrchestratorAgent** (20KB) - Self-recovery
 7. **WorkflowFissionManagerAgent** (16KB) - Workflow fission
-8. **L3OrchestrationBaseAgent** (16KB) - Base orchestration
+8. **L3OrchestrationBase** (16KB) - Base orchestration
 
 **Consolidation**: Create **UnifiedWorkflowEngine** merging all core logic
 - Single entry point for all workflows

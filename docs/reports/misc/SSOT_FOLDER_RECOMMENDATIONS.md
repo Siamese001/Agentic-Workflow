@@ -53,7 +53,7 @@ SOVEREIGN_REGISTRY = {
 | `observability/` | 16 | `SovereignBaseAgent.py`, `telemetry.py` |
 | `prompt_governance/` | 10 | `PromptRegistryAgent.py`, `renderer.py` |
 | `L3_orchestration/` | 2 | `unified_orchestrator.py`, `UnifiedOrchestratorAgent.py` |
-| `L6_observability/` | 2 | `BenchmarkingAgent.py`, `L6ObservabilityBaseAgent.py` |
+| `L6_observability/` | 2 | `BenchmarkingAgent.py`, `L6ObservabilityBase.py` |
 | `utils/` | 2 | `sovereign_index.py`, `networking.py` |
 
 ### 3. Large L3 Subfolders (Candidates for L4 Depth)
@@ -260,7 +260,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset({
 agentic_core/L3_orchestration/UnifiedOrchestratorAgent.py
 agentic_core/L3_orchestration/unified_orchestrator.py
 agentic_core/L6_observability/BenchmarkingAgent.py
-agentic_core/L6_observability/L6ObservabilityBaseAgent.py
+agentic_core/L6_observability/L6ObservabilityBase.py
 agentic_core/observability/append_windsurf_log.py
 agentic_core/observability/cache_metrics.py
 agentic_core/observability/DocstringComplianceAgent.py

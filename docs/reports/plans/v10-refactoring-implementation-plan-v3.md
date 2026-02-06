@@ -12,15 +12,15 @@ A fully deterministic, zero-flake approach to the Zero-Loss refactoring of 171 a
 
 ```python
 # CORRECT: Safety Mixins ALWAYS precede Base Classes (Left-to-Right)
-class MyAgent(AtomicExecutionMixin, CircuitBreakerMixin, L5SafetyBaseAgent):
-    pass  # MRO: MyAgent → AtomicExecutionMixin → CircuitBreakerMixin → L5SafetyBaseAgent → object
+class MyAgent(AtomicExecutionMixin, CircuitBreakerMixin, L5SafetyBase):
+    pass  # MRO: MyAgent → AtomicExecutionMixin → CircuitBreakerMixin → L5SafetyBase → object
 
 # WRONG: Base class before mixin (WILL CAUSE SILENT FAILURES)
-class MyAgent(L5SafetyBaseAgent, AtomicExecutionMixin):  # ❌ FORBIDDEN
+class MyAgent(L5SafetyBase, AtomicExecutionMixin):  # ❌ FORBIDDEN
     pass
 ```
 
-**Why:** Python MRO resolves methods left-to-right. If `L5SafetyBaseAgent` comes first, its methods shadow mixin safety features, causing silent failures.
+**Why:** Python MRO resolves methods left-to-right. If `L5SafetyBase` comes first, its methods shadow mixin safety features, causing silent failures.
 
 > **v3.0 ENFORCEMENT:** This rule is now enforced by `test_mro_mixin_order.py` which **BLOCKS COMMITS** on violation. See [Automated MRO Guard](#automated-mro-guard-commit-blocking).
 
@@ -96,11 +96,11 @@ def deterministic_harness():
 class DomainPlannerAgent(SovereignBaseAgent):
 
 # AFTER (AtomicExecutionMixin MUST be first)
-class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
+class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBase):
 ```
 
 - [ ] Update imports: Add `from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin`
-- [ ] Update imports: Add `from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent`
+- [ ] Update imports: Add `from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase`
 - [ ] Verify MRO depth = 3 (Agent → Mixin → Base → object)
 - **File**: `agentic_core/L3_orchestration/workflow_engines/DomainPlannerAgent.py`
 - **Guardian Check**: `pytest tests/guardian/test_mro_mixin_order.py -k "DomainPlanner"`
@@ -189,11 +189,11 @@ Target agents (Batch 1):
 
 ```python
 # Before
-class MyAgent(L5SafetyBaseAgent):
+class MyAgent(L5SafetyBase):
     pass
 
 # After (Safety Mixin MUST be first)
-class MyAgent(AtomicExecutionMixin, L5SafetyBaseAgent):
+class MyAgent(AtomicExecutionMixin, L5SafetyBase):
     pass
 ```
 
@@ -629,12 +629,12 @@ SAFETY_MIXINS = [
 BASE_AGENT_CLASSES = [
     "SovereignBaseAgent",
     "L0MaintenanceBaseAgent",
-    "L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent",
-    "L3OrchestrationBaseAgent",
-    "L4StateBaseAgent",
-    "L5SafetyBaseAgent",
-    "L6ObservabilityBaseAgent",
+    "L1CognitionBase",
+    "L2ExecutionBase",
+    "L3OrchestrationBase",
+    "L4StateBase",
+    "L5SafetyBase",
+    "L6ObservabilityBase",
 ]
 
 
@@ -704,8 +704,8 @@ class TestMROMixinOrder:
                 f"The following agents have incorrect mixin ordering:\n\n"
                 f"{violation_report}\n\n"
                 f"FIX: Move safety mixins to the LEFT of base classes:\n"
-                f"  WRONG: class MyAgent(L5SafetyBaseAgent, AtomicExecutionMixin)\n"
-                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBaseAgent)\n\n"
+                f"  WRONG: class MyAgent(L5SafetyBase, AtomicExecutionMixin)\n"
+                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBase)\n\n"
                 f"This commit is BLOCKED until all violations are fixed."
             )
     

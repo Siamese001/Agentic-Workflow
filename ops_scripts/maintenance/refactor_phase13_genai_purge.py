@@ -5,7 +5,7 @@ Refactor Script - Phase 13 GenAI Purge
 Eliminates direct 'google.genai' SDK usage from core agents.
 Refactors them to use the upgraded SovereignLLMGateway.
 Targets:
-1. L2ExecutionBaseAgent.py
+1. L2ExecutionBase.py
 2. subatomic_engine.py
 3. HallucinationHunterAgent.py
 4. FissionManagerAgent.py
@@ -28,7 +28,7 @@ def apply_refactors():
     # Full rewrites of these complex files require careful testing
     # and are better done incrementally
 
-    print("[INFO] L2ExecutionBaseAgent - Requires Gateway delegation")
+    print("[INFO] L2ExecutionBase - Requires Gateway delegation")
     print("[INFO] subatomic_engine.py - Requires Gateway delegation")
     print("[INFO] HallucinationHunterAgent - Requires Gateway delegation")
     print("[INFO] FissionManagerAgent - Requires Gateway delegation")

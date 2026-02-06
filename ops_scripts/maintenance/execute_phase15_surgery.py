@@ -6,7 +6,7 @@ Eliminates 'google.genai' from the L2 Base Agent and Cognitive Agent.
 Enforces SovereignLLMGateway usage.
 
 Targets:
-1. L2ExecutionBaseAgent.py (The Base Class)
+1. L2ExecutionBase.py (The Base Class)
 2. CognitiveDispositionAgent.py (The Architect)
 """
 
@@ -15,7 +15,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-# 1. L2ExecutionBaseAgent (Clean Rewrite)
+# 1. L2ExecutionBase (Clean Rewrite)
 L2_AGENT_CONTENT = '''from __future__ import annotations
 
 """
@@ -43,7 +43,7 @@ def get_subatomic_engine() -> Any:
     return SubAtomicEngineImpl()
 
 @dataclass
-class L2ExecutionBaseAgent(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
+class L2ExecutionBase(RedisCacheMixin, PineconeVectorMixin, SovereignBaseAgent):
     """
     Unified L2 base class - Phase 15 Hardened.
     Inherits:
@@ -206,7 +206,7 @@ def perform_surgery():
     print("--- STARTING PHASE 15 SURGERY ---")
 
     targets = [
-        ("agentic_core/L2_execution/L2ExecutionBaseAgent.py", L2_AGENT_CONTENT),
+        ("agentic_core/L2_execution/L2ExecutionBase.py", L2_AGENT_CONTENT),
         ("agentic_core/L5_safety/validators/CognitiveDispositionAgent.py", CDA_CONTENT),
     ]
 

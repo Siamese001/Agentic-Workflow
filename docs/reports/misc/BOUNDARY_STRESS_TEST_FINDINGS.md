@@ -158,7 +158,7 @@ def _prompt_user_for_move_approval(self, source: Path, target: Path, reason: str
 **Goal:** Verify that custom signals propagate through the entire heal_repository chain without raising `TypeError`.
 
 **Test Setup:**
-- Instantiate L2ExecutionBaseAgent
+- Instantiate L2ExecutionBase
 - Call `heal_repository()` with custom kwargs: `telemetry_id="AUDIT-2026"`, `custom_flag=True`, `auto_approve=True`
 - Verify signals propagate through L2 → L1 → SovereignBaseAgent
 

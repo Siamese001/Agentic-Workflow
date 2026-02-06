@@ -1,5 +1,6 @@
+# NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L3OrchestrationBaseAgent - Consolidated Base for L3 Orchestration Agents
+L3OrchestrationBase - Consolidated Base for L3 Orchestration Agents
 
 V10 Architecture: Layer 3 (Orchestration) base class for workflow engines,
 coordinators, and planners.
@@ -10,9 +11,9 @@ Capabilities:
 - Atomic execution support (when combined with AtomicExecutionMixin)
 
 MRO HARDENING:
-- Inheritance order: Specialized Mixins -> L3OrchestrationBaseAgent -> SovereignBaseAgent
+- Inheritance order: Specialized Mixins -> L3OrchestrationBase -> SovereignBaseAgent
 - When using AtomicExecutionMixin, it MUST come BEFORE this base class:
-  class MyAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
+  class MyAgent(AtomicExecutionMixin, L3OrchestrationBase):
 """
 
 from __future__ import annotations
@@ -25,13 +26,13 @@ from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 
 @dataclass
-class L3OrchestrationBaseAgent(SovereignBaseAgent):
+class L3OrchestrationBase(SovereignBaseAgent):
     """
     Consolidated base for L3 Orchestration agents.
 
     MRO HARDENING:
     - AtomicExecutionMixin: First (if used - for rollback capability)
-    - L3OrchestrationBaseAgent: Second (layer-specific capabilities)
+    - L3OrchestrationBase: Second (layer-specific capabilities)
     - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
 
     Guaranteed Capabilities:
@@ -45,7 +46,7 @@ class L3OrchestrationBaseAgent(SovereignBaseAgent):
     - Atomic Execution: Optional (via AtomicExecutionMixin)
     """
 
-    name: str = "L3OrchestrationBaseAgent"
+    name: str = "L3OrchestrationBase"
     layer: str = "L3"
 
     def __post_init__(self) -> None:

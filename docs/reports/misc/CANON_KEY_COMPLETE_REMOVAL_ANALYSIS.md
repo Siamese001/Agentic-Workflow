@@ -167,7 +167,7 @@ HygieneGuardianAgent.py              [MEDIUM - canonical keys comment]
 ### **L1_COGNITION/THOUGHT_ENGINE/** (5 files)
 ```
 BudgetAgent.py                       [HIGH - check_key_17, check_key_19]
-L1CognitionBaseAgent.py              [MEDIUM - canon key comments]
+L1CognitionBase.py              [MEDIUM - canon key comments]
 LLMPromptGovernorAgent.py            [MEDIUM - canon key comments]
 SovereignCognitivePlaneAgent.py      [MEDIUM - canon key comments]
 constants.py                         [LOW - canon key constants]

@@ -8,6 +8,6 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # no
 from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent
 
 __all__ = [
-    "L6ObservabilityBaseAgent",
+    "L6ObservabilityBase",
     "BenchmarkingAgent",
 ]

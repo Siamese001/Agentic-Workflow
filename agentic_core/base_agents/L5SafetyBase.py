@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L5SafetyBaseAgent - Consolidated Base for L5 Safety Agents
+L5SafetyBase - Consolidated Base for L5 Safety Agents
 
 Layer: L5 - Safety
 Responsibilities:
@@ -23,7 +23,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class L5SafetyBaseAgent(SovereignBaseAgent):
+class L5SafetyBase(SovereignBaseAgent):
     """
     Consolidated base for L5 Safety agents.
 
@@ -33,10 +33,10 @@ class L5SafetyBaseAgent(SovereignBaseAgent):
     - Security boundary checks
     - Compliance verification
 
-    MRO: L5SafetyBaseAgent -> SovereignBaseAgent -> object
+    MRO: L5SafetyBase -> SovereignBaseAgent -> object
     """
 
-    name: str = "L5SafetyBaseAgent"
+    name: str = "L5SafetyBase"
     layer: str = "L5"
 
     def __post_init__(self) -> None:

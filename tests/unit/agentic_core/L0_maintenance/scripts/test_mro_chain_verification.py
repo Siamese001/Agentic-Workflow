@@ -92,14 +92,14 @@ def test_healer_mixin_init_chain():
 
 
 def test_l5_safety_base_agent_init_chain():
-    """Verifies L5SafetyBaseAgent properly calls super().__init__()."""
-    print("\n[TEST 3] L5SafetyBaseAgent __init__ Chain...")
+    """Verifies L5SafetyBase properly calls super().__init__()."""
+    print("\n[TEST 3] L5SafetyBase __init__ Chain...")
 
     try:
-        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
 
-        # L5SafetyBaseAgent is NOT a dataclass, it has regular __init__
-        class TestAgent(L5SafetyBaseAgent):
+        # L5SafetyBase is NOT a dataclass, it has regular __init__
+        class TestAgent(L5SafetyBase):
             def __init__(self):
                 super().__init__()
                 self.name = "TestAgent"
@@ -109,17 +109,17 @@ def test_l5_safety_base_agent_init_chain():
 
         agent = TestAgent()
 
-        # Verify L5SafetyBaseAgent called super().__init__()
+        # Verify L5SafetyBase called super().__init__()
         # which should reach SovereignBaseAgent
         assert agent._sovereign_initialized is True, "Should reach SovereignBaseAgent"
         assert hasattr(agent, "_state"), "Should have _state from SovereignBaseAgent"
         assert hasattr(agent, "_call_path"), "Should have _call_path from SovereignBaseAgent"
 
-        # L5SafetyBaseAgent's __init__ sets these attributes
+        # L5SafetyBase's __init__ sets these attributes
         assert agent.project_root is None, "Should have project_root (default None)"
         assert agent._l5_ctx is None, "Should have L5 context (default None)"
 
-        print("  ✓ L5SafetyBaseAgent __init__ calls super().__init__(**kwargs)")
+        print("  ✓ L5SafetyBase __init__ calls super().__init__(**kwargs)")
         print("  ✓ Initialization reaches SovereignBaseAgent")
         print("  ✓ Both L5 and Sovereign attributes initialized")
         return True
@@ -165,10 +165,10 @@ def test_full_mro_chain_integration():
     print("\n[TEST 5] Full MRO Chain Integration...")
 
     try:
-        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
 
-        # L5SafetyBaseAgent is NOT a dataclass, use regular inheritance
-        class ConcreteAgent(L5SafetyBaseAgent):
+        # L5SafetyBase is NOT a dataclass, use regular inheritance
+        class ConcreteAgent(L5SafetyBase):
             def __init__(self):
                 super().__init__()
                 self.name = "ConcreteAgent"
@@ -183,7 +183,7 @@ def test_full_mro_chain_integration():
 
         # Verify key classes in MRO
         assert "ConcreteAgent" in mro_names, "Concrete agent should be in MRO"
-        assert "L5SafetyBaseAgent" in mro_names, "L5 base should be in MRO"
+        assert "L5SafetyBase" in mro_names, "L5 base should be in MRO"
         assert "SovereignBaseAgent" in mro_names, "Sovereign base should be in MRO"
         assert "infrastructure_mixin" in mro_names, "infrastructure_mixin should be in MRO"
         assert "HealerMixin" in mro_names, "HealerMixin should be in MRO"

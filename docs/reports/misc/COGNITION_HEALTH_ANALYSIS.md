@@ -55,7 +55,7 @@ L5 Safety (weakened guardrails)
 
 ### Base Agents (3 agents)
 1. **CognitionCanonBaseAgent** (11KB) - Base class
-2. **L1CognitionBaseAgent** (11KB) - L1 base
+2. **L1CognitionBase** (11KB) - L1 base
 3. **L1CognitionExerciserAgent** (8KB) - Testing
 
 ### Governance & Quality (3 agents)

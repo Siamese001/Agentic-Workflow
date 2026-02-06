@@ -7,7 +7,7 @@ Ensures each layer (L0-L6) has exactly ONE base agent class.
 Multiple base agents per layer causes inheritance confusion and architectural violations.
 
 Validation Rules:
-1. Each layer must have exactly 1 base agent (e.g., L1CognitionBaseAgent, L2Agent, etc.)
+1. Each layer must have exactly 1 base agent (e.g., L1CognitionBase, L2Agent, etc.)
 2. Base agents should be in base_class or root layer directories
 3. No duplicate base agent classes
 
@@ -29,12 +29,12 @@ LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 # Canonical base agent names per layer
 CANONICAL_BASE_AGENTS = {
     "L0": "L0MaintenanceBaseAgent",
-    "L1": "L1CognitionBaseAgent",
+    "L1": "L1CognitionBase",
     "L2": "L2Agent",
     "L3": "L3Agent",
     "L4": "L4Agent",
     "L5": "L5Agent",
-    "L6": "L6ObservabilityBaseAgent",
+    "L6": "L6ObservabilityBase",
 }
 
 

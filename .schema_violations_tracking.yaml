@@ -108,7 +108,7 @@ violations:
         status: pending
         priority: medium
 
-  - file: agentic_core/L5_safety/validators/L5SafetyBaseAgent.py
+  - file: agentic_core/L5_safety/validators/L5SafetyBase.py
     line: 299
     method: heal_repository
     violations:

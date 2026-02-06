@@ -4119,10 +4119,10 @@ window.realAgentData = {
   "L1 Cognition/Base Agent": {
     "agents": [
       {
-        "name": "L1CognitionBaseAgent",
-        "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
+        "name": "L1CognitionBase",
+        "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L1_cognition\\thought_engine\\L1CognitionBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L1_cognition\\thought_engine\\L1CognitionBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
@@ -5592,10 +5592,10 @@ window.realAgentData = {
   "L2 Execution/Base Agent": {
     "agents": [
       {
-        "name": "L2ExecutionBaseAgent",
-        "path": "agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBaseAgent.py",
+        "name": "L2ExecutionBase",
+        "path": "agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L2_execution\\ToolRegistry\\L2ExecutionBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
@@ -7687,10 +7687,10 @@ window.realAgentData = {
   "L3 Orchestration/Base Agent": {
     "agents": [
       {
-        "name": "L3OrchestrationBaseAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBaseAgent.py",
+        "name": "L3OrchestrationBase",
+        "path": "agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L3_orchestration\\workflow_engines\\L3OrchestrationBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
@@ -8283,10 +8283,10 @@ window.realAgentData = {
   "L4 State/Base Agent": {
     "agents": [
       {
-        "name": "L4StateBaseAgent",
-        "path": "agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L4_state\\ValidationContext\\L4StateBaseAgent.py",
+        "name": "L4StateBase",
+        "path": "agentic_core\\L4_state\\ValidationContext\\L4StateBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L4_state\\ValidationContext\\L4StateBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L4_state\\ValidationContext\\L4StateBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
@@ -10663,10 +10663,10 @@ window.realAgentData = {
   "L5 Safety/Base Agent": {
     "agents": [
       {
-        "name": "L5SafetyBaseAgent",
-        "path": "agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L5_safety\\guardrails\\L5SafetyBaseAgent.py",
+        "name": "L5SafetyBase",
+        "path": "agentic_core\\L5_safety\\guardrails\\L5SafetyBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L5_safety\\guardrails\\L5SafetyBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L5_safety\\guardrails\\L5SafetyBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,
@@ -10726,10 +10726,10 @@ window.realAgentData = {
   "L6_Observability/Base Agent": {
     "agents": [
       {
-        "name": "L6ObservabilityBaseAgent",
-        "path": "agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
-        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L6_observability\\L6ObservabilityBaseAgent.py",
+        "name": "L6ObservabilityBase",
+        "path": "agentic_core\\L6_observability\\L6ObservabilityBase.py",
+        "abs_file": "C:/Git/Agentic-Workflow/agentic_core\\L6_observability\\L6ObservabilityBase.py",
+        "file_path": "C:/Git/Agentic-Workflow/agentic_core\\L6_observability\\L6ObservabilityBase.py",
         "class_line": 1,
         "has_healing": true,
         "has_mixin": true,

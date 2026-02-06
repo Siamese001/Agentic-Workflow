@@ -198,7 +198,7 @@ class DashboardGenerator:
                 # L1 Cognition subcategories - CHECK BASE FIRST (includes SovereignBaseAgent)
                 if (
                     "BaseAgent" in class_name
-                    or class_name == "L1CognitionBaseAgent"
+                    or class_name == "L1CognitionBase"
                     or "base_agent" in path.lower()
                     or "base_class" in path.lower()
                 ):

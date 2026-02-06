@@ -67,7 +67,7 @@ This report identifies **12 consolidation opportunities** across the 270-agent c
 
 **Implementation Plan:**
 ```python
-class CoreOrchestrationAgent(L3OrchestrationBaseAgent):
+class CoreOrchestrationAgent(L3OrchestrationBase):
     """
     Unified L3 orchestration with caching, self-recovery, and intelligent routing.
 
@@ -163,7 +163,7 @@ class CoreOrchestrationAgent(L3OrchestrationBaseAgent):
 
 **Implementation Plan:**
 ```python
-class UnifiedCodeValidatorAgent(L5SafetyBaseAgent):
+class UnifiedCodeValidatorAgent(L5SafetyBase):
     """
     Unified code validation with single AST traversal.
 

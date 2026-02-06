@@ -175,9 +175,9 @@ HEALING_BASES = {
     'CognitionCanonBaseAgent',
     'SubAtomicAgent',
     'ExecutionCanonBaseAgent',
-    'L3OrchestrationBaseAgent',
-    'L4StateBaseAgent',
-    'L5SafetyBaseAgent',
+    'L3OrchestrationBase',
+    'L4StateBase',
+    'L5SafetyBase',
     # ... and more
 }
 ```

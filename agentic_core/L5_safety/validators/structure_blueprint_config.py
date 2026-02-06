@@ -176,8 +176,18 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "ast_signals": {
             # --- CONSTITUTIONAL FOUNDATION (Weight 100) ---
             "agentic_core/base_agents": {
-                "class_patterns": [".*BaseAgent$", ".*Base$"],
-                "base_classes": ["SovereignBaseAgent", "CanonBaseAgent", "L0MaintenanceBase"],
+                "class_patterns": [".*Base$"],
+                "base_classes": [
+                    "SovereignBaseAgent",
+                    "CanonBaseAgent",
+                    "L0MaintenanceBase",
+                    "L1CognitionBase",
+                    "L2ExecutionBase",
+                    "L3OrchestrationBase",
+                    "L4StateBase",
+                    "L5SafetyBase",
+                    "L6ObservabilityBase",
+                ],
                 # GRAVITY REDIRECTED: Keywords from deprecated patterns/agent_roles
                 "keyword_signals": [
                     "sovereign",
@@ -629,7 +639,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "config",  # config/blueprint_sovereign/* variable depth
         "common",  # common/healing/* variable depth
         "observability",  # observability/* at depth 2 (legacy)
-        "L6_observability",  # L6ObservabilityBaseAgent.py at depth 2
+        "L6_observability",  # L6ObservabilityBase.py at depth 2
         "L3_orchestration",  # Orchestrator at layer root
         "L0_maintenance",  # scripts at variable depth
         "L1_cognition",  # thought_engine at variable depth
@@ -1633,7 +1643,7 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
         "pattern": r"^[a-z][a-z0-9]*(_[a-z0-9]+)*_base\.py$",
         "description": "snake_case ending with '_base'",
         "examples": ["outreach_base.py", "resume_base.py", "canon_base.py"],
-        "anti_examples": ["base_agent.py", "BaseAgent.py", "base.py"],
+        "anti_examples": ["base_agent.py", "BaseAgent.py", "base.py", "L1CognitionBaseAgent.py"],
         "extensions": [".py"],
         "min_words": 2,
         "max_words": 3,
@@ -2657,10 +2667,20 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "decorator_signals": ["@abstractmethod", "@runtime_checkable"],
         "weight": 100,  # Constitutional Priority - same as base_agents
     },
-    # Base agents - Constitutional Priority
+    # Base agents - Constitutional Priority (V10 Zero-Ambiguity: Base-Only suffix)
     "agentic_core/base_agents": {
-        "class_patterns": [".*BaseAgent$"],
-        "base_classes": ["SovereignBaseAgent", "CanonBaseAgent"],
+        "class_patterns": [".*Base$"],
+        "base_classes": [
+            "SovereignBaseAgent",
+            "CanonBaseAgent",
+            "L0MaintenanceBase",
+            "L1CognitionBase",
+            "L2ExecutionBase",
+            "L3OrchestrationBase",
+            "L4StateBase",
+            "L5SafetyBase",
+            "L6ObservabilityBase",
+        ],
         "function_patterns": [],
         "import_signals": [],
         "keyword_signals": ["sovereign", "base", "inheritance", "abstract", "foundation"],
@@ -3425,7 +3445,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             ],
             "imports": [],
             "bases": ["ABC"],
-            "examples": ["SovereignBaseAgent", "L1CognitionBaseAgent"],
+            "examples": ["SovereignBaseAgent", "L1CognitionBase"],
         },
         "guardrails": {
             "purpose": "Hard safety limits, mutation controls, deletion guards, circuit breakers, rate limits, throttling, and emergency stop mechanisms",
