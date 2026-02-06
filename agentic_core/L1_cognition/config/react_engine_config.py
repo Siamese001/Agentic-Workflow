@@ -16,7 +16,10 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from .trace_models import ReasoningTraceModel
+try:
+    from agentic_core.L1_cognition.engine.trace_models import ReasoningTraceModel
+except ImportError:
+    ReasoningTraceModel = None  # type: ignore[misc,assignment]
 
 Logger = logging.getLogger(__name__)
 

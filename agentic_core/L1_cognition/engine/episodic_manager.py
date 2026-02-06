@@ -71,7 +71,7 @@ class EpisodicMemory:
         """Lazy load semantic memory."""
         if self._semantic_memory is None and self.embed_index:
             try:
-                from .SemanticMemory import semantic_memory
+                from .semantic_manager import semantic_memory
 
                 self._semantic_memory = semantic_memory
             except ImportError:
