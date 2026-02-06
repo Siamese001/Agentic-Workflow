@@ -75,7 +75,7 @@
 |-----------|--------|----------|--------------|
 | Meta-Learning Mixin | ✅ COMPLETE | `base_agents/meta_learning_mixin.py` | 647 lines, recall_or_execute |
 | Meta-Learning Client | ✅ COMPLETE | `base_agents/meta_learning_client_mixin.py` | 20KB client |
-| Base Meta Learner | ✅ COMPLETE | `base_agents/BaseMetaLearner.py` | Base class |
+| Base Meta Learner | ✅ COMPLETE | `base_agents/MetaLearningBase.py` | Base class |
 
 ### 1.6 Healing Components
 

@@ -96,6 +96,7 @@ FileType = Literal[
     "CONFIG",
     "ADAPTER",  # Classes ending in Adapter, Wrapper, Bridge
     "STRATEGY",  # Classes ending in Strategy
+    "EXCEPTION",  # Exception/Error classes (snake_case _exceptions.py)
     "IGNORE",
 ]
 
@@ -145,6 +146,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "CONFIG": 0,
                 "ADAPTER": 0,
                 "STRATEGY": 0,
+                "EXCEPTION": 0,
             },
             "territory_moves": 0,
         }
@@ -314,6 +316,11 @@ class FileClassificationAgent(*BASE_CLASSES):
             if ftype == "IGNORE":
                 continue
 
+            # [ROOT CAUSE] Check forbidden filename patterns (stuttering, ___, leading _)
+            forbidden_violations = self._check_forbidden_patterns(path.name)
+            for fv in forbidden_violations:
+                self.logger.warning(f"[FORBIDDEN] {path.name}: {fv['reason']}")
+
             # [NEW] Territory Enforcement (Move before Rename)
             target_territory_path = self.check_territory_violation(path, ftype)
             if target_territory_path:
@@ -429,6 +436,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         self.logger.info(f"  - Factories: {self.stats['violations']['FACTORY']}")
         self.logger.info(f"  - Configs: {self.stats['violations']['CONFIG']}")
         self.logger.info(f"  - Adapters: {self.stats['violations']['ADAPTER']}")
+        self.logger.info(f"  - Exceptions: {self.stats['violations']['EXCEPTION']}")
         if not self.dry_run:
             self.logger.info("\n=== FINAL HEALING SUMMARY ===")
             self.logger.info(f"Files Analyzed:     {self.stats['analyzed']}")
@@ -488,12 +496,12 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Allow Mixin files to be classified as MIXIN (don't force CLASS)
             if "Mixin" in path.name or "mixin" in path.name.lower():
                 pass  # Let normal classification handle it below
-            # Scripts and utilities in base_agents should NOT be forced to CLASS
-            elif path.name.endswith("_script.py") or path.name.endswith("_util.py"):
+            # Scripts, utilities, exceptions, and types in base_agents should NOT be forced to CLASS
+            elif path.name.endswith(("_script.py", "_util.py", "_exceptions.py", "_types.py")):
                 pass  # Let normal classification handle it below
             else:
                 # Force CLASS for all other files in base_agents/
-                # This covers SovereignBaseAgent, L0-L6 bases, BaseMetaLearner, etc.
+                # This covers SovereignBaseAgent, L0-L6 bases, MetaLearningBase, etc.
                 return "CLASS"
 
         try:
@@ -655,9 +663,9 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 4. SCRIPT: Handled above (with Agent exclusion)
         # 5. TYPES: Already handled above
 
-        # NEW: Exception forces CLASS early
+        # EXCEPTION: Classes inheriting from Exception/Error -> EXCEPTION type
         if is_exception:
-            return "CLASS"
+            return "EXCEPTION"
         # NEW: Elevate MIXIN priority to prevent override
         if is_mixin:
             return "MIXIN"
@@ -889,6 +897,88 @@ class FileClassificationAgent(*BASE_CLASSES):
         sanitized = sanitized.rstrip("_")
 
         return sanitized if sanitized else stem  # Fallback to original if fully stripped
+
+    def normalize_filename(self, name: str) -> str:
+        """
+        Smart normalization that fixes root cause naming violations.
+
+        Fixes:
+        1. Stuttering acronyms: s_s_o_t_ → ssot_ (naive CamelCase split)
+        2. Multiple underscores: ___ → _ (unsanitized concatenation)
+        3. Leading underscores: _cc_visitor → cc_visitor (legacy convention)
+
+        Args:
+            name: The filename (with or without .py extension)
+
+        Returns:
+            Normalized filename with root cause violations corrected.
+
+        Examples:
+            - "s_s_o_t_consolidation_analyzer_script.py" → "ssot_consolidation_analyzer_script.py"
+            - "setup___init___util.py" → "setup_init_util.py"
+            - "_cc_visitor_script.py" → "cc_visitor_script.py"
+        """
+        # Exempt __init__.py entirely — it's a Python convention
+        if name == "__init__.py" or name == "__init__":
+            return name
+
+        # Separate extension
+        stem = name
+        ext = ""
+        if name.endswith(".py"):
+            stem = name[:-3]
+            ext = ".py"
+
+        # 1. Fix stuttering acronyms: collapse runs of single-char_single-char segments
+        # Matches sequences like a_b_c_d and collapses to abcd
+        # Uses iterative approach to catch overlapping patterns
+        prev = None
+        while prev != stem:
+            prev = stem
+            stem = re.sub(r"\b([a-z])_([a-z])_([a-z])_([a-z])\b", r"\1\2\3\4", stem)
+            stem = re.sub(r"\b([a-z])_([a-z])_([a-z])_([a-z])(?=_)", r"\1\2\3\4", stem)
+
+        # 2. Fix multiple underscores: collapse __ or ___ to single _
+        stem = re.sub(r"_{2,}", "_", stem)
+
+        # 3. Fix leading underscores
+        stem = stem.lstrip("_")
+
+        # 4. Fix trailing underscores
+        stem = stem.rstrip("_")
+
+        return f"{stem}{ext}" if stem else name  # Fallback to original if empty
+
+    def _check_forbidden_patterns(self, filename: str) -> list[dict[str, str]]:
+        """
+        Check a filename against FORBIDDEN_FILENAME_PATTERNS from the constitution.
+
+        Args:
+            filename: The filename to check (without directory path)
+
+        Returns:
+            List of violation dicts with 'pattern' and 'reason' for each match.
+        """
+        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            FORBIDDEN_FILENAME_PATTERNS,
+        )
+
+        violations = []
+        # Skip __init__.py — always exempt
+        if filename == "__init__.py":
+            return violations
+
+        stem = filename.removesuffix(".py")
+        for rule in FORBIDDEN_FILENAME_PATTERNS:
+            if re.search(rule["pattern"], stem):
+                violations.append(
+                    {
+                        "pattern": rule["pattern"],
+                        "reason": rule["reason"],
+                        "filename": filename,
+                    }
+                )
+        return violations
 
     def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
@@ -2147,6 +2237,8 @@ class FileClassificationAgent(*BASE_CLASSES):
         - SCRIPT: snake_case with _script.py suffix
         - UTILITY: snake_case with _util.py suffix
         - TYPES: snake_case with _types.py suffix
+        - EXCEPTION: snake_case with _exceptions.py suffix
+        - STRATEGY (in strategies/): snake_case with _strategy.py suffix
         - MIXIN: snake_case with _mixin.py suffix
         """
         if file_type == "IGNORE":
@@ -2157,6 +2249,15 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         is_app = any(p.startswith("apps_") for p in path.parts)
+
+        # [ROOT CAUSE FIX] Normalize filename FIRST to catch stuttering/underscore violations
+        # This runs before any type-specific logic so all names are clean
+        normalized = self.normalize_filename(path.name)
+        if normalized != path.name:
+            # The filename itself has a root cause violation — return the normalized name
+            # Let the caller handle the rename (type-specific suffixes applied later if needed)
+            self.logger.info(f"[NORMALIZE] {path.name} → {normalized} (root cause fix)")
+            return normalized
 
         # [V10 ZERO-AMBIGUITY] BASE AGENT NAMING ENFORCEMENT
         # Files in agentic_core/base_agents/ classified as CLASS must use Base suffix (not BaseAgent)
@@ -2253,6 +2354,22 @@ class FileClassificationAgent(*BASE_CLASSES):
             core_name = self._sanitize_filename(path.stem)
             snake = self._to_smart_snake_case(core_name)
             new_name = f"{snake}_types.py"
+            return new_name if new_name != path.name else None
+
+        # EXCEPTION: Force snake_case with _exceptions.py suffix
+        if file_type == "EXCEPTION":
+            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_exceptions.py"
+            return new_name if new_name != path.name else None
+
+        # STRATEGY in strategies/ directory: Force snake_case with _strategy.py suffix
+        # (L0 healing strategies use snake_case; L5 strategies use PascalCase handled later)
+        if file_type == "STRATEGY" and "strategies" in path.parts:
+            core_name = self._sanitize_filename(path.stem)
+            snake = self._to_smart_snake_case(core_name)
+            new_name = f"{snake}_strategy.py"
             return new_name if new_name != path.name else None
 
         # CONSOLIDATED GUARDRAILS NAMING CONVENTION ENFORCEMENT

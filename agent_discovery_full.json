@@ -1844,7 +1844,7 @@
   },
   {
     "class_name": "BootstrapAgent",
-    "path": "agentic_core\\L0_maintenance\\scripts\\BootstrapAgent.py",
+    "path": "agentic_core\\L0_maintenance\\agents\\BootstrapAgent.py",
     "layer": "L0",
     "territory": "L0 Maintenance/Core",
     "category": "GenericAgent",

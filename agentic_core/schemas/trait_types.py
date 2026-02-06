@@ -9,7 +9,7 @@ Instead of deep inheritance hierarchies:
 
 Use traits for cleaner composition:
     @with_traits(CachingTrait, MetricsTrait)
-    class MyAgent(LightweightAgentBase):
+    class MyAgent(LightweightBase):
         pass
 
 Benefits:
@@ -263,7 +263,7 @@ def with_traits(*traits: type[Trait]) -> Callable[[type[T]], type[T]]:
 
     Usage:
         @with_traits(CachingTrait, MetricsTrait)
-        class MyAgent(LightweightAgentBase):
+        class MyAgent(LightweightBase):
             pass
 
     Args:

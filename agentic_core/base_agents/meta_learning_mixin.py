@@ -42,7 +42,7 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
-from agentic_core.base_agents.BaseMetaLearner import BaseMetaLearner
+from agentic_core.base_agents.MetaLearningBase import BaseMetaLearner
 
 
 class MetaLearningMixin(BaseMetaLearner):
