@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.mixins.configuration_mixin import ConfigMixin
@@ -231,7 +231,7 @@ class SovereignBaseAgent(
 
                 Subclasses should override this method instead of heal() to benefit
                 from meta-learning capabilities.
-        from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
                 Args:
                     violation: Dictionary detailing the detected violation.

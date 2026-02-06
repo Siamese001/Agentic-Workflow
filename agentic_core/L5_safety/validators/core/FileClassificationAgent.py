@@ -31,7 +31,7 @@ from typing import Any, Literal
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
-    from agentic_core.base_agents.atomic_execution_mixin import atomic_execution_mixin
+    from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
@@ -2126,9 +2126,9 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Enforce STRICT IDENTITY ONLY rule for base_agents/.
 
-        Only SovereignBaseAgent.py, L*Base.py, *_mixin.py, __init__.py, and
-        CanonBaseAgentInterface.py are allowed. Everything else (types, utils,
-        exceptions, engines) is a CRITICAL VIOLATION.
+        Only SovereignBaseAgent.py, L*Base.py, decorators.py, __init__.py, and
+        CanonBaseAgentInterface.py are allowed. Mixins must be in mixins/.
+        Everything else (types, utils, exceptions, engines) is a CRITICAL VIOLATION.
 
         Args:
             path: File path being checked
@@ -2155,7 +2155,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         if name == "LightweightBase.py":
             return None
         if name.endswith("_mixin.py"):
-            return None  # Mixins are still allowed during migration
+            return {
+                "type": "BASE_AGENTS_MIXIN_VIOLATION",
+                "message": f"Mixin '{name}' must be in agentic_core/mixins/, not base_agents/.",
+            }
         if name == "decorators.py":
             return None  # Core decorators
 
@@ -2164,7 +2167,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "type": "BASE_AGENTS_IMPURITY",
             "message": (
                 f"{name} violates STRICT IDENTITY ONLY rule for base_agents/. "
-                f"Only SovereignBaseAgent, L*Base, and *_mixin.py are allowed."
+                f"Only SovereignBaseAgent, L*Base, decorators.py are allowed. Mixins go to mixins/."
             ),
             "suggested_destination": "runtime/ or mixins/",
         }
@@ -2331,7 +2334,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             },
             "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
             "TYPES": {"schemas", "models", "domain", "types"},
-            "MIXIN": {"mixins", "base_agents"},  # Strict: only mixins folder and base_agents
+            "MIXIN": {"mixins"},  # Strict: mixins ONLY in mixins/ folder (migrated from base_agents)
             "CLASS": {"base_agents", "core", "shared_runtime"},  # Base classes allowed here
             "SCRIPT": {"scripts", "L0_maintenance"},  # Scripts only in scripts/ or L0_maintenance/
             "UTILITY": {"utils", "scripts", "L0_maintenance"},  # Utilities in utils/ or L0_maintenance/

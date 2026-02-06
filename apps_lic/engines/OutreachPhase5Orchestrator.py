@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 

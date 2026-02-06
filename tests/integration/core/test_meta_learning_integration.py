@@ -25,7 +25,7 @@ def reset_all_singletons():
     import agentic_core.L1_cognition.meta_learning.healing_memory_embedder_types as hme
     import agentic_core.L1_cognition.meta_learning.meta_learning_client_types as mlc
     import agentic_core.L1_cognition.meta_learning.meta_learning_observability_types as mlo
-    from agentic_core.base_agents.meta_learning_client_mixin import (
+    from agentic_core.mixins.meta_learning_client_mixin import (
         MetaLearningClientMixin,
     )
 

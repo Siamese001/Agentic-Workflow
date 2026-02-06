@@ -39,7 +39,7 @@ class DynamicLoader:
             "class": "HumanReviewQueue",
         },
         "meta_learning": {
-            "module": "agentic_core.base_agents.meta_learning_mixin",
+            "module": "agentic_core.mixins.meta_learning_mixin",
             "class": "MetaLearningService",
         },
     }

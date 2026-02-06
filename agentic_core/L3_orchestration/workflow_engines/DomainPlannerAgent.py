@@ -21,11 +21,11 @@ if TYPE_CHECKING:
     ScenarioSimulationResult = dict[str, Any]
     StrategyPlan = dict[str, Any]
 
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 
 # Runtime imports
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 except ImportError:
     # Fallback stub if mixin is not available
     class SubatomicTestingMixin:

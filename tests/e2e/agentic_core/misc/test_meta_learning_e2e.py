@@ -428,7 +428,7 @@ class TestRollbackProcedures:
 
     def test_singleton_reset_works(self):
         """Test singleton reset for rollback."""
-        from agentic_core.base_agents.meta_learning_client_mixin import (
+        from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
         from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (

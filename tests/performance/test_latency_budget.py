@@ -41,7 +41,7 @@ class TestLatencyBudget:
     def test_atomic_execution_mixin_import_latency(self):
         """Test that AtomicExecutionMixin can be imported quickly."""
         start = time.perf_counter()
-        from agentic_core.base_agents.atomic_execution_mixin import (
+        from agentic_core.mixins.atomic_execution_mixin import (
             AtomicExecutionMixin,
         )
 
@@ -68,7 +68,7 @@ class TestLatencyBudget:
 
     def test_file_hash_computation_latency(self, temp_file):
         """Test file hash computation meets latency budget."""
-        from agentic_core.base_agents.atomic_execution_mixin import (
+        from agentic_core.mixins.atomic_execution_mixin import (
             AtomicExecutionMixin,
         )
 
@@ -88,7 +88,7 @@ class TestLatencyBudget:
 
     def test_atomic_write_latency(self, temp_file):
         """Test atomic write operation meets latency budget."""
-        from agentic_core.base_agents.atomic_execution_mixin import (
+        from agentic_core.mixins.atomic_execution_mixin import (
             AtomicExecutionMixin,
         )
 
@@ -117,7 +117,7 @@ class TestLatencyBudget:
     )
     def test_batch_3a_agents_have_atomic_mixin(self, agent_name):
         """Verify Batch 3.1A agents have AtomicExecutionMixin."""
-        from agentic_core.base_agents.atomic_execution_mixin import (
+        from agentic_core.mixins.atomic_execution_mixin import (
             AtomicExecutionMixin,
         )
 

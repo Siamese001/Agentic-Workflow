@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from typing import Any
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.base_agents.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
+from agentic_core.mixins.feature_flagged_agent_mixin import FeatureFlaggedAgentMixin
 from agentic_core.utils.migration_helper import (
     ComplianceResult,
     MigrationHelper,

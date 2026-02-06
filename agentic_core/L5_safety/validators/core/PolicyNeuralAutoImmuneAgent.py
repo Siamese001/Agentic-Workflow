@@ -25,8 +25,8 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 from agentic_core.L5_safety.validators.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

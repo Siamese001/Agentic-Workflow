@@ -77,7 +77,7 @@ class LightweightAgentBase(
         import threading
         from collections import OrderedDict
 
-        from agentic_core.base_agents.caching_mixin import CacheConfig
+        from agentic_core.mixins.caching_mixin import CacheConfig
 
         self._cache_config = CacheConfig()
         self._cache_store = OrderedDict()
@@ -85,7 +85,7 @@ class LightweightAgentBase(
         self._caching_initialized = True
 
         # Initialize MetricsMixin
-        from agentic_core.base_agents.metrics_mixin import MetricsConfig
+        from agentic_core.mixins.metrics_mixin import MetricsConfig
 
         self._metrics_config = MetricsConfig()
         self._metrics_store = {}

@@ -79,7 +79,7 @@ except ImportError:
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import (
+    from agentic_core.mixins.subatomic_testing_mixin import (
         subatomic_testing_mixin,  # noqa: F401
     )
 except ImportError:

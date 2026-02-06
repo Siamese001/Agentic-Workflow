@@ -193,7 +193,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
                 # Suggest utils path
                 if "mixins" in module_path:
-                    return f"from agentic_core.base_agents.subatomic_testing_mixin import {imported_items}"
+                    return f"from agentic_core.mixins.subatomic_testing_mixin import {imported_items}"
                 else:
                     return f"from agentic_core.utils import {imported_items}"
 

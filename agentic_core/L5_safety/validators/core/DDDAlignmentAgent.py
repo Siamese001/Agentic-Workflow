@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 try:
@@ -32,7 +32,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.base_agents.subatomic_testing_mixin import (
+    from agentic_core.mixins.subatomic_testing_mixin import (
         subatomic_testing_mixin,  # noqa: F401
     )
 except ImportError:

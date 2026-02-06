@@ -36,7 +36,7 @@ from agentic_core.L4_state.utils.layer_gravity import (
     extract_layer_from_module,
     extract_layer_from_path,
 )
-from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 

@@ -41,7 +41,7 @@ def fix_subatomic_mixin_imports(file_path: Path) -> bool:
     if "SubatomicTestingMixin" not in content:
         return False
 
-    if "from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin" in content:
+    if "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin" in content:
         return False
 
     # Remove bad import if exists
@@ -60,7 +60,7 @@ def fix_subatomic_mixin_imports(file_path: Path) -> bool:
 
     lines.insert(
         insert_idx,
-        "from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin",
+        "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin",
     )
 
     file_path.write_text("\n".join(lines), encoding="utf-8")

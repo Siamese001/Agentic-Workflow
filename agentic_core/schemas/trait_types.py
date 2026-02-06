@@ -72,7 +72,7 @@ class CachingTrait(Trait):
         import threading
         from collections import OrderedDict
 
-        from agentic_core.base_agents.caching_mixin import CacheConfig, CacheEntry
+        from agentic_core.mixins.caching_mixin import CacheConfig, CacheEntry
 
         original_post_init = getattr(target_cls, "__post_init__", None)
 
@@ -141,7 +141,7 @@ class MetricsTrait(Trait):
         """Apply metrics capabilities to target class."""
         import threading
 
-        from agentic_core.base_agents.metrics_mixin import (
+        from agentic_core.mixins.metrics_mixin import (
             MetricsConfig,
             PerformanceMetrics,
         )

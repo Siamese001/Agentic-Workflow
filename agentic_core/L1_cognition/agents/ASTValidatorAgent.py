@@ -333,7 +333,7 @@ class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAge
             self.clear_violations()
             test_code = """
 from typing import TYPE_CHECKING
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 if TYPE_CHECKING:
     eval('should be ignored')
 """

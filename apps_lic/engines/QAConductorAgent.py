@@ -89,7 +89,7 @@ Status: DEPRECATED - Do not use in production
 # )
 
 # v10.7: Import from new tools file
-# from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+# from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 # from typing import TYPE_CHECKING
 
 # if TYPE_CHECKING:

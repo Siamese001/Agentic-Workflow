@@ -83,8 +83,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
         "purpose": "Core agentic logic and safety layers.",
         "subfolders": {
             "base_agents": {
-                "purpose": "STRICT IDENTITY ONLY. Sovereign base classes and layer bases.",
-                "notes": "No types, utils, or exceptions. Only SovereignBaseAgent and L*Base files.",
+                "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
+                "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",
             },
             "domain": {"purpose": "Pure domain entities and business objects"},
             "L0_maintenance": {
@@ -230,10 +230,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "naming_convention": r"^[a-z][a-z0-9_]*_(util|types|exceptions|engine|config)\.py$",
             },
             "mixins": {
-                "purpose": "Shared capabilities and behavioral contracts.",
+                "purpose": "ALL shared mixins and behavioral contracts. Canonical home for *_mixin.py files.",
+                "notes": "36 mixins migrated from base_agents/. configuration_mixin.py migrated from config/core/.",
                 "subfolders": {
                     "contracts": {"purpose": "Abstract interfaces and behavioral contracts."},
-                    "capabilities": {"purpose": "Reusable capability mixins."},
                 },
                 "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract)\.py$",
             },

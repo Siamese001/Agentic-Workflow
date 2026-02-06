@@ -218,7 +218,7 @@ class TestMixinInheritance:
 
     def test_domain_mixin_inherits_from_feature_flagged(self):
         """Test DomainAgentMixin inherits from FeatureFlaggedAgentMixin."""
-        from agentic_core.base_agents.feature_flagged_agent_mixin import (
+        from agentic_core.mixins.feature_flagged_agent_mixin import (
             FeatureFlaggedAgentMixin,
         )
 

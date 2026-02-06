@@ -434,7 +434,7 @@ class TestAtomicExecutionMixinIntegration:
     def test_real_mixin_exists(self):
         """Verify AtomicExecutionMixin can be imported."""
         try:
-            from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+            from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
             # Real mixin uses atomic_transaction context manager
             assert (

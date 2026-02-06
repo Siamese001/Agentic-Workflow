@@ -161,7 +161,7 @@ class ReportingAgent(SovereignBaseAgent):
                     _walk_directory(item, prefix + extension, depth + 1)
 
         _walk_directory(start_path, depth=1)
-        return "\nfrom agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
+        return "\nfrom agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nimport logging\n\nLogger = logging.getLogger(__name__)\n".join(
             tree_lines,
         )
 

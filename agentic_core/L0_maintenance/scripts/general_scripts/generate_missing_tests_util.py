@@ -47,7 +47,7 @@ Generated automatically to achieve 100% test coverage.
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
-from agentic_core.base_agents.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 
 # Import the agent
 try:

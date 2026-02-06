@@ -88,7 +88,7 @@ def repair_file(file_path: Path):
     content = content.replace("apps_shared.base_agents", "agentic_core.base_agents")
     content = content.replace(
         "agentic_core.L2_execution.mcp.mcp_hardened_mixin",
-        "agentic_core.base_agents.infrastructure_mixin",
+        "agentic_core.mixins.infrastructure_mixin",
     )
 
     # 5. Write back
