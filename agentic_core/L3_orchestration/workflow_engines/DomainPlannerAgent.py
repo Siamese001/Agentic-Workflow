@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent
+from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
@@ -75,13 +75,13 @@ def _truncate(text: str, limit: int = 160) -> str:
     return text[: limit - 3] + "..."
 
 
-class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
+class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBase):
     """Evaluates strategic alignment with the job domain.
 
     V10 Refactored: Now inherits from AtomicExecutionMixin for rollback capability
-    and L3OrchestrationBaseAgent for proper layer positioning.
+    and L3OrchestrationBase for proper layer positioning.
 
-    MRO: DomainPlannerAgent -> AtomicExecutionMixin -> L3OrchestrationBaseAgent -> ...
+    MRO: DomainPlannerAgent -> AtomicExecutionMixin -> L3OrchestrationBase -> ...
     """
 
     async def run_async(

@@ -118,12 +118,12 @@ class OrphanAgentDetector:
         {
             "SovereignBaseAgent",
             "L0MaintenanceBaseAgent",
-            "L1CognitionBaseAgent",
-            "L2ExecutionBaseAgent",
-            "L3OrchestrationBaseAgent",
-            "L4StateBaseAgent",
-            "L5SafetyBaseAgent",
-            "L6ObservabilityBaseAgent",
+            "L1CognitionBase",
+            "L2ExecutionBase",
+            "L3OrchestrationBase",
+            "L4StateBase",
+            "L5SafetyBase",
+            "L6ObservabilityBase",
             "RGAgentBase",
             "LICAgentBase",
         }

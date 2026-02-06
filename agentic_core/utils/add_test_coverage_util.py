@@ -139,8 +139,8 @@ MISSING_TESTS = [
         "path": "agentic_core\\L1_cognition\\thought_engine\\CanonHealerAgent.py",
     },
     {
-        "class": "L1CognitionBaseAgent",
-        "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBaseAgent.py",
+        "class": "L1CognitionBase",
+        "path": "agentic_core\\L1_cognition\\thought_engine\\L1CognitionBase.py",
     },
     {
         "class": "L1CognitionExerciserAgent",

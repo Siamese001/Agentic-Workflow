@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L2ExecutionBaseAgent - Consolidated Base for L2 Execution Agents
+L2ExecutionBase - Consolidated Base for L2 Execution Agents
 
 Layer: L2 - Execution
 Responsibilities:
@@ -23,7 +23,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class L2ExecutionBaseAgent(SovereignBaseAgent):
+class L2ExecutionBase(SovereignBaseAgent):
     """
     Consolidated base for L2 Execution agents.
 
@@ -33,10 +33,10 @@ class L2ExecutionBaseAgent(SovereignBaseAgent):
     - Action execution pipelines
     - External service integration
 
-    MRO: L2ExecutionBaseAgent -> SovereignBaseAgent -> object
+    MRO: L2ExecutionBase -> SovereignBaseAgent -> object
     """
 
-    name: str = "L2ExecutionBaseAgent"
+    name: str = "L2ExecutionBase"
     layer: str = "L2"
 
     def __post_init__(self) -> None:

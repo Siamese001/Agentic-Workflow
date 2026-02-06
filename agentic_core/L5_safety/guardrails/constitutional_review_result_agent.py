@@ -43,7 +43,7 @@ async def _format_prompt_with_defaults(template, data, budget_manager, goal_stat
     return template
 
 
-class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBaseAgent):
+class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
     """Performs final constitutional review of the output."""
 
     @track_metrics("run_constitutional_review")

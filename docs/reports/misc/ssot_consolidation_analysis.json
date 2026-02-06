@@ -376,7 +376,7 @@
           {
             "name": "L1CognitionExerciserAgent",
             "bases": [
-              "L1CognitionBaseAgent"
+              "L1CognitionBase"
             ],
             "is_agent": true,
             "is_mixin": false,

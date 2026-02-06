@@ -75,7 +75,7 @@ Enforces:
 
 ## Sample File 3: L1 Cognition Base Agent
 
-**File:** `agentic_core/L1_cognition/thought_engine/L1CognitionBaseAgent.py`
+**File:** `agentic_core/L1_cognition/thought_engine/L1CognitionBase.py`
 **Lines:** 18-20
 **Category:** Layer Base Agent
 
@@ -208,10 +208,10 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 1. **Layer Base Agents (L0-L6):** ~7 files
    - `L0MaintenanceBaseAgent.py`
-   - `L1CognitionBaseAgent.py`
-   - `L2ExecutionBaseAgent.py`
-   - `L3OrchestrationBaseAgent.py`
-   - `L4StateBaseAgent.py`
+   - `L1CognitionBase.py`
+   - `L2ExecutionBase.py`
+   - `L3OrchestrationBase.py`
+   - `L4StateBase.py`
    - (L5 has no base agent)
    - (L6 has no base agent)
 

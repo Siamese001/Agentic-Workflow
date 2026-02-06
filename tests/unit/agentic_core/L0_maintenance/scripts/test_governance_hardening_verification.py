@@ -38,7 +38,7 @@ def test_1_signal_saturation_sweep():
     """
     Test 1: Signal Saturation Sweep (The "Long Chain" Test)
 
-    Procedure: Instantiate an L2ExecutionBaseAgent and trigger a heal with
+    Procedure: Instantiate an L2ExecutionBase and trigger a heal with
     telemetry_id="AUDIT-2026" and custom_flag=True.
 
     Verification: Ensure every layer accepts the signals via **kwargs.

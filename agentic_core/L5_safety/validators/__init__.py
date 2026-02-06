@@ -9,7 +9,7 @@ Use direct imports when needed:
 """
 
 __all__ = [
-    "L5SafetyBaseAgent",
+    "L5SafetyBase",
     "LocationAgent",
     "NamingAgent",
     "HierarchyAgent",

@@ -11,15 +11,15 @@ A hardened, state-aware approach to the Zero-Loss refactoring of 171 agents with
 ### MRO ORDERING RULE (MANDATORY)
 ```python
 # CORRECT: Safety Mixins ALWAYS precede Base Classes (Left-to-Right)
-class MyAgent(AtomicExecutionMixin, CircuitBreakerMixin, L5SafetyBaseAgent):
-    pass  # MRO: MyAgent → AtomicExecutionMixin → CircuitBreakerMixin → L5SafetyBaseAgent → object
+class MyAgent(AtomicExecutionMixin, CircuitBreakerMixin, L5SafetyBase):
+    pass  # MRO: MyAgent → AtomicExecutionMixin → CircuitBreakerMixin → L5SafetyBase → object
 
 # WRONG: Base class before mixin (WILL CAUSE SILENT FAILURES)
-class MyAgent(L5SafetyBaseAgent, AtomicExecutionMixin):  # ❌ FORBIDDEN
+class MyAgent(L5SafetyBase, AtomicExecutionMixin):  # ❌ FORBIDDEN
     pass
 ```
 
-**Why:** Python MRO resolves methods left-to-right. If `L5SafetyBaseAgent` comes first, its methods shadow mixin safety features, causing silent failures.
+**Why:** Python MRO resolves methods left-to-right. If `L5SafetyBase` comes first, its methods shadow mixin safety features, causing silent failures.
 
 ### STATE SNAPSHOT RULE (MANDATORY)
 Before modifying ANY agent in L2 (Execution), L3 (Orchestration), or L4 (State):
@@ -73,10 +73,10 @@ python scripts/state_snapshot.py --wave <N> --agent <AgentName>
 class DomainPlannerAgent(SovereignBaseAgent):
 
 # AFTER (AtomicExecutionMixin MUST be first)
-class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent):
+class DomainPlannerAgent(AtomicExecutionMixin, L3OrchestrationBase):
 ```
 - [ ] Update imports: Add `from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin`
-- [ ] Update imports: Add `from agentic_core.base_agents.L3OrchestrationBaseAgent import L3OrchestrationBaseAgent`
+- [ ] Update imports: Add `from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase`
 - [ ] Verify MRO depth = 3 (Agent → Mixin → Base → object)
 - **File**: `agentic_core/L3_orchestration/workflow_engines/DomainPlannerAgent.py`
 - **Guardian Check**: `pytest tests/guardian/test_mro_integrity.py -k "DomainPlanner"`
@@ -151,11 +151,11 @@ Target agents (Batch 1):
 **Strategy per agent** (MRO-SAFE):
 ```python
 # Before
-class MyAgent(L5SafetyBaseAgent):
+class MyAgent(L5SafetyBase):
     pass
 
 # After (Safety Mixin MUST be first)
-class MyAgent(AtomicExecutionMixin, L5SafetyBaseAgent):
+class MyAgent(AtomicExecutionMixin, L5SafetyBase):
     pass
 ```
 

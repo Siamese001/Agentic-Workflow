@@ -24,7 +24,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-L6ObservabilityBaseAgent = object  # Stub for archived import
+L6ObservabilityBase = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
 from agentic_core.L5_safety.validators.core.decorators import standard_heal

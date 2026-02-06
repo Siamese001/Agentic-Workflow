@@ -66,7 +66,7 @@ def test_instantiation():
             "SemanticTerritoryMapperAgent",
         ),
         ("L0_maintenance.scripts.BootstrapAgent", "BootstrapAgent"),
-        ("L2_execution.L2ExecutionBaseAgent", "L2ExecutionBaseAgent"),
+        ("L2_execution.L2ExecutionBase", "L2ExecutionBase"),
     ]
 
     for module_path, class_name in agents_to_test:

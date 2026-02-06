@@ -48,8 +48,8 @@ PRIORITY: HIGH (5 agents)
    Methods needing hardening:
       - heal_repository()
 
-[FILE] Agentic-Workflow\agentic_core\L2_execution\ToolRegistry\L2ExecutionBaseAgent.py
-   Class: L2ExecutionBaseAgent
+[FILE] Agentic-Workflow\agentic_core\L2_execution\ToolRegistry\L2ExecutionBase.py
+   Class: L2ExecutionBase
    Has Redis Mixin: YES
    Has Pinecone Mixin: YES
    Has LLM Calls: YES
@@ -653,8 +653,8 @@ PRIORITY: MEDIUM (147 agents)
    Methods needing hardening:
       - heal_repository()
 
-[FILE] Agentic-Workflow\agentic_core\L3_orchestration\workflow_engines\L3OrchestrationBaseAgent.py
-   Class: L3OrchestrationBaseAgent
+[FILE] Agentic-Workflow\agentic_core\L3_orchestration\workflow_engines\L3OrchestrationBase.py
+   Class: L3OrchestrationBase
    Has Redis Mixin: NO
    Has Pinecone Mixin: NO
    Has LLM Calls: NO
@@ -673,8 +673,8 @@ PRIORITY: MEDIUM (147 agents)
    Methods needing hardening:
       - heal_repository()
 
-[FILE] Agentic-Workflow\agentic_core\L4_state\ValidationContext\L4StateBaseAgent.py
-   Class: L4StateBaseAgent
+[FILE] Agentic-Workflow\agentic_core\L4_state\ValidationContext\L4StateBase.py
+   Class: L4StateBase
    Has Redis Mixin: YES
    Has Pinecone Mixin: YES
    Has LLM Calls: NO
@@ -693,8 +693,8 @@ PRIORITY: MEDIUM (147 agents)
    Methods needing hardening:
       - heal_repository()
 
-[FILE] Agentic-Workflow\agentic_core\L5_safety\validators\L5SafetyBaseAgent.py
-   Class: L5SafetyBaseAgent
+[FILE] Agentic-Workflow\agentic_core\L5_safety\validators\L5SafetyBase.py
+   Class: L5SafetyBase
    Has Redis Mixin: YES
    Has Pinecone Mixin: YES
    Has LLM Calls: NO
@@ -713,8 +713,8 @@ PRIORITY: MEDIUM (147 agents)
    Methods needing hardening:
       - heal_repository()
 
-[FILE] Git\Agentic-Workflow\agentic_core\L6_observability\L6ObservabilityBaseAgent.py
-   Class: L6ObservabilityBaseAgent
+[FILE] Git\Agentic-Workflow\agentic_core\L6_observability\L6ObservabilityBase.py
+   Class: L6ObservabilityBase
    Has Redis Mixin: NO
    Has Pinecone Mixin: NO
    Has LLM Calls: NO

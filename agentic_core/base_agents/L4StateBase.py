@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L4StateBaseAgent - Consolidated Base for L4 State Agents
+L4StateBase - Consolidated Base for L4 State Agents
 
 Layer: L4 - State
 Responsibilities:
@@ -23,7 +23,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class L4StateBaseAgent(SovereignBaseAgent):
+class L4StateBase(SovereignBaseAgent):
     """
     Consolidated base for L4 State agents.
 
@@ -33,10 +33,10 @@ class L4StateBaseAgent(SovereignBaseAgent):
     - Memory persistence operations
     - Cross-agent state synchronization
 
-    MRO: L4StateBaseAgent -> SovereignBaseAgent -> object
+    MRO: L4StateBase -> SovereignBaseAgent -> object
     """
 
-    name: str = "L4StateBaseAgent"
+    name: str = "L4StateBase"
     layer: str = "L4"
 
     def __post_init__(self) -> None:

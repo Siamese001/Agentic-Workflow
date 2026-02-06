@@ -62,10 +62,10 @@ Extract common orchestration logic into `UnifiedOrchestratorAgent` with pluggabl
 | `SovereignBaseAgent.py` | `observability/` | **ROOT** | KEEP (SSOT Root) |
 | `L0MaintenanceBaseAgent.py` | `L0_maintenance/scripts/` | Layer Base | KEEP |
 | `MaintenanceBaseAgent.py` | `L0_maintenance/scripts/` | **DUPLICATE** | ABSORB → L0MaintenanceBaseAgent |
-| `L1CognitionBaseAgent.py` | `L1_cognition/thought_engine/` | Layer Base | KEEP |
-| `L2ExecutionBaseAgent.py` | `L2_execution/ToolRegistry/` | Layer Base | KEEP |
-| `L4StateBaseAgent.py` | `L4_state/ValidationContext/` | Layer Base | KEEP |
-| `L5SafetyBaseAgent.py` | `L5_safety/validators/` | Layer Base | KEEP |
+| `L1CognitionBase.py` | `L1_cognition/thought_engine/` | Layer Base | KEEP |
+| `L2ExecutionBase.py` | `L2_execution/ToolRegistry/` | Layer Base | KEEP |
+| `L4StateBase.py` | `L4_state/ValidationContext/` | Layer Base | KEEP |
+| `L5SafetyBase.py` | `L5_safety/validators/` | Layer Base | KEEP |
 
 **Archived/Deleted Legacy Bases** (confirmed removed):
 | Legacy File | Status |
@@ -76,15 +76,15 @@ Extract common orchestration logic into `UnifiedOrchestratorAgent` with pluggabl
 ### Analysis
 
 - **8 Core Layer Bases**: L0-L6 + SovereignBaseAgent (Root)
-- **Missing Layer Bases**: L3OrchestrationBaseAgent, L6ObservabilityBaseAgent
+- **Missing Layer Bases**: L3OrchestrationBase, L6ObservabilityBase
 - **Duplicate Found**: `MaintenanceBaseAgent.py` duplicates `L0MaintenanceBaseAgent.py`
 - **Legacy Cleanup**: CanonBaseAgent and ExecutionCanonBaseAgent successfully archived
 
 ### Recommendation
 
 1. **DELETE** `MaintenanceBaseAgent.py` - absorbed into L0MaintenanceBaseAgent
-2. **CREATE** `L3OrchestrationBaseAgent.py` if missing
-3. **CREATE** `L6ObservabilityBaseAgent.py` if missing
+2. **CREATE** `L3OrchestrationBase.py` if missing
+3. **CREATE** `L6ObservabilityBase.py` if missing
 4. **CLEAN** __pycache__ directories to remove stale .pyc files
 
 ---
@@ -142,8 +142,8 @@ DEFAULT_EXCLUDED_DIRS: Set[str] = {
 ### Priority 4: Missing Layer Bases (2 files)
 | Task | Files | Action |
 |:-----|:------|:-------|
-| Create L3 base | `L3OrchestrationBaseAgent.py` | CREATE |
-| Create L6 base | `L6ObservabilityBaseAgent.py` | CREATE |
+| Create L3 base | `L3OrchestrationBase.py` | CREATE |
+| Create L6 base | `L6ObservabilityBase.py` | CREATE |
 
 ---
 
@@ -185,10 +185,10 @@ agentic_core/
 ├── observability/SovereignBaseAgent.py (ROOT)
 ├── L0_maintenance/scripts/L0MaintenanceBaseAgent.py
 ├── L0_maintenance/scripts/MaintenanceBaseAgent.py (DUPLICATE)
-├── L1_cognition/thought_engine/L1CognitionBaseAgent.py
-├── L2_execution/ToolRegistry/L2ExecutionBaseAgent.py
-├── L4_state/ValidationContext/L4StateBaseAgent.py
-└── L5_safety/validators/L5SafetyBaseAgent.py
+├── L1_cognition/thought_engine/L1CognitionBase.py
+├── L2_execution/ToolRegistry/L2ExecutionBase.py
+├── L4_state/ValidationContext/L4StateBase.py
+└── L5_safety/validators/L5SafetyBase.py
 ```
 
 ---

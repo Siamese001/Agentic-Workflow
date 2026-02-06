@@ -175,12 +175,12 @@ class NuclearAuditAgent:
         # Check for known base agents that inherit from SovereignBaseAgent
         sovereign_base_agents = {
             "L0MaintenanceBaseAgent",
-            "L1CognitionBaseAgent",
-            "L2ExecutionBaseAgent",
-            "L3OrchestrationBaseAgent",
-            "L4StateBaseAgent",
-            "L5SafetyBaseAgent",
-            "L6ObservabilityBaseAgent",
+            "L1CognitionBase",
+            "L2ExecutionBase",
+            "L3OrchestrationBase",
+            "L4StateBase",
+            "L5SafetyBase",
+            "L6ObservabilityBase",
         }
 
         has_sovereign_base = any(base in sovereign_base_agents for base in inheritance_chain)
@@ -243,9 +243,7 @@ class NuclearAuditAgent:
 
             # Analyze heal() method signature
             heal_methods = [
-                node
-                for node in class_node.body
-                if isinstance(node, ast.FunctionDef) and node.name == "heal"
+                node for node in class_node.body if isinstance(node, ast.FunctionDef) and node.name == "heal"
             ]
             if heal_methods:
                 heal_method = heal_methods[0]
@@ -369,8 +367,7 @@ class NuclearAuditAgent:
             f"- **Total Agents**: {len(self.results)}",
             f"- **Ready**: {len([r for r in self.results if r.status == 'Ready'])}",
             f"- **Broken Import**: {len([r for r in self.results if r.status == 'Broken Import'])}",
-            f"- **Signature Mismatch**: "
-            f"{len([r for r in self.results if r.status == 'Signature Mismatch'])}",
+            f"- **Signature Mismatch**: {len([r for r in self.results if r.status == 'Signature Mismatch'])}",
             f"- **Stub**: {len([r for r in self.results if r.status == 'Stub'])}",
             "",
             "## Detailed Technical Status Table\n",
@@ -395,9 +392,7 @@ class NuclearAuditAgent:
                 deps_str += f" (+{len(result.dependencies) - 3})"
 
             # Format namespace with validation indicator
-            namespace_str = (
-                f"{result.namespace} {'[OK]' if result.namespace_valid else '[INVALID]'}"
-            )
+            namespace_str = f"{result.namespace} {'[OK]' if result.namespace_valid else '[INVALID]'}"
 
             # Format status with indicator
             status_indicator = {
@@ -428,9 +423,7 @@ class NuclearAuditAgent:
             )
 
         # Add high-priority remediation section
-        problematic = [
-            r for r in self.results if r.status in ["Broken Import", "Signature Mismatch"]
-        ]
+        problematic = [r for r in self.results if r.status in ["Broken Import", "Signature Mismatch"]]
         if problematic:
             table.extend(
                 [

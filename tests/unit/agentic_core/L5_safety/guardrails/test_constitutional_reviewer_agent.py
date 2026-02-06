@@ -45,9 +45,9 @@ class TestConstitutionalReviewerAgent:
         assert agent_class is not None, "ConstitutionalReviewerAgent should exist"
 
     def test_inherits_from_l5_safety_base_agent(self, agent_class):
-        """Verify proper inheritance from L5SafetyBaseAgent."""
+        """Verify proper inheritance from L5SafetyBase."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "L5SafetyBaseAgent" in mro_names, "Should inherit from L5SafetyBaseAgent"
+        assert "L5SafetyBase" in mro_names, "Should inherit from L5SafetyBase"
 
     def test_has_run_async_method(self, agent_class):
         """Verify agent has run_async method."""

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L6ObservabilityBaseAgent - Consolidated Base for L6 Observability Agents
+L6ObservabilityBase - Consolidated Base for L6 Observability Agents
 
 Layer: L6 - Observability
 Responsibilities:
@@ -23,7 +23,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class L6ObservabilityBaseAgent(SovereignBaseAgent):
+class L6ObservabilityBase(SovereignBaseAgent):
     """
     Consolidated base for L6 Observability agents.
 
@@ -33,10 +33,10 @@ class L6ObservabilityBaseAgent(SovereignBaseAgent):
     - Logging coordination
     - Metrics and KPI tracking
 
-    MRO: L6ObservabilityBaseAgent -> SovereignBaseAgent -> object
+    MRO: L6ObservabilityBase -> SovereignBaseAgent -> object
     """
 
-    name: str = "L6ObservabilityBaseAgent"
+    name: str = "L6ObservabilityBase"
     layer: str = "L6"
 
     def __post_init__(self) -> None:

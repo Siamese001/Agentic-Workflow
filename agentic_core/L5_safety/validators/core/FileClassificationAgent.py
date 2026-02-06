@@ -479,6 +479,23 @@ class FileClassificationAgent(*BASE_CLASSES):
         if path.name in critical_ignores:
             return "IGNORE"
 
+        # [PRIORITY 0] BASE AGENT Detection: agentic_core/base_agents/ directory
+        # CONSTITUTIONAL: Must come BEFORE STUB detection because base agents
+        # legitimately carry NOT_AN_AGENT markers to prevent downstream misclassification.
+        # V10 Zero-Ambiguity: ALL files in base_agents/ are foundational CLASSes
+        # EXCEPT mixins (which remain MIXIN) and scripts/utilities (flagged for move).
+        if "base_agents" in path.parts:
+            # Allow Mixin files to be classified as MIXIN (don't force CLASS)
+            if "Mixin" in path.name or "mixin" in path.name.lower():
+                pass  # Let normal classification handle it below
+            # Scripts and utilities in base_agents should NOT be forced to CLASS
+            elif path.name.endswith("_script.py") or path.name.endswith("_util.py"):
+                pass  # Let normal classification handle it below
+            else:
+                # Force CLASS for all other files in base_agents/
+                # This covers SovereignBaseAgent, L0-L6 bases, BaseMetaLearner, etc.
+                return "CLASS"
+
         try:
             if not path.exists() or path.stat().st_size == 0:
                 return "IGNORE"
@@ -493,34 +510,6 @@ class FileClassificationAgent(*BASE_CLASSES):
             tree = ast.parse(content)
         except (SyntaxError, UnicodeDecodeError, OSError):
             return "IGNORE"
-
-        # [PRIORITY 2.5] BASE AGENT Detection: Special case for base_agents
-        # Only canonical base agents (L0-L6BaseAgent, SovereignBaseAgent) are forced to CLASS
-        # NOTE: AppBaseAgent REMOVED - it belongs in apps_shared/agents/AppBase.py
-        # Mixins should remain MIXIN, scripts/utilities should be flagged for movement
-        if "base_agents" in path.parts:
-            # Canonical base agent patterns - these are foundational classes
-            # HARDENED: "App" prefix files are FORBIDDEN in agentic_core - they belong in apps_*
-            canonical_base_patterns = [
-                "SovereignBaseAgent",
-                "LightweightAgentBase",
-                "L0MaintenanceBase",
-                "L1CognitionBaseAgent",
-                "L2ExecutionBaseAgent",
-                "L3OrchestrationBaseAgent",
-                "L4StateBaseAgent",
-                "L5SafetyBaseAgent",
-                "L6ObservabilityBaseAgent",
-                "BaseMetaLearner",
-            ]
-            # Check if this is a canonical base agent
-            if any(pattern in path.name for pattern in canonical_base_patterns):
-                return "CLASS"
-            # Allow Mixin files to be classified as MIXIN (don't force CLASS)
-            if "Mixin" in path.name or "mixin" in path.name.lower():
-                pass  # Let normal classification handle it
-            # Scripts and utilities in base_agents should NOT be forced to CLASS
-            # They will be classified normally and flagged for territory violation
 
         # [PRIORITY 2.5] SELF DETECTION: FileClassificationAgent is always an AGENT
         if path.name == "FileClassificationAgent.py":
@@ -1298,12 +1287,12 @@ class FileClassificationAgent(*BASE_CLASSES):
         base_agents = {
             "SovereignBaseAgent",
             "L0MaintenanceBaseAgent",
-            "L1CognitionBaseAgent",
-            "L2ExecutionBaseAgent",
-            "L3OrchestrationBaseAgent",
-            "L4StateBaseAgent",
-            "L5SafetyBaseAgent",
-            "L6ObservabilityBaseAgent",
+            "L1CognitionBase",
+            "L2ExecutionBase",
+            "L3OrchestrationBase",
+            "L4StateBase",
+            "L5SafetyBase",
+            "L6ObservabilityBase",
         }
         for base in node.bases:
             if isinstance(base, ast.Name):
@@ -2168,6 +2157,22 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         is_app = any(p.startswith("apps_") for p in path.parts)
+
+        # [V10 ZERO-AMBIGUITY] BASE AGENT NAMING ENFORCEMENT
+        # Files in agentic_core/base_agents/ classified as CLASS must use Base suffix (not BaseAgent)
+        # PascalCase is the convention for these foundational blueprints (e.g., L1CognitionBase.py)
+        if file_type == "CLASS" and "base_agents" in path.parts:
+            stem = path.stem
+            # Strip Agent suffix if present (e.g., L1CognitionBaseAgent -> L1CognitionBase)
+            if stem.endswith("BaseAgent") and stem != "SovereignBaseAgent":
+                new_stem = stem.removesuffix("Agent")
+                new_name = f"{new_stem}.py"
+                if new_name != path.name:
+                    self.processed_paths.add(path)
+                    self.processed_paths.add(path.with_name(new_name))
+                    return new_name
+            # Already compliant - no rename needed
+            return None
 
         # SSOT IMMUNITY LIST (2026-02-05)
         # Known sovereign configuration/blueprint files - immune to renaming

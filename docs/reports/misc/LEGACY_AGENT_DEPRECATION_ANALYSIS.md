@@ -27,14 +27,14 @@ This report identifies **87 legacy agents** across the SSOT folders that are no 
 | Agent | Location | Reason | Impact |
 |--------|----------|--------|---------|
 | **CanonBaseAgent** | `L5_safety/validators/` | Duplicate of SovereignBaseAgent functionality | HIGH |
-| **L5SafetyBaseAgent** | `L5_safety/validators/` | Redundant base class | MEDIUM |
+| **L5SafetyBase** | `L5_safety/validators/` | Redundant base class | MEDIUM |
 | **L5SafetyExerciserAgent** | `L5_safety/validators/` | Test framework, not production | LOW |
 | **MaintenanceBaseAgent** | `L5_safety/validators/` | Superseded by SovereignBaseAgent | MEDIUM |
-| **L1CognitionBaseAgent** | `L1_cognition/thought_engine/` | Replaced by SovereignBaseAgent | MEDIUM |
-| **L2ExecutionBaseAgent** | `L2_execution/` | Replaced by SovereignBaseAgent | MEDIUM |
-| **L3OrchestrationBaseAgent** | `L3_orchestration/workflow_engines/` | Replaced by SovereignBaseAgent | MEDIUM |
-| **L4StateBaseAgent** | `L4_state/ValidationContext/` | Replaced by SovereignBaseAgent | MEDIUM |
-| **L6ObservabilityBaseAgent** | `L6_observability/` | Replaced by SovereignBaseAgent | MEDIUM |
+| **L1CognitionBase** | `L1_cognition/thought_engine/` | Replaced by SovereignBaseAgent | MEDIUM |
+| **L2ExecutionBase** | `L2_execution/` | Replaced by SovereignBaseAgent | MEDIUM |
+| **L3OrchestrationBase** | `L3_orchestration/workflow_engines/` | Replaced by SovereignBaseAgent | MEDIUM |
+| **L4StateBase** | `L4_state/ValidationContext/` | Replaced by SovereignBaseAgent | MEDIUM |
+| **L6ObservabilityBase** | `L6_observability/` | Replaced by SovereignBaseAgent | MEDIUM |
 
 ### 🟠 **CATEGORY 2: BROKEN DEPENDENCIES** (23 files)
 *Missing imports, archived dependencies*
@@ -138,7 +138,7 @@ UnifiedResourceManagerAgent.py   # 412 lines - Resource management duplication
 ### **L5_SAFETY/VALIDATORS/** (38 files)
 ```
 CanonBaseAgent.py                    [CRITICAL - Broken registry]
-L5SafetyBaseAgent.py                 [REDUNDANT - Base class]
+L5SafetyBase.py                 [REDUNDANT - Base class]
 L5SafetyExerciserAgent.py            [REDUNDANT - Test framework]
 MaintenanceBaseAgent.py              [REDUNDANT - Superseded]
 BudgetAgent.py                       [SUPERSEDED - healer_mixin.py]
@@ -153,7 +153,7 @@ SafetyInspectorAgent.py              [SUPERSEDED - healer_mixin.py]
 
 ### **L1_COGNITION/THOUGHT_ENGINE/** (12 files)
 ```
-L1CognitionBaseAgent.py              [REDUNDANT - SovereignBaseAgent]
+L1CognitionBase.py              [REDUNDANT - SovereignBaseAgent]
 BudgetAgent.py                       [SUPERSEDED - healer_mixin.py]
 LLMPromptGovernorAgent.py            [REDUNDANT - Prompt governance moved]
 MetaLearningAgent.py                 [REDUNDANT - Meta-learning in base]
@@ -163,7 +163,7 @@ StrategicRecommendationAgent.py      [REDUNDANT - Strategy in base]
 
 ### **L2_EXECUTION/** (15 files)
 ```
-L2ExecutionBaseAgent.py              [REDUNDANT - SovereignBaseAgent]
+L2ExecutionBase.py              [REDUNDANT - SovereignBaseAgent]
 CodeJanitorAgent.py                  [SUPERSEDED - healer_mixin.py]
 DependencySentinelAgent.py           [SUPERSEDED - healer_mixin.py]
 HistorianAgent.py                    [REDUNDANT - History in base]
@@ -173,7 +173,7 @@ IntegrityGateExecutorAgent.py        [REDUNDANT - Integrity in base]
 
 ### **L3_ORCHESTRATION/** (10 files)
 ```
-L3OrchestrationBaseAgent.py          [REDUNDANT - SovereignBaseAgent]
+L3OrchestrationBase.py          [REDUNDANT - SovereignBaseAgent]
 CoverageAgent.py                     [REDUNDANT - Coverage in base]
 DAGMutatorAgent.py                   [REDUNDANT - DAG in base]
 DagEngineAgent.py                    [REDUNDANT - DAG in base]
@@ -182,7 +182,7 @@ DagEngineAgent.py                    [REDUNDANT - DAG in base]
 
 ### **L4_STATE/** (5 files)
 ```
-L4StateBaseAgent.py                  [REDUNDANT - SovereignBaseAgent]
+L4StateBase.py                  [REDUNDANT - SovereignBaseAgent]
 StateValidatorAgent.py               [REDUNDANT - Validation in base]
 TestCoverageGuardianAgent.py         [REDUNDANT - Coverage in base]
 UiValidationAgent.py                 [REDUNDANT - UI validation in base]

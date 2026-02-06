@@ -29,8 +29,8 @@ from typing import Any
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 except ImportError:
-    L2ExecutionBaseAgent = None
-MockL2ExecutionBaseAgent = None  # Stub
+    L2ExecutionBase = None
+MockL2ExecutionBase = None  # Stub
 try:
     from agentic_core.config.blueprint_sovereign.sovereign_config_1 import (
         OrchestratorConfig,  # noqa: F401
@@ -100,18 +100,18 @@ class AgentFactory(SovereignBaseAgent):
 
         if mode == "mock":
             # Zero-cost mock for unit testing without LLM calls
-            return MockL2ExecutionBaseAgent(ctx=ctx) if MockL2ExecutionBaseAgent else None
+            return MockL2ExecutionBase(ctx=ctx) if MockL2ExecutionBase else None
 
         elif mode == "aggressive":
             # Real implementation with aggressive healing enabled
-            impl = L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
+            impl = L2ExecutionBase(ctx=ctx) if L2ExecutionBase else None
             # Custom L2 capability for fast recovery
             if impl and hasattr(impl, "enable_aggressive_mode"):
                 impl.enable_aggressive_mode()
             return impl
 
         # Default "real" mode - standard production implementation
-        return L2ExecutionBaseAgent(ctx=ctx) if L2ExecutionBaseAgent else None
+        return L2ExecutionBase(ctx=ctx) if L2ExecutionBase else None
 
     @staticmethod
     def create_system_architect(ctx: Any | None = None) -> SystemArchitect:

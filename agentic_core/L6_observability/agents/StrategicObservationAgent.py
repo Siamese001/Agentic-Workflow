@@ -56,7 +56,7 @@ class StrategicObservationAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     async def analyze(self, target_data: dict[str, Any]) -> dict[str, Any]:
         """
-        Implementation of L6ObservabilityBaseAgent abstract method.
+        Implementation of L6ObservabilityBase abstract method.
 
         Analyzes target data and returns strategic observations.
 

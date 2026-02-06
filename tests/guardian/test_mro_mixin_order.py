@@ -29,12 +29,12 @@ SAFETY_MIXINS = [
 BASE_AGENT_CLASSES = [
     "SovereignBaseAgent",
     "L0MaintenanceBaseAgent",
-    "L1CognitionBaseAgent",
-    "L2ExecutionBaseAgent",
-    "L3OrchestrationBaseAgent",
-    "L4StateBaseAgent",
-    "L5SafetyBaseAgent",
-    "L6ObservabilityBaseAgent",
+    "L1CognitionBase",
+    "L2ExecutionBase",
+    "L3OrchestrationBase",
+    "L4StateBase",
+    "L5SafetyBase",
+    "L6ObservabilityBase",
 ]
 
 
@@ -126,7 +126,7 @@ class TestMROMixinOrder:
         """
         COMMIT-BLOCKING TEST for DomainPlannerAgent.
 
-        Verifies AtomicExecutionMixin precedes L3OrchestrationBaseAgent.
+        Verifies AtomicExecutionMixin precedes L3OrchestrationBase.
         """
         try:
             from agentic_core.L3_orchestration.workflow_engines.DomainPlannerAgent import (
@@ -142,8 +142,8 @@ class TestMROMixinOrder:
                 f"MRO ORDERING VIOLATION DETECTED!\n\n"
                 f"{error_msg}\n\n"
                 f"FIX: Move safety mixins to the LEFT of base classes:\n"
-                f"  WRONG: class MyAgent(L3OrchestrationBaseAgent, AtomicExecutionMixin)\n"
-                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L3OrchestrationBaseAgent)\n\n"
+                f"  WRONG: class MyAgent(L3OrchestrationBase, AtomicExecutionMixin)\n"
+                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L3OrchestrationBase)\n\n"
                 f"This commit is BLOCKED until the violation is fixed."
             )
 
@@ -179,8 +179,8 @@ class TestMROMixinOrder:
                 f"The following agents have incorrect mixin ordering:\n\n"
                 f"{violation_report}\n\n"
                 f"FIX: Move safety mixins to the LEFT of base classes:\n"
-                f"  WRONG: class MyAgent(L5SafetyBaseAgent, AtomicExecutionMixin)\n"
-                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBaseAgent)\n\n"
+                f"  WRONG: class MyAgent(L5SafetyBase, AtomicExecutionMixin)\n"
+                f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBase)\n\n"
                 f"This commit is BLOCKED until all violations are fixed."
             )
 

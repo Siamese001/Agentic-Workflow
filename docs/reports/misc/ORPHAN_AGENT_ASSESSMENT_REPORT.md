@@ -192,7 +192,7 @@ This agent probes for adversarial vulnerabilities...
 ```python
 # In target agent (e.g., BudgetGuardrailAgent), add:
 
-class BudgetGuardrailAgent(L5SafetyBaseAgent):
+class BudgetGuardrailAgent(L5SafetyBase):
     """
     Unified resource and cost governance.
     

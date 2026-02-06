@@ -52,7 +52,7 @@ class PIISanitizerAgent(SovereignBaseAgent):
         PII_PATTERNS: Dictionary mapping PII types to compiled regex patterns.
 
     Inherits:
-        L5SafetyBaseAgent: Provides logging, healing, and MCP hardening.
+        L5SafetyBase: Provides logging, healing, and MCP hardening.
     """
 
     PII_PATTERNS: dict[str, Pattern[str]] = {

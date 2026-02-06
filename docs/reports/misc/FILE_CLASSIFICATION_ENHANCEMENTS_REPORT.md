@@ -54,9 +54,9 @@ def _is_true_agent(self, node: ast.ClassDef, file_path: Path) -> bool:
     for base in node.bases:
         if isinstance(base, ast.Name):
             if base.id in ("SovereignBaseAgent", "L0MaintenanceBaseAgent", 
-                          "L1CognitionBaseAgent", "L2ExecutionBaseAgent",
-                          "L3OrchestrationBaseAgent", "L4StateBaseAgent",
-                          "L5SafetyBaseAgent", "L6ObservabilityBaseAgent"):
+                          "L1CognitionBase", "L2ExecutionBase",
+                          "L3OrchestrationBase", "L4StateBase",
+                          "L5SafetyBase", "L6ObservabilityBase"):
                 return True
         elif isinstance(base, ast.Attribute):
             if "Agent" in base.attr:
@@ -321,9 +321,9 @@ def _classify_with_metadata(self, file_path: Path, tree: ast.AST) -> FileType:
 +        for base in node.bases:
 +            if isinstance(base, ast.Name):
 +                if base.id in ("SovereignBaseAgent", "L0MaintenanceBaseAgent", 
-+                              "L1CognitionBaseAgent", "L2ExecutionBaseAgent",
-+                              "L3OrchestrationBaseAgent", "L4StateBaseAgent",
-+                              "L5SafetyBaseAgent", "L6ObservabilityBaseAgent"):
++                              "L1CognitionBase", "L2ExecutionBase",
++                              "L3OrchestrationBase", "L4StateBase",
++                              "L5SafetyBase", "L6ObservabilityBase"):
 +                    return True
 +            elif isinstance(base, ast.Attribute):
 +                if "Agent" in base.attr:

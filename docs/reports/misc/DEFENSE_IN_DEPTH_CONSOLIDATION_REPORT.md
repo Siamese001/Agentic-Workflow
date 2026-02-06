@@ -111,7 +111,7 @@ Violations Remaining: 0
 | CompositeGuardrailAgent.py | healed → violations_fixed |
 | ConfigurationSecurityGuardrail.py | healed → violations_fixed |
 | InterfaceBoundaryAgent.py | violations → violations_found, fixed → violations_fixed |
-| L5SafetyBaseAgent.py | healed → violations_fixed |
+| L5SafetyBase.py | healed → violations_fixed |
 | S2_SupervisorAgent.py | violations → violations_found, fixed → violations_fixed |
 | SemanticDebuggerAgent.py | violations → violations_found, fixed → violations_fixed |
 | BenchmarkingAgent.py | violations → violations_found, fixed → violations_fixed |

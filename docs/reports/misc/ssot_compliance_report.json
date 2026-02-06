@@ -13802,7 +13802,7 @@
       "compliant": false
     },
     {
-      "path": "archives\\location_violations\\L6ObservabilityBaseAgent.py",
+      "path": "archives\\location_violations\\L6ObservabilityBase.py",
       "classification": "TYPES",
       "expected_naming": "snake_case_types.py",
       "is_naming_compliant": false,
@@ -54153,7 +54153,7 @@
           "compliant": true
         },
         {
-          "path": "archives\\hierarchy_violations\\tests_depth\\tests\\l3\\test_L3OrchestrationBaseAgent.py",
+          "path": "archives\\hierarchy_violations\\tests_depth\\tests\\l3\\test_L3OrchestrationBase.py",
           "classification": "TEST",
           "expected_naming": "test_*.py or *_test.py",
           "is_naming_compliant": true,
@@ -54204,7 +54204,7 @@
     "archives\\hierarchy_violations\\tests_depth\\tests\\l4": {
       "files": [
         {
-          "path": "archives\\hierarchy_violations\\tests_depth\\tests\\l4\\test_L4StateBaseAgent.py",
+          "path": "archives\\hierarchy_violations\\tests_depth\\tests\\l4\\test_L4StateBase.py",
           "classification": "TEST",
           "expected_naming": "test_*.py or *_test.py",
           "is_naming_compliant": true,
@@ -60294,7 +60294,7 @@
           "compliant": true
         },
         {
-          "path": "archives\\location_violations\\L6ObservabilityBaseAgent.py",
+          "path": "archives\\location_violations\\L6ObservabilityBase.py",
           "classification": "TYPES",
           "expected_naming": "snake_case_types.py",
           "is_naming_compliant": false,
@@ -67698,7 +67698,7 @@
           "compliant": true
         },
         {
-          "path": "archives\\void_violations\\L3OrchestrationBaseAgent.py",
+          "path": "archives\\void_violations\\L3OrchestrationBase.py",
           "classification": "ORCHESTRATOR",
           "expected_naming": "PascalCase.py",
           "is_naming_compliant": true,

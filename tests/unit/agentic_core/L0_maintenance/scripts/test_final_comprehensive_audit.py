@@ -20,7 +20,7 @@ def test_case_1_signal_saturation_sweep():
     """
     Test Case 1: The "Signal Saturation" Sweep
 
-    Procedure: Trigger a top-level heal from L3OrchestrationBaseAgent with
+    Procedure: Trigger a top-level heal from L3OrchestrationBase with
     auto_approve=True and custom_telemetry_id="AUDIT-2026".
 
     Expectation: Every agent in the call path (L3 -> L2 -> L1 -> Root) must
@@ -36,17 +36,17 @@ def test_case_1_signal_saturation_sweep():
     try:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
-            L1CognitionBaseAgent,
+            L1CognitionBase,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
-            L2ExecutionBaseAgent,
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+            L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
 
         # Step 1: Create Orchestrator (top of chain)
-        orchestrator = L3OrchestrationBaseAgent()
+        orchestrator = L3OrchestrationBase()
         print("✓ Step 1: Orchestration Agent instantiated")
 
         # Step 2: Trigger top-level heal
@@ -81,14 +81,14 @@ def test_case_1_signal_saturation_sweep():
         print("\n✓ Step 4: Testing individual layer signal acceptance")
 
         # Execution Layer
-        executor = L2ExecutionBaseAgent(ctx=None)
+        executor = L2ExecutionBase(ctx=None)
         exec_result = executor.heal_repository(
             dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Execution"
         )
         print(f"  Execution accepts signals: {exec_result}")
 
         # Cognition Layer
-        cognition = L1CognitionBaseAgent()
+        cognition = L1CognitionBase()
         cog_result = cognition.heal_repository(
             dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Cognition"
         )
@@ -178,13 +178,13 @@ def test_case_2_terminal_independence():
         # Step 5: Test with multiple agents
         print("\n✓ Step 5: Testing multiple agents with SOVEREIGN_AUTO_APPROVE")
 
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
-        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBaseAgent
+        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
 
-        orchestrator = L3OrchestrationBaseAgent()
-        safety_agent = L5SafetyBaseAgent()
+        orchestrator = L3OrchestrationBase()
+        safety_agent = L5SafetyBase()
 
         orch_result = orchestrator.heal_repository(
             dry_run=True, auto_approve=True, terminal_test="Orchestration"
@@ -224,19 +224,19 @@ def test_case_3_depth_constraint_persistence():
 
     try:
         from agentic_core.L1_cognition.thought_engine.l1_cognition_base_agent import (
-            L1CognitionBaseAgent,
+            L1CognitionBase,
         )
-        from agentic_core.L2_execution.tool_registry.L2ExecutionBaseAgent import (
-            L2ExecutionBaseAgent,
+        from agentic_core.L2_execution.tool_registry.L2ExecutionBase import (
+            L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBaseAgent import (
-            L3OrchestrationBaseAgent,
+        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
 
         # Step 1: Test with max_depth=2
         print("✓ Step 1: Testing with max_depth=2")
 
-        orchestrator = L3OrchestrationBaseAgent()
+        orchestrator = L3OrchestrationBase()
 
         # Depth 3 - should be limited
         result_d3 = orchestrator.heal_repository(dry_run=True, depth=3, max_depth=2, depth_test="level_3")
@@ -250,8 +250,8 @@ def test_case_3_depth_constraint_persistence():
         # Step 3: Test depth propagation
         print("\n✓ Step 3: Testing depth propagation through layers")
 
-        executor = L2ExecutionBaseAgent(ctx=None)
-        cognition = L1CognitionBaseAgent()
+        executor = L2ExecutionBase(ctx=None)
+        cognition = L1CognitionBase()
 
         exec_result = executor.heal_repository(dry_run=True, depth=2, max_depth=2, layer_test="Execution")
         print(f"  Execution at depth 2: {exec_result}")

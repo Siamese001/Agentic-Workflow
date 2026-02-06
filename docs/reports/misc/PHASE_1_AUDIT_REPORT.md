@@ -297,7 +297,7 @@ execution_complete.wait(timeout=self.config.execution_timeout_seconds)
 |----------|--------|-------|
 | 1 | Wrap `DomainPlannerAgent` with `HealingAdapter` | L3 |
 | 2 | Add `heal_repository()` to `DomainPlannerAgent` | L3 |
-| 3 | Migrate to `L3OrchestrationBaseAgent` | L3 |
+| 3 | Migrate to `L3OrchestrationBase` | L3 |
 
 ### Future (Wave 3+)
 
@@ -329,12 +329,12 @@ class MyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 object
   └── SovereignBaseAgent (Base)
         ├── L0MaintenanceBaseAgent
-        ├── L1CognitionBaseAgent
-        ├── L2ExecutionBaseAgent
-        ├── L3OrchestrationBaseAgent
-        ├── L4StateBaseAgent
-        ├── L5SafetyBaseAgent
-        └── L6ObservabilityBaseAgent
+        ├── L1CognitionBase
+        ├── L2ExecutionBase
+        ├── L3OrchestrationBase
+        ├── L4StateBase
+        ├── L5SafetyBase
+        └── L6ObservabilityBase
 ```
 
 **All base agents reside in `agentic_core/base_agents/`** per Constitutional Rule #1.

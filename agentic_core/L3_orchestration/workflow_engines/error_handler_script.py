@@ -11,7 +11,7 @@ Single entry point for all workflow orchestration, replacing 8 core engines:
 - DagEngineAgent
 - SelfRecoveringOrchestratorAgent
 - WorkflowFissionManagerAgent
-- L3OrchestrationBaseAgent
+- L3OrchestrationBase
 """
 
 

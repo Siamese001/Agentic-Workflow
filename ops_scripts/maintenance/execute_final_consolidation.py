@@ -18,7 +18,7 @@ IMPORT_REDIRECTS = {
     r"agentic_core\.L5_safety\.guardrails\.NeuralAutoImmuneAgent": "agentic_core.L5_safety.validators.NeuralAutoImmuneAgent",
     r"agentic_core\.L5_safety\.validators\.DependencyDiplomatAgent": "agentic_core.L0_maintenance.scripts.DependencyDiplomatAgent",
     r"agentic_core\.L5_safety\.validators\.SemanticTerritoryMapperAgent": "agentic_core.L1_cognition.thought_engine.SemanticTerritoryMapperAgent",
-    r"agentic_core\.L2_execution\.tool_registry\.L2ExecutionBaseAgent": "agentic_core.L2_execution.L2ExecutionBaseAgent",
+    r"agentic_core\.L2_execution\.tool_registry\.L2ExecutionBase": "agentic_core.L2_execution.L2ExecutionBase",
 }
 
 

@@ -38,12 +38,12 @@ data = json.load(open(discovery_path))
 LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 CANONICAL_BASE_AGENTS = {
     "L0": "L0MaintenanceBaseAgent",
-    "L1": "L1CognitionBaseAgent",
+    "L1": "L1CognitionBase",
     "L2": "L2Agent",
     "L3": "L3Agent",
     "L4": "L4Agent",
     "L5": "L5Agent",
-    "L6": "L6ObservabilityBaseAgent",
+    "L6": "L6ObservabilityBase",
 }
 
 
@@ -261,7 +261,7 @@ class DataValidator:
             # Should not have underscores (use PascalCase)
             if "_" in name and name not in [
                 "L0MaintenanceBaseAgent",
-                "L1CognitionBaseAgent",
+                "L1CognitionBase",
                 "L2Agent",
                 "L3Agent",
                 "L4Agent",

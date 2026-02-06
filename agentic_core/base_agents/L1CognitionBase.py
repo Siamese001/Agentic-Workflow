@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # NOT_AN_AGENT - This is a foundational CLASS, not a runtime agent
 """
-L1CognitionBaseAgent - Consolidated Base for L1 Cognition Agents
+L1CognitionBase - Consolidated Base for L1 Cognition Agents
 
 Layer: L1 - Cognition
 Responsibilities:
@@ -23,7 +23,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass
-class L1CognitionBaseAgent(SovereignBaseAgent):
+class L1CognitionBase(SovereignBaseAgent):
     """
     Consolidated base for L1 Cognition agents.
 
@@ -33,10 +33,10 @@ class L1CognitionBaseAgent(SovereignBaseAgent):
     - Memory retrieval and storage
     - Meta-learning pattern recognition
 
-    MRO: L1CognitionBaseAgent -> SovereignBaseAgent -> object
+    MRO: L1CognitionBase -> SovereignBaseAgent -> object
     """
 
-    name: str = "L1CognitionBaseAgent"
+    name: str = "L1CognitionBase"
     layer: str = "L1"
 
     def __post_init__(self) -> None:

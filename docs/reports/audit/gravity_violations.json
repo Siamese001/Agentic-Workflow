@@ -106,7 +106,7 @@
     "file": "test_agent.py",
     "path": "apps_shared\\common_utils\\test_agent.py",
     "imports": [
-      "from agentic_core.L5_safety.validators.L5SafetyBaseAgent import L5SafetyBaseAgent"
+      "from agentic_core.L5_safety.validators.L5SafetyBase import L5SafetyBase"
     ],
     "recommendation": "DEPORT to agentic_core/utils"
   },

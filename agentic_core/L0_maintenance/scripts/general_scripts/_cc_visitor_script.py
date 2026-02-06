@@ -300,11 +300,11 @@ def should_exclude_path(path: Path) -> bool:
 # PHASE 4: CANONICAL LAYER BASE CLASSES (Gravity Enforcement)
 # ============================================================================
 LAYER_BASE_MAP = {
-    "L1": "L1CognitionBaseAgent",
-    "L2": "L2ExecutionBaseAgent",
-    "L3": "L3OrchestrationBaseAgent",
-    "L4": "L4StateBaseAgent",
-    "L5": "L5SafetyBaseAgent",
+    "L1": "L1CognitionBase",
+    "L2": "L2ExecutionBase",
+    "L3": "L3OrchestrationBase",
+    "L4": "L4StateBase",
+    "L5": "L5SafetyBase",
 }
 
 
@@ -486,13 +486,13 @@ HEALING_BASES = {
     "ExecutionCanonBaseAgent",
     "SubatomicTestingMixin",  # Often co-inherited with HealerMixin
     # L3 bases
-    "L3OrchestrationBaseAgent",
+    "L3OrchestrationBase",
     "L3SubatomicTestingMixin",
     # L4 bases
-    "L4StateBaseAgent",
+    "L4StateBase",
     "L4SubatomicTestingMixin",
     # L5 bases
-    "L5SafetyBaseAgent",
+    "L5SafetyBase",
     # Common agent bases that have HealerMixin in their MRO
     "ASTEnforcementMixin",  # Used by L5 validators
 }
@@ -500,9 +500,9 @@ HEALING_BASES = {
 SELF_TESTING_BASES = {
     "SubAtomicAgent",
     "SubatomicTestingMixin",
-    "L3OrchestrationBaseAgent",
+    "L3OrchestrationBase",
     "L3SubatomicTestingMixin",
-    "L4StateBaseAgent",
+    "L4StateBase",
     "L4SubatomicTestingMixin",
     "CanonBaseAgent",
 }
@@ -861,16 +861,16 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     canonical_patterns = {
         "SovereignBaseAgent",
         "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
+        "L1CognitionBase",
         "L2Agent",
-        "L2ExecutionBaseAgent",
+        "L2ExecutionBase",
         "L3Agent",
-        "L3OrchestrationBaseAgent",
+        "L3OrchestrationBase",
         "L4Agent",
-        "L4StateBaseAgent",
+        "L4StateBase",
         "L5Agent",
-        "L5SafetyBaseAgent",
-        "L6ObservabilityBaseAgent",
+        "L5SafetyBase",
+        "L6ObservabilityBase",
         "HealerMixin",
         "MCPHardenedMixin",
         "MCPShieldMixin",
@@ -1008,14 +1008,14 @@ def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
     # Layer base agents include observability
     base_agents = [
         "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
+        "L1CognitionBase",
         "L2Agent",
         "L3Agent",
         "L4Agent",
         "L5Agent",
-        "L5SafetyBaseAgent",
-        "L4StateBaseAgent",
-        "L3OrchestrationBaseAgent",
+        "L5SafetyBase",
+        "L4StateBase",
+        "L3OrchestrationBase",
     ]
     for base in base_agents:
         if base in source:
@@ -1184,7 +1184,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # This ensures L0SovereignBaseAgent-L6Agent and *BaseAgent classes are always discoverable
     is_l_series_base = name in {
         "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
+        "L1CognitionBase",
         "L2Agent",
         "L3Agent",
         "L4Agent",
@@ -1281,16 +1281,16 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     # Known agent base classes
     agent_bases = {
         "L0MaintenanceBaseAgent",
-        "L1CognitionBaseAgent",
+        "L1CognitionBase",
         "L2Agent",
         "L3Agent",
         "L4Agent",
         "L5Agent",
         "L6Agent",
-        "L2ExecutionBaseAgent",
-        "L3OrchestrationBaseAgent",
-        "L4StateBaseAgent",
-        "L5SafetyBaseAgent",
+        "L2ExecutionBase",
+        "L3OrchestrationBase",
+        "L4StateBase",
+        "L5SafetyBase",
         "ExecutionCanonBaseAgent",
         "CognitionCanonBaseAgent",
         "CanonASTValidator",
@@ -1744,12 +1744,12 @@ def main():
             mcp_hardened_bases = {
                 "SovereignBaseAgent",
                 "L0MaintenanceBaseAgent",
-                "L1CognitionBaseAgent",
-                "L2ExecutionBaseAgent",
-                "L3OrchestrationBaseAgent",
-                "L4StateBaseAgent",
-                "L5SafetyBaseAgent",
-                "L6ObservabilityBaseAgent",
+                "L1CognitionBase",
+                "L2ExecutionBase",
+                "L3OrchestrationBase",
+                "L4StateBase",
+                "L5SafetyBase",
+                "L6ObservabilityBase",
                 "MCPHardenedMixin",
             }
             mcp_hardened = (
@@ -1780,8 +1780,8 @@ def main():
             # L0SovereignBaseAgent and SovereignBaseAgent are exceptions (they are canonical for their layers)
             is_base_class = node.name.endswith("BaseAgent") or node.name in {
                 "L0MaintenanceBaseAgent",
-                "L1CognitionBaseAgent",
-                "L6ObservabilityBaseAgent",
+                "L1CognitionBase",
+                "L6ObservabilityBase",
             }
 
             # SSOT: Use centralized territory name function
