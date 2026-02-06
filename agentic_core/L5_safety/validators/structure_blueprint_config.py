@@ -240,7 +240,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract)\.py$",
             },
             "utils": {
-                "purpose": "General utility functions - home for *_util.py files (Zero-Ambiguity Standard)",
+                "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",
+                "forbidden_patterns": ["test_", "utilities_"],
+                "notes": "Scripts go to L0_maintenance/scripts. Tests go to tests/.",
             },
             # DEPRECATED: "patterns" territory removed - evacuate to base_agents
             "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
@@ -349,7 +351,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             },
         },
         "required_dirs": ["agentic_core/base_agents", "agentic_core/L5_safety"],
-        "forbidden_patterns": ["agentic_core/common", "agentic_core/utils/core_extensions"],
+        "forbidden_patterns": [
+            "agentic_core/common",
+            "agentic_core/utils/core_extensions",
+        ],
     },
     "apps_rg": {
         "depth": 2,
@@ -1918,6 +1923,9 @@ FORBIDDEN_PATTERNS: Final[Sequence[Pattern]] = [
     re.compile("^legacy_.*\\.py$"),
     re.compile("^.+_\\d+\\.py$"),
     re.compile("^draft_.*\\.py$"),
+    # Schema Dissolution + Utils Sanitization
+    re.compile(r"^utilities_.*"),  # Redundant prefix. Use simple snake_case.
+    re.compile(r".*_util_util\.py$"),  # Stuttering suffix violation.
 ]
 # Static protected files (hard-coded core infrastructure)
 _STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
