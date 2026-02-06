@@ -4,6 +4,9 @@
 
 "\nassess_scripts_risk.py - Assessment Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.870725\n"
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

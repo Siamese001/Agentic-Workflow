@@ -62,14 +62,10 @@ class AgentAutonomyValidator:
                     node.name for node in ast.walk(class_node) if isinstance(node, ast.FunctionDef)
                 }
 
-                missing_methods = [
-                    method for method in REQUIRED_METHODS if method not in method_names
-                ]
+                missing_methods = [method for method in REQUIRED_METHODS if method not in method_names]
 
                 if missing_methods:
-                    result["violations"].append(
-                        f"{class_node.name}: missing {', '.join(missing_methods)}"
-                    )
+                    result["violations"].append(f"{class_node.name}: missing {', '.join(missing_methods)}")
 
             result["compliant"] = len(result["violations"]) == 0
 
@@ -117,9 +113,7 @@ class TestAgent:
         temp_path = self._create_temp_file(agent_code)
         try:
             result = validator.validate_agent_file(temp_path)
-            assert result["compliant"], (
-                f"Expected compliant, got violations: {result['violations']}"
-            )
+            assert result["compliant"], f"Expected compliant, got violations: {result['violations']}"
             assert not result["error"]
         finally:
             self._cleanup_temp_file(temp_path)
@@ -179,9 +173,7 @@ class AnotherAgent:
         temp_path = self._create_temp_file(agent_code)
         try:
             result = validator.validate_agent_file(temp_path)
-            assert result["compliant"], (
-                f"Expected compliant, got violations: {result['violations']}"
-            )
+            assert result["compliant"], f"Expected compliant, got violations: {result['violations']}"
         finally:
             self._cleanup_temp_file(temp_path)
 
@@ -218,8 +210,7 @@ class NonCompliantAgent:
             result = validator.validate_agent_file(temp_path)
             assert not result["compliant"]
             assert any(
-                "NonCompliantAgent" in v and "missing heal_repository" in v
-                for v in result["violations"]
+                "NonCompliantAgent" in v and "missing heal_repository" in v for v in result["violations"]
             )
         finally:
             self._cleanup_temp_file(temp_path)

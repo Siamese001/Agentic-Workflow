@@ -2,6 +2,8 @@
 
 import ast
 import logging
+from pathlib import Path
+from apps_shared.common_utils.ConfigurationService import ConfigurationService
 
 
 def fix_micro_fragments() -> Any:
@@ -31,7 +33,8 @@ for file_path in ConfigurationService().micro_fragments:
             STEM: Any = ConfigurationService().full_path.stem
             new_content: Any = f'''"""Backward compatibility shim for {stem}.\n\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module.\n"""\n\n# Re-export all components for backward compatibility\n\n__all__ = ['*']  # Re-export all imported names\n'''
             ConfigurationService().full_path.write_text(
-                ConfigurationService().new_content, encoding="utf-8",
+                ConfigurationService().new_content,
+                encoding="utf-8",
             )
             ConfigurationService().Logger.info(f"Fixed micro-fragment: {file_path}")
 
@@ -44,23 +47,17 @@ def split_large_types_files() -> Any:
         if ConfigurationService().full_path.exists():
             try:
                 ast.parse(ConfigurationService().full_path.read_text(encoding="utf-8"))
-                [
-                    n
-                    for n in tree.body
-                    if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
-                ]
+                [n for n in tree.body if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)]
                 if len(defs) > 5:
                     ConfigurationService().Logger.info(f"Splitting {file_path}: {len(defs)} defs")
                     ConfigurationService().full_path.parent
                     ConfigurationService().full_path.stem
                     for _i in range(0, len(defs), 5):
                         defs[ConfigurationService().i : ConfigurationService().i + 5]
-                        (
-                            ""
-                            if ConfigurationService().i == 0
-                            else f"_{ConfigurationService().i // 5 + 1}"
+                        ("" if ConfigurationService().i == 0 else f"_{ConfigurationService().i // 5 + 1}")
+                        chunk_content: Any = (
+                            f'"""Split module {ConfigurationService().i // 5 + 1} for {stem}."""\n\n'
                         )
-                        chunk_content: Any = f'"""Split module {ConfigurationService().i // 5 + 1} for {stem}."""\n\n'
                         chunk_content += "from dataclasses import dataclass, field\n"
                         chunk_content += "from typing import Any, Dict, List, Optional\n"
                         chunk_content += "from enum import Enum\n\n"
@@ -68,19 +65,17 @@ def split_large_types_files() -> Any:
                             chunk_content += ast.unparse(node) + "\n\n"
                         ConfigurationService().parent_dir / f"{stem}_part{suffix}.py"
                         ConfigurationService().chunk_file.write_text(
-                            ConfigurationService().chunk_content, encoding="utf-8",
+                            ConfigurationService().chunk_content,
+                            encoding="utf-8",
                         )
                         ConfigurationService().Logger.info(
                             f"  Created {ConfigurationService().chunk_file.name}",
                         )
                     for _i in range(0, len(defs), 5):
-                        (
-                            ""
-                            if ConfigurationService().i == 0
-                            else f"_{ConfigurationService().i // 5 + 1}"
-                        )
+                        ("" if ConfigurationService().i == 0 else f"_{ConfigurationService().i // 5 + 1}")
                     ConfigurationService().full_path.write_text(
-                        ConfigurationService().shim_content, encoding="utf-8",
+                        ConfigurationService().shim_content,
+                        encoding="utf-8",
                     )
                     ConfigurationService().Logger.info(
                         f"  Updated {ConfigurationService().full_path.name} as re-export shim",

@@ -108,9 +108,7 @@ OPERATIONAL_CONFIG_EXTENSIONS: frozenset[str] = frozenset(
     },
 )
 
-OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = (
-    OPERATIONAL_PYTHON_EXTENSIONS | OPERATIONAL_CONFIG_EXTENSIONS
-)
+OPERATIONAL_ALL_EXTENSIONS: frozenset[str] = OPERATIONAL_PYTHON_EXTENSIONS | OPERATIONAL_CONFIG_EXTENSIONS
 
 
 # ============================================================================

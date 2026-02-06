@@ -135,6 +135,7 @@ class ThreatDetection:
 
 
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
@@ -153,7 +154,9 @@ class SelfUpdatingSafetyEngineAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def __init__(self, rules_storage_path: str | None = None) -> None:
         """Initialize the self-updating safety engine."""
         self.rules_storage_path = rules_storage_path or os.path.join(
-            os.getcwd(), ".canon_memory", "safety_rules.json",
+            os.getcwd(),
+            ".canon_memory",
+            "safety_rules.json",
         )
         self.rules: dict[str, SafetyRule] = {}
         self.threat_patterns: dict[str, ThreatPattern] = {}

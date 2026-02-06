@@ -7,6 +7,9 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 
 import logging
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -164,13 +167,16 @@ class ObservabilityLoadPlanner:
             log_queries = self._parse_log_queries(load_request) if self.config.enable_logs else []
 
             # Parse trace queries if enabled
-            trace_queries = (
-                self._parse_trace_queries(load_request) if self.config.enable_traces else []
-            )
+            trace_queries = self._parse_trace_queries(load_request) if self.config.enable_traces else []
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, request_type, data_source, metrics, log_queries, trace_queries,
+                load_request,
+                request_type,
+                data_source,
+                metrics,
+                log_queries,
+                trace_queries,
             )
 
             # Estimate data points
@@ -275,7 +281,8 @@ class ObservabilityLoadPlanner:
                         "percentile": AggregationType.PERCENTILE,
                     }
                     aggregation = agg_mapping.get(
-                        raw_metric.get("aggregation"), AggregationType.AVG,
+                        raw_metric.get("aggregation"),
+                        AggregationType.AVG,
                     )
 
                 metric = MetricDefinition(
@@ -291,8 +298,7 @@ class ObservabilityLoadPlanner:
         # Validate metric count
         if len(metrics) > self.config.max_queries_per_plan:
             raise ValueError(
-                f"Number of metrics ({len(metrics)}) exceeds maximum "
-                f"({self.config.max_queries_per_plan})",
+                f"Number of metrics ({len(metrics)}) exceeds maximum ({self.config.max_queries_per_plan})",
             )
 
         return metrics

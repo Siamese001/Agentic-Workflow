@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 

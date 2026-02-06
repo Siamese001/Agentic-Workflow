@@ -148,7 +148,8 @@ class MetaLearningMixin(BaseMetaLearner):
 
                         # Register this agent as an entity
                         MetaLearningMixin._kg_bridge.register_agent(
-                            self.__class__.__name__, agent_type="Agent",
+                            self.__class__.__name__,
+                            agent_type="Agent",
                         )
 
                         Logger.debug(f"[{self.__class__.__name__}] Connected to Knowledge Graph")
@@ -550,7 +551,10 @@ class MetaLearningMixin(BaseMetaLearner):
             if feedback_score >= promotion_threshold:
                 # Promote to Long-Term DNA
                 promoted = MetaLearningMixin._memory.promote_to_long_term(
-                    context, self._namespace, result, feedback_score,
+                    context,
+                    self._namespace,
+                    result,
+                    feedback_score,
                 )
 
                 if promoted:

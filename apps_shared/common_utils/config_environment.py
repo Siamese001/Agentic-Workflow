@@ -7,6 +7,9 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 
 import logging
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -218,7 +221,9 @@ class ConfigPlanningOrchestrator:
         return configs
 
     def _create_deployment_plan(
-        self, request: dict[str, Any], configs: list[ConfigDefinition],
+        self,
+        request: dict[str, Any],
+        configs: list[ConfigDefinition],
     ) -> DeploymentPlan | None:
         """Create deployment plan for configurations."""
         if not configs:
@@ -293,11 +298,15 @@ class ConfigPlanningOrchestrator:
 
 # Factory function for easy instantiation
 def create_config_planning_orchestrator(
-    enable_validation: bool = True, enable_versioning: bool = True, **kwargs: object,
+    enable_validation: bool = True,
+    enable_versioning: bool = True,
+    **kwargs: object,
 ) -> ConfigPlanningOrchestrator:
     """Create a configured config planning orchestrator."""
     config = ConfigPlanningConfig(
-        enable_validation=enable_validation, enable_versioning=enable_versioning, **kwargs,
+        enable_validation=enable_validation,
+        enable_versioning=enable_versioning,
+        **kwargs,
     )
     return ConfigPlanningOrchestrator(config)
 

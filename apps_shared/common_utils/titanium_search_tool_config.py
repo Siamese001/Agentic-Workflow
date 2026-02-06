@@ -33,7 +33,9 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
         try:
             logger.info("Initializing Titanium RAG Pipeline...")
             _TITANIUM_PIPELINE = create_titanium_pipeline(
-                enable_all=True, max_retrieved_docs=20, top_k_final=5,
+                enable_all=True,
+                max_retrieved_docs=20,
+                top_k_final=5,
             )
 
             # Test availability
@@ -75,7 +77,10 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
 
 
 async def get_titanium_search_tool(
-    query: str, context: str | None = None, max_results: int = 5, include_metadata: bool = False,
+    query: str,
+    context: str | None = None,
+    max_results: int = 5,
+    include_metadata: bool = False,
 ) -> str:
     """
     The new gold-standard retrieval function for all Agents.
@@ -184,7 +189,8 @@ async def get_titanium_search_tool(
 
 
 async def get_titanium_search_with_sources(
-    query: str, context: str | None = None,
+    query: str,
+    context: str | None = None,
 ) -> dict[str, Any]:
     """
     Get search results with full source information.

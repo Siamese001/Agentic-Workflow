@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
 
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 

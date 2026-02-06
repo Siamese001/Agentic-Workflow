@@ -11,6 +11,8 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     GLOBAL_EXCLUDED_DIRS,
     is_path_allowed,
 )
+from typing import Any, Callable, Optional
+from pathlib import Path
 
 Logger = logging.getLogger(__name__)
 
@@ -49,7 +51,11 @@ class ToolRegistry:
         cls._tools = {}
 
     def register_tool(
-        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = "",
+        self,
+        tool_name: str,
+        tool_path: str,
+        tool_func: Callable[..., Any],
+        description: str = "",
     ) -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
@@ -174,7 +180,9 @@ class ToolRegistry:
         return idx.get_files(pattern)
 
     def auto_register_from_pattern(
-        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None,
+        self,
+        pattern: str = "*_tool.py",
+        tool_loader: Callable[[Path], tuple] | None = None,
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.

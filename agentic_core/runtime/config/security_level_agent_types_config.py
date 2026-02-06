@@ -10,6 +10,7 @@ This module provides advanced intelligence capabilities:
 """
 
 from __future__ import annotations
+from typing import Callable
 
 """
 Security Level Agent Types
@@ -349,7 +350,9 @@ class SemanticAnalyzer:
         self._analyses: list[dict[str, Any]] = []
 
     def analyze_content(
-        self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT,
+        self,
+        content: str,
+        analysis_type: AnalysisType = AnalysisType.CONTENT,
     ) -> dict[str, Any]:
         """
         Analyze content for quality metrics.

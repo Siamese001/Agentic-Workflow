@@ -32,9 +32,7 @@ class MyClass:
     def method(self):
         pass
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -81,9 +79,7 @@ class MyClass:
 
     def test_context_builder_integration(self):
         """Test SurgicalContextBuilder creates valid contexts."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write("def test(): pass\n")
             temp_path = Path(f.name)
 
@@ -128,9 +124,7 @@ import unused_module
 def my_func():
     print(os.getcwd())
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -170,9 +164,7 @@ class MyAgent:
     def unsafe_method(self, user_input):
         return eval(user_input)
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -218,9 +210,7 @@ except:
 def dangerous():
     eval(input())
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -247,9 +237,7 @@ def dangerous():
         """Test complete E2E flow for FilesystemSSOTReconcilerAgent."""
         source = "class MisplacedAgent: pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -290,9 +278,7 @@ class TestE2EMediumTierIntegration:
             "HierarchyAgent",
         ]
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -342,9 +328,7 @@ class TestE2ELowTierIntegration:
             "ValidationOrchestratorAgent",
         ]
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -399,9 +383,7 @@ class ExistingClass:
         """Method docstring."""
         pass
 '''
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -432,9 +414,7 @@ class ExistingClass:
         """Test that healing is idempotent."""
         source = "def my_func():\n    pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
@@ -515,9 +495,7 @@ class TestE2EAllAgentsCoverage:
 
         source = "def test(): pass\n"
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".py", delete=False, encoding="utf-8"
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 

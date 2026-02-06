@@ -25,9 +25,7 @@ class TestHardenedTimeout(unittest.TestCase):
 
             elapsed = time.time() - start
             # Verify we broke out within ~1.5 seconds (allowing for small overhead)
-            self.assertLess(
-                elapsed, 2.0, "The query failed to break the polling loop within the timeout."
-            )
+            self.assertLess(elapsed, 2.0, "The query failed to break the polling loop within the timeout.")
 
     def test_future_cleanup_on_failure(self):
         """Verify the system remains stable when a query fails mid-execution."""

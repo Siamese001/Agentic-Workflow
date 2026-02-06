@@ -80,7 +80,11 @@ class TextProcessor:
 
     @staticmethod
     def replace_pattern(
-        text: str, pattern: str | Pattern, replacement: str, count: int = 0, flags: int = 0,
+        text: str,
+        pattern: str | Pattern,
+        replacement: str,
+        count: int = 0,
+        flags: int = 0,
     ) -> str:
         """
         Replace pattern matches in text.

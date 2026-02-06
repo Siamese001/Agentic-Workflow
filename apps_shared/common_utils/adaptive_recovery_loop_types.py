@@ -17,6 +17,9 @@ Non-responsibilities:
 """
 
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 
 class FailureType(Enum):
@@ -107,7 +110,10 @@ class AdaptiveRecoveryLoop:
         self.temperature_history: list[TemperatureAdjustment] = []
 
     def record_failure(
-        self, gate_id: str, message: str, details: dict[str, Any] | None = None,
+        self,
+        gate_id: str,
+        message: str,
+        details: dict[str, Any] | None = None,
     ) -> RecoveryResult:
         """
         Record a validation failure and determine recovery action.
@@ -242,15 +248,18 @@ class AdaptiveRecoveryLoop:
         """
         if failure_type == FailureType.CREATIVE:
             new_temp = min(
-                self.current_temperature + self.CREATIVE_TEMP_INCREASE, self.CREATIVE_MAX_TEMP,
+                self.current_temperature + self.CREATIVE_TEMP_INCREASE,
+                self.CREATIVE_MAX_TEMP,
             )
         elif failure_type == FailureType.MECHANICAL:
             new_temp = min(
-                self.current_temperature + self.MECHANICAL_TEMP_INCREASE, self.MECHANICAL_MAX_TEMP,
+                self.current_temperature + self.MECHANICAL_TEMP_INCREASE,
+                self.MECHANICAL_MAX_TEMP,
             )
         else:
             new_temp = min(
-                self.current_temperature + self.MECHANICAL_TEMP_INCREASE, self.MECHANICAL_MAX_TEMP,
+                self.current_temperature + self.MECHANICAL_TEMP_INCREASE,
+                self.MECHANICAL_MAX_TEMP,
             )
 
         return round(new_temp, 2)

@@ -650,7 +650,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             # Prioritizes snake_case 'tool_registry' as the canonical SSOT location.
             if len(paths) > 1:
                 primary = min(
-                    paths, key=lambda p: (ARCHIVES_DIR in str(p), "tool_registry" in str(p), str(p)),
+                    paths,
+                    key=lambda p: (ARCHIVES_DIR in str(p), "tool_registry" in str(p), str(p)),
                 )
                 for p in paths:
                     if p != primary:
@@ -1011,5 +1012,6 @@ if __name__ == "__main__":
     from agentic_core.utils.agent_cli import run_agent_cli
 
     run_agent_cli(
-        CodeDeduplicationAgent, "CodeDeduplicationAgent: direct execution for validation or healing",
+        CodeDeduplicationAgent,
+        "CodeDeduplicationAgent: direct execution for validation or healing",
     )

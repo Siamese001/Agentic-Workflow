@@ -194,7 +194,9 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         # [ETERNAL QUALITY VALIDATION]
         # Skip recursive sanity check if we are currently IN a sanity check
         validated_embedding = self._validate_and_repair_embedding(
-            embedding, text, skip_sanity=is_sanity_check,
+            embedding,
+            text,
+            skip_sanity=is_sanity_check,
         )
 
         if self.redis:
@@ -203,7 +205,10 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         return validated_embedding
 
     def _validate_and_repair_embedding(
-        self, embedding: list[float], source_text: str, skip_sanity: bool = False,
+        self,
+        embedding: list[float],
+        source_text: str,
+        skip_sanity: bool = False,
     ) -> list[float]:
         """
         Sovereign embedding quality gate: Correct length, Non-zero variance, Reasonable norm.
@@ -316,7 +321,10 @@ class PineconeSovereignAgent(SovereignBaseAgent):
         sparse_vec = self._get_sparse_vector(query)
 
         return self.index.query(
-            vector=dense_vec, sparse_vector=sparse_vec, top_k=top_k, include_metadata=True,
+            vector=dense_vec,
+            sparse_vector=sparse_vec,
+            top_k=top_k,
+            include_metadata=True,
         ).to_dict()
 
     def purge_ghost_vector(self, file_path: Path) -> Any:

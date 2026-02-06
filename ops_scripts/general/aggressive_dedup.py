@@ -11,6 +11,8 @@ Strategies:
 
 import ast
 import re
+from collections import defaultdict
+from pathlib import Path
 
 APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
 
@@ -52,9 +54,7 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
 
-                file_classes = [
-                    node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
-                ]
+                file_classes = [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 
                 if not file_classes:
                     continue

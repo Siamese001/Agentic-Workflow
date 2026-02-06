@@ -5,6 +5,8 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
 import logging
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

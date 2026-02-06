@@ -40,9 +40,7 @@ from agentic_core.utils.report_location_validator_types import (  # noqa: E402
     ReportLocationValidator,
 )
 
-COMPLIANCE_LOG_DIR = (
-    PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "compliance_reports"
-)
+COMPLIANCE_LOG_DIR = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "compliance_reports"
 
 
 def get_staged_files() -> list[Path]:

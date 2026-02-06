@@ -41,7 +41,9 @@ def extract_components(html_content, name):
 
     # Extract filter checkboxes
     filter_matches = re.findall(
-        r"checkbox[^>]*>([^<]+)</label>|checkbox[^>]*>\s*<[^>]*>([^<]+)<", html_content, re.DOTALL,
+        r"checkbox[^>]*>([^<]+)</label>|checkbox[^>]*>\s*<[^>]*>([^<]+)<",
+        html_content,
+        re.DOTALL,
     )
     for match in filter_matches:
         label = match[0] or match[1]
@@ -128,10 +130,12 @@ def compare_components():
 
     for key, label in categories:
         set(mono_components[key]) if isinstance(
-            mono_components[key][0] if mono_components[key] else "", str,
+            mono_components[key][0] if mono_components[key] else "",
+            str,
         ) else {str(x) for x in mono_components[key]}
         set(mod_components[key]) if isinstance(
-            mod_components[key][0] if mod_components[key] else "", str,
+            mod_components[key][0] if mod_components[key] else "",
+            str,
         ) else {str(x) for x in mod_components[key]}
 
         print(f"\n{'=' * 50}")

@@ -65,9 +65,7 @@ def test_path_resolution():
         assert "gatekeeper" in archive_path, f"'gatekeeper' not in path: {archive_path}"
 
         expected = project_root / "archives" / "gatekeeper"
-        assert gatekeeper.archive_root == expected, (
-            f"Expected {expected}, got {gatekeeper.archive_root}"
-        )
+        assert gatekeeper.archive_root == expected, f"Expected {expected}, got {gatekeeper.archive_root}"
 
         print("  ✅ PASS: Archive root resolves correctly")
         print(f"     archive_root = {gatekeeper.archive_root}")
@@ -83,9 +81,7 @@ def test_exclusion_logic():
     """Test 3: Verify archives/ is in SOVEREIGN_EXCLUDED_FOLDERS."""
     print("\n[TEST 3] Exclusion Logic Test")
     try:
-        assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, (
-            "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
-        )
+        assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
 
         print("  ✅ PASS: 'archives' is in SOVEREIGN_EXCLUDED_FOLDERS")
         print(f"     SOVEREIGN_EXCLUDED_FOLDERS = {sorted(SOVEREIGN_EXCLUDED_FOLDERS)}")

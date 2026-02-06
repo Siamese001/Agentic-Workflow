@@ -11,6 +11,8 @@ Integrates with dashboard for visibility.
 
 import threading
 import time
+from collections import defaultdict
+from typing import Any
 
 
 class CacheMetrics:

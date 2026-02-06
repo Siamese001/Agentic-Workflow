@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
 
 """
 StrategistAgent - Extracted for one-class-per-file pattern.
@@ -19,6 +20,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 import asyncio
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

@@ -393,7 +393,11 @@ def analyze_supplementation():
 
     # Generate and save markdown report
     md_report = generate_markdown_report(
-        live_cap_counter, dead_cap_detail, unique_to_dead, underrepresented, recommendations,
+        live_cap_counter,
+        dead_cap_detail,
+        unique_to_dead,
+        underrepresented,
+        recommendations,
     )
     report_path = PROJECT_ROOT / "agent_supplementation_report.md"
     report_path.write_text(md_report, encoding="utf-8")

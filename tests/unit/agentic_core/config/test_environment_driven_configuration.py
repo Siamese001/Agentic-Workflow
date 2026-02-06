@@ -152,12 +152,8 @@ class TestEnvironmentDrivenConfiguration(unittest.TestCase):
         self.assertEqual(config.max_rounds, 3)
         self.assertEqual(config.response_timeout, 45.0)
 
-    @patch.dict(
-        os.environ, {"VALIDATION_MAX_SIMILARITY_THRESHOLD": "0.80", "VALIDATION_TEMPERATURE": "0.7"}
-    )
-    @unittest.skipIf(
-        SectionIntegratorConfig is None, "SectionIntegratorConfig module not available"
-    )
+    @patch.dict(os.environ, {"VALIDATION_MAX_SIMILARITY_THRESHOLD": "0.80", "VALIDATION_TEMPERATURE": "0.7"})
+    @unittest.skipIf(SectionIntegratorConfig is None, "SectionIntegratorConfig module not available")
     def test_validation_config_environment_driven(self):
         """Test SectionIntegratorConfig parameters sourced from environment."""
         config = SectionIntegratorConfig()

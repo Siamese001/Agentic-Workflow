@@ -7,6 +7,9 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -341,8 +344,7 @@ class AsyncCoordinator:
                 async with self._lock:
                     for task_id, task_info in self._tasks.items():
                         if (
-                            task_info.state
-                            in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
+                            task_info.state in (TaskState.COMPLETED, TaskState.CANCELLED, TaskState.FAILED)
                             and task_info.created_at < cutoff_time
                         ):
                             tasks_to_remove.append(task_id)
@@ -438,7 +440,9 @@ def managed(
         async def wrapper(*args, **kwargs):
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
-                func(*args, **kwargs), timeout=timeout, cleanup_callback=cleanup_callback,
+                func(*args, **kwargs),
+                timeout=timeout,
+                cleanup_callback=cleanup_callback,
             ) as task_id:
                 return await coordinator.wait_for_task(task_id)
 
@@ -449,7 +453,9 @@ def managed(
 
 # Safe timeout wrapper that prevents orphaned tasks
 async def safe_wait_for(
-    coro: Awaitable, timeout: float, coordinator_name: str = "timeout_coordinator",
+    coro: Awaitable,
+    timeout: float,
+    coordinator_name: str = "timeout_coordinator",
 ) -> Any:
     """Wait for a coroutine with timeout, preventing orphaned tasks.
 

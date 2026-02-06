@@ -43,9 +43,7 @@ class TestSectionHeaders:
 
     def test_territory_summary_header(self, html_content):
         """Verify Territory Summary or similar header exists."""
-        has_header = any(
-            h in html_content for h in ["Territory Summary", "Autonomy Compliance", "Dashboard"]
-        )
+        has_header = any(h in html_content for h in ["Territory Summary", "Autonomy Compliance", "Dashboard"])
         assert has_header, "No dashboard header found"
 
     def test_code_quality_section(self, html_content):
@@ -79,9 +77,7 @@ class TestJSIncludes:
 
     def test_table_rendering_functions_present(self, html_content):
         """Verify table rendering functions are present."""
-        has_render = any(
-            f in html_content for f in ["renderTerritorySummaryTable", "renderCodeQualityTable"]
-        )
+        has_render = any(f in html_content for f in ["renderTerritorySummaryTable", "renderCodeQualityTable"])
         assert has_render, "Table rendering functions not found"
 
     def test_load_data_function_present(self, html_content):

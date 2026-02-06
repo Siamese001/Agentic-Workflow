@@ -204,9 +204,7 @@ class TestConfigurationLoader:
         config = IntegrationConfig()
         loader = ConfigurationLoader(config)
 
-        loader._loaded_configs["shared:settings"] = {
-            "database": {"host": "localhost", "port": 5432}
-        }
+        loader._loaded_configs["shared:settings"] = {"database": {"host": "localhost", "port": 5432}}
 
         value = loader.get_value("database.host", AppDomain.SHARED, "settings")
         assert value == "localhost"

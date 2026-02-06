@@ -280,9 +280,7 @@ class ValidationGateExecutor:
 
         Handles scopes: total, per_bullet, per_segment, per_competency, per_paragraph
         """
-        constraint_key = (
-            f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_id
-        )
+        constraint_key = f"{k_node_id}_{check}" if check in self.word_count_constraints else k_node_id
         constraint = self.word_count_constraints.get(constraint_key)
 
         if not constraint:
@@ -551,9 +549,7 @@ class ValidationGateExecutor:
         ungrounded_claims = []
         for claim in claims:
             # Check if any RAG evidence overlaps with claim
-            has_evidence = any(
-                self._calculate_similarity(claim, evidence) > 0.3 for evidence in rag_evidence
-            )
+            has_evidence = any(self._calculate_similarity(claim, evidence) > 0.3 for evidence in rag_evidence)
             if not has_evidence:
                 ungrounded_claims.append(claim[:50] + "...")
 

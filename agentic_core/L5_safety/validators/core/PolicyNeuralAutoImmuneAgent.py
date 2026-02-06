@@ -25,11 +25,16 @@ from agentic_core.L4_state.validation_context.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
 from agentic_core.L5_safety.validators.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
 class PolicyNeuralAutoImmuneAgent(
-    AtomicExecutionMixin, SubatomicTestingMixin, NeuralAutoImmuneAgent, SovereignBaseAgent,
+    AtomicExecutionMixin,
+    SubatomicTestingMixin,
+    NeuralAutoImmuneAgent,
+    SovereignBaseAgent,
 ):
     """PolicyNeuralAutoImmuneAgent agent for autonomous operations."""
 

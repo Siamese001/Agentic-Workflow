@@ -12,10 +12,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 ARCHIVE_ROOT = (
-    PROJECT_ROOT
-    / "agentic_core"
-    / "archived"
-    / f"phase8_merges_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    PROJECT_ROOT / "agentic_core" / "archived" / f"phase8_merges_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 )
 
 # Files to ARCHIVE (The Losers of the Merge)

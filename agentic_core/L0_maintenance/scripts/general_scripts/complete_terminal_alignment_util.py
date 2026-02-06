@@ -95,7 +95,9 @@ def remove_duplicate_mixin_inheritance(file_path: Path) -> bool:
 
     # Remove HealerMixin from class definitions if LICAgentBase is present
     content = re.sub(
-        r"class (\w+)\(([^)]*LICAgentBase[^)]*), HealerMixin([^)]*)\):", r"class \1(\2\3):", content,
+        r"class (\w+)\(([^)]*LICAgentBase[^)]*), HealerMixin([^)]*)\):",
+        r"class \1(\2\3):",
+        content,
     )
 
     if content != original:

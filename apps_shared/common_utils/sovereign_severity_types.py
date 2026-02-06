@@ -4,6 +4,11 @@ No inline BaseModel definitions allowed outside schemas/.
 """
 
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from pydantic import BaseModel, Field
+from typing import Any
+from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -277,7 +282,8 @@ class write_file_args(BaseModel):
     path: str = Field(..., description="Relative path to the file to write")
     content: str = Field(..., description="Content to write to the file")
     create_dirs: bool = Field(
-        default=True, description="Create parent directories if they don't exist",
+        default=True,
+        description="Create parent directories if they don't exist",
     )
 
     @validator("path")
@@ -308,7 +314,8 @@ class list_files_args(BaseModel):
 
     path: str = Field(default=".", description="Relative path to the directory to list")
     pattern: str | None = Field(
-        default=None, description="Glob pattern to filter files (e.g., '*.py')",
+        default=None,
+        description="Glob pattern to filter files (e.g., '*.py')",
     )
     recursive: bool = Field(default=False, description="Recursively list subdirectories")
 
@@ -326,7 +333,8 @@ class execute_command_args(BaseModel):
     command: str = Field(..., description="Command to execute")
     args: list[str] = Field(default_factory=list, description="Command arguments")
     cwd: str | None = Field(
-        default=None, description="Working directory (relative to project root)",
+        default=None,
+        description="Working directory (relative to project root)",
     )
     timeout: int = Field(default=30, description="Timeout in seconds (max 300)")
     capture_output: bool = Field(default=True, description="Capture stdout and stderr")
@@ -386,13 +394,18 @@ class agent_thought_process(BaseModel):
     )
     relevant_context_keys: list[str] = Field(...)
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
-        ..., description="The action type to take",
+        ...,
+        description="The action type to take",
     )
     tool_arguments: dict[str, Any] = Field(
-        default_factory=dict, description="Arguments for the chosen tool",
+        default_factory=dict,
+        description="Arguments for the chosen tool",
     )
     confidence_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)",
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Confidence in this decision (0.0 to 1.0)",
     )
 
     @field_validator("tool_arguments")
@@ -422,7 +435,8 @@ class code_generation_result(BaseModel):
     dependencies: list[str] = Field(default_factory=list, description="Required pip packages")
     test_cases: list[str] = Field(default_factory=list, description="Test cases to verify the code")
     safety_notes: list[str] = Field(
-        default_factory=list, description="Potential safety concerns or limitations",
+        default_factory=list,
+        description="Potential safety concerns or limitations",
     )
 
 
@@ -432,14 +446,17 @@ class research_result(BaseModel):
 
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: list[dict[str, str]] = Field(
-        ..., description="List of sources with 'url' and 'relevance' keys",
+        ...,
+        description="List of sources with 'url' and 'relevance' keys",
     )
     key_findings: list[str] = Field(..., description="Main findings from the research")
     confidence_level: Literal["high", "medium", "low"] = Field(
-        ..., description="Confidence in the research results",
+        ...,
+        description="Confidence in the research results",
     )
     follow_up_questions: list[str] = Field(
-        default_factory=list, description="Suggested follow-up research questions",
+        default_factory=list,
+        description="Suggested follow-up research questions",
     )
 
 
@@ -490,17 +507,29 @@ class style_profile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: float = Field(
-        default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)",
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: float = Field(default=0.2, ge=0.0, le=1.0, description="Emoji usage frequency")
     sentence_length_avg: int = Field(
-        default=15, ge=5, le=50, description="Target words per sentence",
+        default=15,
+        ge=5,
+        le=50,
+        description="Target words per sentence",
     )
     vocabulary_complexity: float = Field(
-        default=0.5, ge=0.0, le=1.0, description="Vocabulary complexity",
+        default=0.5,
+        ge=0.0,
+        le=1.0,
+        description="Vocabulary complexity",
     )
     confidence_level: float = Field(
-        default=0.8, ge=0.0, le=1.0, description="Confidence in analysis",
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Confidence in analysis",
     )
 
     class Config:
@@ -517,7 +546,8 @@ class generation_config(BaseModel):
     temperature_setting: float = Field(..., ge=0.1, le=1.0, description="LLM temperature")
     banned_phrases: list[str] = Field(default_factory=list, description="Phrases to avoid")
     preferred_transitions: list[str] = Field(
-        default_factory=list, description="Preferred transition words",
+        default_factory=list,
+        description="Preferred transition words",
     )
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
@@ -771,10 +801,12 @@ class thermal_config:
                 "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
                 "frequency_penalty": self.node_overrides[node_id].get(
-                    "frequency_penalty", self.frequency_penalty,
+                    "frequency_penalty",
+                    self.frequency_penalty,
                 ),
                 "presence_penalty": self.node_overrides[node_id].get(
-                    "presence_penalty", self.presence_penalty,
+                    "presence_penalty",
+                    self.presence_penalty,
                 ),
             }
         return {
@@ -835,11 +867,18 @@ class signal_context(BaseModel):
         self.last_modified = datetime.utcnow()
 
     def add_signed_claim(
-        self, claim: str, source: str, confidence: float, evidence: str | None = None,
+        self,
+        claim: str,
+        source: str,
+        confidence: float,
+        evidence: str | None = None,
     ) -> None:
         """Add a signed claim to the context."""
         signed_claim = signed_claim(
-            claim=claim, source=source, confidence=confidence, evidence=evidence,
+            claim=claim,
+            source=source,
+            confidence=confidence,
+            evidence=evidence,
         )
         self.signed_claims.append(signed_claim)
 
@@ -852,7 +891,8 @@ class safety_profile(BaseModel):
     """Safety configuration profile used by execution profiles."""
 
     safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug",
+        default="standard",
+        description="Safety tier: standard | strict | relaxed | debug",
     )
     pii_detection_enabled: bool = True
     policy_engine_enabled: bool = True
@@ -1978,7 +2018,8 @@ class immutable_staging_buffer:
         from datetime import datetime
 
         return ImmutableStagingBuffer(
-            _version=self.version + 1, _timestamp=datetime.utcnow().isoformat(),
+            _version=self.version + 1,
+            _timestamp=datetime.utcnow().isoformat(),
         )
 
 
@@ -2219,9 +2260,7 @@ class experience_bullets_brief:
     )
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
-    GUIDANCE: str = (
-        "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
-    )
+    GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
 
 
 @dataclass
@@ -2383,6 +2422,7 @@ CORE_CONTRACTS_REGISTRY.update(
 # Migrated with Builder pattern for fluent, immutable construction
 
 import logging
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -2737,7 +2777,9 @@ class constitutional_violation(sovereign_base_model):
             return self
 
         def at_location(
-            self, file_path: str, line_number: int | None = None,
+            self,
+            file_path: str,
+            line_number: int | None = None,
         ) -> "ConstitutionalViolation.Builder":
             self._file_path = file_path
             self._line_number = line_number

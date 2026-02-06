@@ -1,6 +1,10 @@
 """
 Simple script to clean up shim chains by manually specifying the patterns.
 import logging
+from typing import Any
+from pathlib import Path
+
+LOGGER = logging.getLogger(__name__)
 
 # NAMING FIXED: LOGGER → Logger
 Logger = logging.getLogger(__name__)

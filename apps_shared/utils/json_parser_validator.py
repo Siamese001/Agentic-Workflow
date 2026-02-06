@@ -47,7 +47,10 @@ class JsonParser:
             )
         except Exception as e:
             return ParseResult(
-                success=False, data=None, errors=[f"Parse error: {str(e)}"], metadata={},
+                success=False,
+                data=None,
+                errors=[f"Parse error: {str(e)}"],
+                metadata={},
             )
 
     @staticmethod
@@ -96,7 +99,9 @@ class JsonParser:
 
     @staticmethod
     def merge_dicts(
-        dict1: dict[str, Any], dict2: dict[str, Any], deep: bool = True,
+        dict1: dict[str, Any],
+        dict2: dict[str, Any],
+        deep: bool = True,
     ) -> dict[str, Any]:
         """
         Merge two dictionaries.

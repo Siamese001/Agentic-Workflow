@@ -7,6 +7,7 @@ reducing noise and improving signal density in the RAG pipeline.
 import logging
 import re
 import time
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,10 @@ class CompressionResult(BaseModel):
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
     compression_ratio: float = Field(
-        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)",
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Compression ratio (compressed/original)",
     )
 
 
@@ -41,7 +45,8 @@ class ContextualCompressor:
 
         # Simple sentence tokenizer using regex
         self.sentence_pattern = re.compile(
-            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", re.MULTILINE,
+            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s",
+            re.MULTILINE,
         )
 
         # Named entity patterns (simple keyword-based)
@@ -238,7 +243,10 @@ Extracted sentences:"""
             return self._compress_heuristic(chunks, query)
 
     def compress(
-        self, chunks: list[str], query: str, use_llm: bool | None = None,
+        self,
+        chunks: list[str],
+        query: str,
+        use_llm: bool | None = None,
     ) -> CompressionResult:
         """Compress retrieved chunks to extract relevant sentences.
 
@@ -277,8 +285,7 @@ Extracted sentences:"""
 
         # Log compression ratio for monitoring
         logger.info(
-            f"Compression ratio: {compression_ratio:.2f} "
-            f"({original_length} -> {compressed_length} chars)",
+            f"Compression ratio: {compression_ratio:.2f} ({original_length} -> {compressed_length} chars)",
         )
 
         # Alert if ratio is unusual

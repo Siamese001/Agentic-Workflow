@@ -49,9 +49,7 @@ class TestOutreachSignalRouterAgent:
 
     def test_has_get_agents_for_signals_method(self, agent_class):
         """Verify agent has get_agents_for_signals method."""
-        assert hasattr(agent_class, "get_agents_for_signals"), (
-            "Should have get_agents_for_signals method"
-        )
+        assert hasattr(agent_class, "get_agents_for_signals"), "Should have get_agents_for_signals method"
 
     def test_has_has_critical_signal_method(self, agent_class):
         """Verify agent has has_critical_signal method."""

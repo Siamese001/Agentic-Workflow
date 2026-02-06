@@ -5,6 +5,7 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from typing import Any
 
 """
 Planning and reflection agents for strategic decision-making.
@@ -19,6 +20,7 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 # DUPLICATE ACCEPTED: App-specific customization valid
 # (different contexts: L2 core planning vs L1 strategic vs apps_rg implementations)
@@ -168,7 +170,13 @@ Output ONLY the plan in Markdown.
 
     @standard_heal
     def heal_repository(
-        self, dry_run=True, execute=False, depth=0, max_depth=3, _call_path=None, **kwargs,
+        self,
+        dry_run=True,
+        execute=False,
+        depth=0,
+        max_depth=3,
+        _call_path=None,
+        **kwargs,
     ) -> dict:
         """Standardized healing signature with signal propagation."""
         return super().heal_repository(dry_run, execute, depth, max_depth, _call_path, **kwargs)

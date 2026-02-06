@@ -3,6 +3,7 @@ Script to fix all incorrect healer_mixin import paths.
 
 Changes:
     from agentic_core.base_agents.healer_mixin import healer_mixin
+from pathlib import Path
 to:
     from agentic_core.base_agents.healer_mixin import healer_mixin
 """

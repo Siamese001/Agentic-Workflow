@@ -452,7 +452,8 @@ class DashboardGenerator:
         metadata_pct = weighted_avg("Metadata %")  # PHASE 3 FIX
         used_pct = weighted_avg("Used %")  # PHASE 3 FIX
         avg_criticality = round(
-            sum(r["Criticality"] * r["Total"] for r in rows) / total_agents, 1,
+            sum(r["Criticality"] * r["Total"] for r in rows) / total_agents,
+            1,
         )  # PHASE 2 FIX
         complexity_health = round(sum(r["Complexity Health"] * r["Total"] for r in rows) / total_agents, 1)
         code_quality = round(sum(r["Code Quality Score"] * r["Total"] for r in rows) / total_agents, 1)

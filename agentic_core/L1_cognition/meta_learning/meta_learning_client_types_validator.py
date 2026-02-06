@@ -457,7 +457,8 @@ class MetaLearningClient:
 
         # Use domain-specific threshold if not overridden
         effective_threshold = min_similarity or self.domain_thresholds.get(
-            domain, DEFAULT_SIMILARITY_THRESHOLD,
+            domain,
+            DEFAULT_SIMILARITY_THRESHOLD,
         )
 
         # Query Pinecone with namespace

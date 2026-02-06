@@ -109,7 +109,9 @@ class AstRelocator(ast.NodeVisitor):
                     for base in node.bases:
                         # Handle simple names (class A(B)) and attributes (class A(mod.B))
                         base_name = getattr(base, "id", "") or getattr(
-                            getattr(base, "attr", None), "value", "",
+                            getattr(base, "attr", None),
+                            "value",
+                            "",
                         )
                         if base_name and any(base_name in b for b in meta.get("bases", [])):
                             score += 4.0  # Massive boost for explicit inheritance match

@@ -450,7 +450,10 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
     tree, error = _parse_code(code)
     if error:
         return TransformResult(
-            success=False, transformed_code=code, operation="remove_decorator", error=error,
+            success=False,
+            transformed_code=code,
+            operation="remove_decorator",
+            error=error,
         )
 
     modifier = DecoratorModifier(target_name, decorator_name, add=False)

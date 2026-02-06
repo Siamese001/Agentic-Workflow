@@ -15,6 +15,8 @@ from agentic_core.L5_safety.validators.structure_blueprint_config import (
     TESTS_DIR,
 )
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -234,7 +236,8 @@ class WorkflowLoader:
                     BRIEF.get("executive_summary", {}).get("word_count", [120, 140]),
                 ),
                 executive_summary_voice=BRIEF.get("executive_summary", {}).get(
-                    "voice", "third_person_implied",
+                    "voice",
+                    "third_person_implied",
                 ),
                 forbidden_patterns=BRIEF.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
@@ -295,7 +298,8 @@ class WorkflowLoader:
             REASONING: Any = self.get_reasoning_config()
             creative_brief: Any = REASONING.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix", {}).get(
-                "thresholds", {},
+                "thresholds",
+                {},
             )
         return self._cached_validation_rules
 
@@ -303,7 +307,8 @@ class WorkflowLoader:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
             self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation", {}).get(
-                TESTS_DIR, [],
+                TESTS_DIR,
+                [],
             )
         return self._cached_pre_flight_tests
 
@@ -312,7 +317,8 @@ class WorkflowLoader:
         if self._cached_file_complexity_thresholds is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_file_complexity_thresholds = CONTEXT.get("pre_flight_file_complexity_gate", {}).get(
-                "thresholds", {},
+                "thresholds",
+                {},
             )
         return self._cached_file_complexity_thresholds
 
@@ -321,7 +327,8 @@ class WorkflowLoader:
         if self._cached_required_files is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_required_files = CONTEXT.get("pre_flight_file_manifest_check", {}).get(
-                "required_file_manifest", [],
+                "required_file_manifest",
+                [],
             )
         return self._cached_required_files
 

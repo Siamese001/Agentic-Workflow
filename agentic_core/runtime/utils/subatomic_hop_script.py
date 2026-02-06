@@ -191,7 +191,9 @@ class SubatomicHop:
 
         try:
             Verdict = await self.SupremeCourt.deliberate(
-                CONTEXT=str(context), GOAL=context.get("Task", ""), risk_level=risk_level,
+                CONTEXT=str(context),
+                GOAL=context.get("Task", ""),
+                risk_level=risk_level,
             )
             plan = AgentPlan(
                 reasoning=Verdict.reasoning,

@@ -108,9 +108,7 @@ class TestDashboardDrillDown:
                     elif not isinstance(value, int | float):
                         errors.append(f"{agent_id}: {field} is not numeric: {value}")
 
-        assert not errors, f"Invalid numeric fields in {len(errors)} cases:\n" + "\n".join(
-            errors[:10]
-        )
+        assert not errors, f"Invalid numeric fields in {len(errors)} cases:\n" + "\n".join(errors[:10])
 
     def test_boolean_fields_are_valid(self, agent_data):
         """Verify boolean fields are not undefined."""
@@ -125,9 +123,7 @@ class TestDashboardDrillDown:
                     if value == "undefined" or value is None:
                         errors.append(f"{agent_id}: {field} is undefined")
 
-        assert not errors, f"Invalid boolean fields in {len(errors)} cases:\n" + "\n".join(
-            errors[:10]
-        )
+        assert not errors, f"Invalid boolean fields in {len(errors)} cases:\n" + "\n".join(errors[:10])
 
     def test_summary_fields_are_valid(self, agent_data):
         """Verify summary fields don't contain 'undefined'."""
@@ -144,6 +140,4 @@ class TestDashboardDrillDown:
                     elif "undefined" in str(value):
                         errors.append(f"{agent_id}: {field} contains 'undefined'")
 
-        assert not errors, f"Invalid summary fields in {len(errors)} cases:\n" + "\n".join(
-            errors[:10]
-        )
+        assert not errors, f"Invalid summary fields in {len(errors)} cases:\n" + "\n".join(errors[:10])

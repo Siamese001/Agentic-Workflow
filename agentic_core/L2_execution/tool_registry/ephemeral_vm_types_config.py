@@ -15,6 +15,8 @@ from typing import Any
 from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
 from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMConfig
 
+LOGGER = logging.getLogger(__name__)
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)
@@ -108,7 +110,10 @@ class EphemeralVm:
             LOGGER.info("ephemeral_vm_initialized", extra={"isolation": self.IsolationConfig.to_dict()})
 
     async def execute_code(
-        self, code: str, language: str = "python", timeout_seconds: int | None = None,
+        self,
+        code: str,
+        language: str = "python",
+        timeout_seconds: int | None = None,
     ) -> ExecutionResult:
         """Execute code in ephemeral VM.
         Args:
@@ -125,7 +130,12 @@ class EphemeralVm:
         VmInstance: Any = None
         try:
             VmInstance: Any = await self._create_and_execute_vm(
-                vm_id, VmConfig, code, language, timeout, start_time,
+                vm_id,
+                VmConfig,
+                code,
+                language,
+                timeout,
+                start_time,
             )
             return VmInstance
         except asyncio.TimeoutError:
@@ -151,14 +161,23 @@ class EphemeralVm:
         return (vm_id, VmConfig)
 
     async def _create_and_execute_vm(
-        self, vm_id: str, VmConfig, code: str, language: str, timeout: int, start_time: float,
+        self,
+        vm_id: str,
+        VmConfig,
+        code: str,
+        language: str,
+        timeout: int,
+        start_time: float,
     ) -> ExecutionResult:
         """Create VM and execute code."""
         if self.enable_logging:
             LOGGER.info("creating_ephemeral_vm", extra={"vm_id": vm_id, "language": language})
         VmInstance = await self.vm_manager.create_vm(VmConfig)
         result = await self._execute_in_vm(
-            VmInstance=VmInstance, code=code, language=language, timeout=timeout,
+            VmInstance=VmInstance,
+            code=code,
+            language=language,
+            timeout=timeout,
         )
         result.execution_time_seconds = time.time() - start_time
         if self.enable_logging:
@@ -208,7 +227,11 @@ class EphemeralVm:
                     LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 
     async def _execute_in_vm(
-        self, VmInstance: Any, code: str, language: str, timeout: int,
+        self,
+        VmInstance: Any,
+        code: str,
+        language: str,
+        timeout: int,
     ) -> ExecutionResult:
         """Execute code inside VM.
 
@@ -226,7 +249,10 @@ class EphemeralVm:
             return await self._execute_javascript(code, timeout)
         else:
             return ExecutionResult(
-                success=False, output="", error=f"Unsupported language: {language}", exit_code=1,
+                success=False,
+                output="",
+                error=f"Unsupported language: {language}",
+                exit_code=1,
             )
 
     async def _execute_python(self, code: str, timeout: int) -> ExecutionResult:
@@ -297,7 +323,8 @@ class EphemeralVm:
 
 
 def create_ephemeral_vm(
-    vm_manager: FirecrackerManager | None = None, IsolationConfig: IsolationConfig | None = None,
+    vm_manager: FirecrackerManager | None = None,
+    IsolationConfig: IsolationConfig | None = None,
 ) -> EphemeralVM:
     """Factory function to create ephemeral VM.
 

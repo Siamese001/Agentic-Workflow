@@ -24,9 +24,7 @@ def build_reasoning_prompt_addendum(params: dict) -> str:
         addendum += "• Consider multiple reasoning approaches before concluding.\n"
 
     if p["tot_b"] >= 5:
-        addendum += (
-            f"• MANDATORY: Evaluate {p['tot_b']} different branches at each decision point.\n"
-        )
+        addendum += f"• MANDATORY: Evaluate {p['tot_b']} different branches at each decision point.\n"
     elif p["tot_b"] >= 4:
         addendum += f"• Explore {p['tot_b']} decision branches at critical junctures.\n"
     else:

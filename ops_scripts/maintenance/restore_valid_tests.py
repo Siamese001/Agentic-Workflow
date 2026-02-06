@@ -91,7 +91,10 @@ def check_module_exists(module: str) -> bool:
 def get_file_content(commit: str, file_path: str) -> str:
     """Get file content from commit."""
     result = subprocess.run(
-        ["git", "show", f"{commit}~1:{file_path}"], capture_output=True, text=True, cwd=PROJECT_ROOT,
+        ["git", "show", f"{commit}~1:{file_path}"],
+        capture_output=True,
+        text=True,
+        cwd=PROJECT_ROOT,
     )
     return result.stdout
 

@@ -52,9 +52,7 @@ class ArchitectureGovernanceValidator:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
 
-            current_layer, current_level = ArchitectureGovernanceValidator.get_layer_from_path(
-                file_path
-            )
+            current_layer, current_level = ArchitectureGovernanceValidator.get_layer_from_path(file_path)
 
             if current_level == -1:
                 return []
@@ -130,12 +128,8 @@ class ArchitectureGovernanceValidator:
             result["compliant"] = False
             return result
 
-        result["gravity_violations"] = ArchitectureGovernanceValidator.check_gravity_violations(
-            file_path
-        )
-        result["naming_violations"] = ArchitectureGovernanceValidator.check_naming_convention(
-            file_path
-        )
+        result["gravity_violations"] = ArchitectureGovernanceValidator.check_gravity_violations(file_path)
+        result["naming_violations"] = ArchitectureGovernanceValidator.check_naming_convention(file_path)
 
         if result["gravity_violations"] or result["naming_violations"]:
             result["compliant"] = False
@@ -176,9 +170,7 @@ class TestAgent(SovereignBaseAgent):
     def run(self):
         pass
 """
-        temp_file = self._create_layer_file(
-            temp_agentic_core, "L5_safety", "TestAgent.py", agent_code
-        )
+        temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "TestAgent.py", agent_code)
 
         result = validator.validate_file(temp_file)
         assert result["compliant"], f"Expected compliant, got: {result}"
@@ -209,9 +201,7 @@ class TestAgent(SovereignBaseAgent):
     def run(self):
         pass
 """
-        temp_file = self._create_layer_file(
-            temp_agentic_core, "L5_safety", "test_file.py", agent_code
-        )
+        temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "test_file.py", agent_code)
 
         result = validator.validate_file(temp_file)
         assert not result["compliant"]
@@ -232,9 +222,7 @@ class SafetyAgent:
     def run(self):
         pass
 """
-        temp_file = self._create_layer_file(
-            temp_agentic_core, "L5_safety", "SafetyAgent.py", agent_code
-        )
+        temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "SafetyAgent.py", agent_code)
 
         result = validator.validate_file(temp_file)
         assert result["compliant"]
@@ -263,9 +251,7 @@ class TestAgent(SovereignBaseAgent):
         bad_string = "unclosed
         pass
 """
-        temp_file = self._create_layer_file(
-            temp_agentic_core, "L5_safety", "TestAgent.py", agent_code
-        )
+        temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "TestAgent.py", agent_code)
 
         validator.validate_file(temp_file)
         # Should handle gracefully without crashing
@@ -279,9 +265,7 @@ class TestAgent:
     def run(self):
         pass
 """
-        temp_file = self._create_layer_file(
-            temp_agentic_core, "L1_cognition", "test_file.py", agent_code
-        )
+        temp_file = self._create_layer_file(temp_agentic_core, "L1_cognition", "test_file.py", agent_code)
 
         result = validator.validate_file(temp_file)
         assert not result["compliant"]

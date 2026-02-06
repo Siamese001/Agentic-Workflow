@@ -106,11 +106,7 @@ def run_subset_test(sample_size: int = 5) -> int:
             file_path = None
 
             if hasattr(v, "violation_type"):
-                v_type = (
-                    v.violation_type.name
-                    if hasattr(v.violation_type, "name")
-                    else str(v.violation_type)
-                )
+                v_type = v.violation_type.name if hasattr(v.violation_type, "name") else str(v.violation_type)
                 file_path = getattr(v, "file_path", None)
             elif isinstance(v, dict):
                 v_type = v.get("type", "")

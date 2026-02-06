@@ -142,6 +142,7 @@ class BenchmarkSuite:
 
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 
 # NAMING FIXED: BenchmarkingAgent → BenchmarkingAgent
@@ -305,7 +306,12 @@ class BenchmarkingAgent(AtomicExecutionMixin, SovereignBaseAgent):
         return result
 
     async def time_function_async(
-        self, name: str, func: Callable, metadata: dict = None, *args, **kwargs,
+        self,
+        name: str,
+        func: Callable,
+        metadata: dict = None,
+        *args,
+        **kwargs,
     ) -> Any:
         """
         Time an async function execution.

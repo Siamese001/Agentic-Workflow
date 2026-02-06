@@ -264,7 +264,10 @@ class HybridRetriever:
         return unique
 
     def reciprocal_rank_fusion(
-        self, dense: list[RetrievalResult], sparse: list[RetrievalResult], k: int = 60,
+        self,
+        dense: list[RetrievalResult],
+        sparse: list[RetrievalResult],
+        k: int = 60,
     ) -> list[RetrievalResult]:
         """
         Fused rankings using optimized RRF (O(N) performance)

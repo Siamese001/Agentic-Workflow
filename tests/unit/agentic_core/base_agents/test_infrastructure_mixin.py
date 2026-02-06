@@ -6,6 +6,7 @@ of the consolidated infrastructure_mixin (Opportunity #4).
 """
 
 from agentic_core.base_agents.infrastructure_mixin import infrastructure_mixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class ConcreteInfrastructureAgent(infrastructure_mixin):

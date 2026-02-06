@@ -199,9 +199,7 @@ class TestPhase1EarlyDetectionPosition:
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Find positions
-        location_complete_pos = content.find(
-            'state_mgr.complete_agent(\n            "LocationAgent"'
-        )
+        location_complete_pos = content.find('state_mgr.complete_agent(\n            "LocationAgent"')
         early_detection_pos = content.find("PHASE 1 ENHANCEMENT")
 
         # Early detection should come after LocationAgent completion

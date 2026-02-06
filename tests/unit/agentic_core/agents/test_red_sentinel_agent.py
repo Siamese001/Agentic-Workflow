@@ -1,8 +1,6 @@
 import pytest
 
-pytestmark = pytest.mark.skip(
-    reason="DEPRECATED: Test requires external modules or complex import chains"
-)
+pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
 
 # New file: tests/unit/test_red_sentinel_agent.py
 import json
@@ -64,9 +62,7 @@ def test_initialization_disabled():
 @pytest.mark.asyncio
 async def test_fuzz_function_disabled(red_sentinel_agent):
     """Test fuzz_function when fuzzing is disabled."""
-    result = await red_sentinel_agent.fuzz_function(
-        "test_func", "def test_func(): pass", "/path/to/file.py"
-    )
+    result = await red_sentinel_agent.fuzz_function("test_func", "def test_func(): pass", "/path/to/file.py")
 
     assert isinstance(result, dict)
     assert result["enabled"] is False
@@ -89,9 +85,7 @@ async def test_fuzz_function_enabled():
         ]
         mock_test.return_value = {"crash": False, "error": None}
 
-        result = await agent.fuzz_function(
-            "test_func", "def test_func(x): return x", "/path/to/file.py"
-        )
+        result = await agent.fuzz_function("test_func", "def test_func(x): return x", "/path/to/file.py")
 
         assert isinstance(result, dict)
         assert result["function"] == "test_func"
@@ -113,9 +107,7 @@ async def test_generate_hostile_inputs_with_mcp():
         {"type": "overflow", "value": "A" * 10000},
     ]
 
-    with patch(
-        "agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client"
-    ) as mock_get_client:
+    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {"response": json.dumps(mock_response)}
         mock_get_client.return_value = mock_router
@@ -132,9 +124,7 @@ async def test_generate_hostile_inputs_fallback():
     """Test hostile input generation fallback when MCP fails."""
     agent = RedSentinelAgent()
 
-    with patch(
-        "agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client"
-    ) as mock_get_client:
+    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
         mock_get_client.side_effect = Exception("MCP connection failed")
 
         with patch.object(agent, "_get_default_hostile_inputs") as mock_default:
@@ -164,9 +154,7 @@ def test_get_default_hostile_inputs(red_sentinel_agent):
 async def test_test_with_input(red_sentinel_agent):
     """Test the _test_with_input method."""
     try:
-        result = await red_sentinel_agent._test_with_input(
-            "test_func", {"type": "test", "value": "data"}
-        )
+        result = await red_sentinel_agent._test_with_input("test_func", {"type": "test", "value": "data"})
         assert isinstance(result, dict)
     except AttributeError:
         # Method might not be fully implemented yet
@@ -225,9 +213,7 @@ async def test_json_decode_error_handling():
     """Test handling of malformed JSON responses from MCP."""
     agent = RedSentinelAgent()
 
-    with patch(
-        "agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client"
-    ) as mock_get_client:
+    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {
             "response": "invalid json response"  # Malformed JSON

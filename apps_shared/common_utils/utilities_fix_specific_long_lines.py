@@ -3,6 +3,10 @@
 import logging
 import os
 import re
+from typing import Any
+from apps_shared.common_utils.ConfigurationService import ConfigurationService
+
+LOGGER = logging.getLogger(__name__)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -76,9 +80,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         stripped_line: Any = line.strip()
         new_lines: Any = []
         if "," in stripped_line and (
-            "(" in stripped_line
-            and ")" in stripped_line
-            or stripped_line.startswith(("import ", "from "))
+            "(" in stripped_line and ")" in stripped_line or stripped_line.startswith(("import ", "from "))
         ):
             parts: Any = stripped_line.split(",")
             if len(parts) > 1:

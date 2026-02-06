@@ -7,6 +7,9 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
+from pydantic import BaseModel, Field
+from pydantic import confloat
+from pydantic import validator
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +21,8 @@ class QualityAssessment(BaseModel):
     relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
     authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
     specificity_score: confloat(ge=0.0, le=1.0) = Field(
-        default=0.0, description="Metric specificity",
+        default=0.0,
+        description="Metric specificity",
     )
     coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
     flags: list[str] = Field(default_factory=list, description="Quality flags/warnings")
@@ -162,7 +166,11 @@ class SignalQualityPipeline:
         )
 
     def evaluate_signal(
-        self, content: str, metadata: dict[str, str], query: str, doc_id: str | None = None,
+        self,
+        content: str,
+        metadata: dict[str, str],
+        query: str,
+        doc_id: str | None = None,
     ) -> QualityAssessment:
         """Evaluate a signal through all quality checks.
 
@@ -318,9 +326,7 @@ class SignalQualityPipeline:
             has_impact_words = any(word in content_lower for word in self.impact_words)
 
             # Check for metrics
-            has_metrics = any(
-                re.search(pattern, content, re.IGNORECASE) for pattern in self.metric_patterns
-            )
+            has_metrics = any(re.search(pattern, content, re.IGNORECASE) for pattern in self.metric_patterns)
 
             # scoring logic
             if has_impact_words and has_metrics:
@@ -441,7 +447,9 @@ class SignalQualityPipeline:
             return []
 
     def batch_evaluate(
-        self, documents: list[tuple[str, dict[str, str], str]], filter_failed: bool = True,
+        self,
+        documents: list[tuple[str, dict[str, str], str]],
+        filter_failed: bool = True,
     ) -> list[tuple[dict[str, str], QualityAssessment]]:
         """Evaluate multiple documents in batch.
 
@@ -504,7 +512,8 @@ def create_quality_pipeline(
 
 # Convenience function for quick filtering
 def filter_high_quality_signals(
-    documents: list[tuple[str, dict[str, str], str]], strict_mode: bool = False,
+    documents: list[tuple[str, dict[str, str], str]],
+    strict_mode: bool = False,
 ) -> list[dict[str, str]]:
     """Quickly filter documents for high-quality signals.
 

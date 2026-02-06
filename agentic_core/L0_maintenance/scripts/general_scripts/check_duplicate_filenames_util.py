@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from collections import defaultdict
 
 
 def check_for_duplicates():

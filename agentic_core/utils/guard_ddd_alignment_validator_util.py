@@ -224,7 +224,11 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     # Rough complexity: nested loops, conditionals, long body
                     # Count flow control statements
                     method_complexity = len(
-                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)],
+                        [
+                            n
+                            for n in ast.walk(method)
+                            if isinstance(n, ast.If | ast.For | ast.While | ast.Try)
+                        ],
                     )
                     if method_complexity > 8:  # Slightly relaxed threshold
                         complex_methods += 1

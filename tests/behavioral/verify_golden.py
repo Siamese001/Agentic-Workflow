@@ -151,9 +151,7 @@ class TestVerifyDomainPlannerGolden:
 
             print("\n[PASS] Golden verification passed (exact match)")
             print(f"  Agent: {self.AGENT_NAME}")
-            print(
-                f"  Pre-refactor MRO depth: {golden_snapshot['metadata'].get('mro_depth', 'N/A')}"
-            )
+            print(f"  Pre-refactor MRO depth: {golden_snapshot['metadata'].get('mro_depth', 'N/A')}")
             print(f"  Post-refactor MRO depth: {current_mro_depth}")
 
     def test_verify_mro_change(self, golden_snapshot):

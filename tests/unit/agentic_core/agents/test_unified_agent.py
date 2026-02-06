@@ -498,9 +498,7 @@ class TestUnifiedAgent:
     @pytest.fixture
     def mock_config_loader(self):
         """Mock the config loader."""
-        with patch(
-            "agentic_core.base_agents.UnifiedAgent.UnifiedAgent._load_unified_config"
-        ) as mock:
+        with patch("agentic_core.base_agents.UnifiedAgent.UnifiedAgent._load_unified_config") as mock:
             mock.return_value = {
                 "validation_rules": {},
                 "forbidden_content": [],

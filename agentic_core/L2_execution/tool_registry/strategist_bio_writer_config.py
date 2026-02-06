@@ -23,6 +23,7 @@ Non-responsibilities:
 import re
 from dataclasses import dataclass
 from typing import Any
+from pydantic import ValidationError as ValidationResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -141,7 +142,9 @@ class StrategistBioWriter:
                     break
                 continue
             grounding_result: Any = self.gate_executor.execute_grounding_check(
-                content=summary, evidence_pool=bullet_pool, gate_id="VG_SUMMARY_GROUNDING_CHECK",
+                content=summary,
+                evidence_pool=bullet_pool,
+                gate_id="VG_SUMMARY_GROUNDING_CHECK",
             )
             validation_results.append(grounding_result)
             if not grounding_result.passed:
@@ -172,7 +175,11 @@ class StrategistBioWriter:
         )
 
     def _generate_content(
-        self, bullet_pool: list[str], context: dict[str, Any], temperature: float, attempt: int,
+        self,
+        bullet_pool: list[str],
+        context: dict[str, Any],
+        temperature: float,
+        attempt: int,
     ) -> str:
         """
         Generate summary content using LLM.

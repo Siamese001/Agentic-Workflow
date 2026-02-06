@@ -20,7 +20,9 @@ def run_healing_with_detailed_report():
     """Run FileClassificationAgent healing and generate detailed JSON report."""
 
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%H:%M:%S",
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(message)s",
+        datefmt="%H:%M:%S",
     )
     logger = logging.getLogger(__name__)
 
@@ -44,7 +46,10 @@ def run_healing_with_detailed_report():
 
     # Run healing on agentic_core territory
     result = agent.heal_repository(
-        dry_run=False, execute=True, target_territory="agentic_core", auto_approve=True,
+        dry_run=False,
+        execute=True,
+        target_territory="agentic_core",
+        auto_approve=True,
     )
 
     # Capture end time

@@ -98,14 +98,12 @@ class TestObsoleteFunctionalityDetection:
 
                         # Level 4: tests/unit/agentic_core/L0_maintenance/, etc.
                         for subsubsubdir in subsubdir.iterdir():
-                            if subsubsubdir.is_dir() and not subsubsubdir.name.startswith(
-                                ("__", ".")
-                            ):
+                            if subsubsubdir.is_dir() and not subsubsubdir.name.startswith(("__", ".")):
                                 level4_tests = list(subsubsubdir.glob("test_*.py"))
                                 if level4_tests:
-                                    result[
-                                        f"tests_{subdir.name}_{subsubdir.name}_{subsubsubdir.name}"
-                                    ] = level4_tests
+                                    result[f"tests_{subdir.name}_{subsubdir.name}_{subsubsubdir.name}"] = (
+                                        level4_tests
+                                    )
 
         return result
 
@@ -591,6 +589,4 @@ class TestObsoleteFunctionalityDetection:
         # This test is INFORMATIONAL for other findings but FAILS on phase files
         # Guardian tests validate architectural compliance, not delete files
         print("\n=== GUARDIAN GATE: ANALYSIS COMPLETE ===")
-        print(
-            "This is an INFORMATIONAL report. Guardian tests are COMPLEMENTARY to unit/e2e tests."
-        )
+        print("This is an INFORMATIONAL report. Guardian tests are COMPLEMENTARY to unit/e2e tests.")

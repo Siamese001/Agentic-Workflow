@@ -112,14 +112,10 @@ def test_mission_script_imports():
         state_guard = RuntimeStateGuard(project_root)
 
         # Test that required methods exist
-        assert hasattr(agent, "validate_file_location"), (
-            "LocationAgent missing validate_file_location"
-        )
+        assert hasattr(agent, "validate_file_location"), "LocationAgent missing validate_file_location"
         assert hasattr(agent, "cleanup_violations"), "LocationAgent missing cleanup_violations"
         assert hasattr(state_guard, "get_metric"), "RuntimeStateGuard missing get_metric"
-        assert hasattr(state_guard, "increment_metric"), (
-            "RuntimeStateGuard missing increment_metric"
-        )
+        assert hasattr(state_guard, "increment_metric"), "RuntimeStateGuard missing increment_metric"
 
         print("✅ All imports and methods available")
         return True

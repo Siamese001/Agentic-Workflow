@@ -352,7 +352,9 @@ class AutonomousDecisionEngine:
         )
 
     def should_proceed_with_healing(
-        self, confidence: ConfidenceScore, agent_name: str = "Unknown",
+        self,
+        confidence: ConfidenceScore,
+        agent_name: str = "Unknown",
     ) -> tuple[bool, str]:
         """Determines if healing should proceed with mandatory safety checks."""
         # [SAFETY] Hard Gate: Check Budget/Cycles first
@@ -443,7 +445,10 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
             self.decisions_made = []
 
     async def analyze_violations_with_cognitive_disposition(
-        self, violations: list, territory: str, state_mgr,
+        self,
+        violations: list,
+        territory: str,
+        state_mgr,
     ):
         """Analyze violations using CognitiveDispositionAgent for enhanced confidence."""
         if not self.enable_cda:
@@ -470,7 +475,8 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
                 )
             else:
                 enhanced_confidence = ConfidenceScore(
-                    value=0.5, reasoning="No cognitive dispositions generated",
+                    value=0.5,
+                    reasoning="No cognitive dispositions generated",
                 )
 
             return dispositions, enhanced_confidence
@@ -591,7 +597,8 @@ class PreFlightValidator:
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if val != 1:
@@ -772,7 +779,9 @@ def execute_phase2_reconciliation(
         violation_type = violation.get("type", "UNKNOWN")
 
         confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1, violation_types=[violation_type], territory=territory,
+            violations_count=1,
+            violation_types=[violation_type],
+            territory=territory,
         )
 
         allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_name)
@@ -862,7 +871,13 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
 @standard_heal
 @with_retry(max_retries=3)
 def execute_phase1_discovery(
-    agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True, **kwargs,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
+    **kwargs,
 ):
     """
     PHASE 1: TERRITORIAL DISCOVERY (Enhanced)
@@ -878,7 +893,12 @@ def execute_phase1_discovery(
 
 
 def execute_phase1_discovery_impl(
-    agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
 ):
     """Implementation for Phase 1 discovery."""
     # Mock implementation for testing - in real scenario this would call actual agents
@@ -1147,7 +1167,10 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
             try:
                 temp_name = None
                 with tempfile.NamedTemporaryFile(
-                    "w", delete=False, dir=str(project_root), encoding="utf-8",
+                    "w",
+                    delete=False,
+                    dir=str(project_root),
+                    encoding="utf-8",
                 ) as tf:
                     json.dump(discovery_data, tf, indent=2)
                     temp_name = tf.name
@@ -1242,7 +1265,12 @@ def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_
 
 
 def execute_phase1_discovery_impl(
-    agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
@@ -1307,7 +1335,9 @@ def execute_phase1_discovery_impl(
     else:
         # Fallback to standard confidence calculation
         confidence = decision_engine.calculate_healing_confidence(
-            len(violations), [str(v) for v in violations[:10]], territory,
+            len(violations),
+            [str(v) for v in violations[:10]],
+            territory,
         )
 
     state_mgr.state["compliance_scores"][territory] = confidence.value
@@ -1406,7 +1436,12 @@ def execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_
 
 
 def execute_phase2_alignment_impl(
-    agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
 ):
     """PHASE 2: STRUCTURAL ALIGNMENT - Implementation"""
     logger.info(f"=== PHASE 2: ALIGNMENT - {territory} ===")
@@ -1464,7 +1499,9 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Safety")
     arch_gov = agents["arch_governor"](project_root=Path.cwd())
     gov_report = arch_gov.comprehensive_territory_audit(
-        target_territories=[territory], check_layer_boundaries=True, check_naming_conventions=True,
+        target_territories=[territory],
+        check_layer_boundaries=True,
+        check_naming_conventions=True,
     )
 
     if gov_report is None:
@@ -1494,7 +1531,13 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
 
 @with_retry(max_retries=3)
 def execute_phase4_healing(
-    agents, territory, gov_report, decision_engine, state_mgr, dry_run=False, auto_approve=True,
+    agents,
+    territory,
+    gov_report,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
 ):
     """PHASE 4: HEALING (Retriable)"""
     # [STRICT SCOPE] Gatekeeper check
@@ -1503,12 +1546,24 @@ def execute_phase4_healing(
         return None
 
     return execute_phase4_healing_impl(
-        agents, territory, gov_report, decision_engine, state_mgr, dry_run, auto_approve,
+        agents,
+        territory,
+        gov_report,
+        decision_engine,
+        state_mgr,
+        dry_run,
+        auto_approve,
     )
 
 
 def execute_phase4_healing_impl(
-    agents, territory, gov_report, decision_engine, state_mgr, dry_run=False, auto_approve=True,
+    agents,
+    territory,
+    gov_report,
+    decision_engine,
+    state_mgr,
+    dry_run=False,
+    auto_approve=True,
 ):
     """PHASE 4: HEALING - Implementation"""
     logger.info(f"=== PHASE 4: HEALING - {territory} ===")
@@ -1658,7 +1713,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
                 "message": conv_violation.get("message", str(conv_violation)),
                 "severity": conv_violation.get("severity", "medium"),
                 "recommended_action": conv_violation.get(
-                    "recommended_action", "Review conversational pattern",
+                    "recommended_action",
+                    "Review conversational pattern",
                 ),
                 "llm_triggered": decision_engine.enable_llm,
                 "confidence": round(conv_violation.get("confidence", 0.5), 3),
@@ -1888,7 +1944,11 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # [COMPREHENSIVE REPORTS] Save detailed reports to files
     save_comprehensive_reports(
-        territory, detailed_cert, markdown_summary, files_affected, state_mgr.project_root,
+        territory,
+        detailed_cert,
+        markdown_summary,
+        files_affected,
+        state_mgr.project_root,
     )
 
     logger.info(f"📜 CERTIFICATE ISSUED: {territory}")
@@ -2045,7 +2105,9 @@ Examples:
     )
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode (legacy)")
     parser.add_argument(
-        "--validate", action="store_true", help="Run in validation-only mode (CI/Dry-Run Mode)",
+        "--validate",
+        action="store_true",
+        help="Run in validation-only mode (CI/Dry-Run Mode)",
     )
     # [PHASE 8] New Flag for Golden Baseline capture
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
@@ -2150,7 +2212,9 @@ Examples:
 
     # [HARDENED] Use Sovereign Decision Engine instead of standard Enhanced engine
     decision_engine = SovereignDecisionEngine(
-        enable_llm=enable_llm, state_mgr=state_mgr, enable_cda=enable_cda,
+        enable_llm=enable_llm,
+        state_mgr=state_mgr,
+        enable_cda=enable_cda,
     )
 
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
@@ -2299,7 +2363,12 @@ Examples:
                     # [UNIVERSAL HEALING] Unified Execution Phase
                     # All agents now receive the 'Heal' signal if confidence is met
                     p1_drift, p1_loc, p1_scan_result = execute_phase1_discovery(
-                        agents, territory, decision_engine, state_mgr, dry_run, auto_approve,
+                        agents,
+                        territory,
+                        decision_engine,
+                        state_mgr,
+                        dry_run,
+                        auto_approve,
                     )
 
                     if p1_drift is not None:
@@ -2309,7 +2378,12 @@ Examples:
 
                         # Execute Phase 2 with decision engine gating
                         phase2_result = execute_phase2_reconciliation(
-                            agents, territory, decision_engine, state_mgr, plan, dry_run,
+                            agents,
+                            territory,
+                            decision_engine,
+                            state_mgr,
+                            plan,
+                            dry_run,
                         )
 
                         # Log Phase 2 results
@@ -2322,7 +2396,10 @@ Examples:
                         # Phase 3: Final Validation (Post-heal AST checks)
                         # Use the original violations from Phase 1
                         phase3_result = execute_phase3_validation(
-                            agents, territory, p1_drift.get("violations", []), dry_run,
+                            agents,
+                            territory,
+                            p1_drift.get("violations", []),
+                            dry_run,
                         )
 
                         if phase3_result["status"] == "clean":
@@ -2334,7 +2411,12 @@ Examples:
                         # Continue with existing phases
                         # Phase 2.5: Structural Alignment (Hierarchy) - Legacy
                         execute_phase2_alignment(
-                            agents, territory, decision_engine, state_mgr, dry_run, auto_approve,
+                            agents,
+                            territory,
+                            decision_engine,
+                            state_mgr,
+                            dry_run,
+                            auto_approve,
                         )
 
                         # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
@@ -2373,7 +2455,9 @@ Examples:
                                 state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
                             else:
                                 state_mgr.complete_agent(
-                                    "FileClassificationAgent", False, "No heal_repository method",
+                                    "FileClassificationAgent",
+                                    False,
+                                    "No heal_repository method",
                                 )
                         elif not pascal_proceed:
                             state_mgr.add_event("warning", f"Sovereignty healing skipped - {pascal_reason}")
@@ -2422,7 +2506,9 @@ Examples:
                                 state_mgr.state["conversational_violations"].extend(conv_violations)
                             else:
                                 state_mgr.complete_agent(
-                                    "DebateSynthesisAgent", False, "No scan_violations method",
+                                    "DebateSynthesisAgent",
+                                    False,
+                                    "No scan_violations method",
                                 )
                         except Exception as e:
                             logger.warning(f"DebateSynthesisAgent failed: {e}")
@@ -2448,7 +2534,9 @@ Examples:
                                 state_mgr.state["hygiene_violations"].extend(hygiene_violations)
                             else:
                                 state_mgr.complete_agent(
-                                    "RootHygieneAgent", False, "No scan_root_violations method",
+                                    "RootHygieneAgent",
+                                    False,
+                                    "No scan_root_violations method",
                                 )
                         except Exception as e:
                             logger.warning(f"RootHygieneAgent failed: {e}")

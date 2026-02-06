@@ -8,6 +8,9 @@ like web search to ensure high-quality responses.
 import asyncio
 import logging
 import time
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +79,10 @@ class RetrievalGrader:
         )
 
     async def grade_documents(
-        self, query: str, documents: list[str], document_ids: list[str] | None = None,
+        self,
+        query: str,
+        documents: list[str],
+        document_ids: list[str] | None = None,
     ) -> RetrievalGrade:
         """Grade documents for relevance to the query.
 
@@ -116,14 +122,9 @@ class RetrievalGrader:
         avg_confidence = total_confidence / len(docs_to_grade) if docs_to_grade else 0
 
         # Determine status
-        if (
-            relevance_ratio >= self.relevance_threshold
-            and avg_confidence >= self.confidence_threshold
-        ):
+        if relevance_ratio >= self.relevance_threshold and avg_confidence >= self.confidence_threshold:
             status = GradeStatus.PASS
-            reasoning = (
-                f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f})"
-            )
+            reasoning = f"High relevance ({relevance_ratio:.2f}) and confidence ({avg_confidence:.2f})"
             self.stats["passes"] += 1
         elif relevance_ratio < self.relevance_threshold * 0.3:
             status = GradeStatus.FALLBACK_REQUIRED

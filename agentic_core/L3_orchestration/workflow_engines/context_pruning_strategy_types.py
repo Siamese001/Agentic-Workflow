@@ -367,7 +367,9 @@ class AdaptiveDepthManager:
         )
 
     def calculate_adaptive_limit(
-        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None,
+        self,
+        context: dict[str, Any],
+        current_metrics: dict[str, Any] | None = None,
     ) -> int:
         """
         Calculate adaptive depth limit based on mission complexity.

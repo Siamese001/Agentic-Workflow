@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any, Optional
 
 """
 LicS2SupervisorAgent - Extracted for one-class-per-file pattern.
@@ -153,7 +154,9 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
             for entity in brief_entities[:5]:  # Validate up to 5 entities
                 if entity["type"] == "person":
                     validation = await self.recipient_agent.validate_entity(
-                        entity["name"], entity["context"], mission,
+                        entity["name"],
+                        entity["context"],
+                        mission,
                     )
                     rag_results.extend(validation["rag_results"])
                     if validation.get("staleness_warning"):
@@ -176,7 +179,9 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
         reflexion_iterations = 0
         while reflexion_iterations < 2:
             critique = self.rag_reflexion.critique_rag_sufficiency(
-                rag_results, profile_analysis.Archetype, iteration=reflexion_iterations + 1,
+                rag_results,
+                profile_analysis.Archetype,
+                iteration=reflexion_iterations + 1,
             )
 
             if refinement_context and reflexion_iterations == 0:
@@ -270,7 +275,9 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
             return []
 
     def _extract_sender_grounding(
-        self, rag_results: List[RAGResult], mission: OutreachMission,
+        self,
+        rag_results: List[RAGResult],
+        mission: OutreachMission,
     ) -> SenderGroundingWhitelists:
         """Extract sender grounding whitelists from RAG."""
         grounding = SenderGroundingWhitelists()
@@ -285,7 +292,8 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
                 grounding.team_members.extend(names)
                 if names:
                     grounding.raw_evidence["team_members"] = grounding.raw_evidence.get(
-                        "team_members", [],
+                        "team_members",
+                        [],
                     ) + [result.text[:200]]
 
             if any(marker in text_lower for marker in ["product", "platform", "solution", "service"]):
@@ -301,7 +309,8 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
                 grounding.case_studies.extend(cases)
                 if cases:
                     grounding.raw_evidence["case_studies"] = grounding.raw_evidence.get(
-                        "case_studies", [],
+                        "case_studies",
+                        [],
                     ) + [result.text[:200]]
 
         grounding.team_members = list(set(grounding.team_members))
@@ -338,7 +347,9 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
         return phrases
 
     def _critique_archetype_classification(
-        self, provisional_analysis: ProfileAnalysis, context: ResearchContext,
+        self,
+        provisional_analysis: ProfileAnalysis,
+        context: ResearchContext,
     ) -> ProfileAnalysis:
         """Agentic self-correction of Archetype classification."""
         all_text = " ".join([r.text for r in context.rag_results]).lower()

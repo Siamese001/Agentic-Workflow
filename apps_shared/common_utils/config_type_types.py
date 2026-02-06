@@ -7,6 +7,9 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 
 import logging
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +165,10 @@ class ConfigLoadPlanner:
 
             # Create load plan
             load_plan = self._create_load_plan(
-                load_request, sources, validation_rules, transformations,
+                load_request,
+                sources,
+                validation_rules,
+                transformations,
             )
 
             # Estimate config size
@@ -254,7 +260,8 @@ class ConfigLoadPlanner:
                     id=raw_source.get("id", f"source_{len(sources)}"),
                     name=raw_source.get("name", "unnamed"),
                     config_type=config_type_mapping.get(
-                        raw_source.get("config_type", "environment"), ConfigType.ENVIRONMENT,
+                        raw_source.get("config_type", "environment"),
+                        ConfigType.ENVIRONMENT,
                     ),
                     format=format_mapping.get(raw_source.get("format", "json"), ConfigFormat.JSON),
                     location=raw_source.get("location", ""),
@@ -268,8 +275,7 @@ class ConfigLoadPlanner:
         # Validate source count
         if len(sources) > self.config.max_sources_per_plan:
             raise ValueError(
-                f"Number of sources ({len(sources)}) exceeds maximum "
-                f"({self.config.max_sources_per_plan})",
+                f"Number of sources ({len(sources)}) exceeds maximum ({self.config.max_sources_per_plan})",
             )
 
         return sources

@@ -99,7 +99,9 @@ for agent in no_tests:
 
         # Find where to insert test_self - after __init__ or __post_init__ if exists, otherwise after class docstring
         init_match = re.search(
-            rf'(class {class_name}.*?:.*?(?:""".*?""")?)(.*?)(def \w+)', content, re.DOTALL,
+            rf'(class {class_name}.*?:.*?(?:""".*?""")?)(.*?)(def \w+)',
+            content,
+            re.DOTALL,
         )
 
         if init_match:

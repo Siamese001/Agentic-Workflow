@@ -153,9 +153,7 @@ class ResumeValidator(DomainValidator):
     def _assess_bullet_quality(self, content: str) -> float:
         """Assess bullet point quality."""
         bullets = [
-            b.strip()
-            for b in content.split("\n")
-            if b.strip().startswith("•") or b.strip().startswith("-")
+            b.strip() for b in content.split("\n") if b.strip().startswith("•") or b.strip().startswith("-")
         ]
         if not bullets:
             return 0.0
@@ -203,11 +201,7 @@ class ResumeValidator(DomainValidator):
         """Calculate action verb diversity."""
         verbs = self._count_action_verbs(content)
         unique_verbs = len(
-            {
-                word.lower()
-                for word in content.split()
-                if word in ["led", "managed", "developed", "created"]
-            },
+            {word.lower() for word in content.split() if word in ["led", "managed", "developed", "created"]},
         )
         return unique_verbs / max(verbs, 1)
 
@@ -287,9 +281,7 @@ class OutreachValidator(DomainValidator):
         if recipient_level == "c_level":
             # Should be very formal
             formal_count = sum(1 for indicator in formal_indicators if indicator in content_lower)
-            informal_count = sum(
-                1 for indicator in informal_indicators if indicator in content_lower
-            )
+            informal_count = sum(1 for indicator in informal_indicators if indicator in content_lower)
             return min(1.0, formal_count * 0.3 - informal_count * 0.5)
         else:
             # Can be slightly less formal
@@ -426,7 +418,8 @@ class SharedSignalInfrastructure:
 
         if enhancer_key not in self._enhancers:
             enhancer = signal_enhancer(
-                name=f"{engine_type.value}_enhancer", thresholds=domain_config.quality_thresholds,
+                name=f"{engine_type.value}_enhancer",
+                thresholds=domain_config.quality_thresholds,
             )
 
             # Store with domain config reference
@@ -479,7 +472,9 @@ class SharedSignalInfrastructure:
         return assessment
 
     def get_feedback_loop(
-        self, engine_type: EngineType, loop_name: str | None = None,
+        self,
+        engine_type: EngineType,
+        loop_name: str | None = None,
     ) -> FeedbackLoop:
         """Get feedback loop for the engine.
 
@@ -650,7 +645,9 @@ def get_shared_infrastructure() -> SharedSignalInfrastructure:
 
 # Convenience functions for engines
 def assess_resume_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
+    content: str,
+    context: dict[str, Any] | None = None,
+    strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess resume signal quality.
 
@@ -665,16 +662,16 @@ def assess_resume_signal(
     infrastructure = get_shared_infrastructure()
 
     # Create resume config
-    thresholds = (
-        QualityThresholds() if strict_mode else QualityThresholds(GOOD_MIN=0.5, MARGINAL_MIN=0.3)
-    )
+    thresholds = QualityThresholds() if strict_mode else QualityThresholds(GOOD_MIN=0.5, MARGINAL_MIN=0.3)
     config = infrastructure.create_domain_config(EngineType.RESUME, custom_thresholds=thresholds)
 
     return infrastructure.assess_signal(content, EngineType.RESUME, config, context)
 
 
 def assess_outreach_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
+    content: str,
+    context: dict[str, Any] | None = None,
+    strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess outreach signal quality.
 
@@ -689,9 +686,7 @@ def assess_outreach_signal(
     infrastructure = get_shared_infrastructure()
 
     # Create outreach config
-    thresholds = (
-        QualityThresholds() if strict_mode else QualityThresholds(GOOD_MIN=0.5, MARGINAL_MIN=0.3)
-    )
+    thresholds = QualityThresholds() if strict_mode else QualityThresholds(GOOD_MIN=0.5, MARGINAL_MIN=0.3)
     config = infrastructure.create_domain_config(EngineType.OUTREACH, custom_thresholds=thresholds)
 
     return infrastructure.assess_signal(content, EngineType.OUTREACH, config, context)

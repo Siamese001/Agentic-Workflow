@@ -277,12 +277,8 @@ class TestManualVerification:
 
             # Verify test failed and detected void violation
             assert result.returncode != 0, "Test should have failed but passed"
-            assert "VOID COMPLIANCE VIOLATIONS" in result.stdout, (
-                "Void compliance violation not detected"
-            )
-            assert "temp_forbidden_folder" in result.stdout, (
-                "Temporary forbidden folder not mentioned"
-            )
+            assert "VOID COMPLIANCE VIOLATIONS" in result.stdout, "Void compliance violation not detected"
+            assert "temp_forbidden_folder" in result.stdout, "Temporary forbidden folder not mentioned"
 
         finally:
             # Cleanup
@@ -300,9 +296,7 @@ if __name__ == "__main__":
     print()
 
     # Run with pytest
-    exit_code = subprocess.run(
-        [sys.executable, "-m", "pytest", __file__, "-v", "-m", "manual"]
-    ).returncode
+    exit_code = subprocess.run([sys.executable, "-m", "pytest", __file__, "-v", "-m", "manual"]).returncode
 
     if exit_code == 0:
         print("\n✅ All manual verification tests passed!")

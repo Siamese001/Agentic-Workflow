@@ -68,9 +68,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
 
     def test_high_frequency_execution(self):
         """Stress test: Ensure the Progress context manager handles rapid open/close cycles."""
-        with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.execute_sql", return_value="ok"
-        ):
+        with patch("agentic_core.L2_execution.tool_registry.query_runtime.execute_sql", return_value="ok"):
             for _ in range(10):
                 run_hardened_query("SELECT 1")
             self.assertTrue(True)
@@ -85,9 +83,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
         def mock_progress_add_task(*args, **kwargs):
             return "mock_task_id"
 
-        with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.Progress"
-        ) as mock_progress_class:
+        with patch("agentic_core.L2_execution.tool_registry.query_runtime.Progress") as mock_progress_class:
             mock_progress = MagicMock()
             mock_progress_class.return_value.__enter__.return_value = mock_progress
             mock_progress.add_task.side_effect = mock_progress_add_task
@@ -107,9 +103,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
 
     def test_graceful_error_handling_with_cleanup(self):
         """Test that errors don't leave the progress bar in a broken state."""
-        with patch(
-            "agentic_core.L2_execution.tool_registry.query_runtime.Progress"
-        ) as mock_progress_class:
+        with patch("agentic_core.L2_execution.tool_registry.query_runtime.Progress") as mock_progress_class:
             mock_progress = MagicMock()
             mock_progress_class.return_value.__enter__.return_value = mock_progress
 

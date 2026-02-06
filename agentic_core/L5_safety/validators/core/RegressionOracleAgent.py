@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from pathlib import Path
 
 """
 RegressionOracleAgent - Extracted for one-class-per-file pattern.
@@ -20,6 +21,7 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -84,7 +86,11 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
             genai_client,
         )
         self.test_runner = RegressionTestRunner(
-            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass,
+            self.ctx,
+            self.test_dir,
+            genai_available,
+            genai_client,
+            self._emit_regression_check_pass,
         )
         self.generated_tests: list[GeneratedTest] = []
 
@@ -174,7 +180,9 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
             _call_path.discard(agent_name)
 
     def post_heal_validation(
-        self, generated_tests: list[GeneratedTest], dry_run: bool = True,
+        self,
+        generated_tests: list[GeneratedTest],
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -226,7 +234,10 @@ class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
         return report
 
     def cleanup_violations(
-        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50,
+        self,
+        violations: list[RegressionViolation],
+        dry_run: bool = True,
+        max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.

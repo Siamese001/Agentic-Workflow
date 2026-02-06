@@ -7,6 +7,8 @@ Compares 272 agents (Jan 13) -> 209 agents (Jan 4) -> 120 agents (current)
 import json
 import subprocess
 import sys
+from collections import defaultdict
+from pathlib import Path
 
 
 def get_agents_at_commit(commit_hash):

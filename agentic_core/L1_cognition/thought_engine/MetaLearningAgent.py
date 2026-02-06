@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 # from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
 
@@ -43,7 +44,9 @@ class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
 
     def __init__(
-        self, replay_capacity: int = 1000, telemetry_callback: TelemetryCallback | None = None,
+        self,
+        replay_capacity: int = 1000,
+        telemetry_callback: TelemetryCallback | None = None,
     ) -> None:
         """Initialize the instance.
 
@@ -72,7 +75,11 @@ class MetaLearningAgent(AtomicExecutionMixin, SovereignBaseAgent):
         super().__init__()
 
     def store_experience(
-        self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float,
+        self,
+        state: dict[str, Any],
+        thought_type: str,
+        outcome: dict[str, Any],
+        reward: float,
     ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
         exp = Experience(state=state, thought_type=thought_type, outcome=outcome, reward=reward)

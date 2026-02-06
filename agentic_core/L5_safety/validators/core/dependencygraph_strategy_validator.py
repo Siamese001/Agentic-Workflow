@@ -381,7 +381,9 @@ class ValidationContext:
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
-                self._client.models.generate_content, model=self.model_id, contents=[prompt],
+                self._client.models.generate_content,
+                model=self.model_id,
+                contents=[prompt],
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)  # Refactored

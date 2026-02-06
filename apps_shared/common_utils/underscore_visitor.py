@@ -5,6 +5,7 @@ Location: agentic_core/L0_maintenance/scripts/
 
 import ast
 import sys
+from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

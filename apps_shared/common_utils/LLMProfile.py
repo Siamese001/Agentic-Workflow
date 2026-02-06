@@ -1,6 +1,9 @@
 # from archives.legacy_root_folders.core.models.models import ReasoningMode  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 
+from pydantic import BaseModel, Field
+
+
 class LLMProfile(BaseModel):
     """LLM configuration profile used by execution profiles.
 
@@ -11,7 +14,8 @@ class LLMProfile(BaseModel):
 
     reasoning_mode: ReasoningMode = ReasoningMode.COT
     ModelTier: str = Field(
-        default="balanced", description="Model tier hint, e.g. 'cheap', 'balanced', 'premium'.",
+        default="balanced",
+        description="Model tier hint, e.g. 'cheap', 'balanced', 'premium'.",
     )
     max_cost_usd: float = Field(default=0.10, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)

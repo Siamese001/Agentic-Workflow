@@ -7,6 +7,9 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -248,7 +251,10 @@ class GraphRAGFusion:
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
     async def query(
-        self, natural_query: str, query_type: QueryType | None = None, max_results: int = 5,
+        self,
+        natural_query: str,
+        query_type: QueryType | None = None,
+        max_results: int = 5,
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
 
@@ -405,7 +411,10 @@ class GraphRAGFusion:
             return await self._vector_only_query(query, max_results)
 
     async def _fusion_query(
-        self, query: str, query_type: QueryType, max_results: int,
+        self,
+        query: str,
+        query_type: QueryType,
+        max_results: int,
     ) -> FusionResult:
         """Execute fusion query combining vector and graph.
 
@@ -427,7 +436,9 @@ class GraphRAGFusion:
         graph_task = self._graph_only_query(query, max_results)
 
         vector_result, graph_result = await asyncio.gather(
-            vector_task, graph_task, return_exceptions=True,
+            vector_task,
+            graph_task,
+            return_exceptions=True,
         )
 
         # Handle exceptions
@@ -438,7 +449,9 @@ class GraphRAGFusion:
 
         # Fuse results
         fused_context = self._fuse_results(
-            vector_result.vector_results, graph_result.graph_results, query_type,
+            vector_result.vector_results,
+            graph_result.graph_results,
+            query_type,
         )
 
         # Combine sources
@@ -551,7 +564,10 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 
 # Convenience function
 async def graphrag_query(
-    query: str, query_type: QueryType | None = None, max_results: int = 5, **kwargs,
+    query: str,
+    query_type: QueryType | None = None,
+    max_results: int = 5,
+    **kwargs,
 ) -> FusionResult:
     """Convenience function for GraphRAG query.
 

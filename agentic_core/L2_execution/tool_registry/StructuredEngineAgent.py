@@ -10,6 +10,7 @@ import os
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -35,7 +36,9 @@ class StructuredEngineAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             # Use Google Gemini by default for planning (fast/long context)
             await self.llm_generate(
-                prompt, provider="google", model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
+                prompt,
+                provider="google",
+                model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
             )
 
             return AgentPlan(

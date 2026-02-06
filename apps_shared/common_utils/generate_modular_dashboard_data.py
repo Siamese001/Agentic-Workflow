@@ -14,6 +14,8 @@ This file is kept for reference only. DO NOT USE.
 """
 
 import sys
+from collections import defaultdict
+from pathlib import Path
 
 print("[DEPRECATED] This script is deprecated. Use regenerate_dashboard_full.py instead.")
 sys.exit(1)
@@ -91,9 +93,7 @@ def calculate_metrics(agents_in_territory):
 
     # Get complexity values (cyclomatic_complexity field)
     complexities = [
-        a.get("cyclomatic_complexity", 0)
-        for a in agents_in_territory
-        if a.get("cyclomatic_complexity")
+        a.get("cyclomatic_complexity", 0) for a in agents_in_territory if a.get("cyclomatic_complexity")
     ]
     avg_cc = sum(complexities) / len(complexities) if complexities else 0
 
@@ -291,9 +291,7 @@ def generate_agent_data(agents, territories):
             heal_cap = 100.0 if has_healing else 0.0
 
             invocation = a.get("invocation", "No")
-            invocation_pct = (
-                100.0 if invocation == "Yes" else (50.0 if invocation == "Inherited" else 0.0)
-            )
+            invocation_pct = 100.0 if invocation == "Yes" else (50.0 if invocation == "Inherited" else 0.0)
 
             mcp_hardened = a.get("mcp_hardened", False)
             hardened_pct = 100.0 if mcp_hardened else 0.0
@@ -320,10 +318,7 @@ def generate_agent_data(agents, territories):
 
             # Code quality score
             code_quality = (
-                typed_pct * 0.30
-                + documented_pct * 0.30
-                + schema_pct * 0.25
-                + proper_base_pct * 0.15
+                typed_pct * 0.30 + documented_pct * 0.30 + schema_pct * 0.25 + proper_base_pct * 0.15
             )
 
             # Store values for distribution arrays

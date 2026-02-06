@@ -130,7 +130,9 @@ class EventBus(ABC):
 
     @abstractmethod
     async def subscribe(
-        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]],
+        self,
+        channel: str,
+        callback: Callable[[SystemEvent], Awaitable[None]],
     ) -> None:
         """Subscribe to events on a channel.
 
@@ -219,7 +221,9 @@ class MemoryEventBus(EventBus):
         logger.debug(f"Published event {event.id} to channel {channel}")
 
     async def subscribe(
-        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]],
+        self,
+        channel: str,
+        callback: Callable[[SystemEvent], Awaitable[None]],
     ) -> None:
         """Subscribe to events on a channel.
 
@@ -320,7 +324,9 @@ class MemoryEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent,
+        self,
+        callback: Callable[[SystemEvent], Awaitable[None]],
+        event: SystemEvent,
     ) -> None:
         """Safely notify a subscriber.
 
@@ -428,7 +434,9 @@ class RedisEventBus(EventBus):
             raise
 
     async def subscribe(
-        self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]],
+        self,
+        channel: str,
+        callback: Callable[[SystemEvent], Awaitable[None]],
     ) -> None:
         """Subscribe to a Redis stream.
 
@@ -584,7 +592,9 @@ class RedisEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent,
+        self,
+        callback: Callable[[SystemEvent], Awaitable[None]],
+        event: SystemEvent,
     ) -> None:
         """Safely notify a subscriber.
 

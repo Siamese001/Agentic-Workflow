@@ -34,9 +34,7 @@ class TestCDAIntegration(unittest.TestCase):
             state_mgr = RuntimeStateManager(self.project_root)
 
             # Test without CDA
-            engine = EnhancedAutonomousDecisionEngine(
-                enable_llm=False, state_mgr=state_mgr, enable_cda=False
-            )
+            engine = EnhancedAutonomousDecisionEngine(enable_llm=False, state_mgr=state_mgr, enable_cda=False)
             self.assertIsNotNone(engine)
             self.assertFalse(engine.enable_cda)
             self.assertIsNone(engine.cda)
@@ -238,9 +236,7 @@ class TestCDALiveIntegration(unittest.TestCase):
             )
 
             state_mgr = RuntimeStateManager(self.project_root)
-            engine = EnhancedAutonomousDecisionEngine(
-                enable_llm=True, state_mgr=state_mgr, enable_cda=True
-            )
+            engine = EnhancedAutonomousDecisionEngine(enable_llm=True, state_mgr=state_mgr, enable_cda=True)
 
             if not engine.enable_cda or not engine.cda:
                 self.skipTest("CognitiveDispositionAgent not available in environment")

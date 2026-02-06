@@ -51,9 +51,7 @@ class TestReportingAgent:
 
     def test_has_get_folder_scope_summary_method(self, agent_class):
         """Verify agent has get_folder_scope_summary method."""
-        assert hasattr(agent_class, "get_folder_scope_summary"), (
-            "Should have get_folder_scope_summary method"
-        )
+        assert hasattr(agent_class, "get_folder_scope_summary"), "Should have get_folder_scope_summary method"
 
     def test_has_generate_ascii_tree_method(self, agent_class):
         """Verify agent has generate_ascii_tree method."""
@@ -61,9 +59,7 @@ class TestReportingAgent:
 
     def test_has_run_diagnostic_report_method(self, agent_class):
         """Verify agent has run_diagnostic_report method."""
-        assert hasattr(agent_class, "run_diagnostic_report"), (
-            "Should have run_diagnostic_report method"
-        )
+        assert hasattr(agent_class, "run_diagnostic_report"), "Should have run_diagnostic_report method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

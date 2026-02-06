@@ -55,9 +55,7 @@ class TestSherlockAgent:
 
     def test_has_trigger_investigation_method(self, agent_class):
         """Verify agent has trigger_investigation method."""
-        assert hasattr(agent_class, "trigger_investigation"), (
-            "Should have trigger_investigation method"
-        )
+        assert hasattr(agent_class, "trigger_investigation"), "Should have trigger_investigation method"
 
     def test_has_execute_method(self, agent_class):
         """Verify agent has execute method."""

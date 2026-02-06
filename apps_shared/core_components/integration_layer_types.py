@@ -86,9 +86,7 @@ class ServiceRegistry:
 
     def get_by_domain(self, domain: AppDomain) -> list[ServiceEndpoint]:
         """Get all services in a domain."""
-        return [
-            self._services[key] for key in self._domain_services[domain] if key in self._services
-        ]
+        return [self._services[key] for key in self._domain_services[domain] if key in self._services]
 
     def list_all(self) -> list[ServiceEndpoint]:
         """List all registered services."""
@@ -117,13 +115,7 @@ class ConfigurationLoader:
         """Get the path to a configuration file."""
         if domain == AppDomain.SHARED:
             return self.config.project_root / self.config.config_dir / f"{config_name}.yaml"
-        return (
-            self.config.project_root
-            / f"apps_{domain.value}"
-            / "domain"
-            / "config"
-            / f"{config_name}.json"
-        )
+        return self.config.project_root / f"apps_{domain.value}" / "domain" / "config" / f"{config_name}.json"
 
     def load(
         self,

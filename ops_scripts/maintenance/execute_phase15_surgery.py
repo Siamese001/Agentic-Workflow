@@ -230,9 +230,7 @@ def perform_surgery():
         for file in files:
             if file == "CognitiveDispositionAgent.py":
                 found_path = Path(root) / file
-                target_path = (
-                    PROJECT_ROOT / "agentic_core/L5_safety/validators/CognitiveDispositionAgent.py"
-                )
+                target_path = PROJECT_ROOT / "agentic_core/L5_safety/validators/CognitiveDispositionAgent.py"
 
                 if found_path.resolve() != target_path.resolve():
                     print(f"[GHOST FOUND] {found_path}")

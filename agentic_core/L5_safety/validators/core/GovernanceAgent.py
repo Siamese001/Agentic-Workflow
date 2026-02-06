@@ -475,7 +475,11 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         return violations
 
     def _check_root_file(
-        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool,
+        self,
+        file_path: Path,
+        violations: list[str],
+        sanitized: list[str],
+        auto_sanitize: bool,
     ) -> None:
         if file_path.name not in self.ALLOWED_ROOT_FILES:
             violations.append(f"Unauthorized file at root: {file_path.name}")
@@ -533,7 +537,10 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
                     counter += 1
                 # DELEGATION: Use ArchivalGatekeeper for safe move (handles approval internally)
                 result = self.gatekeeper.safe_move(
-                    file_path, target, "GovernanceAgent", "Move root script to scripts/",
+                    file_path,
+                    target,
+                    "GovernanceAgent",
+                    "Move root script to scripts/",
                 )
                 if result.success:
                     return f"MOVED to scripts/{target.name}"

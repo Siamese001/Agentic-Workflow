@@ -43,26 +43,16 @@ class TestLocationHierarchyIntegration:
     def test_hierarchy_respects_location_constraints(self, mock_project_root):
         """Test hierarchy agent respects location constraints."""
         # Base agents must stay in base_agents folder
-        valid_base_agent_path = (
-            mock_project_root / "agentic_core" / "base_agents" / "SovereignBaseAgent.py"
-        )
-        invalid_base_agent_path = (
-            mock_project_root / "agentic_core" / "L5_safety" / "SovereignBaseAgent.py"
-        )
+        valid_base_agent_path = mock_project_root / "agentic_core" / "base_agents" / "SovereignBaseAgent.py"
+        invalid_base_agent_path = mock_project_root / "agentic_core" / "L5_safety" / "SovereignBaseAgent.py"
 
         assert "base_agents" in str(valid_base_agent_path), "Valid path"
-        assert "base_agents" not in str(invalid_base_agent_path).replace("base_agents", ""), (
-            "Invalid path"
-        )
+        assert "base_agents" not in str(invalid_base_agent_path).replace("base_agents", ""), "Invalid path"
 
     def test_cross_layer_validation(self, mock_project_root):
         """Test validation across layer boundaries."""
-        l5_path = (
-            mock_project_root / "agentic_core" / "L5_safety" / "validators" / "TestValidator.py"
-        )
-        l0_path = (
-            mock_project_root / "agentic_core" / "L0_maintenance" / "scripts" / "TestScript.py"
-        )
+        l5_path = mock_project_root / "agentic_core" / "L5_safety" / "validators" / "TestValidator.py"
+        l0_path = mock_project_root / "agentic_core" / "L0_maintenance" / "scripts" / "TestScript.py"
 
         # Create the directories
         l0_path.parent.mkdir(parents=True, exist_ok=True)

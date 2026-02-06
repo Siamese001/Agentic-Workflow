@@ -24,7 +24,9 @@ class CognitiveRecoveryMixin:
         return SemanticKnowledgeClient()
 
     def consult_knowledge_base(
-        self, query: str, namespace: str = "architecture-docs",
+        self,
+        query: str,
+        namespace: str = "architecture-docs",
     ) -> list[dict[str, Any]]:
         """
         Generic query to the semantic brain.

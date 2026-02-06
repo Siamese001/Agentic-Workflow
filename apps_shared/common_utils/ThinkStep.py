@@ -5,6 +5,8 @@ Formal data models for separating reasoning from action outputs.
 """
 
 from datetime import datetime
+from pydantic import BaseModel, Field
+from typing import Any
 
 
 class ThinkStep(BaseModel):
@@ -15,13 +17,18 @@ class ThinkStep(BaseModel):
 
     thought: str = Field(..., description="The reasoning or thought process")
     confidence: float = Field(
-        default=1.0, ge=0.0, le=1.0, description="Confidence in this reasoning",
+        default=1.0,
+        ge=0.0,
+        le=1.0,
+        description="Confidence in this reasoning",
     )
     reasoning_type: str = Field(
-        default="general", description="Type of reasoning (e.g., deductive, inductive)",
+        default="general",
+        description="Type of reasoning (e.g., deductive, inductive)",
     )
     timestamp: datetime = Field(
-        default_factory=datetime.now, description="When this thought occurred",
+        default_factory=datetime.now,
+        description="When this thought occurred",
     )
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
@@ -40,7 +47,8 @@ class ActionStep(BaseModel):
     parameters: dict[str, Any] = Field(default_factory=dict, description="Action parameters")
     expected_outcome: str | None = Field(None, description="Expected result of this action")
     timestamp: datetime = Field(
-        default_factory=datetime.now, description="When this action was taken",
+        default_factory=datetime.now,
+        description="When this action was taken",
     )
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
@@ -59,7 +67,8 @@ class ObservationStep(BaseModel):
     error: str | None = Field(None, description="Error message if action failed")
     data: dict[str, Any] = Field(default_factory=dict, description="Structured observation data")
     timestamp: datetime = Field(
-        default_factory=datetime.now, description="When this observation was made",
+        default_factory=datetime.now,
+        description="When this observation was made",
     )
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
@@ -77,7 +86,8 @@ class ReasoningTraceModel(BaseModel):
     trace_id: str = Field(..., description="Unique identifier for this trace")
     task: str = Field(..., description="The task being reasoned about")
     steps: list[ThinkStep | ActionStep | ObservationStep] = Field(
-        default_factory=list, description="Sequence of reasoning, action, and observation steps",
+        default_factory=list,
+        description="Sequence of reasoning, action, and observation steps",
     )
     final_answer: str | None = Field(None, description="Final answer or conclusion")
     total_steps: int = Field(default=0, description="Total number of steps taken")

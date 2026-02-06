@@ -13,6 +13,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import schemas from SSOT
 from agentic_core.schemas.models.consensus import ConsensusVerdict, ModelOpinion
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -78,7 +79,12 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
             pk = persona_keys[i % len(persona_keys)]
             tasks.append(
                 self._get_opinion(
-                    providers[i], models[i], context, goal, risk_level, self.personas[pk]["role"],
+                    providers[i],
+                    models[i],
+                    context,
+                    goal,
+                    risk_level,
+                    self.personas[pk]["role"],
                 ),
             )
 
@@ -86,7 +92,13 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
         return [r for r in results if not isinstance(r, Exception)]
 
     async def _get_opinion(
-        self, provider: str, model: str, context: str, goal: str, risk: str, role: str,
+        self,
+        provider: str,
+        model: str,
+        context: str,
+        goal: str,
+        risk: str,
+        role: str,
     ) -> ModelOpinion:
         prompt = f"{role}\n\nGOAL: {goal}\nCONTEXT: {context[:500]}\nRISK: {risk}\n\nEvaluate and provide: Plan, Reasoning, Risk (LOW/MED/HIGH), Confidence (0-1)."
 
@@ -106,7 +118,10 @@ class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
             raise
 
     async def _analyze_consensus(
-        self, opinions: list[ModelOpinion], context: str, goal: str,
+        self,
+        opinions: list[ModelOpinion],
+        context: str,
+        goal: str,
     ) -> ConsensusVerdict:
         if not opinions:
             raise ValueError("No opinions")

@@ -26,6 +26,8 @@ Logger: Any = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
@@ -132,7 +134,9 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
         return history[-limit:] if history else []
 
     def get_alerts(
-        self, agent_id: str | None = None, Severity: AlertSeverity | None = None,
+        self,
+        agent_id: str | None = None,
+        Severity: AlertSeverity | None = None,
     ) -> list[HealthAlert]:
         """Get health alerts.
 
@@ -253,7 +257,8 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
 
 
 def create_autonomic_monitor(
-    success_rate_threshold: float = 0.8, error_rate_threshold: float = 0.2,
+    success_rate_threshold: float = 0.8,
+    error_rate_threshold: float = 0.2,
 ) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.
 
@@ -265,5 +270,6 @@ def create_autonomic_monitor(
         AutonomicMonitorAgent instance
     """
     return AutonomicMonitorAgent(
-        success_rate_threshold=success_rate_threshold, error_rate_threshold=error_rate_threshold,
+        success_rate_threshold=success_rate_threshold,
+        error_rate_threshold=error_rate_threshold,
     )

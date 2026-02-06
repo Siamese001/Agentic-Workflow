@@ -282,9 +282,7 @@ class TestSubatomicCompliance:
             for agent in file_analysis["agents"]:
                 # Count primary public methods only
                 primary_methods = [
-                    m
-                    for m in agent["methods"]
-                    if m not in excluded_methods and not m.startswith("_")
+                    m for m in agent["methods"] if m not in excluded_methods and not m.startswith("_")
                 ]
                 method_count = len(primary_methods)
 
@@ -340,9 +338,7 @@ class TestSubatomicCompliance:
                     import_layer = get_import_layer(import_name)
                     if import_layer and import_layer != file_layer:
                         # Allow base agents, common utilities
-                        if not any(
-                            x in import_name.lower() for x in ["base", "common", "shared", "utils"]
-                        ):
+                        if not any(x in import_name.lower() for x in ["base", "common", "shared", "utils"]):
                             conflicting_imports.append(f"{import_name} ({import_layer})")
 
                 if conflicting_imports:
@@ -454,8 +450,7 @@ class TestSubatomicCompliance:
             pytest.fail(
                 f"BLOCKING: {len(violations)} cross-layer pollution violations:\n"
                 + "\n".join(
-                    f"  - {v['file_layer']} -> {v['import_layer']}: {v['import']}"
-                    for v in violations[:10]
+                    f"  - {v['file_layer']} -> {v['import_layer']}: {v['import']}" for v in violations[:10]
                 )
             )
 
@@ -474,9 +469,7 @@ class TestSubatomicCompliance:
                 lines = content.splitlines()
 
                 # Count non-empty, non-comment lines
-                code_lines = [
-                    line for line in lines if line.strip() and not line.strip().startswith("#")
-                ]
+                code_lines = [line for line in lines if line.strip() and not line.strip().startswith("#")]
                 loc = len(code_lines)
 
                 if loc > MAX_LOC:

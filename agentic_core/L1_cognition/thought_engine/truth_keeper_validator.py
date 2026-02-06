@@ -9,6 +9,8 @@ import logging
 import os
 from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -71,7 +73,10 @@ class TruthKeeper:
         return {"violations": violations, "fixes": fixes, "file": file_path}
 
     async def _check_function_consistency(
-        self, file_path: str, node: ast.FunctionDef, content: str,
+        self,
+        file_path: str,
+        node: ast.FunctionDef,
+        content: str,
     ) -> dict[str, Any]:
         """
         Check consistency for a single function.

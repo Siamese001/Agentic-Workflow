@@ -8,6 +8,9 @@ Follows the functional component pattern with proper logging.
 import logging
 import time
 import uuid
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +111,9 @@ class ObservabilityOperationPerformer:
         self.logger.info(f"Registered operation: {operation_def.operation_id}")
 
     def perform_operation(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Perform an observability operation.
 
@@ -173,11 +178,16 @@ class ObservabilityOperationPerformer:
         except Exception as e:
             self.logger.error(f"Operation execution failed: {str(e)}")
             return self._create_error_result(
-                context.execution_id, context.operation_id, str(e), start_time,
+                context.execution_id,
+                context.operation_id,
+                str(e),
+                start_time,
             )
 
     def perform_operation_stream(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> object:
         """Perform operation with streaming output.
 
@@ -199,7 +209,9 @@ class ObservabilityOperationPerformer:
         yield from handler(inputs, stream=True)
 
     def perform_operations_batch(
-        self, contexts: list[OperationExecutionContext], inputs_list: list[dict[str, Any]],
+        self,
+        contexts: list[OperationExecutionContext],
+        inputs_list: list[dict[str, Any]],
     ) -> list[OperationExecutionResult]:
         """Perform multiple operations.
 
@@ -276,7 +288,9 @@ class ObservabilityOperationPerformer:
         return self._active_executions.get(execution_id)
 
     def _execute_synchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation synchronously."""
         handler = self._operation_handlers[context.operation_id]
@@ -300,7 +314,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_asynchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation asynchronously."""
         # Simulate async execution
@@ -318,7 +334,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_streaming(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in streaming mode."""
         # For streaming mode, we return a result indicating streaming is active
@@ -331,7 +349,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_batch(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in batch mode."""
         batch_items = inputs.get("batch_items", [])
@@ -403,7 +423,9 @@ class ObservabilityOperationPerformer:
         return None
 
     def _validate_inputs(
-        self, inputs: dict[str, Any], operation_def: ToolOperationDefinition,
+        self,
+        inputs: dict[str, Any],
+        operation_def: ToolOperationDefinition,
     ) -> list[str]:
         """Validate operation inputs."""
         errors = []
@@ -435,7 +457,9 @@ class ObservabilityOperationPerformer:
         }
 
     def _track_execution_complete(
-        self, context: OperationExecutionContext, result: OperationExecutionResult,
+        self,
+        context: OperationExecutionContext,
+        result: OperationExecutionResult,
     ) -> None:
         """Track execution completion."""
         if context.execution_id in self._active_executions:
@@ -445,7 +469,11 @@ class ObservabilityOperationPerformer:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, operation_id: str, error: str, start_time: float,
+        self,
+        execution_id: str,
+        operation_id: str,
+        error: str,
+        start_time: float,
     ) -> OperationExecutionResult:
         """Create error result."""
         return OperationExecutionResult(

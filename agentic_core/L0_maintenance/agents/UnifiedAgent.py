@@ -115,13 +115,19 @@ class BaseStrategy(ABC):
 
     @abstractmethod
     async def execute(
-        self, agent: UnifiedAgent, **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Execute strategy logic."""
         pass
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        dry_run: bool,
+        execute: bool,
+        **kwargs: Any,
     ) -> dict[str, int]:
         """Base healing implementation."""
         return {
@@ -221,7 +227,10 @@ class ValidatorStrategy(BaseStrategy):
         return None
 
     def _apply_validation_rule(
-        self, data: Any, rule_name: str, rule_config: dict[str, Any],
+        self,
+        data: Any,
+        rule_name: str,
+        rule_config: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply a single validation rule."""
         issues: list[str] = []
@@ -327,7 +336,10 @@ class OrchestrationStrategy(BaseStrategy):
         )
 
     async def _execute_workflow_step(
-        self, agent: UnifiedAgent, step: dict[str, Any], **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        step: dict[str, Any],
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Execute a single workflow step."""
         step_type = step.get("type", "agent_call")
@@ -428,7 +440,11 @@ class HealingStrategy(BaseStrategy):
         return {"fixed": False, "artifacts": []}
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        dry_run: bool,
+        execute: bool,
+        **kwargs: Any,
     ) -> dict[str, int]:
         """Heal repository violations."""
         import asyncio
@@ -519,7 +535,11 @@ class LocationHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        dry_run: bool,
+        execute: bool,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Heal repository location violations."""
         # Delegate to agent's heal_repository if available
@@ -684,7 +704,11 @@ class StructureHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
+        self,
+        agent: UnifiedAgent,
+        dry_run: bool,
+        execute: bool,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Heal repository structure violations."""
         violations_found = 0
@@ -770,7 +794,8 @@ class UnifiedAgent(SovereignBaseAgent):
         return strategy_class(self._unified_config)
 
     async def execute(
-        self, **kwargs: Any,
+        self,
+        **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
         if self._strategy is None:
@@ -778,7 +803,8 @@ class UnifiedAgent(SovereignBaseAgent):
         return await self._strategy.execute(self, **kwargs)
 
     def execute_sync(
-        self, **kwargs: Any,
+        self,
+        **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Synchronous wrapper for execute."""
         import asyncio

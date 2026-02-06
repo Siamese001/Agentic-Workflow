@@ -3,6 +3,8 @@
 "Brief description of functionality and purpose."
 "\nformat_scripts_context.py - Formatting Module\n\nDomain: utilities\nGenerated: 2025-12-07T12:07:59.884149\n"
 import logging
+from dataclasses import dataclass, field
+from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -33,7 +35,9 @@ def format(self: Any, data: object, target_format: str | None) -> FormattedOutpu
     self._transform(data)
     self._format_to_target(transformed, fmt)
     return FormattedOutput(
-        DATA=formatted, format_type=fmt, metadata={"original_type": type(data).__name__},
+        DATA=formatted,
+        format_type=fmt,
+        metadata={"original_type": type(data).__name__},
     )
 
 

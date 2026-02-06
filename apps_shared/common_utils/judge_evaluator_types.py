@@ -5,6 +5,9 @@ Uses LLM to evaluate agent outputs against quality criteria.
 """
 
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -79,9 +82,7 @@ class JudgeEvaluationResult:
     def get_failing_criteria(self) -> list[JudgmentCriterion]:
         """Get criteria that failed."""
         return [
-            v.criterion
-            for v in self.verdicts
-            if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}
+            v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}
         ]
 
 
@@ -321,7 +322,12 @@ class JudgeEvaluator:
         for line in lines:
             line = line.strip()
             score_value, reasoning, current_section = self._parse_line(
-                line, score_value, reasoning, current_section, evidence, suggestions,
+                line,
+                score_value,
+                reasoning,
+                current_section,
+                evidence,
+                suggestions,
             )
 
         return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
@@ -359,7 +365,11 @@ class JudgeEvaluator:
             return default
 
     def _parse_list_item(
-        self, line: str, section: str | None, evidence: list[str], suggestions: list[str],
+        self,
+        line: str,
+        section: str | None,
+        evidence: list[str],
+        suggestions: list[str],
     ) -> None:
         """Parse list item into appropriate list."""
         item = line.lstrip("-•").strip()

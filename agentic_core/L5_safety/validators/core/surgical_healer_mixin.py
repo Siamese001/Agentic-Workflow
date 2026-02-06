@@ -174,7 +174,9 @@ class SurgicalHealerMixin:
                 from .surgical_context_types import SurgicalContextBuilder
 
                 builder = SurgicalContextBuilder(
-                    Path(violation["file_path"]), self.__class__.__name__, "heal",
+                    Path(violation["file_path"]),
+                    self.__class__.__name__,
+                    "heal",
                 )
 
                 # Extract violations from legacy format

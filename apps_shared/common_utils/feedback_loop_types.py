@@ -9,6 +9,10 @@ import statistics
 import threading
 import time
 from datetime import datetime
+from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +80,10 @@ class AdaptiveThresholds:
         self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.70, "marginal": 0.55}
 
     def adjust_thresholds(
-        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75,
+        self,
+        quality_scores: list[float],
+        acceptance_rate: float,
+        target_acceptance: float = 0.75,
     ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
@@ -122,8 +129,7 @@ class AdaptiveThresholds:
         )
 
         logger.info(
-            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, "
-            f"adjustment={adjustment_factor:.3f}",
+            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, adjustment={adjustment_factor:.3f}",
         )
 
         return self.thresholds
@@ -385,14 +391,12 @@ class FeedbackLoop:
 
             if flags.get("HALLUCINATION_RISK", 0) > 3:
                 recommendations.append(
-                    "Hallucination risks detected. "
-                    "Add stronger fact-checking and source verification.",
+                    "Hallucination risks detected. Add stronger fact-checking and source verification.",
                 )
 
             if flags.get("HIGHLY_REPETITIVE", 0) > 5:
                 recommendations.append(
-                    "High repetition in outputs. "
-                    "Implement diversity constraints and content variety checks.",
+                    "High repetition in outputs. Implement diversity constraints and content variety checks.",
                 )
 
         # Check trends
@@ -431,8 +435,7 @@ class FeedbackLoop:
             accepted = sum(
                 1
                 for a in recent
-                if a.quality_level
-                in [SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT]
+                if a.quality_level in [SignalQuality.GOOD, SignalQuality.HIGH, SignalQuality.EXCELLENT]
             )
             acceptance_rate = accepted / len(recent)
 
@@ -441,7 +444,8 @@ class FeedbackLoop:
 
             # Adjust thresholds
             new_thresholds = self.adaptive_thresholds.adjust_thresholds(
-                quality_scores, acceptance_rate,
+                quality_scores,
+                acceptance_rate,
             )
 
             return new_thresholds

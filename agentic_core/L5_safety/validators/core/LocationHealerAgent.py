@@ -244,7 +244,10 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             # Use ArchivalGatekeeper for safe move with audit trail
             gk_result = self.gatekeeper.safe_move(
-                src_path, final_dst, self.agent_name, "Reorganizing structure",
+                src_path,
+                final_dst,
+                self.agent_name,
+                "Reorganizing structure",
             )
 
             if gk_result.success:
@@ -323,7 +326,10 @@ class LocationHealerAgent(SovereignBaseAgent):
     # ========================================================================
 
     def post_heal_validation(
-        self, original_path: Path, new_path: Path | None = None, dry_run: bool = True,
+        self,
+        original_path: Path,
+        new_path: Path | None = None,
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """Re-validate after healing to confirm fix effectiveness."""
         report = {
@@ -539,7 +545,10 @@ class LocationHealerAgent(SovereignBaseAgent):
         return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
     def _heal_broken_backup(
-        self, file_path: Path, dry_run: bool, affected_paths: list[Path],
+        self,
+        file_path: Path,
+        dry_run: bool,
+        affected_paths: list[Path],
     ) -> dict[str, Any]:
         """Heal broken backup files by deletion."""
         result = self.safe_delete(file_path, dry_run=dry_run)
@@ -619,7 +628,8 @@ class LocationHealerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Heal territory mismatch violations by moving to correct agentic_core location."""
         target_match = re.search(r"Move to agentic_core/([^\s.]+)", msg) or re.search(
-            r"move to '([^']+)'", msg,
+            r"move to '([^']+)'",
+            msg,
         )
         if target_match:
             territory = target_match.group(1)
@@ -777,7 +787,11 @@ class LocationHealerAgent(SovereignBaseAgent):
             elif choice == "2":
                 # OPTION 2: Create new subfolder and update SSOT
                 return self._create_new_subfolder_and_update_ssot(
-                    file_path, root_folder, unknown_subfolder, dry_run, affected_paths,
+                    file_path,
+                    root_folder,
+                    unknown_subfolder,
+                    dry_run,
+                    affected_paths,
                 )
 
             elif choice == "3":
@@ -976,7 +990,11 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"Creating new subfolder '{unknown_subfolder}'",
                 )
                 return self._autonomous_create_subfolder(
-                    file_path, root_folder, unknown_subfolder, dry_run, affected_paths,
+                    file_path,
+                    root_folder,
+                    unknown_subfolder,
+                    dry_run,
+                    affected_paths,
                 )
             elif confidence_score >= 0.5:
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
@@ -1012,7 +1030,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             return result
 
     def _calculate_subfolder_confidence(
-        self, unknown_subfolder: str, existing_subfolders: list[str],
+        self,
+        unknown_subfolder: str,
+        existing_subfolders: list[str],
     ) -> float:
         """
         Calculate confidence score for creating a new subfolder.
@@ -1253,7 +1273,9 @@ class LocationHealerAgent(SovereignBaseAgent):
     # ========================================================================
 
     def _collect_naming_violations(
-        self, py_files: list[Path], affected_paths: list[Path],
+        self,
+        py_files: list[Path],
+        affected_paths: list[Path],
     ) -> tuple[list, list]:
         """Phase 1: Scan files for naming violations."""
         heal_actions = []
@@ -1270,7 +1292,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 # Check conventions
                 issues = []
                 if not re.match(r"^[a-z0-9_]+\.py$", filename) and not re.match(
-                    r"^[A-Z][a-zA-Z0-9]*Agent\.py$", filename,
+                    r"^[A-Z][a-zA-Z0-9]*Agent\.py$",
+                    filename,
                 ):
                     issues.append("NOT_SNAKE_CASE")
 
@@ -1437,7 +1460,9 @@ class LocationHealerAgent(SovereignBaseAgent):
     # ========================================================================
 
     def _remove_offending_imports(
-        self, lines: list[str], downstream_roots: list[str],
+        self,
+        lines: list[str],
+        downstream_roots: list[str],
     ) -> tuple[list[str], list[str]]:
         """Remove import lines containing downstream roots."""
         new_lines = []

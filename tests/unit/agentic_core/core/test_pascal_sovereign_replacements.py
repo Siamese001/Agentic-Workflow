@@ -83,8 +83,7 @@ class TestPascalSovereignReplacements:
     def test_execute_ssot_comments_updated(self):
         """Verify execute_ssot.py comments updated."""
         file_path = (
-            Path(__file__).parent.parent.parent.parent
-            / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
+            Path(__file__).parent.parent.parent.parent / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
         )
 
         content = file_path.read_text(encoding="utf-8")
@@ -131,9 +130,7 @@ class TestPascalSovereignReplacements:
                     continue
 
         # Allow some historical references in comments/docstrings
-        assert len(found_imports) < 5, (
-            f"Too many PascalSovereigntyAgent references in code: {found_imports}"
-        )
+        assert len(found_imports) < 5, f"Too many PascalSovereigntyAgent references in code: {found_imports}"
 
     def test_file_classification_imports_work(self):
         """Verify FileClassificationAgent imports work correctly."""

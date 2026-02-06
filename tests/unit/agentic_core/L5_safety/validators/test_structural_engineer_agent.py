@@ -63,15 +63,11 @@ class TestStructuralEngineerAgent:
 
     def test_has_check_no_large_classes_method(self, agent_class):
         """Verify agent has check_no_large_classes method."""
-        assert hasattr(agent_class, "check_no_large_classes"), (
-            "Should have check_no_large_classes method"
-        )
+        assert hasattr(agent_class, "check_no_large_classes"), "Should have check_no_large_classes method"
 
     def test_has_check_no_large_functions_method(self, agent_class):
         """Verify agent has check_no_large_functions method."""
-        assert hasattr(agent_class, "check_no_large_functions"), (
-            "Should have check_no_large_functions method"
-        )
+        assert hasattr(agent_class, "check_no_large_functions"), "Should have check_no_large_functions method"
 
     def test_has_check_cyclomatic_complexity_method(self, agent_class):
         """Verify agent has check_cyclomatic_complexity method."""

@@ -45,7 +45,9 @@ class ConvergenceEngine:
             # Sort violations so Toxic Hubs (highest impact) are healed first
             # Formula: Impact = (100 - Metric) * (1 + ln(FanIn))
             prioritized_violations = sorted(
-                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True,
+                current_violations,
+                key=lambda v: v.get("impact_score", 0),
+                reverse=True,
             )
 
             for violation in prioritized_violations:

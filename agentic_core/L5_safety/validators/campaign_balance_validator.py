@@ -51,7 +51,10 @@ class CampaignBalanceValidator:
         }
 
     def validate_campaign_balance(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> BalanceResult:
         """
         Validate campaign balance using purely deterministic logic.
@@ -136,7 +139,10 @@ class CampaignBalanceValidator:
         return issues
 
     def calculate_balance_score(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> float:
         """
         Calculate overall balance score using deterministic algorithm.
@@ -171,7 +177,10 @@ class CampaignBalanceValidator:
         return max(0.0, score)
 
     def suggest_improvements(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> list[str]:
         """
         Generate deterministic improvement suggestions.

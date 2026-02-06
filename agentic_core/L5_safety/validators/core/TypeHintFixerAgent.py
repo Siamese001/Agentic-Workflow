@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+import ast
 
 """
 TypeHintFixerAgent - Extracted for one-class-per-file pattern.
@@ -17,6 +18,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass

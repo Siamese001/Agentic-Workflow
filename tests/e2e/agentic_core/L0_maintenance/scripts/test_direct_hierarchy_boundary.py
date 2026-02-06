@@ -130,9 +130,7 @@ def test_cli_flag_override():
     # Check what the agent sees
     batch_accept = os.environ.get("ARCHIVE_BATCH_ACCEPT", "0")
     auto_approve = os.environ.get("SOVEREIGN_AUTO_APPROVE", "0")
-    print(
-        f"   Agent sees ARCHIVE_BATCH_ACCEPT={batch_accept}, SOVEREIGN_AUTO_APPROVE={auto_approve}"
-    )
+    print(f"   Agent sees ARCHIVE_BATCH_ACCEPT={batch_accept}, SOVEREIGN_AUTO_APPROVE={auto_approve}")
 
     # In a real CLI scenario, --yes would set these to '1'
     # Simulate that here
@@ -143,10 +141,7 @@ def test_cli_flag_override():
     HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=True)
     batch_accept2 = os.environ.get("ARCHIVE_BATCH_ACCEPT", "0")
     auto_approve2 = os.environ.get("SOVEREIGN_AUTO_APPROVE", "0")
-    print(
-        f"   Agent now sees ARCHIVE_BATCH_ACCEPT={batch_accept2}, "
-        f"SOVEREIGN_AUTO_APPROVE={auto_approve2}"
-    )
+    print(f"   Agent now sees ARCHIVE_BATCH_ACCEPT={batch_accept2}, SOVEREIGN_AUTO_APPROVE={auto_approve2}")
 
     if batch_accept2 == "1" and auto_approve2 == "1":
         print("✅ PASS: CLI flag successfully overrides environment variables")

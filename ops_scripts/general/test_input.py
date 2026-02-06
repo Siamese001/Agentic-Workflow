@@ -205,7 +205,10 @@ def validate_pydantic_models():
 
     # Valid ExperienceSection
     exp = ExperienceSection(
-        company="TestCo", role="Engineer", duration="2020-2023", bullets=["Task 1", "Task 2"],
+        company="TestCo",
+        role="Engineer",
+        duration="2020-2023",
+        bullets=["Task 1", "Task 2"],
     )
     print(f"✅ Valid ExperienceSection with {len(exp.bullets)} bullets")
 

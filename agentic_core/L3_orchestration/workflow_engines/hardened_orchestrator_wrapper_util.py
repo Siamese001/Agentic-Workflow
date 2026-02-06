@@ -49,7 +49,9 @@ async def run_hardened_orchestrator(
     Logger.info(f"   Workflow: {workflow_id}")
     Logger.info(f"   Type: {WorkflowType}")
     config: Any = OrchestratorConfig(
-        max_cycles=5, enable_checkpointing=True, checkpoint_dir=storage_path or "./checkpoints",
+        max_cycles=5,
+        enable_checkpointing=True,
+        checkpoint_dir=storage_path or "./checkpoints",
     )
     context: Any = ValidationContext()
     orchestrator: Any = create_orchestrator(config=config, context=context)

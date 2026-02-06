@@ -50,7 +50,9 @@ def main():
     """TODO: Add documentation for main."""
     parser = argparse.ArgumentParser(description="Fix @standard_heal schema violations")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without modifying files",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fixed without modifying files",
     )
     args = parser.parse_args()
     tracking_file = Path(".schema_violations_tracking.yaml")

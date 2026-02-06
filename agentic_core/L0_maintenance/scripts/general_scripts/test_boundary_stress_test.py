@@ -78,7 +78,11 @@ class BoundaryStressTest:
 
         try:
             process = subprocess.run(
-                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60,
+                cmd,
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=60,
             )
 
             stdout = process.stdout
@@ -273,7 +277,12 @@ class BoundaryStressTest:
 
         try:
             process = subprocess.run(
-                cmd, cwd=str(self.project_root), capture_output=True, text=True, timeout=60, env=env,
+                cmd,
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=60,
+                env=env,
             )
 
             stdout = process.stdout

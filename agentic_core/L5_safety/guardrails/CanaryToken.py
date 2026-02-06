@@ -10,6 +10,8 @@ import secrets
 from dataclasses import dataclass
 from typing import Any
 
+LOGGER = logging.getLogger(__name__)
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -153,7 +155,10 @@ class CanaryDefense:
         return (len(issues) == 0, issues)
 
     def create_hardened_prompt(
-        self: Any, system_prompt: str, user_input: str, canary: CanaryToken,
+        self: Any,
+        system_prompt: str,
+        user_input: str,
+        canary: CanaryToken,
     ) -> tuple[str, str, CanaryToken]:
         """
         Create a fully hardened prompt with canary and wrapped input.

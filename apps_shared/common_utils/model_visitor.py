@@ -38,13 +38,10 @@ class ModelVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node):
         is_pydantic = any(
-            isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"}
-            for base in node.bases
+            isinstance(base, ast.Name) and base.id in {"BaseModel", "RootModel"} for base in node.bases
         )
         is_contract = any(node.name.endswith(s) for s in CONTRACT_SIGNALS)
-        has_dataclass = any(
-            isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list
-        )
+        has_dataclass = any(isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list)
 
         if is_pydantic or (has_dataclass and is_contract):
             Logger.error(

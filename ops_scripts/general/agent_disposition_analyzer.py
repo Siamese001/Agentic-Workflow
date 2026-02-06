@@ -41,7 +41,11 @@ class AgentDispositionAnalyzer:
 
             # Classification logic
             classification, details = self._classify_file(
-                file_path.name, content, classes, imports, functions,
+                file_path.name,
+                content,
+                classes,
+                imports,
+                functions,
             )
 
             return classification, details
@@ -55,9 +59,7 @@ class AgentDispositionAnalyzer:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 # Check inheritance
-                bases = [
-                    base.id if isinstance(base, ast.Name) else str(base) for base in node.bases
-                ]
+                bases = [base.id if isinstance(base, ast.Name) else str(base) for base in node.bases]
 
                 # Check for Agent suffix
                 is_agent = node.name.endswith("Agent")
@@ -76,9 +78,7 @@ class AgentDispositionAnalyzer:
                         "is_agent": is_agent,
                         "is_dataclass": is_dataclass,
                         "has_agent_suffix": "Agent" in node.name,
-                        "line_count": node.end_lineno - node.lineno
-                        if hasattr(node, "end_lineno")
-                        else 0,
+                        "line_count": node.end_lineno - node.lineno if hasattr(node, "end_lineno") else 0,
                     },
                 )
 
@@ -204,9 +204,7 @@ class AgentDispositionAnalyzer:
         # Generate summary
         results["classifications"] = self.classifications
         results["analysis_details"] = self.analysis_details
-        results["summary"] = {
-            category: len(files) for category, files in self.classifications.items()
-        }
+        results["summary"] = {category: len(files) for category, files in self.classifications.items()}
 
         return results
 

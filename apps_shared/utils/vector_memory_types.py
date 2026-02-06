@@ -140,7 +140,10 @@ class VectorMemoryStore:
             return ""
 
     def search(
-        self, embedding: list[float], top_k: int | None = None, filter: dict[str, Any] | None = None,
+        self,
+        embedding: list[float],
+        top_k: int | None = None,
+        filter: dict[str, Any] | None = None,
     ) -> list[VectorSearchResult]:
         """
         Search for similar vectors.

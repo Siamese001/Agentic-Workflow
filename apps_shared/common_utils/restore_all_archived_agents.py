@@ -19,6 +19,7 @@ import argparse
 import json
 import shutil
 import sys
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVES = PROJECT_ROOT / "archives"
@@ -62,9 +63,7 @@ def infer_target_directory(agent_name: str, source_path: str) -> str | None:
         return TARGETS["L3"]
 
     # L5 Safety/Validation agents
-    if any(
-        x in name_lower for x in ["validator", "enforcer", "guard", "safety", "canon", "hygiene"]
-    ):
+    if any(x in name_lower for x in ["validator", "enforcer", "guard", "safety", "canon", "hygiene"]):
         return TARGETS["L5"]
 
     # L6 observability agents

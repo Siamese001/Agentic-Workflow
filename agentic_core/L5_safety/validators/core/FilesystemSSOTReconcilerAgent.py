@@ -538,7 +538,9 @@ class FilesystemSSOTReconcilerAgent(
         return drift
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
+        self,
+        current_blueprint: dict[str, Any],
+        drift: list[dict[str, Any]],
     ) -> None:
         """
         Check SOVEREIGN_REGISTRY subfolders.
@@ -630,7 +632,9 @@ class FilesystemSSOTReconcilerAgent(
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
+        self,
+        current_blueprint: dict[str, Any],
+        drift: list[dict[str, Any]],
     ) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
@@ -806,7 +810,10 @@ class FilesystemSSOTReconcilerAgent(
                     # [PHASE 33j] Gatekeeper is Single Point of Approval
                     target.parent.mkdir(parents=True, exist_ok=True)
                     gk_result = self.gatekeeper.safe_move(
-                        source, target, self.agent_name, "Archive unauthorized folder",
+                        source,
+                        target,
+                        self.agent_name,
+                        "Archive unauthorized folder",
                     )
                     if gk_result.success:
                         applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
@@ -849,7 +856,9 @@ class FilesystemSSOTReconcilerAgent(
 
             if action == "add_to_sovereign_registry":
                 content = self._apply_sovereign_registry_update(
-                    content, proposal["root"], proposal["subfolders"],
+                    content,
+                    proposal["root"],
+                    proposal["subfolders"],
                 )
             elif action == "add_to_core_subfolder_map":
                 content = self._apply_core_map_update(content, proposal["l1_folder"], proposal["subfolders"])
@@ -860,7 +869,11 @@ class FilesystemSSOTReconcilerAgent(
 
         # Write back atomically
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=self.blueprint_file.parent, delete=False, suffix=".py",
+            mode="w",
+            encoding="utf-8",
+            dir=self.blueprint_file.parent,
+            delete=False,
+            suffix=".py",
         ) as tmp:
             tmp.write(content)
             tmp_path = tmp.name
@@ -1157,7 +1170,10 @@ class FilesystemSSOTReconcilerAgent(
         return report
 
     def cleanup_violations(
-        self, violations: list[ReconciliationViolation], dry_run: bool = True, max_actions: int = 50,
+        self,
+        violations: list[ReconciliationViolation],
+        dry_run: bool = True,
+        max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup reconciliation violations with blueprint updates.

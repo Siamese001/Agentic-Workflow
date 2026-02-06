@@ -7,6 +7,10 @@ validation hooks, and protection against partial state corruption.
 import copy
 import logging
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +54,7 @@ class StateSnapshot:
                 target_graph.nodes[node].update(attrs)
 
         for edge, attrs in self.edge_attributes.items():
-            if (
-                edge in target_graph
-                and edge[0] in target_graph
-                and edge[1] in target_graph[edge[0]]
-            ):
+            if edge in target_graph and edge[0] in target_graph and edge[1] in target_graph[edge[0]]:
                 target_graph.edges[edge].update(attrs)
 
 
@@ -69,15 +69,15 @@ class DAGSafetyManager:
         """
         self.name = name
         self._snapshots: list[StateSnapshot] = []
-        self._validation_hooks: dict[MutationPhase, list[Callable]] = {
-            phase: [] for phase in MutationPhase
-        }
+        self._validation_hooks: dict[MutationPhase, list[Callable]] = {phase: [] for phase in MutationPhase}
         self._mutation_stack: list[dict[str, Any]] = []
 
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
     def add_validation_hook(
-        self, phase: MutationPhase, hook: Callable[[nx.DiGraph, dict[str, Any]], None],
+        self,
+        phase: MutationPhase,
+        hook: Callable[[nx.DiGraph, dict[str, Any]], None],
     ) -> None:
         """Add a validation hook for a specific phase.
 
@@ -89,7 +89,9 @@ class DAGSafetyManager:
         logger.debug(f"Added validation hook for phase: {phase.value}")
 
     def create_snapshot(
-        self, graph: nx.DiGraph, external_state: dict[str, Any] | None = None,
+        self,
+        graph: nx.DiGraph,
+        external_state: dict[str, Any] | None = None,
     ) -> str:
         """Create a snapshot of the current DAG state.
 
@@ -180,7 +182,10 @@ class DAGSafetyManager:
         return mutation_id
 
     def execute_mutation(
-        self, graph: nx.DiGraph, mutation_func: Callable[[nx.DiGraph], None], mutation_id: str,
+        self,
+        graph: nx.DiGraph,
+        mutation_func: Callable[[nx.DiGraph], None],
+        mutation_id: str,
     ) -> bool:
         """Execute a mutation with full safety checks.
 
@@ -242,7 +247,10 @@ class DAGSafetyManager:
             self._mutation_stack = [m for m in self._mutation_stack if m["id"] != mutation_id]
 
     def _run_hooks(
-        self, phase: MutationPhase, graph: nx.DiGraph, mutation_info: dict[str, Any],
+        self,
+        phase: MutationPhase,
+        graph: nx.DiGraph,
+        mutation_info: dict[str, Any],
     ) -> None:
         """Run validation hooks for a phase.
 

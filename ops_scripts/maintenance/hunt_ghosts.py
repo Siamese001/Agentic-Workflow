@@ -15,10 +15,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 ARCHIVE_ROOT = (
-    PROJECT_ROOT
-    / "agentic_core"
-    / "archived"
-    / f"phase11_hunter_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    PROJECT_ROOT / "agentic_core" / "archived" / f"phase11_hunter_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 )
 
 # Files that should not exist ANYWHERE in agentic_core (except archived)

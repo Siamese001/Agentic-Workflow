@@ -9,6 +9,9 @@ import logging
 import time
 import uuid
 from datetime import datetime
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -169,7 +172,9 @@ class ObservabilityExecutionAdapter:
         return self._active_traces.get(trace_id)
 
     def get_metrics(
-        self, metric_name: str, time_range: tuple[float, float] | None = None,
+        self,
+        metric_name: str,
+        time_range: tuple[float, float] | None = None,
     ) -> list[float]:
         """Get metrics data.
 
@@ -216,7 +221,10 @@ class ObservabilityExecutionAdapter:
         return len(to_remove)
 
     def _execute_with_monitoring(
-        self, handler: Callable, request: ObservabilityRequest, trace_id: str | None,
+        self,
+        handler: Callable,
+        request: ObservabilityRequest,
+        trace_id: str | None,
     ) -> ObservabilityResult:
         """Execute operation with monitoring."""
         try:
@@ -286,7 +294,10 @@ class ObservabilityExecutionAdapter:
                 self._metrics_store[metric_name] = self._metrics_store[metric_name][-1000:]
 
     def _create_error_result(
-        self, request: ObservabilityRequest, error: str, start_time: float,
+        self,
+        request: ObservabilityRequest,
+        error: str,
+        start_time: float,
     ) -> ObservabilityResult:
         """Create error result."""
         return ObservabilityResult(

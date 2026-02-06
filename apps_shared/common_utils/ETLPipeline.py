@@ -7,6 +7,7 @@ golden patterns from Pinecone to Redis.
 
 import logging
 import os
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,10 @@ class ETLPipeline:
         logger.info("ETL Pipeline initialized")
 
     def hydrate_cache(
-        self, min_success_count: int = 10, max_patterns: int = 50, project_filter: str | None = None,
+        self,
+        min_success_count: int = 10,
+        max_patterns: int = 50,
+        project_filter: str | None = None,
     ) -> dict[str, Any]:
         """
         Hydrate Redis cache with golden patterns from Pinecone.
@@ -70,7 +74,10 @@ class ETLPipeline:
         return stats
 
     def _fetch_golden_patterns(
-        self, min_success_count: int, max_patterns: int, project_filter: str | None,
+        self,
+        min_success_count: int,
+        max_patterns: int,
+        project_filter: str | None,
     ) -> list[CanonEntry]:
         """Fetch golden patterns from Pinecone."""
         try:
@@ -165,7 +172,10 @@ class ETLPipeline:
             return 0
 
     def backfill_from_code(
-        self, code_files: list[str], project_context: str = "backfill", batch_size: int = 100,
+        self,
+        code_files: list[str],
+        project_context: str = "backfill",
+        batch_size: int = 100,
     ) -> dict[str, Any]:
         """
         Backfill Pinecone with code files.
@@ -218,7 +228,10 @@ class ETLPipeline:
         return stats
 
     def _create_entry_from_code(
-        self, code: str, project_context: str, file_path: str,
+        self,
+        code: str,
+        project_context: str,
+        file_path: str,
     ) -> CanonEntry:
         """Create CanonEntry from code."""
         # Generate AST

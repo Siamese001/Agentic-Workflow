@@ -88,14 +88,10 @@ class TestHardenedCoreSynthesis:
             )
             assert "_is_safe_path" in content, "Missing _is_safe_path method"
             assert "_is_safe_directory" in content, "Missing _is_safe_directory method"
-            assert "get_sovereign_capabilities" in content, (
-                "Missing get_sovereign_capabilities method"
-            )
+            assert "get_sovereign_capabilities" in content, "Missing get_sovereign_capabilities method"
 
             # Test proper imports
-            assert "from agentic_core.domain.exceptions import" in content, (
-                "Missing domain exceptions import"
-            )
+            assert "from agentic_core.domain.exceptions import" in content, "Missing domain exceptions import"
 
         except Exception as e:
             pytest.fail(f"CRITICAL: SovereignBaseAgent test failed: {e}")
@@ -109,9 +105,7 @@ class TestHardenedCoreSynthesis:
 
             # Test required methods exist
             assert hasattr(SyntaxScarRepairer, "aggressive_trim"), "Missing aggressive_trim method"
-            assert hasattr(SyntaxScarRepairer, "_is_safe_to_modify"), (
-                "Missing _is_safe_to_modify method"
-            )
+            assert hasattr(SyntaxScarRepairer, "_is_safe_to_modify"), "Missing _is_safe_to_modify method"
 
         except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: SyntaxScarRepairer import failed!")
@@ -145,17 +139,13 @@ class TestHardenedCoreSynthesis:
 
             # Test that heal_repository has @standard_heal decorator
             heal_method = HygieneMixin.heal_repository
-            assert hasattr(heal_method, "__wrapped__"), (
-                "heal_repository missing @standard_heal decorator"
-            )
+            assert hasattr(heal_method, "__wrapped__"), "heal_repository missing @standard_heal decorator"
 
             # Test required methods exist
             assert hasattr(HygieneMixin, "_analyze_hygiene_violations"), (
                 "Missing _analyze_hygiene_violations method"
             )
-            assert hasattr(HygieneMixin, "_fix_hygiene_violations"), (
-                "Missing _fix_hygiene_violations method"
-            )
+            assert hasattr(HygieneMixin, "_fix_hygiene_violations"), "Missing _fix_hygiene_violations method"
 
         except (ImportError, NameError, AttributeError):
             pytest.fail("CRITICAL: HygieneMixin import failed!")
@@ -191,18 +181,14 @@ class TestHardenedCoreSynthesis:
             if healer_path.exists():
                 content = healer_path.read_text()
                 assert "def heal_repository" in content, "Missing heal_repository method"
-                assert "_salvaged_advanced_recovery" in content, (
-                    "Missing _salvaged_advanced_recovery method"
-                )
+                assert "_salvaged_advanced_recovery" in content, "Missing _salvaged_advanced_recovery method"
                 assert "_perform_healing_chain" in content, "Missing _perform_healing_chain method"
 
             # Check structural_healing_mixin.py for salvaged logic
             struct_path = Path("agentic_core/base_agents/structural_healing_mixin.py")
             if struct_path.exists():
                 content = struct_path.read_text()
-                assert "_salvaged_file_relocation" in content, (
-                    "Missing salvaged file relocation logic"
-                )
+                assert "_salvaged_file_relocation" in content, "Missing salvaged file relocation logic"
                 assert "_calculate_file_hash" in content, "Missing file hash calculation"
 
         except Exception as e:
@@ -234,9 +220,7 @@ class TestHardenedCoreSynthesis:
 
             # Only fail if critical base_agents have violations
             critical_violations = [
-                v
-                for v in violations
-                if any(f in v for f in ["healer_mixin.py", "SovereignBaseAgent.py"])
+                v for v in violations if any(f in v for f in ["healer_mixin.py", "SovereignBaseAgent.py"])
             ]
             assert len(critical_violations) == 0, f"CRITICAL DEPENDENCY LEAK: {critical_violations}"
 
@@ -251,9 +235,7 @@ class TestHardenedCoreSynthesis:
 
             # Test HealerMixin
             healer_method = HealerMixin.heal_repository
-            assert hasattr(healer_method, "__wrapped__"), (
-                "HealerMixin.heal_repository missing @standard_heal"
-            )
+            assert hasattr(healer_method, "__wrapped__"), "HealerMixin.heal_repository missing @standard_heal"
 
             # Test HygieneMixin
             hygiene_method = HygieneMixin.heal_repository
@@ -285,9 +267,7 @@ class TestHardenedCoreSynthesis:
             )
             assert "def _is_safe_path" in content, "Missing _is_safe_path method"
             assert "def _is_safe_directory" in content, "Missing _is_safe_directory method"
-            assert "def get_sovereign_capabilities" in content, (
-                "Missing get_sovereign_capabilities method"
-            )
+            assert "def get_sovereign_capabilities" in content, "Missing get_sovereign_capabilities method"
 
         except Exception as e:
             pytest.fail(f"Security validation test failed: {e}")

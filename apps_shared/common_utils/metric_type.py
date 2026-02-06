@@ -7,6 +7,10 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 
 import logging
 from datetime import datetime
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +166,9 @@ class ObservabilityPlanningOrchestrator:
 
             # Calculate resource estimates
             resource_estimates = self._estimate_resources(
-                metric_definitions, log_configuration, trace_configuration,
+                metric_definitions,
+                log_configuration,
+                trace_configuration,
             )
 
             result = ObservabilityPlanningResult(
@@ -375,9 +381,7 @@ class ObservabilityPlanningOrchestrator:
 
         # Metrics storage
         metric_points_per_day = len(metrics) * 86400  # 1 point per second per metric
-        estimates["storage_gb_per_day"] += (metric_points_per_day * 16) / (
-            1024**3
-        )  # 16 bytes per point
+        estimates["storage_gb_per_day"] += (metric_points_per_day * 16) / (1024**3)  # 16 bytes per point
 
         # Logs storage
         if logs:
@@ -421,7 +425,9 @@ def create_observability_planning_orchestrator(
 
 # Convenience function for direct usage
 def plan_observability(
-    service_name: str, service_type: str, config: dict[str, Any] | None = None,
+    service_name: str,
+    service_type: str,
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan observability setup from simple parameters.
 
@@ -511,7 +517,8 @@ class OrchestrateObservabilityPlanningOrchestratorProcessor(ABC):
 
     @abstractmethod
     def process(
-        self, input_data: dict[str, object],
+        self,
+        input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process data with L5 safety constraints"""
         ...
@@ -531,13 +538,15 @@ class OrchestrateObservabilityPlanningOrchestratorImpl(
     """
 
     def __init__(
-        self, constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None,
+        self,
+        constraints: OrchestrateObservabilityPlanningOrchestratorConstraints | None = None,
     ):
         self.constraints = constraints or OrchestrateObservabilityPlanningOrchestratorConstraints()
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(
-        self, input_data: dict[str, object],
+        self,
+        input_data: dict[str, object],
     ) -> OrchestrateObservabilityPlanningOrchestratorResult:
         """Process input following L5 architecture principles"""
         self.logger.info(f"Processing {input_data}")

@@ -224,9 +224,7 @@ def main():
 
     if not snapshot_t1.exists():
         print(f"❌ ERROR: Snapshot file not found: {snapshot_t1}")
-        print(
-            "   Run: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json"
-        )
+        print("   Run: git show HEAD~5:agent_discovery_full.json > agent_discovery_snapshot_t-1.json")
         return False
 
     if not current_t.exists():

@@ -228,7 +228,8 @@ class DomainPlannerAdapter(HealingAdapter):
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
-                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id),
+                    asyncio.run,
+                    self._legacy_agent.run_async(plan, job_context, workflow_id),
                 )
                 return future.result()
         else:

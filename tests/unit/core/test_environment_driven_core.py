@@ -126,9 +126,7 @@ class TestEnvironmentDrivenCore(unittest.TestCase):
             def bool_value(self):
                 return os.getenv("BOOL_VALUE", "true").lower() == "true"
 
-        with patch.dict(
-            os.environ, {"INT_VALUE": "100", "FLOAT_VALUE": "2.71", "BOOL_VALUE": "false"}
-        ):
+        with patch.dict(os.environ, {"INT_VALUE": "100", "FLOAT_VALUE": "2.71", "BOOL_VALUE": "false"}):
             config = TypeTestConfig()
             self.assertEqual(config.int_value, 100)
             self.assertEqual(config.float_value, 2.71)

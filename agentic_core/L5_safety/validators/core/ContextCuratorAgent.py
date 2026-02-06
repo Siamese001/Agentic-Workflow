@@ -240,7 +240,9 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         if hasattr(self.ctx, "generate_with_thinking"):
             try:
                 compressed = await self.ctx.generate_with_thinking(
-                    prompt=prompt, thinking_budget=8000, temperature=0.1,
+                    prompt=prompt,
+                    thinking_budget=8000,
+                    temperature=0.1,
                 )
             except Exception as e:
                 Logger.warning(f"Could not use Gemini for compression: {e}")

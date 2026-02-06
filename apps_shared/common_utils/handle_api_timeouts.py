@@ -6,6 +6,7 @@ Generated: 2025-12-07T13:28:54.250342
 """
 
 import logging
+from typing import Any, Callable
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -34,7 +35,11 @@ class HandleApiTimeouts:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(
-        self, primary: Callable, fallback: Callable, *args, **kwargs: dict[str, object],
+        self,
+        primary: Callable,
+        fallback: Callable,
+        *args,
+        **kwargs: dict[str, object],
     ) -> object:
         """Execute with fallback."""
         self.execute(primary, *args, **kwargs)

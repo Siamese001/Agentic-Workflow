@@ -198,7 +198,8 @@ def _update_redis_state(operation: str, key: str, hit: bool = None):
         redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
 
     redis["recent_operations"].insert(
-        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
+        0,
+        {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
     )
     redis["recent_operations"] = redis["recent_operations"][:20]  # Keep last 20
 
@@ -329,7 +330,9 @@ def main():
     )
     parser.add_argument("--reset", action="store_true", help="Reset sovereign state before validation")
     parser.add_argument(
-        "--heal", action="store_true", help="Run autonomous domain healing (dry-run by default)",
+        "--heal",
+        action="store_true",
+        help="Run autonomous domain healing (dry-run by default)",
     )
     parser.add_argument("--execute-heal", action="store_true", help="Execute heal changes (use with --heal)")
     parser.add_argument(
@@ -681,7 +684,9 @@ def main():
             else:
                 print("\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = Orchestrator(
-                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator",
+                strategy=strategy,
+                project_root=project_root,
+                name="SovereignHealOrchestrator",
             )
 
             checkpoint_manager = get_checkpoint_manager(project_root)

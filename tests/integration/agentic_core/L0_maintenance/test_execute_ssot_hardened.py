@@ -27,9 +27,7 @@ def test_phase2_atomic_rollback():
     state_mgr = MagicMock()
 
     agents = {"CrashAgent": MockHealer("CrashAgent", fail=True)}
-    plan = {
-        "violations_found": [{"type": "TEST", "suggested_agent": "CrashAgent", "file": "test.py"}]
-    }
+    plan = {"violations_found": [{"type": "TEST", "suggested_agent": "CrashAgent", "file": "test.py"}]}
 
     # Engine mocks
     engine.calculate_healing_confidence = MagicMock(return_value=MagicMock(value=0.9))
@@ -60,9 +58,7 @@ def test_phase2_sovereignty_denial():
     engine._atomic_lock = True
 
     agents = {"GoodAgent": MockHealer("GoodAgent")}
-    plan = {
-        "violations_found": [{"type": "TEST", "suggested_agent": "GoodAgent", "file": "test.py"}]
-    }
+    plan = {"violations_found": [{"type": "TEST", "suggested_agent": "GoodAgent", "file": "test.py"}]}
 
     engine.calculate_healing_confidence = MagicMock(return_value=MagicMock(value=0.9))
     engine.should_proceed_with_healing = MagicMock(return_value=(True, "GO"))

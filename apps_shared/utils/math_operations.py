@@ -161,7 +161,9 @@ class MathProcessor:
 
     @staticmethod
     def calculate_similarity(
-        values1: list[float], values2: list[float], method: str = "cosine",
+        values1: list[float],
+        values2: list[float],
+        method: str = "cosine",
     ) -> float:
         """
         Calculate similarity between two value lists.
@@ -244,7 +246,8 @@ class MathProcessor:
 
     @staticmethod
     def calculate_score_with_breakdown(
-        components: dict[str, float], weights: dict[str, float] | None = None,
+        components: dict[str, float],
+        weights: dict[str, float] | None = None,
     ) -> ScoreResult:
         """
         Calculate weighted score with breakdown.
@@ -258,7 +261,10 @@ class MathProcessor:
         """
         if not components:
             return ScoreResult(
-                score=0.0, normalized_score=0.0, breakdown={}, metadata={"total_weight": 0.0},
+                score=0.0,
+                normalized_score=0.0,
+                breakdown={},
+                metadata={"total_weight": 0.0},
             )
 
         if weights is None:

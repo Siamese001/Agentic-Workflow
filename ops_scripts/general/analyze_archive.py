@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Analyze archives for files that should be restored to apps_* folders."""
 
+from pathlib import Path
+
 # configuration
 RESUME_KEYWORDS = {"resume", "cv", "ats", "job", "skill", "experience", "bullet", "section"}
 OUTREACH_KEYWORDS = {
@@ -118,9 +120,7 @@ def main():
     print("=" * 80)
 
     # Check deprecated_2026_01_20 specifically
-    deprecated_today = [
-        r for r in all_restore_candidates if r["archive"] == "deprecated_2026_01_20"
-    ]
+    deprecated_today = [r for r in all_restore_candidates if r["archive"] == "deprecated_2026_01_20"]
     if deprecated_today:
         print("\n### deprecated_2026_01_20 (Today's archive)")
         for r in deprecated_today:

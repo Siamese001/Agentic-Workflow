@@ -53,9 +53,7 @@ class TestNervousSystemAgent:
 
     def test_has_force_exerciser_fallback_method(self, agent_class):
         """Verify agent has force_exerciser_fallback method."""
-        assert hasattr(agent_class, "force_exerciser_fallback"), (
-            "Should have force_exerciser_fallback method"
-        )
+        assert hasattr(agent_class, "force_exerciser_fallback"), "Should have force_exerciser_fallback method"
 
     def test_has_healing_capability(self, agent_class):
         """Verify agent has healing capability."""

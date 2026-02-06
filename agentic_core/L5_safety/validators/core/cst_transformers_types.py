@@ -129,7 +129,9 @@ class SurgicalImportRemover(cst.CSTTransformer):
         return new_node
 
     def leave_SimpleStatementLine(
-        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine,
+        self,
+        original_node: cst.SimpleStatementLine,
+        updated_node: cst.SimpleStatementLine,
     ) -> cst.SimpleStatementLine:
         """
         Handle SimpleStatementLine to remove empty import statements.
@@ -218,7 +220,9 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
         return updated_node.with_changes(body=new_body)
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
+        self,
+        original_node: cst.FunctionDef,
+        updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Insert docstring into function if targeted by name."""
         func_name = updated_node.name.value
@@ -267,7 +271,9 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_ExceptHandler(
-        self, original_node: cst.ExceptHandler, updated_node: cst.ExceptHandler,
+        self,
+        original_node: cst.ExceptHandler,
+        updated_node: cst.ExceptHandler,
     ) -> cst.ExceptHandler:
         """Fix bare except clauses."""
         # Check if this is a bare except (no type specified)
@@ -381,7 +387,9 @@ class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_TrailingWhitespace(
-        self, original_node: cst.TrailingWhitespace, updated_node: cst.TrailingWhitespace,
+        self,
+        original_node: cst.TrailingWhitespace,
+        updated_node: cst.TrailingWhitespace,
     ) -> cst.TrailingWhitespace:
         """Remove trailing whitespace before newlines."""
         # Check if there's non-empty whitespace before the newline
@@ -487,7 +495,9 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
+        self,
+        original_node: cst.FunctionDef,
+        updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Add type hints to function if targeted."""
         func_name = updated_node.name.value
@@ -701,7 +711,8 @@ def create_bare_except_fixer(violations) -> SurgicalBareExceptFixer | None:
 
 
 def create_future_import_inserter(
-    violations, future_imports: list[str] | None = None,
+    violations,
+    future_imports: list[str] | None = None,
 ) -> SurgicalFutureImportInserter | None:
     """
     Factory function to create future import inserter from violations.

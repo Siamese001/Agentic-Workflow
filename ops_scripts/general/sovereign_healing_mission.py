@@ -20,7 +20,8 @@ from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 # Configure Logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - [SovereignMission] - %(message)s",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - [SovereignMission] - %(message)s",
 )
 logger = logging.getLogger(__name__)
 

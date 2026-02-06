@@ -4,6 +4,7 @@ import ast
 import hashlib
 import os
 import re
+from typing import Any
 
 
 def calculate_file_hash(file_path: str) -> str:

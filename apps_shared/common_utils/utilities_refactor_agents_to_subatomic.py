@@ -5,6 +5,7 @@ This script systematically updates all agent files in agentic_core/agents/.
 """
 
 import re
+from pathlib import Path
 
 # NAMING FIXED: AGENT_FILES → agent_files
 agent_files = [

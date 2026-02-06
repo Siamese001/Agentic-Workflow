@@ -9,6 +9,11 @@ import json
 import logging
 import re
 from datetime import datetime
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import Enum
+from pydantic import BaseModel
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -302,7 +307,10 @@ class RegexExtractStrategy(FormatRepair):
 
         if extracted:
             return RepairResult(
-                success=True, repaired_data=extracted, strategy_used=self.strategy_name, attempts=1,
+                success=True,
+                repaired_data=extracted,
+                strategy_used=self.strategy_name,
+                attempts=1,
             )
 
         return RepairResult(
@@ -364,7 +372,10 @@ class SchemaFillStrategy(FormatRepair):
             validated = target_schema(**filled)
 
             return RepairResult(
-                success=True, repaired_data=validated, strategy_used=self.strategy_name, attempts=1,
+                success=True,
+                repaired_data=validated,
+                strategy_used=self.strategy_name,
+                attempts=1,
             )
 
         except (ValidationError, Exception) as e:
@@ -526,7 +537,10 @@ class SelfHealingFormatter:
         except Exception as e:
             logger.warning(f"Standard formatting failed: {e}")
             result = FormatResult(
-                data=data, format_type=str(format_type), success=False, errors=[str(e)],
+                data=data,
+                format_type=str(format_type),
+                success=False,
+                errors=[str(e)],
             )
 
         # Apply healing strategies
@@ -547,7 +561,10 @@ class SelfHealingFormatter:
                     # Try formatting with repaired data
                     try:
                         healed_result = self.base_formatter.format(
-                            repair_result.repaired_data, format_type, engine_type, config,
+                            repair_result.repaired_data,
+                            format_type,
+                            engine_type,
+                            config,
                         )
 
                         if healed_result.success:
@@ -650,5 +667,9 @@ async def format_with_healing(
     """
     formatter = get_self_healing_formatter()
     return await formatter.format_with_healing(
-        data, format_type, engine_type, config, target_schema,
+        data,
+        format_type,
+        engine_type,
+        config,
+        target_schema,
     )

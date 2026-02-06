@@ -570,7 +570,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MECE Test Suite Re-baseline")
     parser.add_argument("--execute", action="store_true", help="Execute changes (default: dry run)")
     parser.add_argument(
-        "--output", type=str, default="mece_rebaseline_report.json", help="Report output file",
+        "--output",
+        type=str,
+        default="mece_rebaseline_report.json",
+        help="Report output file",
     )
     args = parser.parse_args()
 

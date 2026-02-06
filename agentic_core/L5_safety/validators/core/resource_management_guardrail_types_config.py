@@ -81,10 +81,14 @@ class ResourceManagementGuardrail:
         # Default quotas
         self.quotas: dict[ResourceType, ResourceQuota] = {
             ResourceType.TOKENS: ResourceQuota(
-                resource_type=ResourceType.TOKENS, limit=1_000_000, unit="tokens",
+                resource_type=ResourceType.TOKENS,
+                limit=1_000_000,
+                unit="tokens",
             ),
             ResourceType.API_CALLS: ResourceQuota(
-                resource_type=ResourceType.API_CALLS, limit=10_000, unit="calls",
+                resource_type=ResourceType.API_CALLS,
+                limit=10_000,
+                unit="calls",
             ),
             ResourceType.COST: ResourceQuota(resource_type=ResourceType.COST, limit=100.0, unit="USD"),
             ResourceType.MEMORY: ResourceQuota(resource_type=ResourceType.MEMORY, limit=1024, unit="MB"),

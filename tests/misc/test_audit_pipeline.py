@@ -129,9 +129,7 @@ class TestSSOTCompliance:
                     with patch("pathlib.Path.exists", return_value=False):
                         # Compliance should fail when critical directories are missing
                         result = check_compliance_gate()
-                        assert result is False, (
-                            "Compliance gate should fail with missing directories"
-                        )
+                        assert result is False, "Compliance gate should fail with missing directories"
 
                     Logger.info("✓ Compliance gate properly uses SSOT constants")
 
@@ -224,9 +222,7 @@ class TestAuditIntegrity:
                 empty_findings.append(agent_name)
 
         assert len(empty_findings) == 0, f"Agents with no findings: {empty_findings}"
-        Logger.info(
-            f"✓ All {len(agent_sections)} agent sections contain findings (Skeptic Rule compliance)"
-        )
+        Logger.info(f"✓ All {len(agent_sections)} agent sections contain findings (Skeptic Rule compliance)")
 
 
 class TestSanityCheck:
@@ -245,9 +241,7 @@ class TestSanityCheck:
 
         # Look for "0 findings" pattern
         zero_findings_pattern = "0 findings"
-        assert zero_findings_pattern not in content, (
-            "Found agent with 0 findings - violates Skeptic Rule"
-        )
+        assert zero_findings_pattern not in content, "Found agent with 0 findings - violates Skeptic Rule"
 
         Logger.info("✓ No agent has 0 findings (Skeptic Rule enforced)")
 

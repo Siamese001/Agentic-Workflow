@@ -7,6 +7,9 @@ Defines the fundamental types for state management with strict immutability.
 import hashlib
 import json
 from datetime import datetime, timezone
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable, TypeVar
 
 T = TypeVar("T")
 

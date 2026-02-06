@@ -237,7 +237,8 @@ class ForwardRollingFacade:
         # Calculate adaptive depth if enabled
         if self._depth_manager:
             adaptive_limit = self._depth_manager.calculate_adaptive_limit(
-                context.metadata, self._orchestrator.get_metrics(),
+                context.metadata,
+                self._orchestrator.get_metrics(),
             )
             self._orchestrator.max_depth = adaptive_limit
 

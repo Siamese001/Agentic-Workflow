@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     from agentic_core.governor import create_cost_governor
     from agentic_core.overseer import create_overseer
     from agentic_core.PiiVault import create_pii_vault
+
+LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
 

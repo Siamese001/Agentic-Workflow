@@ -16,6 +16,8 @@ from agentic_core.L1_cognition.planning.capability_analyzer_types import (
     RecommendationType,
 )
 
+LOGGER = logging.getLogger(__name__)
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)
@@ -58,7 +60,9 @@ class CapabilityAnalyzer:
         failure_patterns: Any = self._identify_failure_patterns(failure_reports)
         for pattern_type, pattern_failures in failure_patterns.items():
             gap: Any = self._create_gap_from_pattern(
-                agent_id=agent_id, pattern_type=pattern_type, failures=pattern_failures,
+                agent_id=agent_id,
+                pattern_type=pattern_type,
+                failures=pattern_failures,
             )
             if gap:
                 gaps.append(gap)
@@ -118,7 +122,8 @@ class CapabilityAnalyzer:
         return report
 
     def _identify_failure_patterns(
-        self, failure_reports: list[dict[str, Any]],
+        self,
+        failure_reports: list[dict[str, Any]],
     ) -> dict[str, list[dict[str, Any]]]:
         """Identify common failure patterns.
 
@@ -147,7 +152,10 @@ class CapabilityAnalyzer:
         return patterns
 
     def _create_gap_from_pattern(
-        self, agent_id: str, pattern_type: str, failures: list[dict[str, Any]],
+        self,
+        agent_id: str,
+        pattern_type: str,
+        failures: list[dict[str, Any]],
     ) -> CapabilityGap | None:
         """Create capability gap from failure pattern.
 

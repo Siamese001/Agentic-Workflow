@@ -136,7 +136,12 @@ class SecureToolsImpl:
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:
             result: Any = subprocess.run(
-                command, shell=True, cwd=self.work_dir, capture_output=True, text=True, timeout=30,
+                command,
+                shell=True,
+                cwd=self.work_dir,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
             if result.returncode != 0:
                 Logger.error(f"Command failed with return code {result.returncode}: {result.stderr}")

@@ -120,9 +120,7 @@ class TestRowOrder:
         l5_indices = [i for i, t in enumerate(territories) if t and "L5" in t]
 
         if l6_indices and l5_indices:
-            assert max(l6_indices) < min(l5_indices), (
-                "L6 territories should come before L5 territories"
-            )
+            assert max(l6_indices) < min(l5_indices), "L6 territories should come before L5 territories"
 
 
 @pytest.mark.dashboard

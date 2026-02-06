@@ -9,6 +9,8 @@ Fix all import issues in agentic_core after bulk hierarchy heal.
 """
 
 import re
+from typing import Any
+from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

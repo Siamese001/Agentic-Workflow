@@ -258,7 +258,10 @@ class RootCustomsAgent(SovereignBaseAgent):
         return matches
 
     def determine_routing(
-        self, file_path: Path, content_matches: dict[str, Any], ast_matches: dict[str, Any],
+        self,
+        file_path: Path,
+        content_matches: dict[str, Any],
+        ast_matches: dict[str, Any],
     ) -> RoutingDecision:
         """Determine where a file should be routed using enhanced analysis."""
 
@@ -386,7 +389,9 @@ class RootCustomsAgent(SovereignBaseAgent):
         return None
 
     def _determine_legacy_routing(
-        self, file_path: Path, ast_matches: dict[str, Any],
+        self,
+        file_path: Path,
+        ast_matches: dict[str, Any],
     ) -> RoutingDecision | None:
         """Determine legacy routing based on AST signals."""
         decorators = ast_matches.get("decorators", [])
@@ -432,7 +437,9 @@ class RootCustomsAgent(SovereignBaseAgent):
         return None
 
     def _determine_ast_placement_routing(
-        self, file_path: Path, ast_matches: dict[str, Any],
+        self,
+        file_path: Path,
+        ast_matches: dict[str, Any],
     ) -> RoutingDecision | None:
         """Determine AST placement routing."""
         imports = ast_matches.get("imports", [])
@@ -481,7 +488,10 @@ class RootCustomsAgent(SovereignBaseAgent):
         return None
 
     def _calculate_routing_score(
-        self, file_path: Path, content_matches: dict[str, Any], config: dict[str, Any],
+        self,
+        file_path: Path,
+        content_matches: dict[str, Any],
+        config: dict[str, Any],
     ) -> float:
         """Calculate routing score for a destination configuration."""
         score = 0.0

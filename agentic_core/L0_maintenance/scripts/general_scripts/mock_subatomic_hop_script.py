@@ -89,7 +89,10 @@ async def demo_phase2_vector_cache(embeddings: list) -> Any:
     print(f"\n📥 Adding {len(documents)} documents to hot cache...")
     start_add: Any = time.time()
     await vector_cache.add_documents(
-        documents=documents, metadatas=metadatas, ids=ids, embeddings=list(embeddings),
+        documents=documents,
+        metadatas=metadatas,
+        ids=ids,
+        embeddings=list(embeddings),
     )
     time_add: Any = time.time() - start_add
     print(f"   Time: {time_add:.2f}s")

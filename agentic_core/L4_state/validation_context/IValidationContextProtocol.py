@@ -10,6 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Protocol
 
+LOGGER = logging.getLogger(__name__)
+
 
 # NAMING FIXED: IValidationContextProtocol → IValidationContextProtocol
 class IValidationContextProtocol(Protocol):

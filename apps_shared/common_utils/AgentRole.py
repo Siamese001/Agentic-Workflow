@@ -5,6 +5,9 @@ numbered system. Agents are identified by their function, not by numbers.
 """
 
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -473,6 +476,5 @@ def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
 
     if legacy_refs:
         raise LegacyCodeError(
-            f"Legacy K-node references found in {context}: {legacy_refs}. "
-            f"Use functional roles instead.",
+            f"Legacy K-node references found in {context}: {legacy_refs}. Use functional roles instead.",
         )

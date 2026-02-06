@@ -18,6 +18,10 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.base_agents.subatomic_testing_mixin import SubatomicTestingMixin
+
+LOGGER = logging.getLogger(__name__)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -62,7 +66,10 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(
-        self, name: str, executor: Any, dependencies: list[str] | None = None,
+        self,
+        name: str,
+        executor: Any,
+        dependencies: list[str] | None = None,
     ) -> CoordinateObservabilityOperations:
         """Add a step to orchestration."""
         self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
@@ -158,7 +165,9 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
 
 
 def orchestrate(
-    steps: list[dict], initial_input: object = None, config: dict | None = None,
+    steps: list[dict],
+    initial_input: object = None,
+    config: dict | None = None,
 ) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH: Any = CoordinateObservabilityOperations(config)

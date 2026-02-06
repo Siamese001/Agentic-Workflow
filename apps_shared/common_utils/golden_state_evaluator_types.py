@@ -8,6 +8,8 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from dataclasses import field
+from pathlib import Path
 
 try:
     from apps_rg.core.JudgeEvaluation import (
@@ -326,14 +328,10 @@ class GoldenStateEvaluator:
         pass_rate = passed / total if total > 0 else 0.0
 
         avg_judge_score = (
-            sum(r.judge_result.overall_score for r in reports.values()) / total
-            if total > 0
-            else 0.0
+            sum(r.judge_result.overall_score for r in reports.values()) / total if total > 0 else 0.0
         )
 
-        avg_action_score = (
-            sum(r.action_match_score for r in reports.values()) / total if total > 0 else 0.0
-        )
+        avg_action_score = sum(r.action_match_score for r in reports.values()) / total if total > 0 else 0.0
 
         failing_cases = [
             {"id": r.case_id, "name": r.case_name, "errors": r.errors}

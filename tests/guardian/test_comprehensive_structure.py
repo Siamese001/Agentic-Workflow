@@ -82,23 +82,17 @@ class TestComprehensiveSSOTStructure:
             # Check all validators
             is_valid_territory, territory_error = validate_territory(rel_path)
             if not is_valid_territory:
-                violations.append(
-                    {"file": str(rel_path), "type": "territory", "error": territory_error}
-                )
+                violations.append({"file": str(rel_path), "type": "territory", "error": territory_error})
                 continue
 
             is_valid_structure, structure_error = validate_subfolder_structure(rel_path)
             if not is_valid_structure:
-                violations.append(
-                    {"file": str(rel_path), "type": "structure", "error": structure_error}
-                )
+                violations.append({"file": str(rel_path), "type": "structure", "error": structure_error})
                 continue
 
             is_valid_forbidden, forbidden_error = validate_forbidden_patterns(rel_path)
             if not is_valid_forbidden:
-                violations.append(
-                    {"file": str(rel_path), "type": "forbidden", "error": forbidden_error}
-                )
+                violations.append({"file": str(rel_path), "type": "forbidden", "error": forbidden_error})
 
         # Report results
         print(f"\n  Files scanned: {len(python_files)}")

@@ -10,6 +10,7 @@ import hmac
 import json
 import logging
 import time
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -265,7 +266,10 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
-        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True,
+        cls,
+        hop_id: str,
+        checkpoint_dir: Path,
+        use_global_key: bool = True,
     ) -> SecureCheckpointManager:
         """Get or create a checkpoint manager.
 
@@ -284,7 +288,9 @@ class CheckpointManagerFactory:
                     logger.info("Generated global checkpoint encryption key")
 
                 manager = SecureCheckpointManager(
-                    hop_id, checkpoint_dir, encryption_key=cls._global_key,
+                    hop_id,
+                    checkpoint_dir,
+                    encryption_key=cls._global_key,
                 )
             else:
                 manager = SecureCheckpointManager(hop_id, checkpoint_dir)

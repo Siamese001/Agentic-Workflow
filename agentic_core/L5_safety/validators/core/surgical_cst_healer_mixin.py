@@ -70,7 +70,9 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         return self._apply_modifications_if_needed(original_node, updated_node, "ClassDef")
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
+        self,
+        original_node: cst.FunctionDef,
+        updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Handle FunctionDef nodes."""
         return self._apply_modifications_if_needed(original_node, updated_node, "FunctionDef")
@@ -84,13 +86,18 @@ class SurgicalCSTTransformer(cst.CSTTransformer):
         return self._apply_modifications_if_needed(original_node, updated_node, "ImportFrom")
 
     def leave_SimpleStatementLine(
-        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine,
+        self,
+        original_node: cst.SimpleStatementLine,
+        updated_node: cst.SimpleStatementLine,
     ) -> cst.SimpleStatementLine:
         """Handle SimpleStatementLine nodes (for bare except, etc.)."""
         return self._apply_modifications_if_needed(original_node, updated_node, "SimpleStatementLine")
 
     def _apply_modifications_if_needed(
-        self, original_node: cst.CSTNode, updated_node: cst.CSTNode, node_type: str,
+        self,
+        original_node: cst.CSTNode,
+        updated_node: cst.CSTNode,
+        node_type: str,
     ) -> cst.CSTNode:
         """Apply modifications if this node matches any violation."""
         if not hasattr(original_node, "position") or not original_node.position:
@@ -189,7 +196,9 @@ class SurgicalCSTHealerMixin:
                     target_node = self._extract_target_node(violation)
 
                     if target_node and not self.gate.verify_action(
-                        context.file_path, action_type, target_node,
+                        context.file_path,
+                        action_type,
+                        target_node,
                     ):
                         return {
                             "status": "skipped",

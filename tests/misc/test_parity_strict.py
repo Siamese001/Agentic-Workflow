@@ -200,9 +200,7 @@ class ParityTestBase(ABC):
 
         return differences
 
-    def _compare_validation_results(
-        self, legacy: ValidationResult, unified: ValidationResult
-    ) -> list[str]:
+    def _compare_validation_results(self, legacy: ValidationResult, unified: ValidationResult) -> list[str]:
         """Compare ValidationResult instances."""
         differences = []
 
@@ -220,9 +218,7 @@ class ParityTestBase(ABC):
 
         # Check if dict has equivalent fields
         if "passed" in legacy and legacy["passed"] != unified.passed:
-            differences.append(
-                f"passed mismatch: legacy={legacy['passed']}, unified={unified.passed}"
-            )
+            differences.append(f"passed mismatch: legacy={legacy['passed']}, unified={unified.passed}")
 
         return differences
 
@@ -233,9 +229,7 @@ class ParityTestBase(ABC):
         differences = []
 
         if legacy.completed != unified.completed:
-            differences.append(
-                f"completed mismatch: legacy={legacy.completed}, unified={unified.completed}"
-            )
+            differences.append(f"completed mismatch: legacy={legacy.completed}, unified={unified.completed}")
 
         if legacy.stage != unified.stage:
             differences.append(f"stage mismatch: legacy={legacy.stage}, unified={unified.stage}")
@@ -328,9 +322,7 @@ class SignalHandlingValidator:
         unified_signals = {call[0][0] for call in unified_add_calls if call[0]}
 
         if legacy_signals != unified_signals:
-            errors.append(
-                f"add_signal mismatch: legacy={legacy_signals}, unified={unified_signals}"
-            )
+            errors.append(f"add_signal mismatch: legacy={legacy_signals}, unified={unified_signals}")
 
         # Compare remove_signal calls
         legacy_remove_calls = legacy_agent.remove_signal.call_args_list
@@ -340,9 +332,7 @@ class SignalHandlingValidator:
         unified_removed = {call[0][0] for call in unified_remove_calls if call[0]}
 
         if legacy_removed != unified_removed:
-            errors.append(
-                f"remove_signal mismatch: legacy={legacy_removed}, unified={unified_removed}"
-            )
+            errors.append(f"remove_signal mismatch: legacy={legacy_removed}, unified={unified_removed}")
 
         return errors
 

@@ -114,7 +114,10 @@ def get_base_agent_territory(layer: str) -> str:
 
 
 def get_territory_from_path(
-    layer: str, path_str: str, is_base_class: bool, class_name: str = "",
+    layer: str,
+    path_str: str,
+    is_base_class: bool,
+    class_name: str = "",
 ) -> str:
     """Determine the canonical territory name based on layer, path, and class type."""
     if class_name == "SovereignBaseAgent" or layer == "Base":
@@ -320,15 +323,10 @@ def _categorize_l3_orchestration(class_name: str, docstring: str, path_str: str)
     if "dag" in name_lower or "dag" in doc_lower or "graph" in doc_lower:
         return TERRITORY_ORCHESTRATION_DAG
 
-    if any(
-        kw in name_lower
-        for kw in ["ppo", "qlearning", "actorcritic", "reinforcecritic", "rlorchestrat"]
-    ):
+    if any(kw in name_lower for kw in ["ppo", "qlearning", "actorcritic", "reinforcecritic", "rlorchestrat"]):
         return TERRITORY_ORCHESTRATION_RL
 
-    if any(
-        kw in name_lower for kw in ["router", "connection", "permission", "registry", "gatekeeper"]
-    ):
+    if any(kw in name_lower for kw in ["router", "connection", "permission", "registry", "gatekeeper"]):
         return TERRITORY_ORCHESTRATION_ROUTING
 
     if any(
@@ -387,10 +385,7 @@ def _categorize_apps_lic(class_name: str, docstring: str, path_str: str) -> str:
     if "hop" in name_lower:
         return TERRITORY_APPS_LIC_HOP
 
-    if any(
-        kw in name_lower
-        for kw in ["orchestrat", "workflow", "supervisor", "s2supervisor", "healing"]
-    ):
+    if any(kw in name_lower for kw in ["orchestrat", "workflow", "supervisor", "s2supervisor", "healing"]):
         return TERRITORY_APPS_LIC_ORCHESTRATION
 
     if "/utils/" in path_str or any(
@@ -463,10 +458,7 @@ def _categorize_l5_guardrails(class_name: str, docstring: str, path_str: str) ->
     name_lower = class_name.lower()
     doc_lower = (docstring or "").lower()
 
-    if any(
-        kw in name_lower
-        for kw in ["mcp", "hardened", "hardening", "rollback", "recovery", "circuit"]
-    ):
+    if any(kw in name_lower for kw in ["mcp", "hardened", "hardening", "rollback", "recovery", "circuit"]):
         return TERRITORY_SAFETY_GUARDRAILS_MCP
     if "mcp" in doc_lower:
         return TERRITORY_SAFETY_GUARDRAILS_MCP

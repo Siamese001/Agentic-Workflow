@@ -133,9 +133,7 @@ class TestCanonKeyRemoval:
     def test_verify_canon_base_agent_is_hollow(self):
         """Verify CanonBaseAgent is hollowed out."""
         try:
-            target_file = (
-                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
-            )
+            target_file = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "CanonBaseAgent.py"
             assert target_file.exists(), f"CanonBaseAgent.py not found at {target_file}"
 
             with open(target_file, encoding="utf-8") as f:
@@ -151,10 +149,7 @@ class TestCanonKeyRemoval:
                     for item in node.body:
                         if isinstance(item, ast.Assign):
                             for target in item.targets:
-                                if (
-                                    isinstance(target, ast.Name)
-                                    and target.id == "VERIFICATION_REGISTRY"
-                                ):
+                                if isinstance(target, ast.Name) and target.id == "VERIFICATION_REGISTRY":
                                     raise AssertionError(
                                         "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY"
                                     )
@@ -164,9 +159,7 @@ class TestCanonKeyRemoval:
                 if isinstance(node, ast.ClassDef) and node.name == "CanonBaseAgent":
                     # Should only have docstring and pass
                     non_trivial = [n for n in node.body if not isinstance(n, ast.Pass | ast.Expr)]
-                    assert len(non_trivial) == 0, (
-                        f"CanonBaseAgent should be hollow, found: {non_trivial}"
-                    )
+                    assert len(non_trivial) == 0, f"CanonBaseAgent should be hollow, found: {non_trivial}"
 
             self.passed += 1
             print("✅ test_verify_canon_base_agent_is_hollow PASSED")
@@ -179,11 +172,7 @@ class TestCanonKeyRemoval:
         """Verify Jinja templates cleansed of legacy Canon Key references."""
         try:
             path = (
-                PROJECT_ROOT
-                / "agentic_core"
-                / "prompt_governance"
-                / "templates"
-                / "agent_autonomy_law.jinja"
+                PROJECT_ROOT / "agentic_core" / "prompt_governance" / "templates" / "agent_autonomy_law.jinja"
             )
             if path.exists():
                 with open(path, encoding="utf-8") as f:
@@ -193,9 +182,7 @@ class TestCanonKeyRemoval:
                 assert "CANON KEY 51" not in content, "Template should not reference 'CANON KEY 51'"
 
                 # Should have new Sovereign Validation reference
-                assert "Sovereign Validation" in content, (
-                    "Template should reference Sovereign Validation"
-                )
+                assert "Sovereign Validation" in content, "Template should reference Sovereign Validation"
 
             self.passed += 1
             print("✅ test_templates_cleansed PASSED")

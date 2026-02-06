@@ -231,9 +231,7 @@ class TestCrossAgentScanConsistency:
     def mock_project(self, tmp_path):
         """Setup project structure."""
         (tmp_path / "agentic_core" / "L5_safety").mkdir(parents=True)
-        (tmp_path / "agentic_core" / "L5_safety" / "TestAgent.py").write_text(
-            "class TestAgent: pass"
-        )
+        (tmp_path / "agentic_core" / "L5_safety" / "TestAgent.py").write_text("class TestAgent: pass")
         return tmp_path
 
     @pytest.fixture(autouse=True)

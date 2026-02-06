@@ -17,9 +17,7 @@ Status: DEPRECATED - Do not use in production
 
 # Comment out all code
 lines = content.split("\n")
-commented_lines = [
-    f"# {line}" if line.strip() and not line.startswith("#") else line for line in lines
-]
+commented_lines = [f"# {line}" if line.strip() and not line.startswith("#") else line for line in lines]
 
 new_content = legacy_header + "\n".join(commented_lines)
 

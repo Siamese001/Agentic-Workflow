@@ -191,8 +191,7 @@ class TestSSOTCompliance:
             if path.is_dir():
                 if path.name not in valid_subfolders:
                     violations.append(
-                        f"Invalid subfolder '{path.name}' in agentic_core. "
-                        f"Valid: {sorted(valid_subfolders)}"
+                        f"Invalid subfolder '{path.name}' in agentic_core. Valid: {sorted(valid_subfolders)}"
                     )
             elif path.suffix == ".py":
                 # Python files at agentic_core root are allowed (e.g., __init__.py)
@@ -309,9 +308,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} apps_shared independence violations:\n"
-                + "\n".join(
-                    f"  - {v['file']}:{v['line']} imports {v['import']}" for v in violations[:20]
-                )
+                + "\n".join(f"  - {v['file']}:{v['line']} imports {v['import']}" for v in violations[:20])
             )
 
     def test_test_files_in_tests_directory(self, report_builder):
@@ -443,9 +440,7 @@ class TestSSOTCompliance:
                                                     "from_layer": layer_name,
                                                     "to_layer": imported_layer,
                                                     "file": str(self._get_relative_path(py_file)),
-                                                    "line": node.lineno
-                                                    if hasattr(node, "lineno")
-                                                    else 1,
+                                                    "line": node.lineno if hasattr(node, "lineno") else 1,
                                                 }
                                             )
                                             report_builder.add_violation(
@@ -463,10 +458,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} layer hierarchy violations:\n"
-                + "\n".join(
-                    f"  - {v['from_layer']} -> {v['to_layer']}: {v['file']}"
-                    for v in violations[:20]
-                )
+                + "\n".join(f"  - {v['from_layer']} -> {v['to_layer']}: {v['file']}" for v in violations[:20])
             )
 
     def test_void_compliance_whitelist(self, report_builder):
@@ -493,9 +485,7 @@ class TestSSOTCompliance:
             if folder_name not in ROOT_WHITELIST:
                 py_files = list(path.rglob("*.py"))
                 if py_files:
-                    violations.append(
-                        {"folder": folder_name, "count": len(py_files), "type": "whitelist"}
-                    )
+                    violations.append({"folder": folder_name, "count": len(py_files), "type": "whitelist"})
                     report_builder.add_violation(
                         code=ViolationCode.SSOT_VOID_COMPLIANCE,
                         file=folder_name,
@@ -508,9 +498,7 @@ class TestSSOTCompliance:
             if folder_name in FORBIDDEN_ROOT_FOLDERS:
                 py_files = list(path.rglob("*.py"))
                 if py_files:
-                    violations.append(
-                        {"folder": folder_name, "count": len(py_files), "type": "forbidden"}
-                    )
+                    violations.append({"folder": folder_name, "count": len(py_files), "type": "forbidden"})
                     report_builder.add_violation(
                         code=ViolationCode.SSOT_VOID_COMPLIANCE,
                         file=folder_name,
@@ -522,9 +510,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} void compliance violations:\n"
-                + "\n".join(
-                    f"  - {v['folder']}: {v['count']} files ({v['type']})" for v in violations
-                )
+                + "\n".join(f"  - {v['folder']}: {v['count']} files ({v['type']})" for v in violations)
             )
 
     def test_sub_atomic_granularity(self, report_builder):
@@ -549,9 +535,7 @@ class TestSSOTCompliance:
                     lines = f.readlines()
 
                 # Filter out empty lines and comments
-                code_lines = [
-                    line for line in lines if line.strip() and not line.strip().startswith("#")
-                ]
+                code_lines = [line for line in lines if line.strip() and not line.strip().startswith("#")]
                 loc_count = len(code_lines)
 
                 # Monolith check (> 800 LOC) - BLOCKING

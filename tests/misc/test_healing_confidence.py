@@ -88,9 +88,7 @@ class HighConfidenceTestAgent:
         elif result["errors"] == 0 and result["violations_found"] > 0:
             print("! Violations found but none fixed (check if file was already moved)")
         else:
-            print(
-                f"? Healing result: fixed={result['violations_fixed']}, errors={result['errors']}"
-            )
+            print(f"? Healing result: fixed={result['violations_fixed']}, errors={result['errors']}")
 
         # The important thing is that the agent has the heal method and it's callable
         # The actual healing might fail due to various reasons (file locks, permissions, etc.)

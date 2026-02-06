@@ -94,9 +94,7 @@ class test_void_violation_handling:
         healer = LocationHealerAgent(project_root=project_root)
 
         # Mock the _heal_void_violation method
-        healer._heal_void_violation = MagicMock(
-            return_value={"applied": True, "action_taken": "MOCKED"}
-        )
+        healer._heal_void_violation = MagicMock(return_value={"applied": True, "action_taken": "MOCKED"})
 
         mock_file = project_root / "agentic_core" / "unknown_folder" / "test_file.py"
         archives_root = project_root / "archives"

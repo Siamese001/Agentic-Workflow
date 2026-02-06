@@ -48,7 +48,11 @@ class CostGovernor:
         self.on_exceeded: Callable | None = None
 
     def track_usage(
-        self, model: str, input_tokens: int, output_tokens: int, OPERATION: str = "completion",
+        self,
+        model: str,
+        input_tokens: int,
+        output_tokens: int,
+        OPERATION: str = "completion",
     ) -> float:
         """ """
         with self._lock:
@@ -87,7 +91,9 @@ class CostGovernor:
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.LIMIT)
             raise BudgetExceededError(
-                f"Budget limit ${self.current_spend:.2f})", self.current_spend, self.LIMIT,
+                f"Budget limit ${self.current_spend:.2f})",
+                self.current_spend,
+                self.LIMIT,
             )
 
     def get_spend(self) -> float:

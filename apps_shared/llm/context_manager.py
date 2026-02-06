@@ -154,7 +154,8 @@ class ContextManager:
 
     @staticmethod
     def create_conversation_context(
-        messages: list[dict[str, str]], max_tokens: int = 4000,
+        messages: list[dict[str, str]],
+        max_tokens: int = 4000,
     ) -> ContextWindow:
         """
         Create context window from messages.
@@ -205,7 +206,8 @@ class ContextManager:
 
     @staticmethod
     def prioritize_messages(
-        messages: list[dict[str, str]], max_tokens: int,
+        messages: list[dict[str, str]],
+        max_tokens: int,
     ) -> list[dict[str, str]]:
         """
         Prioritize messages to fit within token limit.

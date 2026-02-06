@@ -82,7 +82,9 @@ def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
             while True:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
                 done, _ = concurrent.futures.wait(
-                    [future], timeout=0.05, return_when=concurrent.futures.FIRST_COMPLETED,
+                    [future],
+                    timeout=0.05,
+                    return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 
                 if done:

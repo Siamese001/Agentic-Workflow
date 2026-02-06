@@ -97,9 +97,7 @@ async def insert_event(event: TemporalEvent) -> None:
 
                 _neo4j_graph.update_relation_invalidity(
                     rel_id=event.triplet_id,
-                    invalid_at=invalid_at.isoformat()
-                    if isinstance(invalid_at, datetime)
-                    else invalid_at,
+                    invalid_at=invalid_at.isoformat() if isinstance(invalid_at, datetime) else invalid_at,
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):

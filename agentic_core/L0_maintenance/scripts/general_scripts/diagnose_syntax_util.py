@@ -7,6 +7,7 @@ Usage:
 """
 
 import ast
+from pathlib import Path
 
 
 def check_syntax(root: Path) -> int:

@@ -316,7 +316,9 @@ def main():
     )
 
     parser.add_argument(
-        "--headless", action="store_true", help="Run browser in headless mode (no visible window)",
+        "--headless",
+        action="store_true",
+        help="Run browser in headless mode (no visible window)",
     )
 
     parser.add_argument(

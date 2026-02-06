@@ -84,7 +84,11 @@ class CapabilityExtractor:
                 caps["semantic_tags"].add(tag)
 
     def _analyze_method_body(
-        self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict,
+        self,
+        item: ast.FunctionDef,
+        method_name: str,
+        method_loc: int,
+        caps: dict,
     ) -> None:
         """Analyze method body for specialized patterns.
 

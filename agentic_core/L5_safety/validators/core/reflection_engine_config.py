@@ -146,7 +146,10 @@ class ReflectionEngine:
 
         # Initialize circuit breaker for LLM calls
         self.circuit_breaker = get_breaker(
-            "reflection_engine", failure_threshold=3, reset_after_s=60, half_open_max_calls=3,
+            "reflection_engine",
+            failure_threshold=3,
+            reset_after_s=60,
+            half_open_max_calls=3,
         )
 
         Logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
@@ -249,7 +252,10 @@ class ReflectionEngine:
         return True
 
     async def _fast_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
+        self,
+        content: Any,
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using fast regex/built-in validators."""
         results = []
@@ -290,7 +296,10 @@ class ReflectionEngine:
         )
 
     async def _llm_path_evaluate(
-        self, content: Any, criteria: list[ValidationCriterion], context: dict[str, Any] | None,
+        self,
+        content: Any,
+        criteria: list[ValidationCriterion],
+        context: dict[str, Any] | None,
     ) -> CritiqueResult:
         """Evaluate using LLM for semantic validation."""
         # Build prompt

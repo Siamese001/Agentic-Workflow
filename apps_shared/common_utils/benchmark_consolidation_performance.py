@@ -97,9 +97,7 @@ def count_unified_agents() -> dict[str, int]:
         counts["L2_execution_unified"] = len(list(l2_unified.glob("*.py")))
 
     counts["total_unified"] = (
-        counts["L3_orchestration_unified"]
-        + counts["L5_safety_unified"]
-        + counts["L2_execution_unified"]
+        counts["L3_orchestration_unified"] + counts["L5_safety_unified"] + counts["L2_execution_unified"]
     )
 
     return counts

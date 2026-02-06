@@ -71,7 +71,9 @@ def find_files_to_update(root: Path) -> list[Path]:
 
 
 def update_file_content(
-    file_path: Path, rename_map: dict[str, str], dry_run: bool = True,
+    file_path: Path,
+    rename_map: dict[str, str],
+    dry_run: bool = True,
 ) -> tuple[bool, int]:
     """Update file content with new names. Returns (changed, count)."""
     try:

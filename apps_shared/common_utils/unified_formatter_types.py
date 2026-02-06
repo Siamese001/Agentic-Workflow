@@ -6,6 +6,10 @@ engines can use, eliminating the need for separate format_* modules.
 
 import json
 import logging
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +98,10 @@ class DefaultFormatter(FormatterStrategy):
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     @property
@@ -129,11 +136,16 @@ class ResumeBulletFormatter(FormatterStrategy):
                 bullets = self._apply_config(bullets, config)
 
             return FormatResult(
-                data=bullets, format_type=self.format_name, metadata={"bullet_count": len(bullets)},
+                data=bullets,
+                format_type=self.format_name,
+                metadata={"bullet_count": len(bullets)},
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     def _format_text_to_bullets(self, text: str) -> list[str]:
@@ -249,7 +261,10 @@ class ResumeSectionFormatter(FormatterStrategy):
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     def _format_dict_section(self, data: dict, config: dict | None) -> dict:
@@ -366,7 +381,10 @@ class OutreachMessageFormatter(FormatterStrategy):
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     def _format_message_text(self, text: str, config: dict | None) -> str:
@@ -451,7 +469,10 @@ class OutreachSubjectFormatter(FormatterStrategy):
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     def _format_subject_text(self, text: str, config: dict | None) -> str:
@@ -517,7 +538,10 @@ class JSONFormatter(FormatterStrategy):
             )
         except Exception as e:
             return FormatResult(
-                data=data, format_type=self.format_name, success=False, errors=[str(e)],
+                data=data,
+                format_type=self.format_name,
+                success=False,
+                errors=[str(e)],
             )
 
     @property

@@ -22,9 +22,9 @@ class TestGlobalRoutingRigor:
 
     def test_safety_beats_cognition(self):
         """100% PASS: L5 Safety (25) must outrank L1 Cognition (18)."""
-        safety_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L5_safety/guardrails"
-        ]["weight"]
+        safety_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/guardrails"][
+            "weight"
+        ]
         cognition_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/L1_cognition/thought_engine"
         ]["weight"]
@@ -55,12 +55,10 @@ class TestGlobalRoutingRigor:
 
     def test_gravity_enforcement_priority(self):
         """100% PASS: Gravity logic (22) must be second only to Base Agents (100)."""
-        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L5_safety/gravity"
-        ]["weight"]
-        base_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/base_agents"][
+        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/gravity"][
             "weight"
         ]
+        base_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/base_agents"]["weight"]
 
         assert gravity_w > 20, "FAIL: Gravity signals are too weak to enforce layer boundaries."
         assert gravity_w == 22, f"FAIL: Gravity expected weight 22, got {gravity_w}"
@@ -126,16 +124,14 @@ class TestGlobalRoutingRigor:
         guardrails_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/L5_safety/guardrails"
         ]["weight"]
-        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L5_safety/gravity"
-        ]["weight"]
+        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/gravity"][
+            "weight"
+        ]
 
         assert 20 <= guardrails_w <= 25, (
             f"FAIL: Guardrails weight {guardrails_w} not in critical safety range 20-25"
         )
-        assert 20 <= gravity_w <= 25, (
-            f"FAIL: Gravity weight {gravity_w} not in critical safety range 20-25"
-        )
+        assert 20 <= gravity_w <= 25, f"FAIL: Gravity weight {gravity_w} not in critical safety range 20-25"
 
     def test_domain_logic_weight_range(self):
         """100% PASS: Domain logic components must be in 15-18 range."""
@@ -155,9 +151,7 @@ class TestGlobalRoutingRigor:
         assert 15 <= orchestration_w <= 18, (
             f"FAIL: Orchestration weight {orchestration_w} not in domain logic range 15-18"
         )
-        assert 15 <= pg_w <= 18, (
-            f"FAIL: Prompt governance weight {pg_w} not in domain logic range 15-18"
-        )
+        assert 15 <= pg_w <= 18, f"FAIL: Prompt governance weight {pg_w} not in domain logic range 15-18"
 
     def test_state_schema_weight_range(self):
         """100% PASS: State & schema components must be in 10-14 range."""
@@ -168,9 +162,7 @@ class TestGlobalRoutingRigor:
             "agentic_core/prompt_governance/version_registry"
         ]["weight"]
 
-        assert 10 <= state_w <= 14, (
-            f"FAIL: State weight {state_w} not in state & schema range 10-14"
-        )
+        assert 10 <= state_w <= 14, f"FAIL: State weight {state_w} not in state & schema range 10-14"
         assert 10 <= version_w <= 14, (
             f"FAIL: Version registry weight {version_w} not in state & schema range 10-14"
         )
@@ -187,17 +179,13 @@ class TestGlobalRoutingRigor:
 
     def test_base_agents_constitutional_priority(self):
         """100% PASS: Base agents must maintain constitutional weight 100."""
-        base_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/base_agents"][
-            "weight"
-        ]
+        base_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/base_agents"]["weight"]
 
         assert base_w == 100, f"FAIL: Base agents lost constitutional priority with weight {base_w}"
 
         # Ensure no other component comes close to constitutional priority
         signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]
-        other_weights = [
-            s["weight"] for path, s in signals.items() if path != "agentic_core/base_agents"
-        ]
+        other_weights = [s["weight"] for path, s in signals.items() if path != "agentic_core/base_agents"]
         max_other_weight = max(other_weights)
         assert max_other_weight <= 25, (
             f"FAIL: Non-base component has weight {max_other_weight}, too close to constitutional 100"

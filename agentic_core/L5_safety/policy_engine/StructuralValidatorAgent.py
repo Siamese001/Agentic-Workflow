@@ -36,6 +36,7 @@ from agentic_core.L4_state.utils.layer_gravity import (
     extract_layer_from_module,
     extract_layer_from_path,
 )
+from agentic_core.base_agents.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -233,7 +234,11 @@ class StructuralValidatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     # [ATOMIC SAFETY]
     def force_rename_class(
-        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True,
+        self,
+        file_path: Path,
+        old_name: str,
+        new_name: str,
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """Safely renames a class using Atomic Writes."""
         if not file_path.exists():
@@ -302,7 +307,10 @@ class StructuralValidatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
                 result = self.force_rename_class(
-                    Path(path), violation["old_name"], violation["new_name"], dry_run=False,
+                    Path(path),
+                    violation["old_name"],
+                    violation["new_name"],
+                    dry_run=False,
                 )
                 if "error" not in result:
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}

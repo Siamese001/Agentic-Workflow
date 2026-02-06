@@ -4,6 +4,7 @@ Session 5 - Critical Issue Resolution
 """
 
 import re
+from pathlib import Path
 
 
 def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:

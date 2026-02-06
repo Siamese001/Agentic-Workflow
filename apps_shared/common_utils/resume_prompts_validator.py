@@ -45,7 +45,9 @@ def _get_prompt_template(key: str) -> str:
 
 
 def build_librarian_mission_extraction_prompt(
-    job_description: str, company_name: str, job_title: str,
+    job_description: str,
+    company_name: str,
+    job_title: str,
 ) -> str:
     """
     Builds prompt for Librarian agent to extract RAGMission from JD.
@@ -54,12 +56,16 @@ def build_librarian_mission_extraction_prompt(
     template = _get_prompt_template("librarian_mission_extraction")
 
     return template.format(
-        job_description=job_description, company_name=company_name, job_title=job_title,
+        job_description=job_description,
+        company_name=company_name,
+        job_title=job_title,
     )
 
 
 def build_librarian_strategic_analysis_prompt(
-    job_description: str, rag_mission: "RAGMission", previous_context: str | None = None,
+    job_description: str,
+    rag_mission: "RAGMission",
+    previous_context: str | None = None,
 ) -> str:
     """
     Builds prompt for Librarian to analyze strategic priorities and initiatives.
@@ -141,9 +147,7 @@ def build_phase1_prompt(
     tech_search_line = ""
     if mission.key_technologies:
         safe_tech = mission.key_technologies[0].replace('"', "")
-        tech_search_line = (
-            f'3. Search for: `"{mission.target_company_name} press release {safe_tech}"`'
-        )
+        tech_search_line = f'3. Search for: `"{mission.target_company_name} press release {safe_tech}"`'
 
     # 4. Add strategic priorities context if available
     strategic_context = ""
@@ -166,7 +170,10 @@ def build_phase1_prompt(
 
 
 def build_phase2_prompt(
-    job_description: str, mission: "RAGMission", industry: str, librarian_context: str | None = None,
+    job_description: str,
+    mission: "RAGMission",
+    industry: str,
+    librarian_context: str | None = None,
 ) -> str:
     """
     Build Phase 2 RAG prompt with enhanced signal extraction.
@@ -210,7 +217,8 @@ def build_phase3_prompt(
     template = _get_prompt_template("rag_phase_3")
     achievements_context = _format_resume_index_summary(master_resume_index)
     search_pattern_instruction = comp_config.search_pattern.format(
-        role_title=mission.precise_role_title, peer_company="<peer_company>",
+        role_title=mission.precise_role_title,
+        peer_company="<peer_company>",
     )
 
     # Add Librarian context
@@ -282,7 +290,10 @@ def build_phase4_prompt(mission: "RAGMission", librarian_context: str | None = N
 
 
 def build_macro_tot_generation_prompt(
-    base_prompt: str, draft_number: int, total_drafts: int, variation_instruction: str = "",
+    base_prompt: str,
+    draft_number: int,
+    total_drafts: int,
+    variation_instruction: str = "",
 ) -> str:
     """
     Builds prompt for generating one draft in Macro ToT process.
@@ -297,9 +308,7 @@ def build_macro_tot_generation_prompt(
         elif draft_number == 2:
             variation_instruction = "Focus on STRATEGIC VISION and leadership capabilities."
         else:
-            variation_instruction = (
-                "Focus on BALANCED APPROACH combining technical and strategic elements."
-            )
+            variation_instruction = "Focus on BALANCED APPROACH combining technical and strategic elements."
 
     return template.format(
         base_prompt=base_prompt,
@@ -310,7 +319,9 @@ def build_macro_tot_generation_prompt(
 
 
 def build_evaluator_scoring_prompt(
-    drafts: list[str], criteria: dict[str, object], section_name: str,
+    drafts: list[str],
+    criteria: dict[str, object],
+    section_name: str,
 ) -> str:
     """
     Builds prompt for Evaluator Agent to score competing drafts.
@@ -335,7 +346,9 @@ def build_evaluator_scoring_prompt(
 
 
 def build_macro_tot_synthesis_prompt(
-    original_prompt: str, scored_drafts: list[tuple[str, float]], top_k: int = 2,
+    original_prompt: str,
+    scored_drafts: list[tuple[str, float]],
+    top_k: int = 2,
 ) -> str:
     """
     Builds prompt for synthesizing the best elements from top-scoring drafts.
@@ -352,7 +365,9 @@ def build_macro_tot_synthesis_prompt(
         top_drafts_text += f"\n---\n**DRAFT {i} (Score: {score:.1f}):**\n{draft}\n"
 
     return template.format(
-        original_prompt=original_prompt, top_drafts_text=top_drafts_text, top_k=top_k,
+        original_prompt=original_prompt,
+        top_drafts_text=top_drafts_text,
+        top_k=top_k,
     )
 
 
@@ -389,7 +404,9 @@ def build_narrative_prompt(
 
 
 def build_verbatim_bullet_selection_prompt(
-    master_bullets_text_list: list[str], verbatim_count: int, thematic_analysis: "ThematicAnalysis",
+    master_bullets_text_list: list[str],
+    verbatim_count: int,
+    thematic_analysis: "ThematicAnalysis",
 ) -> str:
     """Builds the prompt for selecting verbatim bullets."""
     template = _get_prompt_template("artist_verbatim_bullet_selection")
@@ -411,7 +428,8 @@ def build_verbatim_bullet_selection_prompt(
 
 
 def build_customized_bullet_prompt(
-    source_bullets_text: list[str], thematic_analysis: "ThematicAnalysis",
+    source_bullets_text: list[str],
+    thematic_analysis: "ThematicAnalysis",
 ) -> str:
     """Builds the prompt for customizing bullets."""
     template = _get_prompt_template("artist_customized_bullet")
@@ -507,7 +525,9 @@ def build_bullet_reorder_prompt(
 
 
 def build_bullet_rewrite_prompt(
-    original_bullet: str, target_word_count_range: tuple[int, int], **kwargs: dict[str, any],
+    original_bullet: str,
+    target_word_count_range: tuple[int, int],
+    **kwargs: dict[str, any],
 ) -> str:
     """Builds the prompt for rewriting a single bullet to a word count."""
     template = _get_prompt_template("artist_bullet_rewrite_wc")
@@ -535,8 +555,7 @@ def build_overview_generation_prompt(
         kw in job_desc_lower for kw in ["strategy", "roadmap", "vision", "partnership", "alliance"]
     )
     include_technical_theme = any(
-        kw in job_desc_lower
-        for kw in ["technical", "architect", "engineer", "platform", "cloud", "ai", "ml"]
+        kw in job_desc_lower for kw in ["technical", "architect", "engineer", "platform", "cloud", "ai", "ml"]
     )
 
     theme_instructions = []
@@ -562,7 +581,9 @@ def build_overview_generation_prompt(
 
 
 def build_generation_prompt_with_reinforced_constraints(
-    base_prompt: str, constraints: dict[str, object], attempt_number: int,
+    base_prompt: str,
+    constraints: dict[str, object],
+    attempt_number: int,
 ) -> str:
     """
     Reinforces constraints progressively across attempts.
@@ -655,9 +676,7 @@ def build_validator_factual_check_prompt(
 
     # Extract key verification points
     primary_theme = (
-        thematic_analysis.primary_theme.get("name", "N/A")
-        if thematic_analysis.primary_theme
-        else "N/A"
+        thematic_analysis.primary_theme.get("name", "N/A") if thematic_analysis.primary_theme else "N/A"
     )
 
     differentiators = []

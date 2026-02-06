@@ -250,7 +250,8 @@ class ResourceManager:
             File handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode},
+            ResourceType.FILE_HANDLE,
+            metadata={"path": str(file_path), "mode": mode},
         )
 
         try:
@@ -272,7 +273,8 @@ class ResourceManager:
             Async file handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode},
+            ResourceType.FILE_HANDLE,
+            metadata={"path": str(file_path), "mode": mode},
         )
 
         try:

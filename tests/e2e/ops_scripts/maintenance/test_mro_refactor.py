@@ -41,27 +41,15 @@ def test_tc_mro_002_l4_state_base_agent_mro():
         print(f"   MRO: {' -> '.join(mro_names[:8])}...")
 
         # Verify L4SubatomicTestingMixin comes before SovereignBaseAgent
-        l4_idx = (
-            mro_names.index("L4SubatomicTestingMixin")
-            if "L4SubatomicTestingMixin" in mro_names
-            else -1
-        )
-        sovereign_idx = (
-            mro_names.index("SovereignBaseAgent") if "SovereignBaseAgent" in mro_names else -1
-        )
-        infra_idx = (
-            mro_names.index("infrastructure_mixin") if "infrastructure_mixin" in mro_names else -1
-        )
+        l4_idx = mro_names.index("L4SubatomicTestingMixin") if "L4SubatomicTestingMixin" in mro_names else -1
+        sovereign_idx = mro_names.index("SovereignBaseAgent") if "SovereignBaseAgent" in mro_names else -1
+        infra_idx = mro_names.index("infrastructure_mixin") if "infrastructure_mixin" in mro_names else -1
 
         assert l4_idx >= 0, "L4SubatomicTestingMixin not in MRO"
         assert sovereign_idx >= 0, "SovereignBaseAgent not in MRO"
         assert infra_idx >= 0, "infrastructure_mixin not in MRO"
-        assert l4_idx < sovereign_idx, (
-            "L4SubatomicTestingMixin should come before SovereignBaseAgent"
-        )
-        assert sovereign_idx < infra_idx, (
-            "SovereignBaseAgent should come before infrastructure_mixin"
-        )
+        assert l4_idx < sovereign_idx, "L4SubatomicTestingMixin should come before SovereignBaseAgent"
+        assert sovereign_idx < infra_idx, "SovereignBaseAgent should come before infrastructure_mixin"
 
         print("   ✅ 100% PASS: MRO Linearity Verified")
         return True

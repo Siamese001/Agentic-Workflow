@@ -246,7 +246,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self._touch()
 
     def mark_stage_failed(
-        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0,
+        self,
+        stage_name: str,
+        error_message: str,
+        duration_ms: float = 0.0,
+        retry_count: int = 0,
     ) -> None:
         """Mark a stage as failed.
 
@@ -439,7 +443,9 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_legacy_dict(
-        cls, data: dict[str, Any], metadata: dict[str, str] | None = None,
+        cls,
+        data: dict[str, Any],
+        metadata: dict[str, str] | None = None,
     ) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 
