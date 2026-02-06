@@ -156,7 +156,12 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "L4_state": {
                 "purpose": "State management, persistence, and graph storage.",
                 "subfolders": {
-                    "graph": {"purpose": "Graph database connectors and store drivers."},
+                    "graph": {
+                        "purpose": "Graph database connectors and store drivers.",
+                        "subfolders": {
+                            "healing": {"purpose": "Graph-aware healing strategies (L4 owns its own repair)."},
+                        },
+                    },
                     "validation_context": {"purpose": "Validation context and state tracking."},
                     "audit_trails": {"purpose": "Audit trail and genealogy tracking."},
                     "session_manager": {"purpose": "Session management and disk adapters."},
@@ -267,8 +272,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "research_cache": {"purpose": "Cached research results and retrieval data."},
                     "static_index": {"purpose": "Static knowledge indices and pre-built lookups."},
                     "engine": {"purpose": "RAG orchestration and retrieval logic."},
+                    "healing": {"purpose": "Knowledge-domain healing strategies (wiki, docs)."},
                 },
-                "naming_convention": r"^[a-z][a-z0-9_]*_(loader|cache|index|orchestrator|engine)\.py$",
+                "naming_convention": r"^[a-z][a-z0-9_]*_(loader|cache|index|orchestrator|engine|healer)\.py$",
             },
             "interfaces": {
                 "purpose": "Standardized internal API contracts and protocols",
