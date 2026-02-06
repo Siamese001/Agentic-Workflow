@@ -128,8 +128,16 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Core cognitive logic loops and processing pipelines.",
                         "notes": "Engine REJECTS configs and types. Suffix is SSOT over location.",
                     },
-                    "config": {"purpose": "Cognitive configuration (RAG config, ReAct config, etc.)."},
-                    "types": {"purpose": "Cognitive data models, enums, protocols, and type definitions."},
+                    "config": {
+                        "purpose": "Cognitive configuration (RAG config, ReAct config, etc.).",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                        "forbidden_suffixes": ["_types.py", "_class.py"],
+                    },
+                    "types": {
+                        "purpose": "Passive data structures, enums, protocols, and abstract interfaces only.",
+                        "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_contract.py"],
+                        "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
+                    },
                     "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
                     "utils": {"purpose": "Cognitive helper functions."},
                     # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
@@ -148,8 +156,13 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 # HARDENING 2026-02-06: Strict suffix enforcement — Filename is SSOT over Location.
                 "allowed_suffixes": {
                     "engine": ["_engine.py", "_manager.py", "_planner.py", "_mapper.py", "_strategy.py"],
-                    "config": ["_config.py"],
-                    "types": ["_types.py", "_protocol.py"],
+                    "config": ["_config.py", "_settings.py"],
+                    "types": ["_types.py", "_protocol.py", "_schema.py", "_contract.py"],
+                },
+                "forbidden_suffixes": {
+                    "engine": ["_config.py", "_types.py"],
+                    "config": ["_types.py", "_class.py"],
+                    "types": ["_config.py", "_engine.py", "_agent.py"],
                 },
                 "routing_rules": {
                     "*_config.py": "config",
