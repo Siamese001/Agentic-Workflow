@@ -107,7 +107,7 @@ class Wave9IntegritySimulation:
 
         # Step 3: Import NervousSystemAgent
         try:
-            from agentic_core.L3_orchestration.engine.nervous_system_agent import (
+            from agentic_core.L3_orchestration.orchestrators.nervous_system_agent import (
                 NervousSystemAgent,
             )
 
@@ -342,7 +342,7 @@ class Wave9IntegritySimulation:
 
         # Attempt to compute impact radius
         try:
-            from agentic_core.L3_orchestration.engine.nervous_system_agent import (
+            from agentic_core.L3_orchestration.orchestrators.nervous_system_agent import (
                 NervousSystemAgent,
             )
 

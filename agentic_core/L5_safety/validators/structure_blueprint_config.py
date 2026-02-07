@@ -227,12 +227,20 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "L3_orchestration": {
-                "purpose": "The Nervous System: Routers, Patterns, and Workflow Engines.",
-                "notes": "Standard V10 structure. workflow_engines/ dissolved into engine/types/patterns/routers.",
+                "purpose": "The Conductor: Workflow Management, DAGs, and Coordination.",
+                "notes": "Standard V10 structure. engine=machinery, orchestrators=decision-makers, diagnostics=sensors.",
                 "subfolders": {
                     "engine": {
-                        "purpose": "Orchestration engines, managers, coordinators, and workflow core.",
-                        "allowed_suffixes": ["_orchestrator.py", "_engine.py", "_workflow.py", "_manager.py"],
+                        "purpose": "Execution machinery: DAGs, managers, inspectors, policies, scanners, adapters.",
+                        "allowed_suffixes": ["_engine.py", "_manager.py", "_inspector.py", "_policy.py", "_scanner.py", "_impl.py", "_agent.py", "_adapter.py"],
+                    },
+                    "orchestrators": {
+                        "purpose": "Decision logic: coordinators, nervous system, marketplace, handshakes.",
+                        "allowed_suffixes": ["_orchestrator.py", "_coordinator.py", "_handshake.py", "_system.py", "_agent.py", "_marketplace.py"],
+                    },
+                    "diagnostics": {
+                        "purpose": "Telemetry, metrics, and orchestration reporting.",
+                        "allowed_suffixes": ["_metrics.py", "_telemetry.py", "_report.py"],
                     },
                     "config": {
                         "purpose": "Orchestration configuration and settings.",
@@ -254,29 +262,35 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     },
                 },
                 "allowed_suffixes": {
-                    "engine": ["_orchestrator.py", "_engine.py", "_workflow.py", "_manager.py"],
+                    "engine": ["_engine.py", "_manager.py", "_inspector.py", "_policy.py", "_scanner.py", "_impl.py", "_agent.py", "_adapter.py"],
+                    "orchestrators": ["_orchestrator.py", "_coordinator.py", "_handshake.py", "_system.py", "_agent.py", "_marketplace.py"],
+                    "diagnostics": ["_metrics.py", "_telemetry.py", "_report.py"],
                     "routers": ["_router.py", "_dispatcher.py", "_switch.py", "_delegator.py"],
                     "patterns": ["_strategy.py", "_pattern.py", "_fsm.py", "_flow.py"],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_state.py", "_schema.py", "_model.py", "_protocol.py"],
                 },
                 "forbidden_suffixes": {
-                    "engine": ["_config.py", "_types.py"],
+                    "engine": ["_config.py", "_types.py", "_orchestrator.py"],
+                    "orchestrators": ["_config.py", "_types.py", "_engine.py"],
+                    "diagnostics": ["_config.py", "_types.py"],
                     "config": ["_types.py", "_router.py"],
                     "types": ["_config.py", "_engine.py"],
                     "routers": ["_config.py", "_types.py"],
                     "patterns": ["_config.py", "_types.py"],
                 },
                 "routing_rules": {
+                    "*_orchestrator.py": "orchestrators",
+                    "*_coordinator.py": "orchestrators",
                     "*_router.py": "routers",
                     "*_dispatcher.py": "routers",
                     "*_strategy.py": "patterns",
                     "*_pattern.py": "patterns",
                     "*_config.py": "config",
                     "*_types.py": "types",
-                    "*_orchestrator.py": "engine",
                     "*_engine.py": "engine",
                     "*_manager.py": "engine",
+                    "*_metrics.py": "diagnostics",
                 },
             },
             "L4_state": {
