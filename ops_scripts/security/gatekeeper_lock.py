@@ -25,7 +25,7 @@ from pathlib import Path
 
 # Protected files that require security override
 PROTECTED_FILES = [
-    "agentic_core/L5_safety/core/ArchivalGatekeeper.py",
+    "agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py",
 ]
 
 # Override token in commit message

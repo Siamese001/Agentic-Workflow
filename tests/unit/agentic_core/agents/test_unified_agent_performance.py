@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.engine.unified_agent import (
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     STRATEGY_MAP,
     AgentCategory,
     GenericStrategy,

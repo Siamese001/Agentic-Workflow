@@ -22,28 +22,28 @@ def fix_file_imports(file_path: Path) -> bool:
             content: Any = f.read()
         original: Any = content
         mappings: Any = {
-            "from agentic_core.base import": "from agentic_core.L2_execution.engine.base import",
-            "from agentic_core.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.orchestrators.validation_orchestratorAgent import",
-            "from agentic_core.L2_execution.engine.": "from agentic_core.L2_execution.engine.",
-            "from agentic_core.L2_execution.P2_tools.": "from agentic_core.L2_execution.engine.",
-            "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.engine.",
-            "from agentic_core.L5_safety.P1_core.": "from agentic_core.L5_safety.guardrails.",
-            "from agentic_core.L5_safety.policy.": "from agentic_core.L5_safety.guardrails.",
+            "from agentic_core.base import": "from agentic_core.L2_execution.reasoning.base import",
+            "from agentic_core.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.reasoning.orchestrators.validation_orchestratorAgent import",
+            "from agentic_core.L2_execution.reasoning.": "from agentic_core.L2_execution.reasoning.",
+            "from agentic_core.L2_execution.P2_tools.": "from agentic_core.L2_execution.reasoning.",
+            "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.reasoning.",
+            "from agentic_core.L5_safety.P1_core.": "from agentic_core.L5_safety.enforcement.",
+            "from agentic_core.L5_safety.policy.": "from agentic_core.L5_safety.enforcement.",
             "from agentic_core.L4_state.cache.": "from agentic_core.L4_state.memory.",
             "from agentic_core.L4_state.vector.": "from agentic_core.L4_state.memory.",
             "from agentic_core.shared.constants import": "from agentic_core.L0_maintenance.scripts.canon_validator_config_1 import",
-            "import agentic_core.base": "import agentic_core.L2_execution.engine.base",
-            "import agentic_core.L2_execution.engine.": "import agentic_core.L2_execution.engine.",
-            "import agentic_core.L2_execution.P2_tools.": "import agentic_core.L2_execution.engine.",
-            "import agentic_core.L2_execution.P3_engines.": "import agentic_core.L2_execution.engine.",
-            "from L2_execution.engine.base import": "from agentic_core.L2_execution.engine.base import",
-            "from L2_execution.engine.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.orchestrators.validation_orchestratorAgent import",
+            "import agentic_core.base": "import agentic_core.L2_execution.reasoning.base",
+            "import agentic_core.L2_execution.reasoning.": "import agentic_core.L2_execution.reasoning.",
+            "import agentic_core.L2_execution.P2_tools.": "import agentic_core.L2_execution.reasoning.",
+            "import agentic_core.L2_execution.P3_engines.": "import agentic_core.L2_execution.reasoning.",
+            "from L2_execution.engine.base import": "from agentic_core.L2_execution.reasoning.base import",
+            "from L2_execution.engine.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.reasoning.orchestrators.validation_orchestratorAgent import",
         }
         for old, new in mappings.items():
             content: Any = content.replace(old, new)
         content: Any = re.sub(
             "# \\[INCOMPLETE IMPORT\\] from agentic_core\\.\\.([^\\s]+) import (.+)",
-            "from agentic_core.L2_execution.engine.\\1 import \\2",
+            "from agentic_core.L2_execution.reasoning.\\1 import \\2",
             content,
         )
         content: Any = re.sub("from agentic_core\\.agentic_core\\.", "from agentic_core.", content)

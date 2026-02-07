@@ -31,14 +31,14 @@ def get_project_root() -> Path:
 SSOT_AGENT_FOLDERS = [
     "agentic_core/L0_maintenance/scripts",
     "agentic_core/L1_cognition/thought_engine",
-    "agentic_core/L2_execution/engine",
-    "agentic_core/L3_orchestration/engine",
-    "agentic_core/L3_orchestration/engine",
+    "agentic_core/L2_execution/reasoning",
+    "agentic_core/L3_orchestration/reasoning",
+    "agentic_core/L3_orchestration/reasoning",
     "agentic_core/L4_state/memory",
     "agentic_core/L5_safety/validators",
-    "agentic_core/L5_safety/guardrails",
-    "agentic_core/L5_safety/gravity",
-    "agentic_core/L6_observability/agents",
+    "agentic_core/L5_safety/enforcement",
+    "agentic_core/L5_safety/enforcement",
+    "agentic_core/L6_observability/reasoning",
     "agentic_core/prompt_governance",
 ]
 
@@ -108,6 +108,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+        from agentic_core.mixins.healer_mixin import HealerMixin
 
         assert issubclass(HealerMixin, instructional_injection_mixin)
 
@@ -116,6 +117,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
         assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
 
@@ -124,6 +126,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
 
         assert issubclass(MCPHardenedMixin, instructional_injection_mixin)
 

@@ -118,7 +118,7 @@ class TestCaptureDomainPlannerGolden:
             pytest.skip("Golden snapshot already exists")
 
         try:
-            from agentic_core.L3_orchestration.engine.domain_planner_engine import (
+            from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
                 DomainPlannerAgent,
             )
         except ImportError as e:
@@ -208,7 +208,7 @@ class TestCaptureCodeHealerGolden:
             pytest.skip("Golden snapshot already exists")
 
         try:
-            from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
+            from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
         except ImportError as e:
             pytest.skip(f"CodeHealerAgent not available: {e}")
 

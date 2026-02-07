@@ -246,7 +246,7 @@ def find_modern_equivalent(file_path: Path, file_name: str) -> tuple[str | None,
             "agentic_core/runtime/shared_runtime/semantic_cache.py",
             "EXISTS_ENHANCED",
         ),
-        "input_sanitizer.py": ("agentic_core/L5_safety/guardrails/", "MIGRATE_TO_SAFETY"),
+        "input_sanitizer.py": ("agentic_core/L5_safety/enforcement/", "MIGRATE_TO_SAFETY"),
         "reflection_engine.py": ("agentic_core/runtime/shared_runtime/", "UNIQUE_MIGRATE"),
         "cognitive_contracts.py": ("agentic_core/schemas/models/", "UNIQUE_MIGRATE"),
         "dynamic_dag_manager.py": ("agentic_core/L3_orchestration/", "UNIQUE_MIGRATE"),
@@ -264,9 +264,9 @@ def find_modern_equivalent(file_path: Path, file_name: str) -> tuple[str | None,
     if "resilience" in rel_path:
         return ("agentic_core/L4_resilience/", "MIGRATE_RESILIENCE")
     if "security" in rel_path:
-        return ("agentic_core/L5_safety/guardrails/", "MIGRATE_SAFETY")
+        return ("agentic_core/L5_safety/enforcement/", "MIGRATE_SAFETY")
     if "mcp" in rel_path:
-        return ("agentic_core/L2_execution/mcp/", "MIGRATE_MCP")
+        return ("agentic_core/L2_execution/enforcement/", "MIGRATE_MCP")
     if "schemas" in rel_path or "models" in rel_path:
         return ("agentic_core/schemas/models/", "MIGRATE_SCHEMAS")
     if "config" in rel_path:
@@ -405,7 +405,7 @@ def determine_target_path(analysis: FileAnalysis) -> str:
     if rel_path.startswith("runtime/core/resilience"):
         return "agentic_core/L4_resilience/"
     if rel_path.startswith("runtime/core/security"):
-        return "agentic_core/L5_safety/guardrails/"
+        return "agentic_core/L5_safety/enforcement/"
     if rel_path.startswith("runtime/core/quality"):
         return "agentic_core/runtime/shared_runtime/"
     if rel_path.startswith("runtime/core"):
@@ -423,7 +423,7 @@ def determine_target_path(analysis: FileAnalysis) -> str:
         return "agentic_core/schemas/"
 
     if rel_path.startswith("shared/mcp"):
-        return "agentic_core/L2_execution/mcp/"
+        return "agentic_core/L2_execution/enforcement/"
     if rel_path.startswith("shared/caching"):
         return "agentic_core/runtime/shared_runtime/"
     if rel_path.startswith("shared/configuration"):

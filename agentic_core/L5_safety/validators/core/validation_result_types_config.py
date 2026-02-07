@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.engine.IntegrityGateExecutorAgent import (
+from agentic_core.L2_execution.reasoning.IntegrityGateExecutorAgent import (
     IntegrityGateExecutorAgent,
 )
 

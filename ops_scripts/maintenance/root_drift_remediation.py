@@ -119,7 +119,7 @@ def migrate_and_audit_scripts():
 
 def audit_logs():
     """
-    Scans root logs/ (deprecated - now uses agentic_core/L0_maintenance/logs/).
+    Scans root logs/ (deprecated - now uses agentic_core/L0_maintenance/utils/).
     Rule: If it doesn't match ALLOWED_PATTERNS, it's a runtime log -> Move to L0.
     """
     logs_dir = PROJECT_ROOT / "logs"

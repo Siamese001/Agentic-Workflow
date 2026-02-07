@@ -42,7 +42,7 @@ def test_instantiation():
     # 2. Test Tool Registry (The Dict Refactor)
     try:
         print("[TEST] Initializing tool_registry...")
-        from agentic_core.L2_execution.engine.registry import create_tool_registry
+        from agentic_core.L2_execution.reasoning.registry import create_tool_registry
 
         registry = create_tool_registry()
         tools = registry.get_function_declarations()

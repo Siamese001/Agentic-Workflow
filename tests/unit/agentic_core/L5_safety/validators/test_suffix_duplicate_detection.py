@@ -155,7 +155,7 @@ class TestCognitiveDispositionIntegration:
 
     def test_cognitive_agent_analyzes_suffix_duplicates(self, tmp_path):
         """Test that CognitiveDispositionAgent can analyze suffix duplicates."""
-        from agentic_core.L5_safety.cognition.CognitiveDispositionAgent import (
+        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
 

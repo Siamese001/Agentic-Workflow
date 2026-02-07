@@ -67,7 +67,7 @@ class GatewayFactory:
         """Get or create LLM gateway singleton."""
         if cls._llm_gateway is None:
             try:
-                from agentic_core.L2_execution.mcp.SovereignLLMGateway import (
+                from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
                     get_llm_gateway,
                 )
 
@@ -82,7 +82,7 @@ class GatewayFactory:
         """Get or create embedding gateway singleton."""
         if cls._embedding_gateway is None:
             try:
-                from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
+                from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
                     get_embedding_gateway,
                 )
 

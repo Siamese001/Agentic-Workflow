@@ -23,7 +23,7 @@ def regenerate_core_integrity():
 
     print("--- Regenerating Core Integrity Hash ---")
     try:
-        from agentic_core.L0_maintenance.integrity.core_integrity_util import CoreIntegrityVerifier
+        from agentic_core.L0_maintenance.enforcement.core_integrity_util import CoreIntegrityVerifier
 
         verifier = CoreIntegrityVerifier()
         new_hash = verifier._calculate_merkle_root()

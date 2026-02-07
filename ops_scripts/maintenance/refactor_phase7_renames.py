@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 RENAME_MAP = {
     "agentic_core/L1_cognition/thought_engine/consensus.py": "supreme_court.py",
     "agentic_core/L1_cognition/thought_engine/execution.py": "execution_types.py",
-    "agentic_core/L2_execution/engine/execution.py": "subprocess_executor.py",
+    "agentic_core/L2_execution/reasoning/execution.py": "subprocess_executor.py",
     "agentic_core/L4_state/memory/context.py": "omni_context.py",
 }
 

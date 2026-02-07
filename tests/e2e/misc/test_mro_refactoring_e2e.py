@@ -47,7 +47,7 @@ class TestPhase1E2E:
                 "HierarchyAgent",
             ),
             (
-                PROJECT_ROOT / "apps_rg" / "shared" / "tools" / "dispatch_resume_tools_agent.py",
+                PROJECT_ROOT / "apps_rg" / "shared" / "tools" / "DispatchResumeToolsAgent.py",
                 "DispatchResumeToolsAgent",
             ),
         ]

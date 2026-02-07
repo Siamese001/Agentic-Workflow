@@ -71,7 +71,7 @@ class tool_registry:
 
 
 # REMOVED: SubAtomicAgent duplicate class
-# Use SubAtomicAgent from agentic_core.L3_orchestration.engine instead
+# Use SubAtomicAgent from agentic_core.L3_orchestration.reasoning instead
 
 
 # REMOVED: BaseAgent duplicate class

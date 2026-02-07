@@ -11,7 +11,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from services.configuration import ConfigurationService
+# ConfigurationService import removed - module doesn't exist
+# TODO: This file needs refactoring to remove ConfigurationService dependencies
 
 Logger: Any = logging.getLogger(__name__)
 

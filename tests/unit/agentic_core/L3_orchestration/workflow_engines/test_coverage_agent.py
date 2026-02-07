@@ -32,7 +32,7 @@ class TestCoverageAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.engine.coverage_engine import CoverageAgent
+            from agentic_core.L3_orchestration.reasoning.coverage_engine import CoverageAgent
 
             return CoverageAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -71,7 +71,7 @@ class TestCoverageAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.engine.coverage_engine import (
+                from agentic_core.L3_orchestration.reasoning.coverage_engine import (
                     CoverageAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

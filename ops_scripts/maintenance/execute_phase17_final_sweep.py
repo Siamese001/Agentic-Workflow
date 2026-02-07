@@ -164,7 +164,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 load_dotenv()
 
 def get_subatomic_engine() -> Any:
-    from agentic_core.L3_orchestration.engine.subatomic_engine import SubAtomicEngineImpl
+    from agentic_core.L3_orchestration.reasoning.subatomic_engine import SubAtomicEngineImpl
     return SubAtomicEngineImpl()
 
 @dataclass

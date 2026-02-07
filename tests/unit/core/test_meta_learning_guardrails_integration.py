@@ -215,7 +215,7 @@ class TestCacheStrategyManagement:
 
     def test_eviction_policies(self):
         """Test cache eviction policies work correctly."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.reasoning.cache_strategy_manager_types import (
             EvictionPolicy,
         )
 

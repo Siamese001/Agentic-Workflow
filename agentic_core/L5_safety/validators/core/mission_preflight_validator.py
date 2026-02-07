@@ -67,7 +67,7 @@ class MissionPreflight:
         if self._import_agent is None:
             try:
                 # Phase 5 Migration: ImportAgent -> CodeHealerAgent
-                from agentic_core.L5_safety.policy_engine.code_healer_agent import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                     create_legacy_import_healer,
                 )
 

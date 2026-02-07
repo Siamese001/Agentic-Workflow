@@ -216,7 +216,7 @@ class TestAgent(SovereignBaseAgent):
     def test_valid_upward_import(self, validator, temp_agentic_core):
         """TC-AG-05: Valid upward import (higher layer importing lower) passes."""
         agent_code = """
-from agentic_core.L1_cognition.engine.CognitiveNode import CognitiveNode
+from agentic_core.L1_cognition.reasoning.CognitiveNode import CognitiveNode
 
 class SafetyAgent:
     def run(self):

@@ -194,7 +194,7 @@ class TestSovereignASTCompliance:
         import json
         from pathlib import Path
 
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
 
         # If audit results exist, verify they contain recommendations
         if audit_results_path.exists():

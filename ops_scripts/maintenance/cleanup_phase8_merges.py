@@ -18,12 +18,12 @@ ARCHIVE_ROOT = (
 # Files to ARCHIVE (The Losers of the Merge)
 OBSOLETE_FILES = [
     # 1. Ghost Infrastructure (CRITICAL)
-    "agentic_core/L2_execution/mcp/runtime_shared_multi_provider_clients.py",
-    "agentic_core/L2_execution/mcp/llm_router_mcp_client.py",
+    "agentic_core/L2_execution/enforcement/runtime_shared_multi_provider_clients.py",
+    "agentic_core/L2_execution/enforcement/llm_router_mcp_client.py",
     # 2. Dashboard SSOT (Keep L0, Archive L5 duplicate)
     "agentic_core/L5_safety/validators/dashboard_ssot_definitions.py",
     # 3. Intervention Server (Keep L5, Archive L3 duplicate)
-    "agentic_core/L3_orchestration/engine/intervention_server.py",
+    "agentic_core/L3_orchestration/reasoning/intervention_server.py",
     # 4. Constitution (Keep Config, Archive L1 duplicate)
     "agentic_core/L1_cognition/thought_engine/sovereign_domain_constitution.py",
 ]

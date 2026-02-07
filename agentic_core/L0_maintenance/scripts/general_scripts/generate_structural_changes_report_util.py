@@ -121,7 +121,7 @@ def scan_removed_folders() -> list[dict[str, str]]:
         {
             "folder_name": "logs",
             "original_location": "logs/",
-            "removal_reason": "Merged into agentic_core/L0_maintenance/logs/",
+            "removal_reason": "Merged into agentic_core/L0_maintenance/utils/",
             "action": "consolidated",
         },
         {

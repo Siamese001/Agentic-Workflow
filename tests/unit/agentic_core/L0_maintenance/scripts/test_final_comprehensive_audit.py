@@ -38,10 +38,10 @@ def test_case_1_signal_saturation_sweep():
         from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
-        from agentic_core.L2_execution.engine.L2ExecutionBase import (
+        from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
             L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
 
@@ -178,7 +178,7 @@ def test_case_2_terminal_independence():
         # Step 5: Test with multiple agents
         print("\n✓ Step 5: Testing multiple agents with SOVEREIGN_AUTO_APPROVE")
 
-        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
         from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
@@ -226,10 +226,10 @@ def test_case_3_depth_constraint_persistence():
         from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
         )
-        from agentic_core.L2_execution.engine.L2ExecutionBase import (
+        from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
             L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
 

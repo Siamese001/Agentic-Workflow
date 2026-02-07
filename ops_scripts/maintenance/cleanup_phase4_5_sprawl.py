@@ -22,15 +22,15 @@ ARCHIVE_ROOT = (
 OBSOLETE_FILES = [
     # --- Phase 4: LLM/Embedding ---
     "agentic_core/L1_cognition/thought_engine/llm_engine.py",
-    "agentic_core/L2_execution/mcp/inference_engine.py",
+    "agentic_core/L2_execution/enforcement/inference_engine.py",
     "agentic_core/L2_execution/unified/ModelRouterAgent.py",
-    "agentic_core/L2_execution/engine/format_llm_prompt.py",
+    "agentic_core/L2_execution/reasoning/format_llm_prompt.py",
     "agentic_core/semantic_memory/embeddings/gemini_embedder.py",
     "agentic_core/semantic_memory/embeddings/core_embedder.py",
     # --- Phase 5: Healing ---
     "agentic_core/L5_safety/validators/healing_strategies.py",
     "agentic_core/L5_safety/validators/healing_healing_strategies.py",  # The duplicate
-    "agentic_core/L4_state/ledger/healing_transaction_manager.py",
+    "agentic_core/L4_state/enforcement/healing_transaction_manager.py",
     # --- Phase 5: Validators ---
     "agentic_core/L5_safety/unified/CodeValidatorAgent.py",
     "agentic_core/L5_safety/unified/CodeValidatorAgent.py",  # Duplicate

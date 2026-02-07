@@ -24,8 +24,8 @@ class TestCompleteHealingWorkflow:
 
     def test_gravity_violation_heal_cycle(self):
         """Test complete gravity violation healing cycle."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -78,7 +78,7 @@ class TestCompleteHealingWorkflow:
 
     def test_validation_caching_workflow(self):
         """Test complete validation result caching workflow."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -115,8 +115,8 @@ class TestCompleteHealingWorkflow:
 
     def test_multi_domain_healing_workflow(self):
         """Test healing workflow across multiple domains."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -168,7 +168,7 @@ class TestPatternLearningCycle:
 
     def test_learn_and_recall_pattern(self):
         """Test learning a pattern and recalling it for similar violations."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -193,7 +193,7 @@ class TestPatternLearningCycle:
 
     def test_pattern_quality_evolution(self):
         """Test pattern quality improves with successful uses."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -232,8 +232,8 @@ class TestSystemIntegration:
 
     def test_client_guardrails_integration(self):
         """Test MetaLearningClient and Guardrails work together."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -271,11 +271,11 @@ class TestSystemIntegration:
 
     def test_cache_strategy_manager_integration(self):
         """Test CacheStrategyManager integrates correctly."""
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.reasoning.cache_strategy_manager_types import (
             CacheStrategyManager,
             DomainConfig,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -296,13 +296,13 @@ class TestSystemIntegration:
     def test_all_components_healthy(self):
         """Test all components initialize and operate correctly."""
         from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
-        from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+        from agentic_core.L1_cognition.reasoning.cache_strategy_manager_types import (
             get_cache_strategy_manager,
         )
-        from agentic_core.L1_cognition.meta_learning.guardrails import (
+        from agentic_core.L1_cognition.reasoning.guardrails import (
             get_guardrails,
         )
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             get_meta_learning_client,
         )
 
@@ -327,7 +327,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_invalid_key(self):
         """Test system handles invalid cache keys gracefully."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -339,7 +339,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_oversized_value(self):
         """Test system handles oversized values gracefully."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -351,7 +351,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_depth_limit(self):
         """Test system handles depth limit correctly."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -368,7 +368,7 @@ class TestErrorRecovery:
 
     def test_ttl_expiration_recovery(self):
         """Test system handles expired entries correctly."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -396,7 +396,7 @@ class TestPerformanceBenchmarks:
 
     def test_cache_write_performance(self):
         """Test cache write operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -414,7 +414,7 @@ class TestPerformanceBenchmarks:
 
     def test_cache_read_performance(self):
         """Test cache read operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -436,7 +436,7 @@ class TestPerformanceBenchmarks:
 
     def test_guardrails_validation_performance(self):
         """Test guardrails validation meets performance targets."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -454,7 +454,7 @@ class TestPerformanceBenchmarks:
 
     def test_concurrent_operations_performance(self):
         """Test concurrent operations meet performance targets."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -484,7 +484,7 @@ class TestProductionScenarios:
 
     def test_healing_loop_prevention(self):
         """Test healing loop is prevented in production scenario."""
-        from agentic_core.L1_cognition.meta_learning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -504,7 +504,7 @@ class TestProductionScenarios:
 
     def test_cache_under_memory_pressure(self):
         """Test cache behavior under simulated memory pressure."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -520,7 +520,7 @@ class TestProductionScenarios:
 
     def test_domain_specific_workflows(self):
         """Test domain-specific workflows work correctly."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 

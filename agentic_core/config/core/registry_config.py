@@ -193,13 +193,13 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
 L4_APPROVED_FOLDERS: set = {
     "agentic_core/L6_observability/dashboards",
     "agentic_core/L0_maintenance/scripts",
-    "agentic_core/L3_orchestration/engine",
+    "agentic_core/L3_orchestration/reasoning",
     "agentic_core/L1_cognition/thought_engine",
-    "agentic_core/L5_safety/guardrails",
+    "agentic_core/L5_safety/enforcement",
     "agentic_core/L5_safety/validators",
-    "agentic_core/L5_safety/gravity",
-    "agentic_core/L2_execution/engine",
-    "agentic_core/L2_execution/mcp",
+    "agentic_core/L5_safety/enforcement",
+    "agentic_core/L2_execution/reasoning",
+    "agentic_core/L2_execution/enforcement",
     "agentic_core/L4_state/memory",
     # DISSOLVED: "agentic_core/schemas/models" removed
     "agentic_core/utils/core_extensions",
@@ -247,9 +247,9 @@ MCP_CAPABILITIES: dict = {
     "router": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "marketplace_filter": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
-    "figma": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "fetch": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
+    "figma": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "fetch": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
 }
 
 # ============================================================================

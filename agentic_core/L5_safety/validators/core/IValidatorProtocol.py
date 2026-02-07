@@ -44,7 +44,7 @@ class AdversarialValidator:
 
         try:
             from agentic_core.L4_state.memory import ValidationContext
-            from agentic_core.L5_safety.red_teaming.adversarial_probe_agent_validator import (
+            from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import (
                 AdversarialProbeAgent,
             )
 
@@ -124,7 +124,7 @@ class BoundaryValidator:
 
         try:
             from agentic_core.L4_state.memory import ValidationContext
-            from agentic_core.L5_safety.red_teaming.boundary_testing_agent_validator import (
+            from agentic_core.L5_safety.reasoning.BoundaryTestingAgent_validator import (
                 BoundaryTestingAgent,
             )
 

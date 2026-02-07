@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.engine.unified_agent import (
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     CodeValidatorStrategy,
     ValidationResult,
 )
@@ -95,7 +95,7 @@ class TestCodeValidatorAgentFacade:
     def agent(self):
         """Create CodeValidatorAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+            from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
                 CodeValidatorAgent,
             )
 
@@ -162,7 +162,7 @@ class TestValidationTypes:
 
     def test_violation_type_enum(self):
         """Test ViolationType enum exists."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             ViolationType,
         )
 
@@ -173,7 +173,7 @@ class TestValidationTypes:
 
     def test_violation_dataclass(self):
         """Test Violation dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             Violation,
             ViolationType,
         )
@@ -191,7 +191,7 @@ class TestValidationTypes:
 
     def test_ruleset_dataclass(self):
         """Test RuleSet dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import RuleSet
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import RuleSet
 
         ruleset = RuleSet()
 
@@ -203,7 +203,7 @@ class TestValidationTypes:
 
     def test_validation_report_dataclass(self):
         """Test ValidationReport dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             ValidationReport,
         )
 
@@ -224,7 +224,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             CodeValidatorAgent,
         )
 
@@ -233,7 +233,7 @@ class TestLegacyCompatibility:
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             CodeValidatorAgent,
         )
 
@@ -241,7 +241,7 @@ class TestLegacyCompatibility:
 
     def test_factory_functions_exist(self):
         """Test factory functions exist."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
             create_legacy_async_validator,
             create_legacy_canon_validator,
             create_legacy_print_validator,
@@ -256,7 +256,7 @@ class TestLegacyCompatibility:
     def test_factory_syntax_validator(self):
         """Test create_legacy_syntax_validator creates correct config."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+            from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
                 create_legacy_syntax_validator,
             )
 
@@ -267,7 +267,7 @@ class TestLegacyCompatibility:
     def test_factory_canon_validator(self):
         """Test create_legacy_canon_validator creates correct config."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+            from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
                 create_legacy_canon_validator,
             )
 
@@ -277,7 +277,7 @@ class TestLegacyCompatibility:
 
     def test_all_exports(self):
         """Test __all__ exports are correct."""
-        from agentic_core.L5_safety.policy_engine.code_validator_agent_types import __all__
+        from agentic_core.L5_safety.reasoning.code_validator_agent_types import __all__
 
         expected = [
             "CodeValidatorAgent",

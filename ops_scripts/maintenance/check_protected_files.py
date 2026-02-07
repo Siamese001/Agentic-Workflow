@@ -6,7 +6,7 @@ This script prevents accidental modifications to critical infrastructure files
 like ArchivalGatekeeper.py unless an explicit override is present in the commit message.
 
 PROTECTED FILES:
-    - agentic_core/L5_safety/core/ArchivalGatekeeper.py (The Executioner)
+    - agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py (The Executioner)
     - agentic_core/L5_safety/validators/decorators.py (The Normalizer)
 
 OVERRIDE:
@@ -26,7 +26,7 @@ from pathlib import Path
 
 # Protected files that require explicit override to modify
 PROTECTED_FILES = [
-    "agentic_core/L5_safety/core/ArchivalGatekeeper.py",
+    "agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py",
     "agentic_core/L5_safety/validators/decorators.py",
 ]
 

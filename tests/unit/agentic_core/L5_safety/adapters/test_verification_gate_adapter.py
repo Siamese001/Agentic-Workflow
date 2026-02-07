@@ -7,7 +7,7 @@ from agentic_core.utils.verification_protocol import (
     VerificationRequest,
     VerificationResult,
 )
-from agentic_core.L5_safety.adapters.verification_gate_adapter import (
+from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
     VerificationGateAdapter,
 )
 from agentic_core.utils.feature_flags import FeatureFlagManager

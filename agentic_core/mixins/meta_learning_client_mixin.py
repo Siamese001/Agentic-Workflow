@@ -60,7 +60,7 @@ class MetaLearningClientMixin:
         """Ensure MetaLearningClient is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_client is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+                from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
                     get_meta_learning_client,
                 )
 
@@ -73,7 +73,7 @@ class MetaLearningClientMixin:
         """Ensure HealingMemoryEmbedder is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_embedder is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.engine.memory_embedder import (
+                from agentic_core.L1_cognition.reasoning.engine.memory_embedder import (
                     get_healing_memory_embedder,
                 )
 
@@ -86,7 +86,7 @@ class MetaLearningClientMixin:
         """Ensure CacheStrategyManager is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_cache_manager is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.cache_strategy_manager_types import (
+                from agentic_core.L1_cognition.reasoning.cache_strategy_manager_types import (
                     get_cache_strategy_manager,
                 )
 
@@ -99,7 +99,7 @@ class MetaLearningClientMixin:
         """Ensure guardrails are initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_guardrails is None:
             try:
-                from agentic_core.L1_cognition.meta_learning.guardrails import get_guardrails
+                from agentic_core.L1_cognition.reasoning.guardrails import get_guardrails
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")

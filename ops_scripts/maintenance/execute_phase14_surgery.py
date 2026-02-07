@@ -145,8 +145,8 @@ STRICT COMPLIANCE: Uses SovereignLLMGateway singleton.
 import logging
 from typing import Any
 
-from agentic_core.L2_execution.mcp.SovereignLLMGateway import get_llm_gateway
-from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import get_embedding_gateway
+from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
+from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import get_embedding_gateway
 
 Logger = logging.getLogger(__name__)
 
@@ -195,9 +195,9 @@ def perform_surgery():
     print("--- STARTING PHASE 14 CODE SURGERY ---")
 
     targets = [
-        ("agentic_core/L3_orchestration/engine/FissionManagerAgent.py", FISSION_CONTENT),
-        ("agentic_core/L5_safety/guardrails/HallucinationHunterAgent.py", HUNTER_CONTENT),
-        ("agentic_core/L3_orchestration/engine/subatomic_engine.py", SUBATOMIC_CONTENT),
+        ("agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py", FISSION_CONTENT),
+        ("agentic_core/L5_safety/enforcement/HallucinationHunterAgent.py", HUNTER_CONTENT),
+        ("agentic_core/L3_orchestration/reasoning/subatomic_engine.py", SUBATOMIC_CONTENT),
     ]
 
     for rel_path, content in targets:

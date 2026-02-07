@@ -23,7 +23,7 @@ class MCPOperationMixin:
     def mcp_gateway(self):
         """Lazy-load MCP gateway singleton."""
         if self._mcp_gateway is None:
-            from agentic_core.L2_execution.mcp.SovereignMCPGateway import get_mcp_gateway
+            from agentic_core.L2_execution.enforcement.SovereignMCPGateway import get_mcp_gateway
 
             self._mcp_gateway = get_mcp_gateway()
         return self._mcp_gateway

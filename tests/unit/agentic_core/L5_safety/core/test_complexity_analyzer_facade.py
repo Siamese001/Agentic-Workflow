@@ -15,7 +15,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L3_orchestration.engine.unified_agent import ValidationResult
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import ValidationResult
 
 
 class TestComplexityAnalyzerStrategy:
@@ -33,7 +33,7 @@ class TestComplexityAnalyzerStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create ComplexityAnalyzerStrategy instance."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerStrategy,
         )
 
@@ -63,7 +63,7 @@ class TestComplexityAnalyzerAgentFacade:
     @pytest.fixture
     def agent(self):
         """Create ComplexityAnalyzerAgent instance."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerAgent,
         )
 
@@ -78,7 +78,7 @@ class TestComplexityAnalyzerAgentFacade:
     def test_unified_strategy_initialized(self, agent):
         """Test unified strategy is initialized."""
         assert agent._unified_strategy is not None
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerStrategy,
         )
 
@@ -120,7 +120,7 @@ class TestComplexityTypes:
 
     def test_complexity_violation_dataclass(self):
         """Test ComplexityViolation dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityViolation,
         )
 
@@ -139,7 +139,7 @@ class TestComplexityTypes:
 
     def test_complexity_config_dataclass(self):
         """Test ComplexityConfig dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityConfig,
         )
 
@@ -156,7 +156,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerAgent,
         )
 
@@ -165,7 +165,7 @@ class TestLegacyCompatibility:
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerAgent,
         )
 
@@ -173,7 +173,7 @@ class TestLegacyCompatibility:
 
     def test_calculate_complexity_method(self):
         """Test _calculate_complexity method exists."""
-        from agentic_core.L5_safety.policy_engine.complexity_analyzer_agent import (
+        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
             ComplexityAnalyzerAgent,
         )
 

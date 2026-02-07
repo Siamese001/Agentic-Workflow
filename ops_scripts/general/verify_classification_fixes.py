@@ -34,8 +34,8 @@ def verify_classifications():
             ["AGENT", "CLASS"],
         ),
         (
-            "code_healer_agent.py",
-            project_root / "agentic_core" / "L5_safety" / "policy_engine" / "code_healer_agent.py",
+            "CodeHealerAgent.py",
+            project_root / "agentic_core" / "L5_safety" / "policy_engine" / "CodeHealerAgent.py",
             ["AGENT"],
         ),
     ]

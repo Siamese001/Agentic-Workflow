@@ -22,7 +22,7 @@ class TestGlobalRoutingRigor:
 
     def test_safety_beats_cognition(self):
         """100% PASS: L5 Safety (25) must outrank L1 Cognition (18)."""
-        safety_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/guardrails"][
+        safety_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/enforcement"][
             "weight"
         ]
         cognition_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
@@ -35,29 +35,29 @@ class TestGlobalRoutingRigor:
     def test_orchestration_beats_execution(self):
         """100% PASS: L3 Orchestration (16) must outrank L2 Execution (9)."""
         orch_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L3_orchestration/engine"
+            "agentic_core/L3_orchestration/reasoning"
         ]["weight"]
-        exec_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L2_execution/engine"
-        ]["weight"]
+        exec_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L2_execution/reasoning"][
+            "weight"
+        ]
         assert orch_w > exec_w, "FATAL: Simple tool logic is shadowing workflow orchestration!"
         assert orch_w == 16, f"FAIL: Orchestration expected weight 16, got {orch_w}"
         assert exec_w == 9, f"FAIL: Execution expected weight 9, got {exec_w}"
 
     def test_state_beats_generic_scripts(self):
         """100% PASS: L4 State (14) must outrank L0 Generic Utilities (9)."""
-        state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L4_state/memory"
-        ]["weight"]
+        state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L4_state/memory"][
+            "weight"
+        ]
         # Generic baseline is 9 (defined in L2/L0 utility patterns)
         assert state_w > 9, "FATAL: Persistence contexts are losing gravity to maintenance scripts!"
         assert state_w == 14, f"FAIL: State validation expected weight 14, got {state_w}"
 
     def test_gravity_enforcement_priority(self):
         """100% PASS: Gravity logic (22) must be second only to Base Agents (100)."""
-        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/gravity"][
-            "weight"
-        ]
+        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/L5_safety/enforcement"
+        ]["weight"]
         base_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/base_agents"]["weight"]
 
         assert gravity_w > 20, "FAIL: Gravity signals are too weak to enforce layer boundaries."
@@ -98,15 +98,15 @@ class TestGlobalRoutingRigor:
         """100% PASS: Validates complete Global Weight Standard compliance."""
         expected_hierarchy = {
             100: ["agentic_core/base_agents"],
-            25: ["agentic_core/L5_safety/guardrails"],
-            22: ["agentic_core/L5_safety/gravity"],
+            25: ["agentic_core/L5_safety/enforcement"],
+            22: ["agentic_core/L5_safety/enforcement"],
             18: ["agentic_core/L1_cognition/thought_engine"],
-            16: ["agentic_core/L3_orchestration/engine"],
+            16: ["agentic_core/L3_orchestration/reasoning"],
             15: ["agentic_core/prompt_governance/meta_prompts"],
             14: ["agentic_core/L4_state/memory"],
             12: ["agentic_core/prompt_governance/scripts"],
             10: ["agentic_core/prompt_governance/version_registry"],
-            9: ["agentic_core/L2_execution/engine"],
+            9: ["agentic_core/L2_execution/reasoning"],
         }
 
         signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]
@@ -122,11 +122,11 @@ class TestGlobalRoutingRigor:
     def test_critical_safety_weight_range(self):
         """100% PASS: L5 Safety components must be in 20-25 range."""
         guardrails_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L5_safety/guardrails"
+            "agentic_core/L5_safety/enforcement"
         ]["weight"]
-        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L5_safety/gravity"][
-            "weight"
-        ]
+        gravity_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
+            "agentic_core/L5_safety/enforcement"
+        ]["weight"]
 
         assert 20 <= guardrails_w <= 25, (
             f"FAIL: Guardrails weight {guardrails_w} not in critical safety range 20-25"
@@ -139,7 +139,7 @@ class TestGlobalRoutingRigor:
             "agentic_core/L1_cognition/thought_engine"
         ]["weight"]
         orchestration_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L3_orchestration/engine"
+            "agentic_core/L3_orchestration/reasoning"
         ]["weight"]
         pg_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/meta_prompts"
@@ -155,9 +155,9 @@ class TestGlobalRoutingRigor:
 
     def test_state_schema_weight_range(self):
         """100% PASS: State & schema components must be in 10-14 range."""
-        state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L4_state/memory"
-        ]["weight"]
+        state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L4_state/memory"][
+            "weight"
+        ]
         version_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/version_registry"
         ]["weight"]
@@ -170,7 +170,7 @@ class TestGlobalRoutingRigor:
     def test_generic_utilities_weight_range(self):
         """100% PASS: Generic utilities must be in 5-9 range."""
         execution_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L2_execution/engine"
+            "agentic_core/L2_execution/reasoning"
         ]["weight"]
 
         assert 5 <= execution_w <= 9, (

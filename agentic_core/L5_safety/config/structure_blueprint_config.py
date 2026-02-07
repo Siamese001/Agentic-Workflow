@@ -31,10 +31,10 @@ CONSTITUTIONAL DESIGN PRINCIPLES (A+ HARDENED 2026-02-05):
    Branch nodes: directories only.
    Exceptions: __init__.py, README.md, .gitignore, pyproject.toml, py.typed.
 
-4. GUARDRAILS NAMING CONVENTION (NEW 2026-02-05):
-   All L5 safety guardrail components in agentic_core/L5_safety/guardrails/
-   MUST use snake_case + "_agent.py" naming (e.g., pii_sanitizer_agent.py).
-   PascalCase or missing suffix forbidden.
+4. GUARDRAILS NAMING CONVENTION (CORRECTED 2026-02-07):
+   All L5 safety guardrail agents in agentic_core/L5_safety/enforcement/
+   MUST use PascalCase + "Agent.py" naming (e.g., PiiSanitizerAgent.py).
+   This aligns with GOLDEN_BASELINE and standard agent naming conventions.
 """
 
 # Lock down core mappings to prevent runtime mutation during mission execution
@@ -69,12 +69,12 @@ class TerritoryDefinition(TypedDict):
 
 
 STANDARD_LAYER_STRUCTURE: Final[list[str]] = [
-    "agents",      # Active Sovereign Entities (inherit from SovereignBaseAgent)
-    "engine",      # Core logic loops / pipelines (stateless processing)
-    "types",       # Passive Pydantic Models, Enums, Dataclasses
-    "validators",  # Domain-specific validation logic
-    "utils",       # Helper functions specific to that layer
-    "strategies",  # Strategy pattern implementations
+    "config",  # The Layer's Laws: settings, constants, feature flags
+    "types",  # The Layer's Language: Pydantic Models, Enums, Protocols, Dataclasses
+    "reasoning",  # Decision-making agents: planners, analyzers, strategists, engines
+    "enforcement",  # Constraint execution: guardrails, governors, gravity, gates
+    "validators",  # Passive auditing: compliance checks, structural validators
+    "utils",  # Shared tooling: mixins, helpers, formatters
 ]
 
 SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
@@ -95,10 +95,29 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "complex_reasoning",
                     "multi_agent_coordination",
                 ],
-                "notes": "L0 agents must be low-level and deterministic. No high-level cognition.",
+                "notes": "L0 agents must be low-level and deterministic. LCD+ canonical skeleton + scripts/ nuance.",
                 "subfolders": {
-                    "deterministic": {"purpose": "Deterministic healing and validation"},
-                    "logs": {"purpose": "Runtime logs and execution traces"},
+                    "config": {
+                        "purpose": "Maintenance configuration, boot settings, and log config.",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                    },
+                    "types": {
+                        "purpose": "Maintenance data models, enums, and protocols.",
+                        "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py"],
+                    },
+                    "reasoning": {
+                        "purpose": "Decision-making maintenance agents (healing strategies, planners).",
+                    },
+                    "enforcement": {
+                        "purpose": "Integrity enforcement, sensors, and deterministic validators.",
+                    },
+                    "validators": {
+                        "purpose": "Maintenance validation logic and compliance checks.",
+                    },
+                    "utils": {
+                        "purpose": "Maintenance helper functions and bootstrap utilities.",
+                    },
+                    # NUANCE: scripts/ preserved — home for *_script.py files
                     "scripts": {
                         "purpose": "Maintenance and operational scripts - home for *_script.py files (Zero-Ambiguity Standard)",
                         "subfolders": {
@@ -109,31 +128,14 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "general_scripts": {"purpose": "General maintenance scripts"},
                         },
                     },
-                    "integrity": {"purpose": "Core system verification, checksums, and sovereign locks."},
-                    "strategies": {
-                        "purpose": "L0 healing strategy implementations (deterministic repair procedures).",
-                        "allowed_suffixes": ["_healing_strategy.py", "_strategy.py"],
-                    },
-                    "sensors": {"purpose": "System monitoring and health checks"},
-                    "bootstrap": {
-                        "purpose": "Boot sequence scripts and initialization logic only",
-                        "allowed_extensions": [".py"],
-                        "forbidden_extensions": [".json", ".txt", ".md"],
-                        "content_types": ["boot_scripts"],
-                    },
                 },
             },
             "L1_cognition": {
                 "purpose": "Cognitive processing, reasoning, and thought patterns.",
-                "notes": "Standard V10 structure. thought_engine/ is DISSOLVED — use agents/, engine/, types/, validators/, utils/, config/.",
+                "notes": "LCD+ canonical skeleton. thought_engine/ and meta_learning/ DISSOLVED into 6 folders.",
                 "subfolders": {
-                    "agents": {"purpose": "Active cognitive agents (reasoning, planning, budgeting)."},
-                    "engine": {
-                        "purpose": "Core cognitive logic loops and processing pipelines.",
-                        "notes": "Engine REJECTS configs and types. Suffix is SSOT over location.",
-                    },
                     "config": {
-                        "purpose": "Cognitive configuration (RAG config, ReAct config, etc.).",
+                        "purpose": "Cognitive configuration (RAG config, ReAct config, meta-learning config).",
                         "allowed_suffixes": ["_config.py", "_settings.py"],
                         "forbidden_suffixes": ["_types.py", "_class.py"],
                     },
@@ -142,29 +144,39 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_contract.py"],
                         "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
                     },
-                    "validators": {"purpose": "Cognitive validation logic (consensus, reasoning checks)."},
-                    "utils": {"purpose": "Cognitive helper functions."},
-                    # DISSOLVED: "generators" removed — pitch_generator moved to engine/pitch_engine.py
-                    # DISSOLVED: "intent_analysis" removed — files distributed to engine/, types/, L2/config/, L0/scripts/
-                    # DISSOLVED: "memory" removed — golden_context_mixin elevated to agentic_core/mixins/
-                    "meta_learning": {
-                        "purpose": "Meta-learning and self-improvement systems.",
-                        "subfolders": {
-                            "engine": {"purpose": "Meta-learning logic (client, embedder, cache, domain manager)."},
-                            "validators": {"purpose": "Meta-learning guardrails and validation."},
-                            "types": {"purpose": "Meta-learning data models and type definitions."},
-                            "config": {"purpose": "Meta-learning configuration."},
-                        },
+                    "reasoning": {
+                        "purpose": "Decision-making cognitive agents, engines, planners, and meta-learning logic.",
+                        "allowed_suffixes": [
+                            "_engine.py",
+                            "_manager.py",
+                            "_planner.py",
+                            "_mapper.py",
+                            "_strategy.py",
+                            "_agent.py",
+                        ],
                     },
+                    "enforcement": {
+                        "purpose": "Cognitive constraint enforcement and guardrails.",
+                    },
+                    "validators": {
+                        "purpose": "Cognitive validation logic (consensus, reasoning checks, meta-learning guardrails)."
+                    },
+                    "utils": {"purpose": "Cognitive helper functions."},
                 },
-                # HARDENING 2026-02-06: Strict suffix enforcement — Filename is SSOT over Location.
                 "allowed_suffixes": {
-                    "engine": ["_engine.py", "_manager.py", "_planner.py", "_mapper.py", "_strategy.py"],
+                    "reasoning": [
+                        "_engine.py",
+                        "_manager.py",
+                        "_planner.py",
+                        "_mapper.py",
+                        "_strategy.py",
+                        "_agent.py",
+                    ],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_protocol.py", "_schema.py", "_contract.py"],
                 },
                 "forbidden_suffixes": {
-                    "engine": ["_config.py", "_types.py"],
+                    "reasoning": ["_config.py", "_types.py"],
                     "config": ["_types.py", "_class.py"],
                     "types": ["_config.py", "_engine.py", "_agent.py"],
                 },
@@ -172,16 +184,16 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "*_config.py": "config",
                     "*_types.py": "types",
                     "I*.py": "types",
+                    "*_engine.py": "reasoning",
+                    "*_planner.py": "reasoning",
+                    "*_strategy.py": "reasoning",
+                    "*Agent.py": "reasoning",
                 },
             },
             "L2_execution": {
                 "purpose": "The Hands: Tool execution, MCP clients, and sandboxed environments.",
-                "notes": "Standard V10 structure. Migration complete — tool_registry/ dissolved.",
+                "notes": "LCD+ canonical skeleton + tools/ nuance. engine/mcp/sandbox DISSOLVED into 6 folders.",
                 "subfolders": {
-                    "engine": {
-                        "purpose": "Execution engines, registries, orchestrators, and client managers.",
-                        "allowed_suffixes": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
-                    },
                     "config": {
                         "purpose": "Execution configuration and settings.",
                         "allowed_suffixes": ["_config.py", "_settings.py"],
@@ -192,26 +204,70 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "allowed_suffixes": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
                         "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
                     },
+                    "reasoning": {
+                        "purpose": "Execution engines, registries, orchestrators, and client managers.",
+                        "allowed_suffixes": [
+                            "_executor.py",
+                            "_runner.py",
+                            "_client.py",
+                            "_registry.py",
+                            "_manager.py",
+                            "_agent.py",
+                        ],
+                    },
+                    "enforcement": {
+                        "purpose": "MCP sovereign agents, sandbox enforcement, and execution gates.",
+                        "allowed_suffixes": [
+                            "_env.py",
+                            "_jail.py",
+                            "_container.py",
+                            "_sandbox.py",
+                            "_agent.py",
+                        ],
+                    },
+                    "validators": {
+                        "purpose": "Execution validation logic and tool compliance checks.",
+                    },
+                    "utils": {
+                        "purpose": "Execution helper functions and shared utilities.",
+                    },
+                    # NUANCE: tools/ preserved — standardized tool implementations
                     "tools": {
                         "purpose": "Standardized tool implementations — strict naming enforced.",
-                        "allowed_suffixes": ["_impl.py", "_agent.py", "_client.py", "_util.py", "_service.py", "_executor.py"],
+                        "allowed_suffixes": [
+                            "_impl.py",
+                            "_agent.py",
+                            "_client.py",
+                            "_util.py",
+                            "_service.py",
+                            "_executor.py",
+                        ],
                         "forbidden_suffixes": ["_tool.py"],
-                    },
-                    "mcp": {"purpose": "Model Context Protocol clients, gateways, and sovereign agents."},
-                    "sandbox": {
-                        "purpose": "Sandboxed execution environments (Docker, Firecracker, etc.).",
-                        "allowed_suffixes": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
                     },
                 },
                 "allowed_suffixes": {
-                    "engine": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
+                    "reasoning": [
+                        "_executor.py",
+                        "_runner.py",
+                        "_client.py",
+                        "_registry.py",
+                        "_manager.py",
+                        "_agent.py",
+                    ],
+                    "enforcement": ["_env.py", "_jail.py", "_container.py", "_sandbox.py", "_agent.py"],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
-                    "tools": ["_impl.py", "_agent.py", "_client.py", "_util.py", "_service.py", "_executor.py"],
-                    "sandbox": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
+                    "tools": [
+                        "_impl.py",
+                        "_agent.py",
+                        "_client.py",
+                        "_util.py",
+                        "_service.py",
+                        "_executor.py",
+                    ],
                 },
                 "forbidden_suffixes": {
-                    "engine": ["_config.py", "_types.py"],
+                    "reasoning": ["_config.py", "_types.py"],
                     "config": ["_types.py", "_tool.py"],
                     "types": ["_config.py", "_engine.py", "_agent.py"],
                     "tools": ["_config.py", "_types.py", "_tool.py"],
@@ -221,27 +277,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "*_config.py": "config",
                     "*_types.py": "types",
                     "*_protocol.py": "types",
-                    "*_client.py": "engine",
-                    "*_executor.py": "engine",
-                    "*_registry.py": "engine",
+                    "*_client.py": "reasoning",
+                    "*_executor.py": "reasoning",
+                    "*_registry.py": "reasoning",
+                    "*_sandbox.py": "enforcement",
+                    "*Agent.py": "reasoning",
                 },
             },
             "L3_orchestration": {
                 "purpose": "The Conductor: Workflow Management, DAGs, and Coordination.",
-                "notes": "Standard V10 structure. engine=machinery, orchestrators=decision-makers, diagnostics=sensors.",
+                "notes": "LCD+ canonical skeleton. engine/orchestrators/routers/strategies/patterns/diagnostics DISSOLVED.",
                 "subfolders": {
-                    "engine": {
-                        "purpose": "Execution machinery: DAGs, managers, inspectors, policies, scanners, adapters.",
-                        "allowed_suffixes": ["_engine.py", "_manager.py", "_inspector.py", "_policy.py", "_scanner.py", "_impl.py", "_agent.py", "_adapter.py"],
-                    },
-                    "orchestrators": {
-                        "purpose": "Decision logic: coordinators, nervous system, marketplace, handshakes.",
-                        "allowed_suffixes": ["_orchestrator.py", "_coordinator.py", "_handshake.py", "_system.py", "_agent.py", "_marketplace.py"],
-                    },
-                    "diagnostics": {
-                        "purpose": "Telemetry, metrics, and orchestration reporting.",
-                        "allowed_suffixes": ["_metrics.py", "_telemetry.py", "_report.py"],
-                    },
                     "config": {
                         "purpose": "Orchestration configuration and settings.",
                         "allowed_suffixes": ["_config.py", "_settings.py"],
@@ -249,78 +295,104 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     },
                     "types": {
                         "purpose": "Orchestration data models, schemas, protocols, and state types.",
-                        "allowed_suffixes": ["_types.py", "_state.py", "_schema.py", "_model.py", "_protocol.py"],
+                        "allowed_suffixes": [
+                            "_types.py",
+                            "_state.py",
+                            "_schema.py",
+                            "_model.py",
+                            "_protocol.py",
+                        ],
                         "forbidden_suffixes": ["_config.py", "_engine.py"],
                     },
-                    "routers": {
-                        "purpose": "Action routing, dispatching, and plan execution nodes.",
-                        "allowed_suffixes": ["_router.py", "_dispatcher.py", "_switch.py", "_delegator.py"],
+                    "reasoning": {
+                        "purpose": "Decision-making: engines, orchestrators, routers, strategies, patterns, diagnostics.",
+                        "allowed_suffixes": [
+                            "_engine.py",
+                            "_manager.py",
+                            "_inspector.py",
+                            "_policy.py",
+                            "_scanner.py",
+                            "_impl.py",
+                            "_agent.py",
+                            "_adapter.py",
+                            "_orchestrator.py",
+                            "_coordinator.py",
+                            "_handshake.py",
+                            "_system.py",
+                            "_marketplace.py",
+                            "_router.py",
+                            "_dispatcher.py",
+                            "_switch.py",
+                            "_delegator.py",
+                            "_strategy.py",
+                            "_pattern.py",
+                            "_fsm.py",
+                            "_flow.py",
+                            "_metrics.py",
+                            "_telemetry.py",
+                            "_report.py",
+                        ],
                     },
-                    "strategies": {
-                        "purpose": "Pluggable decision logic and strategy implementations.",
-                        "allowed_suffixes": ["_strategy.py"],
+                    "enforcement": {
+                        "purpose": "Orchestration constraint enforcement and coordination gates.",
                     },
-                    "patterns": {
-                        "purpose": "Architectural implementation patterns, FSMs, and execution flows.",
-                        "allowed_suffixes": ["_pattern.py", "_fsm.py", "_flow.py"],
+                    "validators": {
+                        "purpose": "Orchestration validation logic and workflow compliance checks.",
+                    },
+                    "utils": {
+                        "purpose": "Orchestration helper functions and shared utilities.",
                     },
                 },
                 "allowed_suffixes": {
-                    "engine": ["_engine.py", "_manager.py", "_inspector.py", "_policy.py", "_scanner.py", "_impl.py", "_agent.py", "_adapter.py"],
-                    "orchestrators": ["_orchestrator.py", "_coordinator.py", "_handshake.py", "_system.py", "_agent.py", "_marketplace.py"],
-                    "diagnostics": ["_metrics.py", "_telemetry.py", "_report.py"],
-                    "routers": ["_router.py", "_dispatcher.py", "_switch.py", "_delegator.py"],
-                    "strategies": ["_strategy.py"],
-                    "patterns": ["_pattern.py", "_fsm.py", "_flow.py"],
+                    "reasoning": [
+                        "_engine.py",
+                        "_manager.py",
+                        "_inspector.py",
+                        "_policy.py",
+                        "_scanner.py",
+                        "_impl.py",
+                        "_agent.py",
+                        "_adapter.py",
+                        "_orchestrator.py",
+                        "_coordinator.py",
+                        "_handshake.py",
+                        "_system.py",
+                        "_marketplace.py",
+                        "_router.py",
+                        "_dispatcher.py",
+                        "_strategy.py",
+                        "_pattern.py",
+                        "_fsm.py",
+                        "_flow.py",
+                        "_metrics.py",
+                    ],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_state.py", "_schema.py", "_model.py", "_protocol.py"],
                 },
                 "forbidden_suffixes": {
-                    "engine": ["_config.py", "_types.py", "_orchestrator.py"],
-                    "orchestrators": ["_config.py", "_types.py", "_engine.py"],
-                    "diagnostics": ["_config.py", "_types.py"],
+                    "reasoning": ["_config.py", "_types.py"],
                     "config": ["_types.py", "_router.py"],
                     "types": ["_config.py", "_engine.py"],
-                    "routers": ["_config.py", "_types.py"],
-                    "strategies": ["_config.py", "_types.py", "_pattern.py"],
-                    "patterns": ["_config.py", "_types.py", "_strategy.py"],
                 },
                 "routing_rules": {
-                    "*_orchestrator.py": "orchestrators",
-                    "*_coordinator.py": "orchestrators",
-                    "*_router.py": "routers",
-                    "*_dispatcher.py": "routers",
-                    "*_strategy.py": "strategies",
-                    "*_pattern.py": "patterns",
+                    "*_orchestrator.py": "reasoning",
+                    "*_coordinator.py": "reasoning",
+                    "*_router.py": "reasoning",
+                    "*_dispatcher.py": "reasoning",
+                    "*_strategy.py": "reasoning",
+                    "*_pattern.py": "reasoning",
                     "*_config.py": "config",
                     "*_types.py": "types",
-                    "*_engine.py": "engine",
-                    "*_manager.py": "engine",
-                    "*_metrics.py": "diagnostics",
+                    "*_engine.py": "reasoning",
+                    "*_manager.py": "reasoning",
+                    "*_metrics.py": "reasoning",
+                    "*Agent.py": "reasoning",
                 },
             },
             "L4_state": {
                 "purpose": "The Memory: Databases, Knowledge Graphs, Ledgers, and State.",
-                "notes": "Standard V10 structure. validation_context/ dissolved into memory/ledger/types/utils.",
+                "notes": "LCD+ canonical skeleton + memory/ nuance. graph/ledger/schemas/contracts/session_manager DISSOLVED.",
                 "subfolders": {
-                    "memory": {
-                        "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
-                        "allowed_suffixes": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
-                        "subfolders": {
-                            "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
-                        },
-                    },
-                    "graph": {
-                        "purpose": "Graph database connectors, store drivers, and knowledge graphs.",
-                        "allowed_suffixes": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py", "_bridge.py"],
-                        "subfolders": {
-                            "healing": {"purpose": "Graph-aware healing strategies (L4 owns its own repair)."},
-                        },
-                    },
-                    "ledger": {
-                        "purpose": "Immutable truth: change tracking, telemetry, circuit breakers, audit trails.",
-                        "allowed_suffixes": ["_ledger.py", "_log.py", "_journal.py", "_audit.py", "_tracker.py"],
-                    },
                     "config": {
                         "purpose": "State configuration and settings.",
                         "allowed_suffixes": ["_config.py", "_settings.py"],
@@ -331,18 +403,56 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "allowed_suffixes": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
                         "forbidden_suffixes": ["_config.py", "_engine.py"],
                     },
-                    "schemas": {"purpose": "Legacy schema definitions (being migrated to types/)."},
-                    "contracts": {"purpose": "Interface contracts for state providers."},
+                    "reasoning": {
+                        "purpose": "State decision-making agents and planners.",
+                    },
+                    "enforcement": {
+                        "purpose": "Ledger enforcement, graph integrity, change tracking, and audit trails.",
+                        "allowed_suffixes": [
+                            "_ledger.py",
+                            "_log.py",
+                            "_journal.py",
+                            "_audit.py",
+                            "_tracker.py",
+                            "_graph.py",
+                            "_node.py",
+                            "_edge.py",
+                        ],
+                    },
+                    "validators": {
+                        "purpose": "State validation logic and compliance checks.",
+                    },
                     "utils": {
                         "purpose": "State utility functions.",
                         "allowed_suffixes": ["_util.py", "_helper.py"],
                     },
-                    "session_manager": {"purpose": "Session management and disk adapters."},
+                    # NUANCE: memory/ preserved — hot storage and semantic retrieval
+                    "memory": {
+                        "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
+                        "allowed_suffixes": [
+                            "_store.py",
+                            "_retriever.py",
+                            "_cache.py",
+                            "_memory.py",
+                            "_db.py",
+                        ],
+                        "subfolders": {
+                            "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
+                        },
+                    },
                 },
                 "allowed_suffixes": {
                     "memory": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
-                    "graph": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py"],
-                    "ledger": ["_ledger.py", "_log.py", "_journal.py", "_audit.py", "_tracker.py"],
+                    "enforcement": [
+                        "_ledger.py",
+                        "_log.py",
+                        "_journal.py",
+                        "_audit.py",
+                        "_tracker.py",
+                        "_graph.py",
+                        "_node.py",
+                        "_edge.py",
+                    ],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
                     "utils": ["_util.py", "_helper.py"],
@@ -356,146 +466,184 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "*_store.py": "memory",
                     "*_retriever.py": "memory",
                     "*_cache.py": "memory",
-                    "*_graph.py": "graph",
-                    "*_ledger.py": "ledger",
-                    "*_tracker.py": "ledger",
+                    "*_graph.py": "enforcement",
+                    "*_ledger.py": "enforcement",
+                    "*_tracker.py": "enforcement",
                     "*_config.py": "config",
                     "*_types.py": "types",
                     "*_util.py": "utils",
+                    "*Agent.py": "reasoning",
                 },
             },
             "L5_safety": {
                 "purpose": "The Guardian: Safety, Security, and Governance.",
-                "notes": "Standard V10 structure. config/ holds The Law (blueprint). validators/ holds The Police.",
+                "notes": "LCD+ canonical skeleton. guardrails/gravity/cognition/governance/security/policy_engine/red_teaming/runtime/human_review DISSOLVED into reasoning/enforcement.",
                 "subfolders": {
                     "config": {
                         "purpose": "The Law: blueprint config, safety settings, and constitutional definitions.",
                         "allowed_suffixes": ["_config.py", "_blueprint.py", "_settings.py"],
                     },
                     "types": {
-                        "purpose": "Safety data models, schemas, and error types.",
-                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py"],
+                        "purpose": "Safety data models, schemas, protocols, and error types.",
+                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                    },
+                    "reasoning": {
+                        "purpose": "Decision-making safety agents: analyzers, strategists, policy engines, red teaming, cognition.",
+                        "allowed_suffixes": [
+                            "_agent.py",
+                            "_strategy.py",
+                            "_processor.py",
+                            "_disposition.py",
+                            "_analyzer.py",
+                            "_healer.py",
+                            "_detector.py",
+                            "_executor.py",
+                            "_probe.py",
+                            "_adapter.py",
+                        ],
+                    },
+                    "enforcement": {
+                        "purpose": "Constraint execution: guardrails, governors, gravity, gates, shields, security, runtime guards.",
+                        "naming_convention": "PascalCaseAgent",
+                        "allowed_suffixes": [
+                            "_guardrail.py",
+                            "_shield.py",
+                            "_firewall.py",
+                            "_sanitizer.py",
+                            "_agent.py",
+                            "_vault.py",
+                            "_gate.py",
+                            "_governor.py",
+                            "_policy.py",
+                            "_compliance.py",
+                            "_fixer.py",
+                            "_enforcer.py",
+                            "_refactorer.py",
+                            "_medic.py",
+                            "_surgeon.py",
+                            "_scanner.py",
+                            "_gatekeeper.py",
+                            "_breaker.py",
+                            "_guard.py",
+                            "_handler.py",
+                            "_queue.py",
+                            "_portal.py",
+                            "_workflow.py",
+                        ],
                     },
                     "validators": {
-                        "purpose": "The Police: structural validators, compliance checks, and classification agents.",
-                        "allowed_suffixes": ["_validator.py", "_check.py", "_inspector.py", "_agent.py"],
-                        "subfolders": {
-                            "core": {"purpose": "Core validator agents (LocationAgent, HierarchyAgent, etc.)."},
-                        },
-                    },
-                    "security": {
-                        "purpose": "The Military: active defense, guardrails, shields, and firewalls.",
-                        "allowed_suffixes": ["_guardrail.py", "_shield.py", "_firewall.py", "_sanitizer.py"],
-                    },
-                    "governance": {
-                        "purpose": "The Legislature: policies, compliance rules, and audit definitions.",
-                        "allowed_suffixes": ["_policy.py", "_compliance.py", "_audit.py"],
-                    },
-                    "cognition": {
-                        "purpose": "The Conscience: AI-driven safety logic, batch processors, and strategies.",
-                        "allowed_suffixes": ["_processor.py", "_strategy.py", "_agent.py", "_disposition.py"],
-                    },
-                    "guardrails": {
-                        "purpose": "Operational L5 safety guardrail agents and components "
-                        "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
-                        "naming_convention": "snake_case_agent",
-                        "ast_signals": {
-                            "AGENT": {
-                                "inherits": ["SovereignBaseAgent", "SubatomicTestingMixin"],
-                                "keywords": [
-                                    "guardrail",
-                                    "membrane",
-                                    "sanitizer",
-                                    "hygiene",
-                                    "redact",
-                                    "scrub",
-                                ],
-                                "methods": ["sanitize", "scrub", "redact", "block", "heal", "execute"],
-                            },
-                        },
-                        "forbidden_patterns": [
-                            "*Agent.py",
-                            "*Membrane.py",
-                            "*Strategy.py",
+                        "purpose": "Passive auditing: structural validators, compliance checks, classification agents.",
+                        "allowed_suffixes": [
+                            "_validator.py",
+                            "_check.py",
+                            "_inspector.py",
+                            "_agent.py",
+                            "_categorizer.py",
+                            "_generator.py",
+                            "_canonicalizer.py",
                         ],
-                        "required_dirs": [],
                     },
-                    "gravity": {"purpose": "Gravity enforcement and structural integrity."},
-                    "human_review": {
-                        "purpose": "Human-in-the-loop review gates, queues, and workflows.",
-                        "allowed_suffixes": ["_queue.py", "_portal.py", "_workflow.py"],
+                    "utils": {
+                        "purpose": "Safety utility functions, mixins, and helpers.",
+                        "allowed_suffixes": [
+                            "_util.py",
+                            "_mixin.py",
+                            "_helper.py",
+                            "_visitor.py",
+                            "_extractor.py",
+                        ],
                     },
-                    "red_teaming": {"purpose": "Adversarial testing and boundary probing."},
-                    "policy_engine": {"purpose": "Policy evaluation and enforcement engine."},
-                    "runtime": {"purpose": "Runtime safety checks and guards."},
-                    "utils": {"purpose": "Safety utility functions."},
                 },
                 "allowed_suffixes": {
-                    "anti_patterns": ["_detector.py"],
-                    "utils": ["_util.py", "_visitor.py", "_extractor.py", "_controls.py", "_security.py"],
-                    "strategies": ["_strategy.py", "_logic.py", "_mitigator.py", "_guardrail.py"],
-                    "runtime": ["_guard.py", "_handler.py", "_wrapper.py", "_violation.py"],
-                    "red_teaming": ["_agent.py", "_probe.py", "_test.py", "_scenario.py"],
-                    "policy_engine": ["_agent.py", "_validator.py", "_enforcer.py", "_healer.py", "_analyzer.py", "_manager.py", "_detector.py", "_executor.py", "_cleanup.py"],
-                    "gravity": ["_validator.py", "_scanner.py", "_auditor.py", "_agent.py", "_graph.py", "_info.py", "_fixer.py", "_enforcer.py", "_refactorer.py", "_medic.py", "_surgeon.py", "_trimmer.py", "_utils.py"],
-                    "guardrails": ["_guardrail.py", "_scrubber.py", "_defense.py", "_mixin.py", "_vault.py"],
-                    "human_review": ["_queue.py", "_portal.py", "_workflow.py"],
-                    "core": ["_layer.py", "_gatekeeper.py", "_handler.py", "_breaker.py", "_manager.py", "_session.py", "_service.py"],
-                    "cognition": ["_processor.py", "_strategy.py", "_agent.py", "_disposition.py"],
                     "config": ["_config.py", "_blueprint.py", "_settings.py"],
-                    "types": ["_types.py", "_schema.py", "_model.py"],
-                    "validators": ["_validator.py", "_check.py", "_inspector.py", "_strategy.py", "_protocol.py", "_helper.py", "_contracts.py", "_model.py", "_schemas.py", "_canonicalizer.py", "_agent.py", "FileClassificationAgent.py"],
-                    "security": ["_gate.py", "_authority.py", "_shield.py", "_firewall.py", "_sanitizer.py", "_guardrail.py"],
-                    "governance": ["_policy.py", "_compliance.py", "_audit.py", "_registry.py", "_manager.py"],
+                    "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                    "reasoning": [
+                        "_agent.py",
+                        "_strategy.py",
+                        "_processor.py",
+                        "_disposition.py",
+                        "_analyzer.py",
+                        "_healer.py",
+                        "_detector.py",
+                        "_executor.py",
+                        "_probe.py",
+                        "_adapter.py",
+                    ],
+                    "enforcement": [
+                        "_guardrail.py",
+                        "_shield.py",
+                        "_firewall.py",
+                        "_sanitizer.py",
+                        "_agent.py",
+                        "_vault.py",
+                        "_gate.py",
+                        "_governor.py",
+                        "_policy.py",
+                        "_compliance.py",
+                        "_fixer.py",
+                        "_enforcer.py",
+                        "_refactorer.py",
+                        "_medic.py",
+                        "_surgeon.py",
+                        "_scanner.py",
+                        "_gatekeeper.py",
+                        "_breaker.py",
+                        "_guard.py",
+                        "_handler.py",
+                    ],
+                    "validators": [
+                        "_validator.py",
+                        "_check.py",
+                        "_inspector.py",
+                        "_agent.py",
+                        "_categorizer.py",
+                        "_generator.py",
+                        "_canonicalizer.py",
+                    ],
+                    "utils": ["_util.py", "_mixin.py", "_helper.py", "_visitor.py", "_extractor.py"],
                 },
                 "forbidden_suffixes": {
                     "config": ["_types.py", "_validator.py"],
                     "types": ["_config.py", "_validator.py"],
                     "validators": ["_config.py", "_types.py"],
-                    "security": ["_config.py", "_types.py"],
-                    "governance": ["_config.py", "_types.py"],
+                    "reasoning": ["_config.py", "_types.py"],
+                    "enforcement": ["_config.py", "_types.py"],
                 },
                 "routing_rules": {
-                    "*_fixer.py": "gravity",
-                    "*_enforcer.py": "gravity",
-                    "*_refactorer.py": "gravity",
-                    "*_medic.py": "gravity",
-                    "*_surgeon.py": "gravity",
-                    "*_scanner.py": "gravity",
-                    "*_gatekeeper.py": "core",
-                    "*_breaker.py": "core",
-                    "*_processor.py": "cognition",
-                    "*_disposition.py": "cognition",
+                    "*_fixer.py": "enforcement",
+                    "*_enforcer.py": "enforcement",
+                    "*_refactorer.py": "enforcement",
+                    "*_medic.py": "enforcement",
+                    "*_surgeon.py": "enforcement",
+                    "*_scanner.py": "enforcement",
+                    "*_gatekeeper.py": "enforcement",
+                    "*_breaker.py": "enforcement",
+                    "*_guardrail.py": "enforcement",
+                    "*_shield.py": "enforcement",
+                    "*_gate.py": "enforcement",
+                    "*_governor.py": "enforcement",
+                    "*_policy.py": "enforcement",
+                    "*_guard.py": "enforcement",
+                    "*_processor.py": "reasoning",
+                    "*_disposition.py": "reasoning",
+                    "*_strategy.py": "reasoning",
+                    "*_analyzer.py": "reasoning",
+                    "*_probe.py": "reasoning",
                     "*_validator.py": "validators",
-                    "*_guardrail.py": "security",
-                    "*_shield.py": "security",
-                    "*_policy.py": "governance",
+                    "*_categorizer.py": "validators",
+                    "*_inspector.py": "validators",
                     "*_config.py": "config",
                     "*_types.py": "types",
+                    "*_protocol.py": "types",
+                    "*_util.py": "utils",
+                    "*_mixin.py": "utils",
+                    "*Agent.py": "reasoning",
                 },
             },
             "L6_observability": {
                 "purpose": "The Sensory Layer: Metrics, Logs, Tracing, and Dashboards.",
-                "notes": "Standard V10 structure. telemetry/ split into metrics/logs/tracing.",
+                "notes": "LCD+ canonical skeleton + dashboards/ nuance. metrics/logs/tracing/telemetry/reports/agents/engine DISSOLVED.",
                 "subfolders": {
-                    "metrics": {
-                        "purpose": "Quantitative data: counters, gauges, collectors, performance metrics.",
-                        "allowed_suffixes": ["_metrics.py", "_gauge.py", "_counter.py", "_collector.py"],
-                    },
-                    "logs": {
-                        "purpose": "Structured event logging: loggers, handlers, formatters, sinks.",
-                        "allowed_suffixes": ["_logger.py", "_handler.py", "_formatter.py", "_sink.py", "_spy.py"],
-                    },
-                    "tracing": {
-                        "purpose": "Distributed tracing: tracers, spans, context propagation.",
-                        "allowed_suffixes": ["_tracer.py", "_span.py", "_context.py", "_propagator.py"],
-                    },
-                    "dashboards": {
-                        "purpose": "Operational dashboards, visualizations, and renderers.",
-                        "allowed_suffixes": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
-                    },
-                    "agents": {"purpose": "Active observability agents (monitoring, analysis, synthesis)."},
-                    "engine": {"purpose": "Monitoring engines (UnifiedAgentMonitor, ExecutionTimer)."},
                     "config": {
                         "purpose": "Observability configuration and settings.",
                         "allowed_suffixes": ["_config.py", "_settings.py"],
@@ -504,28 +652,70 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Observability data models (ExecutionMetrics, AggregatedMetrics).",
                         "allowed_suffixes": ["_types.py", "_schema.py", "_model.py"],
                     },
-                    "telemetry": {"purpose": "Legacy telemetry (being migrated to metrics/logs/tracing)."},
-                    "reports": {"purpose": "Compliance and audit reports."},
+                    "reasoning": {
+                        "purpose": "Active observability agents, monitoring engines, analysis, and synthesis.",
+                        "allowed_suffixes": [
+                            "_agent.py",
+                            "_metrics.py",
+                            "_gauge.py",
+                            "_counter.py",
+                            "_collector.py",
+                            "_logger.py",
+                            "_handler.py",
+                            "_formatter.py",
+                            "_sink.py",
+                            "_spy.py",
+                            "_tracer.py",
+                            "_span.py",
+                            "_context.py",
+                            "_propagator.py",
+                        ],
+                    },
+                    "enforcement": {
+                        "purpose": "Compliance enforcement, audit reporting, and observability gates.",
+                    },
+                    "validators": {
+                        "purpose": "Observability validation logic and compliance checks.",
+                    },
                     "utils": {"purpose": "Observability utility functions."},
+                    # NUANCE: dashboards/ preserved — operational dashboards
+                    "dashboards": {
+                        "purpose": "Operational dashboards, visualizations, and renderers.",
+                        "allowed_suffixes": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
+                    },
                 },
                 "allowed_suffixes": {
-                    "metrics": ["_metrics.py", "_gauge.py", "_counter.py", "_collector.py"],
-                    "logs": ["_logger.py", "_handler.py", "_formatter.py", "_sink.py", "_spy.py"],
-                    "tracing": ["_tracer.py", "_span.py", "_context.py", "_propagator.py"],
+                    "reasoning": [
+                        "_agent.py",
+                        "_metrics.py",
+                        "_gauge.py",
+                        "_counter.py",
+                        "_collector.py",
+                        "_logger.py",
+                        "_handler.py",
+                        "_formatter.py",
+                        "_sink.py",
+                        "_spy.py",
+                        "_tracer.py",
+                        "_span.py",
+                        "_context.py",
+                        "_propagator.py",
+                    ],
                     "dashboards": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_schema.py", "_model.py"],
                 },
                 "routing_rules": {
-                    "*_metrics.py": "metrics",
-                    "*_collector.py": "metrics",
-                    "*_logger.py": "logs",
-                    "*_handler.py": "logs",
-                    "*_tracer.py": "tracing",
-                    "*_span.py": "tracing",
+                    "*_metrics.py": "reasoning",
+                    "*_collector.py": "reasoning",
+                    "*_logger.py": "reasoning",
+                    "*_handler.py": "reasoning",
+                    "*_tracer.py": "reasoning",
+                    "*_span.py": "reasoning",
                     "*_dashboard.py": "dashboards",
                     "*_config.py": "config",
                     "*_types.py": "types",
+                    "*Agent.py": "reasoning",
                 },
             },
             "config": {
@@ -633,26 +823,28 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "weight": 100,
             },
             # --- L5 SAFETY: MAXIMUM DEFENSIVE PRIORITY (Weight 22-25) ---
-            "agentic_core/L5_safety/guardrails": {
-                "class_patterns": [".*Guardrail.*", ".*Barrier.*"],
+            "agentic_core/L5_safety/enforcement": {
+                "class_patterns": [".*Guardrail.*", ".*Barrier.*", ".*Gravity.*", ".*Leak.*"],
                 "base_classes": ["BaseGuardrail", "SafetyAirlock"],
-                "keyword_signals": ["mutation_check", "deletion_block", "circuit_breaker"],
+                "keyword_signals": [
+                    "mutation_check",
+                    "deletion_block",
+                    "circuit_breaker",
+                    "import_waterfall",
+                    "layer_violation",
+                    "deportation",
+                ],
                 "weight": 25,
             },
-            "agentic_core/L5_safety/gravity": {
-                "class_patterns": [".*Gravity.*", ".*Leak.*"],
-                "keyword_signals": ["import_waterfall", "layer_violation", "deportation"],
-                "weight": 22,
-            },
             # --- L1 COGNITION: REASONING SUPERIORITY (Weight 18) ---
-            "agentic_core/L1_cognition/thought_engine": {
+            "agentic_core/L1_cognition/reasoning": {
                 "class_patterns": [".*Node$", ".*Thought.*", ".*Reason.*"],
                 "base_classes": ["ThoughtNode", "ReActNode"],
                 "keyword_signals": ["chain_of_thought", "self_reflection", "deliberation"],
                 "weight": 18,
             },
             # --- L3 ORCHESTRATION: STRATEGIC COORDINATION (Weight 16) ---
-            "agentic_core/L3_orchestration/engine": {
+            "agentic_core/L3_orchestration/reasoning": {
                 "class_patterns": [".*Orchestrator$", ".*Workflow.*"],
                 "base_classes": ["BaseOrchestrator", "WorkflowEngine"],
                 "keyword_signals": ["mission_control", "fission_logic", "dag_executor"],
@@ -683,7 +875,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "weight": 11,
             },
             # --- L0/L2 BASELINE: GENERIC UTILITIES (Weight 9) ---
-            "agentic_core/L2_execution/engine": {
+            "agentic_core/L2_execution/reasoning": {
                 "class_patterns": [".*Agent$"],
                 "weight": 9,
             },
@@ -768,59 +960,66 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Unit tests for agentic_core modules",
                         "subfolders": {
                             "L0_maintenance": [
-                                "scripts",
-                                "deterministic",
-                                "logs",
-                                "boot",
-                                "core",
-                                "agents",
-                                "validators",
                                 "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
+                                "validators",
+                                "utils",
+                                "scripts",  # NUANCE
                             ],
                             "L1_cognition": [
-                                "thought_engine",
-                                # DISSOLVED: "intent_analysis" removed
-                                "memory",
-                                "meta_learning",
-                                "core",
-                                "agents",
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
                                 "validators",
-                            ],
-                            "L2_execution": ["tool_registry", "mcp", "execution_bridge", "core", "agents"],
-                            "L3_orchestration": [
-                                "workflow_engines",
-                                "fission_logic",
-                                "interfaces",
                                 "utils",
-                                "core",
-                                "agents",
-                                "orchestration",
+                            ],
+                            "L2_execution": [
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
+                                "validators",
+                                "utils",
+                                "tools",  # NUANCE
+                            ],
+                            "L3_orchestration": [
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
+                                "validators",
+                                "utils",
                             ],
                             "L4_state": [
-                                "validation_context",
-                                "ledger",
-                                "memory",
-                                "core",
-                                "agents",
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
                                 "validators",
+                                "utils",
+                                "memory",  # NUANCE
                             ],
                             "L5_safety": [
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
                                 "validators",
-                                "guardrails",
-                                "policy_engine",
-                                "gravity",
-                                "red_teaming",
-                                "cognition",
-                                "core",
                                 "utils",
-                                "security",
-                                "agents",
-                                "strategies",
                             ],
-                            "L6_observability": ["dashboards", "agents", "reports", "telemetry", "core"],
+                            "L6_observability": [
+                                "config",
+                                "types",
+                                "reasoning",
+                                "enforcement",
+                                "validators",
+                                "utils",
+                                "dashboards",  # NUANCE
+                            ],
                             "base_agents": [],
-                            # DISSOLVED: "domain" removed
-                            # DEPRECATED: "patterns" removed - evacuate to base_agents
                             "utils": [],
                         },
                     },
@@ -1066,22 +1265,20 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
     {
         "base_agents",  # Flat folder - foundational classes at depth 2
-        # DISSOLVED: "domain" removed
         "utils",  # utils/sovereign_index.py at depth 2
         "config",  # config/core/* variable depth
-        "common",  # common/healing/* variable depth
-        "observability",  # observability/* at depth 2 (legacy)
+        "reasoning",  # LCD+ reasoning folder at variable depth
+        "enforcement",  # LCD+ enforcement folder at variable depth
+        "validators",  # LCD+ validators at variable depth
         "L6_observability",  # L6ObservabilityBase.py at depth 2
         "L3_orchestration",  # Orchestrator at layer root
         "L0_maintenance",  # scripts at variable depth
-        "L1_cognition",  # thought_engine at variable depth
-        "L2_execution",  # mcp at variable depth
-        "L4_state",  # ValidationContext at variable depth
-        "L5_safety",  # validators/guardrails at variable depth
-        # DISSOLVED: "schemas" removed
+        "L1_cognition",  # reasoning at variable depth
+        "L2_execution",  # tools at variable depth
+        "L4_state",  # memory at variable depth
+        "L5_safety",  # validators/enforcement at variable depth
         "prompt_governance",  # meta_prompts at variable depth
         "runtime",  # shared_runtime at variable depth
-        # DEPRECATED: "patterns" removed - evacuate to base_agents
         "semantic_memory",  # store/embeddings at variable depth
         # Top-level territories that allow files in root
         "agentic_core",  # __init__.py and core files at territory root
@@ -1188,8 +1385,8 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "css": ["themes", "layouts"],
         "config": ["dashboard_config"],
     },
-    # L0_maintenance/strategies/ - Healing strategy implementations
-    "strategies": {
+    # L0_maintenance/reasoning/ - Healing strategy implementations (was strategies/)
+    "reasoning": {
         "healing": ["audit_healing_strategy"],
     },
     # L0_maintenance/scripts/ - 181 .py files, flat structure (simplified)
@@ -1202,8 +1399,9 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "maintenance": ["maintenance_scripts"],
         "test_utilities": ["test_helpers"],
     },
-    # L3_orchestration/engine/ - 130 .py files, 5 subdirs
-    "workflow_engines": {
+    # L3_orchestration/reasoning/ - 130 .py files (was engine/ + orchestrators/)
+    # NOTE: "reasoning" key already defined above for L0, so use full path as key
+    "L3_reasoning": {
         "core": ["base_orchestrators", "orchestration_types"],
         "dag": ["dag_executors", "dag_managers"],
         "rl": ["rl_orchestrators", "rl_coordinators"],
@@ -1214,17 +1412,17 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "rag": ["rag_orchestrators"],
         "telemetry": ["telemetry_agents", "metrics_agents"],
     },
-    # L1_cognition/thought_engine/ - 160 .py files, 6 subdirs
-    "thought_engine": {
-        "reasoning": ["reasoning_engines", "logic_processors"],
+    # L1_cognition/reasoning/ - 160 .py files (was thought_engine/)
+    "L1_reasoning": {
+        "engines": ["reasoning_engines", "logic_processors"],
         "planning": ["planners", "schedulers"],
         "memory": ["memory_managers", "context_handlers"],
         "analysis": ["analyzers", "evaluators"],
         "synthesis": ["synthesizers", "generators"],
         "evaluation": ["evaluators", "scorers"],
     },
-    # L5_safety/guardrails/ - 79 .py files, 0 subdirs
-    "guardrails": {
+    # L5_safety/enforcement/ - 79+ .py files (was guardrails/ + gravity/)
+    "enforcement": {
         "security": ["pii_guards", "injection_guards", "auth_guards"],
         "quality": ["code_quality", "format_guards"],
         "structural": ["hierarchy_healers", "structure_guards"],
@@ -1233,8 +1431,8 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "mcp": ["mcp_security", "mcp_guards"],
         "detection": ["duplicate_detectors", "threat_detectors"],
     },
-    # L2_execution/engine/ - 145 .py files, 1 subdir
-    "tool_registry": {
+    # L2_execution/reasoning/ - 145 .py files (was engine/)
+    "L2_reasoning": {
         "core": ["registry_core", "registry_types"],
         "tools": ["tool_implementations"],
         "handlers": ["tool_handlers"],
@@ -1273,18 +1471,16 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
     {
         "agentic_core/L6_observability/dashboards",
         "agentic_core/L0_maintenance/scripts",
-        "agentic_core/L0_maintenance/strategies",
-        "agentic_core/L3_orchestration/engine",
-        "agentic_core/L1_cognition/thought_engine",
-        "agentic_core/L5_safety/guardrails",
-        "agentic_core/L5_safety/validators",  # 135 files - added per SSOT review
-        "agentic_core/L5_safety/gravity",  # 22 files - added per SSOT review
-        "agentic_core/L2_execution/engine",
-        "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
-        "agentic_core/L4_state/memory",  # 41 files - added per SSOT review
-        # DISSOLVED: "agentic_core/schemas/models" removed
-        # agentic_core/utils/core_extensions EVICTED - deprecated system removed
-        "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
+        "agentic_core/L0_maintenance/reasoning",
+        "agentic_core/L3_orchestration/reasoning",
+        "agentic_core/L1_cognition/reasoning",
+        "agentic_core/L5_safety/enforcement",
+        "agentic_core/L5_safety/validators",
+        "agentic_core/L5_safety/reasoning",
+        "agentic_core/L2_execution/reasoning",
+        "agentic_core/L2_execution/tools",
+        "agentic_core/L4_state/memory",
+        "agentic_core/config/core",
         "agentic_core/prompt_governance/meta_prompts",
         "agentic_core/prompt_governance/templates",
         "agentic_core/prompt_governance/scripts",
@@ -1312,68 +1508,69 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
 }
 
 CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    # === LAYERED ARCHITECTURE (L0-L6) ===
+    # === LAYERED ARCHITECTURE (L0-L6) — LCD+ CANONICAL SKELETON ===
     "base_agents": [],  # Pure library domain - foundational classes and mixins only
     # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
     "L0_maintenance": [
-        "agents",
-        "utils",
         "config",
-        "scripts",
-        "sensors",
-        "bootstrap",
-        "logs",
-        "keys",
-        "integrity",
-    ],  # Standard Kernel + L0 Extensions
-    "L1_cognition": [
-        "agents",
-        "utils",
-        "config",
-        "prompts",
-        "patterns",
-        "thought_engine",
-        # DISSOLVED: "generators" removed
-    ],  # Standard Kernel + L1 Extensions
-    "L2_execution": [
-        "agents",
-        "utils",
-        "config",
-        "tools",
-        "resources",
-        "mcp",
-    ],  # Standard Kernel + L2 Extensions
-    "L3_orchestration": [
-        "agents",
-        "utils",
-        "config",
-        "workflow_engines",
-        "delegators",
-    ],  # Standard Kernel + L3 Extensions
-    "L4_state": [
-        "agents",
-        "utils",
-        "config",
-        "memory",
-        "contracts",
-        "migrations",
-        "ledger",
-    ],  # Standard Kernel + L4 Extensions (schemas DISSOLVED)
-    "L5_safety": [
-        "agents",
-        "utils",
-        "config",
+        "types",
+        "reasoning",
+        "enforcement",
         "validators",
-        "guardrails",
-    ],  # Standard Kernel + L5 Extensions
-    "L6_observability": [
-        "agents",
         "utils",
+        "scripts",  # NUANCE: preserved
+    ],  # LCD+ 6-folder + scripts/ nuance
+    "L1_cognition": [
         "config",
-        "dashboards",
-        "reports",
-        "telemetry",
-    ],  # Standard Kernel + L6 Extensions
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+    ],  # LCD+ 6-folder canonical
+    "L2_execution": [
+        "config",
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+        "tools",  # NUANCE: preserved
+    ],  # LCD+ 6-folder + tools/ nuance
+    "L3_orchestration": [
+        "config",
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+    ],  # LCD+ 6-folder canonical
+    "L4_state": [
+        "config",
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+        "memory",  # NUANCE: preserved
+    ],  # LCD+ 6-folder + memory/ nuance
+    "L5_safety": [
+        "config",
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+    ],  # LCD+ 6-folder canonical
+    "L6_observability": [
+        "config",
+        "types",
+        "reasoning",
+        "enforcement",
+        "validators",
+        "utils",
+        "dashboards",  # NUANCE: preserved
+    ],  # LCD+ 6-folder + dashboards/ nuance
     # === SPECIALIZED DOMAINS ===
     # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
     "config": ["core"],  # Configuration management - blueprint_sovereign DISSOLVED into core
@@ -1612,7 +1809,7 @@ APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
 }
 
 # Central SSOT — all agents should use get_correct_app_path() for precise suggestions
-APP_SPECIFIC_TARGET_SUBFOLDER: str = "engines"
+APP_SPECIFIC_TARGET_SUBFOLDER: str = "reasoning"
 
 # Pre-compiled APP_SPECIFIC_PATTERNS for performance - eliminates hot-path re-compilation
 APP_SPECIFIC_PATTERNS: Final[list[Pattern]] = [
@@ -1833,7 +2030,9 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     },
     "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
-    "config/core": {"primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"})},
+    "config/core": {
+        "primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"})
+    },
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
     "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
     "prompt_governance/L3_templates": {
@@ -2425,9 +2624,9 @@ MCP_CAPABILITIES: Final[Mapping[str, Mapping[str, bool | str]]] = {
     "router": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "marketplace_filter": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
     "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
-    "figma": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "fetch": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
-    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.mcp"},
+    "figma": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "fetch": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
 }
 SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset({"stubs", ".sovereign_healing_backup", "__pycache__"})
 
@@ -2875,7 +3074,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },
     # === DATA & LOGS (Runtime Debugging) ===
-    "agentic_core/L0_maintenance/logs": {
+    "agentic_core/L0_maintenance/utils": {
         "description": "Runtime debug logs, error dumps, and stack traces.",
         "file_extensions": [".log", ".err", ".out", ".txt"],
         "content_signals": {
@@ -3209,7 +3408,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 15,
     },
     # L2_execution placements
-    "agentic_core/L2_execution/engine": {
+    "agentic_core/L2_execution/reasoning": {
         "class_patterns": [".*Agent$", ".*Tool$", ".*Handler$"],
         "base_classes": ["SubAtomicAgent", "BaseTool", "ToolHandler"],
         "function_patterns": ["execute_.*", "run_tool.*", "invoke_.*"],
@@ -3226,7 +3425,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "keyword_signals": ["action", "handler", "execute", "perform"],
         "weight": 7,
     },
-    "agentic_core/L2_execution/mcp": {
+    "agentic_core/L2_execution/enforcement": {
         "class_patterns": [".*MCP.*", ".*Client$", ".*Server$"],
         "base_classes": ["MCPClient", "MCPServer"],
         "function_patterns": ["mcp_.*", "fetch_.*", "connect_.*"],
@@ -3235,7 +3434,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 9,
     },
     # L3_orchestration placements
-    "agentic_core/L3_orchestration/engine": {
+    "agentic_core/L3_orchestration/reasoning": {
         "class_patterns": [".*Engine$", ".*Orchestrator$", ".*Controller$", ".*Coordinator$"],
         "base_classes": ["BaseEngine", "WorkflowEngine", "Orchestrator"],
         "function_patterns": ["orchestrate_.*", "coordinate_.*", "run_workflow.*"],
@@ -3251,7 +3450,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "decorator_signals": ["@workflow", "@orchestrate"],
         "weight": 16,
     },
-    "agentic_core/L3_orchestration/engine": {
+    "agentic_core/L3_orchestration/reasoning": {
         "class_patterns": [".*Fission.*", ".*Split.*", ".*Decompose.*"],
         "base_classes": ["FissionEngine", "TaskSplitter"],
         "function_patterns": ["fission_.*", "split_.*", "decompose_.*"],
@@ -3276,7 +3475,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "keyword_signals": ["context", "state", "session", "validation"],
         "weight": 14,
     },
-    "agentic_core/L4_state/ledger": {
+    "agentic_core/L4_state/enforcement": {
         "class_patterns": [".*Ledger.*", ".*Audit.*", ".*Log.*", ".*Historian.*"],
         "base_classes": ["BaseLedger", "AuditLog"],
         "function_patterns": ["log_.*", "record_.*", "audit_.*"],
@@ -3293,7 +3492,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 14,
     },
     # L5_safety placements
-    "agentic_core/L5_safety/guardrails": {
+    "agentic_core/L5_safety/enforcement": {
         "class_patterns": [".*Guardrail.*", ".*Limit.*", ".*Throttle.*", ".*Healer.*"],
         "base_classes": ["BaseGuardrail", "RateLimiter", "CircuitBreaker"],
         "function_patterns": ["guard_.*", "limit_.*", "throttle_.*", "heal_.*"],
@@ -3329,7 +3528,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "filename_patterns": [".*_validator\\.py$"],
         "weight": 50,  # Increased to attract deterministic validators from L0
     },
-    "agentic_core/L5_safety/gravity": {
+    "agentic_core/L5_safety/enforcement": {
         "class_patterns": [".*Gravity.*", ".*Import.*", ".*Waterfall.*"],
         "base_classes": ["GravityEnforcer", "ImportValidator"],
         "function_patterns": ["check_gravity.*", "validate_import.*"],
@@ -3337,7 +3536,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "keyword_signals": ["gravity", "import", "waterfall", "upstream", "downstream"],
         "weight": 22,
     },
-    "agentic_core/L5_safety/red_teaming": {
+    "agentic_core/L5_safety/reasoning": {
         "class_patterns": [".*RedTeam.*", ".*Adversarial.*", ".*Attack.*"],
         "base_classes": ["RedTeamAgent", "AdversarialTester"],
         "function_patterns": ["attack_.*", "probe_.*", "fuzz_.*"],
@@ -3421,44 +3620,27 @@ PLACEMENT_CONFIDENCE = {
 # === REVERSE LOOKUP: L2 -> L1 MAPPING ===
 # For quick parent resolution
 L2_TO_L1_MAP: Final[Mapping[str, str]] = {
-    "thought_engine": "L1_cognition",
-    # DISSOLVED: "intent_analysis" removed
-    "planning": "L1_cognition",
-    "tool_registry": "L2_execution",
-    "action_handlers": "L2_execution",
-    "mcp": "L2_execution",
-    "workflow_engines": "L3_orchestration",
-    "fission_logic": "L3_orchestration",
-    "meta_learning": "L3_orchestration",
-    "S3_vitality": "L3_orchestration",
-    "validation_context": "L4_state",
-    "ledger": "L4_state",
+    # LCD+ canonical folders → parent layer
+    "reasoning": "CONTEXT_DEPENDENT",  # Present in all layers — resolved by parent path
+    "enforcement": "CONTEXT_DEPENDENT",
+    "validators": "CONTEXT_DEPENDENT",
+    "utils": "CONTEXT_DEPENDENT",
+    "config": "CONTEXT_DEPENDENT",
+    "types": "CONTEXT_DEPENDENT",
+    # Nuance folders → specific layer
+    "scripts": "L0_maintenance",
+    "tools": "L2_execution",
     "memory": "L4_state",
-    "filesystem": "L4_state",
-    "guardrails": "L5_safety",
-    "validators": "L5_safety",
-    "gravity": "L5_safety",
-    "red_teaming": "L5_safety",
-    # "core_extensions": "utils",  # EVICTED - deprecated system removed
-    "naming": "utils",
-    "wrappers": "utils",
-    "general_helpers": "utils",
-    "metrics": "observability",
-    "tracing": "observability",
-    "telemetry": "observability",
-    "compliance": "observability",
-    "models": "runtime",
-    "messages": "runtime",
-    "types": "runtime",
+    "dashboards": "L6_observability",
+    # Non-layer domains
     "templates": "prompt_governance",
     "meta_prompts": "prompt_governance",
     "rendering": "prompt_governance",
     "version_registry": "prompt_governance",
     "environments": "config",
     "feature_flags": "config",
-    "scripts": "L0_maintenance",
-    "logs": "L0_maintenance",
-    "benchmarks": "L0_maintenance",
+    "models": "runtime",
+    "messages": "runtime",
 }
 
 # === GENERALIZED EXERCISER REGISTRY (Phase 7 SSOT) ===
@@ -3488,7 +3670,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L0": [
         {
             "name": "BootstrapAgent",
-            "file": "agentic_core/L0_maintenance/agents/BootstrapAgent.py",
+            "file": "agentic_core/L0_maintenance/reasoning/BootstrapAgent.py",
             "methods": 6,
             "fingerprint": "fcfd5e27416abb4c",
         },
@@ -3528,79 +3710,79 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L2": [
         {
             "name": "CanonBaseAgent",
-            "file": "agentic_core/L2_execution/engine/ExecutionCanonBaseAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/ExecutionCanonBaseAgent.py",
             "methods": 13,
             "fingerprint": "00b4b4376214468b",
         },
         {
             "name": "CodeDeduplicationAgent",
-            "file": "agentic_core/L2_execution/engine/CodeDeduplicationAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/CodeDeduplicationAgent.py",
             "methods": 11,
             "fingerprint": "1c26bf7b92ef3fb8",
         },
         {
             "name": "CodeJanitorAgent",
-            "file": "agentic_core/L2_execution/engine/CodeJanitorAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/CodeJanitorAgent.py",
             "methods": 12,
             "fingerprint": "ae825674e1abeb55",
         },
         {
             "name": "ContextCuratorAgent",
-            "file": "agentic_core/L2_execution/engine/ContextCuratorAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/ContextCuratorAgent.py",
             "methods": 13,
             "fingerprint": "b55bbeb3cc150054",
         },
         {
             "name": "DependencyDiplomatAgent",
-            "file": "agentic_core/L2_execution/engine/DependencyDiplomatAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/DependencyDiplomatAgent.py",
             "methods": 11,
             "fingerprint": "15bc567d77279e31",
         },
         {
             "name": "DynamicModelRouterAgent",
-            "file": "agentic_core/L2_execution/engine/DynamicModelRouterAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/DynamicModelRouterAgent.py",
             "methods": 11,
             "fingerprint": "e6532e4040366631",
         },
         {
             "name": "GitAgent",
-            "file": "agentic_core/L2_execution/engine/GitAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/GitAgent.py",
             "methods": 12,
             "fingerprint": "82c9b049e6fd5597",
         },
         {
             "name": "IntegrityGateExecutorAgent",
-            "file": "agentic_core/L2_execution/engine/IntegrityGateExecutorAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/IntegrityGateExecutorAgent.py",
             "methods": 8,
             "fingerprint": "cc6465bde4266c9f",
         },
         {
             "name": "MemoryArchitectAgent",
-            "file": "agentic_core/L2_execution/engine/MemoryArchitectAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/MemoryArchitectAgent.py",
             "methods": 13,
             "fingerprint": "b07bc5ecfbb20791",
         },
         {
             "name": "SovereignActionPlaneAgent",
-            "file": "agentic_core/L2_execution/engine/SovereignActionPlaneAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/SovereignActionPlaneAgent.py",
             "methods": 11,
             "fingerprint": "91faa15364d0a1a5",
         },
         {
             "name": "StructuralEngineerAgent",
-            "file": "agentic_core/L2_execution/engine/StructuralEngineerAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/StructuralEngineerAgent.py",
             "methods": 8,
             "fingerprint": "37d55e1531ee303e",
         },
         {
             "name": "SystemArchitectAgent",
-            "file": "agentic_core/L2_execution/engine/SystemArchitectAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/SystemArchitectAgent.py",
             "methods": 8,
             "fingerprint": "e340d23c73eb4451",
         },
         {
             "name": "ToolsmithAgent",
-            "file": "agentic_core/L2_execution/engine/ToolsmithAgent.py",
+            "file": "agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
             "methods": 17,
             "fingerprint": "920d8dc7ea2d38d4",
         },
@@ -3608,37 +3790,37 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L3": [
         {
             "name": "DagEngineAgent",
-            "file": "agentic_core/L3_orchestration/engine/DagEngineAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/DagEngineAgent.py",
             "methods": 14,
             "fingerprint": "e58f4699d9aa84e5",
         },
         {
             "name": "MockAgent",
-            "file": "agentic_core/L3_orchestration/engine/NervousSystemAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
             "methods": 2,
             "fingerprint": "b644392cf05e5442",
         },
         {
             "name": "NervousSystemAgent",
-            "file": "agentic_core/L3_orchestration/engine/NervousSystemAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
             "methods": 12,
             "fingerprint": "c3a187f4f4fd9eeb",
         },
         {
             "name": "SemanticGatekeeperAgent",
-            "file": "agentic_core/L3_orchestration/engine/SemanticGatekeeperAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py",
             "methods": 6,
             "fingerprint": "40da7e8727c03cdc",
         },
         {
             "name": "SubatomicHopAgent",
-            "file": "agentic_core/L3_orchestration/engine/SubatomicHopAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py",
             "methods": 14,
             "fingerprint": "7c2a442208c79cd7",
         },
         {
             "name": "TestPilotAgent",
-            "file": "agentic_core/L3_orchestration/engine/TestPilotAgent.py",
+            "file": "agentic_core/L3_orchestration/reasoning/TestPilotAgent.py",
             "methods": 15,
             "fingerprint": "5948ee871695c65f",
         },
@@ -3690,13 +3872,13 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L5": [
         {
             "name": "AdversarialRedTeamerAgent",
-            "file": "agentic_core/L5_safety/guardrails/AdversarialRedTeamerAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/AdversarialRedTeamerAgent.py",
             "methods": 24,
             "fingerprint": "f7b28e4a681e38f8",
         },
         {
             "name": "AutonomousThreatEvolutionAgent",
-            "file": "agentic_core/L5_safety/guardrails/AutonomousThreatEvolutionAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/AutonomousThreatEvolutionAgent.py",
             "methods": 11,
             "fingerprint": "c181817ddf232911",
         },
@@ -3720,19 +3902,19 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "GravityLeakRepairAgent",
-            "file": "agentic_core/L5_safety/gravity/gravity_leak_repair_agent.py",
+            "file": "agentic_core/L5_safety/enforcement/GravityLeakRepairAgent.py",
             "methods": 3,
             "fingerprint": "51dbad0a31ea9c72",
         },
         {
             "name": "HallucinationHunterAgent",
-            "file": "agentic_core/L5_safety/guardrails/HallucinationHunterAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/HallucinationHunterAgent.py",
             "methods": 9,
             "fingerprint": "88a8355c3b923aa1",
         },
         {
             "name": "HealerAgent",
-            "file": "agentic_core/L5_safety/guardrails/HealerAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/HealerAgent.py",
             "methods": 14,
             "fingerprint": "f7be54e968a04313",
         },
@@ -3750,7 +3932,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "ImportAgent",
-            "file": "agentic_core/L5_safety/gravity/ImportAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/ImportAgent.py",
             "methods": 7,
             "fingerprint": "f1dad62889a51085",
         },
@@ -3762,7 +3944,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "L5IntegrityGateExecutorAgent",
-            "file": "agentic_core/L5_safety/guardrails/L5IntegrityGateExecutorAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/L5IntegrityGateExecutorAgent.py",
             "methods": 17,
             "fingerprint": "790a1b648be58757",
         },
@@ -3774,13 +3956,13 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "NeuralAutoImmuneAgent",
-            "file": "agentic_core/L5_safety/guardrails/NeuralAutoImmuneAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/NeuralAutoImmuneAgent.py",
             "methods": 3,
             "fingerprint": "78dc1bb327996dcf",
         },
         {
             "name": "RedTeamAgent",
-            "file": "agentic_core/L5_safety/red_teaming/red_team_agent.py",
+            "file": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
             "methods": 3,
             "fingerprint": "d76f6932c53b7a77",
         },
@@ -3798,13 +3980,13 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "SelfUpdatingSafetyEngineAgent",
-            "file": "agentic_core/L5_safety/guardrails/SelfUpdatingSafetyEngineAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/SelfUpdatingSafetyEngineAgent.py",
             "methods": 14,
             "fingerprint": "ce122c5e1c1fe306",
         },
         {
             "name": "TerritoryHealerAgent",
-            "file": "agentic_core/L5_safety/guardrails/TerritoryHealerAgent.py",
+            "file": "agentic_core/L5_safety/enforcement/TerritoryHealerAgent.py",
             "methods": 7,
             "fingerprint": "6fdffa7306e70169",
         },
@@ -3904,7 +4086,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "bases": ["ABC"],
             "examples": ["SovereignBaseAgent", "L1CognitionBase"],
         },
-        "guardrails": {
+        "enforcement": {
             "purpose": "Hard safety limits, mutation controls, deletion guards, circuit breakers, rate limits, throttling, and emergency stop mechanisms",
             "entity_types": ["Class"],
             "keywords": [
@@ -3924,7 +4106,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "block",
                 "prevent",
             ],
-            "imports": ["agentic_core.L5_safety.guardrails"],
+            "imports": ["agentic_core.L5_safety.enforcement"],
             "bases": ["BaseGuardrail", "SafetyGuardrail", "CircuitBreaker", "RateLimiter"],
             "examples": [
                 "MutationGuardrail",
@@ -3934,7 +4116,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "ContentFilterGuardrail",
             ],
         },
-        "red_teaming": {
+        "reasoning": {
             "purpose": "Adversarial testing agents, automated threat simulation, exploit probing, jailbreak attempts, prompt injection testing, and attack vector generation",
             "entity_types": ["Class", "Function"],
             "keywords": [
@@ -3952,7 +4134,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "injection",
                 "poison",
             ],
-            "imports": ["agentic_core.L5_safety.red_teaming"],
+            "imports": ["agentic_core.L5_safety.reasoning"],
             "bases": ["RedTeamAgent", "AdversarialAgent", "ThreatSimulator"],
             "examples": [
                 "JailbreakProber",
@@ -3962,36 +4144,8 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "ExploitGenerator",
             ],
         },
-        "gravity": {
-            "purpose": "Import waterfall enforcement, dependency direction control, layer authority validation, gravity surgery execution, and upstream/downstream Violation detection",
-            "entity_types": ["Class", "Function"],
-            "keywords": [
-                "gravity",
-                "waterfall",
-                "import",
-                "dependency",
-                "direction",
-                "layer",
-                "authority",
-                "upstream",
-                "downstream",
-                "Violation",
-                "enforce",
-                "surgery",
-            ],
-            "imports": [
-                "agentic_core.L5_safety.gravity",
-                "agentic_core.runtime.shared_runtime.void_compliance",
-            ],
-            "bases": ["GravityEnforcer", "WaterfallValidator"],
-            "examples": [
-                "GravityValidator",
-                "ImportWaterfallChecker",
-                "DependencyDirectionGuard",
-                "GravitySurgeryEngine",
-                "LayerAuthorityAuditor",
-            ],
-        },
+        # DISSOLVED: "gravity" merged into "enforcement" per LCD+
+        # Gravity keywords: gravity, waterfall, import, dependency, direction, layer, authority
         "validators": {
             "purpose": "Canon constitution validators, structural policy enforcement, naming law validation, runtime compliance auditing, and architectural drift detection",
             "entity_types": ["Class"],
@@ -4066,7 +4220,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "healing_trace",
                 "mission_log",
             ],
-            "imports": ["agentic_core.L0_maintenance.logs", "logging", "json"],
+            "imports": ["agentic_core.L0_maintenance.utils", "logging", "json"],
             "bases": ["DiagnosticLogger", "MissionTranscript", "MaintenanceAudit"],
             "examples": [
                 "HealingOperationLogger",
@@ -4100,7 +4254,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "L1_cognition": {
-        "thought_engine": {
+        "reasoning": {
             "purpose": "Core reasoning primitives, thought nodes, chain-of-thought execution, internal monologue structures, and advanced deliberation patterns",
             "entity_types": ["Class", "Protocol"],
             "keywords": [
@@ -4123,7 +4277,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "contemplate",
                 "self_reflect",
             ],
-            "imports": ["agentic_core.L1_cognition.engine", "pydantic", "typing"],
+            "imports": ["agentic_core.L1_cognition.reasoning", "pydantic", "typing"],
             "bases": [
                 "ThoughtNode",
                 "ReasoningStep",
@@ -4187,7 +4341,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "L2_execution": {
-        "tool_registry": {
+        "reasoning": {
             "purpose": "Registration and discovery of external tools, base tool definitions, and tool metadata management",
             "entity_types": ["Class", "Function"],
             "keywords": [
@@ -4199,9 +4353,9 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "available_tools",
                 "toolset",
             ],
-            "imports": ["agentic_core.L2_execution.engine", "pydantic", "typing"],
-            "bases": ["BaseTool", "tool_registry"],
-            "examples": ["tool_registry", "register_tool", "AvailableToolsList", "ToolMetadata"],
+            "imports": ["agentic_core.L2_execution.reasoning", "pydantic", "typing"],
+            "bases": ["BaseTool"],
+            "examples": ["register_tool", "AvailableToolsList", "ToolMetadata"],
         },
         "action_handlers": {
             "purpose": "Action dispatch logic, handler mapping, execution routing, and fallback strategies for tool calls",
@@ -4243,7 +4397,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "protocol",
             ],
             "imports": [
-                "agentic_core.L2_execution.mcp",
+                "agentic_core.L2_execution.enforcement",
                 "requests",
                 "playwright",
                 "selenium",
@@ -4261,7 +4415,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "L3_orchestration": {
-        "workflow_engines": {
+        "reasoning": {
             "purpose": "High-level agent orchestration, multi-agent workflow engines, Task routing, mission lifecycle management, and coordination primitives",
             "entity_types": ["Class"],
             "keywords": [
@@ -4279,7 +4433,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "dispatch",
                 "schedule",
             ],
-            "imports": ["agentic_core.L3_orchestration.engine", "langgraph", "pydantic"],
+            "imports": ["agentic_core.L3_orchestration.reasoning", "langgraph", "pydantic"],
             "bases": ["CanonBaseAgent", "WorkflowEngine", "OrchestratorBase", "MissionManager"],
             "examples": [
                 "SovereignOrchestrator",
@@ -4304,7 +4458,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "fork",
                 "proliferate",
             ],
-            "imports": ["agentic_core.L3_orchestration.engine"],
+            "imports": ["agentic_core.L3_orchestration.reasoning"],
             "bases": ["FissionEngine", "SubAgentSpawner", "CanonBaseAgent"],
             "examples": [
                 "FissionManagerAgent",
@@ -4362,7 +4516,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
         },
     },
     "L4_state": {
-        "validation_context": {
+        "reasoning": {
             "purpose": "Runtime validation contexts, state integrity containers, and scoped validation environments",
             "entity_types": ["Class"],
             "keywords": [
@@ -4394,7 +4548,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "append_only",
                 "commit_log",
             ],
-            "imports": ["agentic_core.L4_state.ledger"],
+            "imports": ["agentic_core.L4_state.enforcement"],
             "bases": ["ImmutableLedger", "AuditTrail", "EventLedger"],
             "examples": [
                 "SovereignLedger",
@@ -4981,7 +5135,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "purpose": "Shared application-level agent templates and worker base classes - home for AppBase.py",
             "entity_types": ["Class"],
             "keywords": ["agent", "base_agent", "worker", "bot", "task_executor", "app_worker"],
-            "imports": ["agentic_core.L3_orchestration.engine", "apps_shared.agents.AppBase"],
+            "imports": ["agentic_core.L3_orchestration.reasoning", "apps_shared.agents.AppBase"],
             "bases": ["CanonBaseAgent", "AppBase"],
             "examples": ["AppBase", "TaskWorker", "AsyncAppWorker", "StatefulAppAgent"],
             "canonical_files": ["AppBase.py"],  # Zero-Ambiguity: Renamed from AppBaseAgent.py
@@ -5153,9 +5307,9 @@ PROJECT_ROOT_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "keywords": ["test", "spec", "fixture", "mock"],
         "naming_convention": "snake_case_test",  # Enforce consistent test naming
     },
-    "guardrails": {  # NEW EXPLICIT CONTENT TYPE FOR L5 SAFETY
-        "purpose": "L5 safety guardrail agents and components",
-        "content_types": ["safety_agent", "membrane", "sanitizer", "hygiene_agent"],
+    "enforcement": {  # LCD+ CONTENT TYPE FOR L5 SAFETY (was guardrails)
+        "purpose": "L5 safety enforcement agents and components (guardrails, gravity, gates)",
+        "content_types": ["safety_agent", "membrane", "sanitizer", "hygiene_agent", "guardrail", "gate"],
         "execution_allowed": True,  # Operational agents
         "notes": "Sovereign operational safety components - snake_case_agent naming mandatory",
         "file_patterns": ["*_agent.py"],

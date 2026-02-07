@@ -2,7 +2,7 @@
 Run unified HierarchyAgent in dry-run mode (healing_enabled=False)
 This consolidates both HierarchyEnforcerAgent and HierarchyHealerAgent functionality.
 
-Location: Uses the NEW unified agent at agentic_core/L5_safety/guardrails/HierarchyAgent.py
+Location: Uses the NEW unified agent at agentic_core/L5_safety/enforcement/HierarchyAgent.py
 """
 
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
@@ -24,7 +24,7 @@ def main():
     print("=" * 80)
     print("UNIFIED HIERARCHY AGENT - DRY RUN MODE")
     print("=" * 80)
-    print("Using: agentic_core/L5_safety/guardrails/HierarchyAgent.py")
+    print("Using: agentic_core/L5_safety/enforcement/HierarchyAgent.py")
     print("Validating hierarchy (no changes will be made)...\n")
 
     project_root = Path.cwd()

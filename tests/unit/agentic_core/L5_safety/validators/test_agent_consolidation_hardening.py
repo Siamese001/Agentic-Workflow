@@ -33,8 +33,8 @@ CANONICAL_HYGIENE_PATH = "agentic_core.L5_safety.validators"
 
 # Deprecated Paths (Forbidden)
 DEPRECATED_PATHS = {
-    "agentic_core.L5_safety.guardrails": UNIFIED_AGENTS,
-    "agentic_core.L2_execution.engine": ["ModelRouterAgent"],
+    "agentic_core.L5_safety.enforcement": UNIFIED_AGENTS,
+    "agentic_core.L2_execution.reasoning": ["ModelRouterAgent"],
     "apps_shared.base_agents": ["HygieneGuardianAgent"],
 }
 
@@ -46,7 +46,7 @@ class TestConsolidationRuntimeIntegrity:
     """
 
     @pytest.mark.parametrize("agent_name", UNIFIED_AGENTS)
-    def test_unified_agents_importable_from_canonical(self, agent_name):
+    def test_UnifiedAgents_importable_from_canonical(self, agent_name):
         """Verify each unified agent loads from agentic_core.L5_safety.unified"""
         module = importlib.import_module(CANONICAL_UNIFIED_PATH)
         agent_class = getattr(module, agent_name, None)
@@ -165,8 +165,8 @@ class TestDirectoryIntegrity:
     Ensures directory structure follows architectural standards.
     """
 
-    def test_guardrails_contains_no_unified_agents(self):
-        """Ensure agentic_core/L5_safety/guardrails/ contains zero Unified* files."""
+    def test_guardrails_contains_no_UnifiedAgents(self):
+        """Ensure agentic_core/L5_safety/enforcement/ contains zero Unified* files."""
         guardrails_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "guardrails"
         if not guardrails_dir.exists():
             pytest.skip("guardrails directory does not exist")

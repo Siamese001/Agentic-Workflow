@@ -19,8 +19,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
-from agentic_core.L2_execution.mcp.redis import SovereignRedisClient
+from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+from agentic_core.L2_execution.enforcement.redis import SovereignRedisClient
 
 # ARCHIVED: pinecone_telemetry import removed # PineconeTelemetryWrapper
 

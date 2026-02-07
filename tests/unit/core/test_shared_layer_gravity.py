@@ -75,7 +75,7 @@ class TestExtractLayerFromPath:
 
     def test_extract_layer_from_path_l3(self):
         """Should extract L3 from path."""
-        path = Path("agentic_core/L3_orchestration/engine/engine.py")
+        path = Path("agentic_core/L3_orchestration/reasoning/engine.py")
         assert extract_layer_from_path(path) == "L3"
 
     def test_extract_layer_from_path_no_layer(self):
@@ -104,7 +104,7 @@ class TestExtractLayerFromModule:
 
     def test_extract_layer_from_module_l3(self):
         """Should extract L3 from module path."""
-        module = "agentic_core.L3_orchestration.engine.engine"
+        module = "agentic_core.L3_orchestration.reasoning.engine"
         assert extract_layer_from_module(module) == "L3"
 
     def test_extract_layer_from_module_l5(self):

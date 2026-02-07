@@ -23,6 +23,7 @@ from agentic_core.config.core.feature_flags_config import (
     GRACEFUL_DEGRADATION,
     USE_PINECONE,
 )
+from agentic_core.mixins.redis_cache_mixin import RedisCacheMixin
 
 # from agentic_core.L6_observability.cache_metrics import get_cache_metrics  # Optional metrics - commented out
 
@@ -96,7 +97,7 @@ class PineconeVectorMixin(RedisCacheMixin):
         if self._pinecone_client is None:
             try:
                 # Re-routing to the hardened MCP implementation
-                from agentic_core.L2_execution.mcp.pinecone_mcp_client import (
+                from agentic_core.L2_execution.enforcement.pinecone_mcp_client import (
                     get_pinecone_mcp_client,
                 )
 

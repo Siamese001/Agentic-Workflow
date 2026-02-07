@@ -29,7 +29,7 @@ def migrate_unified():
     # 1. PATH MAPPING configuration
     # legacy_path -> new_path
     PATH_MAPPING = {
-        "agentic_core/L5_safety/unified": "agentic_core/L5_safety/policy_engine",
+        "agentic_core/L5_safety/unified": "agentic_core/L5_safety/reasoning",
         "agentic_core/L2_execution/unified": "agentic_core/L2_execution/execution_bridge",
     }
 
@@ -105,15 +105,15 @@ def migrate_unified():
         # Path Updates (Imports) - L5
         (
             re.compile(r"from agentic_core\.L5_safety\.unified\."),
-            "from agentic_core.L5_safety.policy_engine.",
+            "from agentic_core.L5_safety.reasoning.",
         ),
         (
             re.compile(r"import agentic_core\.L5_safety\.unified\."),
-            "import agentic_core.L5_safety.policy_engine.",
+            "import agentic_core.L5_safety.reasoning.",
         ),
         (
             re.compile(r"from agentic_core\.L5_safety\.unified import"),
-            "from agentic_core.L5_safety.policy_engine import",
+            "from agentic_core.L5_safety.reasoning import",
         ),
         # Path Updates (Imports) - L2
         (

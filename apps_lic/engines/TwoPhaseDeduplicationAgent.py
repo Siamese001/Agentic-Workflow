@@ -29,7 +29,7 @@ Status: DEPRECATED - Do not use in production
 #     - AST-based structural comparison
 #     - Semantic similarity detection
 
-# Territory: agentic_core/L5_safety/guardrails/
+# Territory: agentic_core/L5_safety/enforcement/
 # Canon Key 51 Compliance: Includes heal_repository() method
 # """
 

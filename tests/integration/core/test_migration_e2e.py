@@ -29,8 +29,8 @@ from agentic_core.interfaces.review_protocol import (
 from agentic_core.interfaces.verification_protocol import (
     VerificationRequest,
 )
-from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
-from agentic_core.L5_safety.adapters.verification_gate_adapter import (
+from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter
+from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
     VerificationGateAdapter,
 )
 from agentic_core.utils.dependency_resolver import DynamicLoader

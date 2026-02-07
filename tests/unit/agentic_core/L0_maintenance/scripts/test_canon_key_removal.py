@@ -23,7 +23,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import HealerMixin
 try:
-    from agentic_core.L5_safety.gravity.gravity_agent import HealerMixin
+    from agentic_core.L5_safety.enforcement.gravity_agent import HealerMixin
 except ImportError:
     # Fallback for testing
     class HealerMixin:

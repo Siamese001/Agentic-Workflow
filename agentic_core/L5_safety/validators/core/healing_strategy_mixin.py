@@ -4,10 +4,20 @@ HealingStrategyMixin - Unified Healing Access for Agents
 [PHASE 5 MIGRATION] Provides single interface to healing operations.
 """
 
-from agentic_core.L5_safety.validators.core.healing_sovereign_orchestrator_types import (
-    HealingSovereignOrchestrator,
-    get_healing_orchestrator,
-)
+try:
+    from agentic_core.L5_safety.validators.core.healing_sovereign_orchestrator_types import (
+        HealingSovereignOrchestrator,
+        get_healing_orchestrator,
+    )
+except ImportError:
+    # Stub for healing resilience when orchestrator module is missing
+    class HealingSovereignOrchestrator:
+        """Stub orchestrator when real module is unavailable."""
+
+        pass
+
+    def get_healing_orchestrator():
+        return None
 
 
 class HealingStrategyMixin:

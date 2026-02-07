@@ -36,7 +36,7 @@ class TestEmbeddingSovereignAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
+            from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
                 EmbeddingSovereignAgent,
             )
 
@@ -93,7 +93,7 @@ class TestEmbeddingSovereignAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L2_execution.mcp.EmbeddingSovereignAgent import (
+                from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
                     EmbeddingSovereignAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

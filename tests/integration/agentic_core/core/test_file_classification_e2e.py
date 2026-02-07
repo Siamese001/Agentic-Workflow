@@ -244,7 +244,7 @@ class TestIntegrationPromptGovernance:
         agent.file_registry = []
         return agent
 
-    def test_prompt_governance_agents_classified_correctly(self, agent):
+    def test_prompt_GovernanceAgents_classified_correctly(self, agent):
         """Test prompt_governance/agents files are classified as AGENT."""
         agents_dir = agent.project_root / "agentic_core/prompt_governance/agents"
 

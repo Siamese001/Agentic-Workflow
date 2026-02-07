@@ -70,7 +70,7 @@ def measure_registry_init() -> tuple[float, int]:
     return elapsed, total_mappings
 
 
-def count_unified_agents() -> dict[str, int]:
+def count_UnifiedAgents() -> dict[str, int]:
     """Count unified agents by category."""
     unified_dir = PROJECT_ROOT / "agentic_core"
 
@@ -142,7 +142,7 @@ def main():
     # 3. Agent counts
     print("3. AGENT CONSOLIDATION METRICS")
     print("-" * 40)
-    unified_counts = count_unified_agents()
+    unified_counts = count_UnifiedAgents()
     archived_count = count_archived_agents()
 
     print("   Unified Agents:")

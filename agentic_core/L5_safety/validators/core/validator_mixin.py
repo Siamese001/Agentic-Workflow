@@ -6,10 +6,20 @@ ValidatorMixin - Unified Validation Access for Agents
 
 from typing import Any
 
-from agentic_core.L5_safety.validators.core.validator_orchestrator_types import (
-    ValidatorOrchestrator,
-    get_validator_orchestrator,
-)
+try:
+    from agentic_core.L5_safety.validators.core.validator_orchestrator_types import (
+        ValidatorOrchestrator,
+        get_validator_orchestrator,
+    )
+except ImportError:
+
+    class ValidatorOrchestrator:
+        """Stub orchestrator when real module is unavailable."""
+
+        pass
+
+    def get_validator_orchestrator():
+        return None
 
 
 class ValidatorMixin:

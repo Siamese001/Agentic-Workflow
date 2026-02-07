@@ -36,7 +36,7 @@ class TestSelfUpdatingSafetyEngineAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.guardrails.self_updating_safety_engine_agent_types import (
+            from agentic_core.L5_safety.enforcement.SelfUpdatingSafetyEngineAgent_types import (
                 SelfUpdatingSafetyEngineAgent,
             )
 
@@ -87,7 +87,7 @@ class TestSelfUpdatingSafetyEngineAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.guardrails.self_updating_safety_engine_agent_types import (
+                from agentic_core.L5_safety.enforcement.SelfUpdatingSafetyEngineAgent_types import (
                     SelfUpdatingSafetyEngineAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

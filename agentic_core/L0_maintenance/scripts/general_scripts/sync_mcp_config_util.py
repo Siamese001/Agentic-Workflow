@@ -41,7 +41,7 @@ def get_windsurf_config_path() -> Path:
 def load_sovereign_registry() -> dict[str, Any]:
     """Load the SOVEREIGN_MCP_REGISTRY from mcp_registry.py."""
     try:
-        from agentic_core.L2_execution.mcp.mcp_registry import SOVEREIGN_MCP_REGISTRY
+        from agentic_core.L2_execution.enforcement.mcp_registry import SOVEREIGN_MCP_REGISTRY
 
         return SOVEREIGN_MCP_REGISTRY
     except ImportError as e:

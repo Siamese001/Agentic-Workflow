@@ -27,7 +27,7 @@ HEALING_STRATEGY_MAP: dict[str, str] = {
 }
 
 # Default app healing target subfolder
-DEFAULT_APP_HEALING_TARGET: str = "engines"
+DEFAULT_APP_HEALING_TARGET: str = "reasoning"
 
 # Violation severity thresholds
 VIOLATION_THRESHOLDS: dict[str, int] = {

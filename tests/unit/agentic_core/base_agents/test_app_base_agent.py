@@ -14,7 +14,10 @@ import pytest
 @pytest.fixture(autouse=True)
 def mock_core_integrity():
     """Mock CoreIntegrityVerifier for all tests."""
-    mock_path = "agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+    mock_path = (
+        "agentic_core.L0_maintenance.enforcement"
+        ".core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+    )
     with patch(mock_path):
         yield
 

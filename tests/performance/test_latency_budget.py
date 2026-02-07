@@ -50,11 +50,11 @@ class TestLatencyBudget:
         assert elapsed < 1.0, f"Import took {elapsed:.3f}s, budget is 1.0s"
         assert AtomicExecutionMixin is not None
 
-    def test_code_healer_agent_instantiation_latency(self):
+    def test_CodeHealerAgent_instantiation_latency(self):
         """Test CodeHealerAgent instantiation meets latency budget."""
         start = time.perf_counter()
         try:
-            from agentic_core.L5_safety.policy_engine.code_healer_agent import (
+            from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                 CodeHealerAgent,
             )
 
@@ -123,11 +123,11 @@ class TestLatencyBudget:
 
         agent_imports = {
             "CodeHealerAgent": (
-                "agentic_core.L5_safety.policy_engine.code_healer_agent",
+                "agentic_core.L5_safety.reasoning.CodeHealerAgent",
                 "CodeHealerAgent",
             ),
             "VerificationGate": (
-                "agentic_core.L5_safety.security.verification_gate",
+                "agentic_core.L5_safety.enforcement.verification_gate",
                 "VerificationGate",
             ),
             "LocationAgent": (

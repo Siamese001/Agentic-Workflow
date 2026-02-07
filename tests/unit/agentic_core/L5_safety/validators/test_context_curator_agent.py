@@ -45,7 +45,7 @@ class TestContextCuratorAgent:
         """Verify ContextCuratorAgent exists and is importable."""
         assert agent_class is not None, "ContextCuratorAgent should exist"
 
-    def test_inherits_from_sub_atomic_agent(self, agent_class):
+    def test_inherits_from_SubAtomicAgent(self, agent_class):
         """Verify proper inheritance from SubAtomicAgent."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
         assert "SubAtomicAgent" in mro_names, "Should inherit from SubAtomicAgent"

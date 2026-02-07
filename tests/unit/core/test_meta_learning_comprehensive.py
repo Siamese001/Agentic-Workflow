@@ -28,9 +28,9 @@ import pytest
 
 def reset_all_singletons():
     """Reset all meta-learning singletons for test isolation."""
-    import agentic_core.L1_cognition.meta_learning.CacheStrategyManager as csm
-    import agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder as hme
-    import agentic_core.L1_cognition.meta_learning.MetaLearningClient as mlc
+    import agentic_core.L1_cognition.reasoning.CacheStrategyManager as csm
+    import agentic_core.L1_cognition.reasoning.HealingMemoryEmbedder as hme
+    import agentic_core.L1_cognition.reasoning.MetaLearningClient as mlc
 
     mlc._meta_learning_client = None
     mlc._singleton_instance = None
@@ -49,7 +49,7 @@ def reset_all_singletons():
 
     # Reset domain context manager if it exists
     try:
-        import agentic_core.L1_cognition.meta_learning.DomainContextManager as dcm
+        import agentic_core.L1_cognition.reasoning.DomainContextManager as dcm
 
         dcm._domain_context_manager = None
     except (ImportError, AttributeError):
@@ -57,7 +57,7 @@ def reset_all_singletons():
 
     # Reset observability if it exists
     try:
-        import agentic_core.L1_cognition.meta_learning.MetaLearningObservability as mlo
+        import agentic_core.L1_cognition.reasoning.MetaLearningObservability as mlo
 
         mlo._observability_instance = None
     except (ImportError, AttributeError):
@@ -141,7 +141,7 @@ class TestMetaLearningClientMixin:
         from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
         )
 
@@ -185,7 +185,7 @@ class TestMetaLearningClientMixin:
         from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
-        from agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder import (
+        from agentic_core.L1_cognition.reasoning.HealingMemoryEmbedder import (
             HealingMemoryEmbedder,
         )
 
@@ -222,10 +222,10 @@ class TestSovereignBaseAgentIntegration:
 
     def test_sovereign_base_agent_has_ml_capabilities(self):
         """Test that SovereignBaseAgent has meta-learning capabilities."""
-        from agentic_core.L1_cognition.meta_learning.HealingMemoryEmbedder import (
+        from agentic_core.L1_cognition.reasoning.HealingMemoryEmbedder import (
             HealingMemoryEmbedder,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
         )
 
@@ -233,7 +233,9 @@ class TestSovereignBaseAgentIntegration:
             patch.object(MetaLearningClient, "_initialize_redis"),
             patch.object(MetaLearningClient, "_initialize_pinecone"),
             patch.object(HealingMemoryEmbedder, "_initialize_embedding_agent"),
-            patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"),
+            patch(
+                "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+            ),
         ):
             from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
 
@@ -266,7 +268,7 @@ class TestDomainIsolation:
         from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
         )
 
@@ -288,7 +290,7 @@ class TestDomainIsolation:
         from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
         )
 
@@ -310,7 +312,7 @@ class TestDomainIsolation:
         from agentic_core.mixins.meta_learning_client_mixin import (
             MetaLearningClientMixin,
         )
-        from agentic_core.L1_cognition.meta_learning.MetaLearningClient import (
+        from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
         )
 
@@ -413,7 +415,7 @@ class TestDomainContextManager:
     def test_singleton_pattern(self):
         """Test that DomainContextManager follows singleton pattern."""
         try:
-            from agentic_core.L1_cognition.meta_learning.DomainContextManager import (
+            from agentic_core.L1_cognition.reasoning.DomainContextManager import (
                 get_domain_context_manager,
             )
 
@@ -426,7 +428,7 @@ class TestDomainContextManager:
     def test_default_contexts_initialized(self):
         """Test that default domain contexts are initialized."""
         try:
-            from agentic_core.L1_cognition.meta_learning.DomainContextManager import (
+            from agentic_core.L1_cognition.reasoning.DomainContextManager import (
                 get_domain_context_manager,
             )
 
@@ -456,7 +458,7 @@ class TestMetaLearningObservability:
     def test_singleton_pattern(self):
         """Test that MetaLearningObservability follows singleton pattern."""
         try:
-            from agentic_core.L1_cognition.meta_learning.MetaLearningObservability import (
+            from agentic_core.L1_cognition.reasoning.MetaLearningObservability import (
                 get_meta_learning_observability,
             )
 
@@ -469,7 +471,7 @@ class TestMetaLearningObservability:
     def test_initial_health_checks_registered(self):
         """Test that initial health checks are registered."""
         try:
-            from agentic_core.L1_cognition.meta_learning.MetaLearningObservability import (
+            from agentic_core.L1_cognition.reasoning.MetaLearningObservability import (
                 get_meta_learning_observability,
             )
 

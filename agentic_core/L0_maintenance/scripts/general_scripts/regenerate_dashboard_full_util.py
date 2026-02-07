@@ -351,7 +351,7 @@ def generate_strategic_recommendations(dashboard_data: list[dict]) -> dict[str, 
     """
     try:
         # Correct import path: L1_cognition/thought_engine/
-        from agentic_core.L1_cognition.agents.StrategicRecommendationAgent import (
+        from agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent import (
             StrategicRecommendationAgent,
         )
 

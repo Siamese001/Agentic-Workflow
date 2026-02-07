@@ -4,7 +4,7 @@ Dashboard Integration Tests (Phase 6)
 
 Tests for dashboard integration.
 
-Migrated from: agentic_core/L2_execution/engine/test_phase6_integration.py
+Migrated from: agentic_core/L2_execution/reasoning/test_phase6_integration.py
 """
 
 import sys

@@ -265,7 +265,7 @@ def main():
         print(f"  {i}. {rec}")
 
     # Save results to SSOT-approved location
-    output_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+    output_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     results = {

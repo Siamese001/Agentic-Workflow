@@ -23,7 +23,7 @@ class TestASTAuditVerification:
         Target: < 97 UNKNOWN files (19% reduction)
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -43,7 +43,7 @@ class TestASTAuditVerification:
         with Enum mislabeling issues.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -69,7 +69,7 @@ class TestASTAuditVerification:
         INTEGRITY TEST: Verify PlaceholderDetectorAgent is now SOVEREIGN_AGENT.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -85,7 +85,7 @@ class TestASTAuditVerification:
         REGRESSION TEST: Verify audit detected Enum mislabeling and recommended renames.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -104,7 +104,7 @@ class TestASTAuditVerification:
         VERIFICATION TEST: Verify SOVEREIGN_AGENT count increased from 9 to 31+.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -118,7 +118,7 @@ class TestASTAuditVerification:
         VERIFICATION TEST: Verify SPECIALIST_NODE count increased from 7 to 11+.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -132,7 +132,7 @@ class TestASTAuditVerification:
         STRUCTURE TEST: Verify audit results have all required fields.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -160,7 +160,7 @@ class TestASTAuditVerification:
         COMPLETENESS TEST: Verify all files have classifications.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())
@@ -188,7 +188,7 @@ class TestASTAuditVerification:
         RECOMMENDATIONS TEST: Verify refactoring recommendations are generated.
         MANDATORY: 100% PASS
         """
-        audit_results_path = Path("agentic_core/L0_maintenance/logs/audit_apps_lic_ast_results.json")
+        audit_results_path = Path("agentic_core/L0_maintenance/utils/audit_apps_lic_ast_results.json")
         assert audit_results_path.exists(), "Audit results file must exist"
 
         results = json.loads(audit_results_path.read_text())

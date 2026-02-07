@@ -50,7 +50,7 @@ class ComponentFactory:
 
         if use_adapter:
             try:
-                from agentic_core.L5_safety.adapters.verification_gate_adapter import (
+                from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
                     VerificationGateAdapter,
                 )
 
@@ -89,7 +89,7 @@ class ComponentFactory:
 
         if use_adapter:
             try:
-                from agentic_core.L5_safety.adapters.human_review_adapter import (
+                from agentic_core.L5_safety.reasoning.human_review_adapter import (
                     HumanReviewAdapter,
                 )
 

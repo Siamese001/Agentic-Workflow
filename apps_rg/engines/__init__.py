@@ -20,8 +20,8 @@ from .agent_executor import (
 )
 
 # V2.5 Compliant Agents - All inherit from RGAgentBase
-from .ats_compatibility_agent import ATSCompatibilityAgent
-from .brand_compliance_agent import BrandComplianceAgent
+from .ATSCompatibilityAgent import ATSCompatibilityAgent
+from .BrandComplianceAgent import BrandComplianceAgent
 from .CampaignPlannerAgent import CampaignPlannerAgent
 from .ContentQualityAgent import ContentQualityAgent, TestPilot
 from .ContentStrategyAgent import ContentStrategyAgent

@@ -20,8 +20,8 @@ ARCHIVE_ROOT = (
 )
 
 OBSOLETE_FILES = [
-    "agentic_core/L2_execution/mcp/runtime_shared_cache_clients.py",
-    "agentic_core/L2_execution/mcp/runtime_shared_vector_store_clients.py",
+    "agentic_core/L2_execution/enforcement/runtime_shared_cache_clients.py",
+    "agentic_core/L2_execution/enforcement/runtime_shared_vector_store_clients.py",
 ]
 
 

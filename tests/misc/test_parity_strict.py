@@ -20,7 +20,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.engine.unified_agent import (
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     AgentCategory,
     HealingResult,
     OrchestrationResult,
@@ -58,7 +58,7 @@ class ParityTestBase(ABC):
 
     Subclasses must implement:
     - create_legacy_agent(): Create the legacy agent instance
-    - create_unified_agent(): Create the unified agent instance
+    - create_UnifiedAgent(): Create the unified agent instance
     - get_test_data(): Provide test data for execution
     """
 
@@ -71,7 +71,7 @@ class ParityTestBase(ABC):
         pass
 
     @abstractmethod
-    def create_unified_agent(self) -> UnifiedAgent:
+    def create_UnifiedAgent(self) -> UnifiedAgent:
         """Create unified agent instance."""
         pass
 
@@ -110,10 +110,10 @@ class ParityTestBase(ABC):
             ParityTestResult with comparison details
         """
         legacy_agent = self.create_legacy_agent()
-        unified_agent = self.create_unified_agent()
+        UnifiedAgent = self.create_UnifiedAgent()
 
         self.setup_agent_mocks(legacy_agent)
-        self.setup_agent_mocks(unified_agent)
+        self.setup_agent_mocks(UnifiedAgent)
 
         test_data = self.get_test_data()
 
@@ -124,7 +124,7 @@ class ParityTestBase(ABC):
 
         # Execute unified agent with timing
         start_time = time.perf_counter()
-        unified_result = await self.execute_unified(unified_agent, **test_data, **kwargs)
+        unified_result = await self.execute_unified(UnifiedAgent, **test_data, **kwargs)
         unified_time_ms = (time.perf_counter() - start_time) * 1000
 
         # Compare results
@@ -300,14 +300,14 @@ class SignalHandlingValidator:
     @staticmethod
     def validate_signals(
         legacy_agent: Any,
-        unified_agent: Any,
+        UnifiedAgent: Any,
     ) -> list[str]:
         """
         Validate signal handling consistency.
 
         Args:
             legacy_agent: Legacy agent with mocked signal methods
-            unified_agent: Unified agent with mocked signal methods
+            UnifiedAgent: Unified agent with mocked signal methods
 
         Returns:
             List of validation errors
@@ -316,7 +316,7 @@ class SignalHandlingValidator:
 
         # Compare add_signal calls
         legacy_add_calls = legacy_agent.add_signal.call_args_list
-        unified_add_calls = unified_agent.add_signal.call_args_list
+        unified_add_calls = UnifiedAgent.add_signal.call_args_list
 
         legacy_signals = {call[0][0] for call in legacy_add_calls if call[0]}
         unified_signals = {call[0][0] for call in unified_add_calls if call[0]}
@@ -326,7 +326,7 @@ class SignalHandlingValidator:
 
         # Compare remove_signal calls
         legacy_remove_calls = legacy_agent.remove_signal.call_args_list
-        unified_remove_calls = unified_agent.remove_signal.call_args_list
+        unified_remove_calls = UnifiedAgent.remove_signal.call_args_list
 
         legacy_removed = {call[0][0] for call in legacy_remove_calls if call[0]}
         unified_removed = {call[0][0] for call in unified_remove_calls if call[0]}

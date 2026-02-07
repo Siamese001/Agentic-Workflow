@@ -29,15 +29,15 @@ TARGET_FILES = {
     "NervousSystemAgent.py": {
         "static_imports": [
             "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
-            "from agentic_core.L5_safety.guardrails.HierarchyAgent import HierarchyAgent",
-            "from agentic_core.L5_safety.policy_engine.code_healer_agent import create_legacy_import_healer",
+            "from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent",
+            "from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer",
         ],
         "already_dynamic": True,  # Already uses try/except dynamic imports
     },
     "mission_orchestrator.py": {
         "static_imports": [
             "from agentic_core.L5_safety.validators.LocationAgent import LocationAgent",
-            "from agentic_core.L5_safety.policy_engine.code_healer_agent import create_legacy_import_healer",
+            "from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer",
         ],
         "needs_refactor": True,
     },
@@ -45,8 +45,8 @@ TARGET_FILES = {
         "static_imports": [
             "from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight",
             "from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator",
-            "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine",
-            "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail",
+            "from agentic_core.L5_safety.enforcement.subatomic_engine import SubAtomicEngine",
+            "from agentic_core.L5_safety.enforcement.safety_layer import SafetyGuardrail",
         ],
         "needs_refactor": True,
     },
@@ -54,27 +54,27 @@ TARGET_FILES = {
         "static_imports": [
             "from agentic_core.L5_safety.validators.mission_preflight_1 import MissionPreflight",
             "from agentic_core.L5_safety.validators.compliance_orchestrator import compliance_orchestrator",
-            "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine",
-            "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail",
+            "from agentic_core.L5_safety.enforcement.subatomic_engine import SubAtomicEngine",
+            "from agentic_core.L5_safety.enforcement.safety_layer import SafetyGuardrail",
         ],
         "needs_refactor": True,
     },
     "mcp_router_sovereign.py": {
         "static_imports": [
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
+            "from agentic_core.L5_safety.enforcement.mcp_sovereign import mcp_authority",
             "from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield",
         ],
         "needs_refactor": True,
     },
     "mcp_marketplace_sovereign.py": {
         "static_imports": [
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
+            "from agentic_core.L5_safety.enforcement.mcp_sovereign import mcp_authority",
         ],
         "needs_refactor": True,
     },
     "autonomous_sovereign_core.py": {
         "static_imports": [
-            "from agentic_core.L5_safety.guardrails.self_updating_safety_engine import create_self_updating_safety_engine",
+            "from agentic_core.L5_safety.enforcement.self_updating_safety_engine import create_self_updating_safety_engine",
         ],
         "already_dynamic": True,  # Already uses try/except dynamic import
     },
@@ -106,7 +106,7 @@ def refactor_mission_orchestrator(file_path: Path) -> bool:
         )
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.policy_engine.code_healer_agent import create_legacy_import_healer",
+            "from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer",
         )
 
         # The functions already use dynamic imports inside, so we're done
@@ -142,11 +142,11 @@ def refactor_mission_controller(file_path: Path) -> bool:
         )
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.guardrails.subatomic_engine import SubAtomicEngine",
+            "from agentic_core.L5_safety.enforcement.subatomic_engine import SubAtomicEngine",
         )
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.guardrails.safety_layer import SafetyGuardrail",
+            "from agentic_core.L5_safety.enforcement.safety_layer import SafetyGuardrail",
         )
 
         if content != original:
@@ -168,7 +168,7 @@ def refactor_mcp_router(file_path: Path) -> bool:
         # Remove static imports
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
+            "from agentic_core.L5_safety.enforcement.mcp_sovereign import mcp_authority",
         )
         content = remove_static_import(
             content,
@@ -197,7 +197,7 @@ def refactor_mcp_marketplace(file_path: Path) -> bool:
         # Remove static import
         content = remove_static_import(
             content,
-            "from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority",
+            "from agentic_core.L5_safety.enforcement.mcp_sovereign import mcp_authority",
         )
 
         if content != original:

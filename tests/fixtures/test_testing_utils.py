@@ -210,7 +210,7 @@ def temp_env_vars(**env_vars: str) -> Generator[None, None, None]:
 @contextmanager
 def mock_core_integrity() -> Generator[MagicMock, None, None]:
     """Mock CoreIntegrityVerifier for testing agents."""
-    mock_path = "agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+    mock_path = "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
     with patch(mock_path) as mock:
         yield mock
 
