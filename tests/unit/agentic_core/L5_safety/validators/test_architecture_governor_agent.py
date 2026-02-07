@@ -35,7 +35,7 @@ class TestArchitectureGovernorAgentActivation:
 
     def test_not_a_stub_anymore(self, mock_project):
         """Test that heal_repository() no longer returns {'skipped': 1}."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -52,7 +52,7 @@ class TestArchitectureGovernorAgentActivation:
 
     def test_returns_canonical_keys(self, mock_project):
         """Test that @standard_heal canonical keys are returned."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -86,7 +86,7 @@ class TestUniversalScope:
 
     def test_scans_multiple_roots(self, mock_project):
         """Test that agent scans all existing SOVEREIGN_REGISTRY roots."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -103,7 +103,7 @@ class TestUniversalScope:
 
     def test_skips_nonexistent_roots(self, mock_project):
         """Test that agent skips roots that don't exist."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -127,7 +127,7 @@ class TestAutoApproveMode:
 
     def test_auto_approve_parameter_exists(self, mock_project):
         """Test that auto_approve parameter is accepted."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -141,7 +141,7 @@ class TestAutoApproveMode:
 
     def test_headless_mode_no_stdin(self, mock_project):
         """Test that CI mode works without stdin prompts."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -167,7 +167,7 @@ class TestCIVerification:
 
     def test_ci_verification_method_exists(self, mock_project):
         """Test that run_ci_verification_sync() method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -178,7 +178,7 @@ class TestCIVerification:
 
     def test_ci_verification_returns_tuple(self, mock_project):
         """Test that run_ci_verification_sync() returns (bool, dict)."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -194,7 +194,7 @@ class TestCIVerification:
 
     def test_ci_verification_headless(self, mock_project):
         """Test that CI verification works without stdin."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -219,7 +219,7 @@ class TestLayerBoundaryValidation:
 
     def test_valid_layer_structure(self, mock_project):
         """Test that valid layer files pass validation."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -236,7 +236,7 @@ class TestLayerBoundaryValidation:
 
     def test_sovereign_territory_valid(self, mock_project):
         """Test that files in sovereign territories pass."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -252,7 +252,7 @@ class TestLayerBoundaryValidation:
 
     def test_rogue_folder_invalid(self, mock_project):
         """Test that files outside sovereign territories fail."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -278,7 +278,7 @@ class TestCycleDetection:
 
     def test_cycle_detection(self, mock_project):
         """Test that cycle detection prevents infinite loops."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -295,7 +295,7 @@ class TestCycleDetection:
 
     def test_depth_limiting(self, mock_project):
         """Test that depth limiting prevents deep recursion."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -331,7 +331,7 @@ class TestPhase2NamingViolationHealing:
 
     def test_heal_violation_method_exists(self, mock_project_with_naming_violation):
         """Test that _heal_violation method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -342,7 +342,7 @@ class TestPhase2NamingViolationHealing:
 
     def test_heal_naming_violation_method_exists(self, mock_project_with_naming_violation):
         """Test that _heal_naming_violation method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -353,7 +353,7 @@ class TestPhase2NamingViolationHealing:
 
     def test_naming_violation_dispatches_correctly(self, mock_project_with_naming_violation):
         """Test that NAMING violations dispatch to _heal_naming_violation."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -406,7 +406,7 @@ class BadOrchestrator:
 
     def test_heal_gravity_violation_method_exists(self, mock_project_with_gravity_violation):
         """Test that _heal_gravity_violation method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -417,7 +417,7 @@ class BadOrchestrator:
 
     def test_gravity_violation_dispatches_correctly(self, mock_project_with_gravity_violation):
         """Test that GRAVITY violations dispatch to _heal_gravity_violation."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -446,7 +446,7 @@ class BadOrchestrator:
 
     def test_gravity_repair_agent_lazy_loaded(self, mock_project_with_gravity_violation):
         """Test that GravityLeakRepairAgent is lazy-loaded."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -476,7 +476,7 @@ class TestPhase2ExecuteMode:
 
     def test_execute_false_does_not_heal(self, mock_project):
         """Test that execute=False does not trigger healing."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -493,7 +493,7 @@ class TestPhase2ExecuteMode:
 
     def test_dry_run_does_not_heal(self, mock_project):
         """Test that dry_run=True does not trigger healing."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -510,7 +510,7 @@ class TestPhase2ExecuteMode:
 
     def test_healing_disabled_does_not_heal(self, mock_project):
         """Test that healing_enabled=False does not trigger healing."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -556,7 +556,7 @@ class TestPhase3CleanupEmptyDirs:
 
     def test_cleanup_empty_dirs_method_exists(self, mock_project_with_ghost_dirs):
         """Test that _cleanup_empty_dirs method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -567,7 +567,7 @@ class TestPhase3CleanupEmptyDirs:
 
     def test_cleanup_empty_dirs_purges_ghosts(self, mock_project_with_ghost_dirs):
         """Test that recursive cleanup removes empty directories."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -584,7 +584,7 @@ class TestPhase3CleanupEmptyDirs:
 
     def test_cleanup_preserves_non_empty_dirs(self, mock_project_with_ghost_dirs):
         """Test that cleanup preserves directories with real content."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -601,7 +601,7 @@ class TestPhase3CleanupEmptyDirs:
 
     def test_cleanup_removes_gitkeep_sentinels(self, mock_project_with_ghost_dirs):
         """Test that cleanup removes .gitkeep sentinels in empty dirs."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -677,7 +677,7 @@ class TestPhase3GravityRepairMocked:
 
     def test_gravity_repair_orchestration_mocked(self, mock_project):
         """Test gravity repair agent orchestration with mocks."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -733,7 +733,7 @@ class TestPhase4DeduplicationAudit:
 
     def test_deduplication_audit_method_exists(self, mock_project):
         """Test that _trigger_deduplication_audit method exists."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -744,7 +744,7 @@ class TestPhase4DeduplicationAudit:
 
     def test_deduplication_audit_in_heal_result(self, mock_project):
         """Test that heal_repository returns deduplication_audit key."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -763,7 +763,7 @@ class TestPhase4DeduplicationAudit:
 
     def test_deduplication_audit_returns_valid_structure(self, mock_project):
         """Test that deduplication audit returns expected structure."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -780,7 +780,7 @@ class TestPhase4DeduplicationAudit:
 
     def test_deduplication_detects_duplicate_agents(self, tmp_path):
         """Test that deduplication audit returns valid structure even with duplicates."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -824,7 +824,7 @@ class TestPhase4CentralizedASTEngine:
             StructuralValidatorAgent,
             StructureConfig,
         )
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

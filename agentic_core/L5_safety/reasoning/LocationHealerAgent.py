@@ -119,7 +119,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
             try:
-                from agentic_core.L5_safety.validators.naming_agent_validator import (
+                from agentic_core.L5_safety.validators.naming_validator import (
                     get_naming_agent,
                 )
 
@@ -307,10 +307,41 @@ class LocationHealerAgent(SovereignBaseAgent):
             }
 
     def _determine_target_directory(self, src_path: Path, violation: dict[str, Any]) -> Path | None:
-        """Determine target directory for file relocation based on violation context."""
+        """Determine target directory for file relocation based on violation context.
+
+        [DEDUP 2026-02-07] Uses FCA's classify_file() + _get_correct_folder_for_type()
+        for classification-based routing instead of hardcoded defaults.
+        """
+        # Honor explicit suggestion if provided
         suggested_target = violation.get("suggested_target")
         if suggested_target:
             return self.project_root / suggested_target
+
+        # Use FCA for classification-based routing
+        try:
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                FileClassificationAgent,
+            )
+
+            fca = FileClassificationAgent(
+                project_root=self.project_root,
+                dry_run=True,
+                validate_only=True,
+            )
+            file_type = fca.classify_file(src_path)
+            correct_folder = fca._get_correct_folder_for_type(file_type)
+            if correct_folder:
+                # Determine the layer from the violation context or current location
+                try:
+                    rel = src_path.relative_to(self.project_root / "agentic_core")
+                    layer = rel.parts[0] if len(rel.parts) > 1 else None
+                    if layer:
+                        return self.project_root / "agentic_core" / layer / correct_folder
+                except ValueError:
+                    pass
+        except Exception:
+            pass
+
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 
     @timeout(300)
@@ -575,7 +606,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Case 2: Move/Archive — validate new location
             if new_path.exists():
                 # Delegate validation to LocationValidatorAgent
-                from agentic_core.L5_safety.validators.LocationValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
                     LocationValidatorAgent,
                 )
 
@@ -1927,7 +1958,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Delegate gravity violation healing to GravityLeakDetector."""
-        from agentic_core.L5_safety.config.gravity_leak_detector_config import GravityLeakDetector
+        from agentic_core.L5_safety.config.gravity_leak_config import GravityLeakDetector
 
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._heal_gravity_violations(gravity_issues)

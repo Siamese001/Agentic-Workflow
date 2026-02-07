@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.surgical_context import (
+from agentic_core.L5_safety.types.surgical_context_types import (
     SurgicalContextBuilder,
 )
 from agentic_core.L5_safety.validators.surgical_healing_adapter import (

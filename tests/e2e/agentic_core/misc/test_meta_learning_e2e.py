@@ -99,7 +99,7 @@ class TestEndToEndHealingCycle:
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )
@@ -347,7 +347,7 @@ class TestFullSystemIntegration:
         from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
             CodeHealerAgent,
         )
-        from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )

@@ -99,7 +99,7 @@ def discover_agent_classes() -> list[type]:
     agent_imports = [
         ("agentic_core.L3_orchestration.reasoning.domain_planner_engine", "DomainPlannerAgent"),
         ("agentic_core.L5_safety.reasoning.CodeHealerAgent", "CodeHealerAgent"),
-        ("agentic_core.L5_safety.validators.location_agent", "LocationAgent"),
+        ("agentic_core.L5_safety.reasoning.LocationAgent", "LocationAgent"),
     ]
 
     for module_path, class_name in agent_imports:

@@ -1175,8 +1175,8 @@ class TestGravityCompliance:
                 print(f"  ... and {len(violations) - 10} more")
 
             print("\n[REMEDIATION] Run LocationAgent:")
-            print("  python -m agentic_core.L5_safety.validators.LocationAgent --heal --dry-run")
-            print("  python -m agentic_core.L5_safety.validators.LocationAgent --heal --apply")
+            print("  python -m agentic_core.L5_safety.reasoning.LocationAgent --heal --dry-run")
+            print("  python -m agentic_core.L5_safety.reasoning.LocationAgent --heal --apply")
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#import-waterfall-violations")
         else:
             print(f"[OK] No waterfall violations detected ({len(core_files)} core files checked)")

@@ -2189,6 +2189,361 @@ FORBIDDEN_FILENAME_PATTERNS: Final[Sequence[Mapping[str, str]]] = [
     },
 ]
 
+# === KNOWN ARCHITECTURAL SUFFIXES (LCD+ Compound Suffix Prevention) ===
+# Single-suffix rule: every .py file must have AT MOST ONE of these suffixes.
+# Files with multiple suffixes (e.g., *_types_config.py) are compound violations.
+KNOWN_ARCHITECTURAL_SUFFIXES: Final[Sequence[str]] = [
+    "_types",
+    "_config",
+    "_validator",
+    "_script",
+    "_util",
+    "_mixin",
+    "_protocol",
+    "_strategy",
+    "_adapter",
+    "_factory",
+    "_orchestrator",
+    "_engine",
+    "_gateway",
+    "_sensor",
+]
+
+# Explicit forbidden compound suffix patterns (regex).
+# These are the most common compound violations discovered during LCD+ migration.
+FORBIDDEN_COMPOUND_PATTERNS: Final[Sequence[str]] = [
+    r".*_types_config\.py$",
+    r".*_validator_util\.py$",
+    r".*_types_validator\.py$",
+    r".*_config_util\.py$",
+    r".*_validator_script\.py$",
+    r".*_config_script\.py$",
+]
+
+# === CANONICAL SUFFIX-TO-FOLDER MAPPING (LCD+ Routing SSOT) ===
+# Maps architectural suffixes to their canonical LCD folder.
+# Used by FileClassificationAgent for territory enforcement.
+# "GLOBAL_MIXINS" is a sentinel meaning agentic_core/mixins/ (not layer-local).
+SUFFIX_TO_FOLDER: Final[Mapping[str, str]] = {
+    "_config.py": "config",
+    "_types.py": "types",
+    "_protocol.py": "types",
+    "_validator.py": "validators",
+    "_script.py": "scripts",
+    "_util.py": "utils",
+    "_mixin.py": "GLOBAL_MIXINS",
+    "Protocol.py": "GLOBAL_INTERFACES",  # I*Protocol.py -> agentic_core/interfaces/
+    "Agent.py": "reasoning",
+    "Inspector.py": "reasoning",
+    "Healer.py": "reasoning",
+    "Guardian.py": "reasoning",
+    "Orchestrator.py": "reasoning",
+    "Monitor.py": "enforcement",
+    "Strategy.py": "enforcement",
+    "Adapter.py": "enforcement",
+    "_guardrail.py": "enforcement",
+    "_strategy.py": "enforcement",
+}
+
+# === GLOBAL INTERFACE ROUTING ===
+# Files matching this pattern are global interface contracts and MUST live in
+# agentic_core/interfaces/, NOT in layer-level types/ folders.
+# The "I" prefix + "Protocol" suffix is the canonical interface naming convention.
+# "GLOBAL_INTERFACES" is a sentinel in SUFFIX_TO_FOLDER (like GLOBAL_MIXINS for mixins).
+INTERFACE_FILENAME_PATTERN: Final[str] = r"^I[A-Z].*Protocol\.py$"
+
+# Files matching INTERFACE_FILENAME_PATTERN are routed to this global folder:
+GLOBAL_INTERFACES_FOLDER: Final[str] = "agentic_core/interfaces"
+
+# === FORBIDDEN EPHEMERAL SCRIPT PATTERNS ===
+# Files matching these patterns are one-off migration/maintenance scripts that should
+# never be committed. They accumulate as tech debt and clutter the codebase.
+# Used by FileClassificationAgent._detect_ephemeral_scripts() to flag for deletion.
+# Exemptions: "two_phase" (algorithm name), "execution_phase" (domain concept),
+#             "mutation_phase" (pipeline concept) — these use "phase" semantically.
+FORBIDDEN_EPHEMERAL_PATTERNS: Final[Sequence[str]] = [
+    r"(?i)phase\s*\d",       # phase1, phase_2, phase 3, Phase10
+    r"(?i)wave\s*[\d_]",     # wave_9, wave1, Wave 2
+    r"(?i)sprint\d",         # sprint4, Sprint1
+]
+EPHEMERAL_PATTERN_EXEMPTIONS: Final[Sequence[str]] = [
+    r"(?i)two_?phase",       # TwoPhaseDeduplication (algorithm name)
+    r"(?i)execution_phase",  # execution_phase_types (domain concept)
+    r"(?i)mutation_phase",   # mutation_phase (pipeline concept)
+    r"(?i)research_hop_phase",  # research_hop_phase (domain concept)
+]
+
+# === AST-BASED FILETYPE-TO-FOLDER ROUTING (replaces suffix matching) ===
+# Maps the FileType returned by classify_file() (AST analysis) to the correct LCD folder.
+# This is the ONLY routing table for folder assignment. Suffix matching is FORBIDDEN.
+# Used by FileClassificationAgent._get_correct_folder_for_type_ast().
+FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
+    "AGENT": "reasoning",
+    "ORCHESTRATOR": "reasoning",
+    "CONFIG": "config",
+    "TYPES": "types",
+    "PROTOCOL": "types",
+    "VALIDATOR": "validators",
+    "UTILITY": "utils",
+    "MIXIN": "GLOBAL_MIXINS",       # Sentinel: routed to agentic_core/mixins/
+    "SCRIPT": "scripts",
+    "FACTORY": "enforcement",
+    "ADAPTER": "enforcement",
+    "STRATEGY": "enforcement",
+    "EXCEPTION": "types",
+    "ENGINE": "reasoning",
+    "GATEWAY": "enforcement",
+    "SERVICE": "utils",             # Singleton services, monitors, collectors → utils/
+    # CLASS, STUB, TEST, IGNORE → no routing (stay where they are)
+}
+
+# === DUPLICATE FILE DETECTION ===
+# When the same filename exists in multiple locations, the canonical copy is determined
+# by this priority order. Higher priority locations win.
+# Used by FileClassificationAgent._detect_duplicate_files().
+CANONICAL_LOCATION_PRIORITY: Final[Sequence[str]] = [
+    "runtime",            # Runtime types/config are most canonical
+    "interfaces",         # Global interfaces
+    "base_agents",        # Base agents
+    "mixins",             # Global mixins
+    "config/core",        # Core config
+    "config",             # Global config
+    "utils",              # Global utils
+    "prompt_governance",  # Domain-specific governance
+    "L5_safety",          # Safety layer
+    "L6_observability",   # Observability layer
+    "L4_state",           # State layer
+    "L3_orchestration",   # Orchestration layer
+    "L2_execution",       # Execution layer
+    "L1_cognition",       # Cognition layer
+    "L0_maintenance",     # Maintenance layer
+]
+
+# Files exempt from duplicate detection (legitimately exist in multiple locations)
+DUPLICATE_DETECTION_EXEMPT: Final[Sequence[str]] = [
+    "__init__.py",
+    "conftest.py",
+    "__main__.py",
+]
+
+# === CROSS-LAYER FILENAME DETECTION ===
+# Files with layer indicators (l0-l6, L0-L6) in their filenames MUST live in the
+# matching layer. A file named "l5_streamer.py" in L6_observability/ is a violation.
+# Used by FileClassificationAgent._detect_cross_layer_naming_violation().
+# The regex captures the layer number from the filename for comparison.
+LAYER_PREFIX_PATTERN: Final[str] = r"(?i)(?:^|_)l([0-6])(?:_|[A-Z])"
+
+# === L5 ENFORCEMENT DOMAIN-SPECIALIZED SUFFIXES ===
+# L5_safety/enforcement/ uses domain-specific semantic suffixes.
+# The _script.py suffix is NOT used in enforcement/ — scripts belong in scripts/.
+L5_ENFORCEMENT_ALLOWED_SUFFIXES: Final[Sequence[str]] = [
+    "_guardrail.py",
+    "_enforcer.py",
+    "_gate.py",
+    "_manager.py",
+    "_shield.py",
+    "_firewall.py",
+    "_sanitizer.py",
+    "_governor.py",
+    "_policy.py",
+    "_guard.py",
+]
+
+# === FILENAME SINGLE-TAG RULE (RCA: dual-tag prevention) ===
+# Each filename must carry at most ONE classification tag. Filenames with multiple
+# tags (e.g., "code_detection_types.py" has both AGENT and TYPES) create
+# ambiguous classification and must be renamed.
+#
+# RCA: 13 files were found with both "agent" and "types" in the filename.
+# 10 of those were full agent implementations dumped into types/ folders with
+# "_types" appended. The classifier saw SovereignBaseAgent → AGENT, but the
+# "_types" suffix and types/ folder said TYPES. No validation prevented this.
+#
+# Rule: A filename may contain AT MOST ONE classification suffix.
+# Violation = the file needs renaming before it can be correctly classified.
+#
+# IMPORTANT: This detects COMPOUND SUFFIXES (two tags concatenated), NOT domain
+# words. "find_misnamed_agents_util.py" is fine ("agents" is a domain word,
+# "_util" is the only classification suffix). But "code_detector_agent_types.py"
+# is forbidden ("_agent" + "_types" = two classification suffixes).
+#
+# The detection uses regex on the filename stem, not simple substring matching.
+
+# Classification suffix patterns that are matched precisely using regex.
+# Used by FileClassificationAgent._classify_filename_by_suffix() to determine
+# the file's classification tag.
+CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
+    r"_agent\.py$": "AGENT",
+    r"_types\.py$": "TYPES",
+    r"_config\.py$": "CONFIG",
+    r"_validator\.py$": "VALIDATOR",
+    r"_util\.py$": "UTILITY",
+    r"_mixin\.py$": "MIXIN",
+    r"_script\.py$": "SCRIPT",
+    r"_strategy\.py$": "STRATEGY",
+    r"_adapter\.py$": "ADAPTER",
+    r"_protocol\.py$": "PROTOCOL",
+    r"Agent\.py$": "AGENT",  # PascalCase class-style (e.g., CodeDetectorAgent.py)
+    r"Strategy\.py$": "STRATEGY",  # PascalCase class-style (e.g., RecoveryStrategy.py)
+    r"Adapter\.py$": "ADAPTER",  # PascalCase class-style (e.g., LocalDiskAdapter.py)
+    r"I[A-Z].*Protocol\.py$": "PROTOCOL",  # PascalCase interface-style (e.g., IHealerProtocol.py)
+}
+
+# Compound suffix patterns that are FORBIDDEN in filenames.
+# Each pattern matches a stem that has two classification suffixes back-to-back.
+# Format: (regex_pattern, tag_A, tag_B, example)
+COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
+    # AGENT compounds
+    (r"_agent_types$",       "AGENT", "TYPES",     "code_detector_agent_types.py"),
+    (r"_agent_config$",      "AGENT", "CONFIG",     "security_level_agent_config.py"),
+    (r"_agent_validator$",   "AGENT", "VALIDATOR",   "routing_decision_agent_validator.py"),
+    (r"_agent_util$",        "AGENT", "UTILITY",     "extract_pattern_agent_util.py"),
+    (r"_agent_script$",      "AGENT", "SCRIPT",      "agent_script.py"),
+    (r"Agent_types$",        "AGENT", "TYPES",       "CodeDetectorAgent_types.py"),
+    (r"Agent_config$",       "AGENT", "CONFIG",      "SomeAgent_config.py"),
+    # ENGINE compounds
+    (r"_engine_types$",      "ENGINE", "TYPES",      "safety_engine_types.py"),
+    (r"_engine_validator$",  "ENGINE", "VALIDATOR",   "consensus_engine_validator.py"),
+    (r"_engine_config$",     "ENGINE", "CONFIG",      "engine_config.py"),
+    # GUARDRAIL compounds
+    (r"_guardrail_types$",   "GUARDRAIL", "TYPES",    "mcp_security_guardrail_types.py"),
+    (r"_guardrail_mixin$",   "GUARDRAIL", "MIXIN",    "cost_guardrail_mixin.py"),
+    (r"_guardrail_config$",  "GUARDRAIL", "CONFIG",   "guardrail_config.py"),
+    # MANAGER compounds
+    (r"_manager_types$",     "MANAGER", "TYPES",      "resource_manager_types.py"),
+    (r"_manager_config$",    "MANAGER", "CONFIG",     "sovereign_manager_config.py"),
+    (r"_manager_validator$", "MANAGER", "VALIDATOR",  "context_manager_validator.py"),
+    # STRATEGY compounds
+    (r"_strategy_types$",    "STRATEGY", "TYPES",     "context_pruning_strategy_types.py"),
+    (r"_strategy_config$",   "STRATEGY", "CONFIG",    "mcpservermode_strategy_config.py"),
+    (r"_strategy_mixin$",    "STRATEGY", "MIXIN",     "healing_strategy_mixin.py"),
+    (r"_strategy_script$",   "STRATEGY", "SCRIPT",    "execution_strategy_script.py"),
+    (r"_strategy_validator$", "STRATEGY", "VALIDATOR", "reasoningnode_strategy_validator.py"),
+    # VALIDATOR compounds
+    (r"_validator_types$",   "VALIDATOR", "TYPES",    "code_validator_types.py"),
+    (r"_validator_util$",    "VALIDATOR", "UTILITY",   "check_sovereign_base_validator_util.py"),
+    (r"_validator_script$",  "VALIDATOR", "SCRIPT",    "coverage_validator_script.py"),
+    # SCANNER compounds
+    (r"_scanner_types$",     "SCANNER", "TYPES",      "credential_scanner_types.py"),
+    (r"_scanner_script$",    "SCANNER", "SCRIPT",     "complexity_scanner_script.py"),
+    (r"_scanner_util$",      "SCANNER", "UTILITY",    "sovereign_scanner_util.py"),
+    # PROTOCOL compounds
+    (r"_protocol_types$",    "PROTOCOL", "TYPES",     "healer_protocol_types.py"),
+    (r"_protocol_config$",   "PROTOCOL", "CONFIG",    "detection_protocol_config.py"),
+    (r"_protocol_guardrail$", "PROTOCOL", "GUARDRAIL", "airlock_protocol_guardrail.py"),
+    # SUITE compounds
+    (r"_suite_types$",       "SUITE", "TYPES",        "security_validation_suite_types.py"),
+    # FACTORY compounds
+    (r"_factory_config$",    "FACTORY", "CONFIG",     "gateway_factory_config.py"),
+    (r"_factory_util$",      "FACTORY", "UTILITY",    "component_factory_util.py"),
+    # ORCHESTRATOR compounds
+    (r"_orchestrator_types$", "ORCHESTRATOR", "TYPES", "recursive_orchestrator_types.py"),
+    # SHIELD compounds
+    (r"_shield_validator$",  "SHIELD", "VALIDATOR",   "governance_shield_validator.py"),
+    # SANITIZER compounds
+    (r"_sanitizer_util$",    "SANITIZER", "UTILITY",  "telemetry_sanitizer_util.py"),
+    # GUARD compounds
+    (r"_guard_util$",        "GUARD", "UTILITY",      "scan_guard_util.py"),
+    (r"_guard_mixin$",       "GUARD", "MIXIN",        "cost_guard_mixin.py"),
+    # DETECTOR compounds
+    (r"_detector_types$",    "DETECTOR", "TYPES",     "code_detector_types.py"),
+    (r"_detector_config$",   "DETECTOR", "CONFIG",    "gravity_leak_detector_config.py"),
+    (r"_detector_script$",   "DETECTOR", "SCRIPT",    "drift_detector_script.py"),
+    # ENFORCER compounds
+    (r"_enforcer_types$",    "ENFORCER", "TYPES",     "code_enforcer_types.py"),
+    (r"_enforcer_util$",     "ENFORCER", "UTILITY",   "root_hygiene_enforcer_util.py"),
+    # CONFIG compounds
+    (r"_config_types$",      "CONFIG", "TYPES",       "blueprint_config_types.py"),
+    (r"_config_script$",     "CONFIG", "SCRIPT",      "integrity_gate_executor_config_script.py"),
+    (r"_config_util$",       "CONFIG", "UTILITY",     "sync_mcp_config_util.py"),
+    (r"_config_detector$",   "CONFIG", "DETECTOR",    "magic_config_detector.py"),
+]
+
+# === FOLDER PURITY RULES (BIDIRECTIONAL ENFORCEMENT) ===
+# Defines which file suffixes are ALLOWED in each LCD folder.
+# Used by FileClassificationAgent._enforce_folder_purity() to EVICT misplaced files.
+# Key = folder name, Value = list of allowed filename patterns (suffix or regex).
+FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
+    "reasoning": [r".*Agent\.py$"],  # ONLY *Agent.py files allowed
+    "validators": [r".*_validator\.py$", r".*Validator.*\.py$"],
+    "config": [r".*_config\.py$", r".*_config\.yaml$", r".*_config\.json$"],
+    "types": [r".*_types\.py$", r".*_protocol\.py$", r"I[A-Z].*Protocol\.py$",
+              r".*Error\.py$", r".*Exception\.py$"],  # Exception classes live in types/
+    "utils": [r".*_util\.py$", r".*_mixin\.py$", r".*_helper\.py$",
+              r".*_collector\.py$", r".*_monitor\.py$"],  # Service singletons route here
+    "scripts": [r".*_script\.py$"],
+    "enforcement": [r".*_guardrail\.py$", r".*_enforcer\.py$",
+                    r".*_gate\.py$", r".*_manager\.py$", r".*_shield\.py$",
+                    r".*_firewall\.py$", r".*_sanitizer\.py$", r".*_governor\.py$",
+                    r".*_policy\.py$", r".*_guard\.py$", r".*_strategy\.py$",
+                    r".*Strategy\.py$", r".*Adapter\.py$", r".*Monitor\.py$",
+                    r".*Factory\.py$", r".*Gateway\.py$", r".*_adapter\.py$",
+                    r"^[a-z][a-z0-9_]*\.py$"],  # Plain snake_case .py (no suffix) allowed
+    "dashboards": [r".*\.html$", r".*\.js$", r".*\.css$", r".*\.yaml$",
+                   r".*\.json$", r".*\.py$"],  # Dashboard assets: HTML/JS/CSS/YAML/JSON/PY
+}
+
+# === NON-PYTHON FILE ROUTING ===
+# Maps non-Python file extensions to their canonical subfolder within a layer.
+# Used by FCA._enforce_folder_purity() and _classify_non_python_file().
+# Files that don't match any layer's expected non-Python patterns are flagged.
+NON_PYTHON_FOLDER_ROUTES: Final[Mapping[str, str]] = {
+    "dashboard_ssot.yaml": "dashboards",   # Dashboard config belongs with dashboards
+    ".yaml": "config",                      # Default: YAML files → config/
+    ".json": "config",                      # Default: JSON files → config/
+    ".html": "dashboards",                  # HTML → dashboards/
+    ".js": "dashboards",                    # JS → dashboards/
+    ".css": "dashboards",                   # CSS → dashboards/
+}
+
+# === SERVICE CLASS DETECTION PATTERNS ===
+# Patterns that identify service/infrastructure classes (NOT agents).
+# These classes are singletons, collectors, monitors that belong in utils/, not reasoning/.
+# Used by FileClassificationAgent._is_service_singleton() for SERVICE classification.
+SERVICE_CLASS_INDICATORS: Final[Sequence[str]] = [
+    "Collector",
+    "Monitor",
+    "Tracker",
+    "Reporter",
+    "Emitter",
+    "Publisher",
+    "Subscriber",
+    "Aggregator",
+    "Accumulator",
+    "Sampler",
+    "Recorder",
+]
+
+# === APP DOMAIN PREFIXES ===
+# Filename prefixes that indicate an agent belongs to an app domain, NOT agentic_core.
+# If a file in agentic_core/ matches these, it's a cross-domain violation.
+APP_DOMAIN_PREFIXES: Final[Sequence[str]] = [
+    "Lic",        # apps_lic (Letter of Intent/Correspondence)
+    "Campaign",   # apps_lic campaign logic
+    "Outreach",   # apps_lic outreach logic
+]
+
+# === LAYER KEYWORD AFFINITY ===
+# Keywords in docstrings/class names that indicate layer affinity.
+# Used by FileClassificationAgent._compute_layer_affinity() for semantic scoring.
+LAYER_KEYWORD_AFFINITY: Final[Mapping[str, Sequence[str]]] = {
+    "L0_maintenance": ["cleanup", "maintenance", "bootstrap", "heal", "repair",
+                       "reconcile", "ssot", "folder cleanup", "hygiene", "migration",
+                       "discovery", "manifest", "sync", "gospel"],
+    "L1_cognition": ["thought", "intent", "planning", "cognition", "reasoning",
+                     "decision", "analysis", "understanding"],
+    "L2_execution": ["tool", "mcp", "action", "execute", "invoke", "run",
+                     "embed", "search", "index"],
+    "L3_orchestration": ["workflow", "orchestrat", "meta-learn", "pipeline",
+                         "coordinate", "schedule", "batch", "tier"],
+    "L4_state": ["state", "memory", "ledger", "cache", "redis", "pinecone",
+                 "persist", "store", "context"],
+    "L5_safety": ["safety", "guard", "valid", "enforce", "protect", "sentinel",
+                  "threat", "adversarial", "compliance", "audit", "inspect"],
+    "L6_observability": ["observ", "telemetry", "monitor", "metric", "dashboard",
+                         "report", "log", "trace", "health"],
+}
+
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
 # All naming rules for all file types in the repository
 

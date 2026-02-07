@@ -159,7 +159,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 # LocationHealerAgent is the SSOT for all file mutation operations
                 if self.healing_enabled:
                     try:
-                        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+                        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
                             LocationHealerAgent,
                         )
 
@@ -509,14 +509,16 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         approved_layers_l2: set,
         results: dict[str, Any],
     ) -> None:
-        """Relocate a single file to approved L2 layer."""
+        """Relocate a single file to approved L2 layer.
+
+        [DEDUP 2026-02-07] Uses FCA classify_file() to determine correct L3 subfolder.
+        """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             check_forbidden_signals,
         )
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
-            # Prevent files with forbidden extensions/keywords from being relocated
             try:
                 content = None
                 if py_file.exists() and py_file.stat().st_size < 1_000_000:
@@ -532,7 +534,28 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
             target_path = agentic_core_path / target_layer_l2
-            target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
+
+            # [DEDUP] Use FCA for classification-based L3 routing
+            target_territory_l3 = None
+            try:
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                    FileClassificationAgent,
+                )
+
+                fca = FileClassificationAgent(
+                    project_root=agentic_core_path.parent,
+                    dry_run=True,
+                    validate_only=True,
+                )
+                file_type = fca.classify_file(py_file)
+                target_territory_l3 = fca._get_correct_folder_for_type(file_type)
+            except Exception:
+                pass
+
+            # Fallback to heuristic if FCA unavailable or returns None
+            if not target_territory_l3:
+                target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
+
             final_target = target_path / target_territory_l3
             final_target.mkdir(parents=True, exist_ok=True)
 
@@ -613,14 +636,16 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         bad_territory_l3: str,
         results: dict[str, Any],
     ) -> None:
-        """Relocate a single file to approved L3 territory."""
+        """Relocate a single file to approved L3 territory.
+
+        [DEDUP 2026-02-07] Uses FCA classify_file() for L3 routing.
+        """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             check_forbidden_signals,
         )
 
         try:
             # ARTIFACT ROUTING NEGATIVE LOGIC CHECK
-            # Prevent files with forbidden extensions/keywords from being relocated
             try:
                 content = None
                 if py_file.exists() and py_file.stat().st_size < 1_000_000:
@@ -634,7 +659,26 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
             except Exception:
                 pass  # Non-blocking
 
-            target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
+            # [DEDUP] Use FCA for classification-based L3 routing
+            target_territory_l3 = None
+            try:
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                    FileClassificationAgent,
+                )
+
+                fca = FileClassificationAgent(
+                    project_root=layer_l2_path.parent.parent,
+                    dry_run=True,
+                    validate_only=True,
+                )
+                file_type = fca.classify_file(py_file)
+                target_territory_l3 = fca._get_correct_folder_for_type(file_type)
+            except Exception:
+                pass
+
+            # Fallback to heuristic if FCA unavailable or returns None
+            if not target_territory_l3:
+                target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
             target_path = layer_l2_path / target_territory_l3
             target_path.mkdir(parents=True, exist_ok=True)
 

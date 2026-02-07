@@ -12,7 +12,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # Import the agent directly without SovereignBaseAgent to avoid integrity checks
-from agentic_core.L5_safety.validators.FileClassificationAgent import FileClassificationAgent
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 
 
 class TestPascalHardening:

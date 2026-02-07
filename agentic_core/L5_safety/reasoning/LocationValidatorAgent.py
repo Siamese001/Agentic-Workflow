@@ -486,11 +486,15 @@ class LocationValidatorAgent(SovereignBaseAgent):
         current_territory: str,
         rel_path: Path,
     ) -> tuple[bool, str]:
-        """Check semantic alignment between file location and content."""
+        """Check semantic alignment between file location and content.
+
+        [DEDUP 2026-02-07] Delegates file classification to FCA for consistent
+        territory alignment instead of reimplementing AST scoring locally.
+        """
         if not current_territory:
             return True, "OK"
 
-        # Calculate semantic scores
+        # Calculate semantic scores (still needed for app domain check)
         app_rg_score, app_lic_score, territory_scores = self._calculate_semantic_scores(tree)
 
         # Check for app-specific violations
@@ -498,7 +502,36 @@ class LocationValidatorAgent(SovereignBaseAgent):
         if not result[0]:
             return result
 
-        # Check territory alignment
+        # [DEDUP] Use FCA for classification-based territory alignment
+        try:
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                FileClassificationAgent,
+            )
+
+            file_path = self.project_root / rel_path
+            if file_path.exists():
+                fca = FileClassificationAgent(
+                    project_root=self.project_root,
+                    dry_run=True,
+                    validate_only=True,
+                )
+                file_type = fca.classify_file(file_path)
+                correct_folder = fca._get_correct_folder_for_type(file_type)
+
+                # Extract current subfolder from territory
+                current_subfolder = current_territory.split("/")[-1] if "/" in current_territory else current_territory
+                if correct_folder and current_subfolder != correct_folder:
+                    # Only flag if FCA is confident (not UTILITY which is the default)
+                    if file_type != "UTILITY":
+                        return False, (
+                            f"TERRITORY ALIGNMENT (FCA): File classified as {file_type}, "
+                            f"belongs in '{correct_folder}/' not '{current_subfolder}/'. "
+                            f"File: {rel_path}"
+                        )
+        except Exception:
+            pass  # Fall through to legacy scoring if FCA unavailable
+
+        # Fallback to legacy territory scoring
         return self._check_territory_alignment(current_territory, territory_scores, rel_path)
 
     def _calculate_semantic_scores(self, tree: Any) -> tuple[float, float, dict[str, float]]:

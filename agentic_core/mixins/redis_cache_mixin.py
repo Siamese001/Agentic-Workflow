@@ -19,7 +19,7 @@ import logging
 import time
 from typing import Any
 
-from agentic_core.config.core.feature_flags_config import (
+from agentic_core.runtime.config.feature_flags_config import (
     CACHE_METRICS_ENABLED,
     GRACEFUL_DEGRADATION,
     USE_REDIS_CACHE,

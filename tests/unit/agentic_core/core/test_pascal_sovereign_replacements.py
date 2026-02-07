@@ -31,7 +31,7 @@ class TestPascalSovereignReplacements:
         content = file_path.read_text(encoding="utf-8")
 
         # Should import FileClassificationAgent
-        assert "from agentic_core.L5_safety.validators.file_classification_agent import" in content
+        assert "from agentic_core.L5_safety.reasoning.FileClassificationAgent import" in content
         assert "FileClassificationAgent" in content
 
         # Should NOT import PascalSovereigntyAgent
@@ -135,7 +135,7 @@ class TestPascalSovereignReplacements:
     def test_file_classification_imports_work(self):
         """Verify FileClassificationAgent imports work correctly."""
         try:
-            from agentic_core.L5_safety.validators.file_classification_agent import (
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
                 FileClassificationAgent,
                 get_python_files_fast,
             )
@@ -147,7 +147,7 @@ class TestPascalSovereignReplacements:
 
     def test_architecture_governor_can_instantiate(self):
         """Verify ArchitectureGovernorAgent can instantiate FileClassificationAgent."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -171,7 +171,7 @@ class TestBackwardCompatibility:
 
     def test_file_classification_agent_interface_compatible(self):
         """Verify FileClassificationAgent maintains expected interface."""
-        from agentic_core.L5_safety.validators.file_classification_agent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -183,7 +183,7 @@ class TestBackwardCompatibility:
 
     def test_get_python_files_fast_function_available(self):
         """Verify get_python_files_fast function is available."""
-        from agentic_core.L5_safety.validators.file_classification_agent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             get_python_files_fast,
         )
 

@@ -92,7 +92,7 @@ class TestPhase1EarlyDetectionIntegration:
     def test_file_classification_agent_can_be_imported(self):
         """Verify FileClassificationAgent can be imported."""
         try:
-            from agentic_core.L5_safety.validators.file_classification_agent import (
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
                 FileClassificationAgent,
             )
 
@@ -102,7 +102,7 @@ class TestPhase1EarlyDetectionIntegration:
 
     def test_file_classification_agent_has_required_methods(self):
         """Verify FileClassificationAgent has required methods for early detection."""
-        from agentic_core.L5_safety.validators.file_classification_agent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

@@ -105,8 +105,8 @@ class TestLocationAgentSmartRouting:
         # True no-match would need an extension not in any pattern
         assert mock_agent._determine_target_root_from_metadata("random_file.weirdext") is None
 
-    @patch("agentic_core.L5_safety.validators.LocationAgent.LocationAgent.safe_move")
-    @patch("agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent")
+    @patch("agentic_core.L5_safety.reasoning.LocationAgent.LocationAgent.safe_move")
+    @patch("agentic_core.L5_safety.reasoning.LocationHealerAgent.LocationHealerAgent")
     def test_cleanup_routes_root_file(self, mock_healer, mock_safe_move, mock_agent):
         """
         Verify cleanup_violations actually calls safe_move for a root violation.
@@ -130,8 +130,8 @@ class TestLocationAgentSmartRouting:
         target_path = mock_agent.project_root / "logs" / "trace.jsonl"
         mock_safe_move.assert_called_once_with(violation_file, target_path, dry_run=False)
 
-    @patch("agentic_core.L5_safety.validators.LocationAgent.LocationAgent.safe_move")
-    @patch("agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent")
+    @patch("agentic_core.L5_safety.reasoning.LocationAgent.LocationAgent.safe_move")
+    @patch("agentic_core.L5_safety.reasoning.LocationHealerAgent.LocationHealerAgent")
     def test_cleanup_creates_target_directory(self, mock_healer, mock_safe_move, mock_agent):
         """
         Verify cleanup_violations creates target directory if needed.
@@ -154,7 +154,7 @@ class TestLocationAgentSmartRouting:
         target_path = target_dir / "test_data.csv"
         mock_safe_move.assert_called_once_with(violation_file, target_path, dry_run=False)
 
-    @patch("agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent")
+    @patch("agentic_core.L5_safety.reasoning.LocationHealerAgent.LocationHealerAgent")
     def test_cleanup_skips_non_root_files(self, mock_healer, mock_agent):
         """
         Verify smart routing only applies to root files.
@@ -176,7 +176,7 @@ class TestLocationAgentSmartRouting:
             assert "Smart-routed" not in results[0]["action_taken"]
             mock_heal.assert_called_once()
 
-    @patch("agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent")
+    @patch("agentic_core.L5_safety.reasoning.LocationHealerAgent.LocationHealerAgent")
     def test_cleanup_fallback_to_standard_healing(self, mock_healer, mock_agent):
         """
         Verify fallback to standard healing when no pattern matches.
@@ -197,7 +197,7 @@ class TestLocationAgentSmartRouting:
             assert results[0]["action_taken"] == "Standard healing"
             mock_heal.assert_called_once()
 
-    @patch("agentic_core.L5_safety.validators.LocationHealerAgent.LocationHealerAgent")
+    @patch("agentic_core.L5_safety.reasoning.LocationHealerAgent.LocationHealerAgent")
     def test_dry_run_mode_routing(self, mock_healer, mock_agent):
         """
         Verify dry_run mode doesn't actually move files but shows intent.

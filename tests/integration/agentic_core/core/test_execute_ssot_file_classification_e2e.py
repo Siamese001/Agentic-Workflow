@@ -39,7 +39,7 @@ class TestE2EAllPhasesPresent:
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
-        assert "from agentic_core.L5_safety.validators.FileClassificationAgent import" in content
+        assert "from agentic_core.L5_safety.reasoning.FileClassificationAgent import" in content
         assert "FileClassificationAgent" in content
 
     def test_file_classification_agent_in_agents_dict(self):
@@ -270,7 +270,7 @@ class TestIntegrationFileClassificationAgent:
     def test_file_classification_agent_importable(self):
         """Test FileClassificationAgent can be imported."""
         try:
-            from agentic_core.L5_safety.validators.FileClassificationAgent import (
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
                 FileClassificationAgent,
             )
 
@@ -280,7 +280,7 @@ class TestIntegrationFileClassificationAgent:
 
     def test_file_classification_agent_has_run_method(self):
         """Test FileClassificationAgent has run method."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -290,7 +290,7 @@ class TestIntegrationFileClassificationAgent:
     @pytest.mark.skip(reason="Core integrity check prevents instantiation in test environment")
     def test_file_classification_agent_has_stats(self):
         """Test FileClassificationAgent instance has stats attribute."""
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -312,11 +312,11 @@ class TestIntegrationExecuteSSOTImports:
         """Test that execute_ssot.py imports work correctly."""
         try:
             # Import key components
-            from agentic_core.L5_safety.validators.FileClassificationAgent import (
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
                 FileClassificationAgent,
             )
-            from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent
-            from agentic_core.L5_safety.validators.location_agent import LocationAgent
+            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
             assert FileClassificationAgent is not None
             assert LocationAgent is not None

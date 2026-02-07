@@ -97,8 +97,19 @@ FileType = Literal[
     "ADAPTER",  # Classes ending in Adapter, Wrapper, Bridge
     "STRATEGY",  # Classes ending in Strategy
     "EXCEPTION",  # Exception/Error classes (snake_case _exceptions.py)
+    "SERVICE",  # Singleton services, monitors, collectors (utils/, not reasoning/)
     "IGNORE",
 ]
+
+
+@dataclass
+class ClassificationResult:
+    """Result of content-weighted file classification with confidence scoring."""
+
+    file_type: str
+    confidence: float  # 0.0 - 1.0
+    signals: list[str]  # Evidence for classification
+    warnings: list[str]  # Ambiguity warnings
 
 
 @dataclass
@@ -174,7 +185,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "CONFIG": ["config"],
             "TYPES": ["domain"],
             "CLASS": ["domain", "engines", "utils"],
-            "MIXIN": ["utils", "shared", "mixins"],
+            "MIXIN": ["mixins"],  # [LCD+ P2] Tightened: mixins MUST go to mixins/ only
         }
 
         # STANDARD KERNEL: All layers should have these subfolders (LCD+ canonical skeleton)
@@ -247,6 +258,26 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Determine current file depth relative to layer
         file_depth = len(parts) - 1  # Index of filename
 
+        # === GLOBAL OVERRIDE: Mixins always go to agentic_core/mixins/ ===
+        if filename.endswith("_mixin.py") or ("Mixin" in filename and filename.endswith(".py")):
+            if "agentic_core" in parts:
+                agentic_idx = parts.index("agentic_core")
+                agentic_root = Path(*parts[: agentic_idx + 1])
+                target = agentic_root / "mixins" / filename
+                if file_path.parent != target.parent:
+                    return target
+            return None
+
+        # === GLOBAL OVERRIDE: I*Protocol.py interfaces go to agentic_core/interfaces/ ===
+        if re.match(r"^I[A-Z].*Protocol\.py$", filename):
+            if "agentic_core" in parts:
+                agentic_idx = parts.index("agentic_core")
+                agentic_root = Path(*parts[: agentic_idx + 1])
+                target = agentic_root / "interfaces" / filename
+                if file_path.parent != target.parent:
+                    return target
+            return None
+
         # === L0 SCRIPTS SPECIAL CASE ===
         if "L0_maintenance" in parts and "scripts" in parts:
             scripts_idx = parts.index("scripts")
@@ -262,37 +293,70 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if filename.endswith("_script.py"):
                     return None  # Already correct
 
-        # If file is not at layer root, it's already in a subfolder
-        if file_depth != layer_idx + 1:
-            return None
-
-        # === KERNEL ROUTING FOR FILES AT LAYER ROOT ===
-
-        # Utilities -> utils/
-        if filename.endswith("_util.py"):
-            return layer_root / "utils" / filename
-
-        # Configs -> config/ (except structure_blueprint_config.py)
-        if filename.endswith("_config.py") and filename != "structure_blueprint_config.py":
-            return layer_root / "config" / filename
-
-        # Types -> types/
-        if filename.endswith("_types.py") or filename.endswith("_protocol.py"):
-            return layer_root / "types" / filename
-
-        # Scripts (L0 only) -> scripts/
-        if filename.endswith("_script.py") and "L0_maintenance" in str(layer_root):
-            return layer_root / "scripts" / filename
-
-        # Validators -> validators/
-        if filename.endswith("_validator.py"):
-            return layer_root / "validators" / filename
-
-        # Agents -> reasoning/
-        if filename.endswith("Agent.py"):
-            return layer_root / "reasoning" / filename
+        # === RECURSIVE KERNEL ROUTING (validates files at ANY depth) ===
+        # [LCD+ P2] AST-based routing: classify_file() parses content to determine type.
+        correct_folder = self._get_correct_folder_for_type(file_path, layer_root)
+        if correct_folder:
+            current_subfolder = file_path.parent.name
+            # Only move if not already in the correct folder
+            if current_subfolder != correct_folder:
+                target = layer_root / correct_folder / filename
+                if file_path != target:
+                    return target
 
         return None
+
+    def _get_correct_folder_for_type(self, file_path: Path, layer_root: Path) -> str | None:
+        """
+        Determine the correct LCD subfolder for a file using AST-based classification.
+
+        Uses classify_file() to parse the file's AST and determine its architectural
+        role, then maps that role to the correct LCD folder via FILETYPE_TO_FOLDER.
+
+        NO SUFFIX STRING MATCHING. All routing is based on parsed content.
+
+        Args:
+            file_path: Full path to the file (used for AST parsing)
+            layer_root: The layer root path (e.g., agentic_core/L5_safety)
+
+        Returns:
+            Correct subfolder name (e.g., "config", "types", "reasoning"), or None.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            FILETYPE_TO_FOLDER,
+        )
+
+        filename = file_path.name
+
+        # Skip critical files
+        if filename in ("__init__.py", "__main__.py", "conftest.py"):
+            return None
+
+        # structure_blueprint_config.py exception: stays in config/ where it is
+        if filename == "structure_blueprint_config.py":
+            return "config"
+
+        # AST-based classification
+        file_type = self.classify_file(file_path)
+
+        # Types that don't get routed (stay where they are)
+        if file_type in ("CLASS", "STUB", "TEST", "IGNORE"):
+            return None
+
+        # Look up the correct folder for this FileType
+        target_folder = FILETYPE_TO_FOLDER.get(file_type)
+        if target_folder is None:
+            return None
+
+        # GLOBAL_MIXINS sentinel: handled by enforce_kernel_structure() global override
+        if target_folder == "GLOBAL_MIXINS":
+            return None  # Already handled by mixin global override above
+
+        # GLOBAL_INTERFACES sentinel: handled by enforce_kernel_structure() global override
+        if target_folder == "GLOBAL_INTERFACES":
+            return None  # Already handled by interface global override above
+
+        return target_folder
 
     def run(self) -> dict[str, Any]:
         """Entry point for execute_ssot.py orchestration."""
@@ -316,10 +380,42 @@ class FileClassificationAgent(*BASE_CLASSES):
         self.file_registry = get_python_files_fast(root)
         self.stats["analyzed"] = len(self.file_registry)
 
+        # [LCD+ P6] DUPLICATE FILE DETECTION (runs once before per-file loop)
+        duplicate_violations = self._detect_duplicate_files(self.file_registry)
+        if duplicate_violations:
+            self.stats["duplicate_files"] = len(duplicate_violations)
+            for dv in duplicate_violations:
+                self.logger.warning(f"[DUPLICATE] {dv['message']}")
+
         # Iterating over a copy to allow registry updates during renames
         for idx, path in enumerate(list(self.file_registry)):
             if not path.exists():
                 continue
+
+            # [LCD+ P0] COMPOUND SUFFIX PRE-VALIDATION GATE
+            # Must run BEFORE classify_file() to prevent ambiguous classification.
+            compound_violation = self.validate_single_suffix(path.name)
+            if compound_violation:
+                self.logger.warning(
+                    f"[COMPOUND_SUFFIX] {path.name} has {len(compound_violation['found_suffixes'])} "
+                    f"suffixes: {compound_violation['found_suffixes']}. "
+                    f"Suggested: {compound_violation['suggested_name']}"
+                )
+                suggested = compound_violation["suggested_name"]
+                if suggested != path.name and not self.validate_only:
+                    if self.resolve_collision_and_rename(path, suggested):
+                        if not self.dry_run:
+                            self.stats["renamed"] += 1
+                            self.action_counters["renames"] += 1
+                            dest = path.parent / suggested
+                            if dest.exists():
+                                self.processed_paths.add(path)
+                                self.processed_paths.add(dest)
+                                path = dest
+                                self.file_registry[idx] = path
+                                import_count = self.update_imports(compound_violation["filename"], suggested)
+                                self.stats["imports_fixed"] += import_count
+                                self.action_counters["import_fixes"] += import_count
 
             ftype = self.classify_file(path)
             if ftype == "IGNORE":
@@ -332,6 +428,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             # [LAYER PURITY] Detect cognitive contamination and passive agent naming
             # [FAKE CONFIG] Detect _config.py files with active logic
+            file_content = ""
             try:
                 file_content = path.read_text(encoding="utf-8")
                 purity_violation = self.check_layer_purity(path, file_content, ftype)
@@ -355,7 +452,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 self.logger.warning(f"[{ba_violation['type']}] {path.name}: {ba_violation['message']}")
 
             # [UTILS PURITY] Ban tests, utilities_ prefix, misplaced scripts in core
-            utils_violation = self.check_utils_purity(path, content)
+            utils_violation = self.check_utils_purity(path, file_content)
             if utils_violation:
                 self.logger.warning(f"[{utils_violation['type']}] {path.name}: {utils_violation['message']}")
 
@@ -391,6 +488,78 @@ class FileClassificationAgent(*BASE_CLASSES):
                 else:
                     # If move failed (collision), log and continue to rename check in place
                     self.logger.warning("Move failed. Proceeding with in-place audit.")
+
+            # [LCD+ P1] FOLDER-SUFFIX CONSISTENCY CHECK
+            # Files in typed folders must have matching suffixes (e.g., types/ -> _types.py)
+            folder_suffix_violation = self.validate_folder_suffix_consistency(path)
+            if folder_suffix_violation:
+                self.logger.warning(
+                    f"[FOLDER_SUFFIX] {path.name} in {folder_suffix_violation['folder']}/ "
+                    f"missing required suffix. Suggested: {folder_suffix_violation['suggested_name']}"
+                )
+                fs_suggested = folder_suffix_violation["suggested_name"]
+                if fs_suggested != path.name and not self.validate_only:
+                    if self.resolve_collision_and_rename(path, fs_suggested):
+                        if not self.dry_run:
+                            self.stats["renamed"] += 1
+                            self.action_counters["renames"] += 1
+                            dest = path.parent / fs_suggested
+                            if dest.exists():
+                                self.processed_paths.add(path)
+                                self.processed_paths.add(dest)
+                                import_count = self.update_imports(path.name, fs_suggested)
+                                self.stats["imports_fixed"] += import_count
+                                self.action_counters["import_fixes"] += import_count
+                                path = dest
+                                self.file_registry[idx] = path
+
+            # [LCD+ P3] FOLDER PURITY ENFORCEMENT (BIDIRECTIONAL)
+            # Evict files from folders they don't belong in (e.g., non-Agent in reasoning/)
+            purity_violation = self._enforce_folder_purity(path)
+            if purity_violation:
+                self.logger.warning(
+                    f"[FOLDER_PURITY] {path.name} in {purity_violation['current_folder']}/ "
+                    f"violates purity rules. Should be in {purity_violation['suggested_folder']}/"
+                )
+                if purity_violation.get("target_path") and not self.validate_only:
+                    target = purity_violation["target_path"]
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    if self.resolve_collision_and_rename(
+                        path, target.name, target_dir=target.parent
+                    ):
+                        if not self.dry_run:
+                            self.stats.setdefault("purity_evictions", 0)
+                            self.stats["purity_evictions"] += 1
+                            path = target
+                            self.file_registry[idx] = path
+
+            # [LCD+ P3] CROSS-DOMAIN VIOLATION DETECTION
+            # Detect app-domain agents misplaced in agentic_core/
+            cross_domain = self._detect_cross_domain_violation(path)
+            if cross_domain:
+                self.logger.warning(
+                    f"[CROSS_DOMAIN] {cross_domain['message']}"
+                )
+
+            # [LCD+ P4] EPHEMERAL SCRIPT DETECTION
+            # Flag numbered phase/wave/sprint scripts for deletion
+            ephemeral = self._detect_ephemeral_scripts(path)
+            if ephemeral:
+                self.logger.warning(
+                    f"[EPHEMERAL] {ephemeral['message']}"
+                )
+                self.stats.setdefault("ephemeral_scripts", 0)
+                self.stats["ephemeral_scripts"] += 1
+
+            # [LCD+ P5] CROSS-LAYER NAMING VIOLATION DETECTION
+            # Files with layer indicators in their name must match their actual layer
+            cross_layer = self._detect_cross_layer_naming_violation(path)
+            if cross_layer:
+                self.logger.warning(
+                    f"[CROSS_LAYER] {cross_layer['message']}"
+                )
+                self.stats.setdefault("cross_layer_violations", 0)
+                self.stats["cross_layer_violations"] += 1
 
             new_name = self.get_compliant_name(path, ftype)
             if new_name and new_name != path.name:
@@ -564,6 +733,29 @@ class FileClassificationAgent(*BASE_CLASSES):
         except (SyntaxError, UnicodeDecodeError, OSError):
             return "IGNORE"
 
+        # [PRIORITY 2.3] FILENAME DUAL-TAG CONFLICT DETECTION
+        # RCA: Files with multiple classification tags (e.g., "code_detection_types.py"
+        # carrying both AGENT and TYPES) create ambiguous classification. When detected,
+        # resolve via folder context: the folder the file lives in is the source of truth.
+        filename_tags = self._detect_filename_tag_conflicts(path)
+        if len(filename_tags) > 1:
+            self.logger.warning(
+                f"[DUAL-TAG] {path.name} carries conflicting tags: {filename_tags}. "
+                f"Resolving via folder context."
+            )
+            # Folder context wins: if the file lives in types/, it's TYPES
+            # NOTE: reasoning/ is intentionally EXCLUDED — files in reasoning/ with
+            # dual tags should NOT be force-classified as AGENT. Let AST analysis
+            # determine if it's actually an AGENT, SERVICE, CLASS, etc.
+            parent_folder = path.parent.name
+            folder_to_filetype = {
+                "types": "TYPES", "config": "CONFIG",
+                "validators": "VALIDATOR", "utils": "UTILITY", "scripts": "SCRIPT",
+                "enforcement": "STRATEGY",
+            }
+            if parent_folder in folder_to_filetype:
+                return folder_to_filetype[parent_folder]
+
         # [PRIORITY 2.5] SELF DETECTION: FileClassificationAgent is always an AGENT
         if path.name == "FileClassificationAgent.py":
             return "AGENT"
@@ -590,6 +782,12 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Collect all ClassDef nodes
         class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         if not class_nodes:
+            # [PRIORITY 4] SCRIPT Detection — only for no-class files
+            # Scripts are functions + if __name__ == "__main__", no classes.
+            # Files WITH classes use class-based routing (AGENT, STRATEGY, etc.)
+            script_indicators = self._detect_script_patterns(tree, path)
+            if script_indicators["is_script"]:
+                return "SCRIPT"
             return "UTILITY"
 
         class_names = [node.name for node in class_nodes]
@@ -689,16 +887,6 @@ class FileClassificationAgent(*BASE_CLASSES):
         validator_patterns = ["validator", "validate", "check", "verify", "Validator", "Check", "Verify"]
         is_validator = self._detect_validator_patterns(tree, path, content, validator_patterns)
 
-        # [PRIORITY 4] SCRIPT Detection - MOVED AFTER AGENT CHECK
-        # CRITICAL FIX: Explicitly exclude Agents, Orchestrators, Engines, Adapters from being classified as Scripts
-        if path.name != "FileClassificationAgent.py" and not is_agent:
-            # Exclude architectural components from SCRIPT classification (case-insensitive)
-            exclusion_keywords = ["agent", "orchestrator", "engine", "adapter"]
-            if not any(keyword in path.name.lower() for keyword in exclusion_keywords):
-                script_indicators = self._detect_script_patterns(tree, path)
-                if script_indicators["is_script"]:
-                    return "SCRIPT"
-
         # [WINDSURF IMPLEMENTATION] PRIORITY EXECUTION - Order matters!
         # 1. STUB: Already handled above (preempts all)
         # 2. BASE_AGENT: Already handled above
@@ -719,15 +907,29 @@ class FileClassificationAgent(*BASE_CLASSES):
         if is_interface_protocol or is_protocol:
             return "PROTOCOL"
 
-        # 6. ORCHESTRATOR: Detect if Orchestrator in class name or path
+        # 6. ORCHESTRATOR: Specialized agent type (must come before AGENT)
         if is_orchestrator:
             return "ORCHESTRATOR"
-        # 7. STRATEGY: Classes ending in Strategy
-        elif is_strategy:
+
+        # 7. AGENT: Strongest architectural signal — Agent suffix or Agent inheritance
+        # MUST come before STRATEGY/ADAPTER/CONFIG/VALIDATOR because a class named
+        # "FooStrategyAgent" is still an AGENT, not a STRATEGY.
+        if is_agent:
+            return "AGENT"
+
+        # 7.5. STRATEGY: Classes ending in Strategy (non-agent)
+        if is_strategy:
             return "STRATEGY"
-        # 7.5. ADAPTER: Classes ending in Adapter, Wrapper, Bridge
-        elif is_adapter:
+        # 7.6. ADAPTER: Classes ending in Adapter, Wrapper, Bridge (non-agent)
+        if is_adapter:
             return "ADAPTER"
+
+        # 7.7. SERVICE: Singleton services, monitors, collectors → utils/
+        # These are infrastructure classes with _instance pattern, record_*/get_metrics methods.
+        # MUST come after AGENT (so FooMonitorAgent stays AGENT).
+        if self._is_service_singleton(primary_node, primary_name):
+            return "SERVICE"
+
         # APP-SPECIFIC CLASSIFICATION OVERRIDES
         is_app = any(p.startswith("apps_") for p in path.parts)
         if is_app:
@@ -738,13 +940,15 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Force VALIDATOR on hybrid names
             if "Validator" in primary_name and "Agent" in primary_name:
                 return "VALIDATOR"
-
-        # 8. AGENT: PRIORITY - Agent detection must come before CONFIG/VALIDATOR
-        # Files can contain Config/Validator classes but if primary class is Agent, it's an AGENT
-        if is_agent:
-            return "AGENT"
         # 9. CONFIG: Detect if file name or path contains config, blueprint, settings, or manifest
+        # [LCD+ P1] CONTENT-SCORE TIEBREAKER: If filename says CONFIG but content is
+        # overwhelmingly TYPES (dataclasses, BaseModel, Enum, Protocol), override to TYPES.
         elif is_config:
+            content_scores = self._compute_content_scores(path)
+            types_score = content_scores.get("TYPES", 0)
+            config_score = content_scores.get("CONFIG", 0)
+            if types_score > 0 and types_score > config_score * 2:
+                return "TYPES"
             return "CONFIG"
         # 10. VALIDATOR: Detect if path contains validators/ or file name ends in _validator
         elif is_validator:
@@ -777,6 +981,36 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
+
+    # ========================================================================
+    # FILENAME TAG CONFLICT DETECTION (RCA hardening)
+    # ========================================================================
+
+    def _detect_filename_tag_conflicts(self, path: Path) -> set[str]:
+        """
+        Detect conflicting classification tags in a filename.
+
+        Uses COMPOUND_SUFFIX_CONFLICTS from blueprint config to match specific
+        compound suffix patterns (e.g., "_agent_types", "_config_script") that
+        indicate two classification tags in one filename.
+
+        Returns empty set if clean, or the set of conflicting tags if found.
+        Does NOT flag domain words (e.g., "agents" in "find_misnamed_agents_util.py").
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            COMPOUND_SUFFIX_CONFLICTS,
+        )
+
+        stem = path.stem  # filename without .py
+        detected_tags: set[str] = set()
+
+        for pattern, tag_a, tag_b, _example in COMPOUND_SUFFIX_CONFLICTS:
+            if re.search(pattern, stem):
+                detected_tags.add(tag_a)
+                detected_tags.add(tag_b)
+                return detected_tags
+
+        return set()
 
     # ========================================================================
     # ENHANCED AST-BASED DETECTION METHODS
@@ -1024,6 +1258,608 @@ class FileClassificationAgent(*BASE_CLASSES):
                     }
                 )
         return violations
+
+    def validate_single_suffix(self, filename: str) -> dict[str, Any] | None:
+        """
+        Pre-classification gate: reject files with multiple architectural suffixes.
+
+        LCD+ Single-Suffix Rule: every .py file must have AT MOST ONE known
+        architectural suffix. Files like *_types_config.py have ambiguous
+        classification and must be renamed before processing.
+
+        Args:
+            filename: The filename to check (e.g., "model_provider_types_config.py")
+
+        Returns:
+            None if compliant, or a violation dict with:
+                - found_suffixes: list of detected suffixes
+                - primary_suffix: recommended suffix (rightmost match)
+                - suggested_name: auto-corrected filename with single suffix
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            KNOWN_ARCHITECTURAL_SUFFIXES,
+        )
+
+        if not filename.endswith(".py") or filename in ("__init__.py", "__main__.py", "conftest.py"):
+            return None
+
+        stem = filename[:-3]  # Remove .py
+
+        # Find suffixes that appear as TRAILING segments in the stem.
+        # We iteratively strip trailing suffixes to detect compound chains.
+        # E.g., "model_provider_types_config" -> strip "_config" -> "model_provider_types" -> strip "_types"
+        # This correctly ignores semantic words like "_strategy" in "healing_mixin".
+        found_suffixes: list[str] = []
+        remaining = stem
+        while True:
+            matched = False
+            for suffix in KNOWN_ARCHITECTURAL_SUFFIXES:
+                if remaining.endswith(suffix) and len(remaining) > len(suffix):
+                    found_suffixes.append(suffix)
+                    remaining = remaining[: -len(suffix)]
+                    matched = True
+                    break
+            if not matched:
+                break
+
+        if len(found_suffixes) <= 1:
+            return None
+
+        # Primary suffix is the outermost (first stripped = rightmost in original)
+        rightmost_suffix = found_suffixes[0]
+
+        # Build suggested name by stripping all suffixes except the primary one
+        sanitized_stem = stem
+        for suffix in found_suffixes:
+            if suffix != rightmost_suffix:
+                sanitized_stem = sanitized_stem.replace(suffix, "")
+
+        # Clean up double/trailing underscores from stripping
+        sanitized_stem = re.sub(r"_{2,}", "_", sanitized_stem).strip("_")
+        suggested_name = f"{sanitized_stem}{rightmost_suffix}.py" if sanitized_stem else filename
+
+        return {
+            "found_suffixes": found_suffixes,
+            "primary_suffix": rightmost_suffix,
+            "suggested_name": suggested_name,
+            "filename": filename,
+        }
+
+    def validate_folder_suffix_consistency(self, path: Path) -> dict[str, Any] | None:
+        """
+        Enforce that files in typed LCD folders have matching suffixes.
+
+        Rules:
+        - Files in types/   -> must end with _types.py, _protocol.py, or match I*Protocol.py
+        - Files in utils/   -> must end with _util.py, _mixin.py, or _helper.py
+        - Files in config/  -> must end with _config.py, _settings.py, or _blueprint.py
+        - Files in reasoning/ -> must end with Agent.py or other reasoning suffixes
+
+        Args:
+            path: Full file path to validate
+
+        Returns:
+            None if compliant, or a dict with 'folder', 'expected_suffixes', 'suggested_name'.
+        """
+        filename = path.name
+        parent_name = path.parent.name
+
+        if filename in ("__init__.py", "__main__.py", "conftest.py"):
+            return None
+
+        if not filename.endswith(".py"):
+            return None
+
+        # Folder-to-allowed-suffix mapping (LCD canonical rules)
+        folder_suffix_rules: dict[str, list[str]] = {
+            "types": ["_types.py", "_protocol.py"],
+            "utils": ["_util.py", "_mixin.py", "_helper.py"],
+            "config": ["_config.py", "_settings.py", "_blueprint.py"],
+        }
+
+        expected_suffixes = folder_suffix_rules.get(parent_name)
+        if expected_suffixes is None:
+            return None
+
+        # Interface protocol files (I*Protocol.py) are exempt in types/
+        if parent_name == "types" and filename.startswith("I") and filename[1:2].isupper():
+            return None
+
+        # Check if file already has a correct suffix
+        if any(filename.endswith(s) for s in expected_suffixes):
+            return None
+
+        # Build suggested name: append the primary suffix for this folder
+        stem = filename[:-3]  # Remove .py
+        primary_suffix = expected_suffixes[0]  # e.g., "_types.py" for types/
+        suggested_name = f"{stem}{primary_suffix}"
+
+        return {
+            "folder": parent_name,
+            "expected_suffixes": expected_suffixes,
+            "suggested_name": suggested_name,
+            "filename": filename,
+        }
+
+    def _enforce_folder_purity(self, path: Path) -> dict[str, Any] | None:
+        """
+        Bidirectional folder purity enforcement.
+
+        Unlike enforce_kernel_structure() which only routes files INTO correct folders,
+        this method EVICTS files from folders they don't belong in.
+
+        Example: reasoning/ should ONLY contain *Agent.py files.
+        A file like error_recovery_guardrail.py in reasoning/ is a purity violation.
+
+        Handles both Python AND non-Python files (YAML, JSON, HTML, JS, CSS).
+
+        Returns:
+            None if file is in a valid folder, or violation dict with eviction target.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            FOLDER_PURITY_RULES,
+            NON_PYTHON_FOLDER_ROUTES,
+            SUFFIX_TO_FOLDER,
+        )
+
+        filename = path.name
+        if filename in ("__init__.py", "__main__.py", "conftest.py"):
+            return None
+
+        folder_name = path.parent.name
+        if folder_name not in FOLDER_PURITY_RULES:
+            return None
+
+        allowed_patterns = FOLDER_PURITY_RULES[folder_name]
+
+        # Check if filename matches ANY allowed pattern for this folder
+        for pattern in allowed_patterns:
+            if re.match(pattern, filename):
+                return None
+
+        # File doesn't match any allowed pattern — purity violation.
+        # Determine correct folder: use NON_PYTHON_FOLDER_ROUTES for non-Python files,
+        # SUFFIX_TO_FOLDER for Python files.
+        correct_folder = None
+
+        if not filename.endswith(".py"):
+            # Non-Python: check exact filename first, then extension
+            if filename in NON_PYTHON_FOLDER_ROUTES:
+                correct_folder = NON_PYTHON_FOLDER_ROUTES[filename]
+            else:
+                ext = path.suffix
+                correct_folder = NON_PYTHON_FOLDER_ROUTES.get(ext)
+        else:
+            # Python: use SUFFIX_TO_FOLDER
+            for suffix, folder in sorted(SUFFIX_TO_FOLDER.items(), key=lambda x: len(x[0]), reverse=True):
+                if filename.endswith(suffix):
+                    correct_folder = folder
+                    break
+
+        # For Python files in reasoning/ that aren't *Agent.py, use AST-based routing
+        if correct_folder is None and folder_name == "reasoning" and filename.endswith(".py"):
+            file_type = self.classify_file(path)
+            from agentic_core.L5_safety.config.structure_blueprint_config import FILETYPE_TO_FOLDER
+            correct_folder = FILETYPE_TO_FOLDER.get(file_type)
+
+        # Compute target path
+        layer_root = None
+        for part_idx, part in enumerate(path.parts):
+            if part.startswith("L") and "_" in part:
+                layer_root = Path(*path.parts[: part_idx + 1])
+                break
+
+        target_folder = correct_folder or "enforcement"
+        target_path = layer_root / target_folder / filename if layer_root else None
+
+        return {
+            "type": "FOLDER_PURITY_VIOLATION",
+            "filename": filename,
+            "current_folder": folder_name,
+            "allowed_patterns": allowed_patterns,
+            "suggested_folder": target_folder,
+            "target_path": target_path,
+        }
+
+    def _detect_cross_domain_violation(self, path: Path) -> dict[str, Any] | None:
+        """
+        Detect app-domain agents misplaced in agentic_core/.
+
+        Files with app-specific prefixes (Lic*, Campaign*, Outreach*) belong in
+        their respective apps_* directories, not in agentic_core/.
+
+        Returns:
+            None if no violation, or violation dict with correct app domain.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            APP_DOMAIN_PREFIXES,
+        )
+
+        filename = path.name
+        path_str = str(path)
+
+        # Only check files inside agentic_core/
+        if "agentic_core" not in path_str:
+            return None
+
+        for prefix in APP_DOMAIN_PREFIXES:
+            if filename.startswith(prefix):
+                # Determine which app domain this belongs to
+                app_domain = f"apps_{prefix.lower()}"
+                return {
+                    "type": "CROSS_DOMAIN_VIOLATION",
+                    "filename": filename,
+                    "prefix": prefix,
+                    "current_location": str(path.parent),
+                    "suggested_domain": app_domain,
+                    "message": (
+                        f"{filename} has app-domain prefix '{prefix}' but is in agentic_core/. "
+                        f"It should be in {app_domain}/engines/."
+                    ),
+                }
+
+        return None
+
+    def _detect_ephemeral_scripts(self, path: Path) -> dict[str, Any] | None:
+        """
+        Detect one-off migration/maintenance scripts with numbered phase/wave/sprint patterns.
+
+        These files are ephemeral artifacts that accumulate as tech debt.
+        Exempts legitimate domain uses (e.g., TwoPhaseDeduplication, execution_phase_types).
+
+        Returns:
+            None if file is clean, or violation dict if ephemeral script detected.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            EPHEMERAL_PATTERN_EXEMPTIONS,
+            FORBIDDEN_EPHEMERAL_PATTERNS,
+        )
+
+        filename = path.name
+        if not filename.endswith(".py"):
+            return None
+
+        # Check exemptions first
+        for exempt_pattern in EPHEMERAL_PATTERN_EXEMPTIONS:
+            if re.search(exempt_pattern, filename):
+                return None
+
+        # Check forbidden patterns
+        for pattern in FORBIDDEN_EPHEMERAL_PATTERNS:
+            if re.search(pattern, filename):
+                return {
+                    "type": "EPHEMERAL_SCRIPT",
+                    "filename": filename,
+                    "pattern_matched": pattern,
+                    "message": (
+                        f"{filename} matches ephemeral pattern '{pattern}'. "
+                        f"Numbered phase/wave/sprint scripts are one-off migration artifacts "
+                        f"and should be deleted or archived."
+                    ),
+                }
+
+        return None
+
+    def _detect_cross_layer_naming_violation(self, path: Path) -> dict[str, Any] | None:
+        """
+        Detect files with layer indicators in their filename that don't match their
+        actual layer location.
+
+        Example: l5_streamer.py in L6_observability/ — the 'l5' in the filename
+        implies it belongs to L5_safety, but it's physically in L6.
+
+        Returns:
+            None if no violation, or violation dict with details.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            LAYER_PREFIX_PATTERN,
+        )
+
+        filename = path.name
+        path_str = str(path)
+
+        # Extract layer number from filename
+        name_match = re.search(LAYER_PREFIX_PATTERN, filename)
+        if not name_match:
+            return None
+
+        filename_layer = name_match.group(1)  # e.g., "5" from "l5_streamer"
+
+        # Extract layer number from path
+        path_match = re.search(r"[/\\]L([0-6])_", path_str)
+        if not path_match:
+            return None  # Not in a layer folder
+
+        path_layer = path_match.group(1)  # e.g., "6" from "L6_observability"
+
+        if filename_layer == path_layer:
+            return None  # Layer in name matches layer in path
+
+        # Map layer numbers to names for readable messages
+        layer_names = {
+            "0": "L0_maintenance", "1": "L1_cognition", "2": "L2_execution",
+            "3": "L3_orchestration", "4": "L4_state", "5": "L5_safety",
+            "6": "L6_observability",
+        }
+
+        return {
+            "type": "CROSS_LAYER_NAMING_VIOLATION",
+            "filename": filename,
+            "filename_layer": f"L{filename_layer}",
+            "actual_layer": f"L{path_layer}",
+            "filename_layer_name": layer_names.get(filename_layer, f"L{filename_layer}"),
+            "actual_layer_name": layer_names.get(path_layer, f"L{path_layer}"),
+            "message": (
+                f"{filename} contains layer indicator 'L{filename_layer}' but lives in "
+                f"{layer_names.get(path_layer, f'L{path_layer}')}. Either rename the file "
+                f"to remove the layer prefix, or move it to {layer_names.get(filename_layer, f'L{filename_layer}')}/."
+            ),
+        }
+
+    def _detect_duplicate_files(self, file_registry: list[Path]) -> list[dict[str, Any]]:
+        """
+        Detect duplicate filenames across the codebase and determine which copy is canonical.
+
+        Uses CANONICAL_LOCATION_PRIORITY to resolve which copy wins. The copy in the
+        highest-priority location is kept; others are flagged for deletion.
+
+        Also checks whether any importers reference the duplicate's path — if so,
+        the import must be redirected to the canonical location before deletion.
+
+        Args:
+            file_registry: List of all file paths being audited.
+
+        Returns:
+            List of violation dicts, one per duplicate file (not per group).
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            CANONICAL_LOCATION_PRIORITY,
+            DUPLICATE_DETECTION_EXEMPT,
+        )
+
+        # Build filename -> [paths] index
+        filename_index: dict[str, list[Path]] = {}
+        for path in file_registry:
+            if path.name in DUPLICATE_DETECTION_EXEMPT:
+                continue
+            if not path.name.endswith(".py"):
+                continue
+            filename_index.setdefault(path.name, []).append(path)
+
+        violations = []
+        for filename, paths in filename_index.items():
+            if len(paths) < 2:
+                continue
+
+            # Score each path by canonical priority (lower index = higher priority)
+            def priority_score(p: Path) -> int:
+                path_str = str(p).replace("\\", "/")
+                for idx, location in enumerate(CANONICAL_LOCATION_PRIORITY):
+                    if location in path_str:
+                        return idx
+                return len(CANONICAL_LOCATION_PRIORITY)  # Unknown = lowest priority
+
+            scored = sorted(paths, key=priority_score)
+            canonical = scored[0]
+            duplicates = scored[1:]
+
+            for dup in duplicates:
+                violations.append({
+                    "type": "DUPLICATE_FILE",
+                    "filename": filename,
+                    "canonical_path": str(canonical),
+                    "duplicate_path": str(dup),
+                    "message": (
+                        f"{filename} exists in multiple locations. "
+                        f"Canonical: {canonical.parent}. "
+                        f"Duplicate: {dup.parent} — should be deleted."
+                    ),
+                })
+
+        return violations
+
+    def _compute_layer_affinity(self, path: Path) -> dict[str, float]:
+        """
+        Compute semantic layer affinity scores using AST analysis.
+
+        Analyzes:
+        1. Module/class docstrings for layer keywords
+        2. Class names for domain indicators
+        3. Method names for behavioral patterns
+        4. Import targets for dependency affinity
+
+        Returns:
+            Dict mapping layer names (L0-L6) to affinity scores (0.0-1.0).
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            LAYER_KEYWORD_AFFINITY,
+        )
+
+        scores: dict[str, float] = {layer: 0.0 for layer in LAYER_KEYWORD_AFFINITY}
+
+        try:
+            content = path.read_text(encoding="utf-8", errors="replace")
+            tree = ast.parse(content)
+        except (SyntaxError, OSError):
+            return scores
+
+        # Combine all text signals: module docstring + class names + method names + docstrings
+        text_signals: list[str] = []
+
+        # Module docstring
+        module_doc = ast.get_docstring(tree)
+        if module_doc:
+            text_signals.append(module_doc.lower())
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                text_signals.append(node.name.lower())
+                class_doc = ast.get_docstring(node)
+                if class_doc:
+                    text_signals.append(class_doc.lower())
+
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                text_signals.append(node.name.lower())
+
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                text_signals.append(node.module.lower())
+
+        combined_text = " ".join(text_signals)
+
+        # Score each layer based on keyword matches
+        total_hits = 0
+        for layer, keywords in LAYER_KEYWORD_AFFINITY.items():
+            hits = 0
+            for keyword in keywords:
+                # Use word boundary-ish matching (keyword appears as substring)
+                count = combined_text.count(keyword.lower())
+                hits += count
+            scores[layer] = float(hits)
+            total_hits += hits
+
+        # Normalize to 0.0-1.0
+        if total_hits > 0:
+            for layer in scores:
+                scores[layer] = round(scores[layer] / total_hits, 3)
+
+        return scores
+
+    def _compute_content_scores(self, path: Path) -> dict[str, int]:
+        """
+        AST-based content scoring to determine true file type by content analysis.
+
+        Walks the AST and assigns weighted scores to each classification category
+        based on actual code patterns, NOT filename suffixes.
+
+        Scoring weights:
+        - TYPES:     +10 per @dataclass, +10 per BaseModel, +10 per Enum, +15 per Protocol
+        - CONFIG:    +5 per UPPER_CASE constant, +3 per settings dict pattern
+        - AGENT:     +20 per class ending in 'Agent' or inheriting from *Agent
+        - UTILITY:   +3 per standalone function (not a class method)
+        - VALIDATOR: +5 per validate_/check_ function
+
+        Args:
+            path: File path to analyze
+
+        Returns:
+            Dict mapping category names to integer scores.
+        """
+        scores: dict[str, int] = {
+            "TYPES": 0,
+            "CONFIG": 0,
+            "AGENT": 0,
+            "UTILITY": 0,
+            "VALIDATOR": 0,
+        }
+
+        try:
+            content = path.read_text(encoding="utf-8")
+            tree = ast.parse(content)
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            return scores
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                # Agent indicators
+                if node.name.endswith("Agent"):
+                    scores["AGENT"] += 20
+                for base in node.bases:
+                    if isinstance(base, ast.Name) and "Agent" in base.id:
+                        scores["AGENT"] += 20
+                    elif isinstance(base, ast.Attribute) and "Agent" in base.attr:
+                        scores["AGENT"] += 20
+
+                # Type indicators: @dataclass
+                for decorator in node.decorator_list:
+                    if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                        scores["TYPES"] += 10
+                    elif isinstance(decorator, ast.Call):
+                        if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
+                            scores["TYPES"] += 10
+
+                # Type indicators: BaseModel, Enum, Protocol inheritance
+                for base in node.bases:
+                    if isinstance(base, ast.Name):
+                        if base.id == "BaseModel":
+                            scores["TYPES"] += 10
+                        elif base.id == "Enum":
+                            scores["TYPES"] += 10
+                        elif base.id == "Protocol":
+                            scores["TYPES"] += 15
+                    elif isinstance(base, ast.Attribute):
+                        if base.attr == "BaseModel":
+                            scores["TYPES"] += 10
+                        elif base.attr == "Enum":
+                            scores["TYPES"] += 10
+                        elif base.attr == "Protocol":
+                            scores["TYPES"] += 15
+
+            # Config indicators: UPPER_CASE constant assignments
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id.isupper() and len(target.id) > 1:
+                        scores["CONFIG"] += 5
+
+            # Utility indicators: standalone functions (module-level)
+            elif isinstance(node, ast.FunctionDef) and not isinstance(node, ast.AsyncFunctionDef):
+                # Validator indicators
+                if node.name.startswith(("validate_", "check_", "verify_", "ensure_")):
+                    scores["VALIDATOR"] += 5
+                else:
+                    scores["UTILITY"] += 3
+
+            elif isinstance(node, ast.AsyncFunctionDef):
+                if node.name.startswith(("validate_", "check_", "verify_", "ensure_")):
+                    scores["VALIDATOR"] += 5
+                else:
+                    scores["UTILITY"] += 3
+
+        return scores
+
+    def classify_file_with_confidence(self, path: Path) -> ClassificationResult:
+        """
+        Content-weighted classification with confidence scoring.
+
+        Uses AST-based content analysis to determine file type and reports
+        confidence level. Low-confidence results (<0.6) include ambiguity warnings.
+
+        Args:
+            path: File path to classify
+
+        Returns:
+            ClassificationResult with file_type, confidence, signals, and warnings.
+        """
+        scores = self._compute_content_scores(path)
+        total = sum(scores.values())
+
+        if total == 0:
+            return ClassificationResult(
+                file_type="UTILITY",
+                confidence=0.5,
+                signals=[],
+                warnings=["No classification signals found in content"],
+            )
+
+        winner = max(scores, key=scores.get)
+        confidence = scores[winner] / total
+
+        signals = [f"{k}={v}" for k, v in scores.items() if v > 0]
+
+        warnings = []
+        if confidence < 0.6:
+            sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+            if len(sorted_scores) > 1:
+                runner_up_name, runner_up_score = sorted_scores[1]
+                warnings.append(
+                    f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up_name} ({runner_up_score})"
+                )
+
+        return ClassificationResult(
+            file_type=winner,
+            confidence=confidence,
+            signals=signals,
+            warnings=warnings,
+        )
 
     def _detect_test_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
@@ -1312,7 +2148,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                     # Check for config methods
                     elif isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
-                        if item.name in ("load", "save", "validate", "configure", "get_setting"):
+                        if item.name in ("load", "save", "configure", "get_setting", "from_env"):
                             config_methods += 1
 
             # Check module-level constants
@@ -1447,14 +2283,25 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if decorator.attr in agent_decorators:
                     return True
 
-        # Check 4: Method-based detection
-        agent_methods = {"execute", "act", "heal", "run"}
+        # Check 4: Method-based detection (HARDENED — requires corroborating signal)
+        # 'execute', 'act', 'heal', 'run' are common in non-agent classes (engines,
+        # services, orchestrators). Require BOTH an agent method AND a corroborating
+        # signal: file in reasoning/ folder OR 'agent' keyword in class docstring.
+        agent_methods = {"execute", "act", "heal"}  # 'run' removed — too generic
+        has_agent_method = False
         for item in node.body:
-            if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if item.name in agent_methods:
-                    return True
-
-        # Check 5: REMOVED - Structural context (low-signal folder check)
+                    has_agent_method = True
+                    break
+        if has_agent_method:
+            # Corroborating signal: file is in reasoning/ folder
+            if "reasoning" in file_path.parts:
+                return True
+            # Corroborating signal: class docstring mentions 'agent'
+            docstring = ast.get_docstring(node)
+            if docstring and "agent" in docstring.lower():
+                return True
 
         return False
 
@@ -1487,6 +2334,65 @@ class FileClassificationAgent(*BASE_CLASSES):
             return True
 
         return False
+
+    def _is_service_singleton(self, node: ast.ClassDef, class_name: str) -> bool:
+        """
+        Detect singleton service/infrastructure classes (NOT agents).
+
+        These are classes like RagTelemetryCollector, UnifiedAgentMonitor,
+        ExecutionTimer — infrastructure singletons that belong in utils/.
+
+        Detection criteria (requires 2+ signals):
+        1. Class name ends with a SERVICE_CLASS_INDICATOR (Collector, Monitor, etc.)
+        2. Has _instance class attribute (singleton pattern)
+        3. Has record_*/emit_*/publish_*/get_metrics methods (telemetry API)
+        4. Has __new__ with singleton guard (cls._instance is None)
+
+        Returns True only if the class matches 2+ signals to avoid false positives.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            SERVICE_CLASS_INDICATORS,
+        )
+
+        signals = 0
+
+        # Signal 1: Class name contains a service indicator suffix
+        if any(class_name.endswith(ind) for ind in SERVICE_CLASS_INDICATORS):
+            signals += 1
+
+        # Signal 2: Singleton _instance class attribute
+        for item in node.body:
+            if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                if item.target.id == "_instance":
+                    signals += 1
+                    break
+            elif isinstance(item, ast.Assign):
+                for target in item.targets:
+                    if isinstance(target, ast.Name) and target.id == "_instance":
+                        signals += 1
+                        break
+
+        # Signal 3: Service-like methods (record_*, emit_*, get_metrics, etc.)
+        service_method_prefixes = ("record_", "emit_", "publish_", "collect_", "track_")
+        service_method_names = {"get_metrics", "get_health_status", "reset"}
+        service_method_count = 0
+        for item in node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if any(item.name.startswith(p) for p in service_method_prefixes):
+                    service_method_count += 1
+                elif item.name in service_method_names:
+                    service_method_count += 1
+        if service_method_count >= 2:
+            signals += 1
+
+        # Signal 4: __new__ with singleton guard
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef) and item.name == "__new__":
+                signals += 1
+                break
+
+        # Require 2+ signals to classify as SERVICE (avoids false positives)
+        return signals >= 2
 
     def _is_factory_class(self, node: ast.ClassDef) -> bool:
         """
@@ -2355,7 +3261,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # In Core, Agents follow the Domain (Guardrails, Registry, etc.)
         # We explicitly whitelist valid functional domains for each type.
         core_rules = {
-            "AGENT": {"reasoning", "enforcement"},
+            "AGENT": {"reasoning"},  # [LCD+ P2] Tightened: agents MUST go to reasoning/, not enforcement/
             "ORCHESTRATOR": {"reasoning"},
             "STRATEGY": {"reasoning"},
             "ADAPTER": {"reasoning"},
@@ -2363,7 +3269,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "CONFIG": {"config"},
             "PROTOCOL": {"types"},
             "TYPES": {"types"},
-            "MIXIN": {"utils", "mixins"},
+            "MIXIN": {"mixins"},  # [LCD+ P2] Tightened: mixins MUST go to agentic_core/mixins/
             "CLASS": {"base_agents", "reasoning"},
             "SCRIPT": {"scripts"},
             "UTILITY": {"utils"},

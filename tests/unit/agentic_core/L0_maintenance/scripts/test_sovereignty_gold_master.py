@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import (
+from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer_script import (
     PascalSovereigntyFixer,
 )
 
@@ -48,7 +48,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("from healer_mixin import", updated, "Absolute import should work without dots")
+        self.assertIn("from HealerMixin import", updated, "Absolute import should be updated to new module name")
 
     def test_relative_import_triple_dots(self):
         """Edge Case: Triple-dot relative imports (from ...module)."""
@@ -130,7 +130,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("from .tracing_mixin import", updated, "Direct relative import should be updated")
+        self.assertIn("from .TracingMixin import", updated, "Direct relative import should be updated to new module name")
 
     def test_import_alias_with_relative(self):
         """Verify import aliases work with absolute imports."""
@@ -143,7 +143,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         )
         updated = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("import healer_mixin as hm", updated, "Import alias should be preserved")
+        self.assertIn("import HealerMixin as hm", updated, "Import alias should be updated to new module name")
 
 
 class TestRelativeImportPatterns(unittest.TestCase):

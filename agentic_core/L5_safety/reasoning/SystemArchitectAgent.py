@@ -119,7 +119,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             if "pytest" in str(proj_root) or "tmp" in str(proj_root):
                 Logger.info("Test Environment Detected: Bypassing strict HierarchyAgent validation.")
                 return []
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
             return HierarchyAgent(proj_root).validate_hierarchy()
 

@@ -10,7 +10,7 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
 
 def test_location_agent_heal_method():

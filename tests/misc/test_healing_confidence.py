@@ -43,7 +43,7 @@ class HighConfidenceTestAgent:
         decision_engine = SovereignDecisionEngine(enable_llm=False)
 
         # Create agents dict
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         agents = {"LocationAgent": LocationAgent(project_root)}
 
@@ -127,7 +127,7 @@ class DirectTestAgent:
 """)
 
     try:
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         agent = LocationAgent(project_root)
 

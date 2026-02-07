@@ -16,7 +16,7 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
-from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
 # Configure Logging
 logging.basicConfig(
@@ -37,7 +37,7 @@ def run_mission():
     agent._autonomous_mode = True
 
     # Also enable autonomous mode on the healer agent
-    from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
     healer = LocationHealerAgent(project_root=project_root)
     healer._autonomous_mode = True

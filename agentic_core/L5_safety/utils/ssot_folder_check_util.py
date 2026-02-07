@@ -22,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
     FilesystemSSOTReconcilerAgent,
 )
 
@@ -93,7 +93,7 @@ Examples:
         return 0
     else:
         print("[FAIL] SSOT Violations Detected.")
-        print("   Run 'python -m agentic_core.L5_safety.validators.HierarchyAgent --heal' to fix.")
+        print("   Run 'python -m agentic_core.L5_safety.reasoning.HierarchyAgent --heal' to fix.")
         return 1
 
 

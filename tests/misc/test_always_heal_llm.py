@@ -49,7 +49,7 @@ class AlwaysHealTestAgent:
         )
 
         # Create agents dict
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         agents = {"LocationAgent": LocationAgent(project_root)}
 

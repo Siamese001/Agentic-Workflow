@@ -37,7 +37,7 @@ class TestPhase4PerimeterDetection:
 
     def test_location_validator_universal_scanning(self, mock_project):
         """Test 4.1: Verify LocationValidatorAgent scans all SOVEREIGN_REGISTRY roots."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         agent = LocationValidatorAgent(project_root=mock_project)
         results = agent.run()
@@ -53,7 +53,7 @@ class TestPhase4PerimeterDetection:
 
     def test_location_validator_scripts_isolation(self, mock_project):
         """Test 4.2: Verify AST import isolation for scripts/."""
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         # Create scripts folder with violating import
         scripts_dir = mock_project / "scripts"
@@ -125,7 +125,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_sync_method_exists(self, mock_project):
         """Test 5.1a: Verify run_ci_verification_sync() method exists."""
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 
@@ -137,7 +137,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_sync_returns_tuple(self, mock_project):
         """Test 5.1b: Verify run_ci_verification_sync() returns (bool, dict)."""
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 
@@ -160,7 +160,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_headless_no_stdin(self, mock_project):
         """Test 5.1c: Verify CI verification works without stdin."""
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 
@@ -201,7 +201,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_no_structural_checks(self):
         """Test 6.1: Verify HygieneGuardianAgent has no structural/location checks."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian import HygieneGuardianAgent
 
         # Get methods defined directly on HygieneGuardianAgent (not inherited)
         own_methods = [
@@ -233,7 +233,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_content_focus(self, tmp_path):
         """Test 6.2: Verify HygieneGuardianAgent focuses on content hygiene."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian import HygieneGuardianAgent
 
         # Create files with hygiene issues
         (tmp_path / "empty.py").write_text("")  # Empty file
@@ -254,7 +254,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_uses_canonical_keys(self, tmp_path):
         """Test 6.3: Verify HygieneGuardianAgent uses canonical heal_repository keys."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian import HygieneGuardianAgent
 
         agent = HygieneGuardianAgent(tmp_path, dry_run=True)
         result = agent.heal_repository(dry_run=True)

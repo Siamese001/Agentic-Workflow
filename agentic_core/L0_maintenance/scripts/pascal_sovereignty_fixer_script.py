@@ -60,28 +60,23 @@ class PascalSovereigntyFixer:
         self.file_registry: list[Path] = []
 
     def classify_file(self, path: Path) -> FileType:
-        """Analyze file AST to determine architectural role with strict test exemptions."""
-        # --- EXEMPTION PATCH: TESTS ---
-        # Critical Analysis: Preserving Pytest Discovery. Renaming test_*.py to PascalCase
-        # would render the CI/CD pipeline blind as pytest would ignore the files.
+        """Classify file by delegating to FileClassificationAgent (SSOT).
+
+        [DEDUP 2026-02-07] Replaced independent AST analysis with FCA delegation.
+        Maps FCA's rich type taxonomy back to PSF's simpler FileType.
+        """
+        # Preserve original exemptions that FCA doesn't handle
         if path.name.startswith("test_") or path.name.endswith("_test.py") or "tests" in path.parts:
             return "IGNORE"
-
-        if path.name == "conftest.py" or path.name == "__init__.py":
+        if path.name in ("conftest.py", "__init__.py"):
             return "IGNORE"
-
-        # --- EXEMPTION PATCH: MIXINS ---
-        # Mixins are explicitly categorized to enforce snake_case naming conventions,
-        # differentiating them from the PascalCase requirement of primary Agent/Class files.
         if path.name.endswith("_mixin.py") or path.name.endswith("Mixin.py"):
             return "MIXIN"
 
-        # --- EXEMPTION PATCH: SSOT ---
-        # Critical SSOT files that have hundreds of import references.
         critical_ssot_files = {
-            "structure_blueprint.py",  # 926+ import references
-            "tool_registry.py",  # Tool registration system
-            "execute_ssot.py",  # SSOT execution orchestrator - do not rename
+            "structure_blueprint.py",
+            "tool_registry.py",
+            "execute_ssot.py",
         }
         if path.name in critical_ssot_files:
             return "IGNORE"
@@ -89,49 +84,83 @@ class PascalSovereigntyFixer:
         try:
             if not path.exists() or path.stat().st_size == 0:
                 return "IGNORE"
-            content = path.read_text(encoding="utf-8")
-            tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):
+        except OSError:
             return "IGNORE"
 
-        has_class = False
-        is_agent = False
+        # Delegate to FCA — single source of truth for file classification
+        try:
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                FileClassificationAgent,
+            )
 
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                has_class = True
-                if node.name.endswith("Agent"):
-                    is_agent = True
-                for base in node.bases:
-                    if (isinstance(base, ast.Name) and "Agent" in base.id) or (
-                        isinstance(base, ast.Attribute) and "Agent" in base.attr
+            fca = FileClassificationAgent(
+                project_root=path.parent,
+                dry_run=True,
+                validate_only=True,
+            )
+            fca_type = fca.classify_file(path)
+
+            # Map FCA types -> PSF FileType
+            fca_to_psf = {
+                "AGENT": "AGENT",
+                "TYPES": "CLASS",
+                "CONFIG": "CLASS",
+                "VALIDATOR": "CLASS",
+                "UTILITY": "UTILITY",
+                "SCRIPT": "UTILITY",
+                "STRATEGY": "CLASS",
+                "ADAPTER": "CLASS",
+                "PROTOCOL": "CLASS",
+                "MIXIN": "MIXIN",
+                "EXCEPTION": "CLASS",
+                "ENGINE": "CLASS",
+                "GUARDRAIL": "CLASS",
+                "MANAGER": "CLASS",
+                "SCANNER": "CLASS",
+                "FACTORY": "CLASS",
+                "ORCHESTRATOR": "CLASS",
+                "SHIELD": "CLASS",
+                "SANITIZER": "CLASS",
+                "GUARD": "CLASS",
+                "DETECTOR": "CLASS",
+                "ENFORCER": "CLASS",
+            }
+            return fca_to_psf.get(fca_type, "UTILITY")
+        except Exception:
+            # Fallback: if FCA unavailable, use minimal AST check
+            try:
+                content = path.read_text(encoding="utf-8")
+                tree = ast.parse(content)
+            except (SyntaxError, UnicodeDecodeError, OSError):
+                return "IGNORE"
+
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    if node.name.endswith("Agent") or any(
+                        (isinstance(b, ast.Name) and "Agent" in b.id) or
+                        (isinstance(b, ast.Attribute) and "Agent" in b.attr)
+                        for b in node.bases
                     ):
-                        is_agent = True
-
-        if is_agent:
-            return "AGENT"
-        elif has_class:
-            return "CLASS"
-        else:
+                        return "AGENT"
+                    return "CLASS"
             return "UTILITY"
 
     def update_imports(self, old_name: str, new_name: str) -> int:
-        """Refactors imports using the in-memory registry to avoid O(N²) disk hits."""
+        """Refactor imports using the in-memory registry.
+
+        Note: This is intentionally NOT delegated to FCA because it operates on
+        PSF's in-memory file_registry, whereas FCA scans the filesystem.
+        Import rewriting is simple regex, not a classification concern.
+        """
         count = 0
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
 
-        # Ultra-Precision Regex: Handles 'from x import', 'import x', and 'import x as y'
-        # Critical Analysis: Expanded to handle relative imports (e.g., 'from .old_mod import')
-        # by adding an optional dot-prefix group. This is vital for maintaining integrity
-        # in hierarchical multi-agent systems where local package imports are standard.
-        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)"
+                                + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         regex_import = re.compile(
             rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
-        # Note: The \.* in regex_from captures any number of leading dots for relative paths,
-        # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
 
-        # Optimized: Scans in-memory file_registry instead of hitting disk rglob
         for _i, path in enumerate(self.file_registry):
             if path.name == new_name or not path.exists():
                 continue
@@ -290,28 +319,45 @@ class PascalSovereigntyFixer:
             return False
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
-        """Calculates the target filename based on the primary class definition."""
+        """Calculate compliant filename by delegating to FCA when available.
+
+        [DEDUP 2026-02-07] FCA's get_compliant_name is the SSOT for naming.
+        Falls back to local logic for mixins and basic class detection.
+        """
         if file_type == "IGNORE":
             return None
 
-        # --- MIXIN STANDARDIZATION ---
-        # Logic: Forces Mixins to snake_case.
-        # Example: HygieneMixin.py -> hygiene_mixin.py
+        # Mixin standardization (local — FCA doesn't handle mixin snake_case)
         if file_type == "MIXIN":
             stem = path.stem
-            # Acronym-aware snake_case conversion (Pass 1: LLMProvider -> LLM_Provider)
             s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", stem)
-            # Pass 2: camelCase boundaries (llmProvider -> llm_Provider)
             clean_stem = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
-
             if not clean_stem.endswith("_mixin"):
                 clean_stem += "_mixin"
-
             target = f"{clean_stem}.py"
             return target if target != path.name else None
 
         if file_type == "UTILITY":
             return None
+
+        # Delegate to FCA
+        try:
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                FileClassificationAgent,
+            )
+
+            fca = FileClassificationAgent(
+                project_root=path.parent,
+                dry_run=True,
+                validate_only=True,
+            )
+            result = fca.get_compliant_name(path)
+            if result and result != path.name:
+                return result
+        except Exception:
+            pass
+
+        # Fallback: basic class-name extraction
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]

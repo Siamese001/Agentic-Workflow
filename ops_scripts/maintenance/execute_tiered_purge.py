@@ -91,7 +91,7 @@ def run_tiered_purge(
         from agentic_core.L5_safety.reasoning.TieredBatchProcessor import (
             TieredBatchProcessor,
         )
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
