@@ -427,6 +427,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {"purpose": "Safety utility functions."},
                 },
                 "allowed_suffixes": {
+                    "gravity": ["_validator.py", "_scanner.py", "_auditor.py", "_agent.py", "_graph.py", "_info.py", "_fixer.py", "_enforcer.py", "_refactorer.py", "_medic.py", "_surgeon.py", "_utils.py"],
                     "core": ["_gatekeeper.py", "_breaker.py", "_manager.py", "_session.py", "_service.py"],
                     "cognition": ["_processor.py", "_strategy.py", "_agent.py", "_disposition.py"],
                     "config": ["_config.py", "_blueprint.py", "_settings.py"],
@@ -443,6 +444,12 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "governance": ["_config.py", "_types.py"],
                 },
                 "routing_rules": {
+                    "*_fixer.py": "gravity",
+                    "*_enforcer.py": "gravity",
+                    "*_refactorer.py": "gravity",
+                    "*_medic.py": "gravity",
+                    "*_surgeon.py": "gravity",
+                    "*_scanner.py": "gravity",
                     "*_gatekeeper.py": "core",
                     "*_breaker.py": "core",
                     "*_processor.py": "cognition",
@@ -3701,7 +3708,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "GravityLeakRepairAgent",
-            "file": "agentic_core/L5_safety/gravity/GravityLeakRepairAgent.py",
+            "file": "agentic_core/L5_safety/gravity/gravity_leak_repair_agent.py",
             "methods": 3,
             "fingerprint": "51dbad0a31ea9c72",
         },

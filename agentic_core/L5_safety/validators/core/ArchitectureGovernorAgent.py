@@ -138,7 +138,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     def _get_gravity_repair_agent(self):
         """Lazy-load GravityLeakRepairAgent for orchestrated healing."""
         if self._gravity_repair_agent is None:
-            from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import (
+            from agentic_core.L5_safety.gravity.gravity_leak_repair_agent import (
                 GravityLeakRepairAgent,
             )
 
