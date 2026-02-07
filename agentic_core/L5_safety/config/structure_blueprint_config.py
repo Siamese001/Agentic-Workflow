@@ -312,7 +312,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     },
                     "graph": {
                         "purpose": "Graph database connectors, store drivers, and knowledge graphs.",
-                        "allowed_suffixes": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py"],
+                        "allowed_suffixes": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py", "_bridge.py"],
                         "subfolders": {
                             "healing": {"purpose": "Graph-aware healing strategies (L4 owns its own repair)."},
                         },
