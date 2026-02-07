@@ -35,7 +35,7 @@ class TestGlobalRoutingRigor:
     def test_orchestration_beats_execution(self):
         """100% PASS: L3 Orchestration (16) must outrank L2 Execution (9)."""
         orch_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L3_orchestration/workflow_engines"
+            "agentic_core/L3_orchestration/engine"
         ]["weight"]
         exec_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/L2_execution/engine"
@@ -101,7 +101,7 @@ class TestGlobalRoutingRigor:
             25: ["agentic_core/L5_safety/guardrails"],
             22: ["agentic_core/L5_safety/gravity"],
             18: ["agentic_core/L1_cognition/thought_engine"],
-            16: ["agentic_core/L3_orchestration/workflow_engines"],
+            16: ["agentic_core/L3_orchestration/engine"],
             15: ["agentic_core/prompt_governance/meta_prompts"],
             14: ["agentic_core/L4_state/validation_context"],
             12: ["agentic_core/prompt_governance/scripts"],
@@ -139,7 +139,7 @@ class TestGlobalRoutingRigor:
             "agentic_core/L1_cognition/thought_engine"
         ]["weight"]
         orchestration_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L3_orchestration/workflow_engines"
+            "agentic_core/L3_orchestration/engine"
         ]["weight"]
         pg_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/meta_prompts"

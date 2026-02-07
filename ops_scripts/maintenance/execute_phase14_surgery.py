@@ -195,9 +195,9 @@ def perform_surgery():
     print("--- STARTING PHASE 14 CODE SURGERY ---")
 
     targets = [
-        ("agentic_core/L3_orchestration/workflow_engines/FissionManagerAgent.py", FISSION_CONTENT),
+        ("agentic_core/L3_orchestration/engine/FissionManagerAgent.py", FISSION_CONTENT),
         ("agentic_core/L5_safety/guardrails/HallucinationHunterAgent.py", HUNTER_CONTENT),
-        ("agentic_core/L3_orchestration/fission_logic/subatomic_engine.py", SUBATOMIC_CONTENT),
+        ("agentic_core/L3_orchestration/engine/subatomic_engine.py", SUBATOMIC_CONTENT),
     ]
 
     for rel_path, content in targets:

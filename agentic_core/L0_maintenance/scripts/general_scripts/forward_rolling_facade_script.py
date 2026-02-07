@@ -19,25 +19,25 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L3_orchestration.interfaces import (
+from agentic_core.L3_orchestration.types import (
     AgentResult,
     ExecutionContext,
     ExecutionPhase,
 )
-from agentic_core.L3_orchestration.workflow_engines.context_pruning_strategy_types import (
+from agentic_core.L3_orchestration.types.context_pruning_strategy_types import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
 )
-from agentic_core.L3_orchestration.workflow_engines.forward_rolling_config_types import (
+from agentic_core.L3_orchestration.engine.forward_rolling_config_types import (
     ExecutionMode,
     ForwardRollingConfig,
     RolloutStage,
 )
-from agentic_core.L3_orchestration.workflow_engines.recursion_monitor_types import (
+from agentic_core.L3_orchestration.engine.recursion_monitor_types import (
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L3_orchestration.workflow_engines.recursive_orchestrator_types import (
+from agentic_core.L3_orchestration.engine.recursive_orchestrator_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

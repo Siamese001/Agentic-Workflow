@@ -15,7 +15,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.agents.UnifiedAgent import OrchestrationResult
+from agentic_core.L3_orchestration.engine.unified_agent import OrchestrationResult
 
 
 class TestL3OrchestrationStrategy:
@@ -268,19 +268,19 @@ class TestInterfaceTypes:
 
     def test_agent_result_import(self):
         """Test AgentResult can be imported."""
-        from agentic_core.L3_orchestration.interfaces import AgentResult
+        from agentic_core.L3_orchestration.types import AgentResult
 
         assert AgentResult is not None
 
     def test_mission_result_import(self):
         """Test MissionResult can be imported."""
-        from agentic_core.L3_orchestration.interfaces import MissionResult
+        from agentic_core.L3_orchestration.types import MissionResult
 
         assert MissionResult is not None
 
     def test_execution_context_import(self):
         """Test ExecutionContext can be imported."""
-        from agentic_core.L3_orchestration.interfaces import ExecutionContext
+        from agentic_core.L3_orchestration.types import ExecutionContext
 
         assert ExecutionContext is not None
 

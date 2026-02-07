@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.agents.UnifiedAgent import ValidationResult
+from agentic_core.L3_orchestration.engine.unified_agent import ValidationResult
 
 
 class TestATSValidatorStrategy:

@@ -37,22 +37,22 @@ def _get_gravity_validator():
 """,
     },
     "filesystem_mcp_client.py": {
-        "old_import": "from agentic_core.L3_orchestration.workflow_engines",
+        "old_import": "from agentic_core.L3_orchestration.engine",
         "new_code": """
 def _get_workflow_engine():
     \"\"\"Lazy load workflow engine to avoid L0 → L3 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
+    module = importlib.import_module('agentic_core.L3_orchestration.engine')
     return module
 """,
     },
     "gitkraken_mcp_client.py": {
-        "old_import": "from agentic_core.L3_orchestration.workflow_engines",
+        "old_import": "from agentic_core.L3_orchestration.engine",
         "new_code": """
 def _get_workflow_engine():
     \"\"\"Lazy load workflow engine to avoid L0 → L3 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L3_orchestration.workflow_engines')
+    module = importlib.import_module('agentic_core.L3_orchestration.engine')
     return module
 """,
     },

@@ -26,7 +26,7 @@ DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
 LOGGING_IMPORT = "import logging"
 LOGGER_INIT = "logger = logging.getLogger(__name__)"
 TESTING_IMPORT = (
-    "from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import SubatomicTestingMixin"
+    "from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import SubatomicTestingMixin"
 )
 
 

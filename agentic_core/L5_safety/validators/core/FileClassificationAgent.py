@@ -2272,7 +2272,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         f"Orchestration signals {found_orchestration} detected in L0 file {path.name}. "
                         f"Strategy/orchestration belongs in L3_orchestration."
                     ),
-                    "suggested_destination": "agentic_core/L3_orchestration/agents/",
+                    "suggested_destination": "agentic_core/L3_orchestration/engine/",
                 }
 
         # --- Rule 2: Passive Agent Detection ---
@@ -2461,7 +2461,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             # Route to appropriate folder based on type
                             target_folder = {
                                 "CONFIG": "config",
-                                "PROTOCOL": "L3_orchestration/interfaces",
+                                "PROTOCOL": "L3_orchestration/types",
                                 "TYPES": "runtime/types",
                                 "STRATEGY": "L3_orchestration/utils",
                                 "ADAPTER": "L2_execution/mcp",

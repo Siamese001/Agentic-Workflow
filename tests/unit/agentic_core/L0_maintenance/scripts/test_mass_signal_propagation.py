@@ -39,7 +39,7 @@ def test_case_1_long_chain_propagation():
         from agentic_core.L2_execution.engine.L2ExecutionBase import (
             L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
 
@@ -120,7 +120,7 @@ def test_case_2_multi_agent_cycle_persistence():
         from agentic_core.L2_execution.engine.L2ExecutionBase import (
             L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
 
@@ -206,7 +206,7 @@ def test_case_3_gatekeeper_automation_sweep():
         print(f"✓ Approval granted without stdin prompt: {approval}")
 
         # Step 3: Test with multiple agents
-        from agentic_core.L3_orchestration.workflow_engines.L3OrchestrationBase import (
+        from agentic_core.L3_orchestration.engine.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
         from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase

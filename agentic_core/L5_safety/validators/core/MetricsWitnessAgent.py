@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import (
     SubatomicTestingMixin,
 )
 

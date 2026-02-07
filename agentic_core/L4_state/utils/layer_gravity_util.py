@@ -70,13 +70,13 @@ def extract_layer_from_module(module: str) -> str | None:
     Extract layer identifier from module path.
 
     Args:
-        module: Module path (e.g., "agentic_core.L3_orchestration.workflow_engines")
+        module: Module path (e.g., "agentic_core.L3_orchestration.engine")
 
     Returns:
         Layer identifier (e.g., "L3") or None if not in a layer
 
     Example:
-        >>> extract_layer_from_module("agentic_core.L3_orchestration.workflow_engines")
+        >>> extract_layer_from_module("agentic_core.L3_orchestration.engine")
         'L3'
         >>> extract_layer_from_module("apps_shared.common_utils")
         None

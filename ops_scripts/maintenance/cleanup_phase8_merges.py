@@ -23,7 +23,7 @@ OBSOLETE_FILES = [
     # 2. Dashboard SSOT (Keep L0, Archive L5 duplicate)
     "agentic_core/L5_safety/validators/dashboard_ssot_definitions.py",
     # 3. Intervention Server (Keep L5, Archive L3 duplicate)
-    "agentic_core/L3_orchestration/workflow_engines/intervention_server.py",
+    "agentic_core/L3_orchestration/engine/intervention_server.py",
     # 4. Constitution (Keep Config, Archive L1 duplicate)
     "agentic_core/L1_cognition/thought_engine/sovereign_domain_constitution.py",
 ]

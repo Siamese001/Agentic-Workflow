@@ -226,15 +226,56 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "L3_orchestration": {
-                "purpose": "Workflow orchestration, strategy patterns, and multi-agent coordination.",
+                "purpose": "The Nervous System: Routers, Patterns, and Workflow Engines.",
+                "notes": "Standard V10 structure. workflow_engines/ dissolved into engine/types/patterns/routers.",
                 "subfolders": {
-                    "agents": {"purpose": "Orchestration agents and unified strategy framework."},
-                    "config": {"purpose": "Orchestration configuration dataclasses."},
-                    "fission_logic": {"purpose": "Task decomposition and fission logic."},
-                    "interfaces": {"purpose": "Orchestration interfaces and protocols."},
-                    "routers": {"purpose": "Action routing and plan execution nodes."},
-                    "utils": {"purpose": "Orchestration utility functions."},
-                    "workflow_engines": {"purpose": "Workflow execution engines."},
+                    "engine": {
+                        "purpose": "Orchestration engines, managers, coordinators, and workflow core.",
+                        "allowed_suffixes": ["_orchestrator.py", "_engine.py", "_workflow.py", "_manager.py"],
+                    },
+                    "config": {
+                        "purpose": "Orchestration configuration and settings.",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                        "forbidden_suffixes": ["_types.py"],
+                    },
+                    "types": {
+                        "purpose": "Orchestration data models, schemas, protocols, and state types.",
+                        "allowed_suffixes": ["_types.py", "_state.py", "_schema.py", "_model.py", "_protocol.py"],
+                        "forbidden_suffixes": ["_config.py", "_engine.py"],
+                    },
+                    "routers": {
+                        "purpose": "Action routing, dispatching, and plan execution nodes.",
+                        "allowed_suffixes": ["_router.py", "_dispatcher.py", "_switch.py", "_delegator.py"],
+                    },
+                    "patterns": {
+                        "purpose": "Workflow strategies, patterns, FSMs, and execution flows.",
+                        "allowed_suffixes": ["_strategy.py", "_pattern.py", "_fsm.py", "_flow.py"],
+                    },
+                },
+                "allowed_suffixes": {
+                    "engine": ["_orchestrator.py", "_engine.py", "_workflow.py", "_manager.py"],
+                    "routers": ["_router.py", "_dispatcher.py", "_switch.py", "_delegator.py"],
+                    "patterns": ["_strategy.py", "_pattern.py", "_fsm.py", "_flow.py"],
+                    "config": ["_config.py", "_settings.py"],
+                    "types": ["_types.py", "_state.py", "_schema.py", "_model.py", "_protocol.py"],
+                },
+                "forbidden_suffixes": {
+                    "engine": ["_config.py", "_types.py"],
+                    "config": ["_types.py", "_router.py"],
+                    "types": ["_config.py", "_engine.py"],
+                    "routers": ["_config.py", "_types.py"],
+                    "patterns": ["_config.py", "_types.py"],
+                },
+                "routing_rules": {
+                    "*_router.py": "routers",
+                    "*_dispatcher.py": "routers",
+                    "*_strategy.py": "patterns",
+                    "*_pattern.py": "patterns",
+                    "*_config.py": "config",
+                    "*_types.py": "types",
+                    "*_orchestrator.py": "engine",
+                    "*_engine.py": "engine",
+                    "*_manager.py": "engine",
                 },
             },
             "L4_state": {
@@ -417,7 +458,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "weight": 18,
             },
             # --- L3 ORCHESTRATION: STRATEGIC COORDINATION (Weight 16) ---
-            "agentic_core/L3_orchestration/workflow_engines": {
+            "agentic_core/L3_orchestration/engine": {
                 "class_patterns": [".*Orchestrator$", ".*Workflow.*"],
                 "base_classes": ["BaseOrchestrator", "WorkflowEngine"],
                 "keyword_signals": ["mission_control", "fission_logic", "dag_executor"],
@@ -967,7 +1008,7 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "maintenance": ["maintenance_scripts"],
         "test_utilities": ["test_helpers"],
     },
-    # L3_orchestration/workflow_engines/ - 130 .py files, 5 subdirs
+    # L3_orchestration/engine/ - 130 .py files, 5 subdirs
     "workflow_engines": {
         "core": ["base_orchestrators", "orchestration_types"],
         "dag": ["dag_executors", "dag_managers"],
@@ -1039,7 +1080,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L6_observability/dashboards",
         "agentic_core/L0_maintenance/scripts",
         "agentic_core/L0_maintenance/strategies",
-        "agentic_core/L3_orchestration/workflow_engines",
+        "agentic_core/L3_orchestration/engine",
         "agentic_core/L1_cognition/thought_engine",
         "agentic_core/L5_safety/guardrails",
         "agentic_core/L5_safety/validators",  # 135 files - added per SSOT review
@@ -1587,10 +1628,10 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     # DISSOLVED: "L1_cognition/intent_analysis" removed
     "L2_execution/engine": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
-    "L3_orchestration/workflow_engines": {
+    "L3_orchestration/engine": {
         "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}),
     },
-    "L3_orchestration/fission_logic": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
+    "L3_orchestration/engine": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
     "L4_state/validation_context": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
@@ -3000,7 +3041,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 9,
     },
     # L3_orchestration placements
-    "agentic_core/L3_orchestration/workflow_engines": {
+    "agentic_core/L3_orchestration/engine": {
         "class_patterns": [".*Engine$", ".*Orchestrator$", ".*Controller$", ".*Coordinator$"],
         "base_classes": ["BaseEngine", "WorkflowEngine", "Orchestrator"],
         "function_patterns": ["orchestrate_.*", "coordinate_.*", "run_workflow.*"],
@@ -3016,7 +3057,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "decorator_signals": ["@workflow", "@orchestrate"],
         "weight": 16,
     },
-    "agentic_core/L3_orchestration/fission_logic": {
+    "agentic_core/L3_orchestration/engine": {
         "class_patterns": [".*Fission.*", ".*Split.*", ".*Decompose.*"],
         "base_classes": ["FissionEngine", "TaskSplitter"],
         "function_patterns": ["fission_.*", "split_.*", "decompose_.*"],
@@ -3373,37 +3414,37 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L3": [
         {
             "name": "DagEngineAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/DagEngineAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/DagEngineAgent.py",
             "methods": 14,
             "fingerprint": "e58f4699d9aa84e5",
         },
         {
             "name": "MockAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/NervousSystemAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/NervousSystemAgent.py",
             "methods": 2,
             "fingerprint": "b644392cf05e5442",
         },
         {
             "name": "NervousSystemAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/NervousSystemAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/NervousSystemAgent.py",
             "methods": 12,
             "fingerprint": "c3a187f4f4fd9eeb",
         },
         {
             "name": "SemanticGatekeeperAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/SemanticGatekeeperAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/SemanticGatekeeperAgent.py",
             "methods": 6,
             "fingerprint": "40da7e8727c03cdc",
         },
         {
             "name": "SubatomicHopAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/SubatomicHopAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/SubatomicHopAgent.py",
             "methods": 14,
             "fingerprint": "7c2a442208c79cd7",
         },
         {
             "name": "TestPilotAgent",
-            "file": "agentic_core/L3_orchestration/workflow_engines/TestPilotAgent.py",
+            "file": "agentic_core/L3_orchestration/engine/TestPilotAgent.py",
             "methods": 15,
             "fingerprint": "5948ee871695c65f",
         },
@@ -4044,7 +4085,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "dispatch",
                 "schedule",
             ],
-            "imports": ["agentic_core.L3_orchestration.workflow_engines", "langgraph", "pydantic"],
+            "imports": ["agentic_core.L3_orchestration.engine", "langgraph", "pydantic"],
             "bases": ["CanonBaseAgent", "WorkflowEngine", "OrchestratorBase", "MissionManager"],
             "examples": [
                 "SovereignOrchestrator",
@@ -4069,7 +4110,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "fork",
                 "proliferate",
             ],
-            "imports": ["agentic_core.L3_orchestration.fission_logic"],
+            "imports": ["agentic_core.L3_orchestration.engine"],
             "bases": ["FissionEngine", "SubAgentSpawner", "CanonBaseAgent"],
             "examples": [
                 "FissionManagerAgent",
@@ -4746,7 +4787,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "purpose": "Shared application-level agent templates and worker base classes - home for AppBase.py",
             "entity_types": ["Class"],
             "keywords": ["agent", "base_agent", "worker", "bot", "task_executor", "app_worker"],
-            "imports": ["agentic_core.L3_orchestration.workflow_engines", "apps_shared.agents.AppBase"],
+            "imports": ["agentic_core.L3_orchestration.engine", "apps_shared.agents.AppBase"],
             "bases": ["CanonBaseAgent", "AppBase"],
             "examples": ["AppBase", "TaskWorker", "AsyncAppWorker", "StatefulAppAgent"],
             "canonical_files": ["AppBase.py"],  # Zero-Ambiguity: Renamed from AppBaseAgent.py

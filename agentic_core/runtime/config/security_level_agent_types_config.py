@@ -27,7 +27,7 @@ from enum import Enum
 from typing import Any
 
 try:
-    from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
     )
 except ImportError:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """Nervous System module."""
-from .ReflexLayer import ReflexLayer
+from agentic_core.L3_orchestration.patterns.reflex_layer_pattern import ReflexLayer
 
 
 # NAMING FIXED: NervousSystem → NervousSystem

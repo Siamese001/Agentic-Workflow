@@ -61,7 +61,7 @@ except ImportError:
     class CanonBaseAgentInterface(Protocol):
         pass
 
-from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.L5_safety.guardrails.mcp_hardened_mixin import mcp_hardened_mixin
 from agentic_core.L5_safety.validators.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
@@ -126,7 +126,7 @@ def update_source_file(source_file: Path):
             lines.insert(start + 1, "")
 
     # Add import for SubAtomicAgent at the top after imports
-    import_line = "from agentic_core.L3_orchestration.fission_logic.SubAtomicAgent import SubAtomicAgent"
+    import_line = "from agentic_core.L3_orchestration.engine.sub_atomic_agent import SubAtomicAgent"
 
     # Find where to insert (after other imports)
     insert_idx = 0

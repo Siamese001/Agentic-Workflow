@@ -193,7 +193,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
 L4_APPROVED_FOLDERS: set = {
     "agentic_core/L6_observability/dashboards",
     "agentic_core/L0_maintenance/scripts",
-    "agentic_core/L3_orchestration/workflow_engines",
+    "agentic_core/L3_orchestration/engine",
     "agentic_core/L1_cognition/thought_engine",
     "agentic_core/L5_safety/guardrails",
     "agentic_core/L5_safety/validators",
