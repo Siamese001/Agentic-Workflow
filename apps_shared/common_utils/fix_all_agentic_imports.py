@@ -23,7 +23,7 @@ def fix_file_imports(file_path: Path) -> bool:
         original: Any = content
         mappings: Any = {
             "from agentic_core.base import": "from agentic_core.L2_execution.engine.base import",
-            "from agentic_core.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.validation_orchestratorAgent import",
+            "from agentic_core.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.orchestrators.validation_orchestratorAgent import",
             "from agentic_core.L2_execution.engine.": "from agentic_core.L2_execution.engine.",
             "from agentic_core.L2_execution.P2_tools.": "from agentic_core.L2_execution.engine.",
             "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.engine.",
@@ -37,7 +37,7 @@ def fix_file_imports(file_path: Path) -> bool:
             "import agentic_core.L2_execution.P2_tools.": "import agentic_core.L2_execution.engine.",
             "import agentic_core.L2_execution.P3_engines.": "import agentic_core.L2_execution.engine.",
             "from L2_execution.engine.base import": "from agentic_core.L2_execution.engine.base import",
-            "from L2_execution.engine.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.validation_orchestratorAgent import",
+            "from L2_execution.engine.ValidationOrchestratorAgent import": "from agentic_core.L2_execution.engine.orchestrators.validation_orchestratorAgent import",
         }
         for old, new in mappings.items():
             content: Any = content.replace(old, new)
