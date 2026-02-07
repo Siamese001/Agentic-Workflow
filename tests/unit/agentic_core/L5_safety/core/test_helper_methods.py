@@ -19,7 +19,7 @@ class TestCleanupRedundantConflicts:
 
     def test_cleanup_redundant_conflicts_dry_run(self):
         """Test that dry_run mode doesn't delete files."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -32,7 +32,7 @@ class TestCleanupRedundantConflicts:
 
     def test_cleanup_redundant_conflicts_identical_files(self):
         """Test cleanup of byte-identical conflict files."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -64,7 +64,7 @@ class TestCleanupRedundantConflicts:
 
     def test_cleanup_redundant_conflicts_different_files(self):
         """Test that different conflict files are not deleted."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -98,7 +98,7 @@ class TestUpdateFileHeader:
 
     def test_update_file_header_dry_run(self):
         """Test that dry_run mode doesn't modify files."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -120,7 +120,7 @@ class TestUpdateFileHeader:
 
     def test_update_file_header_updates_content(self):
         """Test that file headers are updated correctly."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -144,7 +144,7 @@ class TestUpdateFileHeader:
 
     def test_update_file_header_handles_exceptions(self):
         """Test that exceptions are handled gracefully."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -161,7 +161,7 @@ class TestSyncCompanionTest:
 
     def test_sync_companion_test_no_tests_dir(self):
         """Test behavior when tests directory doesn't exist."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -183,7 +183,7 @@ class TestSyncCompanionTest:
 
     def test_sync_companion_test_test_prefix_pattern(self):
         """Test renaming test files with test_ prefix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -210,7 +210,7 @@ class TestSyncCompanionTest:
 
     def test_sync_companion_test_suffix_pattern(self):
         """Test renaming test files with _test suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -241,7 +241,7 @@ class TestRefactorNonPythonAssets:
 
     def test_refactor_non_python_assets_updates_json(self):
         """Test that JSON files are updated."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -270,7 +270,7 @@ class TestRefactorNonPythonAssets:
 
     def test_refactor_non_python_assets_updates_yaml(self):
         """Test that YAML files are updated."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -297,7 +297,7 @@ class TestRefactorNonPythonAssets:
 
     def test_refactor_non_python_assets_dry_run(self):
         """Test that dry_run mode doesn't modify files."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -326,7 +326,7 @@ class TestMethodSignatures:
         """Test cleanup_redundant_conflicts method signature."""
         import inspect
 
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -343,7 +343,7 @@ class TestMethodSignatures:
         """Test update_file_header method signature."""
         import inspect
 
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -360,7 +360,7 @@ class TestMethodSignatures:
         """Test sync_companion_test method signature."""
         import inspect
 
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -377,7 +377,7 @@ class TestMethodSignatures:
         """Test refactor_non_python_assets method signature."""
         import inspect
 
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -391,7 +391,7 @@ class TestMethodSignatures:
         """Test _to_smart_snake_case method signature."""
         import inspect
 
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

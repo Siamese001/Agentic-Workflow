@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.core.unified_cst_healer import (
+from agentic_core.L5_safety.utils.unified_cst_healer import (
     HealingConfig,
     UnifiedCSTHealer,
 )

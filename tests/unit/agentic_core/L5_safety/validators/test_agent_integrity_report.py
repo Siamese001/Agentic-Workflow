@@ -20,18 +20,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.validators.core.agent_integrity_report import (
+from agentic_core.L5_safety.reasoning.integrity_report_generator import (
     AgentIntegrityReporter,
     GapAnalysisItem,
     IntegrityReportResult,
     generate_full_report,
     validate_registry_coverage,
 )
-from agentic_core.L5_safety.validators.core.registry_verification import VerificationResult
-from agentic_core.L5_safety.validators.core.ssot_structure_validation import (
+from agentic_core.L5_safety.enforcement.registry_verification_script import VerificationResult
+from agentic_core.L5_safety.enforcement.ssot_structure_validation_script import (
     StructureValidationResult,
 )
-from agentic_core.L5_safety.validators.core.three_tier_compliance import ComplianceResult
+from agentic_core.L5_safety.enforcement.three_tier_compliance_script import ComplianceResult
 
 
 class TestGapAnalysisItem:

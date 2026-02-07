@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.core.surgical_cst_healer_mixin import (
+from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
-from agentic_core.L5_safety.validators.core.surgical_healing_adapter import (
+from agentic_core.L5_safety.reasoning.SurgicalHealingAdapter import (
     SurgicalHealingAdapter,
 )
 

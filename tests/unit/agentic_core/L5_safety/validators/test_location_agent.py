@@ -27,7 +27,7 @@ class TestLocationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
+            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
             return LocationAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -56,7 +56,7 @@ class TestLocationAgent:
     def test_sovereign_territories_defined(self):
         """Verify SOVEREIGN_TERRITORIES constant is defined."""
         try:
-            from agentic_core.L5_safety.validators.core.location_agent import SOVEREIGN_TERRITORIES
+            from agentic_core.L5_safety.reasoning.LocationAgent import SOVEREIGN_TERRITORIES
 
             assert isinstance(SOVEREIGN_TERRITORIES, dict), "Should be a dictionary"
         except (ImportError, NameError, AttributeError):
@@ -154,7 +154,7 @@ class TestLocationAgentHealing:
     def test_has_heal_method(self):
         """Verify agent has healing capability."""
         try:
-            from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
+            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
             assert hasattr(LocationAgent, "heal") or hasattr(LocationAgent, "heal_repository"), (
                 "Should have healing method"

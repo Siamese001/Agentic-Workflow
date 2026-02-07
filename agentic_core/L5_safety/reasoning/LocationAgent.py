@@ -12,14 +12,14 @@ salvaged into the canonical owners:
     - location_path_util: Utilities (is_path_compliant, get_location_agent singleton)
 
 This shim preserves backward compatibility for existing imports:
-    from agentic_core.L5_safety.validators.core.LocationAgent import LocationAgent
-    from agentic_core.L5_safety.validators.core.location_agent import LocationAgent  # Windows
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent  # Windows
 
 All new code should import from the canonical modules directly.
 """
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.core.LocationHealerAgent import (
+from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
     LocationHealerAgent,
 )
 from agentic_core.L5_safety.utils.location_path_util import (  # noqa: F401
@@ -39,7 +39,7 @@ class LocationAgent(LocationHealerAgent):
 
     def run(self, files: list[Path] | None = None) -> dict:
         """Delegate validation scan to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
             LocationValidatorAgent,
         )
 
@@ -48,7 +48,7 @@ class LocationAgent(LocationHealerAgent):
 
     def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
         """Delegate to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
             LocationValidatorAgent,
         )
 
@@ -57,7 +57,7 @@ class LocationAgent(LocationHealerAgent):
 
     def validate_sovereign_roots(self) -> list[tuple[Path, str]]:
         """Delegate to LocationValidatorAgent."""
-        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
             LocationValidatorAgent,
         )
 

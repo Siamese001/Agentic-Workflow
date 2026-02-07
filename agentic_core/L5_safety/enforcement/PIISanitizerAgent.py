@@ -23,7 +23,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 
 
 def track_metrics(name: str):

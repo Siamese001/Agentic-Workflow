@@ -164,7 +164,7 @@ class TestHierarchyScopedHealing:
     @pytest.fixture
     def hierarchy_agent(self, workspace, mock_security_validation):
         """Create HierarchyAgent instance."""
-        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         return HierarchyAgent(
             project_root=workspace,
@@ -271,7 +271,7 @@ class TestEnforceDepthRulesScoping:
     @pytest.fixture
     def hierarchy_agent(self, workspace, mock_security_validation):
         """Create HierarchyAgent instance."""
-        from agentic_core.L5_safety.validators.core.hierarchy_agent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         return HierarchyAgent(project_root=workspace, healing_enabled=False, auto_approve=True)
 

@@ -35,7 +35,7 @@ class TestE2EFileClassificationAgent:
     @pytest.fixture
     def agent(self, temp_project):
         """Create agent instance for testing."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -160,7 +160,7 @@ class TestIntegrationWithExecuteSSOT:
 
     def test_heal_repository_interface(self):
         """Test heal_repository has correct interface for execute_ssot."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -178,7 +178,7 @@ class TestIntegrationWithExecuteSSOT:
 
     def test_heal_interface(self):
         """Test heal method has correct interface."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -193,7 +193,7 @@ class TestIntegrationWithExecuteSSOT:
 
     def test_run_interface(self):
         """Test run method exists for orchestration."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -206,7 +206,7 @@ class TestIntegrationPromptGovernance:
     @pytest.fixture
     def agent(self):
         """Create agent with real project root."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -303,7 +303,7 @@ class TestAllPhasesIntegration:
 
     def test_full_workflow_no_crashes(self):
         """Test complete workflow without any crashes."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -349,7 +349,7 @@ class TestAllPhasesIntegration:
             agent.file_registry = []
 
             # Phase 1: Logger works
-            from agentic_core.L5_safety.validators.core.FileClassificationAgent import Logger
+            from agentic_core.L5_safety.reasoning.FileClassificationAgent import Logger
 
             assert Logger is not None
 
@@ -376,7 +376,7 @@ class TestAllPhasesIntegration:
 
     def test_no_regression_in_existing_tests(self):
         """Verify existing guardian tests still pass conceptually."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -440,7 +440,7 @@ class TestPrimaryClassCentricE2E:
     @pytest.fixture
     def agent(self, tmp_path):
         """Create agent instance for testing."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

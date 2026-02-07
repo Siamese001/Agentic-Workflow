@@ -47,7 +47,7 @@ class TestEnvironmentDrivenCore(unittest.TestCase):
         """Test the ConfidenceScore environment pattern from execute_ssot.py."""
 
         # Import the actual refactored ConfidenceScore
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ConfidenceScore
 
         # Test with custom environment thresholds
         with patch.dict(
@@ -67,7 +67,7 @@ class TestEnvironmentDrivenCore(unittest.TestCase):
     def test_sovereign_decision_engine_environment_integration(self):
         """Test SovereignDecisionEngine uses environment variables for model selection."""
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             ConfidenceScore,
             SovereignDecisionEngine,
         )
@@ -93,7 +93,7 @@ class TestEnvironmentDrivenCore(unittest.TestCase):
     def test_no_hardcoded_values_in_decision_engine(self):
         """Verify decision engine doesn't use hardcoded model strings."""
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             ConfidenceScore,
             SovereignDecisionEngine,
         )

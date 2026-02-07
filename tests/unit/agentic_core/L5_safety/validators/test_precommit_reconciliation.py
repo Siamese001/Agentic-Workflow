@@ -31,7 +31,7 @@ class TestDuplicateFilenameDetection:
 
     def test_duplicate_filename_detected(self, tmp_path):
         """Test that duplicate filenames are detected by CodeDeduplicationAgent."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -57,7 +57,7 @@ class TestDuplicateFilenameDetection:
 
     def test_no_duplicates_when_unique(self, tmp_path):
         """Test that no duplicates are detected when filenames are unique."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 

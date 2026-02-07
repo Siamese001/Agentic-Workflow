@@ -27,7 +27,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 L6ObservabilityBase = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 

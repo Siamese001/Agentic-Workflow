@@ -8,7 +8,7 @@ Usage (unchanged):
     from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 """
 
-from agentic_core.L5_safety.validators.core.LocationAgent import (  # noqa: F401
+from agentic_core.L5_safety.reasoning.LocationAgent import (  # noqa: F401
     LocationAgent,
     get_location_agent,
     is_path_compliant,
