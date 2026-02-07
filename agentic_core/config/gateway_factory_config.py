@@ -97,7 +97,7 @@ class GatewayFactory:
         """Get or create validator orchestrator singleton."""
         if cls._validator_orchestrator is None:
             try:
-                from agentic_core.L5_safety.types.healing_orchestration_suite_types_validator import (
+                from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
                     get_validator_orchestrator,
                 )
 
@@ -112,7 +112,7 @@ class GatewayFactory:
         """Get or create healing orchestrator singleton."""
         if cls._healing_orchestrator is None:
             try:
-                from agentic_core.L5_safety.types.healing_orchestration_suite_types_validator import (
+                from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
                     get_healing_orchestrator,
                 )
 
