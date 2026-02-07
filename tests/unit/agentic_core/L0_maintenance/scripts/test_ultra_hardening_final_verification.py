@@ -93,7 +93,7 @@ class TestSovereignFinalClosure:
         [LOGIC PURGE] Verify LocationAgent has no access to deprecated key-bypass logic.
         Ensures strict AST/Territory enforcement.
         """
-        from agentic_core.L5_safety.validators.core.location_agent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         agent = LocationAgent(project_root)
         assert not hasattr(agent, "is_excepted_from_key"), (

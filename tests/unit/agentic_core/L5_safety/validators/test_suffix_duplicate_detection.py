@@ -21,7 +21,7 @@ class test_suffix_duplicate_detection:
 
     def test_detect_flat_suffix_duplicates(self, tmp_path):
         """Test detection of _flat suffix duplicates."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -44,7 +44,7 @@ class test_suffix_duplicate_detection:
 
     def test_detect_1_suffix_duplicates(self, tmp_path):
         """Test detection of _1 suffix duplicates."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -67,7 +67,7 @@ class test_suffix_duplicate_detection:
 
     def test_no_false_positives_for_legitimate_suffixes(self, tmp_path):
         """Test that legitimate suffixes don't trigger false positives."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -89,7 +89,7 @@ class test_suffix_duplicate_detection:
 
     def test_multiple_suffix_duplicates_in_directory(self, tmp_path):
         """Test detection of multiple suffix duplicates with various patterns."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 
@@ -188,7 +188,7 @@ class TestPreventFutureDuplicates:
 
     def test_ci_validation_catches_suffix_duplicates(self, tmp_path):
         """Test that CI validation catches suffix duplicates before commit."""
-        from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+        from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
             CodeDeduplicationAgent,
         )
 

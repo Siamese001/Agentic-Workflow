@@ -77,7 +77,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify the @standard_heal decorator works with the new signature.
         """
-        from agentic_core.L5_safety.validators.core.decorators import standard_heal
+        from agentic_core.L5_safety.utils.decorators_util import standard_heal
 
         class MockHealer:
             name = "Mock"

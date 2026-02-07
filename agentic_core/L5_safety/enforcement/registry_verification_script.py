@@ -11,7 +11,7 @@ This module provides:
 5. Path mismatch detection (registry path != actual path)
 
 USAGE:
-    from agentic_core.L5_safety.validators.core.registry_verification import RegistryVerifier
+    from agentic_core.L5_safety.enforcement.registry_verification_script import RegistryVerifier
     verifier = RegistryVerifier()
     report = verifier.verify_registry()
 """

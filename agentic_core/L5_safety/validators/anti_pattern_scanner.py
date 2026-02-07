@@ -18,25 +18,25 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.anti_patterns.base_detector import (
+from agentic_core.L5_safety.validators.base_detector import (
     AntiPatternCategory,
     AntiPatternViolation,
     CompositeDetector,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.anti_patterns.global_mutation_detector import (
+from agentic_core.L5_safety.validators.global_mutation_detector import (
     GlobalMutationDetector,
 )
-from agentic_core.L5_safety.validators.anti_patterns.magic_config_detector import (
+from agentic_core.L5_safety.validators.magic_config_detector import (
     MagicConfigDetector,
 )
-from agentic_core.L5_safety.validators.anti_patterns.path_fragility_detector import (
+from agentic_core.L5_safety.validators.path_fragility_detector import (
     PathFragilityDetector,
 )
-from agentic_core.L5_safety.validators.anti_patterns.silent_swallower_detector import (
+from agentic_core.L5_safety.validators.silent_swallower_detector import (
     SilentSwallowerDetector,
 )
-from agentic_core.L5_safety.validators.anti_patterns.type_erasure_detector import (
+from agentic_core.L5_safety.validators.type_erasure_detector import (
     TypeErasureDetector,
 )
 

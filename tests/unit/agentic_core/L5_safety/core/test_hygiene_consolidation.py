@@ -26,7 +26,7 @@ from agentic_core.L5_safety.enforcement.archival_gatekeeper import (
     ArchivalOperation,
     ArchivalResult,
 )
-from agentic_core.L5_safety.validators.core.hygiene_guardian_agent import (
+from agentic_core.L5_safety.enforcement.hygiene_guardian_config_script import (
     HygieneGuardianAgent,
     HygieneViolation,
 )

@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.validators.core.LocationHealerAgent import LocationHealerAgent
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
 
 def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
@@ -102,7 +102,7 @@ def get_location_agent(project_root: Path) -> LocationHealerAgent:
     """
     global _healer_instance
     if _healer_instance is None:
-        from agentic_core.L5_safety.validators.core.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         _healer_instance = LocationHealerAgent(project_root=project_root)
     return _healer_instance

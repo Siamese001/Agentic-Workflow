@@ -18,7 +18,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_ignore_types(self):
         """Test that IGNORE, TYPES, UTILITY return None."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -44,7 +44,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_script_snake_case(self):
         """Test SCRIPT files are converted to snake_case."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -76,7 +76,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_test_prefix(self):
         """Test TEST files get test_ prefix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -101,7 +101,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_mixin_snake_case(self):
         """Test MIXIN files use snake_case with _mixin suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -137,7 +137,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_agent_suffix(self):
         """Test AGENT files get Agent suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -162,7 +162,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_protocol_passthrough(self):
         """Test PROTOCOL files remain PascalCase."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -180,7 +180,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_engine_passthrough(self):
         """Test ENGINE files remain PascalCase."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -198,7 +198,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_gateway_passthrough(self):
         """Test GATEWAY files remain PascalCase."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -216,7 +216,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_stub_agent_replacement(self):
         """Test STUB files replace Agent with Stub."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -241,7 +241,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_orchestrator_suffix_fix(self):
         """Test ORCHESTRATOR strips Agent/Service and adds Orchestrator."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -273,7 +273,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_adapter_suffix_fix(self):
         """Test ADAPTER strips Agent and adds Strategy."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -298,7 +298,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_factory_suffix(self):
         """Test FACTORY files get Factory suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -323,7 +323,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_validator_snake_case(self):
         """Test VALIDATOR files use snake_case with _validator suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -355,7 +355,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_config_snake_case(self):
         """Test CONFIG files use snake_case with _config suffix."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -387,7 +387,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_handles_ast_parsing_errors(self):
         """Test that AST parsing errors are handled gracefully."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -406,7 +406,7 @@ class TestGetCompliantName:
 
     def test_get_compliant_name_no_classes_in_file(self):
         """Test behavior when file has no classes."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

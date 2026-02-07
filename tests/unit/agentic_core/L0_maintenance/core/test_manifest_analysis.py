@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.general_scripts.verify_manifest import analyze_impact
+from agentic_core.L0_maintenance.scripts.verify_manifest import analyze_impact
 
 
 class TestManifestAnalysis:

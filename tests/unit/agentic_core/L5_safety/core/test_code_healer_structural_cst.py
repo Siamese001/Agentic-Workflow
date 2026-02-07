@@ -13,16 +13,16 @@ from pathlib import Path
 import libcst as cst
 import pytest
 
-from agentic_core.L5_safety.validators.core.cst_transformers import (
+from agentic_core.L5_safety.types.cst_transformers_types import (
     SurgicalBlankLineNormalizer,
     SurgicalTrailingWhitespaceFixer,
 )
-from agentic_core.L5_safety.validators.core.surgical_context import (
+from agentic_core.L5_safety.types.surgical_context import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.L5_safety.validators.core.surgical_cst_healer_mixin import (
+from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
 

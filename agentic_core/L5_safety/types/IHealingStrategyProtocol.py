@@ -156,7 +156,7 @@ def register_chaos_healing() -> dict[str, Any]:
     errors = []
 
     try:
-        from agentic_core.L5_safety.validators.core.healing_sovereign_orchestrator_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_suite_types_validator import (
             get_healing_orchestrator,
         )
 

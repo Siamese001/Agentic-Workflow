@@ -134,7 +134,7 @@ class ThreatDetection:
     recommendations: list[str]
 
 
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 

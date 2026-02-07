@@ -35,7 +35,7 @@ class TestCodeDeduplicationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+            from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
                 CodeDeduplicationAgent,
             )
 
@@ -82,7 +82,7 @@ class TestCodeDeduplicationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.core.code_deduplication_agent import (
+                from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import (
                     CodeDeduplicationAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

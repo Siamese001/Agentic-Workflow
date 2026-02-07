@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.general_scripts.pascal_sovereignty_fixer import (
+from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import (
     PascalSovereigntyFixer,
 )
 

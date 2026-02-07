@@ -11,7 +11,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 import json
 
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)

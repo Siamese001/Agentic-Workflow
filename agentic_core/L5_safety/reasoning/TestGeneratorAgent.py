@@ -26,7 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 log = logging.getLogger(__name__)

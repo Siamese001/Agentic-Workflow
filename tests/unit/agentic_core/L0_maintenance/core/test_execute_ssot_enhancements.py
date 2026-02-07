@@ -20,7 +20,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import the classes we need to test
-from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
     ASTCodeQualityValidator,
     AutonomousDecisionEngine,
     ConfidenceScore,
@@ -38,7 +38,7 @@ class TestSafetyMechanisms:
         Requirement: Must return False and specific error message.
         """
         # Use the enhanced version with cycle detection
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine as EnhancedEngine,
         )
 
@@ -60,7 +60,7 @@ class TestSafetyMechanisms:
         Verify global healing budget prevents runaway processes.
         Requirement: Stop after N operations.
         """
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine as EnhancedEngine,
         )
 
@@ -202,7 +202,7 @@ class TestConfidenceScoring:
 
     def test_calculate_healing_confidence_zero_violations(self):
         """Zero violations should return perfect confidence."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import AutonomousDecisionEngine
+        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine
 
         engine = AutonomousDecisionEngine(enable_llm=False)
         confidence = engine.calculate_healing_confidence(
@@ -214,7 +214,7 @@ class TestConfidenceScoring:
 
     def test_calculate_healing_confidence_trusted_territory(self):
         """Trusted territories should have higher confidence for same violation count."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import AutonomousDecisionEngine
+        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine
 
         engine = AutonomousDecisionEngine(enable_llm=False)
 
@@ -234,7 +234,7 @@ class TestConfidenceScoring:
 
     def test_calculate_healing_confidence_known_types(self):
         """Known violation types should increase confidence."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import AutonomousDecisionEngine
+        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine
 
         engine = AutonomousDecisionEngine(enable_llm=False)
 
@@ -254,7 +254,7 @@ class TestConfidenceScoring:
 
     def test_should_proceed_with_healing_high_confidence(self):
         """High confidence (>0.75) should proceed with healing."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine,
             ConfidenceScore,
         )
@@ -269,7 +269,7 @@ class TestConfidenceScoring:
 
     def test_should_proceed_with_healing_low_confidence_no_llm(self):
         """Low confidence without LLM should not proceed."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine,
             ConfidenceScore,
         )
@@ -284,7 +284,7 @@ class TestConfidenceScoring:
 
     def test_should_proceed_with_healing_low_confidence_with_llm(self):
         """Low confidence with LLM enabled should proceed with override."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine,
             ConfidenceScore,
         )
@@ -303,7 +303,7 @@ class TestRuntimeStateManager:
 
     def test_state_initialization(self, tmp_path):
         """Test that state is properly initialized."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
 
@@ -314,7 +314,7 @@ class TestRuntimeStateManager:
 
     def test_start_mission(self, tmp_path):
         """Test mission start updates state correctly."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.start_mission("Test Mission", ["Agent1", "Agent2"])
@@ -325,7 +325,7 @@ class TestRuntimeStateManager:
 
     def test_update_agent(self, tmp_path):
         """Test agent update tracking."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.update_agent("TestAgent", "L5 - Safety")
@@ -335,7 +335,7 @@ class TestRuntimeStateManager:
 
     def test_complete_agent(self, tmp_path):
         """Test agent completion tracking."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.complete_agent("TestAgent", True, "Completed successfully")
@@ -346,7 +346,7 @@ class TestRuntimeStateManager:
 
     def test_finish_mission(self, tmp_path):
         """Test mission finish updates state correctly."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.start_mission("Test", [])
@@ -360,7 +360,7 @@ class TestRuntimeStateManager:
         """Test that state is saved atomically."""
         import json
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import RuntimeStateManager
+        from agentic_core.L0_maintenance.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
         state_mgr.state["test_key"] = "test_value"
@@ -382,7 +382,7 @@ class TestNonInteractiveGuard:
         """Test that guard blocks input() calls."""
         import builtins
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import NonInteractiveGuard
+        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
         original_input = builtins.input
 
@@ -399,7 +399,7 @@ class TestNonInteractiveGuard:
         """Test that inactive guard allows input() calls."""
         import builtins
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import NonInteractiveGuard
+        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
         # Mock input to avoid actual stdin read
         with patch.object(builtins, "input", return_value="test"):
@@ -409,7 +409,7 @@ class TestNonInteractiveGuard:
 
     def test_guard_exhaustion_protection(self):
         """Test that guard prevents infinite prompt loops."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import NonInteractiveGuard
+        from agentic_core.L0_maintenance.scripts.execute_ssot import NonInteractiveGuard
 
         with NonInteractiveGuard(active=True, max_blocked_prompts=3):
             # First 3 should raise RuntimeError
@@ -429,7 +429,7 @@ class TestWithRetryDecorator:
 
     def test_retry_succeeds_on_first_attempt(self):
         """Test that successful first attempt returns immediately."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import with_retry
+        from agentic_core.L0_maintenance.scripts.execute_ssot import with_retry
 
         call_count = 0
 
@@ -446,7 +446,7 @@ class TestWithRetryDecorator:
 
     def test_retry_succeeds_after_failures(self):
         """Test that retry succeeds after transient failures."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import with_retry
+        from agentic_core.L0_maintenance.scripts.execute_ssot import with_retry
 
         call_count = 0
 
@@ -465,7 +465,7 @@ class TestWithRetryDecorator:
 
     def test_retry_exhausted_raises(self):
         """Test that exhausted retries raise the last exception."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import with_retry
+        from agentic_core.L0_maintenance.scripts.execute_ssot import with_retry
 
         @with_retry(max_retries=2, delay=0.01)
         def always_fails():
@@ -478,7 +478,7 @@ class TestWithRetryDecorator:
 
     def test_retry_does_not_retry_prompt_errors(self):
         """Test that prompt-related errors are not retried."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import with_retry
+        from agentic_core.L0_maintenance.scripts.execute_ssot import with_retry
 
         call_count = 0
 
@@ -499,7 +499,7 @@ class TestEnhancedAutonomousDecisionEngine:
 
     def test_enhanced_engine_initialization(self, tmp_path):
         """Test enhanced engine initializes correctly."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             EnhancedAutonomousDecisionEngine,
             RuntimeStateManager,
         )
@@ -513,7 +513,7 @@ class TestEnhancedAutonomousDecisionEngine:
 
     def test_classify_violation_type(self, tmp_path):
         """Test violation type classification."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
             EnhancedAutonomousDecisionEngine,
             RuntimeStateManager,
         )
@@ -537,7 +537,7 @@ class TestAgentDiscovery:
         """Test agent discovery from cached JSON."""
         import json
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import list_available_agents
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache
         cache_data = [
@@ -559,7 +559,7 @@ class TestAgentDiscovery:
         """Test that duplicate agents are removed."""
         import json
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import list_available_agents
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache with duplicates
         cache_data = [
@@ -579,7 +579,7 @@ class TestAgentDiscovery:
         """Test that invalid module paths are rejected."""
         import json
 
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import list_available_agents
+        from agentic_core.L0_maintenance.scripts.execute_ssot import list_available_agents
 
         # Create mock discovery cache with invalid paths
         cache_data = [
@@ -603,7 +603,7 @@ class TestConfidenceScoreDataclass:
 
     def test_is_high_confidence(self):
         """Test high confidence threshold."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ConfidenceScore
 
         high = ConfidenceScore(value=0.80, reasoning="High")
         medium = ConfidenceScore(value=0.75, reasoning="Medium")
@@ -615,7 +615,7 @@ class TestConfidenceScoreDataclass:
 
     def test_is_medium_confidence(self):
         """Test medium confidence threshold."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ConfidenceScore
 
         high = ConfidenceScore(value=0.80, reasoning="High")
         medium = ConfidenceScore(value=0.60, reasoning="Medium")
@@ -627,7 +627,7 @@ class TestConfidenceScoreDataclass:
 
     def test_is_low_confidence(self):
         """Test low confidence threshold."""
-        from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L0_maintenance.scripts.execute_ssot import ConfidenceScore
 
         high = ConfidenceScore(value=0.80, reasoning="High")
         medium = ConfidenceScore(value=0.60, reasoning="Medium")

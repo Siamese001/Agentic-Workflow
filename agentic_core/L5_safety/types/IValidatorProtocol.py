@@ -214,7 +214,7 @@ def register_red_team_validators() -> dict[str, Any]:
     errors = []
 
     try:
-        from agentic_core.L5_safety.validators.core.validator_orchestrator_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_suite_types_validator import (
             get_validator_orchestrator,
         )
 

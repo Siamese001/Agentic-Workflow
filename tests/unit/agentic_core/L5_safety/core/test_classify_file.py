@@ -19,7 +19,7 @@ class TestClassifyFile:
 
     def test_classify_file_critical_ignores(self):
         """Test that critical ignore patterns work."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -38,7 +38,7 @@ class TestClassifyFile:
 
     def test_classify_file_stub_detection_preempts_all(self):
         """Test that STUB detection has highest priority."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -56,7 +56,7 @@ class TestClassifyFile:
 
     def test_classify_file_base_agent_detection(self):
         """Test BASE_AGENT detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -74,7 +74,7 @@ class TestClassifyFile:
 
     def test_classify_file_self_detection(self):
         """Test self-detection for FileClassificationAgent."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -92,7 +92,7 @@ class TestClassifyFile:
 
     def test_classify_file_blueprint_detection(self):
         """Test blueprint file detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -110,7 +110,7 @@ class TestClassifyFile:
 
     def test_classify_file_test_detection(self):
         """Test TEST detection with various patterns."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -144,7 +144,7 @@ class TestClassifyFile:
 
     def test_classify_file_script_detection(self):
         """Test SCRIPT detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -162,7 +162,7 @@ class TestClassifyFile:
 
     def test_classify_file_types_detection(self):
         """Test TYPES detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -187,7 +187,7 @@ class TestClassifyFile:
 
     def test_classify_file_primary_class_centric_detection(self):
         """Test primary-class-centric detection logic."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -206,7 +206,7 @@ class TestClassifyFile:
 
     def test_classify_file_exception_classification(self):
         """Test that Exception/Error classes are classified as CLASS."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -238,7 +238,7 @@ class TestClassifyFile:
 
     def test_classify_file_mixin_priority_elevation(self):
         """Test that MIXIN has elevated priority."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -256,7 +256,7 @@ class TestClassifyFile:
 
     def test_classify_file_agent_not_misclassified_as_script(self):
         """Test that Agents are not misclassified as SCRIPTs."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -276,7 +276,7 @@ class TestClassifyFile:
 
     def test_classify_file_orchestrator_detection(self):
         """Test ORCHESTRATOR detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -301,7 +301,7 @@ class TestClassifyFile:
 
     def test_classify_file_adapter_detection(self):
         """Test ADAPTER detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -326,7 +326,7 @@ class TestClassifyFile:
 
     def test_classify_file_config_detection(self):
         """Test CONFIG detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -351,7 +351,7 @@ class TestClassifyFile:
 
     def test_classify_file_validator_detection(self):
         """Test VALIDATOR detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -376,7 +376,7 @@ class TestClassifyFile:
 
     def test_classify_file_protocol_detection(self):
         """Test PROTOCOL detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -398,7 +398,7 @@ class TestClassifyFile:
 
     def test_classify_file_factory_detection(self):
         """Test FACTORY detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -416,7 +416,7 @@ class TestClassifyFile:
 
     def test_classify_file_agent_detection(self):
         """Test AGENT detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -441,7 +441,7 @@ class TestClassifyFile:
 
     def test_classify_file_gateway_detection(self):
         """Test GATEWAY detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -459,7 +459,7 @@ class TestClassifyFile:
 
     def test_classify_file_engine_detection(self):
         """Test ENGINE detection."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -477,7 +477,7 @@ class TestClassifyFile:
 
     def test_classify_file_fallback_to_class(self):
         """Test fallback to CLASS for non-matching patterns."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -495,7 +495,7 @@ class TestClassifyFile:
 
     def test_classify_file_empty_file(self):
         """Test classification of empty Python files."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -513,7 +513,7 @@ class TestClassifyFile:
 
     def test_classify_file_no_classes(self):
         """Test classification of files with no classes."""
-        from agentic_core.L5_safety.validators.core.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

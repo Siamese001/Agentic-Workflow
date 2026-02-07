@@ -35,7 +35,7 @@ try:
     )
 except ImportError:
     IntegrityGateExecutorAgent = None  # type: ignore[misc,assignment]
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 

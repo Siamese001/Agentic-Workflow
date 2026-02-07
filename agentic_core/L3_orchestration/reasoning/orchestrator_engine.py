@@ -48,7 +48,7 @@ from agentic_core.L3_orchestration.types import (
     ExecutionPhase,
     MissionResult,
 )
-from agentic_core.L5_safety.validators.core.decorators import standard_heal
+from agentic_core.L5_safety.utils.decorators_util import standard_heal
 from agentic_core.L5_safety.config.structure_blueprint_config import get_validated_project_root
 
 # [PHASE 2] SSOT Discovery Integration

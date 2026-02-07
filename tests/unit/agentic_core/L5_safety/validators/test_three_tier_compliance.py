@@ -19,8 +19,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.validators.core.registry_verification import AgentInfo
-from agentic_core.L5_safety.validators.core.three_tier_compliance import (
+from agentic_core.L5_safety.enforcement.registry_verification_script import AgentInfo
+from agentic_core.L5_safety.enforcement.three_tier_compliance_script import (
     AgentCompliance,
     ComplianceResult,
     ThreeTierComplianceChecker,

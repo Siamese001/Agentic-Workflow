@@ -17,7 +17,7 @@ Three-Tier Architecture:
    - Checks: tests/unit/ test coverage per agent
 
 USAGE:
-    from agentic_core.L5_safety.validators.core.three_tier_compliance import (
+    from agentic_core.L5_safety.enforcement.three_tier_compliance_script import (
         ThreeTierComplianceChecker
     )
     checker = ThreeTierComplianceChecker()
@@ -31,7 +31,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
-from agentic_core.L5_safety.validators.core.registry_verification import (
+from agentic_core.L5_safety.enforcement.registry_verification_script import (
     AgentInfo,
     RegistryVerifier,
 )

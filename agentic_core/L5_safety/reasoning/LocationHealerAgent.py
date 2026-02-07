@@ -36,10 +36,10 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
-from agentic_core.L5_safety.validators.core.location_utils_util import (
+from agentic_core.L5_safety.utils.location_utils_util import (
     compute_module_path,
 )
-from agentic_core.L5_safety.validators.core.location_constants_util import (
+from agentic_core.L5_safety.utils.location_constants_util import (
     ARCHIVE_SUBFOLDERS,
     DEFAULT_APP_HEALING_TARGET,
     DEFAULT_ARCHIVE_SUBFOLDER,
@@ -349,7 +349,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             super().heal_repository()
 
-            from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+            from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
             validator = LocationValidatorAgent(project_root=self.project_root)
             scan_result = validator.run()
@@ -644,7 +644,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Get all Python files
-            from agentic_core.L5_safety.validators.core.location_utils import get_agent_files
+            from agentic_core.L5_safety.utils.location_utils_util import get_agent_files
 
             python_files = [Path(f) for f in get_agent_files(str(self.project_root))]
 
@@ -1927,7 +1927,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Delegate gravity violation healing to GravityLeakDetector."""
-        from agentic_core.L5_safety.validators.core.GravityLeakDetector import GravityLeakDetector
+        from agentic_core.L5_safety.config.gravity_leak_detector_config import GravityLeakDetector
 
         detector = GravityLeakDetector(project_root=self.project_root)
         return detector._heal_gravity_violations(gravity_issues)
@@ -2103,7 +2103,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                     "issue": str(msg),
                                 },
                             )
-                            from agentic_core.L5_safety.validators.core.LocationValidatorAgent import (
+                            from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
                                 LocationValidatorAgent,
                             )
 
@@ -2241,7 +2241,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         Delegates to LocationValidatorAgent for validation.
         """
-        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.enforce_void_compliance(files)
@@ -2469,7 +2469,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """Full location compliance scan with automatic cleanup."""
-        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         scan_result = validator.run()

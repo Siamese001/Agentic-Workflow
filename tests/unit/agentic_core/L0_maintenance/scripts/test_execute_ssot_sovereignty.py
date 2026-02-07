@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.general_scripts.execute_ssot import (
+from agentic_core.L0_maintenance.scripts.execute_ssot import (
     PreFlightValidator,
     SovereignDecisionEngine,
 )
