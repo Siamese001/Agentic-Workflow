@@ -2015,15 +2015,15 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import (
             get_consolidated_orchestrator,
         )
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,  # noqa: F401
         )
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.SystemArchitectAgent import (
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
             SystemArchitectAgent,  # noqa: F401
         )
 
@@ -2140,7 +2140,7 @@ Examples:
     if args.capture_baseline:
         print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
         try:
-            from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+            from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
                 ArchitectureGovernorAgent,
             )
 
@@ -2226,24 +2226,24 @@ Examples:
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness
     try:
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
         from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
-        from agentic_core.L5_safety.validators.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
-        from agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.validators.RootHygieneAgent import (
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
             RootHygieneAgent,  # noqa: F401
         )
-        from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+        from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
         from agentic_core.L6_observability.reasoning.DebateSynthesisAgent import (
             DebateSynthesisAgent,
         )
@@ -2308,7 +2308,7 @@ Examples:
             if is_autonomous:
                 logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
                 try:
-                    from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+                    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
                         ArchitectureGovernorAgent,
                     )
 

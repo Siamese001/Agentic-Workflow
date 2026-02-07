@@ -52,7 +52,7 @@ def compute_module_path(file_path: Path, project_root: Path | None = None) -> st
         project_root: Optional project root (auto-detected if None)
 
     Returns:
-        Module path string (e.g., 'agentic_core.L5_safety.validators.LocationAgent')
+        Module path string (e.g., 'agentic_core.L5_safety.reasoning.LocationAgent')
     """
     if project_root is None:
         from agentic_core.L5_safety.config.structure_blueprint_config import (

@@ -26,7 +26,7 @@ from .MessageComplianceAgent import MessageComplianceAgent
 from .MessageDiversityValidator import MessageDiversityValidator
 from .OutreachCapabilityMonitorAgent import OutreachCapabilityMonitorAgent
 from .OutreachLearningAgent import OutreachLearningAgent
-from .OutreachPhase5Orchestrator import OutreachPhase5Orchestrator
+
 from .OutreachProactiveAgent import OutreachProactiveAgent
 from .OutreachSignalRouterAgent import OutreachSignalRouterAgent
 from .OutreachTestPilotAgent import OutreachTestPilotAgent
@@ -65,7 +65,7 @@ __all__ = [
     "MessageDiversityValidator",
     "OutreachCapabilityMonitorAgent",
     "OutreachLearningAgent",
-    "OutreachPhase5Orchestrator",
+
     "OutreachProactiveAgent",
     "OutreachSignalRouterAgent",
     "OutreachTestPilotAgent",

@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import (
+from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer_script import (
     PascalSovereigntyFixer,
 )
 
@@ -136,8 +136,8 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
         updated = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", updated)
 
-        self.assertIn("import llm_provider_mixin as lpm", updated)
-        self.assertIn("from llm_provider_mixin import Provider", updated)
+        self.assertIn("import LLMProviderMixin as lpm", updated)
+        self.assertIn("from LLMProviderMixin import Provider", updated)
 
     def test_summary_output_integrity(self):
         """

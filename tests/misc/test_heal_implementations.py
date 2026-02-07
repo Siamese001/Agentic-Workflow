@@ -13,15 +13,15 @@ sys.path.insert(0, str(project_root))
 
 # List of agents to test
 AGENTS_TO_TEST = [
-    ("agentic_core.L5_safety.validators.ArchitectureGovernorAgent", "ArchitectureGovernorAgent"),
-    ("agentic_core.L5_safety.validators.HierarchyAgent", "HierarchyAgent"),
+    ("agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent", "ArchitectureGovernorAgent"),
+    ("agentic_core.L5_safety.reasoning.HierarchyAgent", "HierarchyAgent"),
     (
-        "agentic_core.L5_safety.validators.FilesystemSSOTReconcilerAgent",
+        "agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent",
         "FilesystemSSOTReconcilerAgent",
     ),
     ("agentic_core.L5_safety.validators.CodeDeduplicationAgent", "CodeDeduplicationAgent"),
-    ("agentic_core.L5_safety.validators.LocationHealerAgent", "LocationHealerAgent"),
-    ("agentic_core.L5_safety.validators.LocationValidatorAgent", "LocationValidatorAgent"),
+    ("agentic_core.L5_safety.reasoning.LocationHealerAgent", "LocationHealerAgent"),
+    ("agentic_core.L5_safety.reasoning.LocationValidatorAgent", "LocationValidatorAgent"),
     ("agentic_core.L5_safety.validators.AutonomyGuardianAgent", "AutonomyGuardianAgent"),
     ("agentic_core.L5_safety.validators.CartographerAgent", "CartographerAgent"),
     ("agentic_core.L5_safety.validators.GitAgent", "GitAgent"),

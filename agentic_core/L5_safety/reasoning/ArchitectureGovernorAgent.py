@@ -55,8 +55,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 # [PHASE 24] Integrate L0 Maintenance Capability
-from agentic_core.L5_safety.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.validators.FileClassificationAgent import (
+from agentic_core.L0_maintenance.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
@@ -555,7 +555,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
                 # [UNIFIED AUDIT] Ingest Physical Hierarchy Violations
                 try:
-                    from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+                    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
                     hierarchy = HierarchyAgent(project_root=self.project_root)
                     # Scan specifically for files sitting in the root that shouldn't be there
@@ -1409,7 +1409,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Logger.info(f"[{agent_name}] Found {len(violations)} violations to process")
 
         # Step 2: Initialize Batch Processor
-        from agentic_core.L5_safety.reasoning.cognitive_batch_processor import (
+        from agentic_core.L5_safety.utils.cognitive_batch_processor_util import (
             CognitiveBatchProcessor,
         )
 
@@ -1468,7 +1468,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # 2. Ingest Hierarchy (Physical Placement)
         try:
-            from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
             hierarchy = HierarchyAgent(project_root=self.project_root)
             for territory in target_territories:
@@ -1487,7 +1487,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # 3. Ingest System Architect (Circular Dependencies/Gravity)
         try:
-            from agentic_core.L5_safety.validators.SystemArchitectAgent import SystemArchitectAgent
+            from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
 
             architect = SystemArchitectAgent(project_root=self.project_root)
             for territory in target_territories:

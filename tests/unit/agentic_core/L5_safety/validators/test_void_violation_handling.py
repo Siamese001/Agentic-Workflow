@@ -39,14 +39,14 @@ class test_void_violation_handling:
 
     def test_healing_strategy_map_has_void_violation(self):
         """Verify VOID VIOLATION is in the healing strategy map."""
-        from agentic_core.L5_safety.validators.location_constants import HEALING_STRATEGY_MAP
+        from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
 
         assert "VOID VIOLATION" in HEALING_STRATEGY_MAP
         assert HEALING_STRATEGY_MAP["VOID VIOLATION"] == "_heal_void_violation"
 
     def test_location_healer_has_void_violation_method(self):
         """Verify LocationHealerAgent has _heal_void_violation method."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         assert hasattr(LocationHealerAgent, "_heal_void_violation")
         assert hasattr(LocationHealerAgent, "_relocate_to_existing_subfolder")
@@ -54,7 +54,7 @@ class test_void_violation_handling:
 
     def test_void_violation_dry_run_shows_options(self, project_root):
         """Verify dry run shows all options instead of archiving."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         healer = LocationHealerAgent(project_root=project_root)
 
@@ -79,7 +79,7 @@ class test_void_violation_handling:
 
     def test_void_violation_not_default_archive(self):
         """Verify void violation does NOT default to archiving."""
-        from agentic_core.L5_safety.validators.location_constants import HEALING_STRATEGY_MAP
+        from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
 
         # VOID VIOLATION should have its own handler, not fall through to archiving
         assert "VOID VIOLATION" in HEALING_STRATEGY_MAP
@@ -89,7 +89,7 @@ class test_void_violation_handling:
 
     def test_apply_healing_strategy_routes_void_violation(self, project_root):
         """Verify _apply_healing_strategy routes VOID VIOLATION to correct handler."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         healer = LocationHealerAgent(project_root=project_root)
 

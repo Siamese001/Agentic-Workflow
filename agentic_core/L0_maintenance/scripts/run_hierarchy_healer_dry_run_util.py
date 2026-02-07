@@ -15,7 +15,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.HierarchyHealerAgent import HierarchyHealerAgent
+from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
 
 
 def main():

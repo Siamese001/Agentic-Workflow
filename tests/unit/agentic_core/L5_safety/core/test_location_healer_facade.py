@@ -94,7 +94,7 @@ class TestLocationHealerAgentFacade:
 
     def test_class_exists(self):
         """Test LocationHealerAgent class exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -103,7 +103,7 @@ class TestLocationHealerAgentFacade:
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -113,7 +113,7 @@ class TestLocationHealerAgentFacade:
         """Test LocationHealerAgent is a dataclass."""
         from dataclasses import is_dataclass
 
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -121,7 +121,7 @@ class TestLocationHealerAgentFacade:
 
     def test_has_project_root_field(self):
         """Test LocationHealerAgent has project_root field."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -134,7 +134,7 @@ class TestLocationHealerMethods:
 
     def test_heal_method_signature(self):
         """Test heal method exists with correct signature."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -143,7 +143,7 @@ class TestLocationHealerMethods:
 
     def test_heal_repository_method_signature(self):
         """Test heal_repository method exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -152,7 +152,7 @@ class TestLocationHealerMethods:
 
     def test_safe_move_method_exists(self):
         """Test safe_move method exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -161,7 +161,7 @@ class TestLocationHealerMethods:
 
     def test_safe_delete_method_exists(self):
         """Test safe_delete method exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -170,7 +170,7 @@ class TestLocationHealerMethods:
 
     def test_post_heal_validation_method_exists(self):
         """Test post_heal_validation method exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -179,7 +179,7 @@ class TestLocationHealerMethods:
 
     def test_fix_imports_after_move_method_exists(self):
         """Test fix_imports_after_move method exists."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -192,7 +192,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -200,7 +200,7 @@ class TestLegacyCompatibility:
 
     def test_docstring_updated(self):
         """Test docstring mentions facade pattern."""
-        from agentic_core.L5_safety.validators.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 

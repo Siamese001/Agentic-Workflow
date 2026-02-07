@@ -42,8 +42,8 @@ import pytest
 
 # Import existing agents for validation
 try:
-    from agentic_core.L5_safety.validators.file_classification_agent import FileClassificationAgent
-    from agentic_core.L5_safety.validators.location_agent import LocationAgent
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
     AGENTS_AVAILABLE = True
 except ImportError:

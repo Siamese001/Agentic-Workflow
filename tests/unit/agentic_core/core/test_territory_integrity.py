@@ -127,7 +127,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
         # Capture log output
         log_capture = io.StringIO()
         handler = logging.StreamHandler(log_capture)
-        logger = logging.getLogger("agentic_core.L5_safety.validators.HierarchyAgent")
+        logger = logging.getLogger("agentic_core.L5_safety.reasoning.HierarchyAgent")
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
 

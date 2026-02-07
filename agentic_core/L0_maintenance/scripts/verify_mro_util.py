@@ -74,7 +74,7 @@ def verify_meta_learning_agent():
 def verify_location_validator_agent():
     """Verify LocationValidatorAgent MRO."""
     try:
-        from agentic_core.L5_safety.validators.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         return print_mro(LocationValidatorAgent, "LocationValidatorAgent")
     except ImportError as e:
@@ -85,7 +85,7 @@ def verify_location_validator_agent():
 def verify_hierarchy_agent():
     """Verify HierarchyAgent MRO."""
     try:
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         return print_mro(HierarchyAgent, "HierarchyAgent")
     except ImportError as e:

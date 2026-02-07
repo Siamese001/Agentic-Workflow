@@ -123,7 +123,7 @@ class TestArchitectureGovernorIntegration:
 
     def test_governor_detects_suffix_duplicates(self, tmp_path):
         """Test that ArchitectureGovernorAgent detects suffix duplicates."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

@@ -96,7 +96,7 @@ class TestSSOTViolationDetection:
 
     def test_ssot_violation_detected(self, tmp_path):
         """Test that SSOT violations are detected by ArchitectureGovernorAgent."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
@@ -120,7 +120,7 @@ class TestSSOTViolationDetection:
 
     def test_approved_structure_passes(self, tmp_path):
         """Test that approved SSOT structure passes validation."""
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

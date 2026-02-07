@@ -74,7 +74,7 @@ def run_subset_test(sample_size: int = 5) -> int:
         from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
-        from agentic_core.L5_safety.validators.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 

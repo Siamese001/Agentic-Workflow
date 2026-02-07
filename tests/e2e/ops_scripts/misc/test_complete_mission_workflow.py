@@ -21,7 +21,7 @@ def test_complete_mission_workflow():
 
     try:
         from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
-        from agentic_core.L5_safety.validators.location_agent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         # 1. Initialize Mission Control
         print("\n📡 1. INITIALIZING MISSION CONTROL...")

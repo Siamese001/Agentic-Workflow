@@ -131,7 +131,7 @@ class TestLatencyBudget:
                 "VerificationGate",
             ),
             "LocationAgent": (
-                "agentic_core.L5_safety.validators.location_agent",
+                "agentic_core.L5_safety.reasoning.LocationAgent",
                 "LocationAgent",
             ),
         }

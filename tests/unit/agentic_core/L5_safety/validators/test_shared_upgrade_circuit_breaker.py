@@ -266,7 +266,7 @@ class TestSharedUpgradeCircuitBreaker:
                     # Mock safe_move
                     with patch.object(agent, "safe_move"):
                         # Mock Logger to capture error logs
-                        with patch("agentic_core.L5_safety.validators.LocationAgent.Logger") as mock_logger:
+                        with patch("agentic_core.L5_safety.reasoning.LocationAgent.Logger") as mock_logger:
                             # Mock the file reading for dust threshold
                             with patch("builtins.open", mock_open(read_data="".join(content_lines))):
                                 # Trigger the deep import validation logic

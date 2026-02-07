@@ -23,7 +23,7 @@ from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
 def _get_hierarchy_agent() -> Any:
     """Get hierarchy agent."""
     try:
-        from agentic_core.L5_safety.validators.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         return HierarchyAgent
     except Exception:
@@ -33,7 +33,7 @@ def _get_hierarchy_agent() -> Any:
 def _get_naming_agent() -> Any:
     """Get naming agent."""
     try:
-        from agentic_core.L5_safety.validators.naming_agent_validator import NamingAgent
+        from agentic_core.L5_safety.validators.naming_validator import NamingAgent
 
         return NamingAgent
     except Exception:

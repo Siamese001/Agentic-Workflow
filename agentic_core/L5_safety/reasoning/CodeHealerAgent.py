@@ -43,7 +43,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     UnifiedAgent,
 )
 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
-from agentic_core.L5_safety.validators.surgical_context import (
+from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,

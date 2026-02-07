@@ -2,21 +2,19 @@ from __future__ import annotations
 
 # ruff: noqa: E501, E402
 """
-LocationAgent — Backward-compatibility shim (LCD+ Phase 0.3).
+LocationAgent — DEPRECATED backward-compatibility shim (LCD+ Phase 0.3).
 
-This file formerly contained ~2,241 lines of facade code. All logic has been
-salvaged into the canonical owners:
+[DEPRECATED 2026-02-07] This shim exists ONLY for backward compatibility.
+New code MUST import from canonical modules directly:
 
     - LocationValidatorAgent: Validation (run, validate_file_location, enforce_void_compliance)
     - LocationHealerAgent: Healing (heal, heal_violations, heal_repository, cleanup_violations)
     - location_path_util: Utilities (is_path_compliant, get_location_agent singleton)
 
-This shim preserves backward compatibility for existing imports:
-    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent  # Windows
-
-All new code should import from the canonical modules directly.
+DO NOT add new logic here. This file will be removed once all 80+ references
+are migrated to the canonical agents above.
 """
+import warnings
 from pathlib import Path
 
 from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
@@ -29,13 +27,19 @@ from agentic_core.L5_safety.utils.location_path_util import (  # noqa: F401
 
 
 class LocationAgent(LocationHealerAgent):
-    """Backward-compatibility shim — inherits all behavior from LocationHealerAgent.
+    """DEPRECATED backward-compatibility shim — inherits all behavior from LocationHealerAgent.
 
-    Validation methods delegate to LocationValidatorAgent.
-    Healing methods are inherited from LocationHealerAgent.
-
-    New code should import LocationHealerAgent or LocationValidatorAgent directly.
+    [DEPRECATED 2026-02-07] Import LocationHealerAgent or LocationValidatorAgent directly.
+    This shim will be removed once all 80+ references are migrated.
     """
+
+    def __post_init__(self):
+        warnings.warn(
+            "LocationAgent is deprecated. Use LocationHealerAgent or LocationValidatorAgent directly.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__post_init__()
 
     def run(self, files: list[Path] | None = None) -> dict:
         """Delegate validation scan to LocationValidatorAgent."""

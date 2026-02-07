@@ -12,7 +12,7 @@ import pytest
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agentic_core.L5_safety.validators.FileClassificationAgent import FileClassificationAgent
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 
 
 class TestSSOTCompliance:

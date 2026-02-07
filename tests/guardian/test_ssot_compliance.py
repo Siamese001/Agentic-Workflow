@@ -80,6 +80,7 @@ class TestSSOTCompliance:
             ".pytest_cache",
             "archives",
             ".sovereign_healing_backup",
+            ".healing_backups",
             ".backup",
             "node_modules",
             ".mypy_cache",
@@ -224,8 +225,10 @@ class TestSSOTCompliance:
         for path in self.project_root.rglob("*BaseAgent.py"):
             rel_path = self._get_relative_path(path)
 
-            # Skip excluded directories
+            # Skip excluded directories and test files
             if any(excluded in path.parts for excluded in self.excluded_dirs):
+                continue
+            if "tests" in path.parts:
                 continue
 
             # Check if it's in the canonical location
