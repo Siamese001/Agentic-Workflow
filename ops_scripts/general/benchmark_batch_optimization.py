@@ -18,7 +18,7 @@ def benchmark_batch_vs_immediate():
     Benchmark: 1000 increments - batch vs immediate writes.
     Demonstrates dramatic reduction in disk I/O and time.
     """
-    from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
 
     # Test parameters
     num_increments = 1000
@@ -110,7 +110,7 @@ def demonstrate_location_agent_scenario():
     Demonstrate real-world LocationAgent scenario: scanning 500 files.
     Shows how batching prevents disk thrashing during validation scans.
     """
-    from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
 
     # Simulate LocationAgent scanning files
     num_files = 500

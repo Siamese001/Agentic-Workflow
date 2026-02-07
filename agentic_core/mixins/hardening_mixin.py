@@ -16,7 +16,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from agentic_core.L4_state.ledger.CircuitBreaker import CircuitBreakerOpenError, get_breaker
+from agentic_core.L4_state.ledger.circuit_breaker import CircuitBreakerOpenError, get_breaker
 from agentic_core.L5_safety.strategies.ErrorRecoveryStrategy import ErrorRecoveryStrategy
 from agentic_core.L6_observability.telemetry.system_telemetry_util import SystemTelemetry, get_telemetry
 

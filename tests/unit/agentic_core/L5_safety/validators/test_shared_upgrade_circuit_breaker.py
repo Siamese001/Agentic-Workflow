@@ -72,7 +72,7 @@ class TestSharedUpgradeCircuitBreaker:
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.validation_context.RuntimeStateGuard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -132,7 +132,7 @@ class TestSharedUpgradeCircuitBreaker:
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.validation_context.RuntimeStateGuard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -193,7 +193,7 @@ class TestSharedUpgradeCircuitBreaker:
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.validation_context.RuntimeStateGuard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -252,7 +252,7 @@ class TestSharedUpgradeCircuitBreaker:
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.validation_context.RuntimeStateGuard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()

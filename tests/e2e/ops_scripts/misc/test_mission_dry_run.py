@@ -20,7 +20,7 @@ def test_mission_dry_run():
 
     try:
         # Import and run the mission logic in dry-run mode
-        from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+        from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
         from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         # Initialize agents
@@ -104,7 +104,7 @@ def test_mission_script_imports():
 
     try:
         # Test imports that the mission script uses
-        from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+        from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
         from agentic_core.L5_safety.validators.location_agent import LocationAgent
 
         # Test that we can create instances

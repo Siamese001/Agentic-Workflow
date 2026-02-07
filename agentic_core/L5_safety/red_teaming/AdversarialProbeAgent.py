@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L4_state.validation_context import ValidationContext
+from agentic_core.L4_state.memory import ValidationContext
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 from agentic_core.runtime.shared_runtime import log_event
 

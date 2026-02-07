@@ -27,7 +27,7 @@ class TestCasingMigration:
             consumer = root / "main.py"
             consumer.write_text(
                 "from agentic_core.L2_execution.engine import tool\n"
-                "from agentic_core.L4_state.validation_context import context"
+                "from agentic_core.L4_state.memory import context"
             )
 
             yield root
@@ -49,7 +49,7 @@ class TestCasingMigration:
         f = mock_fs / "main.py"
         content = f.read_text()
         content = content.replace("L2_execution.engine", "L2_execution.engine")
-        content = content.replace("L4_state.validation_context", "L4_state.validation_context")
+        content = content.replace("L4_state.memory", "L4_state.memory")
         f.write_text(content)
 
         # --- ASSERTIONS ---
@@ -60,4 +60,4 @@ class TestCasingMigration:
 
         updated_code = f.read_text()
         assert "L2_execution.engine" in updated_code
-        assert "L4_state.validation_context" in updated_code
+        assert "L4_state.memory" in updated_code

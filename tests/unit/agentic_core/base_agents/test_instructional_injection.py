@@ -34,7 +34,7 @@ SSOT_AGENT_FOLDERS = [
     "agentic_core/L2_execution/engine",
     "agentic_core/L3_orchestration/engine",
     "agentic_core/L3_orchestration/engine",
-    "agentic_core/L4_state/validation_context",
+    "agentic_core/L4_state/memory",
     "agentic_core/L5_safety/validators",
     "agentic_core/L5_safety/guardrails",
     "agentic_core/L5_safety/gravity",

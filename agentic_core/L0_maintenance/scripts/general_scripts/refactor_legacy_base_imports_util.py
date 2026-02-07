@@ -17,7 +17,7 @@ LEGACY_IMPORTS = {
     "L1CognitionBase": "agentic_core.base_agents.L1CognitionBase",
     "L2ExecutionBase": "agentic_core.L2_execution.L2ExecutionBase",
     "L3OrchestrationBase": "agentic_core.L3_orchestration.engine.L3OrchestrationBase",
-    "L4StateBase": "agentic_core.L4_state.validation_context.L4StateBase",
+    "L4StateBase": "agentic_core.L4_state.memory.L4StateBase",
     "L5SafetyBase": "agentic_core.L5_safety.validators.L5SafetyBase",
     "L6ObservabilityBase": "agentic_core.L6_observability.L6ObservabilityBase",
     "MaintenanceBaseAgent": "agentic_core.L5_safety.validators.MaintenanceBaseAgent",

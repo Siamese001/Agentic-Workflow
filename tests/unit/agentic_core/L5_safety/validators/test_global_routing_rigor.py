@@ -47,7 +47,7 @@ class TestGlobalRoutingRigor:
     def test_state_beats_generic_scripts(self):
         """100% PASS: L4 State (14) must outrank L0 Generic Utilities (9)."""
         state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L4_state/validation_context"
+            "agentic_core/L4_state/memory"
         ]["weight"]
         # Generic baseline is 9 (defined in L2/L0 utility patterns)
         assert state_w > 9, "FATAL: Persistence contexts are losing gravity to maintenance scripts!"
@@ -103,7 +103,7 @@ class TestGlobalRoutingRigor:
             18: ["agentic_core/L1_cognition/thought_engine"],
             16: ["agentic_core/L3_orchestration/engine"],
             15: ["agentic_core/prompt_governance/meta_prompts"],
-            14: ["agentic_core/L4_state/validation_context"],
+            14: ["agentic_core/L4_state/memory"],
             12: ["agentic_core/prompt_governance/scripts"],
             10: ["agentic_core/prompt_governance/version_registry"],
             9: ["agentic_core/L2_execution/engine"],
@@ -156,7 +156,7 @@ class TestGlobalRoutingRigor:
     def test_state_schema_weight_range(self):
         """100% PASS: State & schema components must be in 10-14 range."""
         state_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L4_state/validation_context"
+            "agentic_core/L4_state/memory"
         ]["weight"]
         version_w = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
             "agentic_core/prompt_governance/version_registry"

@@ -1317,7 +1317,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             app_rg, app_lic, terr_scores = self._recompute_ast_scores(tree)
 
                             # [HARDENING] PERSISTENT GLOBAL CANDIDATE DETECTION
-                            from agentic_core.L4_state.validation_context.RuntimeStateGuard import (
+                            from agentic_core.L4_state.memory.runtime_state_guard import (
                                 RuntimeStateGuard,
                             )
                             from agentic_core.L5_safety.validators.structure_blueprint_config import (

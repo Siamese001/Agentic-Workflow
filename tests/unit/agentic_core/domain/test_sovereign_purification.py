@@ -64,8 +64,8 @@ class TestSovereignPurification(unittest.TestCase):
         artifacts = [
             Path("agentic_core/base_agents/HygieneMixin.py"),
             Path("agentic_core/L3_orchestration/OrchestratorAgent.py"),
-            Path("agentic_core/L4_state/validation_context/CheckpointManagerAgent.py"),
-            Path("agentic_core/L4_state/validation_context/StateManagementAgent.py"),
+            Path("agentic_core/L4_state/memory/CheckpointManagerAgent.py"),
+            Path("agentic_core/L4_state/memory/StateManagementAgent.py"),
             Path("agentic_core/L1_cognition/thought_engine/ASTValidatorAgent.py"),
         ]
 
