@@ -168,7 +168,7 @@ class HybridRetriever:
 
     async def _load_or_rebuild_local_index(self):
         """Thread-safe loading of the sovereign index"""
-        cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
+        cache_path = Path("agentic_core/L4_state/memory/.sovereign_local_index.json")
         if cache_path.exists():
             try:
                 data = await asyncio.to_thread(lambda: json.loads(cache_path.read_text(encoding="utf-8")))
@@ -200,7 +200,7 @@ class HybridRetriever:
                 def _sync():
                     tokenized = [self.tokenizer.tokenize_code(c["text"]) for c in chunks]
                     idx = BM25Okapi(tokenized)
-                    cache_path = Path("agentic_core/L4_state/validation_context/.sovereign_local_index.json")
+                    cache_path = Path("agentic_core/L4_state/memory/.sovereign_local_index.json")
                     cache_path.parent.mkdir(parents=True, exist_ok=True)
                     with tempfile.NamedTemporaryFile("w", delete=False, dir=cache_path.parent) as tf:
                         json.dump({"chunks": chunks}, tf, ensure_ascii=False)

@@ -43,7 +43,7 @@ class AdversarialValidator:
             return
 
         try:
-            from agentic_core.L4_state.validation_context import ValidationContext
+            from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.red_teaming.adversarial_probe_agent_validator import (
                 AdversarialProbeAgent,
             )
@@ -123,7 +123,7 @@ class BoundaryValidator:
             return
 
         try:
-            from agentic_core.L4_state.validation_context import ValidationContext
+            from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.red_teaming.boundary_testing_agent_validator import (
                 BoundaryTestingAgent,
             )

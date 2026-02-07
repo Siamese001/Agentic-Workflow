@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
 
 
 class TestRuntimeStateGuard:

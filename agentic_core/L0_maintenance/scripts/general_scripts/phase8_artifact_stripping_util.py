@@ -8,8 +8,8 @@ domain directories and strips all transitional prefixes.
 Targets:
 1. HygieneMixin.py -> HygieneMixin.py (base_agents/)
 2. Orchestrator.py -> Orchestrator.py (L3_orchestration/)
-3. CheckpointManagerAgent.py -> CheckpointManagerAgent.py (L4_state/validation_context/)
-4. StateManagementAgent.py -> StateManagementAgent.py (L4_state/validation_context/)
+3. CheckpointManagerAgent.py -> CheckpointManagerAgent.py (L4_state/memory/)
+4. StateManagementAgent.py -> StateManagementAgent.py (L4_state/memory/)
 5. ASTValidatorAgent.py -> ASTValidatorAgent.py (L1_cognition/thought_engine/)
 """
 
@@ -43,14 +43,14 @@ def phase8_artifact_stripping():
             "class_new": "Orchestrator",
         },
         {
-            "old": "agentic_core/L4_state/validation_context/CheckpointManagerAgent.py",
-            "new": "agentic_core/L4_state/validation_context/CheckpointManagerAgent.py",
+            "old": "agentic_core/L4_state/memory/CheckpointManagerAgent.py",
+            "new": "agentic_core/L4_state/memory/CheckpointManagerAgent.py",
             "class_old": "CheckpointManagerAgent",
             "class_new": "CheckpointManagerAgent",
         },
         {
-            "old": "agentic_core/L4_state/validation_context/StateManagementAgent.py",
-            "new": "agentic_core/L4_state/validation_context/StateManagementAgent.py",
+            "old": "agentic_core/L4_state/memory/StateManagementAgent.py",
+            "new": "agentic_core/L4_state/memory/StateManagementAgent.py",
             "class_old": "StateManagementAgent",
             "class_new": "StateManagementAgent",
         },

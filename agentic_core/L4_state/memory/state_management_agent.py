@@ -16,7 +16,7 @@ Key Features:
 - Orphan entry detection (manifest entries without files)
 - Resource synchronization with registry agents
 
-Territory: agentic_core/L4_state/validation_context/
+Territory: agentic_core/L4_state/memory/
 Canon Alignment: L4 state persistence, integrity, and recovery
 """
 

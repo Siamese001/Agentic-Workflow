@@ -31,7 +31,7 @@ Logger: Any = logging.getLogger(__name__)
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 try:
-    from agentic_core.L4_state.validation_context.CachedStateLedgerAgent import CachedStateLedgerAgent
+    from agentic_core.L4_state.ledger.cached_state_ledger import CachedStateLedgerAgent
 except ImportError:
     CachedStateLedgerAgent = None
 

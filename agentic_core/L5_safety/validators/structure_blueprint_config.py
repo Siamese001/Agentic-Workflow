@@ -279,17 +279,68 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "L4_state": {
-                "purpose": "State management, persistence, and graph storage.",
+                "purpose": "The Memory: Databases, Knowledge Graphs, Ledgers, and State.",
+                "notes": "Standard V10 structure. validation_context/ dissolved into memory/ledger/types/utils.",
                 "subfolders": {
+                    "memory": {
+                        "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
+                        "allowed_suffixes": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
+                        "subfolders": {
+                            "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
+                        },
+                    },
                     "graph": {
-                        "purpose": "Graph database connectors and store drivers.",
+                        "purpose": "Graph database connectors, store drivers, and knowledge graphs.",
+                        "allowed_suffixes": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py"],
                         "subfolders": {
                             "healing": {"purpose": "Graph-aware healing strategies (L4 owns its own repair)."},
                         },
                     },
-                    "validation_context": {"purpose": "Validation context and state tracking."},
-                    "audit_trails": {"purpose": "Audit trail and genealogy tracking."},
+                    "ledger": {
+                        "purpose": "Immutable truth: change tracking, telemetry, circuit breakers, audit trails.",
+                        "allowed_suffixes": ["_ledger.py", "_log.py", "_journal.py", "_audit.py", "_tracker.py"],
+                    },
+                    "config": {
+                        "purpose": "State configuration and settings.",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                        "forbidden_suffixes": ["_types.py"],
+                    },
+                    "types": {
+                        "purpose": "State data models, schemas, protocols, and error types.",
+                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                        "forbidden_suffixes": ["_config.py", "_engine.py"],
+                    },
+                    "schemas": {"purpose": "Legacy schema definitions (being migrated to types/)."},
+                    "contracts": {"purpose": "Interface contracts for state providers."},
+                    "utils": {
+                        "purpose": "State utility functions.",
+                        "allowed_suffixes": ["_util.py", "_helper.py"],
+                    },
                     "session_manager": {"purpose": "Session management and disk adapters."},
+                },
+                "allowed_suffixes": {
+                    "memory": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
+                    "graph": ["_graph.py", "_node.py", "_edge.py", "_ontology.py", "_store.py"],
+                    "ledger": ["_ledger.py", "_log.py", "_journal.py", "_audit.py", "_tracker.py"],
+                    "config": ["_config.py", "_settings.py"],
+                    "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
+                    "utils": ["_util.py", "_helper.py"],
+                },
+                "forbidden_suffixes": {
+                    "memory": ["_config.py", "_types.py"],
+                    "config": ["_types.py", "_store.py"],
+                    "types": ["_config.py", "_store.py"],
+                },
+                "routing_rules": {
+                    "*_store.py": "memory",
+                    "*_retriever.py": "memory",
+                    "*_cache.py": "memory",
+                    "*_graph.py": "graph",
+                    "*_ledger.py": "ledger",
+                    "*_tracker.py": "ledger",
+                    "*_config.py": "config",
+                    "*_types.py": "types",
+                    "*_util.py": "utils",
                 },
             },
             "L5_safety": {
@@ -479,7 +530,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "weight": 12,
             },
             # --- L4 STATE: PERSISTENCE INTEGRITY (Weight 11-14) ---
-            "agentic_core/L4_state/validation_context": {
+            "agentic_core/L4_state/memory": {
                 "class_patterns": [".*Context.*", ".*State.*"],
                 "base_classes": ["ValidationContext", "StateManager"],
                 "weight": 14,
@@ -1087,7 +1138,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L5_safety/gravity",  # 22 files - added per SSOT review
         "agentic_core/L2_execution/engine",
         "agentic_core/L2_execution/mcp",  # 26 files - added per SSOT review
-        "agentic_core/L4_state/validation_context",  # 41 files - added per SSOT review
+        "agentic_core/L4_state/memory",  # 41 files - added per SSOT review
         # DISSOLVED: "agentic_core/schemas/models" removed
         # agentic_core/utils/core_extensions EVICTED - deprecated system removed
         "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
@@ -1632,7 +1683,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
         "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}),
     },
     "L3_orchestration/engine": {"primary": frozenset({"fission", "split", "decompose", "atomic"})},
-    "L4_state/validation_context": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
+    "L4_state/memory": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
         "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"}),
@@ -3074,7 +3125,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "weight": 16,
     },
     # L4_state placements
-    "agentic_core/L4_state/validation_context": {
+    "agentic_core/L4_state/memory": {
         "class_patterns": [".*Context.*", ".*State.*", ".*Session.*"],
         "base_classes": ["ValidationContext", "StateManager"],
         "function_patterns": ["get_context.*", "set_state.*", "validate_context.*"],
@@ -3452,43 +3503,43 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L4": [
         {
             "name": "AutonomousCheckpointManagerAgent",
-            "file": "agentic_core/L4_state/validation_context/AutonomousCheckpointManagerAgent.py",
+            "file": "agentic_core/L4_state/memory/AutonomousCheckpointManagerAgent.py",
             "methods": 13,
             "fingerprint": "41e505612b995ed9",
         },
         {
             "name": "AutonomousStateGuardianAgent",
-            "file": "agentic_core/L4_state/validation_context/AutonomousStateGuardianAgent.py",
+            "file": "agentic_core/L4_state/memory/AutonomousStateGuardianAgent.py",
             "methods": 10,
             "fingerprint": "5ebb94cbbdf1aa58",
         },
         {
             "name": "PineconeSovereignAgent",
-            "file": "agentic_core/L4_state/validation_context/PineconeSovereignAgent.py",
+            "file": "agentic_core/L4_state/memory/PineconeSovereignAgent.py",
             "methods": 12,
             "fingerprint": "4dd0d1e4b0e3e220",
         },
         {
             "name": "RedisSovereignAgent",
-            "file": "agentic_core/L4_state/validation_context/RedisSovereignAgent.py",
+            "file": "agentic_core/L4_state/memory/RedisSovereignAgent.py",
             "methods": 6,
             "fingerprint": "b040e351f725cddb",
         },
         {
             "name": "SchemaEvolverAgent",
-            "file": "agentic_core/L4_state/validation_context/SchemaEvolverAgent.py",
+            "file": "agentic_core/L4_state/memory/SchemaEvolverAgent.py",
             "methods": 14,
             "fingerprint": "895c1f48e33df32e",
         },
         {
             "name": "SovereignPineconeStoreAgent",
-            "file": "agentic_core/L4_state/validation_context/SovereignPineconeStoreAgent.py",
+            "file": "agentic_core/L4_state/memory/SovereignPineconeStoreAgent.py",
             "methods": 10,
             "fingerprint": "f441583d3a2a4cd2",
         },
         {
             "name": "SubAtomicRegistryAgent",
-            "file": "agentic_core/L4_state/validation_context/SubAtomicRegistryAgent.py",
+            "file": "agentic_core/L4_state/memory/SubAtomicRegistryAgent.py",
             "methods": 7,
             "fingerprint": "78801bbc67f74db4",
         },
@@ -4179,7 +4230,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "state_check",
                 "validate_in_context",
             ],
-            "imports": ["agentic_core.L4_state.validation_context", "pydantic", "typing"],
+            "imports": ["agentic_core.L4_state.memory", "pydantic", "typing"],
             "bases": ["ValidationContext", "BaseStateContext"],
             "examples": [
                 "SovereignValidationContext",

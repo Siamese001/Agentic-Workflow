@@ -15,7 +15,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L4_state.validation_context.RuntimeStateGuard import RuntimeStateGuard
+from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
 from agentic_core.L5_safety.validators.LocationAgent import LocationAgent
 
 # Configure Logging

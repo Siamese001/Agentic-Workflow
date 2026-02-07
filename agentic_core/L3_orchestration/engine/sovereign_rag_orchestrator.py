@@ -65,7 +65,7 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, Sove
             engine: Optional engine instance
         """
         self.query_history: list[Any] = []
-        self.config_path: Path = Path("agentic_core/L4_state/validation_context/.sovereign_config.json")
+        self.config_path: Path = Path("agentic_core/L4_state/memory/.sovereign_config.json")
         self._load_sovereign_config()
         self.threshold_adaptation_rate: float = 0.02
         self.performance_window: int = 50

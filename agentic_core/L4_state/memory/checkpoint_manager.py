@@ -18,7 +18,7 @@ Key Features:
 - Automatic recovery from mirrored backups
 - Backward compatible with legacy create_checkpoint signatures
 
-Territory: agentic_core/L4_state/validation_context/
+Territory: agentic_core/L4_state/memory/
 Canon Alignment: L4 state persistence and recovery
 """
 

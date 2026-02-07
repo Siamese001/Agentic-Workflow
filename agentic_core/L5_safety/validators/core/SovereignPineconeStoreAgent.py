@@ -12,7 +12,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 ==============================================================================
 SOVEREIGN PINECONE STORE AGENT (MERGED IMPLEMENTATION)
 ==============================================================================
-Logic sourced from L4_state/validation_context/SovereignPineconeStoreAgent.py
+Logic sourced from L4_state/memory/SovereignPineconeStoreAgent.py
 to ensure index management and retry logic (9KB) is preserved over the 3KB stub.
 
 Canonical Location: semantic_memory/store/ (SSOT)

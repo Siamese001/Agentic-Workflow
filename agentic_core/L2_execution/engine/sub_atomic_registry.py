@@ -28,10 +28,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.L4_state.validation_context.PineconeSovereignAgent import PineconeSovereignAgent
+from agentic_core.L4_state.memory.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L4_state.validation_context.RedisSovereignAgent import RedisSovereignAgent
+from agentic_core.L4_state.memory.RedisSovereignAgent import RedisSovereignAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -54,10 +54,10 @@ def _get_unified_agent_mapping() -> dict[str, type]:
     from agentic_core.L1_cognition.agents.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
-    from agentic_core.L4_state.validation_context.CheckpointManagerAgent import (
+    from agentic_core.L4_state.memory.checkpoint_manager import (
         CheckpointManagerAgent,
     )
-    from agentic_core.L4_state.validation_context.StateManagementAgent import (
+    from agentic_core.L4_state.memory.state_management_agent import (
         StateManagementAgent,
     )
     from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent

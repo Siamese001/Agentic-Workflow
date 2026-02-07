@@ -33,7 +33,7 @@ def test_tc_mro_002_l4_state_base_agent_mro():
     """TC-MRO-002: L4StateBase MRO Check"""
     print("\n[TC-MRO-002] Testing L4StateBase MRO...")
     try:
-        from agentic_core.L4_state.validation_context.L4StateBase import L4StateBase
+        from agentic_core.L4_state.memory.L4StateBase import L4StateBase
 
         mro = L4StateBase.mro()
         mro_names = [cls.__name__ for cls in mro]

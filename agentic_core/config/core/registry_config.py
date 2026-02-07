@@ -200,7 +200,7 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L5_safety/gravity",
     "agentic_core/L2_execution/engine",
     "agentic_core/L2_execution/mcp",
-    "agentic_core/L4_state/validation_context",
+    "agentic_core/L4_state/memory",
     # DISSOLVED: "agentic_core/schemas/models" removed
     "agentic_core/utils/core_extensions",
     "agentic_core/config/core",  # DISSOLVED: was blueprint_sovereign
