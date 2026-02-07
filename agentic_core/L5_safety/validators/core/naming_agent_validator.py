@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.validators.structure_blueprint_config import PROJECT_ROOT_METADATA
+from agentic_core.L5_safety.config.structure_blueprint_config import PROJECT_ROOT_METADATA
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 TREE_SITTER_AVAILABLE = False  # Stub - tree-sitter not required for tests

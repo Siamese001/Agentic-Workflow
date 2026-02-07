@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 # [SOVEREIGN IMPORTS]
-from agentic_core.L5_safety.validators.structure_blueprint_config import protected_folders
+from agentic_core.L5_safety.config.structure_blueprint_config import protected_folders
 
 PROTECTED_FOLDERS = protected_folders  # Alias for backward compatibility
 
@@ -21,7 +21,7 @@ PROTECTED_FOLDERS = protected_folders  # Alias for backward compatibility
 from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )

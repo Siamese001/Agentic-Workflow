@@ -7,7 +7,7 @@ This module provides waterfall-compliant access to shared constants.
 """
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,

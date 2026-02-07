@@ -9,7 +9,7 @@ and chain completeness across the entire codebase.
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.security import safe_execute

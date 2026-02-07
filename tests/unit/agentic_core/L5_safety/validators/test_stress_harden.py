@@ -1,4 +1,4 @@
-from agentic_core.L5_safety.validators.structure_blueprint_config import is_path_allowed
+from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
 
 
 class TestStressHarden:

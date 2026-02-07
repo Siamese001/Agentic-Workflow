@@ -20,7 +20,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     SCRIPTS_DIR,

@@ -8,7 +8,7 @@ import shutil
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
     safe_path_join,
 )

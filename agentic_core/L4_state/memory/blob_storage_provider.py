@@ -308,7 +308,7 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorag
         raise ValueError(f"Unknown adapter type: {adapter_type}")
 
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
 

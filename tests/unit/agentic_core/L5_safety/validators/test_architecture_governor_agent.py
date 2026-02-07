@@ -633,7 +633,7 @@ class TestPhase3RootWhitelist:
 
     def test_root_whitelist_includes_coverage(self):
         """Test that .coverage is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             ROOT_PROTECTED_FILES,
         )
 
@@ -641,7 +641,7 @@ class TestPhase3RootWhitelist:
 
     def test_root_whitelist_includes_pytest_ini(self):
         """Test that pytest.ini is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             ROOT_PROTECTED_FILES,
         )
 
@@ -649,7 +649,7 @@ class TestPhase3RootWhitelist:
 
     def test_root_whitelist_includes_tox_ini(self):
         """Test that tox.ini is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             ROOT_PROTECTED_FILES,
         )
 
@@ -657,7 +657,7 @@ class TestPhase3RootWhitelist:
 
     def test_root_whitelist_includes_python_version(self):
         """Test that .python-version is in ROOT_PROTECTED_FILES."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             ROOT_PROTECTED_FILES,
         )
 

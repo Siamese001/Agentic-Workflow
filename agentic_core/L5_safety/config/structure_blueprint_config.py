@@ -365,12 +365,36 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "L5_safety": {
-                "purpose": "L5 sovereign safety layer - guardrails and validators",
+                "purpose": "The Guardian: Safety, Security, and Governance.",
+                "notes": "Standard V10 structure. config/ holds The Law (blueprint). validators/ holds The Police.",
                 "subfolders": {
+                    "config": {
+                        "purpose": "The Law: blueprint config, safety settings, and constitutional definitions.",
+                        "allowed_suffixes": ["_config.py", "_blueprint.py", "_settings.py"],
+                    },
+                    "types": {
+                        "purpose": "Safety data models, schemas, and error types.",
+                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py"],
+                    },
+                    "validators": {
+                        "purpose": "The Police: structural validators, compliance checks, and classification agents.",
+                        "allowed_suffixes": ["_validator.py", "_check.py", "_inspector.py", "_agent.py"],
+                        "subfolders": {
+                            "core": {"purpose": "Core validator agents (LocationAgent, HierarchyAgent, etc.)."},
+                        },
+                    },
+                    "security": {
+                        "purpose": "The Military: active defense, guardrails, shields, and firewalls.",
+                        "allowed_suffixes": ["_guardrail.py", "_shield.py", "_firewall.py", "_sanitizer.py"],
+                    },
+                    "governance": {
+                        "purpose": "The Legislature: policies, compliance rules, and audit definitions.",
+                        "allowed_suffixes": ["_policy.py", "_compliance.py", "_audit.py"],
+                    },
                     "guardrails": {
                         "purpose": "Operational L5 safety guardrail agents and components "
                         "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
-                        "naming_convention": "snake_case_agent",  # Enforced by FileClassificationAgent
+                        "naming_convention": "snake_case_agent",
                         "ast_signals": {
                             "AGENT": {
                                 "inherits": ["SovereignBaseAgent", "SubatomicTestingMixin"],
@@ -389,10 +413,36 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "*Agent.py",
                             "*Membrane.py",
                             "*Strategy.py",
-                        ],  # Force snake_case
-                        "required_dirs": [],  # Leaf node preferred
+                        ],
+                        "required_dirs": [],
                     },
-                    "validators": {"purpose": "Structural and runtime validators"},
+                    "gravity": {"purpose": "Gravity enforcement and structural integrity."},
+                    "red_teaming": {"purpose": "Adversarial testing and boundary probing."},
+                    "policy_engine": {"purpose": "Policy evaluation and enforcement engine."},
+                    "runtime": {"purpose": "Runtime safety checks and guards."},
+                    "utils": {"purpose": "Safety utility functions."},
+                },
+                "allowed_suffixes": {
+                    "config": ["_config.py", "_blueprint.py", "_settings.py"],
+                    "types": ["_types.py", "_schema.py", "_model.py"],
+                    "validators": ["_validator.py", "_check.py", "_inspector.py", "_agent.py"],
+                    "security": ["_guardrail.py", "_shield.py", "_firewall.py", "_sanitizer.py"],
+                    "governance": ["_policy.py", "_compliance.py", "_audit.py"],
+                },
+                "forbidden_suffixes": {
+                    "config": ["_types.py", "_validator.py"],
+                    "types": ["_config.py", "_validator.py"],
+                    "validators": ["_config.py", "_types.py"],
+                    "security": ["_config.py", "_types.py"],
+                    "governance": ["_config.py", "_types.py"],
+                },
+                "routing_rules": {
+                    "*_validator.py": "validators",
+                    "*_guardrail.py": "security",
+                    "*_shield.py": "security",
+                    "*_policy.py": "governance",
+                    "*_config.py": "config",
+                    "*_types.py": "types",
                 },
             },
             "L6_observability": {

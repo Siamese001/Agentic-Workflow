@@ -13,7 +13,7 @@ full_agent_discovery.py is the canonical SSOT for agent discovery.
 import json
 from collections import defaultdict
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )

@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 # Import SSOT
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
@@ -56,7 +56,7 @@ def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
 
         for line_num, line in enumerate(lines, 1):
             # Skip lines that import DASHBOARD_DIR (legitimate usage)
-            if "from agentic_core.L5_safety.validators.structure_blueprint_config import" in line:
+            if "from agentic_core.L5_safety.config.structure_blueprint_config import" in line:
                 continue
             if "DASHBOARD_DIR" in line and "import" in line:
                 continue
@@ -119,7 +119,7 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
         print("REMEDIATION REQUIRED:")
         print("=" * 80)
         print("Replace hardcoded paths with:")
-        print("  from agentic_core.L5_safety.validators.structure_blueprint_config import DASHBOARD_DIR")
+        print("  from agentic_core.L5_safety.config.structure_blueprint_config import DASHBOARD_DIR")
         print("  dashboard_path = project_root / DASHBOARD_DIR")
         print("=" * 80)
         return False, violations_report

@@ -1,6 +1,6 @@
 import pytest
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
     is_path_allowed,
 )
@@ -44,7 +44,7 @@ class TestUltraHardening:
 
     def test_forbidden_extension_leak_protection(self):
         """Test that forbidden extensions are blocked in scripts."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             ARTIFACT_ROUTING_MAP,
         )
 
@@ -81,7 +81,7 @@ class TestUltraHardening:
 
     def test_is_l4_approved_type_safety(self):
         """Test that is_l4_approved handles TypeError gracefully."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import is_l4_approved
+        from agentic_core.L5_safety.config.structure_blueprint_config import is_l4_approved
 
         # Test with invalid path (should not crash)
         assert is_l4_approved("invalid") is False

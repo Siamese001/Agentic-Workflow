@@ -118,7 +118,7 @@ class TestGlobalKeyPurge:
 
     def test_territory_based_healing_still_works(self):
         """Verify that territory-based healing logic works without canon keys."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             CORE_TERRITORY_KEYWORDS,
             DEFAULT_APP_HEALING_TARGET,
             DEFAULT_CORE_HEALING_TERRITORY,
@@ -137,7 +137,7 @@ class TestGlobalKeyPurge:
 
     def test_depth_based_validation_still_functions(self):
         """Ensure depth-based validation works without canon key dependencies."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_REGISTRY
+        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
 
         # Verify depth enforcement is still present
         for folder_name, config in SOVEREIGN_REGISTRY.items():
@@ -147,7 +147,7 @@ class TestGlobalKeyPurge:
 
     def test_ast_based_territory_scoring_intact(self):
         """Verify AST-based territory scoring system is intact."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             APP_LIC_AST_TERMS,
             APP_RG_AST_TERMS,
             CORE_TERRITORY_KEYWORDS,

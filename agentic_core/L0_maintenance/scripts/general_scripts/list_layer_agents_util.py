@@ -12,7 +12,7 @@ Reads from agent_discovery_full.json - run full_agent_discovery.py first.
 import json
 import sys
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
 )
 

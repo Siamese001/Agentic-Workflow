@@ -20,7 +20,7 @@ project_root = (
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )

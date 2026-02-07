@@ -119,13 +119,13 @@ class PatternSyntaxHealerV2:
         Fix Pattern 1: Malformed imports inside structure_blueprint blocks.
 
         Example:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
         from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
             SOVEREIGN_REGISTRY,
         )
 
         Should be:
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_REGISTRY,
         )
 

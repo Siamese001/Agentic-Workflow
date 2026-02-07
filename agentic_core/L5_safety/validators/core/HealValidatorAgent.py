@@ -84,7 +84,7 @@ BANDIT_HIGH_SEVERITY_PATTERNS = [
     "B607",  # start_process_with_partial_path
 ]
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
 

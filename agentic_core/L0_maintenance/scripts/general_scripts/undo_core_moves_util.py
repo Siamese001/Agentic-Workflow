@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
 )

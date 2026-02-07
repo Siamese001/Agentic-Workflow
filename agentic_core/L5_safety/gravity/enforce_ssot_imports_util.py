@@ -14,7 +14,7 @@ AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
 # The SSOT import block to add
 SSOT_IMPORT = """# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
 )

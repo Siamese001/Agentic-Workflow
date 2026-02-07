@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
 )

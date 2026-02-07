@@ -49,7 +49,7 @@ class TestSovereignIntegration(unittest.TestCase):
 
     def test_archive_territory_presence(self):
         """Verify archives/ is a recognized root."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import ROOT_WHITELIST
+        from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
 
         # Check that archives is in the ROOT_WHITELIST
         self.assertIn("archives", ROOT_WHITELIST)

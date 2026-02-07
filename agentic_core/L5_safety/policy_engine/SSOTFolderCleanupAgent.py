@@ -89,7 +89,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from structure_blueprint."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 CORE_SUBFOLDER_MAP,
                 L4_APPROVED_FOLDERS,
                 SOVEREIGN_REGISTRY,

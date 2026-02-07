@@ -113,7 +113,7 @@ from agentic_core.L5_safety.validators.canonical_truth_validator import (
     categorize_agent,
     get_canonical_layer,
 )
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -156,7 +156,7 @@ OUTPUT_JSON = CANONICAL_JSON
 # ============================================================================
 # Import SSOT exclusions from structure_blueprint
 try:
-    from agentic_core.L5_safety.validators.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
+    from agentic_core.L5_safety.config.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
 
     SSOT_EXCLUDED = set(GLOBAL_EXCLUDED_DIRS)
 except ImportError:

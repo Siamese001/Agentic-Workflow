@@ -45,8 +45,8 @@ class TestCanonKeyRemoval:
         try:
             # Registry has been removed - this test now validates removal
             # Verify the registry is gone by checking it's not in the module
-            import agentic_core.L5_safety.validators.structure_blueprint_config_config as sb
-            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
 

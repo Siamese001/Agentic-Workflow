@@ -46,7 +46,7 @@ PATH_TO_SSOT_MAP = {
     # Critical subdirectories
     r'["\']agentic_core/L6_observability/dashboards["\']': "DASHBOARD_DIR",
     r'["\']agentic_core/config/blueprint_sovereign["\']': "BLUEPRINT_SOVEREIGN_DIR",
-    r'["\\']agentic_core/runtime/types["\\']': "SCHEMAS_DIR",
+    r'["\']agentic_core/runtime/types["\']': "SCHEMAS_DIR",
     r'["\']agentic_core/prompt_governance["\']': "PROMPT_GOVERNANCE_DIR",
     r'["\']agentic_core/utils["\']': "UTILS_DIR",
     r'["\']agentic_core/runtime["\']': "RUNTIME_DIR",
@@ -82,7 +82,7 @@ PATH_CONSTRUCTOR_MAP = {
 }
 
 # Required imports to add
-SSOT_IMPORT = """from agentic_core.L5_safety.validators.structure_blueprint_config import (
+SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -112,7 +112,7 @@ def should_exclude_path(path: Path) -> bool:
 
 def has_ssot_import(content: str) -> bool:
     """Check if file already imports from structure_blueprint."""
-    return "from agentic_core.L5_safety.validators.structure_blueprint_config import" in content
+    return "from agentic_core.L5_safety.config.structure_blueprint_config import" in content
 
 
 def add_ssot_import(content: str) -> str:
