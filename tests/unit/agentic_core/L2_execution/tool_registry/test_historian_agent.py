@@ -34,7 +34,7 @@ class TestHistorianAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L2_execution.tools.historian_tool import HistorianAgent
+            from agentic_core.L2_execution.tools.historian_agent import HistorianAgent
 
             return HistorianAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -85,7 +85,7 @@ class TestHistorianAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L2_execution.tools.historian_tool import (
+                from agentic_core.L2_execution.tools.historian_agent import (
                     HistorianAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
