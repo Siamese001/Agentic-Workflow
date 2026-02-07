@@ -18,7 +18,7 @@ from agentic_core.base_agents.decorators import standard_heal
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )

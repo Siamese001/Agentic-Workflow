@@ -60,7 +60,7 @@ from agentic_core.L5_safety.validators.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
-from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
 Logger = logging.getLogger(__name__)
 

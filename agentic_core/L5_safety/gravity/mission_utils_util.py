@@ -8,7 +8,7 @@ import importlib
 from typing import Any
 
 # Import SSOT registries
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,

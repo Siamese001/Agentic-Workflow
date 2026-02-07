@@ -86,7 +86,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
         lines = content.split("\n")
 
         # Skip if file imports from structure_blueprint (likely compliant)
-        if "from agentic_core.L5_safety.validators.structure_blueprint_config import" in content:
+        if "from agentic_core.L5_safety.config.structure_blueprint_config import" in content:
             # File uses SSOT, but still check for violations
             pass
 
@@ -176,7 +176,7 @@ def validate_repository() -> tuple[bool, dict]:
         print("REMEDIATION REQUIRED")
         print("=" * 80)
         print("Replace hardcoded paths with SSOT constants:")
-        print("  from agentic_core.L5_safety.validators.structure_blueprint_config import (")
+        print("  from agentic_core.L5_safety.config.structure_blueprint_config import (")
         print("      AGENT_DISCOVERY_JSON, DASHBOARD_DIR, L0_MAINTENANCE_DIR,")
         print("      get_validated_project_root")
         print("  )")

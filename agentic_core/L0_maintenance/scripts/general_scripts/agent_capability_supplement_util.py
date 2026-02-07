@@ -25,7 +25,7 @@ import sys
 from collections import Counter
 
 # Import shared constants and normalizer from the discovery script
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     PROJECT_ROOT,
     SCRIPTS_DIR,
 )

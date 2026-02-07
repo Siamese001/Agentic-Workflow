@@ -26,7 +26,7 @@ class TestImportHarmonization:
         """
         TC-001: Scans the code of key agents to ensure no 'from archives' imports exist.
         """
-        import agentic_core.L5_safety.validators.structure_blueprint_config_config as ssot
+        import agentic_core.L5_safety.config.structure_blueprint_config_config as ssot
 
         excluded_dirs = getattr(ssot, "GLOBAL_EXCLUDED_DIRS", [])
 
@@ -51,7 +51,7 @@ class TestImportHarmonization:
         """
         TC-003: Direct check that SovereignIndex is actually using the SSOT exclusion list.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             GLOBAL_EXCLUDED_DIRS,
         )
         from agentic_core.utils.sovereign_index import SovereignIndex

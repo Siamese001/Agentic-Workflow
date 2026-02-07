@@ -13,7 +13,7 @@ class TestSovereignPurification(unittest.TestCase):
         """Verify the sovereign registry contains the new policy_engine paths (100% pass mandatory)."""
         # [CRITICAL ANALYSIS] Challenging the assumption that structure_blueprint is fully synced.
         # Windsurf's Phase 7 report claims updates, but we must verify L5 subfolder mapping.
-        from agentic_core.L5_safety.validators.structure_blueprint_config import CORE_SUBFOLDER_MAP
+        from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
 
         # SUCCESS: 100% PASS - Ensuring Phase 6/7 mapping is preserved in the blueprint
         self.assertIn("policy_engine", CORE_SUBFOLDER_MAP["L5_safety"], "L5_safety map missing policy_engine")

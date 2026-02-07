@@ -7,7 +7,7 @@ Creates all Missing directories to enforce the 3-level depth law.
 import os
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,

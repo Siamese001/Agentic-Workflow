@@ -12,7 +12,7 @@ This suite ensures the Global Weight Standard is properly enforced:
 
 import pytest
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
 
 class TestGlobalRoutingRigor:

@@ -7,7 +7,7 @@ Comprehensive Agent Audit - Scans ALL agents to map detection capabilities
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
 )
 

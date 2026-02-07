@@ -38,7 +38,7 @@ except ImportError:
 
 
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
 

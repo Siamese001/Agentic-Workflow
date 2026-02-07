@@ -359,7 +359,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         self.Logger = logging.getLogger(__name__)
         self.DependencyGraph = DependencyGraph()
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )

@@ -13,7 +13,7 @@ core: Any = ROOT / "agentic_core"
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import CORE_SUBFOLDER_MAP
+from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
 
 core_map: Any = CORE_SUBFOLDER_MAP
 external_map: Any = {

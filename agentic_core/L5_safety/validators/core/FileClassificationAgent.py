@@ -1006,7 +1006,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             List of violation dicts with 'pattern' and 'reason' for each match.
         """
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             FORBIDDEN_FILENAME_PATTERNS,
         )
 

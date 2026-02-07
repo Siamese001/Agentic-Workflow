@@ -189,7 +189,7 @@ class FilesystemSSOTReconcilerAgent(
                 "errors": [str(e)],
             }
 
-    BLUEPRINT_PATH = Path("agentic_core/L5_safety/validators/structure_blueprint_config.py")
+    BLUEPRINT_PATH = Path("agentic_core/L5_safety/config/structure_blueprint_config.py")
     # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/ (gitignored, not indexed)
     ARCHIVE_ROOT = Path(".healing_backups/unmapped_drift/")
 
@@ -370,7 +370,7 @@ class FilesystemSSOTReconcilerAgent(
 
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
 

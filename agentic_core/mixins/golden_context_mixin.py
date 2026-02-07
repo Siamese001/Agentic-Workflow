@@ -46,7 +46,7 @@ You are operating within a governed repository. These rules are IMMUTABLE:
    - No hardcoded paths (use structure_blueprint_config.py constants)
 
 5. **SSOT FILES**:
-   - Structure: `agentic_core/L5_safety/validators/structure_blueprint_config.py`
+   - Structure: `agentic_core/L5_safety/config/structure_blueprint_config.py`
    - Agent Registry: `agent_discovery_full.json`
 
 REMEMBER: When in doubt, consult the SSOT. Do not hallucinate file locations.

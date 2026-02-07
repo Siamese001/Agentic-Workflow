@@ -64,7 +64,7 @@ class TestConsolidatedMigration:
     def test_sovereign_territories_exists(self):
         """SOVEREIGN_TERRITORIES must exist in structure_blueprint."""
         try:
-            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
 
@@ -115,7 +115,7 @@ class TestConsolidatedMigration:
         """Check status of legacy CANON_VALIDATION_REGISTRY."""
         try:
             # Registry has been removed - verify it's gone
-            import agentic_core.L5_safety.validators.structure_blueprint_config_config as sb
+            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
 
             assert not hasattr(sb, "CANON_VALIDATION_REGISTRY"), (
                 "CANON_VALIDATION_REGISTRY should have been removed"

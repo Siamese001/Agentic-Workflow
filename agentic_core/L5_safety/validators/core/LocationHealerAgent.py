@@ -208,7 +208,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def safe_create_directory(self, relative_path: str) -> Path:
         """Safely create a directory within the project root."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import safe_path_join
+        from agentic_core.L5_safety.config.structure_blueprint_config import safe_path_join
 
         target = safe_path_join(self.project_root, relative_path)
         if not target.exists():

@@ -154,7 +154,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.validators.structure_blueprint_config import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
         SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )
@@ -208,7 +208,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
 
 from fnmatch import fnmatch
 
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,  # Flexible depth exemptions (Option A)
     PROJECT_ROOT_METADATA,  # [ENHANCED] Imported for smart routing
@@ -1320,7 +1320,7 @@ class LocationAgent(AtomicExecutionMixin, SovereignBaseAgent):
                             from agentic_core.L4_state.memory.runtime_state_guard import (
                                 RuntimeStateGuard,
                             )
-                            from agentic_core.L5_safety.validators.structure_blueprint_config import (
+                            from agentic_core.L5_safety.config.structure_blueprint_config import (
                                 HEALING_CONFIG,
                             )
 

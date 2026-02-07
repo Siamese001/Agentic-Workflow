@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L5_safety.gravity.ssot_scanner import SSOTScanner
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
     SOVEREIGN_TERRITORIES,  # [RECONCILED 2026-01-27] Use unified schema

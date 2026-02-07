@@ -39,7 +39,7 @@ from agentic_core.L5_safety.gravity.mission_utils import (
 from agentic_core.L5_safety.validators.core.decorators import standard_heal
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
-from agentic_core.L5_safety.validators.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     ALLOWED_DUPLICATE_FILENAMES,
     CORE_SUBFOLDER_MAP,
     ROOT_PROTECTED_FILES,
@@ -429,7 +429,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             # Skip whitelisted root files (conftest.py, pytest.ini)
             if len(rel.parts) == 1:
-                from agentic_core.L5_safety.validators.structure_blueprint_config import (
+                from agentic_core.L5_safety.config.structure_blueprint_config import (
                     TESTS_ROOT_FILE_WHITELIST,
                 )
 
@@ -510,7 +510,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L2 layer."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             check_forbidden_signals,
         )
 
@@ -614,7 +614,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
         results: dict[str, Any],
     ) -> None:
         """Relocate a single file to approved L3 territory."""
-        from agentic_core.L5_safety.validators.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             check_forbidden_signals,
         )
 
