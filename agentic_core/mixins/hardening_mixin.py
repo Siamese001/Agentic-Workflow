@@ -17,7 +17,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from agentic_core.L4_state.utils.circuit_breaker import CircuitBreakerOpenError, get_breaker
-from agentic_core.L5_safety.strategies.ErrorRecoveryStrategy import ErrorRecoveryStrategy
+from agentic_core.L5_safety.strategies.error_recovery_strategy import ErrorRecoveryStrategy
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
 
 
