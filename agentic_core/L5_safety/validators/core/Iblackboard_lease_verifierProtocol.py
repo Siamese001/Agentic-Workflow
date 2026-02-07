@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L2_execution.engine.definitions import (
+from agentic_core.L2_execution.reasoning.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,
@@ -24,7 +24,7 @@ from agentic_core.L2_execution.engine.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
 
 
 # Define a Protocol for the Blackboard interface required by this module

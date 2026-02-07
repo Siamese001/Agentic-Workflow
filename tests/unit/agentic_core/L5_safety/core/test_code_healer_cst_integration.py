@@ -213,7 +213,7 @@ def test():
         finally:
             temp_path.unlink()
 
-    def test_code_healer_agent_pattern(self):
+    def test_CodeHealerAgent_pattern(self):
         """Test the pattern that CodeHealerAgent would use for CST healing."""
         source_code = '''# Important module comment
 import os  # OS operations

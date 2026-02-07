@@ -34,7 +34,7 @@ class TestAdversarialProbeAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.red_teaming.adversarial_probe_agent_validator import (
+            from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import (
                 AdversarialProbeAgent,
             )
 
@@ -83,7 +83,7 @@ class TestAdversarialProbeAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.red_teaming.adversarial_probe_agent_validator import (
+                from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import (
                     AdversarialProbeAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

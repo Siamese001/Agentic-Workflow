@@ -13,8 +13,8 @@ ARCHIVE_ROOT = (
 )
 
 DUPLICATE_FILES = [
-    "agentic_core/L5_safety/guardrails/CognitiveBatchProcessor.py",
-    "agentic_core/L5_safety/guardrails/TieredBatchProcessor.py",
+    "agentic_core/L5_safety/enforcement/CognitiveBatchProcessor.py",
+    "agentic_core/L5_safety/enforcement/TieredBatchProcessor.py",
     "agentic_core/L1_cognition/thought_engine/structured_engine.py",
     "agentic_core/L0_maintenance/scripts/maintenance",
     "agentic_core/L0_maintenance/scripts/security/gatekeeper_lock.py",

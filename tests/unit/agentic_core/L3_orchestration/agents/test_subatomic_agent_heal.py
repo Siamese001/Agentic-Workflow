@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 
 def test_subatomic_agent_has_heal_method():
     """Verify SubAtomicAgent has heal() method."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -28,7 +28,7 @@ def test_subatomic_agent_has_heal_method():
 
 def test_subatomic_agent_heal_signature():
     """Verify heal() method returns correct signature."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -55,7 +55,7 @@ def test_subatomic_agent_heal_signature():
 
 def test_subatomic_agent_heal_base_class_behavior():
     """Verify SubAtomicAgent heal() returns skipped status (base class)."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -73,7 +73,7 @@ def test_subatomic_agent_heal_base_class_behavior():
 
 def test_subatomic_agent_heal_with_various_violations():
     """Test heal() with various violation types."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -101,7 +101,7 @@ def test_subatomic_agent_heal_with_various_violations():
 
 def test_subatomic_agent_heal_invalid_input():
     """Test heal() with invalid input types."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -148,7 +148,7 @@ def test_phase3_completion_criteria():
 
 def test_heal_method_integration():
     """Integration test: verify heal() works in context."""
-    from agentic_core.L3_orchestration.engine.sub_atomic_agent import (
+    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (
         SubAtomicAgent,
     )
 
@@ -157,7 +157,7 @@ def test_heal_method_integration():
     # Simulate a realistic violation scenario
     violation = {
         "type": "signature_mismatch",
-        "file": "agentic_core/L3_orchestration/engine/SubAtomicAgent.py",
+        "file": "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
         "details": {
             "expected": "heal(self, violation: dict) -> dict",
             "actual": "Not found",

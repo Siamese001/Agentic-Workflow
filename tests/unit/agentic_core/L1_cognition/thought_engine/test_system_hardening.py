@@ -17,12 +17,12 @@ import pytest
 
 # --- configuration ---
 RESTORED_AGENTS_MAP = [
-    ("MetaLearningAgent", "agentic_core.L1_cognition.agents.MetaLearningAgent"),
+    ("MetaLearningAgent", "agentic_core.L1_cognition.reasoning.MetaLearningAgent"),
     (
         "StrategicRecommendationAgent",
-        "agentic_core.L1_cognition.agents.StrategicRecommendationAgent",
+        "agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent",
     ),
-    ("BudgetAgent", "agentic_core.L1_cognition.agents.BudgetAgent"),
+    ("BudgetAgent", "agentic_core.L1_cognition.reasoning.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
     ("DeadlockDetectorAgent", "agentic_core.L5_safety.validators.DeadlockDetectorAgent"),
@@ -93,7 +93,7 @@ except Exception as e:
         field(default_factory=dict) fix).
         """
         try:
-            from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
+            from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
         except (ImportError, NameError, AttributeError):
             pytest.skip("MetaLearningAgent not available for isolation test")
 

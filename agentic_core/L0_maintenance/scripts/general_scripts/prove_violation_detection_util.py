@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L3_orchestration.engine.SSOTOrchestratorAgent import (
+from agentic_core.L3_orchestration.reasoning.SSOTOrchestratorAgent import (
     SSOTOrchestratorAgent,
 )
 

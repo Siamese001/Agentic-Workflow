@@ -71,22 +71,6 @@ class LocationValidatorAgent(SovereignBaseAgent):
             "errors": [],
         }
 
-    def run(self) -> dict[str, Any]:
-        """
-        Execute validation-only scan.
-
-        Returns:
-            Dict with violations list, no healing actions
-        """
-        # TODO: Implement validation orchestration
-        # This will be populated during migration phase
-        return {
-            "violations": [],
-            "total_files_scanned": 0,
-            "compliant_files": 0,
-            "status": "NOT_IMPLEMENTED",
-        }
-
     # ========================================================================
     # MIGRATED VALIDATION METHODS (Phase 3 Batch 1)
     # ========================================================================
@@ -105,7 +89,22 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return violations
 
     def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
-        """Per-file location validation with correct forbidden-check ordering."""
+        """Per-file location validation with correct forbidden-check ordering.
+
+        [CONSTITUTIONAL OVERRIDE 2026-01-22]
+        SovereignBaseAgent and Layer Base Agents have 'Semantic Location Immunity'
+        from standard rules but MUST reside in 'agentic_core/base_agents/'.
+        This check runs BEFORE standard validation to prevent validator logic gaps.
+        """
+        # 1. Constitutional Check: Base Agent Location Lock
+        if "BaseAgent" in file_path.name or file_path.name == "SovereignBaseAgent.py":
+            if file_path.parent.name != "base_agents":
+                return (
+                    False,
+                    f"CRITICAL: Base Agents must reside in 'agentic_core/base_agents/', not '{file_path.parent.name}'",
+                )
+
+        # 2. Standard validation chain
         try:
             rel_path = file_path.relative_to(self.project_root)
             parts = rel_path.parts
@@ -676,6 +675,23 @@ class LocationValidatorAgent(SovereignBaseAgent):
             for arg in node.args.args:
                 score += self._score_identifier(arg.arg, territory_keywords)
         return score
+
+    def enforce_void_compliance(self, files: list[Path]) -> tuple[list[Path], list[tuple[Path, str]]]:
+        """Filter files and collect all location-based violations.
+
+        Salvaged from LocationAgent.py during LCD+ decommission.
+        """
+        valid_files: list[Path] = []
+        violations: list[tuple[Path, str]] = []
+
+        for file_path in files:
+            is_valid, reason = self.validate_file_location(file_path)
+            if is_valid:
+                valid_files.append(file_path)
+            else:
+                violations.append((file_path, reason))
+
+        return valid_files, violations
 
     # Naming convention validation (used by validation chain)
     def _check_naming_conventions(self, file_path: Path) -> list[str]:

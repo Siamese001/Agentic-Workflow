@@ -42,7 +42,7 @@ class RateLimitMixin:
         self._violation_count: dict[str, int] = {}
         self._redis = None
         try:
-            from agentic_core.L2_execution.mcp.caching_redis_mcp_client import get_redis_client
+            from agentic_core.L2_execution.enforcement.caching_redis_mcp_client import get_redis_client
 
             self._redis = get_redis_client()
         except Exception:

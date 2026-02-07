@@ -59,7 +59,7 @@ class ChaosResilienceStrategy:
 
         try:
             from agentic_core.L4_state.memory import ValidationContext
-            from agentic_core.L5_safety.red_teaming.chaos_engineering_agent_validator import (
+            from agentic_core.L5_safety.reasoning.ChaosEngineeringAgent_validator import (
                 ChaosEngineeringAgent,
             )
 

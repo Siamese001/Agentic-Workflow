@@ -31,10 +31,10 @@ DATACLASS_FILES = [
 # Files needing Enum imports
 ENUM_FILES = [
     "OutreachLearningAgent.py",
-    "architecture_visualizer_agent.py",
+    "ArchitectureVisualizerAgent.py",
     "check_schema_policy.py",
     "cultural_decoder_agent.py",
-    "pre_mortem_agent.py",
+    "PreMortemAgent.py",
 ]
 
 # Files needing BaseModel conversion

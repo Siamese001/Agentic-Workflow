@@ -73,8 +73,8 @@ def rename_files_and_directories():
     renames = [
         # Test files
         (
-            "tests/unit/agentic_core/L5_safety/guardrails/test_pii_sanitizer_agent.py",
-            "tests/unit/agentic_core/L5_safety/guardrails/test_pii_sanitizer_agent.py",
+            "tests/unit/agentic_core/L5_safety/enforcement/test_PIISanitizerAgent.py",
+            "tests/unit/agentic_core/L5_safety/enforcement/test_PIISanitizerAgent.py",
         ),
         (
             "tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py",

@@ -5,7 +5,7 @@ import os
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 edited_files = [
-    "scripts/rename_unified_agents.py",
+    "scripts/rename_UnifiedAgents.py",
     "tests/unit/test_unified_hygiene_validator.py",
     "tests/unit/test_l5_sovereignty_upgrade.py",
     "tests/unit/test_phase2_validator_consolidation.py",

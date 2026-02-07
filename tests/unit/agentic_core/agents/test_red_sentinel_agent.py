@@ -2,7 +2,7 @@ import pytest
 
 pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
 
-# New file: tests/unit/test_red_sentinel_agent.py
+# New file: tests/unit/test_RedSentinelAgent.py
 import json
 import os
 import sys
@@ -14,7 +14,7 @@ import pytest
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agentic_core.L5_safety.guardrails.RedSentinelAgent import RedSentinelAgent
+from agentic_core.L5_safety.enforcement.RedSentinelAgent import RedSentinelAgent
 
 
 @pytest.fixture
@@ -60,9 +60,9 @@ def test_initialization_disabled():
 
 
 @pytest.mark.asyncio
-async def test_fuzz_function_disabled(red_sentinel_agent):
+async def test_fuzz_function_disabled(RedSentinelAgent):
     """Test fuzz_function when fuzzing is disabled."""
-    result = await red_sentinel_agent.fuzz_function("test_func", "def test_func(): pass", "/path/to/file.py")
+    result = await RedSentinelAgent.fuzz_function("test_func", "def test_func(): pass", "/path/to/file.py")
 
     assert isinstance(result, dict)
     assert result["enabled"] is False
@@ -107,7 +107,9 @@ async def test_generate_hostile_inputs_with_mcp():
         {"type": "overflow", "value": "A" * 10000},
     ]
 
-    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
+    with patch(
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+    ) as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {"response": json.dumps(mock_response)}
         mock_get_client.return_value = mock_router
@@ -124,7 +126,9 @@ async def test_generate_hostile_inputs_fallback():
     """Test hostile input generation fallback when MCP fails."""
     agent = RedSentinelAgent()
 
-    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
+    with patch(
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+    ) as mock_get_client:
         mock_get_client.side_effect = Exception("MCP connection failed")
 
         with patch.object(agent, "_get_default_hostile_inputs") as mock_default:
@@ -136,9 +140,9 @@ async def test_generate_hostile_inputs_fallback():
             mock_default.assert_called_once()
 
 
-def test_get_default_hostile_inputs(red_sentinel_agent):
+def test_get_default_hostile_inputs(RedSentinelAgent):
     """Test default hostile inputs generation."""
-    defaults = red_sentinel_agent._get_default_hostile_inputs()
+    defaults = RedSentinelAgent._get_default_hostile_inputs()
 
     assert isinstance(defaults, list)
     assert len(defaults) > 0
@@ -151,28 +155,28 @@ def test_get_default_hostile_inputs(red_sentinel_agent):
 
 
 @pytest.mark.asyncio
-async def test_test_with_input(red_sentinel_agent):
+async def test_test_with_input(RedSentinelAgent):
     """Test the _test_with_input method."""
     try:
-        result = await red_sentinel_agent._test_with_input("test_func", {"type": "test", "value": "data"})
+        result = await RedSentinelAgent._test_with_input("test_func", {"type": "test", "value": "data"})
         assert isinstance(result, dict)
     except AttributeError:
         # Method might not be fully implemented yet
         pytest.skip("_test_with_input method not implemented yet")
 
 
-def test_audit_path_creation(red_sentinel_agent):
+def test_audit_path_creation(RedSentinelAgent):
     """Test that audit path parent directory is created."""
     # The __init__ method should create the parent directory
-    audit_path = red_sentinel_agent.audit_path
+    audit_path = RedSentinelAgent.audit_path
     assert audit_path.parent.exists() or True  # Directory creation is attempted
 
 
 @pytest.mark.autonomy
-def test_heal_repository_smoke(red_sentinel_agent):
+def test_heal_repository_smoke(RedSentinelAgent):
     """Autonomy heal smoke test — ensure no crash."""
     try:
-        red_sentinel_agent.heal_repository()  # Post-healing: will pass once compliant
+        RedSentinelAgent.heal_repository()  # Post-healing: will pass once compliant
         assert True  # No crash = success
     except AttributeError:
         # heal_repository method may not exist yet, that's expected
@@ -184,6 +188,7 @@ def test_heal_repository_smoke(red_sentinel_agent):
 
 def test_healer_mixin_inheritance(red_sentinel_agent):
     """Test that agent properly inherits from HealerMixin."""
+    from agentic_core.mixins.healer_mixin import HealerMixin
 
     assert isinstance(red_sentinel_agent, HealerMixin)
 
@@ -213,7 +218,9 @@ async def test_json_decode_error_handling():
     """Test handling of malformed JSON responses from MCP."""
     agent = RedSentinelAgent()
 
-    with patch("agentic_core.L5_safety.guardrails.RedSentinelAgent.get_llm_router_client") as mock_get_client:
+    with patch(
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+    ) as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {
             "response": "invalid json response"  # Malformed JSON

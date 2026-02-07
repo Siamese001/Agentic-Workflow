@@ -146,7 +146,7 @@ def generate_layer_tests():
     try:
         tests = generator.generate_agent_tests(
             L5SafetyBase,
-            "agentic_core.L5_safety.guardrails.L5SafetyBase",
+            "agentic_core.L5_safety.enforcement.L5SafetyBase",
         )
         generator.write_test_file(
             "safety_base_agent",

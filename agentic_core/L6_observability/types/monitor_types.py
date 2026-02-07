@@ -1,7 +1,7 @@
 """
 Monitor Types - Data models for agent execution monitoring.
 
-Extracted from schemas/unified_agent_monitor_types.py during Schema Dissolution.
+Extracted from schemas/UnifiedAgent_monitor_types.py during Schema Dissolution.
 """
 
 from __future__ import annotations

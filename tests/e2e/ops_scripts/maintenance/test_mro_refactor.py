@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def test_tc_mro_001_reporting_agent_initialization():
+def test_tc_mro_001_ReportingAgent_initialization():
     """TC-MRO-001: ReportingAgent Initialization"""
     print("\n[TC-MRO-001] Testing ReportingAgent Initialization...")
     try:
@@ -130,7 +130,7 @@ def run_all_tests():
 
     results = []
 
-    results.append(("TC-MRO-001", test_tc_mro_001_reporting_agent_initialization()))
+    results.append(("TC-MRO-001", test_tc_mro_001_ReportingAgent_initialization()))
     results.append(("TC-MRO-002", test_tc_mro_002_l4_state_base_agent_mro()))
     results.append(("TC-MRO-003", test_tc_mro_003_semantic_debugger_inheritance()))
     results.append(("TC-CAP-001", test_tc_cap_001_redis_capability_retention()))

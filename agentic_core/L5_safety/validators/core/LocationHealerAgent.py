@@ -22,26 +22,37 @@ from __future__ import annotations
 import logging
 import re
 import shutil
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L3_orchestration.engine.unified_agent import (
+from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     LocationHealingStrategy,
 )
 from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
-from agentic_core.L5_safety.validators.core.location_utils import (
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.validators.core.location_utils_util import (
     compute_module_path,
 )
-from agentic_core.L5_safety.validators.location_constants import (
+from agentic_core.L5_safety.validators.core.location_constants_util import (
     ARCHIVE_SUBFOLDERS,
     DEFAULT_APP_HEALING_TARGET,
     DEFAULT_ARCHIVE_SUBFOLDER,
     HEALING_STRATEGY_MAP,
 )
+from agentic_core.L5_safety.config.structure_blueprint_config import (
+    APP_SPECIFIC_TARGET_SUBFOLDER,
+    AST_DOMAIN_HIT_THRESHOLD,
+    PROJECT_ROOT_METADATA,
+    ROOT_PROTECTED_FILES,
+    get_validated_project_root,
+)
+from agentic_core.L0_maintenance.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -75,9 +86,14 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Initialize healer with backup infrastructure."""
         super().__post_init__()
         self.project_root = self.project_root.resolve()
+        self._validate_project_root()
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         self.agent_name = "LocationHealerAgent"
+        # Lazy agent references to avoid circular instantiation
+        self._naming_agent = None
+        self._import_agent = None
+        self._autonomous_mode = False
 
         # [PHASE 3] Initialize unified location healing strategy
         self._unified_strategy: LocationHealingStrategy | None = LocationHealingStrategy(
@@ -88,89 +104,292 @@ class LocationHealerAgent(SovereignBaseAgent):
             },
         )
 
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+    def _validate_project_root(self) -> None:
+        """Validate that project_root is the actual project root."""
+        validated_root = get_validated_project_root()
+        if self.project_root != validated_root:
+            Logger.warning(
+                f"PROJECT ROOT MISMATCH: Provided '{self.project_root}' != validated '{validated_root}'. "
+                f"Using validated root to prevent folder creation outside project.",
+            )
+            self.project_root = validated_root
+
+    @property
+    def naming_agent(self):
+        """Lazy NamingAgent - created on first access to avoid circular init."""
+        if self._naming_agent is None:
+            try:
+                from agentic_core.L5_safety.validators.naming_agent_validator import (
+                    get_naming_agent,
+                )
+
+                self._naming_agent = get_naming_agent(self.project_root)
+            except (ImportError, RecursionError):
+                Logger.warning("NamingAgent not available - post-heal naming validation disabled")
+        return self._naming_agent
+
+    @property
+    def import_agent(self):
+        """Lazy import healer - created on first access to avoid circular init."""
+        if self._import_agent is None:
+            try:
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+                    create_legacy_import_healer,
+                )
+
+                self._import_agent = create_legacy_import_healer()
+            except (ImportError, RecursionError):
+                Logger.warning("Import healer not available - post-heal import validation disabled")
+        return self._import_agent
+
+    def heal(self, violation: dict) -> HealResult:
         """
-        [HEALER PROTOCOL] Standardized healing interface for location violations.
+        Heal a single location violation.
+
+        Required by execute_ssot.py — provides the interface for autonomous healing.
+        Converts violation dict to cleanup_violations format and returns HealResult.
 
         Args:
-            violation: Violation dict with keys: type, file, message, etc.
+            violation: Dict with keys: file, message, type, suggested_action
 
         Returns:
-            Dict with keys: status, details, artifacts, errors
+            HealResult with violations_found, violations_fixed, status, errors, metadata.
         """
+        start_time = time.time()
+
+        file_path = violation.get("file")
+        if not file_path:
+            return HealResult(
+                violations_found=0,
+                violations_fixed=0,
+                status=HealStatus.ERROR,
+                errors=1,
+                error_message="Missing file path in violation",
+                metadata={"agent": self.__class__.__name__},
+            )
+
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
+
+        message = violation.get("message", "Location violation")
+
         try:
-            violation_type = violation.get("type", "")
-            file_path = violation.get("file")
+            cleanup_results = self.cleanup_violations([(file_path, message)], dry_run=False)
 
-            if not file_path:
-                return {
-                    "status": "failed",
-                    "details": "No file path provided in violation",
-                    "artifacts": [],
-                    "errors": ["Missing file path"],
-                }
+            if cleanup_results and len(cleanup_results) > 0:
+                result = cleanup_results[0]
+                applied = result.get("applied", False)
+                error = result.get("error")
+                execution_time = (time.time() - start_time) * 1000
 
-            src_path = Path(file_path)
+                if applied and not error:
+                    return HealResult(
+                        violations_found=1,
+                        violations_fixed=1,
+                        status=HealStatus.SUCCESS,
+                        execution_time_ms=execution_time,
+                        details=[result.get("action_taken", "Location violation processed")],
+                        metadata={
+                            "agent": self.__class__.__name__,
+                            "target": str(file_path),
+                            "action_taken": result.get("action_taken"),
+                            "new_path": result.get("new_path"),
+                        },
+                    )
+                else:
+                    return HealResult(
+                        violations_found=1,
+                        violations_fixed=0,
+                        status=HealStatus.ERROR,
+                        errors=1,
+                        error_message=error,
+                        execution_time_ms=execution_time,
+                        metadata={"agent": self.__class__.__name__, "target": str(file_path)},
+                    )
+            else:
+                return HealResult(
+                    violations_found=1,
+                    violations_fixed=0,
+                    status=HealStatus.ERROR,
+                    errors=1,
+                    error_message="No cleanup result returned",
+                    execution_time_ms=(time.time() - start_time) * 1000,
+                    metadata={"agent": self.__class__.__name__, "target": str(file_path)},
+                )
 
-            # Determine target location based on violation type
-            if "DEPTH" in violation_type or "MISPLACED" in violation_type:
-                # Use safe_move to relocate file
-                target_dir = self._determine_target_directory(src_path, violation)
-                if target_dir:
-                    dst_path = target_dir / src_path.name
-                    result = self.safe_move(src_path, dst_path, dry_run=False)
-                    return {
-                        "status": "success" if result["applied"] else "failed",
-                        "details": result.get("action_taken", "File move operation"),
-                        "artifacts": [str(dst_path)] if result["applied"] else [],
-                        "errors": [result["error"]] if result.get("error") else [],
-                    }
+        except Exception as e:
+            Logger.error(f"Error healing location violation for {file_path}: {e}")
+            return HealResult(
+                violations_found=1,
+                violations_fixed=0,
+                status=HealStatus.ERROR,
+                errors=1,
+                error_message=str(e),
+                execution_time_ms=(time.time() - start_time) * 1000,
+                metadata={"agent": self.__class__.__name__, "target": str(file_path)},
+            )
 
+    def heal_violations(self, violations: list, auto_approve: bool = True) -> dict:
+        """
+        Heal multiple location violations.
+
+        Called by execute_ssot.py when LocationAgent has detected violations
+        and the decision engine has approved healing.
+        """
+        start_time = time.time()
+        total_violations = len(violations)
+        healed_count = 0
+        details = []
+
+        Logger.info(
+            f"LocationHealerAgent healing {total_violations} violations (auto_approve={auto_approve})"
+        )
+
+        violation_list = []
+        for v in violations:
+            if isinstance(v, tuple) and len(v) >= 2:
+                violation_list.append((v[0], v[1]))
+            elif isinstance(v, dict):
+                file_path = v.get("file")
+                message = v.get("message", "Location violation")
+                if file_path:
+                    violation_list.append(
+                        (Path(file_path) if isinstance(file_path, str) else file_path, message),
+                    )
+            else:
+                Logger.warning(f"Skipping invalid violation format: {v}")
+
+        try:
+            cleanup_results = self.cleanup_violations(violation_list, dry_run=not auto_approve)
+
+            for i, result in enumerate(cleanup_results):
+                if result.get("applied", False):
+                    healed_count += 1
+                    details.append(
+                        {
+                            "violation_index": i,
+                            "status": "healed",
+                            "action": result.get("action_taken", "Unknown action"),
+                            "file": str(result.get("file_path", "Unknown file")),
+                        }
+                    )
+                else:
+                    details.append(
+                        {
+                            "violation_index": i,
+                            "status": "failed" if result.get("error") else "skipped",
+                            "error": result.get("error"),
+                            "file": str(result.get("file_path", "Unknown file")),
+                        }
+                    )
+
+            execution_time = int((time.time() - start_time) * 1000)
             return {
-                "status": "skipped",
-                "details": f"No healing strategy for violation type: {violation_type}",
-                "artifacts": [],
-                "errors": [],
+                "healed": healed_count,
+                "total": total_violations,
+                "success": healed_count == total_violations,
+                "message": f"Healed {healed_count}/{total_violations} location violations",
+                "execution_time_ms": execution_time,
+                "details": details,
+                "auto_approve": auto_approve,
             }
 
         except Exception as e:
-            Logger.error(f"Heal operation failed: {e}")
+            Logger.error(f"Error in heal_violations: {e}")
             return {
-                "status": "failed",
-                "details": "Exception during healing",
-                "artifacts": [],
-                "errors": [str(e)],
+                "healed": 0,
+                "total": total_violations,
+                "success": False,
+                "message": f"Failed to heal violations: {str(e)}",
+                "execution_time_ms": int((time.time() - start_time) * 1000),
+                "error": str(e),
+                "details": [],
             }
 
     def _determine_target_directory(self, src_path: Path, violation: dict[str, Any]) -> Path | None:
         """Determine target directory for file relocation based on violation context."""
-        # Use healing strategy map to determine target
         suggested_target = violation.get("suggested_target")
         if suggested_target:
             return self.project_root / suggested_target
-
-        # Fallback to default app healing target
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    @timeout(300)
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set[str] | None = None,
+    ) -> dict[str, int]:
         """
-        Main healing orchestration method.
-
-        Args:
-            dry_run: Preview mode (no actual changes)
-            execute: Apply healing operations
-
-        Returns:
-            Dict with healing summary
+        Autonomous full-repository location law healing.
+        Canon Key 51 compliance - fully self-orchestrating.
         """
-        # Placeholder for full orchestration - will delegate to LocationAgent for now
-        return {
-            "violations_fixed": 0,
-            "files_moved": 0,
-            "files_deleted": 0,
-            "backups_created": 0,
-            "status": "DELEGATED_TO_LOCATIONAGENT",
-        }
+        if _call_path is None:
+            _call_path = set()
+
+        agent_name = self.__class__.__name__
+
+        if agent_name in _call_path:
+            print(f"  [!] HEALING CYCLE DETECTED: {agent_name} already in path → stopping")
+            return {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0, "cycle_detected": True}
+
+        if depth > max_depth:
+            print(f"  [!] RECURSION DEPTH LIMIT REACHED ({depth}/{max_depth}) → stopping")
+            return {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0, "depth_limited": True}
+
+        _call_path.add(agent_name)
+
+        if execute and dry_run:
+            raise ValueError("execute and dry_run cannot both be True")
+
+        actual_execute = execute and not dry_run
+
+        try:
+            super().heal_repository()
+
+            from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+
+            validator = LocationValidatorAgent(project_root=self.project_root)
+            scan_result = validator.run()
+            violations = scan_result.get("violations", [])
+            print(f"[LOCATION HEAL @ depth {depth}] Found {len(violations)} violations")
+
+            counts = {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0}
+
+            for v in violations:
+                file_path = Path(v["file"]) if isinstance(v, dict) else v[0]
+                reason = v.get("reason", "") if isinstance(v, dict) else v[1]
+                try:
+                    cleanup_results = self.cleanup_violations(
+                        [(file_path, reason)],
+                        dry_run=not actual_execute,
+                    )
+                    if cleanup_results and cleanup_results[0].get("applied"):
+                        counts["healed"] += 1
+                        print(
+                            f"  [+] HEALED: {file_path.name} - {cleanup_results[0].get('action_taken', 'fixed')}"
+                        )
+                    elif cleanup_results and cleanup_results[0].get("error"):
+                        counts["errors"] += 1
+                        print(f"  [!] ERROR: {file_path.name} - {cleanup_results[0]['error']}")
+                    else:
+                        counts["skipped"] += 1
+                except Exception as e:
+                    counts["errors"] += 1
+                    print(f"  [!] ERROR on {file_path.name}: {e}")
+
+            print(
+                f"\n[LOCATION HEAL SUMMARY] "
+                f"Healed: {counts['healed']} | Blocked: {counts['blocked']} | "
+                f"Skipped: {counts['skipped']} | Errors: {counts['errors']}"
+            )
+
+            return counts
+
+        finally:
+            _call_path.discard(agent_name)
 
     # ========================================================================
     # MIGRATED HEALING METHODS (Phase 3 Batch 3)
@@ -1479,3 +1698,808 @@ class LocationHealerAgent(SovereignBaseAgent):
             new_lines.append(line)
 
         return new_lines, removed_modules
+
+    # ========================================================================
+    # SALVAGED FROM LocationAgent.py (LCD+ Decommission Phase 0.3)
+    # ========================================================================
+
+    def post_naming_validation(self, affected_paths: list[Path], dry_run: bool = True) -> dict[str, Any]:
+        """Post-healing NamingAgent validation on affected paths."""
+        naming_report = {
+            "naming_post_heal_status": "SKIPPED",
+            "naming_prefix_violations": [],
+            "naming_duplicate_violations": {},
+            "naming_message": "",
+        }
+
+        if dry_run:
+            naming_report["naming_message"] = "PREVIEW: Naming validation skipped in dry-run"
+            naming_report["naming_post_heal_status"] = "PREVIEW"
+            return naming_report
+
+        try:
+            prefix_violations = []
+            for path in affected_paths:
+                if path.suffix == ".py" and path.exists():
+                    violations = self.naming_agent.validate_prefix_location_match(path)
+                    if violations:
+                        prefix_violations.append(
+                            {
+                                "file": str(path.relative_to(self.project_root)),
+                                "issues": violations,
+                            },
+                        )
+
+            duplicates = self.naming_agent.scan_repository_duplicates()
+
+            naming_report["naming_prefix_violations"] = prefix_violations
+            naming_report["naming_duplicate_violations"] = {
+                name: [str(p.relative_to(self.project_root)) for p in paths]
+                for name, paths in duplicates.items()
+            }
+
+            total_naming_issues = len(prefix_violations) + len(duplicates)
+            if total_naming_issues == 0:
+                naming_report["naming_post_heal_status"] = "FULL_SUCCESS"
+                naming_report["naming_message"] = "Naming compliant post-heal"
+            elif total_naming_issues <= 2:
+                naming_report["naming_post_heal_status"] = "PARTIAL"
+                naming_report["naming_message"] = (
+                    f"{total_naming_issues} minor naming issues (likely collision suffixes)"
+                )
+            else:
+                naming_report["naming_post_heal_status"] = "NEEDS_REVIEW"
+                naming_report["naming_message"] = (
+                    f"{total_naming_issues} naming issues — review prefixes/duplicates"
+                )
+
+            Logger.info(
+                f"[LocationHealerAgent] Post-naming validation: {naming_report['naming_post_heal_status']} ({total_naming_issues} issues)",
+            )
+
+        except Exception as e:
+            naming_report["naming_post_heal_status"] = "ERROR"
+            naming_report["naming_message"] = f"Naming validation error: {e}"
+            Logger.error(f"[LocationHealerAgent] Naming validation failed: {e}")
+
+        return naming_report
+
+    def auto_heal_naming_issues(self, naming_report: dict[str, Any], dry_run: bool = True) -> dict[str, Any]:
+        """Autonomous naming healing triggered when post-naming validation finds issues."""
+        heal_report = {
+            "naming_auto_heal_applied": False,
+            "naming_heal_actions": [],
+            "naming_heal_message": "",
+        }
+
+        if dry_run:
+            heal_report["naming_heal_message"] = "PREVIEW: Naming auto-heal skipped in dry-run"
+            return heal_report
+
+        actions = []
+
+        try:
+            duplicates = naming_report.get("naming_duplicate_violations", {})
+            for _dup_name, paths in duplicates.items():
+                for path_str in paths[1:]:
+                    path = self.project_root / path_str
+                    if path.exists():
+                        resolve_result = self.naming_agent.resolve_duplicate_filename(path, dry_run=False)
+                        actions.append(
+                            {
+                                "type": "DUPLICATE_RESOLVE",
+                                "original": path_str,
+                                "result": resolve_result,
+                            },
+                        )
+
+            prefix_violations = naming_report.get("naming_prefix_violations", [])
+            for viol in prefix_violations:
+                path_str = viol["file"]
+                path = self.project_root / path_str
+                if path.exists():
+                    move_result = self.naming_agent.move_to_canonical_location(path, dry_run=False)
+                    if move_result.get("moved"):
+                        actions.append(
+                            {
+                                "type": "PREFIX_CANONICAL_MOVE",
+                                "original": path_str,
+                                "result": move_result,
+                            },
+                        )
+                    else:
+                        actions.append(
+                            {
+                                "type": "PREFIX_NEEDS_MANUAL",
+                                "file": path_str,
+                                "issues": viol["issues"],
+                            },
+                        )
+
+            if actions:
+                heal_report["naming_auto_heal_applied"] = True
+                heal_report["naming_heal_actions"] = actions
+                heal_report["naming_heal_message"] = (
+                    f"Applied {len(actions)} naming heals ({len([a for a in actions if 'moved' in a.get('result', {})])} moves)"
+                )
+                Logger.info(f"[LocationHealerAgent] Naming auto-heal: {len(actions)} actions")
+            else:
+                heal_report["naming_heal_message"] = "No naming issues required auto-heal"
+
+        except Exception as e:
+            heal_report["naming_heal_message"] = f"ERROR during naming auto-heal: {e}"
+            Logger.error(f"[LocationHealerAgent] Naming auto-heal failed: {e}")
+
+        return heal_report
+
+    def post_import_validation_and_heal(
+        self,
+        affected_paths: list[Path],
+        import_touched_paths: list[Path],
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Combined ImportAgent validation + auto-healing on affected files."""
+        full_report = {
+            "import_validation_status": "SKIPPED",
+            "import_auto_heal_applied": False,
+            "import_gravity_violations": [],
+            "import_gravity_auto_heal_applied": False,
+            "import_gravity_heal_actions": [],
+            "import_final_status": "SKIPPED",
+            "import_message": "",
+        }
+
+        if dry_run:
+            full_report["import_message"] = "PREVIEW: Import validation/heal skipped"
+            return full_report
+
+        all_paths = list(set(affected_paths + import_touched_paths))
+        valid_files = [p for p in all_paths if p.suffix == ".py" and p.exists()]
+
+        if not valid_files:
+            full_report["import_validation_status"] = "NO_FILES"
+            full_report["import_message"] = "No Python files affected"
+            return full_report
+
+        try:
+            import_violations = self.import_agent.run(valid_files)
+
+            convention_issues = []
+            gravity_issues = []
+            for path, msgs in import_violations:
+                rel = str(path.relative_to(self.project_root))
+                for msg in msgs if isinstance(msgs, list) else [msgs]:
+                    if "GRAVITY VIOLATION" in str(msg):
+                        gravity_issues.append({"file": rel, "issue": str(msg), "path": path})
+                    else:
+                        convention_issues.append({"file": rel, "issue": str(msg)})
+
+            total_convention = len(convention_issues)
+            total_gravity = len(gravity_issues)
+
+            full_report["import_gravity_violations"] = gravity_issues
+            full_report["import_message"] = (
+                f"Validation: {total_convention} convention issues, {total_gravity} gravity issues"
+            )
+
+            if total_convention == 0 and total_gravity == 0:
+                full_report["import_validation_status"] = "FULL_SUCCESS"
+                return full_report
+
+            gravity_heal_actions = []
+            if total_gravity > 0:
+                gravity_heal_actions = self._heal_gravity_violations(gravity_issues)
+
+                if gravity_heal_actions:
+                    full_report["import_gravity_auto_heal_applied"] = True
+                    full_report["import_gravity_heal_actions"] = gravity_heal_actions
+                    full_report["import_message"] += (
+                        f" | Gravity auto-heal: {len(gravity_heal_actions)} actions"
+                    )
+
+            final_violations = self.import_agent.run(valid_files)
+            final_convention = 0
+            final_gravity = 0
+            for _, msgs in final_violations:
+                for m in msgs if isinstance(msgs, list) else [msgs]:
+                    if "GRAVITY" in str(m):
+                        final_gravity += 1
+                    else:
+                        final_convention += 1
+
+            if final_convention == 0 and final_gravity == 0:
+                full_report["import_final_status"] = "FULL_SUCCESS"
+            elif final_gravity == 0:
+                full_report["import_final_status"] = "CONVENTION_FIXED"
+            else:
+                full_report["import_final_status"] = "PARTIAL"
+
+            full_report["import_message"] += (
+                f" → Final: {full_report['import_final_status']} (gravity remaining: {final_gravity})"
+            )
+
+        except Exception as e:
+            full_report["import_validation_status"] = "ERROR"
+            full_report["import_message"] = f"Import validation error: {e}"
+            Logger.error(f"[LocationHealerAgent] Import validation failed: {e}")
+
+        return full_report
+
+    def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Delegate gravity violation healing to GravityLeakDetector."""
+        from agentic_core.L5_safety.validators.core.GravityLeakDetector import GravityLeakDetector
+
+        detector = GravityLeakDetector(project_root=self.project_root)
+        return detector._heal_gravity_violations(gravity_issues)
+
+    def post_naming_conventions_validation_and_heal(
+        self,
+        affected_paths: list[Path],
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Full NamingAgent convention validation + auto-healing for fixable issues."""
+        conventions_report = {
+            "naming_conventions_status": "SKIPPED",
+            "naming_conventions_auto_heal_applied": False,
+            "naming_conventions_actions": [],
+            "naming_conventions_final_status": "SKIPPED",
+            "naming_message": "",
+        }
+
+        if dry_run:
+            conventions_report["naming_message"] = "PREVIEW: Naming conventions validation/heal skipped"
+            return conventions_report
+
+        convention_violations = []
+        for path in [p for p in affected_paths if p.suffix == ".py" and p.exists()]:
+            filename = path.name
+            issues = []
+
+            if not re.match(r"^[a-z0-9_]+\.py$", filename) and not re.match(
+                r"^[A-Z][a-zA-Z0-9]*Agent\.py$",
+                filename,
+            ):
+                issues.append("NOT_SNAKE_CASE")
+
+            if hasattr(self.naming_agent, "forbidden_patterns"):
+                for pattern in self.naming_agent.forbidden_patterns:
+                    if pattern.match(filename):
+                        issues.append("FORBIDDEN_PATTERN")
+
+            if issues:
+                convention_violations.append(
+                    {
+                        "file": str(path.relative_to(self.project_root)),
+                        "path": path,
+                        "issues": issues,
+                    },
+                )
+
+        total_conventions = len(convention_violations)
+        conventions_report["naming_message"] = f"Conventions validation: {total_conventions} issues"
+
+        if total_conventions == 0:
+            conventions_report["naming_conventions_status"] = "FULL_SUCCESS"
+            return conventions_report
+
+        heal_actions = []
+        for viol in convention_violations:
+            path = viol["path"]
+            filename = path.name
+
+            try:
+                new_name = re.sub(r"[^a-zA-Z0-9_.]", "_", filename)
+                new_name = re.sub(r"_+", "_", new_name).strip("_")
+                if not new_name.endswith(".py"):
+                    new_name += ".py"
+
+                if new_name != filename and new_name.lower() != filename.lower():
+                    new_path = path.parent / new_name
+
+                    move_result = self.safe_move(path, new_path, dry_run=False)
+                    if move_result.get("applied"):
+                        heal_actions.append(
+                            {
+                                "type": "NAMING_CONVENTION_RENAME",
+                                "original": viol["file"],
+                                "new": str(new_path.relative_to(self.project_root)),
+                                "fixes": viol["issues"],
+                                "result": move_result,
+                            },
+                        )
+                        affected_paths.append(new_path)
+
+            except Exception as e:
+                heal_actions.append(
+                    {
+                        "type": "NAMING_CONVENTION_HEAL_ERROR",
+                        "file": viol["file"],
+                        "error": str(e),
+                    },
+                )
+
+        if heal_actions:
+            conventions_report["naming_conventions_auto_heal_applied"] = True
+            conventions_report["naming_conventions_actions"] = heal_actions
+
+            remaining = len([a for a in heal_actions if "ERROR" in a.get("type", "")])
+            if remaining == 0:
+                conventions_report["naming_conventions_final_status"] = "FULL_SUCCESS"
+            else:
+                conventions_report["naming_conventions_final_status"] = "PARTIAL"
+
+            conventions_report["naming_message"] += (
+                f" → Auto-heal applied ({len(heal_actions)} actions) → Final: {conventions_report['naming_conventions_final_status']}"
+            )
+
+        return conventions_report
+
+    def deep_import_validation_and_heal(
+        self,
+        affected_paths: list[Path],
+        import_touched_paths: list[Path],
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Deep ImportAgent integration: full validation + advanced auto-heal."""
+        import ast
+
+        deep_report = {
+            "import_deep_status": "SKIPPED",
+            "import_convention_heal_applied": False,
+            "import_gravity_heal_applied": False,
+            "import_final_status": "SKIPPED",
+            "import_message": "",
+        }
+
+        if dry_run:
+            deep_report["import_message"] = "PREVIEW: Deep import validation/heal skipped"
+            return deep_report
+
+        all_paths = list(set(affected_paths + import_touched_paths))
+        valid_files = [p for p in all_paths if p.suffix == ".py" and p.exists()]
+
+        if not valid_files:
+            deep_report["import_deep_status"] = "NO_FILES"
+            deep_report["import_message"] = "No files for import analysis"
+            return deep_report
+
+        try:
+            import_violations = self.import_agent.run(valid_files)
+
+            convention_actions = []
+            gravity_actions = []
+            additional_moves = []
+
+            for path, msgs in import_violations:
+                try:
+                    content = path.read_text(encoding="utf-8")
+                    tree = ast.parse(content)
+                    new_content = content
+
+                    new_content = re.sub(r"^from \.+ import \*\n", "", new_content, flags=re.MULTILINE)
+                    new_content = re.sub(r"^from \.+\s+", "from ", new_content, flags=re.MULTILINE)
+
+                    if new_content != content:
+                        backup_dir = self._init_backup_dir() / "deep_import_heal"
+                        backup_dir.mkdir(parents=True, exist_ok=True)
+                        backup_path = backup_dir / path.relative_to(self.project_root)
+                        backup_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(path, backup_path)
+
+                        path.write_text(new_content, encoding="utf-8")
+                        convention_actions.append(
+                            {
+                                "type": "IMPORT_CONVENTION_HEAL",
+                                "file": str(path.relative_to(self.project_root)),
+                                "fixes": ["star/relative cleanup"],
+                            },
+                        )
+
+                    for msg in msgs if isinstance(msgs, list) else [msgs]:
+                        if "GRAVITY VIOLATION" in str(msg):
+                            gravity_actions.append(
+                                {
+                                    "file": str(path.relative_to(self.project_root)),
+                                    "issue": str(msg),
+                                },
+                            )
+                            from agentic_core.L5_safety.validators.core.LocationValidatorAgent import (
+                                LocationValidatorAgent,
+                            )
+
+                            validator = LocationValidatorAgent(project_root=self.project_root)
+                            app_rg, app_lic, terr_scores = validator._calculate_semantic_scores(tree)
+
+                            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                                HEALING_CONFIG,
+                            )
+
+                            if not hasattr(self, "state_guard"):
+                                from agentic_core.L4_state.memory.runtime_state_guard import (
+                                    RuntimeStateGuard,
+                                )
+
+                                self.state_guard = RuntimeStateGuard(self.project_root)
+
+                            self.state_guard.increment_metric("files_scanned")
+                            shared_upgrade_count = self.state_guard.get_metric("upgrade_count", 0)
+
+                            with open(path) as f:
+                                if len(f.readlines()) < HEALING_CONFIG["dust_threshold"]:
+                                    continue
+
+                            if (app_rg + app_lic) < AST_DOMAIN_HIT_THRESHOLD * 0.5:
+                                if shared_upgrade_count >= HEALING_CONFIG["max_shared_upgrades_per_run"]:
+                                    Logger.error(
+                                        f"CIRCUIT BREAKER TRIPPED: Shared upgrade limit at {path}",
+                                    )
+                                    continue
+
+                                target = self.project_root / "apps_shared" / "utils" / path.name
+                                move_result = self.safe_move(path, target, dry_run=False)
+                                self.state_guard.increment_metric("upgrade_count")
+                                additional_moves.append(move_result)
+                            elif (app_rg + app_lic) >= AST_DOMAIN_HIT_THRESHOLD * 0.8:
+                                dominant = "apps_rg" if app_rg >= app_lic else "apps_lic"
+                                target = (
+                                    self.project_root / dominant / APP_SPECIFIC_TARGET_SUBFOLDER / path.name
+                                )
+                                move_result = self.safe_move(path, target, dry_run=False)
+                                additional_moves.append(move_result)
+
+                except Exception as e:
+                    convention_actions.append(
+                        {"type": "IMPORT_HEAL_ERROR", "file": str(path), "error": str(e)},
+                    )
+
+            final_valid = [p for p in valid_files if p.exists()]
+            final_violations = self.import_agent.run(final_valid) if final_valid else []
+            final_convention = 0
+            final_gravity = 0
+            for _, msgs in final_violations:
+                for m in msgs if isinstance(msgs, list) else [msgs]:
+                    if "GRAVITY" in str(m):
+                        final_gravity += 1
+                    else:
+                        final_convention += 1
+
+            deep_report["import_convention_heal_applied"] = bool(convention_actions)
+            deep_report["import_gravity_heal_applied"] = bool(gravity_actions or additional_moves)
+            deep_report["import_final_status"] = (
+                "FULL_SUCCESS" if final_convention == 0 and final_gravity == 0 else "PARTIAL"
+            )
+            deep_report["import_message"] = (
+                f"Deep import heal: {len(convention_actions)} convention, "
+                f"{len(gravity_actions)} gravity, {len(additional_moves)} moves "
+                f"→ Final: {deep_report['import_final_status']}"
+            )
+
+        except Exception as e:
+            deep_report["import_deep_status"] = "ERROR"
+            deep_report["import_message"] = f"Deep import error: {e}"
+            Logger.error(f"[LocationHealerAgent] Deep import heal failed: {e}")
+
+        return deep_report
+
+    def deep_naming_validation_and_heal(
+        self,
+        affected_paths: list[Path],
+        import_touched_paths: list[Path],
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Deep naming validation orchestrator — linear phase chain."""
+        deep_naming_report = {
+            "naming_deep_status": "SKIPPED",
+            "naming_convention_heal_applied": False,
+            "naming_semantic_issues": [],
+            "naming_heal_actions": [],
+            "naming_final_status": "SKIPPED",
+            "naming_message": "",
+        }
+
+        if dry_run:
+            deep_naming_report["naming_message"] = "PREVIEW: Deep naming validation/heal skipped"
+            return deep_naming_report
+
+        all_paths = list(set(affected_paths + import_touched_paths))
+        py_files = [p for p in all_paths if p.suffix == ".py" and p.exists()]
+
+        if not py_files:
+            deep_naming_report["naming_deep_status"] = "NO_FILES"
+            deep_naming_report["naming_message"] = "No Python files for naming analysis"
+            return deep_naming_report
+
+        heal_actions, semantic_issues = self._collect_naming_violations(py_files, affected_paths)
+        self._apply_naming_heals(heal_actions, affected_paths)
+
+        deep_naming_report["naming_semantic_issues"] = semantic_issues
+        deep_naming_report["naming_convention_heal_applied"] = bool(heal_actions)
+        deep_naming_report["naming_heal_actions"] = heal_actions
+        self._set_naming_final_status(deep_naming_report, heal_actions, semantic_issues)
+
+        return deep_naming_report
+
+    def _determine_target_root_from_metadata(self, filename: str) -> str | None:
+        """Smart routing using active PROJECT_ROOT_METADATA."""
+        for folder, meta in PROJECT_ROOT_METADATA.items():
+            patterns = meta.get("file_patterns", [])
+            for pattern in patterns:
+                if fnmatch(filename, pattern):
+                    return folder
+
+        filename_lower = filename.lower()
+        for folder, meta in PROJECT_ROOT_METADATA.items():
+            keywords = meta.get("keywords", [])
+            for kw in keywords:
+                if kw in filename_lower:
+                    return folder
+
+        return None
+
+    def enforce_void_compliance(self, files: list[Path]) -> tuple[list[Path], list[tuple[Path, str]]]:
+        """Filter files and collect all location-based violations.
+
+        Delegates to LocationValidatorAgent for validation.
+        """
+        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+
+        validator = LocationValidatorAgent(project_root=self.project_root)
+        return validator.enforce_void_compliance(files)
+
+    def cleanup_violations(
+        self,
+        violations: list[tuple[Path, str]],
+        dry_run: bool = True,
+        max_actions: int = 50,
+    ) -> list[dict[str, Any]]:
+        """ULTRA HEALING ENGINE — Full autonomous healing with batch post-validation.
+
+        Salvaged from LocationAgent.py during LCD+ decommission.
+        """
+        actions = []
+        archives_root = self.project_root / ".healing_backups"
+        affected_paths: list[Path] = []
+        import_touched_paths: list[Path] = []
+
+        for i, violation in enumerate(violations):
+            if i >= max_actions:
+                Logger.warning(f"[LocationHealerAgent] Cleanup budget exhausted ({max_actions} actions).")
+                break
+
+            if isinstance(violation, tuple):
+                file_path, msg = violation
+            else:
+                file_path = getattr(violation, "file_path", None) or violation[0]
+                msg = getattr(violation, "message", None) or violation[1]
+
+            if file_path.name in ROOT_PROTECTED_FILES:
+                Logger.info(f"[LocationHealerAgent] Skipping protected root file: {file_path.name}")
+                continue
+
+            archive_markers = (".archived", ".backup", ".old", ".copy")
+            if any(file_path.name.lower().endswith(marker) for marker in archive_markers):
+                continue
+            if any(marker in file_path.name.lower() for marker in archive_markers):
+                continue
+
+            action = {
+                "type": "LOCATION_HEALING",
+                "file": str(file_path),
+                "violation": msg,
+                "applied": False,
+                "action_taken": "",
+            }
+
+            is_root_file = file_path.parent == self.project_root
+            routed = False
+
+            if is_root_file and "not in ROOT_WHITELIST" in msg:
+                target_root = self._determine_target_root_from_metadata(file_path.name)
+                if target_root:
+                    target_path = self.project_root / target_root / file_path.name
+                    target_dir = self.project_root / target_root
+                    if not target_dir.exists():
+                        if not dry_run:
+                            target_dir.mkdir(exist_ok=True)
+
+                    move_res = self.safe_move(file_path, target_path, dry_run=dry_run)
+                    action.update(move_res)
+                    if move_res.get("applied"):
+                        action["action_taken"] = f"Smart-routed to {target_root}/"
+                        affected_paths.append(target_path)
+                        routed = True
+
+            if not routed:
+                heal_result = self._apply_healing_strategy(
+                    file_path,
+                    msg,
+                    archives_root,
+                    dry_run,
+                    affected_paths,
+                    import_touched_paths,
+                )
+                action.update(heal_result)
+
+            actions.append(action)
+
+        # === BATCH POST-HEALING VALIDATION ===
+        batch_report = {
+            "batch_post_heal_status": "SKIPPED",
+            "batch_healed_count": sum(1 for a in actions if a.get("applied")),
+            "batch_remaining_violations": [],
+            "batch_success_rate": 0.0,
+            "batch_message": "",
+        }
+
+        if dry_run:
+            batch_report["batch_message"] = "PREVIEW: Batch post-heal validation skipped in dry-run"
+            batch_report["batch_post_heal_status"] = "PREVIEW"
+        else:
+            try:
+                unique_affected = list({p.resolve() for p in affected_paths if p.exists()})
+                if unique_affected:
+                    _, batch_violations = self.enforce_void_compliance(unique_affected)
+                    batch_report["batch_remaining_violations"] = [
+                        {"file": str(p), "message": m} for p, m in batch_violations
+                    ]
+                    resolved_count = len(unique_affected) - len(batch_report["batch_remaining_violations"])
+                    batch_report["batch_success_rate"] = (
+                        resolved_count / len(unique_affected) * 100 if unique_affected else 100
+                    )
+                    if not batch_report["batch_remaining_violations"]:
+                        batch_report["batch_post_heal_status"] = "FULL_SUCCESS"
+                        batch_report["batch_message"] = f"All {len(unique_affected)} healed paths compliant"
+                    elif batch_report["batch_success_rate"] >= 90:
+                        batch_report["batch_post_heal_status"] = "HIGH_SUCCESS"
+                        batch_report["batch_message"] = f"{batch_report['batch_success_rate']:.1f}% success"
+                    else:
+                        batch_report["batch_post_heal_status"] = "PARTIAL"
+                        batch_report["batch_message"] = f"{batch_report['batch_success_rate']:.1f}% success"
+                else:
+                    batch_report["batch_post_heal_status"] = "NO_ACTIONS"
+                    batch_report["batch_message"] = "No healing actions applied"
+            except Exception as e:
+                batch_report["batch_post_heal_status"] = "ERROR"
+                batch_report["batch_message"] = f"Batch validation error: {e}"
+                Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
+
+        # === NAMING + IMPORT POST-HEAL CYCLES ===
+        all_naming_affected = list(set(affected_paths + import_touched_paths))
+
+        naming_report = self.post_naming_validation(all_naming_affected, dry_run=dry_run)
+        batch_report["naming_post_heal"] = naming_report
+        if naming_report["naming_post_heal_status"] == "FULL_SUCCESS":
+            batch_report["batch_message"] += " | Naming FULL_SUCCESS"
+        elif naming_report["naming_post_heal_status"] in {"PARTIAL", "NEEDS_REVIEW"}:
+            batch_report["batch_message"] += f" | Naming {naming_report['naming_post_heal_status']}"
+
+        if naming_report["naming_post_heal_status"] in {"PARTIAL", "NEEDS_REVIEW"}:
+            naming_heal_report = self.auto_heal_naming_issues(naming_report, dry_run=dry_run)
+            batch_report["naming_auto_heal"] = naming_heal_report
+            if naming_heal_report["naming_auto_heal_applied"]:
+                final_naming = self.post_naming_validation(all_naming_affected, dry_run=dry_run)
+                batch_report["naming_post_heal_final"] = final_naming
+                if final_naming["naming_post_heal_status"] == "FULL_SUCCESS":
+                    batch_report["batch_message"] += " | Naming auto-healed to FULL_SUCCESS"
+
+        conventions_report = self.post_naming_conventions_validation_and_heal(affected_paths, dry_run=dry_run)
+        batch_report["naming_conventions"] = conventions_report
+        batch_report["batch_message"] += (
+            f" | Conventions: {conventions_report.get('naming_conventions_final_status') or conventions_report.get('naming_conventions_status')}"
+        )
+
+        import_full_report = self.post_import_validation_and_heal(
+            affected_paths,
+            import_touched_paths,
+            dry_run=dry_run,
+        )
+        batch_report["import_cycle"] = import_full_report
+        batch_report["batch_message"] += (
+            f" | Imports: {import_full_report.get('import_final_status') or import_full_report.get('import_validation_status')}"
+        )
+
+        # === DUPLICATE RESOLUTION ===
+        duplicate_report = {
+            "duplicate_resolution_applied": False,
+            "duplicate_actions": [],
+            "duplicate_final_duplicates": {},
+            "duplicate_message": "PREVIEW: skipped" if dry_run else "",
+        }
+        if not dry_run:
+            try:
+                duplicates = self.naming_agent.scan_repository_duplicates()
+                duplicate_actions = []
+                for _dup_name, paths in duplicates.items():
+                    if len(paths) <= 1:
+                        continue
+
+                    def sort_key(p_str: str) -> Any:
+                        match = re.search(r"_(\d+)(?=\.py$)", str(p_str))
+                        return int(match.group(1)) if match else 0
+
+                    sorted_paths = sorted(paths, key=sort_key)
+                    for secondary in sorted_paths[1:]:
+                        secondary_path = (
+                            self.project_root / secondary if isinstance(secondary, str) else secondary
+                        )
+                        if secondary_path.exists():
+                            resolve_result = self.naming_agent.resolve_duplicate_filename(
+                                secondary_path, dry_run=False
+                            )
+                            duplicate_actions.append(
+                                {
+                                    "type": "DUPLICATE_RESOLUTION",
+                                    "primary_kept": str(sorted_paths[0]),
+                                    "secondary_resolved": str(secondary),
+                                    "resolution": resolve_result,
+                                }
+                            )
+                            if resolve_result.get("applied") and resolve_result.get("new_path"):
+                                affected_paths.append(self.project_root / resolve_result["new_path"])
+                if duplicate_actions:
+                    duplicate_report["duplicate_resolution_applied"] = True
+                    duplicate_report["duplicate_actions"] = duplicate_actions
+                    duplicate_report["duplicate_message"] = f"Resolved {len(duplicate_actions)} duplicates"
+                else:
+                    duplicate_report["duplicate_message"] = "No duplicates detected"
+            except Exception as e:
+                duplicate_report["duplicate_message"] = f"ERROR: {e}"
+                Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
+
+        batch_report["duplicate_resolution"] = duplicate_report
+        batch_report["batch_message"] += f" | Duplicates: {duplicate_report['duplicate_message'][:50]}"
+
+        # === DEEP CYCLES ===
+        naming_deep = self.deep_naming_validation_and_heal(
+            affected_paths, import_touched_paths, dry_run=dry_run
+        )
+        batch_report["naming_deep_cycle"] = naming_deep
+        batch_report["batch_message"] += f" | Naming deep: {naming_deep['naming_deep_status']}"
+
+        import_deep = self.deep_import_validation_and_heal(
+            affected_paths, import_touched_paths, dry_run=dry_run
+        )
+        batch_report["import_deep_cycle"] = import_deep
+        batch_report["batch_message"] += f" | Imports deep: {import_deep['import_final_status']}"
+
+        for action in actions:
+            action["batch_post_heal"] = batch_report
+
+        return actions
+
+    def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
+        """Full location compliance scan with automatic cleanup."""
+        from agentic_core.L5_safety.validators.core.LocationValidatorAgent import LocationValidatorAgent
+
+        validator = LocationValidatorAgent(project_root=self.project_root)
+        scan_result = validator.run()
+        violations = scan_result.get("violations", [])
+
+        # Convert violation dicts to tuples for cleanup_violations
+        violation_tuples = []
+        for v in violations:
+            if isinstance(v, dict):
+                violation_tuples.append((Path(v["file"]), v["reason"]))
+            else:
+                violation_tuples.append(v)
+
+        cleanup_results = (
+            self.cleanup_violations(violation_tuples, dry_run=dry_run) if violation_tuples else []
+        )
+        batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
+
+        return {
+            "violations_detected": len(violations),
+            "actions_applied": sum(1 for a in cleanup_results if a.get("applied")),
+            "detailed_actions": cleanup_results,
+            "batch_post_heal_summary": batch_summary,
+            "naming_post_heal_summary": batch_summary.get("naming_post_heal", {}),
+            "naming_auto_heal_summary": batch_summary.get("naming_auto_heal", {}),
+            "naming_final_summary": batch_summary.get("naming_post_heal_final", {}),
+            "naming_conventions_summary": batch_summary.get("naming_conventions", {}),
+            "import_cycle_summary": batch_summary.get("import_cycle", {}),
+            "duplicate_resolution_summary": batch_summary.get("duplicate_resolution", {}),
+            "naming_deep_cycle_summary": batch_summary.get("naming_deep_cycle", {}),
+            "import_deep_cycle_summary": batch_summary.get("import_deep_cycle", {}),
+            "dry_run": dry_run,
+        }

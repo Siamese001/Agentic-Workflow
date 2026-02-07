@@ -29,12 +29,14 @@ redis_timeout: Any = 5
 class SovereignSemanticCache(SovereignBaseAgent):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
-    def __init__(self, mission_id: str, engine=None, pinecone_agent: PineconeSovereignAgent | None = None):
+    def __init__(
+        self, mission_id: str, engine=None, SovereignPineconeStoreAgent: PineconeSovereignAgent | None = None
+    ):
         super().__init__()
         self.mission_id = mission_id
         self._mcp_audit("init", payload={"mission_id": mission_id})
         self.engine = engine
-        self.pinecone = pinecone_agent or PineconeSovereignAgent(Path("."))
+        self.pinecone = SovereignPineconeStoreAgent or PineconeSovereignAgent(Path("."))
         self.index_name = "canon-semantic-v1"
         self.namespace = "canon-files"
         try:

@@ -177,15 +177,15 @@ class FileClassificationAgent(*BASE_CLASSES):
             "MIXIN": ["utils", "shared", "mixins"],
         }
 
-        # STANDARD KERNEL: All layers should have these subfolders
-        self.standard_kernel = ["utils", "config", "agents"]
+        # STANDARD KERNEL: All layers should have these subfolders (LCD+ canonical skeleton)
+        self.standard_kernel = ["config", "types", "reasoning", "enforcement", "validators", "utils"]
 
     def enforce_kernel_structure(self, file_path: Path, layer_root: Path | None = None) -> Path | None:
         """
         Enforce Standard Kernel structure by detecting and relocating misplaced files.
 
-        Standard Kernel subfolders (utils, config, agents) should exist in all layers.
-        Files matching kernel patterns are routed to their appropriate subfolder.
+        LCD+ canonical skeleton (config, types, reasoning, enforcement, validators, utils)
+        should exist in all layers. Files matching kernel patterns are routed accordingly.
 
         GLOBAL OVERRIDES (apply regardless of current location):
         - *_validator.py -> agentic_core/L5_safety/validators/ (all validators go to L5)
@@ -193,8 +193,9 @@ class FileClassificationAgent(*BASE_CLASSES):
         KERNEL ROUTING (within layer):
         - *_util.py -> layer_root/utils/
         - *_config.py -> layer_root/config/
+        - *_types.py -> layer_root/types/
         - *_script.py (L0 only) -> layer_root/scripts/
-        - *Agent.py (at layer root) -> layer_root/agents/
+        - *Agent.py (at layer root) -> layer_root/reasoning/
 
         Args:
             file_path: The file to check
@@ -254,9 +255,9 @@ class FileClassificationAgent(*BASE_CLASSES):
                 # Utilities in scripts should go to utils
                 if filename.endswith("_util.py"):
                     return layer_root / "utils" / filename
-                # Agents in scripts should go to agents
+                # Agents in scripts should go to reasoning
                 if filename.endswith("Agent.py"):
-                    return layer_root / "agents" / filename
+                    return layer_root / "reasoning" / filename
                 # Scripts stay in scripts (if properly named)
                 if filename.endswith("_script.py"):
                     return None  # Already correct
@@ -275,13 +276,21 @@ class FileClassificationAgent(*BASE_CLASSES):
         if filename.endswith("_config.py") and filename != "structure_blueprint_config.py":
             return layer_root / "config" / filename
 
+        # Types -> types/
+        if filename.endswith("_types.py") or filename.endswith("_protocol.py"):
+            return layer_root / "types" / filename
+
         # Scripts (L0 only) -> scripts/
         if filename.endswith("_script.py") and "L0_maintenance" in str(layer_root):
             return layer_root / "scripts" / filename
 
-        # Agents -> agents/
+        # Validators -> validators/
+        if filename.endswith("_validator.py"):
+            return layer_root / "validators" / filename
+
+        # Agents -> reasoning/
         if filename.endswith("Agent.py"):
-            return layer_root / "agents" / filename
+            return layer_root / "reasoning" / filename
 
         return None
 
@@ -328,8 +337,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 purity_violation = self.check_layer_purity(path, file_content, ftype)
                 if purity_violation:
                     self.logger.warning(
-                        f"[{purity_violation['type']}] {path.name}: "
-                        f"{purity_violation['message']}"
+                        f"[{purity_violation['type']}] {path.name}: {purity_violation['message']}"
                     )
                     # Force reclassification for passive agents
                     if purity_violation["type"] == "PASSIVE_AGENT_NAMING":
@@ -337,35 +345,25 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                 fake_config = self.check_fake_config(path, file_content)
                 if fake_config:
-                    self.logger.warning(
-                        f"[{fake_config['type']}] {path.name}: "
-                        f"{fake_config['message']}"
-                    )
+                    self.logger.warning(f"[{fake_config['type']}] {path.name}: {fake_config['message']}")
             except Exception:
                 pass  # File read failure — skip purity/config check
 
             # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
             ba_violation = self.check_base_agents_purity(path)
             if ba_violation:
-                self.logger.warning(
-                    f"[{ba_violation['type']}] {path.name}: "
-                    f"{ba_violation['message']}"
-                )
+                self.logger.warning(f"[{ba_violation['type']}] {path.name}: {ba_violation['message']}")
 
             # [UTILS PURITY] Ban tests, utilities_ prefix, misplaced scripts in core
             utils_violation = self.check_utils_purity(path, content)
             if utils_violation:
-                self.logger.warning(
-                    f"[{utils_violation['type']}] {path.name}: "
-                    f"{utils_violation['message']}"
-                )
+                self.logger.warning(f"[{utils_violation['type']}] {path.name}: {utils_violation['message']}")
 
             # [DOMAIN ROOT PURITY] Leaf Node Rule + PascalCase in knowledge/
             domain_violation = self.check_domain_root_purity(path)
             if domain_violation:
                 self.logger.warning(
-                    f"[{domain_violation['type']}] {path.name}: "
-                    f"{domain_violation['message']}"
+                    f"[{domain_violation['type']}] {path.name}: {domain_violation['message']}"
                 )
 
             # [NEW] Territory Enforcement (Move before Rename)
@@ -2221,7 +2219,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # Rule 3: Scripts in utils/ should be in L0_maintenance/scripts
         if "utils" in parts and content:
-            if 'if __name__ ==' in content or "if __name__==" in content:
+            if "if __name__ ==" in content or "if __name__==" in content:
                 return {
                     "type": "MISPLACED_SCRIPT",
                     "message": f"'{name}' in utils/ contains __main__ guard. Move to L0_maintenance/scripts/.",
@@ -2263,7 +2261,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         f"Cognitive signals {found_cognitive} detected in L0 file {path.name}. "
                         f"L0 must be reflexive/deterministic only."
                     ),
-                    "suggested_destination": "agentic_core/L6_observability/agents/",
+                    "suggested_destination": "agentic_core/L6_observability/reasoning/",
                 }
             if found_orchestration:
                 return {
@@ -2272,7 +2270,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         f"Orchestration signals {found_orchestration} detected in L0 file {path.name}. "
                         f"Strategy/orchestration belongs in L3_orchestration."
                     ),
-                    "suggested_destination": "agentic_core/L3_orchestration/engine/",
+                    "suggested_destination": "agentic_core/L3_orchestration/reasoning/",
                 }
 
         # --- Rule 2: Passive Agent Detection ---
@@ -2357,45 +2355,19 @@ class FileClassificationAgent(*BASE_CLASSES):
         # In Core, Agents follow the Domain (Guardrails, Registry, etc.)
         # We explicitly whitelist valid functional domains for each type.
         core_rules = {
-            "AGENT": {
-                "engines",
-                "core",
-                "agents",  # Standard
-                "guardrails",  # L5 Safety
-                "tool_registry",  # L2 Execution
-                "thought_engine",  # L1 Cognition
-                "workflow_engines",  # L3 Orchestration
-                "validation_context",  # L4 State
-                "red_teaming",  # L5 Safety
-                "observability",  # L6 Observability
-                "mcp",  # L2/L3 MCP Agents
-                "fission_logic",  # L3
-                "scripts",  # L0 Maintenance (Allow agents in scripts if they are autonomous)
-            },
-            "VALIDATOR": {
-                "validators",
-                "safety",
-                "guards",
-                "validation",
-                "guardrails",
-                "validation_context",
-                "gravity",
-                "red_teaming",
-                "core",  # Allow validators in core/
-            },
-            "CONFIG": {
-                "config",  # Root config folder
-                "core",  # config/core/ for foundational settings
-                "manifests",  # config/manifests/ for system metadata
-                "engines",  # config/engines/ for layer-specific parameters
-                "core",  # DISSOLVED: was blueprint_sovereign
-            },
-            "PROTOCOL": {"interfaces", "protocols", "mcp"},  # MCP has protocols
-            "TYPES": {"models", "domain", "types"},  # schemas DISSOLVED
-            "MIXIN": {"mixins"},  # Strict: mixins ONLY in mixins/ folder (migrated from base_agents)
-            "CLASS": {"base_agents", "core", "shared_runtime"},  # Base classes allowed here
-            "SCRIPT": {"scripts", "L0_maintenance"},  # Scripts only in scripts/ or L0_maintenance/
-            "UTILITY": {"utils", "scripts", "L0_maintenance"},  # Utilities in utils/ or L0_maintenance/
+            "AGENT": {"reasoning", "enforcement"},
+            "ORCHESTRATOR": {"reasoning"},
+            "STRATEGY": {"reasoning"},
+            "ADAPTER": {"reasoning"},
+            "VALIDATOR": {"validators"},
+            "CONFIG": {"config"},
+            "PROTOCOL": {"types"},
+            "TYPES": {"types"},
+            "MIXIN": {"utils", "mixins"},
+            "CLASS": {"base_agents", "reasoning"},
+            "SCRIPT": {"scripts"},
+            "UTILITY": {"utils"},
+            "EXCEPTION": {"types"},
         }
 
         # 3. EXECUTE VALIDATION
@@ -2508,19 +2480,21 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                     if current_parent in junk_drawers:
                         # Move to the primary home for that type
-                        # Map Type -> Primary Core Home
+                        # Map Type -> Primary Core Home (LCD+ targets)
                         core_defaults = {
-                            "AGENT": "base_agents",
+                            "AGENT": "reasoning",
                             "VALIDATOR": "validators",
                             "CONFIG": "config",
-                            "PROTOCOL": "interfaces",
-                            "TYPES": "runtime/types",
-                            "MIXIN": "mixins",
-                            "CLASS": "base_agents",  # Classes evacuate to base_agents
-                            "SCRIPT": "L0_maintenance/scripts",  # Scripts evacuate to L0
-                            "UTILITY": "L0_maintenance/scripts",  # Utilities evacuate to L0
-                            "STRATEGY": "L3_orchestration/utils",
-                            "ADAPTER": "L2_execution/mcp",
+                            "PROTOCOL": "types",
+                            "TYPES": "types",
+                            "MIXIN": "utils",
+                            "CLASS": "reasoning",
+                            "SCRIPT": "L0_maintenance/scripts",
+                            "UTILITY": "utils",
+                            "STRATEGY": "reasoning",
+                            "ADAPTER": "reasoning",
+                            "ORCHESTRATOR": "reasoning",
+                            "EXCEPTION": "types",
                         }
                         target_folder = core_defaults.get(file_type)
 
@@ -2528,17 +2502,17 @@ class FileClassificationAgent(*BASE_CLASSES):
                     if "patterns" in path.parts and target_folder is None:
                         # Default evacuation for any file type in patterns/
                         type_to_folder = {
-                            "MIXIN": "base_agents",
-                            "CLASS": "base_agents",
+                            "MIXIN": "utils",
+                            "CLASS": "reasoning",
                             "CONFIG": "config",
                             "SCRIPT": "L0_maintenance/scripts",
-                            "UTILITY": "L0_maintenance/scripts",
-                            "TYPES": "runtime/types",
+                            "UTILITY": "utils",
+                            "TYPES": "types",
                         }
-                        target_folder = type_to_folder.get(file_type, "base_agents")
+                        target_folder = type_to_folder.get(file_type, "reasoning")
 
-        # GUARDRAILS IMMUNITY
-        if "guardrails" in path.parts and file_type == "AGENT":
+        # ENFORCEMENT IMMUNITY (LCD+ — was guardrails)
+        if "enforcement" in path.parts and file_type == "AGENT":
             return None
 
         # 4. SPECIAL HANDLING: TESTS
@@ -2717,17 +2691,14 @@ class FileClassificationAgent(*BASE_CLASSES):
             new_name = f"{snake}_strategy.py"
             return new_name if new_name != path.name else None
 
-        # CONSOLIDATED GUARDRAILS NAMING CONVENTION ENFORCEMENT
+        # GUARDRAILS AGENTS: PascalCase with Agent suffix (CORRECTED 2026-02-07)
+        # Guardrails agents follow standard agent naming: PascalCaseAgent.py
         if file_type == "AGENT" and "guardrails" in path.parts:
-            if path.name.endswith("_agent.py"):
+            # Already compliant if ends with Agent.py and is PascalCase
+            if path.name.endswith("Agent.py") and path.name[0].isupper():
                 return None
-            base_name = target_name.removesuffix("Agent").removesuffix("Strategy").removesuffix("Handler")
-            new_name = f"{self._to_smart_snake_case(base_name)}_agent.py"
-            if new_name != path.name:
-                self.processed_paths.add(path)
-                self.processed_paths.add(path.with_name(new_name))
-                return new_name
-            return None
+            # Otherwise, let the AST fallback handle PascalCase enforcement
+            pass
 
         # TEST: Force test_ prefix + snake_case
         if file_type == "TEST":

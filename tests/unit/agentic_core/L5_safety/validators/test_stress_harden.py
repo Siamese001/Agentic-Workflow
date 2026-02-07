@@ -22,7 +22,7 @@ class TestStressHarden:
     # --- 3. The "Depth-5" Sprawl ---
     def test_l4_specialization_enforces_hard_cutoff(self):
         """100% PASS: tool_registry allows depth 4, but depth 5 must be blocked."""
-        path = "agentic_core/L2_execution/engine/core/extra/file.py"
+        path = "agentic_core/L2_execution/reasoning/core/extra/file.py"
         assert is_path_allowed(path) is False
 
     # --- 4. The "L3 Phishing" Attack ---

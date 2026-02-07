@@ -22,7 +22,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-PROTECTED_FILES = ["agentic_core/L5_safety/core/ArchivalGatekeeper.py"]
+PROTECTED_FILES = ["agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py"]
 OVERRIDE_TOKEN = "[SECURITY-OVERRIDE]"
 BYPASS_ENV_VAR = "GATEKEEPER_BYPASS"
 

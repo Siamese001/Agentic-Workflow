@@ -26,7 +26,7 @@ class TestCasingMigration:
             # Setup Import Consumer
             consumer = root / "main.py"
             consumer.write_text(
-                "from agentic_core.L2_execution.engine import tool\n"
+                "from agentic_core.L2_execution.reasoning import tool\n"
                 "from agentic_core.L4_state.memory import context"
             )
 

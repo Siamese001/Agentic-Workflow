@@ -32,7 +32,7 @@ class TestTrackObservabilityCostAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L6_observability.agents.TrackObservabilityCostAgent import (
+            from agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent import (
                 TrackObservabilityCostAgent,
             )
 
@@ -87,7 +87,7 @@ class TestTrackObservabilityCostAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.agents.TrackObservabilityCostAgent import (
+                from agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent import (
                     TrackObservabilityCostAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

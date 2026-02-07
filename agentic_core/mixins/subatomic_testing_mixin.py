@@ -8,14 +8,14 @@ SubatomicTestingMixin - Phase 1 Canonical Self-Testing for L2 Agents
 Provides automatic self-testing capabilities for all L2 execution-layer agents.
 This mixin enforces the sovereign requirement that L2-L4 agents must be "Self" testing.
 
-Location: agentic_core/L2_execution/engine/subatomic_testing_mixin.py
+Location: agentic_core/L2_execution/reasoning/subatomic_testing_mixin.py
 Purpose: Shared testing infrastructure for SubAtomicAgent-derived classes
 """
 import logging
 
 # GRAVITY FIXED: Use correct L2 location for MCPHardenedMixin
 try:
-    _mod = importlib.import_module("agentic_core.L2_execution.mcp.MCPHardenedMixin")
+    _mod = importlib.import_module("agentic_core.L2_execution.enforcement.MCPHardenedMixin")
     MCPHardenedMixin = _mod.MCPHardenedMixin
 except (ImportError, AttributeError):
     # Fallback: create stub if module not available during healing
@@ -25,7 +25,7 @@ except (ImportError, AttributeError):
         pass
 
 
-from agentic_core.runtime.types.anomaly_report_config import AnomalyReport, AnomalySeverity
+from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
 
 # Import instructional injection patterns for all agents
 try:

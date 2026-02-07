@@ -322,8 +322,8 @@ def analyze_supplementation():
     if "git_operations" in unique_to_dead or "git_integration" in unique_to_dead:
         recommendations.append(
             "→ Merge GitAgent methods into ToolsmithAgent or new L2 GitToolAgent\n"
-            "  Source: agentic_core/L2_execution/engine/GitAgent.py\n"
-            "  Target: agentic_core/L2_execution/engine/ToolsmithAgent.py (add git_* methods)",
+            "  Source: agentic_core/L2_execution/reasoning/GitAgent.py\n"
+            "  Target: agentic_core/L2_execution/reasoning/ToolsmithAgent.py (add git_* methods)",
         )
 
     if "dead_code_analysis" in unique_to_dead:
@@ -336,7 +336,7 @@ def analyze_supplementation():
     if "mapping" in unique_to_dead or "territory" in unique_to_dead:
         recommendations.append(
             "→ Integrate SemanticTerritoryMapperAgent patterns\n"
-            "  Source: agentic_core/L3_orchestration/engine/SemanticTerritoryMapperAgent.py\n"
+            "  Source: agentic_core/L3_orchestration/reasoning/SemanticTerritoryMapperAgent.py\n"
             "  Target: HierarchyAgent or LocationAgent (L5) for semantic structural awareness",
         )
 

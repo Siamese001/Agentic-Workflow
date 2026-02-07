@@ -14,9 +14,9 @@ LEGACY_FILES = [
     "OutreachTestPilotAgent.py",  # Missing OutreachAgent module
     "OutreachCapabilityMonitorAgent.py",  # Missing context module
     "control_plane.py",  # Missing BiasAuditorAgent
-    "architecture_visualizer_agent.py",  # BaseModel not converted
+    "ArchitectureVisualizerAgent.py",  # BaseModel not converted
     "cultural_decoder_agent.py",  # BaseModel not converted
-    "pre_mortem_agent.py",  # BaseModel not converted
+    "PreMortemAgent.py",  # BaseModel not converted
     "knowledge_graph_agent.py",  # Syntax error with braces
     "check_schema_policy.py",  # Missing field import
     "message_body_composer.py",  # Missing ValidationResult

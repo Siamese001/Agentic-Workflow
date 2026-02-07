@@ -189,7 +189,7 @@ def apply_refactors():
 
     # 2. Structured Engine
     # Note: Phase 7 archived the L1 stub, so we target the L2 implementation or recreate it
-    se_path = PROJECT_ROOT / "agentic_core/L2_execution/engine/structured_engine.py"
+    se_path = PROJECT_ROOT / "agentic_core/L2_execution/reasoning/structured_engine.py"
     # Ensure dir exists
     se_path.parent.mkdir(parents=True, exist_ok=True)
 

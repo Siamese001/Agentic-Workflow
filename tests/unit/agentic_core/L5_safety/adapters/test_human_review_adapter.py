@@ -5,7 +5,7 @@ from agentic_core.utils.review_protocol import (
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.L5_safety.adapters.human_review_adapter import HumanReviewAdapter
+from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter
 from agentic_core.utils.feature_flags import FeatureFlagManager
 
 

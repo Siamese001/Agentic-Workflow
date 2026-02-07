@@ -7,7 +7,7 @@ surgical operations before they corrupt the codebase.
 
 import pytest
 
-from agentic_core.L5_safety.security.verification_gate import VerificationGate
+from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 from agentic_core.L5_safety.validators.core.surgical_context import (
     ASTCoordinate,
     SurgicalContext,

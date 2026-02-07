@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.core.archival_gatekeeper import (
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import (
     ArchivalGatekeeper,
     ArchivalOperation,
     ArchivalResult,

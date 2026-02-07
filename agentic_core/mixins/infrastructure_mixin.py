@@ -32,8 +32,16 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.mixins.context_management_mixin import ContextManagementMixin
+from agentic_core.mixins.cost_guardrail_mixin import CostGuardrailMixin
+from agentic_core.mixins.healer_mixin import HealerMixin
+from agentic_core.mixins.hitl_mixin import HITLMixin
 from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.mixins.performance_mixin import PerformanceMixin
+from agentic_core.mixins.pinecone_vector_mixin import PineconeVectorMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
+from agentic_core.mixins.tracing_mixin import TracingMixin
 
 Logger = logging.getLogger(__name__)
 

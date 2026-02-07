@@ -664,7 +664,7 @@ def main():
                     import importlib.util
 
                     spec = importlib.util.find_spec(
-                        "agentic_core.L6_observability.agents.PerformanceAnalystAgentSimple",
+                        "agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple",
                     )
                     if spec:
                         perf_module = importlib.util.module_from_spec(spec)

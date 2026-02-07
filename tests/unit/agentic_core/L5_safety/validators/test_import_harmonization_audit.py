@@ -13,7 +13,7 @@ import pytest
 # --- Audit configuration ---
 CORE_AGENTS_TO_VERIFY = [
     # (Module Path, Class Name)
-    ("agentic_core.L1_cognition.agents.MetaLearningAgent", "MetaLearningAgent"),
+    ("agentic_core.L1_cognition.reasoning.MetaLearningAgent", "MetaLearningAgent"),
     ("agentic_core.L5_safety.validators.HygieneGuardianAgent", "HygieneGuardianAgent"),
     ("agentic_core.L5_safety.validators.LocationAgent", "LocationAgent"),
     ("agentic_core.utils.sovereign_index", "SovereignIndex"),

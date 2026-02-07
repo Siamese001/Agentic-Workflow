@@ -63,16 +63,16 @@ class TestMetaLearningPatternRecall:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_pattern_recall_above_threshold(self, mock_redis=None, mock_pinecone=None):
         """Test successful pattern recall when similarity exceeds threshold."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mocks
-        mock_pinecone_agent = MagicMock()
-        mock_pinecone_agent.status = "ONLINE"
-        mock_pinecone_agent.pc = MagicMock()
-        mock_pinecone_agent.index = MagicMock()
-        mock_pinecone.return_value = mock_pinecone_agent
+        mock_SovereignPineconeStoreAgent = MagicMock()
+        mock_SovereignPineconeStoreAgent.status = "ONLINE"
+        mock_SovereignPineconeStoreAgent.pc = MagicMock()
+        mock_SovereignPineconeStoreAgent.index = MagicMock()
+        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
 
         # Mock Pinecone query response with high similarity
         mock_match = MagicMock()
@@ -80,13 +80,13 @@ class TestMetaLearningPatternRecall:
         mock_match.metadata = TEST_PATTERN
         mock_match.values = [0.1, 0.2, 0.3]  # Mock embedding
 
-        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
+        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
 
         # Mock Redis
-        mock_redis_agent = MagicMock()
+        mock_RedisSovereignAgent = MagicMock()
         mock_redis_client = MagicMock()
-        mock_redis_agent.get_client.return_value = mock_redis_client
-        mock_redis.return_value = mock_redis_agent
+        mock_RedisSovereignAgent.get_client.return_value = mock_redis_client
+        mock_redis.return_value = mock_RedisSovereignAgent
 
         # Test pattern recall
         client = MetaLearningClient()
@@ -99,31 +99,31 @@ class TestMetaLearningPatternRecall:
         assert patterns[0].similarity_score == 0.92
 
         # Verify Pinecone was called with correct namespace
-        mock_pinecone_agent.index.query.assert_called_once()
-        call_args = mock_pinecone_agent.index.query.call_args
+        mock_SovereignPineconeStoreAgent.index.query.assert_called_once()
+        call_args = mock_SovereignPineconeStoreAgent.index.query.call_args
         assert call_args[1]["namespace"] == "healing_patterns_agentic_core"
         assert call_args[1]["top_k"] == 3
 
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_pattern_recall_below_threshold(self, mock_pinecone=None):
         """Test pattern rejection when similarity below threshold."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mock with low similarity
-        mock_pinecone_agent = MagicMock()
-        mock_pinecone_agent.status = "ONLINE"
-        mock_pinecone_agent.pc = MagicMock()
-        mock_pinecone_agent.index = MagicMock()
-        mock_pinecone.return_value = mock_pinecone_agent
+        mock_SovereignPineconeStoreAgent = MagicMock()
+        mock_SovereignPineconeStoreAgent.status = "ONLINE"
+        mock_SovereignPineconeStoreAgent.pc = MagicMock()
+        mock_SovereignPineconeStoreAgent.index = MagicMock()
+        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
 
         # Mock Pinecone query response with low similarity
         mock_match = MagicMock()
         mock_match.score = 0.78  # Below 0.85 threshold
         mock_match.metadata = TEST_PATTERN
 
-        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
+        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
 
         # Test pattern recall
         client = MetaLearningClient()
@@ -133,28 +133,28 @@ class TestMetaLearningPatternRecall:
         assert len(patterns) == 0
 
         # Verify query was still made
-        mock_pinecone_agent.index.query.assert_called_once()
+        mock_SovereignPineconeStoreAgent.index.query.assert_called_once()
 
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_domain_specific_thresholds(self, mock_pinecone=None):
         """Test domain-specific similarity thresholds."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mock
-        mock_pinecone_agent = MagicMock()
-        mock_pinecone_agent.status = "ONLINE"
-        mock_pinecone_agent.pc = MagicMock()
-        mock_pinecone_agent.index = MagicMock()
-        mock_pinecone.return_value = mock_pinecone_agent
+        mock_SovereignPineconeStoreAgent = MagicMock()
+        mock_SovereignPineconeStoreAgent.status = "ONLINE"
+        mock_SovereignPineconeStoreAgent.pc = MagicMock()
+        mock_SovereignPineconeStoreAgent.index = MagicMock()
+        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
 
         # Mock pattern with similarity between thresholds
         mock_match = MagicMock()
         mock_match.score = 0.88  # Above agentic_core (0.85) but below apps_lic (0.92)
         mock_match.metadata = {**TEST_PATTERN, "domain": "apps_lic"}
 
-        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
+        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
 
         client = MetaLearningClient()
 
@@ -173,15 +173,15 @@ class TestRedisCachingWithGuardrails:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_cache_set_with_ttl(self, mock_redis=None):
         """Test cache setting with TTL and domain isolation."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mock Redis
-        mock_redis_agent = MagicMock()
+        mock_RedisSovereignAgent = MagicMock()
         mock_redis_client = MagicMock()
-        mock_redis_agent.get_client.return_value = mock_redis_client
-        mock_redis.return_value = mock_redis_agent
+        mock_RedisSovereignAgent.get_client.return_value = mock_redis_client
+        mock_redis.return_value = mock_RedisSovereignAgent
 
         client = MetaLearningClient()
 
@@ -205,15 +205,15 @@ class TestRedisCachingWithGuardrails:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_cache_get_hit_miss(self, mock_redis=None):
         """Test cache hit and miss scenarios."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mock Redis
-        mock_redis_agent = MagicMock()
+        mock_RedisSovereignAgent = MagicMock()
         mock_redis_client = MagicMock()
-        mock_redis_agent.get_client.return_value = mock_redis_client
-        mock_redis.return_value = mock_redis_agent
+        mock_RedisSovereignAgent.get_client.return_value = mock_redis_client
+        mock_redis.return_value = mock_RedisSovereignAgent
 
         client = MetaLearningClient()
 
@@ -233,7 +233,7 @@ class TestRedisCachingWithGuardrails:
 
     def test_input_validation_guardrails(self):
         """Test cache poisoning protection via input validation."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -264,7 +264,7 @@ class TestHealingDepthTracking:
 
     def test_healing_depth_increment_and_reset(self):
         """Test depth counter increment and reset functionality."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -299,7 +299,7 @@ class TestHealingDepthTracking:
 
     def test_max_depth_enforcement(self):
         """Test enforcement of maximum healing depth (5)."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -325,7 +325,9 @@ class TestEnhancedSovereignBaseAgent:
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Mock the integrity check to prevent shutdown
-        with patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"):
+        with patch(
+            "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        ):
             # Create test agent
             agent = SovereignBaseAgent(project_root=Path.cwd())
 
@@ -347,7 +349,9 @@ class TestEnhancedSovereignBaseAgent:
             assert result["source"] == "meta_learning_cache"
             agent.ml_enhanced_heal.assert_called_once()
 
-    @patch("agentic_core.L0_maintenance.integrity.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity")
+    @patch(
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+    )
     def test_fallback_to_default_heal(self, mock_integrity):
         """Test fallback to default heal when meta-learning unavailable."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -404,24 +408,24 @@ class TestIntegrationScenarios:
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by E2E tests")
     def test_full_healing_cycle_with_memory(self, mock_redis=None, mock_pinecone=None):
         """Test complete healing cycle: violation -> pattern recall -> healing -> storage."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
         # Setup mocks
-        mock_pinecone_agent = MagicMock()
-        mock_pinecone_agent.status = "ONLINE"
-        mock_pinecone_agent.pc = MagicMock()
-        mock_pinecone_agent.index = MagicMock()
-        mock_pinecone.return_value = mock_pinecone_agent
+        mock_SovereignPineconeStoreAgent = MagicMock()
+        mock_SovereignPineconeStoreAgent.status = "ONLINE"
+        mock_SovereignPineconeStoreAgent.pc = MagicMock()
+        mock_SovereignPineconeStoreAgent.index = MagicMock()
+        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
 
-        mock_redis_agent = MagicMock()
+        mock_RedisSovereignAgent = MagicMock()
         mock_redis_client = MagicMock()
-        mock_redis_agent.get_client.return_value = mock_redis_client
-        mock_redis.return_value = mock_redis_agent
+        mock_RedisSovereignAgent.get_client.return_value = mock_redis_client
+        mock_redis.return_value = mock_RedisSovereignAgent
 
         # Mock no existing patterns (first time healing)
-        mock_pinecone_agent.index.query.return_value.matches = []
+        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = []
         mock_redis_client.get.return_value = None
 
         client = MetaLearningClient()
@@ -454,7 +458,7 @@ class TestIntegrationScenarios:
             "healing_strategy": healing_result,
             "domain": "agentic_core",
         }
-        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
+        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
 
         # Step 6: Retrieve pattern for similar violation
         patterns = client.retrieve_healing_patterns(TEST_VIOLATION)
@@ -468,7 +472,7 @@ class TestPerformanceAndLoad:
 
     def test_cache_performance_under_load(self):
         """Test cache performance with high-volume operations."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -498,7 +502,7 @@ class TestPerformanceAndLoad:
 
     def test_memory_usage_bounds(self):
         """Test memory usage stays within reasonable bounds."""
-        from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
 
@@ -535,10 +539,12 @@ class TestTop12AgentsIntegration:
         mock_client.reset_healing_depth.return_value = None
         return mock_client
 
-    def test_gravity_leak_repair_agent_caching(self, mock_ml_infrastructure):
+    def test_GravityLeakRepairAgent_caching(self, mock_ml_infrastructure):
         """Test GravityLeakRepairAgent AST analysis caching."""
-        with patch("agentic_core.L5_safety.gravity.gravity_leak_repair_agent.SovereignBaseAgent.__post_init__"):
-            agent = agentic_core.L5_safety.gravity.gravity_leak_repair_agent()
+        with patch(
+            "agentic_core.L5_safety.enforcement.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
+        ):
+            agent = agentic_core.L5_safety.enforcement.GravityLeakRepairAgent()
 
             # Inject mock ML client
             agent.ml_cache_get = mock_ml_infrastructure.cache_get
@@ -559,7 +565,7 @@ class TestTop12AgentsIntegration:
             mock_ml_infrastructure.cache_set.assert_called_once()
             assert fix.fix_type == "RELOCATE"
 
-    def test_ats_compatibility_agent_performance(self, mock_ml_infrastructure):
+    def test_ATSCompatibilityAgent_performance(self, mock_ml_infrastructure):
         """Test ATSCompatibilityAgent validation caching."""
         with patch("apps_rg.engines.ATSCompatibilityAgent.RGAgentBase.__post_init__"):
             agent = apps_rg.engines.ATSCompatibilityAgent()

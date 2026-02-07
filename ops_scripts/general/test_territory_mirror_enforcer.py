@@ -4,7 +4,7 @@ Test Territory Mirror Enforcer
 Enforces strict "Mirror-Image" folder sovereignty between source code and test suite.
 Every test file must reside in a directory that exactly parallels its source component.
 
-Example: apps_lic/engines/PIISanitizerAgent.py → tests/unit/apps_lic/engines/test_pii_sanitizer_agent.py
+Example: apps_lic/engines/PIISanitizerAgent.py → tests/unit/apps_lic/engines/test_PIISanitizerAgent.py
 """
 
 import ast
@@ -166,7 +166,7 @@ def get_source_for_test(test_path: Path, project_root: Path) -> tuple[Path | Non
     territory = parts[0] if parts else None
 
     # Convert test filename to source filename
-    # test_pii_sanitizer_agent.py -> PIISanitizerAgent.py (approximate)
+    # test_PIISanitizerAgent.py -> PIISanitizerAgent.py (approximate)
     test_stem = test_path.stem
     if test_stem.startswith("test_"):
         source_stem = test_stem[5:]  # Remove test_ prefix

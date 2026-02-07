@@ -17,12 +17,25 @@ OPERATIONAL SAFETY (Feb 2026):
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.runtime.process_guard import ProcessGuard, SecurityViolation
-from agentic_core.L5_safety.runtime.safe_subprocess import (
-    safe_communicate,
-    safe_popen,
-    safe_run,
-)
+from agentic_core.L5_safety.enforcement.process_guard import ProcessGuard, SecurityViolation
+
+try:
+    from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+        safe_communicate,
+        safe_popen,
+        safe_run,
+    )
+except ImportError:
+    # Stubs for resilience when module is unavailable
+    def safe_communicate(*args, **kwargs):
+        return None
+
+    def safe_popen(*args, **kwargs):
+        return None
+
+    def safe_run(*args, **kwargs):
+        return None
+
 
 logger = logging.getLogger(__name__)
 

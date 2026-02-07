@@ -31,6 +31,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
+from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
+from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 
 # [PHASE 9] Global Architecture Injection
 from agentic_core.mixins.configuration_mixin import ConfigMixin
@@ -39,14 +43,15 @@ from agentic_core.mixins.configuration_mixin import ConfigMixin
 from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
 from agentic_core.mixins.embedding_mixin import EmbeddingMixin
 from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
-from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
+from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
 from agentic_core.L5_safety.validators.core.healing_strategy_mixin import HealingStrategyMixin
 from agentic_core.L5_safety.validators.core.validator_mixin import ValidatorMixin
-from agentic_core.utils.core_integrity_verifier_validator import (
+from agentic_core.L0_maintenance.enforcement.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
-from agentic_core.utils.HealerError import ConfigurationError, SovereignError
+from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+from agentic_core.runtime.exceptions.sovereign_errors import SovereignError
 
 logger = logging.getLogger(__name__)
 

@@ -14,7 +14,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L3_orchestration.engine.unified_agent import (
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
     LocationHealingStrategy,
 )
@@ -209,7 +209,7 @@ class TestLegacyCompatibility:
 
     def test_unified_strategy_import(self):
         """Test LocationHealingStrategy can be imported."""
-        from agentic_core.L3_orchestration.engine.unified_agent import LocationHealingStrategy
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
 
         assert LocationHealingStrategy is not None
 
@@ -217,15 +217,15 @@ class TestLegacyCompatibility:
 class TestStrategyIntegration:
     """Tests for strategy integration."""
 
-    def test_strategy_in_unified_agent_exports(self):
+    def test_strategy_in_UnifiedAgent_exports(self):
         """Test LocationHealingStrategy is in UnifiedAgent exports."""
-        from agentic_core.L3_orchestration.engine.unified_agent import __all__
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
 
         assert "LocationHealingStrategy" in __all__
 
     def test_strategy_inherits_from_healing_strategy(self):
         """Test LocationHealingStrategy inherits from HealingStrategy."""
-        from agentic_core.L3_orchestration.engine.unified_agent import (
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
             HealingStrategy,
             LocationHealingStrategy,
         )

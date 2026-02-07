@@ -134,7 +134,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     else:
         report.status = GuardianStatus.BLOCK.value
 
-    # Write JSON report to agentic_core/L0_maintenance/logs/guardian_report.json
+    # Write JSON report to agentic_core/L0_maintenance/utils/guardian_report.json
     json_report_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "guardian_report.json"
     json_report_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -223,11 +223,11 @@ def guardian_performance_baseline():
 def critical_files():
     """List of critical files that must exist."""
     return [
-        "agentic_core/L3_orchestration/engine/SovereignMcpRouterAgent.py",
-        "agentic_core/L5_safety/security/mcp_sovereign_authority.py",
-        "agentic_core/L2_execution/mcp/SovereignPineconeMcpClientAgent.py",
-        "agentic_core/L2_execution/mcp/SovereignMCPGatewayAgent.py",
-        "agentic_core/L2_execution/engine/WebSearchTools.py",
+        "agentic_core/L3_orchestration/reasoning/SovereignMcpRouterAgent.py",
+        "agentic_core/L5_safety/enforcement/mcp_sovereign_authority.py",
+        "agentic_core/L2_execution/enforcement/SovereignPineconeMcpClientAgent.py",
+        "agentic_core/L2_execution/enforcement/SovereignMCPGatewayAgent.py",
+        "agentic_core/L2_execution/reasoning/WebSearchTools.py",
         "agentic_core/base_agents/SovereignBaseAgent.py",
     ]
 

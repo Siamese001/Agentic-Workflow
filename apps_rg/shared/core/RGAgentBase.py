@@ -29,13 +29,13 @@ from typing import Any, Final
 from apps_shared.agents.AppBase import AppBase
 
 # PHASE 1.1: Guardrails Integration
-from agentic_core.L1_cognition.meta_learning.guardrails import (
+from agentic_core.L1_cognition.reasoning.guardrails import (
     MetaLearningGuardrails,
     get_guardrails,
 )
 
 # PHASE 2.1: MetaLearningClient Integration
-from agentic_core.L1_cognition.meta_learning.meta_learning_client_types import (
+from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
     HealingPattern,
     MetaLearningClient,
     get_meta_learning_client,

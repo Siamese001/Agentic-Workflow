@@ -12,7 +12,7 @@ PAIRS = [
         "agentic_core/L5_safety/validators/dashboard_ssot_definitions.py",
     ),
     (
-        "agentic_core/L3_orchestration/engine/intervention_server.py",
+        "agentic_core/L3_orchestration/reasoning/intervention_server.py",
         "agentic_core/L5_safety/validators/intervention_server.py",
     ),
     (

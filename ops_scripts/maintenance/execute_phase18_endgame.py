@@ -240,7 +240,7 @@ def endgame():
         "agentic_core/L5_safety/validators/NeuralAutoImmuneAgent.py": NEURAL_CONTENT,
         "agentic_core/L0_maintenance/scripts/DependencyDiplomatAgent.py": DIPLOMAT_CONTENT,
         "agentic_core/L1_cognition/thought_engine/SemanticTerritoryMapperAgent.py": MAPPER_CONTENT,
-        "agentic_core/L2_execution/mcp/__init__.py": INIT_CONTENT,
+        "agentic_core/L2_execution/enforcement/__init__.py": INIT_CONTENT,
         "agentic_core/L0_maintenance/scripts/BootstrapAgent.py": BOOTSTRAP_CONTENT,
     }
 

@@ -9,8 +9,8 @@ by simulating scenarios where agents might hallucinate fixes.
 import tempfile
 from pathlib import Path
 
-from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
-from agentic_core.L5_safety.security.verification_gate import VerificationGate
+from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 from agentic_core.L5_safety.validators.surgical_context import (
     ASTCoordinate,
     SurgicalContext,

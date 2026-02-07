@@ -23,7 +23,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from agentic_core.L2_execution.engine.definitions import (
+from agentic_core.L2_execution.reasoning.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,
@@ -32,7 +32,7 @@ from agentic_core.L2_execution.engine.definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L2_execution.engine.execution import execute_command
+from agentic_core.L2_execution.reasoning.execution import execute_command
 from agentic_core.L5_safety.validators.filesystem import (
     create_directory,
     delete_file,
@@ -267,7 +267,7 @@ class MCPHardenedMixin:
 def perform_surgery():
     print("--- STARTING PHASE 16 DEEP CLEAN ---")
 
-    tr_path = PROJECT_ROOT / "agentic_core/L2_execution/engine/registry.py"
+    tr_path = PROJECT_ROOT / "agentic_core/L2_execution/reasoning/registry.py"
     if tr_path.exists():
         with open(tr_path, "w", encoding="utf-8") as f:
             f.write(TOOL_REGISTRY_CONTENT)

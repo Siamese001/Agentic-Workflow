@@ -158,7 +158,7 @@ class HealingStrategy:
         """Get or create the shared TwoPhaseDeduplicationAgent instance."""
         if self._dedup_agent is None:
             try:
-                from agentic_core.L5_safety.guardrails.TwoPhaseDeduplicationAgent import (
+                from agentic_core.L5_safety.enforcement.TwoPhaseDeduplicationAgent import (
                     TwoPhaseDeduplicationAgent,
                 )
 
@@ -180,7 +180,7 @@ class HealingStrategy:
         """
         try:
             if agent_name == "CodeValidatorAgent":
-                from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
+                from agentic_core.L5_safety.reasoning.code_validator_agent_types import (
                     CodeValidatorAgent,
                 )
 
@@ -194,7 +194,7 @@ class HealingStrategy:
                 return HygieneGuardianAgent(project_root=self.project_root)
 
             elif agent_name == "StructureEnforcerAgent":
-                from agentic_core.L5_safety.policy_engine.structure_enforcer_agent_types import (
+                from agentic_core.L5_safety.reasoning.structure_enforcer_agent_types import (
                     StructureEnforcerAgent,
                 )
 
@@ -211,14 +211,14 @@ class HealingStrategy:
                 return LocationAgent(project_root=self.project_root)
 
             elif agent_name == "CodeEnforcerAgent":
-                from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import (
+                from agentic_core.L5_safety.reasoning.code_enforcer_agent_types import (
                     CodeEnforcerAgent,
                 )
 
                 return CodeEnforcerAgent()
 
             elif agent_name == "StructuralHealerAgent":
-                from agentic_core.L5_safety.guardrails.StructuralHealerAgent import (
+                from agentic_core.L5_safety.enforcement.StructuralHealerAgent import (
                     StructuralHealerAgent,
                 )
 
@@ -227,7 +227,7 @@ class HealingStrategy:
             # Core Hygiene Agents
             elif agent_name == "ImportAgent":
                 # Phase 5 Migration: ImportAgent -> CodeHealerAgent
-                from agentic_core.L5_safety.policy_engine.code_healer_agent import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                     create_legacy_import_healer,
                 )
 
@@ -253,12 +253,12 @@ class HealingStrategy:
                 return FilesystemSSOTReconcilerAgent(project_root=self.project_root)
 
             elif agent_name == "GitHygieneAgent":
-                from agentic_core.L5_safety.guardrails.GitHygieneAgent import GitHygieneAgent
+                from agentic_core.L5_safety.enforcement.GitHygieneAgent import GitHygieneAgent
 
                 return GitHygieneAgent(project_root=self.project_root, ctx=None)
 
             elif agent_name == "FileCleanupAgent":
-                from agentic_core.L5_safety.guardrails.FileCleanupAgent import FileCleanupAgent
+                from agentic_core.L5_safety.enforcement.FileCleanupAgent import FileCleanupAgent
 
                 return FileCleanupAgent(project_root=self.project_root, ctx=None)
 

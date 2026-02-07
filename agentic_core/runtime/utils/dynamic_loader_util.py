@@ -27,15 +27,15 @@ class DynamicLoader:
     # Registry of protocol to implementation mappings
     IMPLEMENTATION_REGISTRY: dict[str, dict[str, str]] = {
         "verification": {
-            "module": "agentic_core.L5_safety.security.verification_gate",
+            "module": "agentic_core.L5_safety.enforcement.verification_gate",
             "class": "VerificationGate",
         },
         "detection": {
-            "module": "agentic_core.L0_maintenance.sensors.detection_signal",
+            "module": "agentic_core.L0_maintenance.enforcement.detection_signal",
             "class": "DetectionSignalEmitter",
         },
         "review": {
-            "module": "agentic_core.L5_safety.human_review.review_queue",
+            "module": "agentic_core.L5_safety.enforcement.review_queue",
             "class": "HumanReviewQueue",
         },
         "meta_learning": {
@@ -53,7 +53,7 @@ class DynamicLoader:
         """Load a class dynamically.
 
         Args:
-            module_path: Full module path (e.g., 'agentic_core.L5_safety.security.verification_gate')
+            module_path: Full module path (e.g., 'agentic_core.L5_safety.enforcement.verification_gate')
             class_name: Name of the class to load
 
         Returns:

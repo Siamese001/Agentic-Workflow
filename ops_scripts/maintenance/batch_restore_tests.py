@@ -107,7 +107,7 @@ def fix_imports(content: str) -> str:
         "NamingAgent": "naming_agent",
         "HygieneGuardianAgent": "hygiene_guardian_agent",
         "CodeDuplicationAgent": "code_duplication_agent",
-        "StructuralValidatorAgent": "structural_validator_agent",
+        "StructuralValidatorAgent": "StructuralValidatorAgent",
         # Base agents
         "SovereignBaseAgent": "sovereign_base_agent",
         "L0MaintenanceBaseAgent": "l0_maintenance_base_agent",

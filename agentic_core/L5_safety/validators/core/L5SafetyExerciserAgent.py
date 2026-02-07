@@ -15,7 +15,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
-from agentic_core.L6_observability.metrics.layer_decorator import layer_entry
+from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
 
 
 # Lazy imports — gravity-safe (same/downstream L5)
@@ -43,7 +43,7 @@ def _get_naming_agent() -> Any:
 def _get_import_agent() -> Any:
     """Get import healer (Phase 5 Migration: ImportAgent -> CodeHealerAgent)."""
     try:
-        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
             create_legacy_import_healer,
         )
 
@@ -52,10 +52,10 @@ def _get_import_agent() -> Any:
         return None
 
 
-def _get_red_team_agent() -> Any:
+def _get_RedTeamAgent() -> Any:
     """Get red team agent."""
     try:
-        from agentic_core.L5_safety.red_teaming.red_team_agent import RedTeamAgent
+        from agentic_core.L5_safety.reasoning.RedTeamAgent import RedTeamAgent
 
         return RedTeamAgent
     except Exception:
@@ -65,7 +65,7 @@ def _get_red_team_agent() -> Any:
 def _get_healer_agent() -> Any:
     """Get healer agent."""
     try:
-        from agentic_core.L5_safety.guardrails.StructuralHealerAgent import StructuralHealerAgent
+        from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent
 
         return StructuralHealerAgent
     except Exception:
@@ -176,7 +176,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
 
     def _exercise_red_team_probe(self) -> str:
         """Light red team fuzz (prompt injection simulation)."""
-        RedTeamAgent = _get_red_team_agent()
+        RedTeamAgent = _get_RedTeamAgent()
         if RedTeamAgent is None:
             return "Red team probe: Skipped (agent not available)"
         try:

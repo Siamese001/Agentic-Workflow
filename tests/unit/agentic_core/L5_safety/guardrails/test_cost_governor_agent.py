@@ -34,7 +34,7 @@ class TestCostGovernorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.guardrails.CostGovernorAgent import CostGovernorAgent
+            from agentic_core.L5_safety.enforcement.CostGovernorAgent import CostGovernorAgent
 
             return CostGovernorAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestCostGovernorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.guardrails.CostGovernorAgent import (
+                from agentic_core.L5_safety.enforcement.CostGovernorAgent import (
                     CostGovernorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

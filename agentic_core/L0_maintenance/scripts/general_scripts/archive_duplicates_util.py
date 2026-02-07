@@ -7,18 +7,18 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 ARCHIVE_BASE = PROJECT_ROOT / "archives" / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
 TARGETS = [
-    "agentic_core/L5_safety/guardrails/CodeDetectorAgent.py",
-    "agentic_core/L5_safety/guardrails/CodeEnforcerAgent.py",
-    "agentic_core/L5_safety/guardrails/CodeHealerAgent.py",
-    "agentic_core/L5_safety/guardrails/CodeValidatorAgent.py",
-    "agentic_core/L5_safety/guardrails/ResourceManagerAgent.py",
-    "agentic_core/L5_safety/guardrails/SafetyDetectorAgent.py",
-    "agentic_core/L5_safety/guardrails/SafetyExecutorAgent.py",
-    "agentic_core/L5_safety/guardrails/SecurityManagerAgent.py",
-    "agentic_core/L5_safety/guardrails/StructureEnforcerAgent.py",
-    "agentic_core/L5_safety/guardrails/StructureHealerAgent.py",
-    "agentic_core/L5_safety/guardrails/StructureValidatorAgent.py",
-    "agentic_core/L2_execution/engine/ModelRouterAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeDetectorAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeEnforcerAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeHealerAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeValidatorAgent.py",
+    "agentic_core/L5_safety/enforcement/ResourceManagerAgent.py",
+    "agentic_core/L5_safety/enforcement/SafetyDetectorAgent.py",
+    "agentic_core/L5_safety/enforcement/SafetyExecutorAgent.py",
+    "agentic_core/L5_safety/enforcement/SecurityManagerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureEnforcerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureHealerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureValidatorAgent.py",
+    "agentic_core/L2_execution/reasoning/ModelRouterAgent.py",
     "apps_shared/base_agents/HygieneGuardianAgent.py",
 ]
 

@@ -14,12 +14,12 @@ import time
 
 import pytest
 
-from agentic_core.L5_safety.runtime.process_guard import (
+from agentic_core.L5_safety.enforcement.process_guard import (
     BLOCKED_COMMANDS,
     ProcessGuard,
     SecurityViolation,
 )
-from agentic_core.L5_safety.runtime.safe_subprocess import safe_popen, safe_run
+from agentic_core.L5_safety.enforcement.safe_subprocess import safe_popen, safe_run
 
 
 class TestProcessGuardSingleton:

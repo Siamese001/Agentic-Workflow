@@ -17,9 +17,9 @@ class TestBaselineWeightAudit:
     def test_l2_execution_baseline_weights(self):
         """L2 Execution components must not exceed weight 9."""
         l2_paths = [
-            "agentic_core/L2_execution/engine",
+            "agentic_core/L2_execution/reasoning",
             "agentic_core/L2_execution/action_handlers",
-            "agentic_core/L2_execution/mcp",
+            "agentic_core/L2_execution/enforcement",
         ]
 
         for path in l2_paths:

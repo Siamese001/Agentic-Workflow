@@ -28,8 +28,9 @@ class PeerIntelligenceConfig:
 
 
 from agentic_core.base_agents.timeout_decorator import timeout
+
 try:
-    from agentic_core.L2_execution.engine.integrity_gate_executor import (
+    from agentic_core.L2_execution.reasoning.integrity_gate_executor import (
         IntegrityGateExecutorAgent,
     )
 except ImportError:

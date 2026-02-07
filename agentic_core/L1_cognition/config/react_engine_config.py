@@ -17,7 +17,7 @@ from enum import Enum
 from typing import Any
 
 try:
-    from agentic_core.L1_cognition.engine.trace_models import ReasoningTraceModel
+    from agentic_core.L1_cognition.reasoning.trace_models import ReasoningTraceModel
 except ImportError:
     ReasoningTraceModel = None  # type: ignore[misc,assignment]
 

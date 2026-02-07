@@ -23,7 +23,7 @@ def test_circuit_breaker():
     print("TEST 1: Circuit Breaker")
     print("=" * 60)
 
-    from agentic_core.L5_safety.core.circuit_breaker import (
+    from agentic_core.L5_safety.enforcement.circuit_breaker import (
         CircuitBreaker,
         CircuitBreakerConfig,
         CircuitBreakerOpenError,
@@ -134,7 +134,7 @@ def test_adapter_base():
     print("TEST 2: Adapter Base")
     print("=" * 60)
 
-    from agentic_core.L5_safety.adapters.adapter_base import (
+    from agentic_core.L5_safety.reasoning.adapter_base import (
         AdapterBase,
     )
 
@@ -291,7 +291,7 @@ def test_context_session():
     print("TEST 4: Context Session")
     print("=" * 60)
 
-    from agentic_core.L5_safety.core.context_session import (
+    from agentic_core.L5_safety.enforcement.context_session import (
         RiskLevel,
         classify_risk,
         get_session_manager,

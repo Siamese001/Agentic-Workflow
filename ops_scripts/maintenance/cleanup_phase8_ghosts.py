@@ -16,9 +16,9 @@ ARCHIVE_ROOT = (
 
 GHOST_FILES = [
     # The Legacy Client Factory (Critical Sprawl)
-    "agentic_core/L2_execution/mcp/runtime_shared_multi_provider_clients.py",
+    "agentic_core/L2_execution/enforcement/runtime_shared_multi_provider_clients.py",
     # Deprecated router
-    "agentic_core/L2_execution/mcp/llm_router_mcp_client.py",
+    "agentic_core/L2_execution/enforcement/llm_router_mcp_client.py",
     # Any leftovers from Phase 7 investigation if you want to be aggressive:
     # "agentic_core/L0_maintenance/scripts/dashboard_ssot_definitions.py"
 ]

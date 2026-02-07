@@ -34,7 +34,7 @@ class TestUnusedCleanupAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.guardrails.UnusedCleanupAgent import UnusedCleanupAgent
+            from agentic_core.L5_safety.enforcement.UnusedCleanupAgent import UnusedCleanupAgent
 
             return UnusedCleanupAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestUnusedCleanupAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.guardrails.UnusedCleanupAgent import (
+                from agentic_core.L5_safety.enforcement.UnusedCleanupAgent import (
                     UnusedCleanupAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

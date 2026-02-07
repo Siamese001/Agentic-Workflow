@@ -237,7 +237,7 @@ class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
             )
 
         try:
-            from agentic_core.L6_observability.telemetry.sovereign_events import emit_event
+            from agentic_core.L6_observability.reasoning.sovereign_events import emit_event
 
             emit_event(
                 "MCP_GUARDIAN_CRITIQUE",

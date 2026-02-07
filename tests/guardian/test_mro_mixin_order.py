@@ -97,8 +97,8 @@ def discover_agent_classes() -> list[type]:
 
     # Try to import specific agents we know about
     agent_imports = [
-        ("agentic_core.L3_orchestration.engine.domain_planner_engine", "DomainPlannerAgent"),
-        ("agentic_core.L5_safety.policy_engine.code_healer_agent", "CodeHealerAgent"),
+        ("agentic_core.L3_orchestration.reasoning.domain_planner_engine", "DomainPlannerAgent"),
+        ("agentic_core.L5_safety.reasoning.CodeHealerAgent", "CodeHealerAgent"),
         ("agentic_core.L5_safety.validators.location_agent", "LocationAgent"),
     ]
 
@@ -129,7 +129,7 @@ class TestMROMixinOrder:
         Verifies AtomicExecutionMixin precedes L3OrchestrationBase.
         """
         try:
-            from agentic_core.L3_orchestration.engine.domain_planner_engine import (
+            from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
                 DomainPlannerAgent,
             )
         except ImportError as e:

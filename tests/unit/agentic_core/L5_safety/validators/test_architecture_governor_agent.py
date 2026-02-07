@@ -820,7 +820,7 @@ class TestPhase4CentralizedASTEngine:
 
     def test_governor_and_validator_consistency(self, mock_project_with_violation):
         """Test that Governor and StructuralValidator find same violations."""
-        from agentic_core.L5_safety.policy_engine.structural_validator_agent_types import (
+        from agentic_core.L5_safety.reasoning.StructuralValidatorAgent_types import (
             StructuralValidatorAgent,
             StructureConfig,
         )

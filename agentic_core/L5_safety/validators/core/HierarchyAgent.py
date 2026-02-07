@@ -20,7 +20,7 @@ PURPOSE: Complete hierarchy management including:
 - Empty folder cleanup (from Healer)
 - Orphaned file purging (from Healer)
 
-LOCATION: agentic_core/L5_safety/guardrails/ (SSOT-compliant)
+LOCATION: agentic_core/L5_safety/enforcement/ (LCD+ SSOT-compliant)
 """
 
 import logging
@@ -31,8 +31,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
-from agentic_core.L5_safety.gravity.mission_utils import (
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
@@ -263,7 +263,7 @@ class HierarchyAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 if not layer_l2_path.exists():
                     continue
 
-            # L3 Sub-territories (thought_engine, guardrails, etc.)
+            # L3 Sub-territories (reasoning, enforcement, validators, etc. — LCD+ canonical)
             expected_territories_l3 = set(CORE_SUBFOLDER_MAP.get(layer_l2_name, []))
             if not expected_territories_l3:
                 continue

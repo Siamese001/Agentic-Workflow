@@ -3,7 +3,7 @@ import time
 import unittest
 from unittest.mock import patch
 
-from agentic_core.L2_execution.engine.query_runtime import run_hardened_query
+from agentic_core.L2_execution.reasoning.query_runtime import run_hardened_query
 
 
 class TestHardenedTimeout(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestHardenedTimeout(unittest.TestCase):
             return "should never return"
 
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             side_effect=permanent_sleep,
         ):
             start = time.time()
@@ -34,7 +34,7 @@ class TestHardenedTimeout(unittest.TestCase):
             raise ConnectionError("DB Dead")
 
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             side_effect=crash_immediately,
         ):
             with self.assertRaises(ConnectionError):
@@ -43,7 +43,7 @@ class TestHardenedTimeout(unittest.TestCase):
     def test_rapid_re_entry_stability(self):
         """Ensure terminal UI handles sequential sub-second timeouts without corruption."""
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             side_effect=lambda x: time.sleep(2),
         ):
             for _ in range(3):
@@ -53,7 +53,7 @@ class TestHardenedTimeout(unittest.TestCase):
     def test_successful_execution_retrieval(self):
         """Verify data is returned correctly when the thread finishes before timeout."""
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             return_value="success",
         ):
             result = run_hardened_query("SELECT valid", timeout_seconds=5)
@@ -67,7 +67,7 @@ class TestHardenedTimeout(unittest.TestCase):
             return [{"id": sql}]
 
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             side_effect=slow_but_successful,
         ):
             result = run_hardened_query("SELECT wait_test", timeout_seconds=1)
@@ -80,7 +80,7 @@ class TestHardenedTimeout(unittest.TestCase):
             raise concurrent.futures.TimeoutError("Concurrent timeout")
 
         with patch(
-            "agentic_core.L2_execution.engine.query_runtime.execute_sql",
+            "agentic_core.L2_execution.reasoning.query_runtime.execute_sql",
             side_effect=raise_concurrent_timeout,
         ):
             with self.assertRaises((concurrent.futures.TimeoutError, TimeoutError)):

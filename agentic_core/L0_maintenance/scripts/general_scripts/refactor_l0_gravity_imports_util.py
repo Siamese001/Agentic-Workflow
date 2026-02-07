@@ -25,34 +25,34 @@ REPO = Path(__file__).parent.parent
 # Refactoring patterns for specific files
 REFACTORINGS = {
     "l0_delegation_testing_mixin.py": {
-        "old_import": "from agentic_core.L5_safety.gravity import GravityValidator",
+        "old_import": "from agentic_core.L5_safety.enforcement import GravityValidator",
         "new_code": """
 def _get_gravity_validator():
     \"\"\"Lazy load GravityValidator to avoid L0 → L5 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L5_safety.gravity')
+    module = importlib.import_module('agentic_core.L5_safety.enforcement')
     return module.GravityValidator
 
 # Use: GravityValidator = _get_gravity_validator() when needed
 """,
     },
     "filesystem_mcp_client.py": {
-        "old_import": "from agentic_core.L3_orchestration.engine",
+        "old_import": "from agentic_core.L3_orchestration.reasoning",
         "new_code": """
 def _get_workflow_engine():
     \"\"\"Lazy load workflow engine to avoid L0 → L3 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L3_orchestration.engine')
+    module = importlib.import_module('agentic_core.L3_orchestration.reasoning')
     return module
 """,
     },
     "gitkraken_mcp_client.py": {
-        "old_import": "from agentic_core.L3_orchestration.engine",
+        "old_import": "from agentic_core.L3_orchestration.reasoning",
         "new_code": """
 def _get_workflow_engine():
     \"\"\"Lazy load workflow engine to avoid L0 → L3 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L3_orchestration.engine')
+    module = importlib.import_module('agentic_core.L3_orchestration.reasoning')
     return module
 """,
     },
@@ -77,12 +77,12 @@ def _get_cognitive_node():
 """,
     },
     "BootstrapAgent.py": {
-        "old_import": "from agentic_core.L2_execution.engine.Toolsmith",
+        "old_import": "from agentic_core.L2_execution.reasoning.Toolsmith",
         "new_code": """
 def _get_toolsmith():
     \"\"\"Lazy load Toolsmith to avoid L0 → L2 dependency.\"\"\"
     import importlib
-    module = importlib.import_module('agentic_core.L2_execution.engine.Toolsmith')
+    module = importlib.import_module('agentic_core.L2_execution.reasoning.Toolsmith')
     return module.Toolsmith
 """,
     },

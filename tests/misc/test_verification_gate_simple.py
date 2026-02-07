@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.append(".")
 
-from agentic_core.L5_safety.security.verification_gate import VerificationGate
+from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 
 
 def test_verification_gate_basic():

@@ -28,16 +28,16 @@ from agentic_core.L3_orchestration.types.context_pruning_strategy_types import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
 )
-from agentic_core.L3_orchestration.engine.forward_rolling_config_types import (
+from agentic_core.L3_orchestration.reasoning.forward_rolling_config_types import (
     ExecutionMode,
     ForwardRollingConfig,
     RolloutStage,
 )
-from agentic_core.L3_orchestration.engine.recursion_monitor_types import (
+from agentic_core.L3_orchestration.reasoning.recursion_monitor_types import (
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L3_orchestration.orchestrators.recursive_orchestrator_types import (
+from agentic_core.L3_orchestration.reasoning.recursive_orchestrator_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

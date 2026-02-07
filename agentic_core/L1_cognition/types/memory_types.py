@@ -1,0 +1,66 @@
+"""
+agentic_core/L1_cognition/reasoning/types/memory_types.py
+
+Passive data structures and constants for HealingMemoryEmbedder.
+Extracted from engine/memory_embedder.py to prevent circular dependencies.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from dataclasses import dataclass, field
+from typing import Any, Final
+
+# Constants
+EMBEDDING_DIMENSION: Final[int] = 1536  # OpenAI ada-002 dimension
+MAX_TEXT_LENGTH: Final[int] = 8000  # Token limit approximation
+
+
+@dataclass
+class ViolationSignature:
+    """
+    Represents a violation signature for embedding.
+
+    Attributes:
+        violation_type: Type of violation
+        path: File path where violation occurred
+        message: Violation message
+        context: Additional context (e.g., line numbers, code snippet)
+        domain: Domain context (agentic_core, apps_lic, apps_rg)
+    """
+
+    violation_type: str
+    path: str = ""
+    message: str = ""
+    context: dict[str, Any] = field(default_factory=dict)
+    domain: str = "agentic_core"
+
+    def to_text(self) -> str:
+        """Convert signature to text for embedding."""
+        parts = [
+            f"violation_type: {self.violation_type}",
+            f"path: {self.path}",
+            f"message: {self.message[:500]}",  # Truncate long messages
+            f"domain: {self.domain}",
+        ]
+        if self.context:
+            context_str = json.dumps(self.context, default=str)[:500]
+            parts.append(f"context: {context_str}")
+        return " | ".join(parts)
+
+    def to_hash(self) -> str:
+        """Generate hash-based signature."""
+        text = self.to_text()
+        return hashlib.sha256(text.encode()).hexdigest()[:16]
+
+    @classmethod
+    def from_violation(cls, violation: dict[str, Any]) -> ViolationSignature:
+        """Create signature from violation dictionary."""
+        return cls(
+            violation_type=violation.get("type", "unknown"),
+            path=violation.get("path", ""),
+            message=violation.get("message", ""),
+            context=violation.get("context", {}),
+            domain=violation.get("domain", "agentic_core"),
+        )

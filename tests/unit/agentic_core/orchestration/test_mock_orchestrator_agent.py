@@ -12,7 +12,7 @@ sys.path.insert(0, str(project_root))
 
 from typing import Any
 
-from agentic_core.L1_cognition.agents.MetaLearningAgent import MetaLearningAgent
+from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 from agentic_core.L3_orchestration.types import (
     ExecutionContext,
     ExecutionPhase,
@@ -69,7 +69,8 @@ def test_meta_learning_agent_1_1():
     )
 
     print(
-        f"✅ Test Case 1.1 PASSED: 'cot' weight increased from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}"
+        f"Test Case 1.1 PASSED: 'cot' weight increased "
+        f"from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}"
     )
     return True
 

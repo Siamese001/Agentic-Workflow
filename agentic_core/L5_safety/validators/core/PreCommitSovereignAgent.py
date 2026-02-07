@@ -41,7 +41,7 @@ from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.gravity.unified_validator import UnifiedSSOTValidator
+from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTValidator
 
 
 @dataclass
@@ -269,7 +269,7 @@ class PreCommitSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, L0Maint
         print("   python scripts/ssot.py validate --summary")
         print()
         print("4. Use DynamicSealAgent for automated refactoring:")
-        print("   python -m agentic_core.L2_execution.engine.DynamicSealAgent --dry-run")
+        print("   python -m agentic_core.L2_execution.reasoning.DynamicSealAgent --dry-run")
         print()
         print("!" * 80 + "\n")
 
@@ -304,7 +304,7 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 
-from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 
 if __name__ == "__main__":

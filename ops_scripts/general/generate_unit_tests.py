@@ -27,7 +27,7 @@ def get_test_path(agent_path: str) -> Path:
     dir_parts = parts[:-1]
 
     # Convert filename to test filename
-    # e.g., ATSCompatibilityAgent.py -> test_ats_compatibility_agent.py
+    # e.g., ATSCompatibilityAgent.py -> test_ATSCompatibilityAgent.py
     class_name = filename.replace(".py", "")
     test_filename = "test_" + to_snake_case(class_name) + ".py"
 

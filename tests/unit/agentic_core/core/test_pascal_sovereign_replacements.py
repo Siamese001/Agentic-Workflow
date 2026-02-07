@@ -56,7 +56,7 @@ class TestPascalSovereignReplacements:
         """Verify SubAtomicRegistryAgent mapping updated."""
         file_path = (
             Path(__file__).parent.parent.parent.parent
-            / "agentic_core/L2_execution/engine/SubAtomicRegistryAgent.py"
+            / "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py"
         )
 
         content = file_path.read_text(encoding="utf-8")
@@ -157,7 +157,7 @@ class TestPascalSovereignReplacements:
     @pytest.mark.skip(reason="SubAtomicRegistryAgent has missing dependencies")
     def test_subatomic_registry_mapping_accessible(self):
         """Verify SubAtomicRegistryAgent mapping is accessible."""
-        from agentic_core.L2_execution.engine.registry.sub_atomic_registry import (
+        from agentic_core.L2_execution.reasoning.registry.sub_atomic_registry import (
             _get_phase4_enforcer_mapping,
         )
 

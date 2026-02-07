@@ -26,7 +26,7 @@ SUSPECT_FILES = [
     "agentic_core/L5_safety/ArchivalGatekeeper.py",
     "agentic_core/L5_safety/validators/context.py",
     "agentic_core/L5_safety/validators/constants.py",
-    "agentic_core/L6_observability/telemetry_utils.py",
+    "agentic_core/L6_observability/reasoning_utils.py",
     "agentic_core/utils/core_extensions/infrastructure_mixin.py",
     "agentic_core/utils/core_extensions/healer_mixin.py",
 ]
