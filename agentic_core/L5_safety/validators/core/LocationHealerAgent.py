@@ -32,7 +32,7 @@ from agentic_core.L3_orchestration.engine.unified_agent import (
     LocationHealingStrategy,
 )
 from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.validators.core.location_utils import (
     compute_module_path,
 )
