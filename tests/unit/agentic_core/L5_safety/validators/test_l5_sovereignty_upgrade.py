@@ -201,7 +201,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_no_structural_checks(self):
         """Test 6.1: Verify HygieneGuardianAgent has no structural/location checks."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_config_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
 
         # Get methods defined directly on HygieneGuardianAgent (not inherited)
         own_methods = [
@@ -233,7 +233,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_content_focus(self, tmp_path):
         """Test 6.2: Verify HygieneGuardianAgent focuses on content hygiene."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_config_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
 
         # Create files with hygiene issues
         (tmp_path / "empty.py").write_text("")  # Empty file
@@ -254,7 +254,7 @@ class TestPhase6HygieneGuardian:
 
     def test_hygiene_guardian_uses_canonical_keys(self, tmp_path):
         """Test 6.3: Verify HygieneGuardianAgent uses canonical heal_repository keys."""
-        from agentic_core.L5_safety.enforcement.hygiene_guardian_config_script import HygieneGuardianAgent
+        from agentic_core.L5_safety.enforcement.hygiene_guardian_script import HygieneGuardianAgent
 
         agent = HygieneGuardianAgent(tmp_path, dry_run=True)
         result = agent.heal_repository(dry_run=True)
