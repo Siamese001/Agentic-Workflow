@@ -247,19 +247,19 @@ MISSING_TESTS = [
     },
     {
         "class": "ActorCriticOrchestratorAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\ActorCriticOrchestratorAgent.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\ActorCriticOrchestratorAgent.py",
     },
     {
         "class": "AgentFactory",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_factory.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\agent_factory.py",
     },
     {
         "class": "AgentGym",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\agent_gym_impl.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\agent_gym_impl.py",
     },
     {
         "class": "ContextCurator",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\context_curator_impl.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\context_curator_impl.py",
     },
     {"class": "CoverageAgent", "path": "agentic_core\\observability\\metrics\\CoverageAgent.py"},
     {
@@ -272,23 +272,23 @@ MISSING_TESTS = [
     },
     {
         "class": "PPOOrchestratorAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\PPOOrchestratorAgent.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\PPOOrchestratorAgent.py",
     },
     {
         "class": "QLearningOrchestratorAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\QLearningOrchestratorAgent.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\QLearningOrchestratorAgent.py",
     },
     {
         "class": "RLOrchestratorAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\RLOrchestratorAgent.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\RLOrchestratorAgent.py",
     },
     {
         "class": "ReinforceCriticOrchestratorAgent",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\ReinforceCriticOrchestratorAgent.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\ReinforceCriticOrchestratorAgent.py",
     },
     {
         "class": "SovereignMcpRouter",
-        "path": "agentic_core\\L3_orchestration\\workflow_engines\\mcp_router_sovereign.py",
+        "path": "agentic_core\\L3_orchestration\\engine\\mcp_router_sovereign.py",
     },
     {
         "class": "CheckpointManagerAgent",

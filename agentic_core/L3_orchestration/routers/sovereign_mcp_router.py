@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L3_orchestration.workflow_engines.mcp_manager import (
+from agentic_core.L3_orchestration.engine.mcp_manager import (
     MCPConnectionManager,
     load_mcp_config,
 )

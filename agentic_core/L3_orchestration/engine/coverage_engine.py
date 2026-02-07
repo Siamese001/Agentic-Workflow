@@ -31,7 +31,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L3_orchestration.workflow_engines.task_queue import enqueue
+    from agentic_core.L3_orchestration.engine.task_queue import enqueue
 except ImportError:
     # Stub if not available
     def enqueue(task_payload: dict) -> Any:

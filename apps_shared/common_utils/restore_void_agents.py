@@ -6,8 +6,8 @@ Restores key functional agents that were incorrectly archived as "void violation
 but are actually needed for the system to function properly.
 
 Categories to restore:
-1. DAG/Workflow agents -> L3_orchestration/workflow_engines/
-2. Key orchestration agents -> L3_orchestration/workflow_engines/
+1. DAG/Workflow agents -> L3_orchestration/engine/
+2. Key orchestration agents -> L3_orchestration/engine/
 3. observability agents (unique ones) -> L6_observability/
 
 NOT restored (have active replacements):
@@ -33,17 +33,17 @@ AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 # Agents to restore with their target locations
 RESTORE_MAP: dict[str, str] = {
     # DAG/Workflow agents -> L3
-    "DagEngineAgent.py": "L3_orchestration/workflow_engines/",
-    "DagExecutorAgent.py": "L3_orchestration/workflow_engines/",
-    "DagManagerAgent.py": "L3_orchestration/workflow_engines/",
-    "DAGMutatorAgent.py": "L3_orchestration/workflow_engines/",
-    "DagRuntimeInspectorAgent.py": "L3_orchestration/workflow_engines/",
-    "WorkflowOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
-    "HardenedWorkflowOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
+    "DagEngineAgent.py": "L3_orchestration/engine/",
+    "DagExecutorAgent.py": "L3_orchestration/engine/",
+    "DagManagerAgent.py": "L3_orchestration/engine/",
+    "DAGMutatorAgent.py": "L3_orchestration/engine/",
+    "DagRuntimeInspectorAgent.py": "L3_orchestration/engine/",
+    "WorkflowOrchestratorAgent.py": "L3_orchestration/engine/",
+    "HardenedWorkflowOrchestratorAgent.py": "L3_orchestration/engine/",
     # Orchestration agents -> L3
-    "NervousSystemAgent.py": "L3_orchestration/workflow_engines/",
-    "OrchestrationHandshakeAgent.py": "L3_orchestration/workflow_engines/",
-    "SelfRecoveringOrchestratorAgent.py": "L3_orchestration/workflow_engines/",
+    "NervousSystemAgent.py": "L3_orchestration/engine/",
+    "OrchestrationHandshakeAgent.py": "L3_orchestration/engine/",
+    "SelfRecoveringOrchestratorAgent.py": "L3_orchestration/engine/",
     # observability agents -> L6
     "TracingAgent.py": "L6_observability/agents/",
     "AutonomicMonitorAgent.py": "L6_observability/agents/",

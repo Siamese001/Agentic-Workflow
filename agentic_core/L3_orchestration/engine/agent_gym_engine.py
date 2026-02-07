@@ -1,5 +1,5 @@
 """
-agentic_core/L3_orchestration/workflow_engines/AgentGymAgent.py
+agentic_core/L3_orchestration/engine/AgentGymAgent.py
 ---------------------------------------------------------------
 FIX: Implements Functional Naming for imports.
 """
@@ -17,7 +17,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # [FIX] Use Functional Naming alias for imports
 try:
-    import agentic_core.L3_orchestration.workflow_engines.agent_gym_types as OrchestrationTypes
+    import agentic_core.L3_orchestration.engine.agent_gym_types as OrchestrationTypes
 
     BenchmarkResult = OrchestrationTypes.BenchmarkResult
     PerformanceLevel = OrchestrationTypes.PerformanceLevel

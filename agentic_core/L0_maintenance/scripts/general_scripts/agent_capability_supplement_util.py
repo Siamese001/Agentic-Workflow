@@ -336,7 +336,7 @@ def analyze_supplementation():
     if "mapping" in unique_to_dead or "territory" in unique_to_dead:
         recommendations.append(
             "→ Integrate SemanticTerritoryMapperAgent patterns\n"
-            "  Source: agentic_core/L3_orchestration/workflow_engines/SemanticTerritoryMapperAgent.py\n"
+            "  Source: agentic_core/L3_orchestration/engine/SemanticTerritoryMapperAgent.py\n"
             "  Target: HierarchyAgent or LocationAgent (L5) for semantic structural awareness",
         )
 

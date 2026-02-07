@@ -63,7 +63,7 @@ class TestVerifyDomainPlannerGolden:
         If this test fails, the refactoring has changed functional behavior.
         """
         try:
-            from agentic_core.L3_orchestration.workflow_engines.DomainPlannerAgent import (
+            from agentic_core.L3_orchestration.engine.domain_planner_engine import (
                 DomainPlannerAgent,
             )
         except ImportError as e:
@@ -159,7 +159,7 @@ class TestVerifyDomainPlannerGolden:
         Verify MRO has changed as expected (added AtomicExecutionMixin).
         """
         try:
-            from agentic_core.L3_orchestration.workflow_engines.DomainPlannerAgent import (
+            from agentic_core.L3_orchestration.engine.domain_planner_engine import (
                 DomainPlannerAgent,
             )
         except ImportError as e:

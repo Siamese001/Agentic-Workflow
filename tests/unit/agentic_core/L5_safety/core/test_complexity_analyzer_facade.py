@@ -15,7 +15,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L3_orchestration.agents.UnifiedAgent import ValidationResult
+from agentic_core.L3_orchestration.engine.unified_agent import ValidationResult
 
 
 class TestComplexityAnalyzerStrategy:

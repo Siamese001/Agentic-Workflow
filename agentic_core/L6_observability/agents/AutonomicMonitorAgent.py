@@ -13,7 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L3_orchestration.workflow_engines.autonomic_monitor_types import (
+from agentic_core.L3_orchestration.engine.autonomic_monitor_types import (
     AlertSeverity,
     HealthAlert,
     HealthStatus,

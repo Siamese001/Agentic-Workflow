@@ -36,7 +36,7 @@ class TestDagEngineAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.workflow_engines.DagEngineAgent import DagEngineAgent
+            from agentic_core.L3_orchestration.engine.dag_engine import DagEngineAgent
 
             return DagEngineAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestDagEngineAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.workflow_engines.DagEngineAgent import (
+                from agentic_core.L3_orchestration.engine.dag_engine import (
                     DagEngineAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

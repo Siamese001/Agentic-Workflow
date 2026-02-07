@@ -19,7 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 CRITICAL_FILES = [
-    "agentic_core/L3_orchestration/workflow_engines/SovereignMcpRouterAgent.py",
+    "agentic_core/L3_orchestration/engine/SovereignMcpRouterAgent.py",
     "agentic_core/L5_safety/guardrails/MCPSovereignAuthority.py",
     "agentic_core/L2_execution/mcp/SovereignPineconeMcpClientAgent.py",
     "agentic_core/L2_execution/mcp/SovereignMCPGatewayAgent.py",

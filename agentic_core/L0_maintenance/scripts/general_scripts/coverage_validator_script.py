@@ -83,7 +83,7 @@ class CoverageHealer:
 
 async def run_autonomous_remediation():
     """Execute Phase 6 autonomous remediation loop."""
-    from agentic_core.L3_orchestration.workflow_engines.mission_controller_convergence import (
+    from agentic_core.L3_orchestration.engine.mission_controller_convergence import (
         ConvergenceEngine,
     )
 

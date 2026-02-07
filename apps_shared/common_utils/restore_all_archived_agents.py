@@ -30,7 +30,7 @@ TARGETS = {
     "L0": "L0_maintenance/scripts/",
     "L1": "L1_cognition/thought_engine/",
     "L2": "L2_execution/engine/",
-    "L3": "L3_orchestration/workflow_engines/",
+    "L3": "L3_orchestration/engine/",
     "L4": "L4_state/validation_context/",
     "L5": "L5_safety/validators/",
     "L6": "L6_observability/agents/",

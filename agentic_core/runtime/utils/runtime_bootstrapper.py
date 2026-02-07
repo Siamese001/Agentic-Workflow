@@ -14,7 +14,7 @@ from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox
 from agentic_core.L2_execution.engine.mcp_manager import MCPConnectionManager
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
-from agentic_core.L3_orchestration.workflow_engines.SupremeCourt import SupremeCourt
+from agentic_core.L3_orchestration.engine.SupremeCourt import SupremeCourt
 from agentic_core.L4_state.audit_trails.genealogy import GenealogyRegistry
 from agentic_core.L4_state.session_manager.disk_adapter import LocalDiskAdapter
 from agentic_core.L5_safety.guardrails.airlock import AirlockProtocol

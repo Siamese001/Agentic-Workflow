@@ -2174,7 +2174,7 @@ class headline_brief:
     GUIDANCE: str = "Must incorporate differentiator keywords from the Competitive Analysis."
 
 
-# Orchestration Workflow models (from L3_orchestration/workflow_engines/orchestrate_workflow_types_models.py)
+# Orchestration Workflow models (from L3_orchestration/engine/orchestrate_workflow_types_models.py)
 
 
 @dataclass

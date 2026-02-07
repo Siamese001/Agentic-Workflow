@@ -16,7 +16,7 @@ from typing import Any
 from dataclasses import field
 
 try:
-    from agentic_core.L3_orchestration.fission_logic.subatomic_testing_mixin import (
+    from agentic_core.L3_orchestration.engine.subatomic_testing_mixin import (
         SubatomicTestingMixin,
     )
 except ImportError:

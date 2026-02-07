@@ -56,7 +56,7 @@ def test_instantiation():
 
     # 3. Test The Refactored Agents (Import Rewiring Check)
     agents_to_test = [
-        ("L3_orchestration.workflow_engines.FissionManagerAgent", "FissionManagerAgent"),
+        ("L3_orchestration.engine.FissionManagerAgent", "FissionManagerAgent"),
         ("L5_safety.guardrails.HallucinationHunterAgent", "HallucinationHunterAgent"),
         ("L5_safety.validators.cached_safety_shield", "CachedSafetyShield"),
         ("L5_safety.validators.NeuralAutoImmuneAgent", "NeuralAutoImmuneAgent"),

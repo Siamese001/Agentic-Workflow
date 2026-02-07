@@ -107,7 +107,7 @@ class Wave9IntegritySimulation:
 
         # Step 3: Import NervousSystemAgent
         try:
-            from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import (
+            from agentic_core.L3_orchestration.engine.nervous_system_agent import (
                 NervousSystemAgent,
             )
 
@@ -334,7 +334,7 @@ class Wave9IntegritySimulation:
         batch_8_6_files = [
             "apps_rg/shared/core/RGAgentBase.py",
             "apps_lic/shared/core/LICAgentBase.py",
-            "agentic_core/L3_orchestration/workflow_engines/NervousSystemAgent.py",
+            "agentic_core/L3_orchestration/engine/NervousSystemAgent.py",
             "apps_rg/engines/RgResumeOrchestrator.py",
             "apps_lic/engines/OutreachPhase5Orchestrator.py",
         ]
@@ -342,7 +342,7 @@ class Wave9IntegritySimulation:
 
         # Attempt to compute impact radius
         try:
-            from agentic_core.L3_orchestration.workflow_engines.NervousSystemAgent import (
+            from agentic_core.L3_orchestration.engine.nervous_system_agent import (
                 NervousSystemAgent,
             )
 

@@ -37,12 +37,12 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L3_orchestration.agents.UnifiedAgent import (
+from agentic_core.L3_orchestration.engine.unified_agent import (
     OrchestrationResult,
     OrchestrationStrategy,
     UnifiedAgent,
 )
-from agentic_core.L3_orchestration.interfaces import (
+from agentic_core.L3_orchestration.types import (
     AgentResult,
     ExecutionContext,
     ExecutionPhase,

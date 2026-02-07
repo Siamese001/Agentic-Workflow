@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L3_orchestration.agents.UnifiedAgent import (
+from agentic_core.L3_orchestration.engine.unified_agent import (
     AgentCategory,
     UnifiedAgent,
     ValidationResult,
