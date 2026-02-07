@@ -34,7 +34,7 @@ class TestDependencyPruningAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.enforcement.DependencyPruningAgent import (
+            from agentic_core.L5_safety.reasoning.DependencyPruningAgent import (
                 DependencyPruningAgent,
             )
 
@@ -83,7 +83,7 @@ class TestDependencyPruningAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.enforcement.DependencyPruningAgent import (
+                from agentic_core.L5_safety.reasoning.DependencyPruningAgent import (
                     DependencyPruningAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

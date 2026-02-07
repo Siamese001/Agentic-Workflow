@@ -7,7 +7,7 @@ STRICT COMPLIANCE: Uses SovereignLLMGateway singleton.
 import logging
 import os
 
-from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import get_embedding_gateway
+from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 
 Logger = logging.getLogger(__name__)

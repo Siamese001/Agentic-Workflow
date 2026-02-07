@@ -341,7 +341,7 @@ class TestFullSystemIntegration:
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.enforcement.GravityLeakRepairAgent import (
+        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
         from agentic_core.L5_safety.reasoning.CodeHealerAgent import (

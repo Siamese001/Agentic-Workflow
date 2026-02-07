@@ -34,7 +34,7 @@ class TestGitHygieneAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.enforcement.GitHygieneAgent import GitHygieneAgent
+            from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
 
             return GitHygieneAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -73,7 +73,7 @@ class TestGitHygieneAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.enforcement.GitHygieneAgent import (
+                from agentic_core.L5_safety.reasoning.GitHygieneAgent import (
                     GitHygieneAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
