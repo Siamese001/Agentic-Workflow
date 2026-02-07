@@ -55,7 +55,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
-from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin
 try:

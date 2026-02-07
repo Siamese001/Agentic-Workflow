@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.gravity.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,

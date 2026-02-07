@@ -427,6 +427,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {"purpose": "Safety utility functions."},
                 },
                 "allowed_suffixes": {
+                    "core": ["_gatekeeper.py", "_breaker.py", "_manager.py", "_session.py", "_service.py"],
+                    "cognition": ["_processor.py", "_strategy.py", "_agent.py", "_disposition.py"],
                     "config": ["_config.py", "_blueprint.py", "_settings.py"],
                     "types": ["_types.py", "_schema.py", "_model.py"],
                     "validators": ["_validator.py", "_check.py", "_inspector.py", "_agent.py"],
@@ -441,6 +443,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "governance": ["_config.py", "_types.py"],
                 },
                 "routing_rules": {
+                    "*_gatekeeper.py": "core",
+                    "*_breaker.py": "core",
+                    "*_processor.py": "cognition",
+                    "*_disposition.py": "cognition",
                     "*_validator.py": "validators",
                     "*_guardrail.py": "security",
                     "*_shield.py": "security",

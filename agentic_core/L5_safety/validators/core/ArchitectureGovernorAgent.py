@@ -148,7 +148,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
     def _get_archival_gatekeeper(self):
         """Lazy-load ArchivalGatekeeper for safe file operations."""
         if self._archival_gatekeeper is None:
-            from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+            from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
 
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper

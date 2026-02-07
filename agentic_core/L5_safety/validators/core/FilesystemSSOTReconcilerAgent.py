@@ -90,7 +90,7 @@ except ImportError:
         pass
 
 
-from agentic_core.L5_safety.core.archival_gatekeeper_config import ArchivalGatekeeper
+from agentic_core.L5_safety.core.archival_gatekeeper import ArchivalGatekeeper
 
 Logger = logging.getLogger(__name__)
 
