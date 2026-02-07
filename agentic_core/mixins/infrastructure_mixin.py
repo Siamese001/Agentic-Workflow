@@ -33,7 +33,7 @@ import logging
 from typing import Any
 
 from agentic_core.mixins.context_management_mixin import ContextManagementMixin
-from agentic_core.mixins.cost_guardrail_mixin import CostGuardrailMixin
+from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.healer_mixin import HealerMixin
 from agentic_core.mixins.hitl_mixin import HITLMixin
 from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin

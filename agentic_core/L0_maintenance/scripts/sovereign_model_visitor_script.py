@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """
 Sovereign Guard: Block Inline Pydantic models
-Enforces that all Pydantic models must live in core_contracts.py
+Enforces that all Pydantic models must live in core_contracts_types.py
 
 Usage: Called automatically by pre-commit hook
 """
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-exempt: Any = {"agentic_core/schemas/models/core_contracts.py"}
+exempt: Any = {"agentic_core/schemas/models/core_contracts_types.py"}
 
 
 class SovereignModelVisitor(ast.NodeVisitor):
@@ -50,7 +50,7 @@ def check_file(filepath: Any) -> Any:
             for Violation in visitor.violations:
                 print(f"  Line {Violation['line']}: class {Violation['class']}({Violation['base']})")
             print("\n💡 SOLUTION: Migrate this model to:")
-            print("   agentic_core/schemas/models/core_contracts.py")
+            print("   agentic_core/schemas/models/core_contracts_types.py")
             print("=" * 80)
             return False
         return True
@@ -71,6 +71,6 @@ if __name__ == "__main__":
             all_passed: Any = False
     if not all_passed:
         print("\n🚫 Pre-commit BLOCKED: Inline Pydantic models detected.")
-        print("   All models must be centralized in core_contracts.py")
+        print("   All models must be centralized in core_contracts_types.py")
         sys.exit(1)
     sys.exit(0)

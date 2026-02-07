@@ -20,7 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L6_observability.utils.integrity_report_generator import (
+from agentic_core.L6_observability.utils.integrity_report_generator_util import (
     AgentIntegrityReporter,
     GapAnalysisItem,
     IntegrityReportResult,

@@ -20,7 +20,7 @@ Specialized Coordinators for Unified Workflow Engine
 from typing import Any
 
 from .base_coordinator import CoordinatorCapability, WorkflowCoordinator
-from .execution_strategy_script import ExecutionStatus, WorkflowContext, WorkflowResult
+from .execution_script import ExecutionStatus, WorkflowContext, WorkflowResult
 
 
 class RLCoordinatorOrchestrator(WorkflowCoordinator):

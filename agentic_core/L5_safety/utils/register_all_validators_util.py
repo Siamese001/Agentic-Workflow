@@ -137,7 +137,7 @@ def get_integration_status() -> dict[str, Any]:
 
     # Check ValidatorOrchestrator
     try:
-        from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_validator_orchestrator,
         )
 
@@ -149,7 +149,7 @@ def get_integration_status() -> dict[str, Any]:
 
     # Check HealingSovereignOrchestrator
     try:
-        from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
 
@@ -201,7 +201,7 @@ def reset() -> None:
 
     # Reset orchestrator singletons if available
     try:
-        from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_types import (
             ValidatorOrchestrator,
         )
 
@@ -210,7 +210,7 @@ def reset() -> None:
         pass
 
     try:
-        from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+        from agentic_core.L5_safety.types.healing_orchestration_types import (
             HealingSovereignOrchestrator,
         )
 

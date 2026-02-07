@@ -69,8 +69,8 @@
     "recommendation": "DEPORT to agentic_core/utils"
   },
   {
-    "file": "reflection_engine_config.py",
-    "path": "apps_shared\\common_utils\\reflection_engine_config.py",
+    "file": "reflection_config.py",
+    "path": "apps_shared\\common_utils\\reflection_config.py",
     "imports": [
       "from agentic_core.L5_safety.validators.circuit_breaker_types import CircuitBreakerConfig, CircuitBreakerFactory, CircuitOpenError"
     ],

@@ -17,7 +17,7 @@ import uuid
 from typing import Any
 
 from agentic_core.runtime.core.telemetry import TraceEvent
-from agentic_core.runtime.types.core_contracts import AgentPlan
+from agentic_core.runtime.types.core_contracts_types import AgentPlan
 
 Logger: Any = logging.getLogger(__name__)
 

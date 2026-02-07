@@ -29,11 +29,11 @@ MIGRATION_MAP: dict[str, str] = {
     # Structure blueprint -> config
     r"from agentic_core\.L5_safety\.validators\.structure_blueprint_config import": "from agentic_core.config import",
     # Unified agents -> unified API
-    r"from agentic_core\.L5_safety\.unified\.code_validator_agent_types import CodeValidatorAgent": "from agentic_core.unified import CodeValidatorAgent",
+    r"from agentic_core\.L5_safety\.unified\.code_validation_types import CodeValidatorAgent": "from agentic_core.unified import CodeValidatorAgent",
     r"from agentic_core\.L5_safety\.unified\.StructureValidatorAgent import StructureValidatorAgent": "from agentic_core.unified import StructureValidatorAgent",
-    r"from agentic_core\.L5_safety\.unified\.code_enforcer_agent_types import CodeEnforcerAgent": "from agentic_core.unified import CodeEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.structure_enforcer_agent_types import StructureEnforcerAgent": "from agentic_core.unified import StructureEnforcerAgent",
-    r"from agentic_core\.L5_safety\.unified\.resource_manager_agent_types import ResourceManagerAgent": "from agentic_core.unified import ResourceManagerAgent",
+    r"from agentic_core\.L5_safety\.unified\.code_enforcement_types import CodeEnforcerAgent": "from agentic_core.unified import CodeEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.structure_enforcement_types import StructureEnforcerAgent": "from agentic_core.unified import StructureEnforcerAgent",
+    r"from agentic_core\.L5_safety\.unified\.resource_types import ResourceManagerAgent": "from agentic_core.unified import ResourceManagerAgent",
     # HealerMixin -> SSOT location
     r"from agentic_core\.L5_safety\.validators\.healer_mixin import": "from agentic_core.mixins.healer_mixin import",
     r"from agentic_core\.L5_safety\.guardrails\.healer_mixin import": "from agentic_core.mixins.healer_mixin import",

@@ -22,6 +22,9 @@ GRACEFUL_DEGRADATION: bool = os.getenv("GRACEFUL_DEGRADATION", "true").lower() =
 # Enable cache metrics collection for dashboard visibility
 CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower() == "true"
 
+# Feature flag to enable/disable Pinecone vector store
+USE_PINECONE: bool = os.getenv("USE_PINECONE", "false").lower() == "true"
+
 
 # =============================================================================
 # File Discovery configuration
@@ -79,8 +82,9 @@ AUTO_ARCHIVE_ENABLED: bool = True
 # =============================================================================
 
 __all__ = [
-    # Redis
+    # Redis / Pinecone
     "USE_REDIS_CACHE",
+    "USE_PINECONE",
     "GRACEFUL_DEGRADATION",
     "CACHE_METRICS_ENABLED",
     # File Discovery

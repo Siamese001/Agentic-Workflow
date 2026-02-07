@@ -2,13 +2,13 @@ from __future__ import annotations
 
 """
 RESIDUAL SWEEP COMPLETE: Phase 2C
-All models centralized in sovereign SSOT: agentic_core/runtime/types/core_contracts.py
+All models centralized in sovereign SSOT: agentic_core/runtime/types/core_contracts_types.py
 
 Note: Some models renamed to avoid conflicts:
 - AgentMessage -> ResidualAgentMessage
 - ValidationResult -> ResidualValidationResult
 """
-from agentic_core.runtime.types.core_contracts import (
+from agentic_core.runtime.types.core_contracts_types import (
     AgentResponse,
     CircuitState,
     GateDecision,

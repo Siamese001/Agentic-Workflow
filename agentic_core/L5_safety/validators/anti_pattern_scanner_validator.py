@@ -6,7 +6,7 @@ Integrates with Guardian tests and HygieneGuardianAgent for comprehensive
 code quality enforcement.
 
 Usage:
-    from agentic_core.L5_safety.validators.anti_pattern_scanner import AntiPatternScanner
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
 
     scanner = AntiPatternScanner(project_root)
     report = scanner.scan_repository()
@@ -18,25 +18,25 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.validators.base_detector import (
+from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     AntiPatternViolation,
     CompositeDetector,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.global_mutation_detector import (
+from agentic_core.L5_safety.validators.global_mutation_validator import (
     GlobalMutationDetector,
 )
-from agentic_core.L5_safety.validators.magic_config_detector import (
+from agentic_core.L5_safety.validators.magic_validator import (
     MagicConfigDetector,
 )
-from agentic_core.L5_safety.validators.path_fragility_detector import (
+from agentic_core.L5_safety.validators.path_fragility_validator import (
     PathFragilityDetector,
 )
-from agentic_core.L5_safety.validators.silent_swallower_detector import (
+from agentic_core.L5_safety.validators.silent_swallower_validator import (
     SilentSwallowerDetector,
 )
-from agentic_core.L5_safety.validators.type_erasure_detector import (
+from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
 

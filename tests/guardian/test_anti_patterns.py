@@ -19,23 +19,23 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.validators.base_detector import (
+from agentic_core.L5_safety.validators.base_detector_validator import (
     CompositeDetector,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.global_mutation_detector import (
+from agentic_core.L5_safety.validators.global_mutation_validator import (
     GlobalMutationDetector,
 )
-from agentic_core.L5_safety.validators.magic_config_detector import (
+from agentic_core.L5_safety.validators.magic_validator import (
     MagicConfigDetector,
 )
-from agentic_core.L5_safety.validators.path_fragility_detector import (
+from agentic_core.L5_safety.validators.path_fragility_validator import (
     PathFragilityDetector,
 )
-from agentic_core.L5_safety.validators.silent_swallower_detector import (
+from agentic_core.L5_safety.validators.silent_swallower_validator import (
     SilentSwallowerDetector,
 )
-from agentic_core.L5_safety.validators.type_erasure_detector import (
+from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
 
@@ -57,13 +57,13 @@ def temp_python_file():
 
 
 @pytest.fixture
-def silent_swallower_detector():
+def silent_swallower_validator():
     """Create a SilentSwallowerDetector instance."""
     return SilentSwallowerDetector(enforcement_level=EnforcementLevel.WARNING)
 
 
 @pytest.fixture
-def type_erasure_detector():
+def type_erasure_validator():
     """Create a TypeErasureDetector instance."""
     return TypeErasureDetector(
         enforcement_level=EnforcementLevel.WARNING,
@@ -72,19 +72,19 @@ def type_erasure_detector():
 
 
 @pytest.fixture
-def path_fragility_detector():
+def path_fragility_validator():
     """Create a PathFragilityDetector instance."""
     return PathFragilityDetector(enforcement_level=EnforcementLevel.WARNING)
 
 
 @pytest.fixture
-def magic_config_detector():
+def magic_validator():
     """Create a MagicConfigDetector instance."""
     return MagicConfigDetector(enforcement_level=EnforcementLevel.WARNING)
 
 
 @pytest.fixture
-def global_mutation_detector():
+def global_mutation_validator():
     """Create a GlobalMutationDetector instance."""
     return GlobalMutationDetector(enforcement_level=EnforcementLevel.WARNING)
 
@@ -97,7 +97,7 @@ def global_mutation_detector():
 class TestSilentSwallowerDetector:
     """Tests for silent exception swallowing detection."""
 
-    def test_detects_bare_except(self, silent_swallower_detector, temp_python_file):
+    def test_detects_bare_except(self, silent_swallower_validator, temp_python_file):
         """Bare except clauses should be detected."""
         code = """
 def risky_function():
@@ -107,13 +107,13 @@ def risky_function():
         pass
 """
         file_path = temp_python_file(code)
-        result = silent_swallower_detector.scan_file(file_path)
+        result = silent_swallower_validator.scan_file(file_path)
 
         assert result.has_violations
         assert result.violation_count >= 1
         assert any("bare except" in v.message.lower() for v in result.violations)
 
-    def test_detects_exception_with_pass(self, silent_swallower_detector, temp_python_file):
+    def test_detects_exception_with_pass(self, silent_swallower_validator, temp_python_file):
         """except Exception with only pass should be detected."""
         code = """
 def risky_function():
@@ -123,12 +123,12 @@ def risky_function():
         pass
 """
         file_path = temp_python_file(code)
-        result = silent_swallower_detector.scan_file(file_path)
+        result = silent_swallower_validator.scan_file(file_path)
 
         assert result.has_violations
         assert result.violation_count >= 1
 
-    def test_allows_exception_with_raise(self, silent_swallower_detector, temp_python_file):
+    def test_allows_exception_with_raise(self, silent_swallower_validator, temp_python_file):
         """except Exception with raise should NOT be detected."""
         code = """
 def risky_function():
@@ -139,11 +139,11 @@ def risky_function():
         raise
 """
         file_path = temp_python_file(code)
-        result = silent_swallower_detector.scan_file(file_path)
+        result = silent_swallower_validator.scan_file(file_path)
 
         assert not result.has_violations
 
-    def test_allows_exception_with_return_false(self, silent_swallower_detector, temp_python_file):
+    def test_allows_exception_with_return_false(self, silent_swallower_validator, temp_python_file):
         """except Exception with return False should NOT be detected."""
         code = """
 def risky_function():
@@ -155,11 +155,11 @@ def risky_function():
         return False
 """
         file_path = temp_python_file(code)
-        result = silent_swallower_detector.scan_file(file_path)
+        result = silent_swallower_validator.scan_file(file_path)
 
         assert not result.has_violations
 
-    def test_respects_whitelist_comment(self, silent_swallower_detector, temp_python_file):
+    def test_respects_whitelist_comment(self, silent_swallower_validator, temp_python_file):
         """Whitelist comment should suppress detection."""
         code = """
 def risky_function():
@@ -170,7 +170,7 @@ def risky_function():
         pass
 """
         file_path = temp_python_file(code)
-        result = silent_swallower_detector.scan_file(file_path)
+        result = silent_swallower_validator.scan_file(file_path)
 
         # Should not have violations due to whitelist
         assert not result.has_violations
@@ -184,7 +184,7 @@ def risky_function():
 class TestTypeErasureDetector:
     """Tests for type erasure detection."""
 
-    def test_detects_dict_return_type(self, type_erasure_detector, temp_python_file):
+    def test_detects_dict_return_type(self, type_erasure_validator, temp_python_file):
         """Functions returning dict should be detected."""
         code = """
 class TestAgent:
@@ -192,12 +192,12 @@ class TestAgent:
         return {"result": data}
 """
         file_path = temp_python_file(code)
-        result = type_erasure_detector.scan_file(file_path)
+        result = type_erasure_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("dict" in v.message for v in result.violations)
 
-    def test_detects_any_return_type(self, type_erasure_detector, temp_python_file):
+    def test_detects_any_return_type(self, type_erasure_validator, temp_python_file):
         """Functions returning Any should be detected."""
         code = """
 from typing import Any
@@ -207,12 +207,12 @@ class TestAgent:
         return data
 """
         file_path = temp_python_file(code)
-        result = type_erasure_detector.scan_file(file_path)
+        result = type_erasure_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("Any" in v.message for v in result.violations)
 
-    def test_allows_specific_dict_types(self, type_erasure_detector, temp_python_file):
+    def test_allows_specific_dict_types(self, type_erasure_validator, temp_python_file):
         """Specific dict types like dict[str, str] should be allowed."""
         code = """
 class TestAgent:
@@ -220,12 +220,12 @@ class TestAgent:
         return {"result": data}
 """
         file_path = temp_python_file(code)
-        result = type_erasure_detector.scan_file(file_path)
+        result = type_erasure_validator.scan_file(file_path)
 
         # dict[str, str] is in allowed types
         assert not result.has_violations
 
-    def test_ignores_private_methods(self, type_erasure_detector, temp_python_file):
+    def test_ignores_private_methods(self, type_erasure_validator, temp_python_file):
         """Private methods should be ignored."""
         code = """
 class TestAgent:
@@ -233,11 +233,11 @@ class TestAgent:
         return {"result": data}
 """
         file_path = temp_python_file(code)
-        result = type_erasure_detector.scan_file(file_path)
+        result = type_erasure_validator.scan_file(file_path)
 
         assert not result.has_violations
 
-    def test_ignores_to_dict_methods(self, type_erasure_detector, temp_python_file):
+    def test_ignores_to_dict_methods(self, type_erasure_validator, temp_python_file):
         """to_dict methods should be ignored."""
         code = """
 class TestAgent:
@@ -245,7 +245,7 @@ class TestAgent:
         return {"name": self.name}
 """
         file_path = temp_python_file(code)
-        result = type_erasure_detector.scan_file(file_path)
+        result = type_erasure_validator.scan_file(file_path)
 
         assert not result.has_violations
 
@@ -258,7 +258,7 @@ class TestAgent:
 class TestPathFragilityDetector:
     """Tests for path fragility detection."""
 
-    def test_detects_os_path_join(self, path_fragility_detector, temp_python_file):
+    def test_detects_os_path_join(self, path_fragility_validator, temp_python_file):
         """os.path.join should be detected."""
         code = """
 import os
@@ -267,12 +267,12 @@ def get_path():
     return os.path.join("base", "subdir", "file.txt")
 """
         file_path = temp_python_file(code)
-        result = path_fragility_detector.scan_file(file_path)
+        result = path_fragility_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("os.path.join" in v.message for v in result.violations)
 
-    def test_detects_os_getcwd(self, path_fragility_detector, temp_python_file):
+    def test_detects_os_getcwd(self, path_fragility_validator, temp_python_file):
         """os.getcwd should be detected."""
         code = """
 import os
@@ -281,12 +281,12 @@ def get_current_dir():
     return os.getcwd()
 """
         file_path = temp_python_file(code)
-        result = path_fragility_detector.scan_file(file_path)
+        result = path_fragility_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("os.getcwd" in v.message for v in result.violations)
 
-    def test_detects_os_path_exists(self, path_fragility_detector, temp_python_file):
+    def test_detects_os_path_exists(self, path_fragility_validator, temp_python_file):
         """os.path.exists should be detected."""
         code = """
 import os
@@ -295,12 +295,12 @@ def check_file(path):
     return os.path.exists(path)
 """
         file_path = temp_python_file(code)
-        result = path_fragility_detector.scan_file(file_path)
+        result = path_fragility_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("os.path.exists" in v.message for v in result.violations)
 
-    def test_allows_pathlib_usage(self, path_fragility_detector, temp_python_file):
+    def test_allows_pathlib_usage(self, path_fragility_validator, temp_python_file):
         """pathlib.Path usage should NOT be detected."""
         code = """
 from pathlib import Path
@@ -312,7 +312,7 @@ def check_file(path):
     return Path(path).exists()
 """
         file_path = temp_python_file(code)
-        result = path_fragility_detector.scan_file(file_path)
+        result = path_fragility_validator.scan_file(file_path)
 
         assert not result.has_violations
 
@@ -325,7 +325,7 @@ def check_file(path):
 class TestMagicConfigDetector:
     """Tests for magic configuration detection."""
 
-    def test_detects_hardcoded_model_name(self, magic_config_detector, temp_python_file):
+    def test_detects_hardcoded_model_name(self, magic_validator, temp_python_file):
         """Hardcoded model names should be detected."""
         code = """
 def get_model():
@@ -333,36 +333,36 @@ def get_model():
     return model
 """
         file_path = temp_python_file(code)
-        result = magic_config_detector.scan_file(file_path)
+        result = magic_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("model" in v.message.lower() for v in result.violations)
 
-    def test_detects_hardcoded_timeout(self, magic_config_detector, temp_python_file):
+    def test_detects_hardcoded_timeout(self, magic_validator, temp_python_file):
         """Hardcoded timeout values should be detected."""
         code = """
 def call_api(timeout=30):
     pass
 """
         file_path = temp_python_file(code)
-        result = magic_config_detector.scan_file(file_path)
+        result = magic_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("timeout" in v.message.lower() for v in result.violations)
 
-    def test_detects_hardcoded_threshold(self, magic_config_detector, temp_python_file):
+    def test_detects_hardcoded_threshold(self, magic_validator, temp_python_file):
         """Hardcoded threshold values should be detected."""
         code = """
 class Validator:
     relevance_threshold = 0.75
 """
         file_path = temp_python_file(code)
-        result = magic_config_detector.scan_file(file_path)
+        result = magic_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("threshold" in v.message.lower() for v in result.violations)
 
-    def test_allows_zero_and_one(self, magic_config_detector, temp_python_file):
+    def test_allows_zero_and_one(self, magic_validator, temp_python_file):
         """0 and 1 should not be flagged as magic numbers."""
         code = """
 def initialize():
@@ -370,7 +370,7 @@ def initialize():
     enabled = 1
 """
         file_path = temp_python_file(code)
-        result = magic_config_detector.scan_file(file_path)
+        result = magic_validator.scan_file(file_path)
 
         # 0 and 1 are allowed
         assert not result.has_violations
@@ -384,7 +384,7 @@ def initialize():
 class TestGlobalMutationDetector:
     """Tests for global mutation detection."""
 
-    def test_detects_sys_path_insert(self, global_mutation_detector, temp_python_file):
+    def test_detects_sys_path_insert(self, global_mutation_validator, temp_python_file):
         """sys.path.insert should be detected."""
         code = """
 import sys
@@ -392,12 +392,12 @@ import sys
 sys.path.insert(0, "/some/path")
 """
         file_path = temp_python_file(code)
-        result = global_mutation_detector.scan_file(file_path)
+        result = global_mutation_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("sys.path.insert" in v.message for v in result.violations)
 
-    def test_detects_sys_path_append(self, global_mutation_detector, temp_python_file):
+    def test_detects_sys_path_append(self, global_mutation_validator, temp_python_file):
         """sys.path.append should be detected."""
         code = """
 import sys
@@ -405,12 +405,12 @@ import sys
 sys.path.append("/some/path")
 """
         file_path = temp_python_file(code)
-        result = global_mutation_detector.scan_file(file_path)
+        result = global_mutation_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("sys.path.append" in v.message for v in result.violations)
 
-    def test_detects_environ_assignment(self, global_mutation_detector, temp_python_file):
+    def test_detects_environ_assignment(self, global_mutation_validator, temp_python_file):
         """os.environ['KEY'] = value should be detected."""
         code = """
 import os
@@ -418,12 +418,12 @@ import os
 os.environ["MY_VAR"] = "value"
 """
         file_path = temp_python_file(code)
-        result = global_mutation_detector.scan_file(file_path)
+        result = global_mutation_validator.scan_file(file_path)
 
         assert result.has_violations
         assert any("os.environ" in v.message for v in result.violations)
 
-    def test_allows_environ_get(self, global_mutation_detector, temp_python_file):
+    def test_allows_environ_get(self, global_mutation_validator, temp_python_file):
         """os.environ.get should NOT be detected (read-only)."""
         code = """
 import os
@@ -431,7 +431,7 @@ import os
 value = os.environ.get("MY_VAR", "default")
 """
         file_path = temp_python_file(code)
-        result = global_mutation_detector.scan_file(file_path)
+        result = global_mutation_validator.scan_file(file_path)
 
         assert not result.has_violations
 

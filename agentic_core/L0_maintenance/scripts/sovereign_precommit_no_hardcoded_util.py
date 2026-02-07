@@ -63,7 +63,7 @@ def check_file(filepath: Any) -> Any:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: sovereign_precommit_no_hardcoded_config_util.py <file1> <file2> ...")
+        print("Usage: sovereign_precommit_no_hardcoded_util.py <file1> <file2> ...")
         sys.exit(0)
     all_passed: Any = True
     for filepath in sys.argv[1:]:

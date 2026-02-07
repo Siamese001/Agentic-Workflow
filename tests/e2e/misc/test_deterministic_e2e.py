@@ -26,7 +26,7 @@ from agentic_core.L5_safety.validators.content_quality_validator import (
 from agentic_core.L5_safety.validators.deliverability_validator import (
     DeliverabilityValidator,
 )
-from agentic_core.L5_safety.validators.governance_shield_validator import (
+from agentic_core.L5_safety.validators.governance_validator import (
     GovernanceShieldValidator,
 )
 from agentic_core.L5_safety.validators.hop_validator import (

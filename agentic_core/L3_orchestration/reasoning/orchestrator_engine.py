@@ -391,7 +391,7 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         # Risk 4: Integrate CredentialScannerAgent
         try:
-            from agentic_core.L5_safety.validators.credential_scanner_agent_types import (
+            from agentic_core.L5_safety.validators.credential_types import (
                 CredentialScannerAgent,
             )
 

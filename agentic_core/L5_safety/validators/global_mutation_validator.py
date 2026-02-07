@@ -12,7 +12,7 @@ Pattern Detection:
 import ast
 from pathlib import Path
 
-from .base_detector_config import (
+from .base_detector_validator_config import (
     AntiPatternCategory,
     AntiPatternDetector,
     AntiPatternViolation,

@@ -7,7 +7,7 @@ ValidatorMixin - Unified Validation Access for Agents
 from typing import Any
 
 try:
-    from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+    from agentic_core.L5_safety.types.healing_orchestration_types import (
         ValidatorOrchestrator,
         get_validator_orchestrator,
     )

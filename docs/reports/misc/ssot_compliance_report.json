@@ -2399,7 +2399,7 @@
       "compliant": false
     },
     {
-      "path": "agentic_core\\L5_safety\\validators\\healing_strategy_mixin.py",
+      "path": "agentic_core\\L5_safety\\validators\\healing_mixin.py",
       "classification": "ORCHESTRATOR",
       "expected_naming": "PascalCase.py",
       "is_naming_compliant": false,
@@ -8285,7 +8285,7 @@
       "compliant": false
     },
     {
-      "path": "archives\\core_contracts_monolithic_20260101\\core_contracts.py",
+      "path": "archives\\core_contracts_types_monolithic_20260101\\core_contracts_types.py",
       "classification": "TYPES",
       "expected_naming": "snake_case_types.py",
       "is_naming_compliant": false,
@@ -17823,7 +17823,7 @@
           "compliant": true
         },
         {
-          "path": "agentic_core\\base_agents\\cost_guardrail_mixin.py",
+          "path": "agentic_core\\base_agents\\cost_mixin.py",
           "classification": "CLASS",
           "expected_naming": "Preserved (no changes)",
           "is_naming_compliant": true,
@@ -24645,7 +24645,7 @@
           "compliant": false
         },
         {
-          "path": "agentic_core\\L5_safety\\validators\\healing_strategy_mixin.py",
+          "path": "agentic_core\\L5_safety\\validators\\healing_mixin.py",
           "classification": "ORCHESTRATOR",
           "expected_naming": "PascalCase.py",
           "is_naming_compliant": false,
@@ -35403,7 +35403,7 @@
           "compliant": false
         },
         {
-          "path": "archives\\bloat_elimination_2026_01\\empty_stubs\\agentic_core\\config\\blueprint_sovereign\\core_contracts.py",
+          "path": "archives\\bloat_elimination_2026_01\\empty_stubs\\agentic_core\\config\\blueprint_sovereign\\core_contracts_types.py",
           "classification": "UTILITY",
           "expected_naming": "snake_case.py",
           "is_naming_compliant": true,
@@ -39090,10 +39090,10 @@
       "classifications": "{'TYPES', 'SCRIPT', 'ORCHESTRATOR'}",
       "violations": 12
     },
-    "archives\\core_contracts_monolithic_20260101": {
+    "archives\\core_contracts_types_monolithic_20260101": {
       "files": [
         {
-          "path": "archives\\core_contracts_monolithic_20260101\\core_contracts.py",
+          "path": "archives\\core_contracts_types_monolithic_20260101\\core_contracts_types.py",
           "classification": "TYPES",
           "expected_naming": "snake_case_types.py",
           "is_naming_compliant": false,
@@ -61719,7 +61719,7 @@
           "compliant": true
         },
         {
-          "path": "archives\\observability\\logic\\inspection\\dag_runtime_inspector.py",
+          "path": "archives\\observability\\logic\\inspection\\dag_runtime_inspector_validator.py",
           "classification": "CLASS",
           "expected_naming": "Preserved (no changes)",
           "is_naming_compliant": true,
@@ -73668,7 +73668,7 @@
           "compliant": true
         },
         {
-          "path": "tests\\unit\\agentic_core\\L3_orchestration\\workflow_engines\\test_dag_runtime_inspector_agent.py",
+          "path": "tests\\unit\\agentic_core\\L3_orchestration\\workflow_engines\\test_dag_runtime_inspector_validator_agent.py",
           "classification": "TEST",
           "expected_naming": "test_*.py or *_test.py",
           "is_naming_compliant": true,

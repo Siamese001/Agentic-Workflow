@@ -1,5 +1,5 @@
 """
-Emergency Fix Script: Remove ALL underscore prefixes from dataclass fields in core_contracts.py
+Emergency Fix Script: Remove ALL underscore prefixes from dataclass fields in core_contracts_types.py
 Session 5 - Critical Issue Resolution
 """
 
@@ -56,8 +56,8 @@ def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:
 
 
 def main():
-    """Run the fix on core_contracts.py"""
-    file_path = Path(r"c:\Git\Agentic-Workflow\agentic_core\schemas\models\core_contracts.py")
+    """Run the fix on core_contracts_types.py"""
+    file_path = Path(r"c:\Git\Agentic-Workflow\agentic_core\schemas\models\core_contracts_types.py")
 
     print("=" * 70)
     print("EMERGENCY FIX: Removing ALL dataclass underscore prefixes")

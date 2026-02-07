@@ -5,7 +5,7 @@ HealingStrategyMixin - Unified Healing Access for Agents
 """
 
 try:
-    from agentic_core.L5_safety.types.healing_orchestration_suite_types import (
+    from agentic_core.L5_safety.types.healing_orchestration_types import (
         HealingSovereignOrchestrator,
         get_healing_orchestrator,
     )
