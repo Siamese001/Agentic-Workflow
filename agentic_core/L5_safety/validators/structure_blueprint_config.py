@@ -193,8 +193,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
                     },
                     "tools": {
-                        "purpose": "Concrete tool implementations (capabilities the agent can invoke).",
-                        "allowed_suffixes": ["_tool.py", "_function.py", "_skill.py"],
+                        "purpose": "Standardized tool implementations — strict naming enforced.",
+                        "allowed_suffixes": ["_impl.py", "_agent.py", "_client.py", "_util.py", "_service.py", "_executor.py"],
+                        "forbidden_suffixes": ["_tool.py"],
                     },
                     "mcp": {"purpose": "Model Context Protocol clients, gateways, and sovereign agents."},
                     "sandbox": {
@@ -206,17 +207,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "engine": ["_executor.py", "_runner.py", "_client.py", "_registry.py", "_manager.py"],
                     "config": ["_config.py", "_settings.py"],
                     "types": ["_types.py", "_schema.py", "_model.py", "_protocol.py"],
-                    "tools": ["_tool.py", "_function.py", "_skill.py"],
+                    "tools": ["_impl.py", "_agent.py", "_client.py", "_util.py", "_service.py", "_executor.py"],
                     "sandbox": ["_env.py", "_jail.py", "_container.py", "_sandbox.py"],
                 },
                 "forbidden_suffixes": {
                     "engine": ["_config.py", "_types.py"],
                     "config": ["_types.py", "_tool.py"],
                     "types": ["_config.py", "_engine.py", "_agent.py"],
-                    "tools": ["_config.py", "_types.py"],
+                    "tools": ["_config.py", "_types.py", "_tool.py"],
                 },
                 "routing_rules": {
-                    "*_tool.py": "tools",
+                    "*_impl.py": "tools",
                     "*_config.py": "config",
                     "*_types.py": "types",
                     "*_protocol.py": "types",
