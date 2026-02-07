@@ -37,7 +37,7 @@ from agentic_core.L3_orchestration.engine.recursion_monitor_types import (
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L3_orchestration.engine.recursive_orchestrator_types import (
+from agentic_core.L3_orchestration.orchestrators.recursive_orchestrator_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

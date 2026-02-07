@@ -36,7 +36,7 @@ class TestDecompositionOrchestratorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.engine.decomposition_orchestratorAgent import (
+            from agentic_core.L3_orchestration.orchestrators.decomposition_orchestratorAgent import (
                 DecompositionOrchestratorAgent,
             )
 
@@ -85,7 +85,7 @@ class TestDecompositionOrchestratorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.engine.decomposition_orchestratorAgent import (
+                from agentic_core.L3_orchestration.orchestrators.decomposition_orchestratorAgent import (
                     DecompositionOrchestratorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
