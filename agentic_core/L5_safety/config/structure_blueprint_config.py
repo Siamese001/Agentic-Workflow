@@ -391,6 +391,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "The Legislature: policies, compliance rules, and audit definitions.",
                         "allowed_suffixes": ["_policy.py", "_compliance.py", "_audit.py"],
                     },
+                    "cognition": {
+                        "purpose": "The Conscience: AI-driven safety logic, batch processors, and strategies.",
+                        "allowed_suffixes": ["_processor.py", "_strategy.py", "_agent.py", "_disposition.py"],
+                    },
                     "guardrails": {
                         "purpose": "Operational L5 safety guardrail agents and components "
                         "(PII sanitizers, hygiene, red teaming, membranes, etc.)",
