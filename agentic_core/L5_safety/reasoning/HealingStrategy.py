@@ -253,7 +253,7 @@ class HealingStrategy:
                 return FilesystemSSOTReconcilerAgent(project_root=self.project_root)
 
             elif agent_name == "GitHygieneAgent":
-                from agentic_core.L5_safety.enforcement.GitHygieneAgent import GitHygieneAgent
+                from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
 
                 return GitHygieneAgent(project_root=self.project_root, ctx=None)
 

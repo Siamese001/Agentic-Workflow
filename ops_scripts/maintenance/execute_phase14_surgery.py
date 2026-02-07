@@ -146,7 +146,7 @@ import logging
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
-from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import get_embedding_gateway
+from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway
 
 Logger = logging.getLogger(__name__)
 

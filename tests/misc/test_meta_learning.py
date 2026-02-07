@@ -542,9 +542,9 @@ class TestTop12AgentsIntegration:
     def test_GravityLeakRepairAgent_caching(self, mock_ml_infrastructure):
         """Test GravityLeakRepairAgent AST analysis caching."""
         with patch(
-            "agentic_core.L5_safety.enforcement.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
+            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
         ):
-            agent = agentic_core.L5_safety.enforcement.GravityLeakRepairAgent()
+            agent = agentic_core.L5_safety.reasoning.GravityLeakRepairAgent()
 
             # Inject mock ML client
             agent.ml_cache_get = mock_ml_infrastructure.cache_get

@@ -82,7 +82,7 @@ class GatewayFactory:
         """Get or create embedding gateway singleton."""
         if cls._embedding_gateway is None:
             try:
-                from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
+                from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
                     get_embedding_gateway,
                 )
 

@@ -35,7 +35,7 @@ class TestAdversarialRedTeamerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.enforcement.AdversarialRedTeamerAgent import (
+            from agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent import (
                 AdversarialRedTeamerAgent,
             )
 
@@ -86,7 +86,7 @@ class TestAdversarialRedTeamerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.enforcement.AdversarialRedTeamerAgent import (
+                from agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent import (
                     AdversarialRedTeamerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

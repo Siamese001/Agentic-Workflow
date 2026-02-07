@@ -6,7 +6,7 @@ EmbeddingMixin - Unified Embedding Access for Agents
 
 from typing import Any, Literal
 
-# from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
+# from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
 #     get_embedding_gateway,
 #     EmbeddingSovereignAgent,
 # )

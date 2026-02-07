@@ -85,7 +85,7 @@ class HealingMemoryEmbedder:
         try:
             from pathlib import Path
 
-            from agentic_core.L2_execution.enforcement.EmbeddingSovereignAgent import (
+            from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
                 EmbeddingSovereignAgent,
             )
 

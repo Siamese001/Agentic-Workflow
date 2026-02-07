@@ -66,7 +66,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L5_safety.enforcement.ArchitectureGovernorAgent import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
 
