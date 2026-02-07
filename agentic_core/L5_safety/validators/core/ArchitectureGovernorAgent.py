@@ -55,7 +55,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 
 # [PHASE 24] Integrate L0 Maintenance Capability
-from agentic_core.L5_safety.policy_engine.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
+from agentic_core.L5_safety.policy_engine.ssot_cleanup_agent import SSOTFolderCleanupAgent
 from agentic_core.L5_safety.validators.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,

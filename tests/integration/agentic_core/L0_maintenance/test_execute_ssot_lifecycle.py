@@ -314,7 +314,7 @@ class TestDownstreamAgentIntegration(unittest.TestCase):
         files_to_check = [
             "agentic_core/L5_safety/validators/CognitiveDispositionAgent.py",
             "agentic_core/L5_safety/validators/ReflectionEngine.py",
-            "agentic_core/L5_safety/policy_engine/SafetyExecutorAgent.py",
+            "agentic_core/L5_safety/policy_engine/safety_executor_agent.py",
             "agentic_core/L5_safety/validators/ArchitectureGovernorAgent.py",
         ]
 

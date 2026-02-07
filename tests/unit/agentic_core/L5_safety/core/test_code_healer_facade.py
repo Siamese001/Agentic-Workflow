@@ -34,7 +34,7 @@ class TestCodeHealingStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create CodeHealingStrategy instance."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
             CodeHealingStrategy,
         )
 
@@ -66,7 +66,7 @@ class TestCodeHealerAgentFacade:
     def agent(self):
         """Create CodeHealerAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+            from agentic_core.L5_safety.policy_engine.code_healer_agent import (
                 CodeHealerAgent,
             )
 
@@ -82,7 +82,7 @@ class TestCodeHealerAgentFacade:
     def test_unified_strategy_initialized(self, agent):
         """Test unified strategy is initialized."""
         assert agent._unified_strategy is not None
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
             CodeHealingStrategy,
         )
 
@@ -138,7 +138,7 @@ class TestHealingTypes:
 
     def test_healing_type_enum(self):
         """Test HealingType enum exists."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import HealingType
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import HealingType
 
         assert hasattr(HealingType, "CANON")
         assert hasattr(HealingType, "IMPORT")
@@ -146,7 +146,7 @@ class TestHealingTypes:
 
     def test_healing_action_dataclass(self):
         """Test HealingAction dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import HealingAction
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import HealingAction
 
         action = HealingAction(
             healing_type="CANON",
@@ -162,7 +162,7 @@ class TestHealingTypes:
 
     def test_healer_config_dataclass(self):
         """Test HealerConfig dataclass exists."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import HealerConfig
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import HealerConfig
 
         config = HealerConfig()
 
@@ -177,20 +177,20 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
 
         assert CodeHealerAgent is not None
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
 
         assert issubclass(CodeHealerAgent, SovereignBaseAgent)
 
     def test_factory_functions_exist(self):
         """Test factory functions exist."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
             create_legacy_canon_healer,
             create_legacy_import_healer,
         )
@@ -200,7 +200,7 @@ class TestLegacyCompatibility:
 
     def test_stdlib_modules_constant(self):
         """Test STDLIB_MODULES constant exists."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
 
         assert hasattr(CodeHealerAgent, "STDLIB_MODULES")
         assert isinstance(CodeHealerAgent.STDLIB_MODULES, set)
@@ -208,7 +208,7 @@ class TestLegacyCompatibility:
 
     def test_atomic_write_method(self):
         """Test atomic_write method exists."""
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
 
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
             agent = CodeHealerAgent()

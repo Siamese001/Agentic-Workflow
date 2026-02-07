@@ -430,7 +430,7 @@ class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBase
         if self._import_agent is None:
             try:
                 # Phase 5 Migration: ImportAgent -> CodeHealerAgent
-                from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+                from agentic_core.L5_safety.policy_engine.code_healer_agent import (
                     create_legacy_import_healer,
                 )
 

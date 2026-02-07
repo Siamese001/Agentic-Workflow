@@ -336,7 +336,7 @@ class TestFullSystemIntegration:
         from agentic_core.L5_safety.gravity.gravity_leak_repair_agent import (
             GravityLeakRepairAgent,
         )
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
             CodeHealerAgent,
         )
         from agentic_core.L5_safety.validators.hierarchy_agent import HierarchyAgent

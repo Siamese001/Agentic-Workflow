@@ -43,7 +43,7 @@ def _get_naming_agent() -> Any:
 def _get_import_agent() -> Any:
     """Get import healer (Phase 5 Migration: ImportAgent -> CodeHealerAgent)."""
     try:
-        from agentic_core.L5_safety.policy_engine.CodeHealerAgent import (
+        from agentic_core.L5_safety.policy_engine.code_healer_agent import (
             create_legacy_import_healer,
         )
 
