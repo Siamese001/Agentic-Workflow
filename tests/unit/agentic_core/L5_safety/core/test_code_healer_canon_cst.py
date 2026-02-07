@@ -19,7 +19,7 @@ from agentic_core.L5_safety.types.cst_transformers_types import (
     SurgicalDocstringInserter,
     SurgicalFutureImportInserter,
 )
-from agentic_core.L5_safety.types.surgical_context import (
+from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
