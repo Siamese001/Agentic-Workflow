@@ -57,7 +57,7 @@ def _get_unified_agent_mapping() -> dict[str, type]:
     from agentic_core.L4_state.memory.checkpoint_manager import (
         CheckpointManagerAgent,
     )
-    from agentic_core.L4_state.memory.state_management_agent import (
+    from agentic_core.L3_orchestration.engine.state_management_engine import (
         StateManagementAgent,
     )
     from agentic_core.L5_safety.policy_engine.code_enforcer_agent_types import CodeEnforcerAgent
