@@ -6,9 +6,9 @@ Automatically syncs SOVEREIGN_MCP_REGISTRY from mcp_registry.py to Windsurf's mc
 This prevents configuration drift between the Python SSOT and the IDE configuration.
 
 Usage:
-    python scripts/sync_mcp_config_util.py           # Dry run (show changes)
-    python scripts/sync_mcp_config_util.py --apply   # Apply changes
-    python scripts/sync_mcp_config_util.py --verify  # Verify sync status only
+    python scripts/sync_mcp_util.py           # Dry run (show changes)
+    python scripts/sync_mcp_util.py --apply   # Apply changes
+    python scripts/sync_mcp_util.py --verify  # Verify sync status only
 
 Author: Cascade
 Date: January 19, 2026

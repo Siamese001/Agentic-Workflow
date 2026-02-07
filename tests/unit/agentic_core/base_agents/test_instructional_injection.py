@@ -185,7 +185,7 @@ class TestAgentInstructionalInjection:
 
     def test_naming_agent_has_injection(self):
         """Verify NamingAgent has instructional injection."""
-        from agentic_core.L5_safety.validators.naming_agent_validator import NamingAgent
+        from agentic_core.L5_safety.validators.naming_validator import NamingAgent
 
         assert hasattr(NamingAgent, "inject_safety_layer")
         assert hasattr(NamingAgent, "inject_all_layers")

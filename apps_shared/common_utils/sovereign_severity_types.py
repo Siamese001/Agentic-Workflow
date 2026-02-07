@@ -235,15 +235,15 @@ sovereign_event_categories = {
 }
 
 
-# NAMING FIXED: sovereign_base_model → sovereign_base_model
-class sovereign_base_model(BaseModel):
+# NAMING FIXED: sovereign_base_model_types → sovereign_base_model_types
+class sovereign_base_model_types(BaseModel):
     """Base model for all Sovereign entities with strict config."""
 
     model_config = ConfigDict(strict=True, frozen=True)
 
 
 # NAMING FIXED: Territory → territory
-class territory(sovereign_base_model):
+class territory(sovereign_base_model_types):
     """Brief description of functionality and purpose."""
 
     name: str
@@ -253,7 +253,7 @@ class territory(sovereign_base_model):
 
 
 # NAMING FIXED: AgentMessage → agent_message
-class agent_message(sovereign_base_model):
+class agent_message(sovereign_base_model_types):
     """Brief description of functionality and purpose."""
 
     source: str
@@ -650,8 +650,8 @@ class injection_pattern(BaseModel):
     enabled: bool = True
 
 
-# NAMING FIXED: CORE_CONTRACTS_REGISTRY → core_contracts_registry
-core_contracts_registry = {
+# NAMING FIXED: CORE_CONTRACTS_REGISTRY → core_contracts_types_registry
+core_contracts_types_registry = {
     # Base models
     "Territory": Territory,
     "AgentMessage": AgentMessage,
@@ -688,7 +688,7 @@ core_contracts_registry = {
 }
 
 # Backward compatibility alias for UPPER_CASE registry name
-CORE_CONTRACTS_REGISTRY = core_contracts_registry
+CORE_CONTRACTS_REGISTRY = core_contracts_types_registry
 
 # === Legacy P1 Core Profiles – Phase 2B Migration (Dec 2025) ===
 
@@ -886,8 +886,8 @@ class signal_context(BaseModel):
 # Safety Profile
 
 
-# NAMING FIXED: SafetyProfile → safety_profile
-class safety_profile(BaseModel):
+# NAMING FIXED: SafetyProfile → safety_profile_types
+class safety_profile_types(BaseModel):
     """Safety configuration profile used by execution profiles."""
 
     safety_tier: str = Field(
@@ -2450,7 +2450,7 @@ class mission_status(str, Enum):
 
 @dataclass(frozen=True)
 # NAMING FIXED: MissionPhase → mission_phase
-class mission_phase(sovereign_base_model):
+class mission_phase(sovereign_base_model_types):
     """A single phase of a mission."""
 
     name: str
@@ -2462,7 +2462,7 @@ class mission_phase(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: MissionPlan → mission_plan
-class mission_plan(sovereign_base_model):
+class mission_plan(sovereign_base_model_types):
     """
     Complete mission plan with Builder pattern support.
 
@@ -2597,7 +2597,7 @@ class mission_plan(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: ThinkingStep → thinking_step
-class thinking_step(sovereign_base_model):
+class thinking_step(sovereign_base_model_types):
     """A single step in a thought chain."""
 
     step_id: int
@@ -2608,7 +2608,7 @@ class thinking_step(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: RevisionStep → revision_step
-class revision_step(sovereign_base_model):
+class revision_step(sovereign_base_model_types):
     """A revision made to the thought chain."""
 
     revision_number: int
@@ -2620,7 +2620,7 @@ class revision_step(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: ThoughtChain → thought_chain
-class thought_chain(sovereign_base_model):
+class thought_chain(sovereign_base_model_types):
     """
     Thought chain for reasoning trace with Builder pattern support.
 
@@ -2719,7 +2719,7 @@ class thought_chain(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: ConstitutionalViolation → constitutional_violation
-class constitutional_violation(sovereign_base_model):
+class constitutional_violation(sovereign_base_model_types):
     """
     Constitutional violation record with Builder pattern support.
 
@@ -2835,7 +2835,7 @@ class constitutional_violation(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingAction → healing_action
-class healing_action(sovereign_base_model):
+class healing_action(sovereign_base_model_types):
     """
     Healing action record with Builder pattern support.
 
@@ -2959,7 +2959,7 @@ class healing_action(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingCycle → healing_cycle
-class healing_cycle(sovereign_base_model):
+class healing_cycle(sovereign_base_model_types):
     """
     Healing cycle record with Builder pattern support.
 
@@ -3058,7 +3058,7 @@ class healing_cycle(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: HealingReport → healing_report
-class healing_report(sovereign_base_model):
+class healing_report(sovereign_base_model_types):
     """
     Healing report for DDD compliance audits with Builder pattern support.
 
@@ -3160,7 +3160,7 @@ class healing_report(sovereign_base_model):
 
 @dataclass(frozen=True)
 # NAMING FIXED: SovereignEvent → sovereign_event
-class sovereign_event(sovereign_base_model):
+class sovereign_event(sovereign_base_model_types):
     """
     Sovereign event telemetry with Builder pattern support.
 

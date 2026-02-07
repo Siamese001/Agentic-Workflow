@@ -12,7 +12,7 @@ from pathlib import Path
 
 # Relative path from repo root or absolute check
 # NAMING FIXED: SSOT_TARGET → ssot_target
-ssot_target = "agentic_core/schemas/models/core_contracts.py"
+ssot_target = "agentic_core/schemas/models/core_contracts_types.py"
 
 
 # NAMING FIXED: UnderscoreVisitor → UnderscoreVisitor

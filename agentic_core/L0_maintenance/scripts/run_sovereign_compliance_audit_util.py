@@ -13,8 +13,8 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.code_validator_agent_types import CodeValidatorAgent
-from agentic_core.L5_safety.reasoning.structure_enforcer_agent_types import (
+from agentic_core.L5_safety.reasoning.code_validation_types import CodeValidatorAgent
+from agentic_core.L5_safety.reasoning.structure_enforcement_types import (
     StructureEnforcerAgent,
 )
 

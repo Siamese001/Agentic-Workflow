@@ -26,7 +26,7 @@ from agentic_core.interfaces.review_protocol import (
     ReviewRequest,
     ReviewStatus,
 )
-from agentic_core.interfaces.verification_protocol import (
+from agentic_core.interfaces.verification_types import (
     VerificationRequest,
 )
 from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter

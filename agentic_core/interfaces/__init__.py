@@ -17,7 +17,7 @@ from agentic_core.utils.detection_protocol import (
     DetectionSignalProtocol,
     Severity,
 )
-from agentic_core.utils.meta_learning_protocol import (
+from agentic_core.utils.meta_learning_types import (
     LearningContext,
     LearningResult,
     MetaLearningProtocol,
@@ -28,7 +28,7 @@ from agentic_core.utils.review_protocol import (
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.utils.verification_protocol import (
+from agentic_core.utils.verification_types import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,

@@ -33,7 +33,7 @@ except (ImportError, NameError, AttributeError):
     SectionIntegratorConfig = None
 
 try:
-    from apps_lic.shared.tools.safety_profile_validator import BudgetProfile
+    from apps_lic.shared.tools.safety_profile_types_validator import BudgetProfile
 except (ImportError, NameError, AttributeError):
     BudgetProfile = None
 

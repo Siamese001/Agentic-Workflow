@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .base_coordinator import WorkflowCoordinator, coordinator_registry
-from .execution_strategy_script import (
+from .execution_script import (
     STRATEGY_REGISTRY,
     ExecutionStatus,
     ExecutionStrategy,

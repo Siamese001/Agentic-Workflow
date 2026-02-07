@@ -24,7 +24,7 @@ from agentic_core.L3_orchestration.types import (
     ExecutionContext,
     ExecutionPhase,
 )
-from agentic_core.L3_orchestration.types.context_pruning_strategy_types import (
+from agentic_core.L3_orchestration.types.context_pruning_types import (
     AdaptiveDepthManager,
     ContextPruningStrategy,
 )
@@ -37,7 +37,7 @@ from agentic_core.L3_orchestration.reasoning.recursion_monitor_types import (
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L3_orchestration.reasoning.recursive_orchestrator_types import (
+from agentic_core.L3_orchestration.reasoning.recursive_orchestration_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
 )

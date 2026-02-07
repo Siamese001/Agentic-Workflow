@@ -32,7 +32,7 @@ class TestDagRuntimeInspectorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.reasoning.dag_runtime_inspector import (
+            from agentic_core.L3_orchestration.reasoning.dag_runtime_inspector_validator import (
                 DagRuntimeInspectorAgent,
             )
 
@@ -77,7 +77,7 @@ class TestDagRuntimeInspectorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.reasoning.dag_runtime_inspector import (
+                from agentic_core.L3_orchestration.reasoning.dag_runtime_inspector_validator import (
                     DagRuntimeInspectorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

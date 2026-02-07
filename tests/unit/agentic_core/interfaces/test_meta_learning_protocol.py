@@ -1,6 +1,6 @@
 """Tests for MetaLearningProtocol."""
 
-from agentic_core.utils.meta_learning_protocol import (
+from agentic_core.utils.meta_learning_types import (
     LearningContext,
     LearningResult,
     MetaLearningProtocol,

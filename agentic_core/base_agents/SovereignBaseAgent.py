@@ -43,10 +43,10 @@ from agentic_core.mixins.configuration_mixin import ConfigMixin
 from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
 from agentic_core.mixins.embedding_mixin import EmbeddingMixin
 from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
-from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
-from agentic_core.mixins.healing_strategy_mixin import HealingStrategyMixin
+from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+from agentic_core.mixins.healing_mixin import HealingStrategyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
-from agentic_core.L0_maintenance.enforcement.core_integrity_util import (
+from agentic_core.L0_maintenance.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )

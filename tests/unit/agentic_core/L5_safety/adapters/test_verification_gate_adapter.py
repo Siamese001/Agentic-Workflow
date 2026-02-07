@@ -3,7 +3,7 @@
 import os
 import tempfile
 
-from agentic_core.utils.verification_protocol import (
+from agentic_core.utils.verification_types import (
     VerificationRequest,
     VerificationResult,
 )
@@ -224,7 +224,7 @@ class TestVerificationGateAdapterProtocolCompliance:
 
     def test_implements_protocol(self):
         """Test that adapter implements VerificationGateProtocol."""
-        from agentic_core.utils.verification_protocol import (
+        from agentic_core.utils.verification_types import (
             VerificationGateProtocol,
         )
 

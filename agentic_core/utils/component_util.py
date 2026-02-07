@@ -11,9 +11,9 @@ from typing import Any
 from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.detection_protocol import DetectionSignalProtocol
 from agentic_core.utils.feature_flags import FeatureFlagManager
-from agentic_core.utils.meta_learning_protocol import MetaLearningProtocol
+from agentic_core.utils.meta_learning_types import MetaLearningProtocol
 from agentic_core.utils.review_protocol import HumanReviewProtocol
-from agentic_core.utils.verification_protocol import VerificationGateProtocol
+from agentic_core.utils.verification_types import VerificationGateProtocol
 
 logger = logging.getLogger(__name__)
 

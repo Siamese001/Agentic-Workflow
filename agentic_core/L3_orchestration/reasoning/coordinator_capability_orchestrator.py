@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-from .execution_strategy_script import ExecutionStatus, WorkflowContext, WorkflowResult
+from .execution_script import ExecutionStatus, WorkflowContext, WorkflowResult
 
 
 @dataclass

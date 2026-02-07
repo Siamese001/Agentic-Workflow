@@ -1085,7 +1085,7 @@
     {
       "layer": "Subfolder",
       "ssot_defined_path": "N/A",
-      "actual_path_found": "archives/core_contracts_monolithic_20260101",
+      "actual_path_found": "archives/core_contracts_types_monolithic_20260101",
       "status": "PASS_EXCLUDED",
       "drift_details": {
         "file_count_actual": 1,

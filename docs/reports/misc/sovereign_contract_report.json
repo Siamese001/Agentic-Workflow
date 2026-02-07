@@ -893,7 +893,7 @@
         "missing_dependencies": []
       },
       {
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\healing_strategy_mixin.py",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\healing_mixin.py",
         "class_name": "HealingStrategyMixin",
         "success": false,
         "error": "No module named 'agentic_core.L5_safety'",
@@ -8754,7 +8754,7 @@
       },
       {
         "class_name": "HealingStrategyMixin",
-        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\healing_strategy_mixin.py",
+        "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\validators\\healing_mixin.py",
         "error": "No module named 'agentic_core.L5_safety'",
         "error_line": 7,
         "missing_dependencies": [

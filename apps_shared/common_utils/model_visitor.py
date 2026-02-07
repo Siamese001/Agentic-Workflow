@@ -1,6 +1,6 @@
 """
 Sovereign Guard: Block Inline Pydantic models (Final Sovereign Version)
-Constitutional enforcement - all models must live in core_contracts.py
+Constitutional enforcement - all models must live in core_contracts_types.py
 Signal-based filtering with timestamped, prefixed logging
 """
 
@@ -29,7 +29,7 @@ contract_signals = (
     "Response",
 )
 # NAMING FIXED: EXEMPT → exempt
-exempt = {"agentic_core/schemas/models/core_contracts.py"}
+exempt = {"agentic_core/schemas/models/core_contracts_types.py"}
 
 
 # NAMING FIXED: ModelVisitor → ModelVisitor
@@ -45,7 +45,7 @@ class ModelVisitor(ast.NodeVisitor):
 
         if is_pydantic or (has_dataclass and is_contract):
             Logger.error(
-                f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts.py.",
+                f"BLOCKED: Inline contract '{node.name}' found at L{node.lineno}. Migrate to core_contracts_types.py.",
             )
             sys.exit(1)
         self.generic_visit(node)
