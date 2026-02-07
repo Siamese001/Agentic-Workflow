@@ -6,13 +6,16 @@
 
 ## Executive Summary
 
-The LCD+ migration underwent **hundreds of iterations** yet still failed to achieve golden state. This RCA identifies **5 systemic root causes** and proposes **architectural fixes** to prevent recurrence.
+The LCD+ migration underwent **hundreds of iterations** yet still failed to achieve golden state. This RCA identifies **8 systemic root causes** and proposes **architectural fixes** to prevent recurrence.
 
 **Total Errors Uncovered Post-Implementation:**
 - 153 files in wrong LCD folders (agents in enforcement/, types in config/, etc.)
 - 67 files with compound suffixes (*_types_config.py, *_validator_util.py)
 - 122 files with nested subdirs that should have been dissolved
 - ~200 stale import references requiring manual fix
+- 8 files in types/ without `_types.py` suffix
+- 11 files in utils/ without `_util.py` suffix
+- 44 files in L5/enforcement/ with inconsistent suffixes vs other layers
 
 ---
 
@@ -381,6 +384,90 @@ def classify_file_with_confidence(self, path: Path) -> ClassificationResult:
         warnings.append(f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up} ({scores[runner_up]})")
     
     return ClassificationResult(winner, confidence, self._get_signals(path), warnings)
+```
+
+---
+
+## Category 6: Types Folder Files Without `_types.py` Suffix
+
+**Files Affected:** 8 files across L1-L5
+
+| Layer | File | Renamed To |
+|-------|------|------------|
+| L1_cognition | `validation_protocol.py` | `validation_types.py` |
+| L2_execution | `mcp_client_protocol.py` | `mcp_client_types.py` |
+| L3_orchestration | `workflow_type.py` | `workflow_types.py` |
+| L4_state | `memory_item_schema.py` | `memory_item_types.py` |
+| L4_state | `state_validation_error.py` | `state_validation_types.py` |
+| L4_state | `validation_context_protocol.py` | `validation_context_types.py` |
+| L4_state | `vector_store_contract.py` | `vector_store_types.py` |
+| L5_safety | `surgical_context.py` | `surgical_context_types.py` |
+
+**Root Cause:** No enforcement that files in `types/` folders must end with `_types.py`. Files were placed in correct folder but with wrong suffix.
+
+**Exception:** `I*Protocol.py` files (e.g., `IOrchestratorProtocol.py`, `IValidatorProtocol.py`) are **correctly named** — the `I` prefix + `Protocol` suffix is the interface naming convention and these files correctly contain `typing.Protocol` definitions.
+
+**Fix Applied:** All 8 files renamed to `*_types.py` suffix. 10 import references updated.
+
+---
+
+## Category 7: Utils Folder Files Without `_util.py` Suffix
+
+**Files Affected:** 11 files across L4, L5, and runtime
+
+| Layer | File | Renamed To |
+|-------|------|------------|
+| L4_state | `circuit_breaker.py` | `circuit_breaker_util.py` |
+| L4_state | `rag_enhancement_utils.py` | `rag_enhancement_util.py` |
+| L5_safety | `capability_extractor.py` | `capability_extractor_util.py` |
+| L5_safety | `gravity_visitor.py` | `gravity_visitor_util.py` |
+| L5_safety | `security_controls.py` | `security_controls_util.py` |
+| L5_safety | `subprocess_security.py` | `subprocess_security_util.py` |
+| L5_safety | `unified_cst_healer.py` | `unified_cst_healer_util.py` |
+| runtime | `runtime_bootstrapper.py` | `runtime_bootstrapper_util.py` |
+| runtime | `sovereign_dependency_error_script.py` | `sovereign_dependency_error_util.py` |
+| runtime | `subatomic_hop_script.py` | `subatomic_hop_util.py` |
+| runtime | `trait_system.py` | `trait_system_util.py` |
+
+**Root Cause:** No enforcement that files in `utils/` folders must end with `_util.py`. Also note `*_script.py` files incorrectly placed in `utils/` instead of `enforcement/`.
+
+**Fix Applied:** All 11 files renamed to `*_util.py` suffix.
+
+---
+
+## Category 8: Enforcement Folder Suffix Inconsistency Across Layers
+
+**RCA: Why L5/enforcement has diverse suffixes but other layers don't**
+
+| Layer | enforcement/ Files | Suffix Distribution |
+|-------|-------------------|---------------------|
+| L0_maintenance | 2 | `_script` (1), OTHER (1) |
+| L1_cognition | 2 | `_script` (2) |
+| L2_execution | 5 | OTHER (4), `_manager` (1) |
+| L3_orchestration | 0 | — |
+| L4_state | 8 | OTHER (8) |
+| **L5_safety** | **44** | `_script` (11), `_guardrail` (5), `_enforcer` (2), `_gate` (2), `_manager` (2), OTHER (22) |
+| L6_observability | 1 | OTHER (1) |
+
+**Root Cause:** L5_safety is the **safety layer** with specialized enforcement concepts:
+- `_guardrail.py` — Input/output membrane filters
+- `_enforcer.py` — Active constraint enforcement
+- `_gate.py` — Access control checkpoints
+- `_manager.py` — Compliance/session management
+
+Other layers (L0-L4, L6) have simpler enforcement needs, so they use generic `_script.py` or no suffix.
+
+**Recommendation:** This is **NOT a bug** — it's intentional domain specialization. L5 safety enforcement requires semantic suffixes to distinguish guardrails from gates from enforcers. However, the LCD+ standard should be updated to document this:
+
+```python
+# structure_blueprint_config.py addition
+L5_ENFORCEMENT_ALLOWED_SUFFIXES = [
+    '_script.py',      # Generic enforcement scripts
+    '_guardrail.py',   # Input/output membrane filters
+    '_enforcer.py',    # Active constraint enforcement
+    '_gate.py',        # Access control checkpoints
+    '_manager.py',     # Compliance/session management
+]
 ```
 
 ---

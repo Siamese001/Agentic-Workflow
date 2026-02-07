@@ -21,7 +21,7 @@ from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L1_cognition.types.validation_protocol import IValidationProtocol
+from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
