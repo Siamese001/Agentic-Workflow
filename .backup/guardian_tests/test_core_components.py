@@ -9,7 +9,7 @@ from pathlib import Path
 # Critical files that must exist for system integrity (updated to match current structure)
 CRITICAL_FILES = [
     "agentic_core/L3_orchestration/engine/SovereignMcpRouterAgent.py",
-    "agentic_core/L5_safety/guardrails/MCPSovereignAuthority.py",
+    "agentic_core/L5_safety/security/mcp_sovereign_authority.py",
     "agentic_core/L2_execution/mcp/SovereignPineconeMcpClientAgent.py",
     "agentic_core/L2_execution/mcp/SovereignMCPGatewayAgent.py",
     "agentic_core/L2_execution/engine/WebSearchTools.py",
