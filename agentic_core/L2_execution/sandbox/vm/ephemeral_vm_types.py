@@ -13,7 +13,7 @@ from enum import Enum
 from typing import Any
 
 try:
-    from agentic_core.L2_execution.sandbox.firecracker_manager import FirecrackerManager
+    from agentic_core.L2_execution.sandbox.vm.firecracker_manager import FirecrackerManager
 except ImportError:
     FirecrackerManager = None  # type: ignore[misc,assignment]
 
