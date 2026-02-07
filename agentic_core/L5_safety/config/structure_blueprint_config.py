@@ -446,14 +446,57 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 },
             },
             "L6_observability": {
-                "purpose": "System-wide monitoring, audit, and cognitive repair (debate/synthesis).",
+                "purpose": "The Sensory Layer: Metrics, Logs, Tracing, and Dashboards.",
+                "notes": "Standard V10 structure. telemetry/ split into metrics/logs/tracing.",
                 "subfolders": {
-                    "agents": {"purpose": "Active healing and debate synthesis agents."},
-                    "dashboards": {"purpose": "Operational dashboards and visualizations."},
+                    "metrics": {
+                        "purpose": "Quantitative data: counters, gauges, collectors, performance metrics.",
+                        "allowed_suffixes": ["_metrics.py", "_gauge.py", "_counter.py", "_collector.py"],
+                    },
+                    "logs": {
+                        "purpose": "Structured event logging: loggers, handlers, formatters, sinks.",
+                        "allowed_suffixes": ["_logger.py", "_handler.py", "_formatter.py", "_sink.py", "_spy.py"],
+                    },
+                    "tracing": {
+                        "purpose": "Distributed tracing: tracers, spans, context propagation.",
+                        "allowed_suffixes": ["_tracer.py", "_span.py", "_context.py", "_propagator.py"],
+                    },
+                    "dashboards": {
+                        "purpose": "Operational dashboards, visualizations, and renderers.",
+                        "allowed_suffixes": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
+                    },
+                    "agents": {"purpose": "Active observability agents (monitoring, analysis, synthesis)."},
                     "engine": {"purpose": "Monitoring engines (UnifiedAgentMonitor, ExecutionTimer)."},
-                    "types": {"purpose": "Observability data models (ExecutionMetrics, AggregatedMetrics)."},
-                    "telemetry": {"purpose": "System telemetry and metrics collection."},
+                    "config": {
+                        "purpose": "Observability configuration and settings.",
+                        "allowed_suffixes": ["_config.py", "_settings.py"],
+                    },
+                    "types": {
+                        "purpose": "Observability data models (ExecutionMetrics, AggregatedMetrics).",
+                        "allowed_suffixes": ["_types.py", "_schema.py", "_model.py"],
+                    },
+                    "telemetry": {"purpose": "Legacy telemetry (being migrated to metrics/logs/tracing)."},
                     "reports": {"purpose": "Compliance and audit reports."},
+                    "utils": {"purpose": "Observability utility functions."},
+                },
+                "allowed_suffixes": {
+                    "metrics": ["_metrics.py", "_gauge.py", "_counter.py", "_collector.py"],
+                    "logs": ["_logger.py", "_handler.py", "_formatter.py", "_sink.py", "_spy.py"],
+                    "tracing": ["_tracer.py", "_span.py", "_context.py", "_propagator.py"],
+                    "dashboards": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
+                    "config": ["_config.py", "_settings.py"],
+                    "types": ["_types.py", "_schema.py", "_model.py"],
+                },
+                "routing_rules": {
+                    "*_metrics.py": "metrics",
+                    "*_collector.py": "metrics",
+                    "*_logger.py": "logs",
+                    "*_handler.py": "logs",
+                    "*_tracer.py": "tracing",
+                    "*_span.py": "tracing",
+                    "*_dashboard.py": "dashboards",
+                    "*_config.py": "config",
+                    "*_types.py": "types",
                 },
             },
             "config": {
