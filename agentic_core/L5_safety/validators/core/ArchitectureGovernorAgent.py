@@ -1409,7 +1409,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Logger.info(f"[{agent_name}] Found {len(violations)} violations to process")
 
         # Step 2: Initialize Batch Processor
-        from agentic_core.L5_safety.cognition.cognitive_batch_processor_validator import (
+        from agentic_core.L5_safety.cognition.cognitive_batch_processor import (
             CognitiveBatchProcessor,
         )
 
