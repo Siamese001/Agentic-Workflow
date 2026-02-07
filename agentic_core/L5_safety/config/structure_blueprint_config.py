@@ -431,6 +431,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {"purpose": "Safety utility functions."},
                 },
                 "allowed_suffixes": {
+                    "utils": ["_util.py", "_visitor.py", "_extractor.py", "_controls.py", "_security.py"],
                     "strategies": ["_strategy.py", "_logic.py", "_mitigator.py", "_guardrail.py"],
                     "runtime": ["_guard.py", "_handler.py", "_wrapper.py", "_violation.py"],
                     "red_teaming": ["_agent.py", "_probe.py", "_test.py", "_scenario.py"],
