@@ -433,7 +433,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "types": ["_types.py", "_schema.py", "_model.py"],
                     "validators": ["_validator.py", "_check.py", "_inspector.py", "_agent.py"],
                     "security": ["_guardrail.py", "_shield.py", "_firewall.py", "_sanitizer.py"],
-                    "governance": ["_policy.py", "_compliance.py", "_audit.py"],
+                    "governance": ["_policy.py", "_compliance.py", "_audit.py", "_registry.py", "_manager.py"],
                 },
                 "forbidden_suffixes": {
                     "config": ["_types.py", "_validator.py"],
