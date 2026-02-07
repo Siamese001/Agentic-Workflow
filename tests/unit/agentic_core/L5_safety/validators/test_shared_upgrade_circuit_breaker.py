@@ -66,7 +66,7 @@ class TestSharedUpgradeCircuitBreaker:
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.policy_engine.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.policy_engine.code_healer_agent.create_legacy_import_healer"
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
@@ -126,7 +126,7 @@ class TestSharedUpgradeCircuitBreaker:
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.policy_engine.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.policy_engine.code_healer_agent.create_legacy_import_healer"
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
@@ -187,7 +187,7 @@ class TestSharedUpgradeCircuitBreaker:
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.policy_engine.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.policy_engine.code_healer_agent.create_legacy_import_healer"
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
@@ -246,7 +246,7 @@ class TestSharedUpgradeCircuitBreaker:
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.policy_engine.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.policy_engine.code_healer_agent.create_legacy_import_healer"
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 

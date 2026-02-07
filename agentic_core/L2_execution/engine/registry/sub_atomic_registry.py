@@ -157,9 +157,9 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
     """
     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
     from agentic_core.L5_safety.policy_engine.code_detector_agent_types import CodeDetectorAgent
-    from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+    from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
     from agentic_core.L5_safety.policy_engine.safety_detector_agent_types import SafetyDetectorAgent
-    from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent
+    from agentic_core.L5_safety.policy_engine.safety_executor_agent import SafetyExecutorAgent
     from agentic_core.L5_safety.policy_engine.structure_healer_agent_types import (
         StructureHealerAgent,
     )

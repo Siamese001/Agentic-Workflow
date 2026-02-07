@@ -37,7 +37,7 @@ from agentic_core.L5_safety.policy_engine.code_validator_agent_types import (
 from agentic_core.L5_safety.policy_engine.resource_manager_agent_types import ResourceManagerAgent
 from agentic_core.L5_safety.policy_engine.safety_detector_agent_types import SafetyDetectorAgent
 
-# from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent  # Module not found
+# from agentic_core.L5_safety.policy_engine.safety_executor_agent import SafetyExecutorAgent  # Module not found
 from agentic_core.L5_safety.policy_engine.security_manager_agent_types import SecurityManagerAgent
 from agentic_core.L5_safety.policy_engine.structure_enforcer_agent_types import (
     StructureEnforcerAgent,

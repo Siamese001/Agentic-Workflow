@@ -20,7 +20,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.policy_engine.CodeDetectorAgent import CodeDetectorAgent
 from agentic_core.L5_safety.policy_engine.CodeEnforcerAgent import CodeEnforcerAgent
-from agentic_core.L5_safety.policy_engine.CodeHealerAgent import CodeHealerAgent
+from agentic_core.L5_safety.policy_engine.code_healer_agent import CodeHealerAgent
 from agentic_core.L5_safety.policy_engine.ResourceManagerAgent import ResourceManagerAgent
 from agentic_core.L5_safety.policy_engine.SafetyDetectorAgent import SafetyDetectorAgent
 

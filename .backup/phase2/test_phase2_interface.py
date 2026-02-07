@@ -19,10 +19,10 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.policy_engine.CodeValidatorAgent import CodeValidatorAgent
-from agentic_core.L5_safety.policy_engine.SafetyExecutorAgent import SafetyExecutorAgent
+from agentic_core.L5_safety.policy_engine.safety_executor_agent import SafetyExecutorAgent
 from agentic_core.L5_safety.policy_engine.SecurityManagerAgent import SecurityManagerAgent
 from agentic_core.L5_safety.policy_engine.StructureEnforcerAgent import StructureEnforcerAgent
-from agentic_core.L5_safety.policy_engine.StructureHealerAgent import StructureHealerAgent
+from agentic_core.L5_safety.policy_engine.structure_healer_agent import StructureHealerAgent
 
 
 class TestPhase2InterfaceCompliance(unittest.TestCase):
