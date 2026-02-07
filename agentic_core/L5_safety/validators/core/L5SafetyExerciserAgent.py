@@ -55,7 +55,7 @@ def _get_import_agent() -> Any:
 def _get_red_team_agent() -> Any:
     """Get red team agent."""
     try:
-        from agentic_core.L5_safety.red_teaming.RedTeamAgent import RedTeamAgent
+        from agentic_core.L5_safety.red_teaming.red_team_agent import RedTeamAgent
 
         return RedTeamAgent
     except Exception:

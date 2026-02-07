@@ -431,6 +431,8 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {"purpose": "Safety utility functions."},
                 },
                 "allowed_suffixes": {
+                    "red_teaming": ["_agent.py", "_probe.py", "_test.py", "_scenario.py"],
+                    "policy_engine": ["_agent.py", "_validator.py", "_enforcer.py", "_healer.py", "_analyzer.py", "_manager.py", "_detector.py", "_executor.py", "_cleanup.py"],
                     "gravity": ["_validator.py", "_scanner.py", "_auditor.py", "_agent.py", "_graph.py", "_info.py", "_fixer.py", "_enforcer.py", "_refactorer.py", "_medic.py", "_surgeon.py", "_trimmer.py", "_utils.py"],
                     "guardrails": ["_guardrail.py", "_scrubber.py", "_defense.py", "_mixin.py", "_vault.py"],
                     "human_review": ["_queue.py", "_portal.py", "_workflow.py"],
@@ -3774,7 +3776,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "RedTeamAgent",
-            "file": "agentic_core/L5_safety/red_teaming/RedTeamAgent.py",
+            "file": "agentic_core/L5_safety/red_teaming/red_team_agent.py",
             "methods": 3,
             "fingerprint": "d76f6932c53b7a77",
         },
