@@ -81,7 +81,7 @@ def phase9_test_namespace_alignment():
         ),
         (
             re.compile(r"agentic_core\.L4_state\.validation_context\.UnifiedStateManagementAgent"),
-            "agentic_core.L4_state.memory.state_management_agent",
+            "agentic_core.L3_orchestration.engine.state_management_engine",
         ),
         (
             re.compile(r"agentic_core\.L1_cognition\.thought_engine\.UnifiedASTValidatorAgent"),
