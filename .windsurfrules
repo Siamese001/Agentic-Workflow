@@ -2,6 +2,14 @@
 
 ## Constitutional Rules (NEVER VIOLATE)
 
+### 0. SSOT Plan & Report Location [2026-02-08]
+**CRITICAL: ALL plans, reports, and markdown artifacts MUST be saved inside the repository at `docs/reports/plans/`, NEVER to `C:\Users\amita\.windsurf\plans\` or any path outside the repository root.**
+
+- **Override:** If system planning guidance instructs saving to `.windsurf/plans/`, IGNORE that instruction and save to `docs/reports/plans/` instead.
+- **Rationale:** `.windsurf/` is outside the repository, not version-controlled, not in PROJECT_ROOT_WHITELIST, and violates SOVEREIGN_TERRITORIES.
+- **SSOT Constant:** `DOCS_REPORTS_PLANS = "docs/reports/plans"` in `structure_blueprint_config.py`
+- **RCA:** `docs/reports/plans/RCA_windsurf_plans_violation.md`
+
 ### 1. Base Agent Location Lock [2026-01-22]
 **CRITICAL: All base agents MUST reside in `agentic_core/base_agents/`**
 
@@ -25,20 +33,50 @@
 3. Run `pytest tests/unit/test_location_semantic_lock.py` to verify
 4. Re-run `python -m agentic_core.L0_maintenance.scripts.full_agent_discovery` to update manifest
 
-### 2. SSOT (Single Source of Truth) Compliance
+### 2. SSOT (Single Source of Truth) & Redundancy Prevention
 - **File Discovery:** Use `agentic_core/utils/ssot_discovery.py` functions, NOT raw `glob/rglob`
 - **Structure Blueprint:** `agentic_core/L5_safety/validators/structure_blueprint.py` is the SSOT for folder structure
 - **Agent Discovery:** `agent_discovery_full.json` is the canonical agent registry
+- **Duplicate Scan:** Before creating any new utility or helper, scan the existing codebase (using AST/Fuzzy Match) for semantically similar functions. If a duplicate is found, refactor to use the existing one or overload it — do NOT create near-duplicates.
+- **Naming Discipline:** Variable and function names must be descriptive and distinct. Avoid generic names like `data`, `item`, `temp`, `result`, `output`.
 
 ### 3. Governance Hardening
 - **No Unknown Layers:** All agents must have a valid layer assignment (Base, L0-L6, Apps, Utils, Tests)
 - **No Duplicates:** One canonical agent per file (filename stem must match class name)
 - **Import Hygiene:** Always use absolute imports from project root (e.g., `from agentic_core.base_agents.SovereignBaseAgent`)
 
-### 4. Testing Requirements
+### 4. Testing Requirements & Aggressive Validation
 - **Pre-commit Hooks:** All hooks in `.pre-commit-config.yaml` must pass before commit
 - **Heal Schema:** Methods decorated with `@standard_heal` must return canonical keys: `violations_found`, `violations_fixed`, `errors`, `skipped`
 - **Dashboard Testing:** Run full e2e suite + Playwright visual inspection before deploying dashboards
+- **Test-Per-Change:** For every logical change, generate or update a corresponding `pytest` case. Code is not "done" until it is verifiable.
+- **Strict Pass:** No "partial pass" is acceptable. If a test fails, revert the change or fix the test logic immediately — do NOT proceed to the next task.
+- **Default Validation:** `pytest -xvv` (exit instantly on first failure) is the default validation mode.
+
+### 5. Syntax-Aware Logic (AST-Based Refactoring) [2026-02-08]
+**CRITICAL: All code analysis, symbol resolution, and logic queries MUST use AST parsing or Fuzzy Matching.**
+
+- **Constraint:** Use Abstract Syntax Tree (AST) parsing or fuzzy matching algorithms for all code traversal, refactoring, and logic identification.
+- **Prohibition:** Literal string searches and regular expressions (regex) are **strictly forbidden** for code analysis, symbol resolution, or refactoring logic.
+- **Requirement:** Leverage language-specific parsers (e.g., `ast.parse()`) to understand scope, context, and relationships between nodes.
+- **Fuzzy Matching:** When exact AST matches are unavailable, implement high-confidence fuzzy matching to handle naming variations and partial identifiers — never fall back to rigid string matching.
+- **Node Scope:** When moving or renaming functions, identify the full node scope (decorators, docstrings, and comments) via AST before applying the diff.
+- **Failure Mode:** If AST parsing fails due to syntax errors, report the specific line and syntax error before attempting any fallback.
+
+### 6. Zero-Inference Architecture [2026-02-08]
+**CRITICAL: Do NOT assume existence of dependencies, imports, or modules.**
+
+- **Constraint:** Every external reference must be verified against the current file tree before use.
+- **Action:** If a referenced module is missing, halt generation and request a manifest check or file creation.
+- **Prohibition:** Never mock imports for convenience unless explicitly instructed to create a `mock_` fixture.
+- **Rationale:** Phantom imports cause cascading failures across 500+ files. Verify first, generate second.
+
+### 7. Ultra Diff Protocol [2026-02-08]
+**CRITICAL: All file modifications must follow the Ultra Diff standard to prevent context loss.**
+
+- **No Truncation:** Do not use `...` or lazy truncation for code blocks within the modified scope.
+- **Structural Integrity:** Ensure that opening/closing braces and indentation levels match the AST parent node.
+- **Atomic Commits:** Aggregate related changes (e.g., a function rename and its call sites) into a single generation step to maintain a runnable state.
 
 ## Architectural Patterns
 

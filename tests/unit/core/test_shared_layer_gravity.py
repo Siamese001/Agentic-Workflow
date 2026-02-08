@@ -114,7 +114,7 @@ class TestExtractLayerFromModule:
 
     def test_extract_layer_from_module_no_layer(self):
         """Should return None for modules without layer."""
-        module = "apps_shared.common_utils.helpers"
+        module = "apps_shared.utils.helpers"
         assert extract_layer_from_module(module) is None
 
     def test_extract_layer_starting_with_layer(self):

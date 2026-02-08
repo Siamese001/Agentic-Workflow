@@ -3,8 +3,8 @@
 from pathlib import Path
 
 root = Path("apps_lic/engines")
-old_import = "from apps_lic.shared.core.agent_base import LICAgentBase"
-new_import = "from apps_lic.shared.core.LICAgentBase import LICAgentBase"
+old_import = "from apps_lic.utils.LICAgentBase import LICAgentBase"
+new_import = "from apps_lic.utils.LICAgentBase import LICAgentBase"
 
 fixed_count = 0
 for py_file in root.glob("*.py"):

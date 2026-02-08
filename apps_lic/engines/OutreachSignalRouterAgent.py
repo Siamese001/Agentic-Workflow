@@ -38,8 +38,7 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
-
+    from apps_lic.engines import AppWorkflowOrchestratorAgent
     from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
 

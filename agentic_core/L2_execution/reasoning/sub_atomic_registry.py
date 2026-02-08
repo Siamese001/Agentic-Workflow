@@ -210,11 +210,11 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import (
         StructureValidatorAgent,
     )
-    from apps_lic.shared.validation.app_content_validator_agent_types import (
-        AppContentValidatorAgent,
-    )
 
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+    from apps_lic.types.ImmutableStagingBuffer import (  # LCD relocated
+        AppContentValidatorAgent,
+    )
 
     return {
         # Unified Code Validator (L5) - Single-pass AST validation

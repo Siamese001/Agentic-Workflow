@@ -462,7 +462,7 @@ class TestAppsShared:
     """apps_shared must also be treated as apps territory."""
 
     def test_apps_shared_agents_stay(self, agent, tmp_path):
-        """AGENT files in apps_shared/agents/ should stay."""
+        """AGENT files in apps_shared/utils/ should stay."""
         p = _write(tmp_path / "apps_shared" / "agents" / "SharedAgent.py", "class SharedAgent:\n    pass\n")
         result = agent.check_territory_violation(p, "AGENT")
         assert result is None
@@ -480,7 +480,7 @@ class TestAppsShared:
         assert result is None
 
     def test_apps_shared_mixins_stay(self, agent, tmp_path):
-        """MIXIN files in apps_shared/mixins/ should stay."""
+        """MIXIN files in apps_shared/utils/ should stay."""
         p = _write(tmp_path / "apps_shared" / "mixins" / "auth_mixin.py", "class AuthMixin:\n    pass\n")
         result = agent.check_territory_violation(p, "MIXIN")
         assert result is None

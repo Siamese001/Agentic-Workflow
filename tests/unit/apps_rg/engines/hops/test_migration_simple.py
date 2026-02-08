@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 def test_knowledge_base_loads():
     """Test that knowledge base is accessible."""
-    from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT
+    from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT
 
     assert FROZEN_SNAPSHOT.version == "v33.2"
     assert len(FROZEN_SNAPSHOT.nodes) == 12
@@ -22,7 +22,7 @@ def test_knowledge_base_loads():
 
 def test_knowledge_base_prompts():
     """Test prompt retrieval."""
-    from apps_rg.domain.knowledge_base import get_prompt
+    from apps_rg.config.knowledge_base import get_prompt
 
     # Test hyde generation prompt
     hyde = get_prompt("k1_hyde_generation")
@@ -32,7 +32,7 @@ def test_knowledge_base_prompts():
 
 def test_knowledge_base_node_configs():
     """Test node configuration retrieval."""
-    from apps_rg.domain.knowledge_base import get_node_config
+    from apps_rg.config.knowledge_base import get_node_config
 
     k9 = get_node_config("K.9")
     assert k9.name == "Leadership Competencies"
@@ -41,7 +41,7 @@ def test_knowledge_base_node_configs():
 
 def test_base_engine_structure():
     """Test BaseRGEngine structure."""
-    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
+    from apps_rg.engines.base_resume_agent import BaseRGEngine
     from pydantic import BaseModel
 
     class TestInput(BaseModel):
@@ -62,7 +62,7 @@ def test_base_engine_structure():
 
 def test_clerk_engine_structure():
     """Test ClerkExtractionEngine structure."""
-    from apps_rg.engines.hops.hop1_clerk_engine import (
+    from apps_rg.engines.hop1_clerk_engine import (
         ClerkExtractionEngine,
         ClerkInput,
         ClerkOutput,
@@ -95,8 +95,8 @@ def test_clerk_engine_structure():
 
 def test_enrichment_engine_structure():
     """Test EnrichmentEngine structure."""
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkOutput, ExperienceSection
-    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
+    from apps_rg.engines.hop1_clerk_engine import ClerkOutput, ExperienceSection
+    from apps_rg.engines.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
 
     engine = EnrichmentEngine()
 
@@ -121,7 +121,7 @@ def test_enrichment_engine_structure():
 
 def test_void_compliance_structure():
     """Test VoidComplianceEngine structure."""
-    from apps_rg.engines.safety.void_compliance_engine import ComplianceInput, VoidComplianceEngine
+    from apps_rg.engines.void_compliance_engine import ComplianceInput, VoidComplianceEngine
 
     engine = VoidComplianceEngine()
 
@@ -134,7 +134,7 @@ def test_void_compliance_structure():
 
 def test_orchestrator_structure():
     """Test ResumeOrchestratorEngine structure."""
-    from apps_rg.engines.orchestration.resume_orchestrator_engine import (
+    from apps_rg.engines.resume_orchestrator_engine import (
         OrchestratorInput,
         ResumeOrchestratorEngine,
         WorkflowState,
@@ -153,7 +153,7 @@ def test_orchestrator_structure():
 
 def test_pydantic_validation():
     """Test that Pydantic models enforce validation."""
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput
+    from apps_rg.engines.hop1_clerk_engine import ClerkInput
     from pydantic import ValidationError
 
     # Valid input

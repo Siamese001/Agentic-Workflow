@@ -213,50 +213,37 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Each file type lists ALL folders where it is legitimately allowed to reside.
         # Files are only moved if they are in a folder NOT in this list.
         self.app_territory_map = {
-            "AGENT": ["engines", "reasoning", "shared"],
+            "AGENT": ["engines", "reasoning"],
             "ORCHESTRATOR": ["engines", "reasoning"],
-            "STRATEGY": ["engines", "shared"],
-            "VALIDATOR": ["validation", "engines", "domain"],
+            "STRATEGY": ["engines", "reasoning"],
+            "VALIDATOR": ["validators"],
             "CONFIG": ["config"],
-            "TYPES": ["types", "domain", "engines", "shared"],
-            "CLASS": ["engines", "domain", "tools", "shared", "utils", "core", "reasoning"],
-            "MIXIN": ["shared", "mixins"],
-            "UTILITY": ["utils", "tools", "shared", "engines", "domain"],
-            "SCRIPT": ["scripts", "tools"],
-            "PROTOCOL": ["types", "domain"],
+            "TYPES": ["types"],
+            "CLASS": ["engines", "tools", "utils", "reasoning"],
+            "MIXIN": ["utils"],
+            "UTILITY": ["utils", "tools"],
+            "SCRIPT": ["scripts"],
+            "PROTOCOL": ["types"],
             "ENGINE": ["engines"],
-            "EXCEPTION": ["types", "domain"],
-            "FACTORY": ["engines", "domain"],
+            "EXCEPTION": ["types"],
+            "FACTORY": ["engines"],
             "GATEWAY": ["engines"],
-            "STUB": ["engines", "domain", "shared", "tools"],
+            "STUB": ["engines", "tools"],
         }
 
         # APPS VALID FOLDERS: All legitimate top-level subfolders in apps_* directories.
         # Files in any of these folders are considered "in sovereign territory" and are
         # NOT subject to territory moves unless explicitly miscategorized.
         self.apps_valid_folders = {
-            "engines",
-            "reasoning",
-            "types",
-            "tools",
-            "validation",
-            "shared",
-            "domain",
             "config",
-            "scripts",
+            "types",
+            "reasoning",
+            "engines",
+            "validators",
             "utils",
-            "core",
-            "logic_nodes",
-            "system_flow",
-            "asset_library",
-            "reports",
-            "mixins",
-            "agents",
-            "common_utils",
-            "core_components",
+            "tools",
+            "scripts",
             "data",
-            "integration",
-            "llm",
         }
 
         # STANDARD KERNEL: All layers should have these subfolders (LCD+ canonical skeleton)

@@ -61,8 +61,8 @@ class TestGlobalSystemIntegrity:
 
         # Verify V2.5 specific requirements
         required_dirs = CANON_VALIDATION_REGISTRY["required_dirs"]
-        assert "apps_lic/shared/core" in required_dirs
-        assert "apps_rg/shared/core" in required_dirs
+        assert "apps_lic/utils" in required_dirs
+        assert "apps_rg/utils" in required_dirs
         assert "agentic_core/base_agents" in required_dirs
 
         # Verify evicted patterns
@@ -101,9 +101,8 @@ class TestGlobalSystemIntegrity:
         Verify Phase 20 hardening standards are enforced.
         """
         # Test LIC Agent Base compliance
-        from apps_lic.shared.core.agent_base import LICAgentBase
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from apps_lic.utils.LICAgentBase import LICAgentBase
 
         # Verify inheritance chain
         assert issubclass(LICAgentBase, SovereignBaseAgent), (
@@ -149,8 +148,8 @@ class TestGlobalSystemIntegrity:
 
         # Verify V2.5 specific requirements
         required_dirs = CANON_VALIDATION_REGISTRY["required_dirs"]
-        assert "apps_lic/shared/core" in required_dirs
-        assert "apps_rg/shared/core" in required_dirs
+        assert "apps_lic/utils" in required_dirs
+        assert "apps_rg/utils" in required_dirs
         assert "agentic_core/base_agents" in required_dirs
 
         # Verify evicted patterns
@@ -185,9 +184,8 @@ class TestGlobalSystemIntegrity:
         """
         Verify LIC and RG domains maintain isolation while sharing core.
         """
-        from apps_lic.shared.core.agent_base import LICAgentBase
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_lic.utils.LICAgentBase import LICAgentBase
 
         # Both should inherit from SovereignBaseAgent but maintain domain specifics
         assert issubclass(LICAgentBase, RGAgentBase.__bases__[0]), "Both should share same base"

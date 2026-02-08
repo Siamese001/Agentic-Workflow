@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, TypeVar
 
-from apps_rg.shared.mixins import HealerMixin, MCPHardenedMixin
+from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 T = TypeVar("T")

@@ -23,17 +23,17 @@ except (ImportError, NameError, AttributeError):
     ModelConfig = RAGConfig = GovernorConfig = None
 
 try:
-    from apps_shared.common_utils.node_negotiator_config import NegotiationConfig
+    from apps_shared.config.node_negotiator_config import NegotiationConfig
 except (ImportError, NameError, AttributeError):
     NegotiationConfig = None
 
 try:
-    from apps_rg.shared.tools.validation_result_validator import SectionIntegratorConfig
+    from apps_rg.tools.validation_result_validator import SectionIntegratorConfig
 except (ImportError, NameError, AttributeError):
     SectionIntegratorConfig = None
 
 try:
-    from apps_lic.shared.tools.safety_profile_types_validator import BudgetProfile
+    from apps_lic.tools.safety_profile_types_validator import BudgetProfile
 except (ImportError, NameError, AttributeError):
     BudgetProfile = None
 

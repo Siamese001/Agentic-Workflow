@@ -4,6 +4,19 @@
 
 ---
 
+### FORENSIC GAP ANALYSIS: L3–L6 ADDENDUM (v5.1 Update)
+
+Based on a comprehensive forensic audit of the complete V15 diagram set (L0–L6) against Prompt v4.7, the following logic gaps were identified and hardened:
+
+| Diagram Source | Logic Gap Identified | Hardening Action |
+|----------------|----------------------|------------------|
+| **L3 Human Gate** | Human review requires a structured "Evidence Pack" (Policy Evals, Risk Scores, Snapshots) and supports "Bidirectional Policy Feedback" loop. | **Updated Cap 3.4**: Mandated `EvidencePack` schema and `PolicyUpdateProposal` emission on overrides. |
+| **L4 Knowledge** | Existence of a "Knowledge Supervisor" that performs "Dense Retraining" on low scores and "Outlier Detection". | **Added Cap 6.6**: Added "Knowledge Supervisor" audit check for low-confidence memory updates. |
+| **L5 Governance** | The "Artifact Guard" is a distinct component enforcing "Replay Comparison" and "Valid Signature Checks" separate from the standard Guardian. | **Updated Cap 7.2**: Split Guardian checks into "Guardrail Guard" (Policy) and "Artifact Guard" (Signatures/Replay). |
+| **L6 Observability** | L6 has a dedicated "Response Handler" that triggers "Self-Healing" directly, distinct from just logging. | **Updated Cap 5.4**: Added "Response Handler" capability to trigger L2 healing from L6 signals. |
+
+---
+
 ## 0. AUTHORITATIVE BASIS & INVARIANTS (NON-NEGOTIABLE)
 
 This prompt is an **executable forensic audit contract**. Evaluation is strictly bounded to four authoritative sources.
@@ -230,9 +243,13 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 2.1 Validator parses the full file into an AST and emits **only** the violating node as a `SurgicalManifest`.
 
-2.2 All manifests are schema-validated at the boundary **before transmission**.
+2.2 **Validator Pre-Flight Emulation:** Validator MUST perform "Safety Emulation Simulation" (Sandbox + Diffing) without committing side-effects before manifest emission.
 
-2.3 Healer enforces the following **strict order** (no reordering allowed):
+2.3 **Validator Permission Check:** Validator MUST perform strict "Policy & Permission Validation" against the L5 Guardian rules before passing to Healer.
+
+2.4 All manifests are schema-validated at the boundary **before transmission**.
+
+2.5 Healer enforces the following **strict order** (no reordering allowed):
 
 1. Schema validation
 2. Hash verification
@@ -244,7 +261,7 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 8. Post-transform `node_id` existence check
 9. Commit
 
-2.4 ≥2 hash mismatches in a single healing wave **force human escalation**.
+2.6 ≥2 hash mismatches in a single healing wave **force human escalation**.
 
 **Architecture gates to apply:** P1, P2, P3, P4, P5, P6 (fail-closed, determinism, atomic writes only, traceability, tokenized authority, typed boundaries).
 
@@ -252,11 +269,12 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 ## 3. Deterministic Control Plane & Routing
 
-3.1 Every routing decision emits a **typed trace event** containing:
+3.1 Every routing decision emits a **typed RouteDecision Artifact** containing:
 
 * timestamp
 * route path
 * risk score
+* `budget_est` (Cost/Token Estimate)
 * rationale enum
 * `policy_config_hash`
 
@@ -268,7 +286,13 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 * Standard validation → healing
 * Human escalation
 
-3.4 Human escalation serializes context into a **concrete Approval Queue artifact** with a **signed decision**.
+3.4 Human escalation MUST generate a structured **Evidence Pack** containing:
+* Full Action Trace (L0)
+* Policy Evaluations & Markers (L5)
+* Risk Score & Budget Breach Data
+* Immutable Boundary Snapshot
+
+3.5 **Bidirectional Feedback:** Human overrides must emit a typed `PolicyUpdateProposal` back to the Policy Update Mechanism (L0/L5).
 
 **Architecture gates to apply:** P1, P2, P4, P5, P6.
 
@@ -278,7 +302,7 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 4.1 `policy_config` is read-once per healing wave.
 
-4.2 SHA-256 hash of policy config is captured at wave start and verified unchanged before **every** routing decision.
+4.2 SHA-256 hash of policy config is captured at wave start (via "Type Trace/Fast Emulation") and verified unchanged before **every** routing decision.
 
 4.3 Any mutation during a wave is a **critical incident**.
 
@@ -293,7 +317,9 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 5.2 Error signatures are computed deterministically from:
 `error type + target node ID + time bucket`.
 
-5.3 Correlated signals collapse into a single incident with max severity.
+5.3 Correlated signals collapse into a single incident using **Root Scope Pinning** strategies.
+
+5.4 **Active Response:** L6 Response Handler MUST be capable of emitting a direct `SelfHealingTrigger` to the L2 Pipe.
 
 **Architecture gates to apply:** P2, P4, P6 (determinism, traceability, typed boundaries).
 **Prohibition:** do not expand into “flow” narration; treat as pure evidence checks.
@@ -315,6 +341,12 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 * is token-bounded (≤300 tokens)
 * is logged and auditable
 
+6.4 **Static Policy Alignment:** Cognitive Engine must execute a "Policy Alignment Check" (Static) prior to response formulation.
+
+6.5 **Hallucination Detection:** Output must pass a "Consistency Check" (Hallucination Detection) against the Knowledge Graph before final emission.
+
+6.6 **Knowledge Supervision:** The L4 Knowledge Supervisor must audit low-confidence memory retrievals and trigger "Dense Retraining" loops.
+
 **Architecture gates to apply:** P2, P3, P4, P6 (determinism, planner purity, traceability, typed boundaries).
 
 ---
@@ -323,18 +355,22 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 7.1 Guardian files are **pure deterministic Python scripts** (no LLMs).
 
-7.2 Guardian execution emits a **signed artifact** containing:
+7.2 **Artifact Guard:** Must enforce "Replay Comparison" and "Valid Signature Checks" on all execution artifacts (no adapters allowed).
+
+7.3 **Guardrail Guard:** Must enforce distinct "Risk Guard" (Token/Cost) and "Policy Guard" (Static Safety) checks.
+
+7.4 Guardian execution emits a **signed artifact** containing:
 
 * environment metadata
 * commit hash
 * pass/fail result
 * cryptographic signature
 
-**7.2.1 Authority Root:** Signatures must be verifiable against the **pinned Public Keys** located in `agentic_core/L0_maintenance/keys/guardian_pub.pem`.
+**7.4.1 Authority Root:** Signatures must be verifiable against the **pinned Public Keys** located in `agentic_core/L0_maintenance/keys/guardian_pub.pem`.
 
-7.3 Absence of artifact OR signature verification failure = **automatic failure**.
+7.5 Absence of artifact OR signature verification failure = **automatic failure**.
 
-7.4 A **Meta-Guardian** enforces ≥95% invariant coverage in CI.
+7.6 A **Meta-Guardian** enforces ≥95% invariant coverage in CI.
 
 **Architecture gates to apply:** P1, P2, P4, P5, P6 (fail-closed, determinism, traceability, signed authority, typed boundaries).
 
@@ -372,7 +408,7 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 10.1 All healing occurs inside a transactional boundary.
 
-10.2 Snapshots include:
+10.2 Snapshots are encapsulated in a typed `Boundary Snapshot Artifact` which includes:
 
 * filesystem
 * git state
@@ -452,12 +488,18 @@ Capabilities: 2, 5, 8, 9, 12
 | ID   | Capability                              | Status          | Evidence Location                          | Gating Invariant Impact | SSOT Validated? |
 |------|-----------------------------------------|-----------------|--------------------------------------------|--------------------------|-----------------|
 | 2.1  | Validator emits SurgicalManifest        |                 |                                            |                          |                 |
-| 2.2  | Boundary schema validation              |                 |                                            | P6                       |                 |
-| 2.3  | Pipe order enforced (1..9)              |                 |                                            | P1                       |                 |
-| 2.4  | ≥2 hash mismatches → human escalation   |                 |                                            | P5                       |                 |
+| 2.2  | Validator Safety Emulation (No Side-Effect) |             |                                            | P2                       |                 |
+| 2.3  | Validator Permission Check (L5)         |                 |                                            | P5                       |                 |
+| 2.4  | Boundary schema validation              |                 |                                            | P6                       |                 |
+| 2.5  | Pipe order enforced (1..9)              |                 |                                            | P1                       |                 |
+| 2.6  | ≥2 hash mismatches → human escalation   |                 |                                            | P5                       |                 |
+| 3.4  | Human Evidence Pack Generation          |                 |                                            | P4                       |                 |
 | 5.1  | Dedupe uses SHA-256                     |                 |                                            | P2                       |                 |
 | 5.2  | Error signature (type+node_id+time)     |                 |                                            | P4                       |                 |
-| 5.3  | Correlated collapse                     |                 |                                            | P3                       |                 |
+| 5.3  | Correlated collapse (Root Scope Pinning)|                 |                                            | P3                       |                 |
+| 5.4  | L6 Self-Healing Trigger Emission        |                 |                                            | P1                       |                 |
+| 6.5  | Hallucination Consistency Check         |                 |                                            | P4                       |                 |
+| 7.2  | Artifact Guard (Signature/Replay)       |                 |                                            | P5                       |                 |
 | 8.1  | Adapters prohibited                     |                 |                                            |                          |                 |
 | 8.2  | Mixins for composition                  |                 |                                            |                          |                 |
 | 8.3  | Safety mixins LEFT in MRO               |                 |                                            | P1                       | PASS/FAIL       |

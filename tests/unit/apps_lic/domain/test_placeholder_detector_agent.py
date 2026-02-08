@@ -35,7 +35,7 @@ class TestPlaceholderDetectorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.domain.placeholder_detector_agent_config import PlaceholderDetectorAgent
+            from apps_lic.config.placeholder_detector_agent_config import PlaceholderDetectorAgent
 
             return PlaceholderDetectorAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -92,7 +92,7 @@ class TestPlaceholderDetectorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.domain.placeholder_detector_agent_config import (
+                from apps_lic.config.placeholder_detector_agent_config import (
                     PlaceholderDetectorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

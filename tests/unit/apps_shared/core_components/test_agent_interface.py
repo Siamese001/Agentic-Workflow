@@ -4,7 +4,7 @@ Unit tests for Agent Interface.
 Tests Phase 3A - Agent Interface Standardization.
 """
 
-from apps_shared.core_components.agent_interface import (
+from apps_shared.utils.agent_interface import (
     AgentContext,
     AgentRegistry,
     AgentResult,
@@ -323,7 +323,7 @@ class TestGetAgentRegistry:
 
     def test_singleton_instance(self):
         """Test that get_agent_registry returns singleton."""
-        import apps_shared.core_components.agent_interface as ai_module
+        import apps_shared.utils.agent_interface as ai_module
 
         ai_module._agent_registry = None
 

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from apps_shared.core_components.integration_layer_types import (
+from apps_shared.types.integration_layer_types import (
     AppDomain,
     ConfigurationLoader,
     IntegrationBridge,
@@ -327,7 +327,7 @@ class TestGetIntegrationBridge:
 
     def test_singleton_instance(self):
         """Test that get_integration_bridge returns singleton."""
-        import apps_shared.core_components.integration_layer_types as il_module
+        import apps_shared.types.integration_layer_types as il_module
 
         il_module._integration_bridge = None
 

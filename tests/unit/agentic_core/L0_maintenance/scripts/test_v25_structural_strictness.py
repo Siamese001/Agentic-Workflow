@@ -105,7 +105,7 @@ def test_apps_rg_filesystem_structure():
     if domain_path.exists():
         current_subfolders = {p.name for p in domain_path.iterdir() if p.is_dir()}
         unknown_folders = current_subfolders - expected_domain_subfolders
-        assert not unknown_folders, f"Found prohibited folders in apps_rg/domain: {unknown_folders}"
+        assert not unknown_folders, f"Found prohibited folders in apps_rg/config: {unknown_folders}"
 
     # Verify top-level structure matches SSOT
     expected_roots = {

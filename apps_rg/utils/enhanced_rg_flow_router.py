@@ -186,7 +186,7 @@ class EnhancedGapClosureEngine(GapClosureEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx)
         # Add thematic analysis dependency
-        from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisNode
+        from apps_rg.types.thematic_analysis_node import ThematicAnalysisNode
 
         self.thematic_node = ThematicAnalysisNode(self.config.get("thematic_config", {}))
 
@@ -290,12 +290,12 @@ class EnhancedResumePlanningEngine(ResumePlanningEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx)
         # Add thematic analysis
-        from apps_rg.logic_nodes.thematic_analysis_node import ThematicAnalysisNode
+        from apps_rg.types.thematic_analysis_node import ThematicAnalysisNode
 
         self.thematic_node = ThematicAnalysisNode(self.config.get("thematic_config", {}))
 
         # Add word count enforcement
-        from apps_rg.validation.word_count_enforcer import WordCountEnforcementEngine
+        from apps_rg.validators.word_count_enforcer import WordCountEnforcementEngine
 
         self.word_enforcer = WordCountEnforcementEngine(self.config.get("word_count_config", {}))
 

@@ -1,57 +1,65 @@
 # .pre-commit-config.yaml
-# OPTIMIZED: Fail-fast anti-patterns -> Auto-fix -> Repo Hygiene
+# STREAMLINED: Syntax Gate -> Auto-Fix -> Analysis -> Structural -> Cleanup
+# Order of operations:
+#   1. py_compile    — fastest gate, catches broken syntax immediately
+#   2. ruff --fix    — auto-fix lint issues (imports, unused vars, etc.)
+#   3. ruff-format   — normalize style on clean code
+#   4. anti-patterns — logic analysis runs on already-fixed/formatted code
+#   5. report-loc    — structural SSOT check (independent of code content)
+#   6. purge-cache   — cleanup, always last
 
 repos:
   # ============================================================================
-  # TIER 1: Logic & Anti-Pattern Validation (Fail Fast)
+  # TIER 1: Syntax Gate (Fastest Fail — broken files never proceed)
   # ============================================================================
   - repo: local
     hooks:
       - id: python-syntax-check
-        name: Python Syntax Validation
+        name: "T1: Python Syntax Validation"
         entry: python -m py_compile
         language: system
         types: [python]
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
-        # CRITICAL: Prevents corrupted Python files from being committed
-
-      - id: check-anti-patterns
-        name: Check Anti-Patterns (Landmine Detection)
-        entry: python ops_scripts/ci/check_anti_patterns.py
-        language: system
-        types: [python]
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
-        # Scan for logic flaws BEFORE formatting to avoid style noise
-
-      - id: check-report-location
-        name: Check Report Location (SSOT)
-        entry: python ops_scripts/hooks/validate_report_location.py --staged-only
-        language: system
-        pass_filenames: false  # Script uses --staged-only to query git internally
-        always_run: true
 
   # ============================================================================
-  # TIER 2: Auto-Fixers & Formatters
+  # TIER 2: Auto-Fixers & Formatters (clean code before analysis)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
       - id: ruff
-        name: Ruff (Lint & Fix)
+        name: "T2: Ruff Lint & Auto-Fix"
         args: [--fix]
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
       - id: ruff-format
-        name: Ruff (Format)
+        name: "T2: Ruff Format"
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
 
   # ============================================================================
-  # TIER 3: Cleanup
+  # TIER 3: Logic Analysis & Structural Checks (on cleaned code)
   # ============================================================================
   - repo: local
     hooks:
+      - id: check-anti-patterns
+        name: "T3: Anti-Pattern Landmine Detection"
+        entry: python ops_scripts/ci/check_anti_patterns.py
+        language: system
+        types: [python]
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
+
+      - id: check-report-location
+        name: "T3: Report Location SSOT Check"
+        entry: python ops_scripts/hooks/validate_report_location.py --staged-only
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # ============================================================================
+  # TIER 4: Cleanup (always runs last)
+  # ============================================================================
       - id: purge-cache
-        name: Pycache Purge
+        name: "T4: Pycache Purge"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
-        language: python
+        language: system
         pass_filenames: false
         always_run: true

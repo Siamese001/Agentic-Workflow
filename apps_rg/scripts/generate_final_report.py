@@ -65,7 +65,7 @@ def generate_report():
     print("🧠 KNOWLEDGE BASE")
     print("-" * 70)
 
-    from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT
+    from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT
 
     print(f"✅ Version: {FROZEN_SNAPSHOT.version}")
     print(f"✅ Prompts: {len(FROZEN_SNAPSHOT.prompts)}")
@@ -102,7 +102,7 @@ def generate_report():
     print("-" * 70)
 
     # Check for void compliance
-    from apps_rg.engines.safety.void_compliance_engine import VoidComplianceEngine
+    from apps_rg.engines.void_compliance_engine import VoidComplianceEngine
 
     print("Running void compliance scan...")
 

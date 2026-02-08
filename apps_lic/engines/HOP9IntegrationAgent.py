@@ -11,11 +11,10 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.trace_registry import TraceRegistry
-
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
+from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
+from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass

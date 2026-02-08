@@ -85,7 +85,7 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, Sove
         """Initialize Titanium RAG Pipeline for SOTA features with strict lazy-loading."""
         try:
             # Lazy import to avoid circular dependency L3 -> Apps Shared
-            from apps_shared.common_utils.titanium_rag_pipeline import TitaniumRAGPipeline
+            from apps_shared.utils.TitaniumRAGPipeline import TitaniumRAGPipeline
 
             self.titanium_pipeline = TitaniumRAGPipeline(
                 enable_compression=True,
