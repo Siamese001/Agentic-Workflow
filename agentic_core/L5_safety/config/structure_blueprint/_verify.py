@@ -22,32 +22,47 @@ import sys
 from types import MappingProxyType
 
 # ── Canonical allowlist for _constants.py imports ──
-ALLOWED_MODULES: frozenset[str] = frozenset({
-    "__future__",
-    "typing",
-    "types",
-    "collections",
-    "functools",
-    "itertools",
-    "dataclasses",
-})
+ALLOWED_MODULES: frozenset[str] = frozenset(
+    {
+        "__future__",
+        "typing",
+        "types",
+        "collections",
+        "functools",
+        "itertools",
+        "dataclasses",
+    }
+)
 
 # ── Scan scope contract ──
 SCAN_ROOTS: tuple[str, ...] = (
-    "agentic_core", "apps_lic", "apps_rg", "apps_shared",
-    "artifacts", "ops_scripts", "tests",
+    "agentic_core",
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+    "artifacts",
+    "ops_scripts",
+    "tests",
 )
 SCAN_EXTENSIONS: tuple[str, ...] = (".py",)
-SCAN_EXCLUDES: frozenset[str] = frozenset({
-    ".venv", "venv", "__pycache__", ".git", "dist", "build",
-    ".pytest_cache", "node_modules",
-})
+SCAN_EXCLUDES: frozenset[str] = frozenset(
+    {
+        ".venv",
+        "venv",
+        "__pycache__",
+        ".git",
+        "dist",
+        "build",
+        ".pytest_cache",
+        "node_modules",
+    }
+)
 
 
 def _allowlist_hash() -> str:
     """Deterministic SHA-256 of the canonical allowlist."""
     return hashlib.sha256(
-        "\n".join(sorted(ALLOWED_MODULES)).encode()
+        "\n".join(sorted(ALLOWED_MODULES)).encode(),
     ).hexdigest()[:16]
 
 
@@ -82,7 +97,8 @@ def _assert_frozen(obj: object, path: str = "root") -> str | None:
 
 
 def _print_phantom_diff(
-    current: set[tuple[str, str]], saved: set[tuple[str, str]]
+    current: set[tuple[str, str]],
+    saved: set[tuple[str, str]],
 ) -> None:
     """Print deterministic diff between current and saved phantom sets."""
     added = sorted(current - saved)
@@ -186,8 +202,9 @@ def main() -> int:
             if not isinstance(bl, list):
                 raise ValueError("not a JSON array")
             for i, entry in enumerate(bl):
-                if not (isinstance(entry, list) and len(entry) == 2
-                        and all(isinstance(s, str) for s in entry)):
+                if not (
+                    isinstance(entry, list) and len(entry) == 2 and all(isinstance(s, str) for s in entry)
+                ):
                     raise ValueError(f"entry {i} invalid")
             bad = [e[0] for e in bl if not _is_repo_relative_normalized(e[0])]
             if bad:
@@ -339,24 +356,23 @@ def main() -> int:
     imm_violations: list[str] = []
 
     # Identity checks
-    if not (c_rw is s_rw):
+    if c_rw is not s_rw:
         imm_violations.append("ROOT_WHITELIST: _constants is not ssot")
-    if not (c_st is t_st):
+    if c_st is not t_st:
         imm_violations.append("SOVEREIGN_TERRITORIES: _constants is not territories")
-    if not (c_st is s_st):
+    if c_st is not s_st:
         imm_violations.append("SOVEREIGN_TERRITORIES: _constants is not ssot")
 
     # ROOT_WHITELIST immutability
     if not isinstance(c_rw, frozenset):
         imm_violations.append(
-            f"ROOT_WHITELIST: type={type(c_rw).__name__}, expected frozenset"
+            f"ROOT_WHITELIST: type={type(c_rw).__name__}, expected frozenset",
         )
 
     # SOVEREIGN_TERRITORIES: top-level type
     if not isinstance(c_st, MappingProxyType):
         imm_violations.append(
-            f"SOVEREIGN_TERRITORIES: top-level type={type(c_st).__name__}, "
-            f"expected MappingProxyType"
+            f"SOVEREIGN_TERRITORIES: top-level type={type(c_st).__name__}, expected MappingProxyType",
         )
     if isinstance(c_st, dict):
         imm_violations.append("SOVEREIGN_TERRITORIES: is plain dict (mutable!)")
@@ -375,8 +391,7 @@ def main() -> int:
 
     print(f"  ROOT_WHITELIST: type={type(c_rw).__name__}, len={len(c_rw)}")
     print(f"  SOVEREIGN_TERRITORIES: type={type(c_st).__name__}, len={len(c_st)}")
-    print(f"  Identity _constants==ssot==territories: "
-          f"{(c_rw is s_rw) and (c_st is t_st) and (c_st is s_st)}")
+    print(f"  Identity _constants==ssot==territories: {(c_rw is s_rw) and (c_st is t_st) and (c_st is s_st)}")
 
     if imm_violations:
         print(f"  RESULT: FAIL ({len(imm_violations)} violations)")
@@ -454,25 +469,22 @@ def main() -> int:
         except SyntaxError as exc:
             rp = _canonical_repo_path(os.path.relpath(fpath, root))
             policy_errors.append(
-                f"{rp}:{exc.lineno or '?'}: SyntaxError — {exc.msg}"
+                f"{rp}:{exc.lineno or '?'}: SyntaxError — {exc.msg}",
             )
             continue
         file_counted = False
         for node in ast.walk(tree):
             if not (
-                isinstance(node, ast.ImportFrom)
-                and node.module
-                and any(t in node.module for t in targets)
+                isinstance(node, ast.ImportFrom) and node.module and any(t in node.module for t in targets)
             ):
                 continue
             if not file_counted:
                 file_counted = True
                 checked += 1
             if node.module in ("structure_blueprint", "structure_blueprint_config"):
-                for a in (node.names or []):
+                for a in node.names or []:
                     policy_errors.append(
-                        f"{os.path.relpath(fpath, root)}:{node.lineno}:{a.name} "
-                        f"(short-path: {node.module})"
+                        f"{os.path.relpath(fpath, root)}:{node.lineno}:{a.name} (short-path: {node.module})",
                     )
                 continue
             names = [a.name for a in node.names] if node.names else []
@@ -506,7 +518,11 @@ def main() -> int:
 
     # Phantom baseline lock (Phase 4.3: hard path constraints, no masking)
     baseline_path = os.path.join(
-        root, "docs", "reports", "plans", "phantom_baseline.json"
+        root,
+        "docs",
+        "reports",
+        "plans",
+        "phantom_baseline.json",
     )
     current_baseline = [[f, n] for f, n in phantom_set]
     current_set_cmp = {tuple(x) for x in current_baseline}
@@ -525,27 +541,22 @@ def main() -> int:
             if not isinstance(saved_baseline, list):
                 raise ValueError("baseline is not a JSON array")
             for i, entry in enumerate(saved_baseline):
-                if not (isinstance(entry, list) and len(entry) == 2
-                        and all(isinstance(s, str) for s in entry)):
+                if not (
+                    isinstance(entry, list) and len(entry) == 2 and all(isinstance(s, str) for s in entry)
+                ):
                     raise ValueError(f"entry {i} is not a [file, name] pair")
-            bad_paths = [
-                e[0] for e in saved_baseline
-                if not _is_repo_relative_normalized(e[0])
-            ]
+            bad_paths = [e[0] for e in saved_baseline if not _is_repo_relative_normalized(e[0])]
             if bad_paths:
                 raise ValueError(
                     f"{len(bad_paths)} baseline path(s) not repo-relative-normalized "
-                    f"(no backslashes, no absolute, no ..); first: {bad_paths[0]}"
+                    f"(no backslashes, no absolute, no ..); first: {bad_paths[0]}",
                 )
-            out_of_scope = [
-                e[0] for e in saved_baseline
-                if not _path_under_scan_roots(e[0])
-            ]
+            out_of_scope = [e[0] for e in saved_baseline if not _path_under_scan_roots(e[0])]
             if out_of_scope:
                 raise ValueError(
                     f"{len(out_of_scope)} baseline path(s) not under SCAN_ROOTS; "
                     f"first: {out_of_scope[0]}. "
-                    f"Valid roots: {SCAN_ROOTS}"
+                    f"Valid roots: {SCAN_ROOTS}",
                 )
             saved_set = {tuple(x) for x in saved_baseline}
         except (json.JSONDecodeError, ValueError, TypeError, OSError) as exc:
@@ -602,21 +613,24 @@ def main() -> int:
                 print(f"  Current-only entries (new phantom): {len(current_only)}")
                 for f, n in current_only:
                     print(f"    + {f}:{n}")
-            print("  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports.")
-            print("  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates.")
+            print(
+                "  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports."
+            )
+            print(
+                "  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates."
+            )
             if not current_only and update_flag:
                 # Only baseline_only: phantoms reduced — safe to update
                 with open(baseline_path, "w", encoding="utf-8") as bf:
                     json.dump(current_baseline, bf, indent=2, sort_keys=True)
-                print(f"  Phantom baseline: UPDATED "
-                      f"({len(saved_set)} → {len(current_set_cmp)} entries)")
+                print(f"  Phantom baseline: UPDATED ({len(saved_set)} → {len(current_set_cmp)} entries)")
             elif current_only:
                 print(f"  Phantom baseline: FAIL — {len(current_only)} new phantom(s)")
                 if update_flag:
                     print("    --update-phantom-baseline REFUSED — new phantoms exist")
                 failures += 1
             else:
-                print(f"    Run with --update-phantom-baseline to persist reduction")
+                print("    Run with --update-phantom-baseline to persist reduction")
     elif init_flag:
         os.makedirs(os.path.dirname(baseline_path), exist_ok=True)
         with open(baseline_path, "w", encoding="utf-8") as bf:
@@ -632,7 +646,11 @@ def main() -> int:
     print("\n6. SHIM STRUCTURAL HARD LOCK")
     print("-" * 40)
     shim_path = os.path.join(
-        root, "agentic_core", "L5_safety", "config", "structure_blueprint_config.py"
+        root,
+        "agentic_core",
+        "L5_safety",
+        "config",
+        "structure_blueprint_config.py",
     )
     with open(shim_path, encoding="utf-8") as f:
         shim_source = f.read()
@@ -650,20 +668,17 @@ def main() -> int:
             continue
         # ALLOWED: exactly one Assign to __all__
         if isinstance(node, ast.Assign):
-            targets_ok = all(
-                isinstance(t, ast.Name) and t.id == "__all__"
-                for t in node.targets
-            )
+            targets_ok = all(isinstance(t, ast.Name) and t.id == "__all__" for t in node.targets)
             if targets_ok:
                 assign_all_count += 1
                 if assign_all_count > 1:
                     shim_violations.append(
-                        f"line {node.lineno}: duplicate __all__ assignment"
+                        f"line {node.lineno}: duplicate __all__ assignment",
                     )
                 continue
             for t in node.targets:
                 shim_violations.append(
-                    f"line {node.lineno}: assignment to {ast.dump(t)}"
+                    f"line {node.lineno}: assignment to {ast.dump(t)}",
                 )
             continue
         # FORBIDDEN: FunctionDef, AsyncFunctionDef
@@ -677,7 +692,7 @@ def main() -> int:
         # FORBIDDEN: control flow (If, For, While, Try, With, Match)
         if isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With)):
             shim_violations.append(
-                f"line {node.lineno}: control flow ({type(node).__name__})"
+                f"line {node.lineno}: control flow ({type(node).__name__})",
             )
             continue
         # FORBIDDEN: any other top-level node
@@ -690,7 +705,7 @@ def main() -> int:
     for node in ast.iter_child_nodes(shim_tree):
         if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
             shim_violations.append(
-                f"line {node.lineno}: top-level Call expression"
+                f"line {node.lineno}: top-level Call expression",
             )
 
     if shim_violations:
@@ -712,11 +727,22 @@ def main() -> int:
     constants_tree = ast.parse(constants_source, filename=constants_path)
 
     forbidden_calls = {
-        "os.getenv", "os.environ", "os.getcwd",
-        "open", "Path.read_text", "Path.read_bytes", "Path.cwd",
-        "time.time", "time.monotonic", "datetime.now", "datetime.utcnow",
-        "random.random", "random.randint", "random.choice",
-        "__import__", "importlib.import_module",
+        "os.getenv",
+        "os.environ",
+        "os.getcwd",
+        "open",
+        "Path.read_text",
+        "Path.read_bytes",
+        "Path.cwd",
+        "time.time",
+        "time.monotonic",
+        "datetime.now",
+        "datetime.utcnow",
+        "random.random",
+        "random.randint",
+        "random.choice",
+        "__import__",
+        "importlib.import_module",
     }
 
     allowlist_violations: list[str] = []
@@ -727,20 +753,18 @@ def main() -> int:
                 top = alias.name.split(".")[0]
                 if top not in ALLOWED_MODULES:
                     allowlist_violations.append(
-                        f"line {node.lineno}: 'import {alias.name}' "
-                        f"('{top}' not in allowlist)"
+                        f"line {node.lineno}: 'import {alias.name}' ('{top}' not in allowlist)",
                     )
         elif isinstance(node, ast.ImportFrom):
             if node.level and node.level > 0:
                 allowlist_violations.append(
-                    f"line {node.lineno}: relative import (level={node.level})"
+                    f"line {node.lineno}: relative import (level={node.level})",
                 )
             elif node.module:
                 top = node.module.split(".")[0]
                 if top not in ALLOWED_MODULES:
                     allowlist_violations.append(
-                        f"line {node.lineno}: 'from {node.module} import ...' "
-                        f"('{top}' not in allowlist)"
+                        f"line {node.lineno}: 'from {node.module} import ...' ('{top}' not in allowlist)",
                     )
 
     for node in ast.walk(constants_tree):
@@ -753,12 +777,16 @@ def main() -> int:
                     call_name = f"{node.func.value.id}.{node.func.attr}"
             if call_name in forbidden_calls:
                 allowlist_violations.append(
-                    f"line {node.lineno}: forbidden call '{call_name}'"
+                    f"line {node.lineno}: forbidden call '{call_name}'",
                 )
 
     current_hash = _allowlist_hash()
     hash_path = os.path.join(
-        root, "docs", "reports", "plans", "allowlist_hash.txt"
+        root,
+        "docs",
+        "reports",
+        "plans",
+        "allowlist_hash.txt",
     )
     print(f"  Allowlist: {sorted(ALLOWED_MODULES)}")
     print(f"  Hash: {current_hash}")
@@ -809,9 +837,7 @@ def main() -> int:
     for fpath in scan_files:
         relpath = os.path.relpath(fpath, root)
         # Skip the package itself and the shim
-        if "structure_blueprint" in relpath and (
-            "config" in relpath.split(os.sep)
-        ):
+        if "structure_blueprint" in relpath and ("config" in relpath.split(os.sep)):
             continue
         try:
             with open(fpath, encoding="utf-8", errors="replace") as f:
@@ -877,7 +903,7 @@ def main() -> int:
         df.write("\n".join(debt_lines))
     baseline_count = len(saved_set) if saved_set is not None else None
     current_count = len(phantom_set)
-    print(f"  Source: PHANTOM_CURRENT_SET (deduplicated current scan)")
+    print("  Source: PHANTOM_CURRENT_SET (deduplicated current scan)")
     print(f"  Phantom current count:  {current_count}")
     if baseline_count is not None:
         print(f"  Phantom baseline count: {baseline_count}")

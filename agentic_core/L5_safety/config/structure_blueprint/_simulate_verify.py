@@ -33,7 +33,8 @@ def _read_bytes(path: str) -> bytes | None:
 def _run_verify(*extra_args: str) -> tuple[int, str]:
     """Run the verifier as a subprocess, return (exit_code, combined_output)."""
     cmd = [
-        sys.executable, "-m",
+        sys.executable,
+        "-m",
         "agentic_core.L5_safety.config.structure_blueprint._verify",
         *extra_args,
     ]
@@ -220,10 +221,12 @@ def main() -> int:
             tampered_detected = len(tampered_violations) > 0
 
             passed = clean_pass and tampered_detected and tampered_count >= 1
-            detail = (f"clean_invocations={clean_count}, "
-                      f"clean_pass={clean_pass}, "
-                      f"tampered_invocations={tampered_count}, "
-                      f"tampered_detected={tampered_detected}")
+            detail = (
+                f"clean_invocations={clean_count}, "
+                f"clean_pass={clean_pass}, "
+                f"tampered_invocations={tampered_count}, "
+                f"tampered_detected={tampered_detected}"
+            )
             results.append(("SIM7: CI guard self-test (in-memory)", passed, detail))
         except Exception as exc:
             results.append(("SIM7: CI guard self-test (in-memory)", False, str(exc)))
@@ -260,27 +263,35 @@ def main() -> int:
     # Verify temp files deleted
     syntax_leftover = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
     if os.path.isfile(syntax_leftover):
-        print(f"    Temp syntax file: WARNING — not cleaned up")
+        print("    Temp syntax file: WARNING — not cleaned up")
         all_pass = False
     else:
-        print(f"    Temp syntax file: CLEAN \u2714")
+        print("    Temp syntax file: CLEAN \u2714")
 
     # Optional git diff check
     try:
         git_result = subprocess.run(
-            ["git", "diff", "--exit-code", "--",
-             "docs/reports/plans/phantom_baseline.json",
-             "docs/reports/plans/allowlist_hash.txt"],
-            cwd=root, capture_output=True, text=True, timeout=10,
+            [
+                "git",
+                "diff",
+                "--exit-code",
+                "--",
+                "docs/reports/plans/phantom_baseline.json",
+                "docs/reports/plans/allowlist_hash.txt",
+            ],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         if git_result.returncode == 0:
-            print(f"    git diff lock files: CLEAN \u2714")
+            print("    git diff lock files: CLEAN \u2714")
         else:
-            print(f"    git diff lock files: DIRTY")
+            print("    git diff lock files: DIRTY")
             print(git_result.stdout[:500] if git_result.stdout else "")
             all_pass = False
     except (FileNotFoundError, subprocess.TimeoutExpired):
-        print(f"    git diff: SKIPPED (git not available)")
+        print("    git diff: SKIPPED (git not available)")
 
     print()
     if all_pass:
