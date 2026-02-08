@@ -1,32 +1,43 @@
 """
-Structure Blueprint Package - Refactored for Performance
+Structure Blueprint Package - Modular SSOT (2026-02-08).
 
-This package splits the monolithic structure_blueprint_config.py into:
-- ssot.py: HOT module (minimal, fast import)
-- territories.py: COLD module (heavy territory definitions)
-- classification.py: COLD module (pattern matching, lazy regex)
-- semantics.py: COLD module (semantic analysis registries)
-- derived.py: COLD module (derived registries, compilation)
+This package is the Single Source of Truth for all structural configuration.
+The monolithic structure_blueprint_config.py is a backward-compatible shim
+that re-exports everything from this package.
 
-All public exports are re-exported here for backward compatibility.
+Modules:
+  ssot.py           - Core constants, path utilities, whitelists, flat enforcement
+  territories.py    - SOVEREIGN_TERRITORIES definition
+  classification.py - Suffix patterns, folder purity, naming rules
+  semantics.py      - AST signals, keyword affinity, agent/placement registries
+  artifacts.py      - File patterns, artifact routing, subfolder metadata
+  derived.py        - Derived registries (computed from territories)
+  governance.py     - Healing, mission, gravity, MCP operational config
 """
 
 from __future__ import annotations
 
-# HOT imports - always loaded (minimal)
+# HOT imports - always loaded (ssot.py is minimal-cost)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
-    # Path constants
     AGENTIC_CORE_DIR,
+    ALLOWED_DUPLICATE_FILENAMES,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
+    AUTONOMOUS_AGENT_WHITELIST,
     BLUEPRINT_SOVEREIGN_DIR,
     COVERAGE_HTML_DIR,
     DASHBOARD_DIR,
+    DISCOVERY_EXCLUDED_TERRITORIES,
     DOCS_REPORTS_PLANS,
+    FLAT_DIRECTORIES,
+    FORBIDDEN_FOLDER_PATTERN,
+    FORBIDDEN_PATTERNS,
+    FORBIDDEN_ROOT_FOLDERS,
+    GLOBAL_EXCLUDED_DIRS,
     KNOWN_GOOD_HASHES,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
@@ -34,250 +45,390 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L5_SAFETY_DIR,
-    # Allowlists (path-based)
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
     L6_OBSERVABILITY_DIR,
-    # Layer validation
     LAYER_ROOTS,
     LEAF_DOMAINS_NO_LCD,
+    NAMING_EXEMPT_DIRS,
+    NAMING_EXEMPT_FILES,
     OPS_SCRIPTS_DIR,
     PROJECT_ROOT_MARKERS,
+    PROJECT_ROOT_WHITELIST,
     PROMPT_GOVERNANCE_DIR,
+    PYTHON_STDLIB_MODULES,
     REPORTS_DIR,
     REQUIRED_LCD_SUBFOLDERS,
+    ROOT_ALLOWED_PATTERNS,
+    ROOT_PROTECTED_FILES,
+    ROOT_WHITELIST,
     RUNTIME_DIR,
     RUNTIME_STATE_JSON,
     SCHEMAS_DIR,
+    SCOPE_SUMMARY_EXCLUSIONS,
     SCRIPTS_FORBIDDEN_PATTERNS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
     STANDARD_LAYER_STRUCTURE,
     TESTS_AUTOGEN_DIR,
     TESTS_DIR,
     TESTS_E2E_DIR,
     TESTS_INTEGRATION_DIR,
+    TESTS_ROOT_FILE_WHITELIST,
     TESTS_UNIT_DIR,
     UTILS_DIR,
-    # Variable depth
+    VALIDATED_FILE_EXTENSIONS,
     VARIABLE_DEPTH_SUBFOLDERS,
     get_apps_lic_subfolder_map,
     get_apps_rg_subfolder_map,
     get_apps_shared_subfolder_map,
     get_core_subfolder_map,
-    # Lazy loaders
     get_sovereign_territories,
     get_subfolder_metadata,
     get_validated_project_root,
+    ignore_dirs,
     is_allowed_subfolder,
+    is_l4_approved,
     is_layer_root,
+    is_path_allowed,
+    protected_folders,
     safe_path_join,
+    safe_prefixed_filename,
+    sovereign_ignored_folders,
+    validate_flat_directory,
+    validate_no_duplicate_prefix,
     validate_no_nested_lcd,
     validate_path_within_project,
 )
 
+# Territories - loaded eagerly (needed by most consumers)
+from agentic_core.L5_safety.config.structure_blueprint.territories import (
+    LAYER_OVERRIDES,
+    SOVEREIGN_TERRITORIES,
+    SubfolderDefinition,
+    TerritoryDefinition,
+    build_sovereign_territories,
+)
 
-# Lazy property accessors for backward compatibility
-# These trigger loading of cold modules on first access
+
+# COLD imports - lazy loaded via __getattr__
 def __getattr__(name: str):
     """Lazy load cold module exports on first access."""
-    # Territories
-    if name == "SOVEREIGN_TERRITORIES":
-        return get_sovereign_territories()
-    if name == "CORE_SUBFOLDER_MAP":
-        return get_core_subfolder_map()
-    if name == "SUBFOLDER_METADATA":
-        return get_subfolder_metadata()
-    if name == "APPS_RG_SUBFOLDER_MAP":
-        return get_apps_rg_subfolder_map()
-    if name == "APPS_LIC_SUBFOLDER_MAP":
-        return get_apps_lic_subfolder_map()
-    if name == "APPS_SHARED_SUBFOLDER_MAP":
-        return get_apps_shared_subfolder_map()
-    if name == "agentic_core_registry":
-        return get_core_subfolder_map()
-
-    # Classification patterns (lazy)
-    if name in (
+    if name in {
+        "CANONICAL_LOCATION_PRIORITY",
         "CLASSIFICATION_SUFFIX_PATTERNS",
         "COMPOUND_SUFFIX_CONFLICTS",
-        "FOLDER_PURITY_RULES",
-        "SUFFIX_TO_FOLDER",
+        "DOMAIN_CONTENT_SIGNALS",
+        "DUPLICATE_DETECTION_EXEMPT",
         "FILETYPE_TO_FOLDER",
-        "KNOWN_ARCHITECTURAL_SUFFIXES",
+        "FOLDER_PURITY_RULES",
         "FORBIDDEN_COMPOUND_PATTERNS",
+        "GLOBAL_INTERFACES_FOLDER",
+        "INTERFACE_FILENAME_PATTERN",
+        "KNOWN_ARCHITECTURAL_SUFFIXES",
         "L5_ENFORCEMENT_ALLOWED_SUFFIXES",
         "LAYER_PREFIX_PATTERN",
-        "INTERFACE_FILENAME_PATTERN",
-        "GLOBAL_INTERFACES_FOLDER",
-        "CANONICAL_LOCATION_PRIORITY",
-        "DUPLICATE_DETECTION_EXEMPT",
         "NON_PYTHON_FOLDER_ROUTES",
-        "DOMAIN_CONTENT_SIGNALS",
         "SERVICE_CLASS_INDICATORS",
-    ):
+        "SUFFIX_TO_FOLDER",
+        "get_classification_suffix_patterns_compiled",
+        "get_compound_suffix_patterns_compiled",
+        "get_folder_purity_patterns_compiled",
+        "get_forbidden_compound_patterns_compiled",
+    }:
         from agentic_core.L5_safety.config.structure_blueprint import classification
 
         return getattr(classification, name)
 
-    # Semantics (lazy)
-    if name in (
-        "NAMING_CONVENTIONS",
-        "LAYER_KEYWORD_AFFINITY",
-        "APP_RG_AST_TERMS",
+    if name in {
+        "AGENT_REGISTRY",
+        "APP_DOMAIN_PREFIXES",
         "APP_LIC_AST_TERMS",
-        "APP_RG_VARIABLE_TERMS",
-        "APP_LIC_VARIABLE_TERMS",
-        "APP_RG_STRING_TERMS",
         "APP_LIC_STRING_TERMS",
-        "VARIABLE_HIT_WEIGHT",
-        "STRING_HIT_WEIGHT",
+        "APP_LIC_VARIABLE_TERMS",
+        "APP_RG_AST_TERMS",
+        "APP_RG_STRING_TERMS",
+        "APP_RG_VARIABLE_TERMS",
         "AST_DOMAIN_HIT_THRESHOLD",
-        "FORBIDDEN_APP_MODULES",
-        "POLYGLOT_DOMAIN_SIGNALS",
+        "AST_PLACEMENT_SIGNALS",
         "CORE_TERRITORY_KEYWORDS",
-        "LAYER_FORBIDDEN_IMPORTS",
-        "TERRITORY_MISMATCH_THRESHOLD",
-        "MIN_ALIGNMENT_SCORE",
         "DEFAULT_APP_HEALING_TARGET",
         "DEFAULT_CORE_HEALING_TERRITORY",
+        "EXERCISER_REGISTRY",
+        "FORBIDDEN_APP_MODULES",
+        "L2_TO_L1_MAP",
+        "LAYER_FORBIDDEN_IMPORTS",
+        "LAYER_KEYWORD_AFFINITY",
+        "LEGACY_AST_SIGNALS",
+        "MIN_ALIGNMENT_SCORE",
+        "NAMING_CONVENTIONS",
+        "PLACEMENT_CONFIDENCE",
+        "POLYGLOT_DOMAIN_SIGNALS",
+        "SEMANTIC_L2_REGISTRY",
+        "STRING_HIT_WEIGHT",
+        "TERRITORY_MISMATCH_THRESHOLD",
+        "TEST_TYPE_SIGNALS",
+        "VARIABLE_HIT_WEIGHT",
         "VIOLATION_SEVERITY",
-        "APP_DOMAIN_PREFIXES",
-    ):
+        "semantic_l2_registry",
+    }:
         from agentic_core.L5_safety.config.structure_blueprint import semantics
 
         return getattr(semantics, name)
 
-    # Artifacts (lazy)
-    if name in (
+    if name in {
         "APP_SPECIFIC_PATTERNS",
-        "FORBIDDEN_BACKUP_PATTERNS",
-        "FORBIDDEN_FILENAME_PATTERNS",
-        "FORBIDDEN_EPHEMERAL_PATTERNS",
-        "EPHEMERAL_PATTERN_EXEMPTIONS",
+        "APP_SPECIFIC_PATTERN_STRINGS",
         "APP_SPECIFIC_PREFIXES",
-        "STUTTERING_PREFIX_MAP",
         "APP_SPECIFIC_TARGET_SUBFOLDER",
+        "ARTIFACT_ROUTING_MAP",
+        "DATA_SUBFOLDER_METADATA",
+        "DOCS_SUBFOLDER_METADATA",
+        "EPHEMERAL_PATTERN_EXEMPTIONS",
+        "FORBIDDEN_BACKUP_PATTERNS",
+        "FORBIDDEN_BACKUP_PATTERN_STRINGS",
+        "FORBIDDEN_EPHEMERAL_PATTERNS",
+        "FORBIDDEN_FILENAME_PATTERNS",
         "FORBIDDEN_LAYER_PREFIXES",
+        "PROJECT_ROOT_METADATA",
+        "PROJECT_ROOT_SUBFOLDERS",
+        "STUTTERING_PREFIX_MAP",
+        "check_forbidden_signals",
         "get_app_specific_patterns_compiled",
+        "get_correct_app_folder",
+        "get_correct_app_path",
+        "get_ephemeral_exemption_patterns_compiled",
         "get_forbidden_backup_patterns_compiled",
-    ):
+        "get_forbidden_ephemeral_patterns_compiled",
+        "has_forbidden_layer_prefix",
+        "is_app_specific_file",
+        "is_broken_backup_file",
+        "validate_artifact_routing",
+    }:
         from agentic_core.L5_safety.config.structure_blueprint import artifacts
 
         return getattr(artifacts, name)
 
-    # Derived registries (lazy)
-    if name in (
-        "L4_SUBFOLDER_MAP",
+    if name in {
+        "APPS_LIC_SUBFOLDER_MAP",
+        "APPS_RG_SUBFOLDER_MAP",
+        "APPS_SHARED_SUBFOLDER_MAP",
+        "CORE_SUBFOLDER_MAP",
         "L4_APPROVED_FOLDERS",
+        "L4_SUBFOLDER_MAP",
         "SCRIPTS_PLACEMENT_RULES",
+        "SUBFOLDER_METADATA",
         "TESTS_L2_SUBFOLDER_MAP",
         "TESTS_SUBFOLDER_MAP",
+        "agentic_core_registry",
         "verify_derived_registries",
-    ):
+    }:
         from agentic_core.L5_safety.config.structure_blueprint import derived
 
         return getattr(derived, name)
 
-    # Territories module (lazy)
-    if name in (
-        "SubfolderDefinition",
-        "TerritoryDefinition",
-        "build_sovereign_territories",
-    ):
-        from agentic_core.L5_safety.config.structure_blueprint import territories
+    if name in {
+        "AGENT_RESILIENCE_CONFIG",
+        "DOWNSTREAM_ROOTS",
+        "GRAVITY_CONFIG",
+        "GRAVITY_SURGERY_ENABLED",
+        "HEALING_CONFIG",
+        "MCP_CAPABILITIES",
+        "MISSION_CONFIG",
+        "UPSTREAM_SOVEREIGN_ROOTS",
+    }:
+        from agentic_core.L5_safety.config.structure_blueprint import governance
 
-        return getattr(territories, name)
+        return getattr(governance, name)
 
-    # Helper functions (lazy)
-    if name in (
-        "get_correct_app_folder",
-        "get_correct_app_path",
-        "is_app_specific_file",
-        "has_forbidden_layer_prefix",
-        "is_broken_backup_file",
-    ):
-        from agentic_core.L5_safety.config.structure_blueprint import artifacts
+    # ROOT_WHITELIST is lazy-computed from SOVEREIGN_TERRITORIES
+    if name == "ROOT_WHITELIST":
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import _get_root_whitelist
 
-        return getattr(artifacts, name)
+        return _get_root_whitelist()
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = [
-    # HOT exports (always available)
-    "LAYER_ROOTS",
-    "REQUIRED_LCD_SUBFOLDERS",
-    "LEAF_DOMAINS_NO_LCD",
-    "STANDARD_LAYER_STRUCTURE",
-    "is_layer_root",
-    "is_allowed_subfolder",
-    "validate_no_nested_lcd",
-    "L5_SUBPROCESS_ALLOWLIST",
-    "L6_HYBRID_ALLOWLIST",
-    "SCRIPTS_FORBIDDEN_PATTERNS",
     "AGENTIC_CORE_DIR",
-    "APPS_RG_DIR",
+    "AGENT_DISCOVERY_JSON",
+    "AGENT_DISCOVERY_MANIFEST_JSON",
+    "AGENT_REGISTRY",
+    "AGENT_RESILIENCE_CONFIG",
+    "ALLOWED_DUPLICATE_FILENAMES",
     "APPS_LIC_DIR",
+    "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_RG_DIR",
+    "APPS_RG_SUBFOLDER_MAP",
     "APPS_SHARED_DIR",
-    "OPS_SCRIPTS_DIR",
-    "TESTS_DIR",
+    "APPS_SHARED_SUBFOLDER_MAP",
+    "APP_DOMAIN_PREFIXES",
+    "APP_LIC_AST_TERMS",
+    "APP_LIC_STRING_TERMS",
+    "APP_LIC_VARIABLE_TERMS",
+    "APP_RG_AST_TERMS",
+    "APP_RG_STRING_TERMS",
+    "APP_RG_VARIABLE_TERMS",
+    "APP_SPECIFIC_PATTERNS",
+    "APP_SPECIFIC_PATTERN_STRINGS",
+    "APP_SPECIFIC_PREFIXES",
+    "APP_SPECIFIC_TARGET_SUBFOLDER",
+    "ARCHIVES_DIR",
+    "ARTIFACT_ROUTING_MAP",
+    "AST_DOMAIN_HIT_THRESHOLD",
+    "AST_PLACEMENT_SIGNALS",
+    "AUTONOMOUS_AGENT_WHITELIST",
+    "BLUEPRINT_SOVEREIGN_DIR",
+    "CANONICAL_LOCATION_PRIORITY",
+    "CLASSIFICATION_SUFFIX_PATTERNS",
+    "COMPOUND_SUFFIX_CONFLICTS",
+    "CORE_SUBFOLDER_MAP",
+    "CORE_TERRITORY_KEYWORDS",
+    "COVERAGE_HTML_DIR",
+    "DASHBOARD_DIR",
+    "DATA_SUBFOLDER_METADATA",
+    "DEFAULT_APP_HEALING_TARGET",
+    "DEFAULT_CORE_HEALING_TERRITORY",
+    "DISCOVERY_EXCLUDED_TERRITORIES",
+    "DOCS_REPORTS_PLANS",
+    "DOCS_SUBFOLDER_METADATA",
+    "DOMAIN_CONTENT_SIGNALS",
+    "DOWNSTREAM_ROOTS",
+    "DUPLICATE_DETECTION_EXEMPT",
+    "EPHEMERAL_PATTERN_EXEMPTIONS",
+    "EXERCISER_REGISTRY",
+    "FILETYPE_TO_FOLDER",
+    "FLAT_DIRECTORIES",
+    "FOLDER_PURITY_RULES",
+    "FORBIDDEN_APP_MODULES",
+    "FORBIDDEN_BACKUP_PATTERNS",
+    "FORBIDDEN_BACKUP_PATTERN_STRINGS",
+    "FORBIDDEN_COMPOUND_PATTERNS",
+    "FORBIDDEN_EPHEMERAL_PATTERNS",
+    "FORBIDDEN_FILENAME_PATTERNS",
+    "FORBIDDEN_FOLDER_PATTERN",
+    "FORBIDDEN_LAYER_PREFIXES",
+    "FORBIDDEN_PATTERNS",
+    "FORBIDDEN_ROOT_FOLDERS",
+    "GLOBAL_EXCLUDED_DIRS",
+    "GLOBAL_INTERFACES_FOLDER",
+    "GRAVITY_CONFIG",
+    "GRAVITY_SURGERY_ENABLED",
+    "HEALING_CONFIG",
+    "INTERFACE_FILENAME_PATTERN",
+    "KNOWN_ARCHITECTURAL_SUFFIXES",
+    "KNOWN_GOOD_HASHES",
     "L0_MAINTENANCE_DIR",
     "L1_COGNITION_DIR",
     "L2_EXECUTION_DIR",
+    "L2_TO_L1_MAP",
     "L3_ORCHESTRATION_DIR",
-    "L4_STATE_DIR",
-    "L5_SAFETY_DIR",
-    "L6_OBSERVABILITY_DIR",
-    "DASHBOARD_DIR",
-    "BLUEPRINT_SOVEREIGN_DIR",
-    "SCHEMAS_DIR",
-    "PROMPT_GOVERNANCE_DIR",
-    "UTILS_DIR",
-    "RUNTIME_DIR",
-    "TESTS_UNIT_DIR",
-    "TESTS_INTEGRATION_DIR",
-    "TESTS_E2E_DIR",
-    "TESTS_AUTOGEN_DIR",
-    "REPORTS_DIR",
-    "ARCHIVES_DIR",
-    "COVERAGE_HTML_DIR",
-    "DOCS_REPORTS_PLANS",
-    "AGENT_DISCOVERY_JSON",
-    "AGENT_DISCOVERY_MANIFEST_JSON",
-    "RUNTIME_STATE_JSON",
-    "KNOWN_GOOD_HASHES",
-    "PROJECT_ROOT_MARKERS",
-    "get_validated_project_root",
-    "validate_path_within_project",
-    "safe_path_join",
-    "VARIABLE_DEPTH_SUBFOLDERS",
-    # COLD exports (lazy loaded)
-    "SOVEREIGN_TERRITORIES",
-    "CORE_SUBFOLDER_MAP",
-    "SUBFOLDER_METADATA",
-    "APPS_RG_SUBFOLDER_MAP",
-    "APPS_LIC_SUBFOLDER_MAP",
-    "APPS_SHARED_SUBFOLDER_MAP",
-    "agentic_core_registry",
-    "SubfolderDefinition",
-    "TerritoryDefinition",
-    "build_sovereign_territories",
-    "CLASSIFICATION_SUFFIX_PATTERNS",
-    "COMPOUND_SUFFIX_CONFLICTS",
-    "FOLDER_PURITY_RULES",
-    "SUFFIX_TO_FOLDER",
-    "FILETYPE_TO_FOLDER",
-    "NAMING_CONVENTIONS",
-    "LAYER_KEYWORD_AFFINITY",
-    "APP_RG_AST_TERMS",
-    "APP_LIC_AST_TERMS",
-    "APP_SPECIFIC_PATTERNS",
-    "FORBIDDEN_BACKUP_PATTERNS",
-    "L4_SUBFOLDER_MAP",
     "L4_APPROVED_FOLDERS",
-    "verify_derived_registries",
+    "L4_STATE_DIR",
+    "L4_SUBFOLDER_MAP",
+    "L5_ENFORCEMENT_ALLOWED_SUFFIXES",
+    "L5_SAFETY_DIR",
+    "L5_SUBPROCESS_ALLOWLIST",
+    "L6_HYBRID_ALLOWLIST",
+    "L6_OBSERVABILITY_DIR",
+    "LAYER_FORBIDDEN_IMPORTS",
+    "LAYER_KEYWORD_AFFINITY",
+    "LAYER_OVERRIDES",
+    "LAYER_PREFIX_PATTERN",
+    "LAYER_ROOTS",
+    "LEAF_DOMAINS_NO_LCD",
+    "LEGACY_AST_SIGNALS",
+    "MCP_CAPABILITIES",
+    "MIN_ALIGNMENT_SCORE",
+    "MISSION_CONFIG",
+    "NAMING_CONVENTIONS",
+    "NAMING_EXEMPT_DIRS",
+    "NAMING_EXEMPT_FILES",
+    "NON_PYTHON_FOLDER_ROUTES",
+    "OPS_SCRIPTS_DIR",
+    "PLACEMENT_CONFIDENCE",
+    "POLYGLOT_DOMAIN_SIGNALS",
+    "PROJECT_ROOT_MARKERS",
+    "PROJECT_ROOT_METADATA",
+    "PROJECT_ROOT_SUBFOLDERS",
+    "PROJECT_ROOT_WHITELIST",
+    "PROMPT_GOVERNANCE_DIR",
+    "PYTHON_STDLIB_MODULES",
+    "REPORTS_DIR",
+    "REQUIRED_LCD_SUBFOLDERS",
+    "ROOT_ALLOWED_PATTERNS",
+    "ROOT_PROTECTED_FILES",
+    "ROOT_WHITELIST",
+    "RUNTIME_DIR",
+    "RUNTIME_STATE_JSON",
+    "SCHEMAS_DIR",
+    "SCOPE_SUMMARY_EXCLUSIONS",
+    "SCRIPTS_FORBIDDEN_PATTERNS",
+    "SCRIPTS_PLACEMENT_RULES",
+    "SEMANTIC_L2_REGISTRY",
+    "SERVICE_CLASS_INDICATORS",
+    "SOVEREIGN_EXCLUDED_FOLDERS",
+    "SOVEREIGN_TERRITORIES",
+    "STANDARD_LAYER_STRUCTURE",
+    "STRING_HIT_WEIGHT",
+    "STUTTERING_PREFIX_MAP",
+    "SUBFOLDER_METADATA",
+    "SUFFIX_TO_FOLDER",
+    "SubfolderDefinition",
+    "TERRITORY_MISMATCH_THRESHOLD",
+    "TESTS_AUTOGEN_DIR",
+    "TESTS_DIR",
+    "TESTS_E2E_DIR",
+    "TESTS_INTEGRATION_DIR",
+    "TESTS_L2_SUBFOLDER_MAP",
+    "TESTS_ROOT_FILE_WHITELIST",
+    "TESTS_SUBFOLDER_MAP",
+    "TESTS_UNIT_DIR",
+    "TEST_TYPE_SIGNALS",
+    "TerritoryDefinition",
+    "UPSTREAM_SOVEREIGN_ROOTS",
+    "UTILS_DIR",
+    "VALIDATED_FILE_EXTENSIONS",
+    "VARIABLE_DEPTH_SUBFOLDERS",
+    "VARIABLE_HIT_WEIGHT",
+    "VIOLATION_SEVERITY",
+    "agentic_core_registry",
+    "build_sovereign_territories",
+    "check_forbidden_signals",
+    "get_app_specific_patterns_compiled",
+    "get_apps_lic_subfolder_map",
+    "get_apps_rg_subfolder_map",
+    "get_apps_shared_subfolder_map",
+    "get_classification_suffix_patterns_compiled",
+    "get_compound_suffix_patterns_compiled",
+    "get_core_subfolder_map",
     "get_correct_app_folder",
     "get_correct_app_path",
-    "is_app_specific_file",
+    "get_ephemeral_exemption_patterns_compiled",
+    "get_folder_purity_patterns_compiled",
+    "get_forbidden_backup_patterns_compiled",
+    "get_forbidden_compound_patterns_compiled",
+    "get_forbidden_ephemeral_patterns_compiled",
+    "get_sovereign_territories",
+    "get_subfolder_metadata",
+    "get_validated_project_root",
     "has_forbidden_layer_prefix",
+    "ignore_dirs",
+    "is_allowed_subfolder",
+    "is_app_specific_file",
     "is_broken_backup_file",
+    "is_l4_approved",
+    "is_layer_root",
+    "is_path_allowed",
+    "protected_folders",
+    "safe_path_join",
+    "safe_prefixed_filename",
+    "semantic_l2_registry",
+    "sovereign_ignored_folders",
+    "validate_artifact_routing",
+    "validate_flat_directory",
+    "validate_no_duplicate_prefix",
+    "validate_no_nested_lcd",
+    "validate_path_within_project",
+    "verify_derived_registries",
 ]
