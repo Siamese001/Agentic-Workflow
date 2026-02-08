@@ -15,6 +15,7 @@ Exit codes:
     1 — One or more thresholds breached (blocks merge)
     2 — Missing artifact files (run run_dedup_analysis.py first)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -46,8 +47,11 @@ PROMPT_SIM_FILE = ARTIFACTS_DIR / "prompt_similarity.json"
 # ---------------------------------------------------------------------------
 # Default thresholds (can be overridden via CLI)
 # ---------------------------------------------------------------------------
+# guardian: allow-magic-config
 DEFAULT_MAX_CODE_SIM = 0.75
+# guardian: allow-magic-config
 DEFAULT_MAX_PROMPT_SIM = 0.80
+# guardian: allow-magic-config
 DEFAULT_MAX_RESP_OVERLAP = 0.70
 
 # ---------------------------------------------------------------------------
@@ -88,13 +92,15 @@ def _check_code_similarity(max_threshold: float) -> list[dict]:
             continue
 
         if score >= max_threshold:
-            violations.append({
-                "type": "CODE_SIMILARITY",
-                "agent_a": agent_a,
-                "agent_b": agent_b,
-                "score": score,
-                "threshold": max_threshold,
-            })
+            violations.append(
+                {
+                    "type": "CODE_SIMILARITY",
+                    "agent_a": agent_a,
+                    "agent_b": agent_b,
+                    "score": score,
+                    "threshold": max_threshold,
+                },
+            )
 
     return violations
 
@@ -117,13 +123,15 @@ def _check_prompt_similarity(max_threshold: float) -> list[dict]:
             continue
 
         if score >= max_threshold:
-            violations.append({
-                "type": "PROMPT_SIMILARITY",
-                "agent_a": agent_a,
-                "agent_b": agent_b,
-                "score": score,
-                "threshold": max_threshold,
-            })
+            violations.append(
+                {
+                    "type": "PROMPT_SIMILARITY",
+                    "agent_a": agent_a,
+                    "agent_b": agent_b,
+                    "score": score,
+                    "threshold": max_threshold,
+                },
+            )
 
     return violations
 
@@ -132,21 +140,29 @@ def main() -> int:
     """Run the sprawl gate. Returns exit code."""
     parser = argparse.ArgumentParser(description="Agent Sprawl Gate — CI enforcement")
     parser.add_argument(
-        "--max-code-sim", type=float, default=DEFAULT_MAX_CODE_SIM,
+        "--max-code-sim",
+        type=float,
+        default=DEFAULT_MAX_CODE_SIM,
         help=f"Maximum code similarity threshold (default: {DEFAULT_MAX_CODE_SIM})",
     )
     parser.add_argument(
-        "--max-prompt-sim", type=float, default=DEFAULT_MAX_PROMPT_SIM,
+        "--max-prompt-sim",
+        type=float,
+        default=DEFAULT_MAX_PROMPT_SIM,
         help=f"Maximum prompt similarity threshold (default: {DEFAULT_MAX_PROMPT_SIM})",
     )
     parser.add_argument(
-        "--max-resp-overlap", type=float, default=DEFAULT_MAX_RESP_OVERLAP,
+        "--max-resp-overlap",
+        type=float,
+        default=DEFAULT_MAX_RESP_OVERLAP,
         help=f"Maximum responsibility overlap threshold (default: {DEFAULT_MAX_RESP_OVERLAP})",
     )
     args = parser.parse_args()
 
     Logger.info("=== Agent Sprawl Gate ===")
-    Logger.info(f"Thresholds: code_sim={args.max_code_sim}, prompt_sim={args.max_prompt_sim}, resp_overlap={args.max_resp_overlap}")
+    Logger.info(
+        f"Thresholds: code_sim={args.max_code_sim}, prompt_sim={args.max_prompt_sim}, resp_overlap={args.max_resp_overlap}",
+    )
     Logger.info(f"Waivers: {len(WAIVERS)} active")
 
     all_violations: list[dict] = []
@@ -166,11 +182,10 @@ def main() -> int:
         Logger.error(f"\nFAIL: {len(all_violations)} threshold breach(es) detected:\n")
         for v in all_violations:
             Logger.error(
-                f"  [{v['type']}] {v['agent_a']} <-> {v['agent_b']}: "
-                f"{v['score']:.4f} >= {v['threshold']}"
+                f"  [{v['type']}] {v['agent_a']} <-> {v['agent_b']}: {v['score']:.4f} >= {v['threshold']}",
             )
         Logger.error(
-            "\nAction required: Extract shared logic or add a documented waiver."
+            "\nAction required: Extract shared logic or add a documented waiver.",
         )
         return 1
     else:

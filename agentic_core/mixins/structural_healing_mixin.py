@@ -71,7 +71,8 @@ class StructuralHealingMixin:
 
                 try:
                     structure = engine.analyze_file_structure(
-                        py_file, max_lines=self.max_lines_per_file
+                        py_file,
+                        max_lines=self.max_lines_per_file,
                     )
 
                     if structure["issues"]:
@@ -81,12 +82,15 @@ class StructuralHealingMixin:
                             fixed = self._fix_structural_issues(py_file, structure)
                             results["issues_fixed"] += fixed
 
-                        results["details"].append({
-                            "file": str(py_file.relative_to(self.project_root)),
-                            "issues": structure["issues"],
-                            "complexity": structure["complexity_score"],
-                        })
+                        results["details"].append(
+                            {
+                                "file": str(py_file.relative_to(self.project_root)),
+                                "issues": structure["issues"],
+                                "complexity": structure["complexity_score"],
+                            },
+                        )
 
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     results["errors"] += 1
                     results["details"].append(

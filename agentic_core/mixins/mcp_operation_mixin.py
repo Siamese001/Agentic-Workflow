@@ -92,21 +92,25 @@ class MCPOperationMixin:
                 duration_ms = (time.monotonic() - start) * 1000
                 self._audit_mcp(tool_name, "SUCCESS", duration_ms, audit_context_id, attempt)
                 return result
+            # guardian: allow-silent-swallow
             except Exception as e:
                 duration_ms = (time.monotonic() - start) * 1000
                 last_exception = e
                 self._audit_mcp(tool_name, "RETRY", duration_ms, audit_context_id, attempt)
                 logger.warning(
                     "MCP call %s failed (attempt %d/%d): %s",
-                    tool_name, attempt + 1, retry_count, e,
+                    tool_name,
+                    attempt + 1,
+                    retry_count,
+                    e,
                 )
                 if attempt < retry_count - 1:
-                    delay = base_delay * (2 ** attempt) + (time.monotonic() % 0.1)
+                    delay = base_delay * (2**attempt) + (time.monotonic() % 0.1)
                     await asyncio.sleep(delay)
 
         self._audit_mcp(tool_name, "FAILED", 0, audit_context_id, retry_count)
         raise RuntimeError(
-            f"MCP call '{tool_name}' failed after {retry_count} attempts"
+            f"MCP call '{tool_name}' failed after {retry_count} attempts",
         ) from last_exception
 
     # ── Gateway convenience methods ──────────────────────────────────

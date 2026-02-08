@@ -9,8 +9,9 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from agentic_core.core.classification_kernel import (
     FileType,
@@ -38,48 +39,35 @@ GOLDEN_SET: list[tuple[str, FileType]] = [
     # --- PRIORITY 0: IGNORE (critical infrastructure) ---
     ("agentic_core/core/__init__.py", "IGNORE"),
     ("tests/conftest.py", "IGNORE"),  # conftest is critical ignore, not TEST
-
     # --- PRIORITY 1: CLASS (base_agents/ directory) ---
     ("agentic_core/base_agents/SovereignBaseAgent.py", "CLASS"),
-
     # --- PRIORITY 5: UTILITY (no classes, no __main__) ---
     ("agentic_core/core/classification_kernel.py", "UTILITY"),
-
     # --- PRIORITY 6: EXCEPTION ---
     ("agentic_core/L2_execution/types/mcp_error_types.py", "EXCEPTION"),
-
     # --- PRIORITY 7: MIXIN ---
     ("agentic_core/mixins/healer_mixin.py", "MIXIN"),
     ("agentic_core/mixins/circuit_breaker_mixin.py", "MIXIN"),
-
     # --- PRIORITY 8: PROTOCOL ---
     ("agentic_core/interfaces/IHealerProtocol.py", "PROTOCOL"),
     ("agentic_core/interfaces/IOrchestratorProtocol.py", "PROTOCOL"),
-
     # --- PRIORITY 9: ORCHESTRATOR ---
     ("agentic_core/knowledge/engine/rag_orchestrator.py", "ORCHESTRATOR"),
-
     # --- PRIORITY 10: AGENT ---
     ("agentic_core/L5_safety/reasoning/FileClassificationAgent.py", "AGENT"),
     ("agentic_core/L5_safety/reasoning/LocationHealerAgent.py", "AGENT"),
     ("agentic_core/L5_safety/reasoning/HierarchyAgent.py", "AGENT"),
     ("apps_lic/engines/CampaignBalanceAgent.py", "AGENT"),
-
     # --- PRIORITY 11: STRATEGY ---
     ("agentic_core/L0_maintenance/enforcement/audit_healing_strategy.py", "STRATEGY"),
-
     # --- PRIORITY 12: ADAPTER ---
     ("agentic_core/L4_state/utils/local_disk_adapter.py", "ADAPTER"),
-
     # --- PRIORITY 14: CONFIG ---
     ("agentic_core/L5_safety/config/structure_blueprint_config.py", "CONFIG"),
-
     # --- PRIORITY 15: VALIDATOR ---
     ("agentic_core/L1_cognition/validators/consensus_validator.py", "VALIDATOR"),
-
     # --- PRIORITY 16: FACTORY ---
     ("agentic_core/runtime/enforcement/envelope_factory.py", "FACTORY"),
-
     # --- PRIORITY 4: SCRIPT ---
     ("agentic_core/L0_maintenance/scripts/add_agent_suffix_plan_util.py", "SCRIPT"),
 ]
@@ -128,8 +116,7 @@ def test_is_agent_file_consistency(rel_path: str, expected_type: FileType) -> No
     result = is_agent_file(abs_path)
     expected = expected_type == "AGENT"
     assert result == expected, (
-        f"is_agent_file({rel_path}) returned {result}, "
-        f"but classify_file_standalone returned {expected_type}"
+        f"is_agent_file({rel_path}) returned {result}, but classify_file_standalone returned {expected_type}"
     )
 
 
@@ -144,7 +131,8 @@ def test_is_agent_file_consistency(rel_path: str, expected_type: FileType) -> No
     ids=[f"is_agent_orch_{entry[0].split('/')[-1]}" for entry in GOLDEN_SET],
 )
 def test_is_agent_or_orchestrator_consistency(
-    rel_path: str, expected_type: FileType
+    rel_path: str,
+    expected_type: FileType,
 ) -> None:
     """is_agent_or_orchestrator must return True iff AGENT or ORCHESTRATOR."""
     abs_path = PROJECT_ROOT / rel_path
@@ -171,9 +159,7 @@ class TestPriorityInvariants:
         """No file classified as AGENT should have 'Mixin' in its primary class name."""
         for rel_path, expected_type in GOLDEN_SET:
             if expected_type == "AGENT":
-                assert "Mixin" not in rel_path, (
-                    f"{rel_path} is classified as AGENT but has 'Mixin' in path"
-                )
+                assert "Mixin" not in rel_path, f"{rel_path} is classified as AGENT but has 'Mixin' in path"
 
     def test_ignore_files_are_infrastructure(self) -> None:
         """IGNORE files should only be __init__.py, conftest.py, etc."""
@@ -181,9 +167,7 @@ class TestPriorityInvariants:
         for rel_path, expected_type in GOLDEN_SET:
             if expected_type == "IGNORE":
                 filename = Path(rel_path).name
-                assert filename in infra_names, (
-                    f"{rel_path} is IGNORE but not in critical infrastructure set"
-                )
+                assert filename in infra_names, f"{rel_path} is IGNORE but not in critical infrastructure set"
 
     def test_mixin_before_agent(self) -> None:
         """MIXIN priority (7) is higher than AGENT priority (10).
@@ -218,17 +202,32 @@ class TestKernelAPI:
     def test_filetype_has_all_expected_values(self) -> None:
         """FileType Literal must contain all 20 expected classification values."""
         import typing
+
         args = typing.get_args(FileType)
         expected = {
-            "AGENT", "CLASS", "MIXIN", "UTILITY", "PROTOCOL", "ENGINE",
-            "STUB", "TEST", "SCRIPT", "TYPES", "GATEWAY", "ORCHESTRATOR",
-            "VALIDATOR", "FACTORY", "CONFIG", "ADAPTER", "STRATEGY",
-            "EXCEPTION", "SERVICE", "IGNORE",
+            "AGENT",
+            "CLASS",
+            "MIXIN",
+            "UTILITY",
+            "PROTOCOL",
+            "ENGINE",
+            "STUB",
+            "TEST",
+            "SCRIPT",
+            "TYPES",
+            "GATEWAY",
+            "ORCHESTRATOR",
+            "VALIDATOR",
+            "FACTORY",
+            "CONFIG",
+            "ADAPTER",
+            "STRATEGY",
+            "EXCEPTION",
+            "SERVICE",
+            "IGNORE",
         }
         assert set(args) == expected, (
-            f"FileType mismatch.\n"
-            f"  Missing: {expected - set(args)}\n"
-            f"  Extra:   {set(args) - expected}"
+            f"FileType mismatch.\n  Missing: {expected - set(args)}\n  Extra:   {set(args) - expected}"
         )
 
 
@@ -246,9 +245,18 @@ class TestAgentCountRegression:
     def test_agent_count_in_range(self) -> None:
         """Total agent count must stay within expected bounds."""
         import os
+
         scan_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
-        exclude = {"__pycache__", ".git", "node_modules", ".backup", "archives",
-                    ".healing_backups", "tests", ".venv"}
+        exclude = {
+            "__pycache__",
+            ".git",
+            "node_modules",
+            ".backup",
+            "archives",
+            ".healing_backups",
+            "tests",
+            ".venv",
+        }
         agent_count = 0
         for sd in scan_dirs:
             d = PROJECT_ROOT / sd

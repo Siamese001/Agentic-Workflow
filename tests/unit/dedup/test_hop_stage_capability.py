@@ -8,6 +8,7 @@ Validates:
 - run_stage provides PHASE_START bookend + delegates to _process
 - All HOP agents can compose the capability
 """
+
 from __future__ import annotations
 
 import pytest
@@ -20,6 +21,7 @@ class TestHOPStageCapabilityInterface:
     def capability_class(self):
         try:
             from apps_lic.utils.hop_stage_capability import HOPStageCapability
+
             return HOPStageCapability
         except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.skip(f"Cannot import HOPStageCapability: {e}")
@@ -28,6 +30,7 @@ class TestHOPStageCapabilityInterface:
     def buffer_class(self):
         try:
             from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
+
             return ImmutableStagingBuffer
         except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.skip(f"Cannot import ImmutableStagingBuffer: {e}")
@@ -36,6 +39,7 @@ class TestHOPStageCapabilityInterface:
     def registry_class(self):
         try:
             from apps_lic.types.TraceRegistry import TraceRegistry
+
             return TraceRegistry
         except (ImportError, NameError, AttributeError, TypeError) as e:
             pytest.skip(f"Cannot import TraceRegistry: {e}")

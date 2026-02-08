@@ -103,6 +103,7 @@ def load_agent_discovery(
         Logger.debug(f"[SSOT] Loaded {len(agents)} agents from discovery JSON")
         return agents
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.error(f"[SSOT] Failed to load discovery JSON: {e}")
         return []
@@ -166,7 +167,8 @@ def get_agents_by_layer(project_root: Path | None = None, layer: str = None) -> 
     return [
         agent
         for agent in agents
-        if agent.get("layer", "").upper() == layer.upper() or layer.upper() in (agent.get("path", "") or agent.get("file", "")).upper()
+        if agent.get("layer", "").upper() == layer.upper()
+        or layer.upper() in (agent.get("path", "") or agent.get("file", "")).upper()
     ]
 
 

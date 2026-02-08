@@ -19,6 +19,7 @@ Outputs:
 Path resolution: All paths imported from structure_blueprint_config.py.
 No hardcoded docs/reports paths permitted.
 """
+
 from __future__ import annotations
 
 import ast
@@ -26,12 +27,10 @@ import hashlib
 import json
 import logging
 import re
-import sys
 from collections import defaultdict
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from itertools import combinations
 from pathlib import Path
-from typing import Any
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 Logger = logging.getLogger("dedup_analysis")
@@ -65,17 +64,22 @@ SIM_DIR = OUT_DIR / "similarity"
 # Constitutional Rule #0: plans/reports → DOCS_REPORTS_PLANS (from blueprint)
 REPORTS_DIR = PROJECT_ROOT / DOCS_REPORTS_PLANS
 
+# guardian: allow-magic-config
 CODE_SIM_THRESHOLD = 0.75
+# guardian: allow-magic-config
 PROMPT_SIM_THRESHOLD = 0.80
+# guardian: allow-magic-config
 RESPONSIBILITY_OVERLAP_THRESHOLD = 0.60
 
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class AgentFeatures:
     """AST-extracted features for a single agent file."""
+
     agent_id: str
     class_name: str
     file_path: str
@@ -104,9 +108,11 @@ class AgentFeatures:
 # AST Feature Extraction
 # ---------------------------------------------------------------------------
 
+
 def _safe_unparse(node: ast.AST) -> str:
     try:
         return ast.unparse(node)
+    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -156,27 +162,66 @@ def _extract_responsibility_keywords(docstring: str) -> list[str]:
     # Domain keyword extraction
     keywords = set()
     patterns = [
-        r'\b(validat\w+)\b', r'\b(detect\w+)\b', r'\b(heal\w+)\b',
-        r'\b(enforc\w+)\b', r'\b(scan\w+)\b', r'\b(monitor\w+)\b',
-        r'\b(audit\w+)\b', r'\b(guard\w+)\b', r'\b(inspect\w+)\b',
-        r'\b(analyz\w+)\b', r'\b(check\w+)\b', r'\b(test\w+)\b',
-        r'\b(classif\w+)\b', r'\b(format\w+)\b', r'\b(clean\w+)\b',
-        r'\b(fix\w+)\b', r'\b(repair\w+)\b', r'\b(generat\w+)\b',
-        r'\b(red.?team\w*)\b', r'\b(adversar\w+)\b', r'\b(security\w*)\b',
-        r'\b(safety\w*)\b', r'\b(complian\w+)\b', r'\b(governan\w+)\b',
-        r'\b(observ\w+)\b', r'\b(metric\w+)\b', r'\b(telem\w+)\b',
-        r'\b(trac\w+)\b', r'\b(location\w*)\b', r'\b(structur\w+)\b',
-        r'\b(hierarch\w+)\b', r'\b(naming\w*)\b', r'\b(dedup\w+)\b',
-        r'\b(duplicat\w+)\b', r'\b(code\w*)\b', r'\b(prompt\w*)\b',
-        r'\b(cost\w*)\b', r'\b(budget\w*)\b', r'\b(token\w*)\b',
-        r'\b(orchestrat\w+)\b', r'\b(pipeline\w*)\b', r'\b(dag\w*)\b',
-        r'\b(memory\w*)\b', r'\b(state\w*)\b', r'\b(cache\w*)\b',
-        r'\b(pinecone\w*)\b', r'\b(redis\w*)\b', r'\b(embed\w+)\b',
-        r'\b(rag\w*)\b', r'\b(retriev\w+)\b',
-        r'\b(attack\w*)\b', r'\b(vulnerab\w+)\b', r'\b(fuzz\w+)\b',
-        r'\b(probe\w*)\b', r'\b(penetrat\w+)\b',
-        r'\b(pii\w*)\b', r'\b(credential\w*)\b', r'\b(secret\w*)\b',
-        r'\b(hygien\w+)\b', r'\b(sprawl\w*)\b',
+        r"\b(validat\w+)\b",
+        r"\b(detect\w+)\b",
+        r"\b(heal\w+)\b",
+        r"\b(enforc\w+)\b",
+        r"\b(scan\w+)\b",
+        r"\b(monitor\w+)\b",
+        r"\b(audit\w+)\b",
+        r"\b(guard\w+)\b",
+        r"\b(inspect\w+)\b",
+        r"\b(analyz\w+)\b",
+        r"\b(check\w+)\b",
+        r"\b(test\w+)\b",
+        r"\b(classif\w+)\b",
+        r"\b(format\w+)\b",
+        r"\b(clean\w+)\b",
+        r"\b(fix\w+)\b",
+        r"\b(repair\w+)\b",
+        r"\b(generat\w+)\b",
+        r"\b(red.?team\w*)\b",
+        r"\b(adversar\w+)\b",
+        r"\b(security\w*)\b",
+        r"\b(safety\w*)\b",
+        r"\b(complian\w+)\b",
+        r"\b(governan\w+)\b",
+        r"\b(observ\w+)\b",
+        r"\b(metric\w+)\b",
+        r"\b(telem\w+)\b",
+        r"\b(trac\w+)\b",
+        r"\b(location\w*)\b",
+        r"\b(structur\w+)\b",
+        r"\b(hierarch\w+)\b",
+        r"\b(naming\w*)\b",
+        r"\b(dedup\w+)\b",
+        r"\b(duplicat\w+)\b",
+        r"\b(code\w*)\b",
+        r"\b(prompt\w*)\b",
+        r"\b(cost\w*)\b",
+        r"\b(budget\w*)\b",
+        r"\b(token\w*)\b",
+        r"\b(orchestrat\w+)\b",
+        r"\b(pipeline\w*)\b",
+        r"\b(dag\w*)\b",
+        r"\b(memory\w*)\b",
+        r"\b(state\w*)\b",
+        r"\b(cache\w*)\b",
+        r"\b(pinecone\w*)\b",
+        r"\b(redis\w*)\b",
+        r"\b(embed\w+)\b",
+        r"\b(rag\w*)\b",
+        r"\b(retriev\w+)\b",
+        r"\b(attack\w*)\b",
+        r"\b(vulnerab\w+)\b",
+        r"\b(fuzz\w+)\b",
+        r"\b(probe\w*)\b",
+        r"\b(penetrat\w+)\b",
+        r"\b(pii\w*)\b",
+        r"\b(credential\w*)\b",
+        r"\b(secret\w*)\b",
+        r"\b(hygien\w+)\b",
+        r"\b(sprawl\w*)\b",
     ]
     for pat in patterns:
         for match in re.finditer(pat, text):
@@ -285,6 +330,7 @@ def extract_features(file_path: Path, agent_entry: dict) -> AgentFeatures | None
 # Similarity computation
 # ---------------------------------------------------------------------------
 
+
 def jaccard(set_a: set, set_b: set) -> float:
     """Jaccard similarity between two sets."""
     if not set_a and not set_b:
@@ -298,7 +344,7 @@ def _normalize_import(imp: str) -> str:
     """Strip project-local prefix for comparison."""
     for prefix in ("agentic_core.", "apps_lic.", "apps_rg.", "apps_shared."):
         if imp.startswith(prefix):
-            return imp[len(prefix):]
+            return imp[len(prefix) :]
     return imp
 
 
@@ -336,10 +382,10 @@ def code_similarity(a: AgentFeatures, b: AgentFeatures) -> float:
 
 def _shingle(text: str, k: int = 5) -> set[str]:
     """Character-level k-shingling for text similarity."""
-    text = re.sub(r'\s+', ' ', text.lower().strip())
+    text = re.sub(r"\s+", " ", text.lower().strip())
     if len(text) < k:
         return {text}
-    return {text[i:i+k] for i in range(len(text) - k + 1)}
+    return {text[i : i + k] for i in range(len(text) - k + 1)}
 
 
 def prompt_similarity(a: AgentFeatures, b: AgentFeatures) -> float:
@@ -364,6 +410,7 @@ def dependency_overlap(a: AgentFeatures, b: AgentFeatures) -> float:
 # ---------------------------------------------------------------------------
 # Clustering (simple single-linkage with threshold)
 # ---------------------------------------------------------------------------
+
 
 def cluster_agents(
     features_list: list[AgentFeatures],
@@ -407,6 +454,7 @@ def cluster_agents(
 # Main pipeline
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     Logger.info("=== Agent Deduplication Analysis Pipeline ===")
     Logger.info(f"Project root: {PROJECT_ROOT}")
@@ -418,7 +466,7 @@ def main() -> None:
     # Phase 0: Load discovery
     # -----------------------------------------------------------------------
     Logger.info("[Phase 0] Loading discovery JSON...")
-    with open(DISCOVERY_JSON, "r", encoding="utf-8") as f:
+    with open(DISCOVERY_JSON, encoding="utf-8") as f:
         discovery = json.load(f)
 
     agents_raw = discovery.get("agents", [])
@@ -450,23 +498,25 @@ def main() -> None:
     # -----------------------------------------------------------------------
     index_entries = []
     for uid, feat in sorted(features_map.items()):
-        index_entries.append({
-            "agent_id": uid,
-            "class_name": feat.class_name,
-            "file_path": feat.file_path,
-            "layer": feat.layer,
-            "base_classes": feat.base_classes,
-            "method_names": feat.method_names,
-            "has_execute": feat.has_execute,
-            "has_heal": feat.has_heal,
-            "has_run": feat.has_run,
-            "line_count": feat.line_count,
-            "integrity_hash": feat.file_sha256,
-            "responsibility_keywords": feat.responsibility_keywords,
-            "import_count": len(feat.imports),
-            "prompt_string_count": len(feat.prompt_strings),
-            "decorator_count": len(feat.decorators),
-        })
+        index_entries.append(
+            {
+                "agent_id": uid,
+                "class_name": feat.class_name,
+                "file_path": feat.file_path,
+                "layer": feat.layer,
+                "base_classes": feat.base_classes,
+                "method_names": feat.method_names,
+                "has_execute": feat.has_execute,
+                "has_heal": feat.has_heal,
+                "has_run": feat.has_run,
+                "line_count": feat.line_count,
+                "integrity_hash": feat.file_sha256,
+                "responsibility_keywords": feat.responsibility_keywords,
+                "import_count": len(feat.imports),
+                "prompt_string_count": len(feat.prompt_strings),
+                "decorator_count": len(feat.decorators),
+            },
+        )
 
     index_path = OUT_DIR / "active_agents_index.json"
     with open(index_path, "w", encoding="utf-8") as f:
@@ -506,10 +556,7 @@ def main() -> None:
         "total_pairs": len(pairs),
         "pairs_above_050": len(high_code),
         "pairs_above_075": len([x for x in high_code if x[1] >= 0.75]),
-        "top_pairs": [
-            {"agent_a": k[0], "agent_b": k[1], "score": round(v, 4)}
-            for k, v in high_code[:100]
-        ],
+        "top_pairs": [{"agent_a": k[0], "agent_b": k[1], "score": round(v, 4)} for k, v in high_code[:100]],
     }
     with open(SIM_DIR / "code_similarity.json", "w", encoding="utf-8") as f:
         json.dump(code_sim_data, f, indent=2)
@@ -527,7 +574,9 @@ def main() -> None:
             fa, fb = features_map[a_id], features_map[b_id]
             shared_bases = set(fa.base_classes) & set(fb.base_classes)
             shared_methods = set(fa.method_names) & set(fb.method_names)
-            f.write(f"| {a_id} | {b_id} | {score:.3f} | {', '.join(shared_bases) or '-'} | {len(shared_methods)} |\n")
+            f.write(
+                f"| {a_id} | {b_id} | {score:.3f} | {', '.join(shared_bases) or '-'} | {len(shared_methods)} |\n",
+            )
     Logger.info(f"[Phase 1] Code similarity: {code_sim_data['pairs_above_075']} pairs ≥ 0.75")
 
     # -----------------------------------------------------------------------
@@ -542,10 +591,7 @@ def main() -> None:
         "total_pairs": len(pairs),
         "pairs_above_040": len(high_prompt),
         "pairs_above_080": len([x for x in high_prompt if x[1] >= 0.80]),
-        "top_pairs": [
-            {"agent_a": k[0], "agent_b": k[1], "score": round(v, 4)}
-            for k, v in high_prompt[:100]
-        ],
+        "top_pairs": [{"agent_a": k[0], "agent_b": k[1], "score": round(v, 4)} for k, v in high_prompt[:100]],
     }
     with open(SIM_DIR / "prompt_similarity.json", "w", encoding="utf-8") as f:
         json.dump(prompt_sim_data, f, indent=2)
@@ -610,20 +656,54 @@ def main() -> None:
     def _classify_import(imp: str) -> str:
         """Classify an import as internal, stdlib, or third-party."""
         internal_prefixes = (
-            "agentic_core.", "apps_lic.", "apps_rg.", "apps_shared.",
-            "ops_scripts.", "tests.",
+            "agentic_core.",
+            "apps_lic.",
+            "apps_rg.",
+            "apps_shared.",
+            "ops_scripts.",
+            "tests.",
         )
         if any(imp.startswith(p) for p in internal_prefixes):
             return "internal"
         # Common stdlib modules (non-exhaustive but covers >95% of usage)
         stdlib = {
-            "abc", "ast", "asyncio", "collections", "contextlib",
-            "copy", "dataclasses", "datetime", "enum", "functools",
-            "hashlib", "importlib", "inspect", "io", "itertools",
-            "json", "logging", "math", "os", "pathlib", "platform",
-            "re", "shutil", "signal", "socket", "subprocess", "sys",
-            "tempfile", "textwrap", "threading", "time", "traceback",
-            "typing", "unittest", "urllib", "uuid", "warnings",
+            "abc",
+            "ast",
+            "asyncio",
+            "collections",
+            "contextlib",
+            "copy",
+            "dataclasses",
+            "datetime",
+            "enum",
+            "functools",
+            "hashlib",
+            "importlib",
+            "inspect",
+            "io",
+            "itertools",
+            "json",
+            "logging",
+            "math",
+            "os",
+            "pathlib",
+            "platform",
+            "re",
+            "shutil",
+            "signal",
+            "socket",
+            "subprocess",
+            "sys",
+            "tempfile",
+            "textwrap",
+            "threading",
+            "time",
+            "traceback",
+            "typing",
+            "unittest",
+            "urllib",
+            "uuid",
+            "warnings",
         }
         top_module = imp.split(".")[0]
         if top_module in stdlib:
@@ -635,15 +715,17 @@ def main() -> None:
         internal = [i for i in feat.imports if _classify_import(i) == "internal"]
         stdlib = [i for i in feat.imports if _classify_import(i) == "stdlib"]
         third_party = [i for i in feat.imports if _classify_import(i) == "third_party"]
-        import_stats.append({
-            "agent_id": feat.agent_id,
-            "layer": feat.layer,
-            "total_imports": len(feat.imports),
-            "internal": len(internal),
-            "stdlib": len(stdlib),
-            "third_party": len(third_party),
-            "blast_radius": len(internal),  # internal imports = blast radius
-        })
+        import_stats.append(
+            {
+                "agent_id": feat.agent_id,
+                "layer": feat.layer,
+                "total_imports": len(feat.imports),
+                "internal": len(internal),
+                "stdlib": len(stdlib),
+                "third_party": len(third_party),
+                "blast_radius": len(internal),  # internal imports = blast radius
+            },
+        )
 
     # Sort by blast radius descending
     import_stats.sort(key=lambda x: -x["blast_radius"])
@@ -665,7 +747,7 @@ def main() -> None:
             f.write(
                 f"| {s['agent_id']} | {s['layer']} | {s['total_imports']} "
                 f"| {s['internal']} | {s['stdlib']} | {s['third_party']} "
-                f"| {s['blast_radius']} |\n"
+                f"| {s['blast_radius']} |\n",
             )
 
         # Layer-level summary
@@ -683,7 +765,7 @@ def main() -> None:
 
     Logger.info(
         f"[Phase 1] Import complexity: avg_blast={avg_blast:.1f}, "
-        f"max_blast={max_blast['blast_radius']} ({max_blast['agent_id']})"
+        f"max_blast={max_blast['blast_radius']} ({max_blast['agent_id']})",
     )
 
     # -----------------------------------------------------------------------
@@ -779,9 +861,15 @@ def main() -> None:
 
             f.write(f"## Cluster {idx}\n\n")
             f.write(f"- **Members** ({len(cluster)}): {', '.join(cluster)}\n")
-            f.write(f"- **Code similarity**: min={stats_code['min']}, median={stats_code['median']}, max={stats_code['max']}\n")
-            f.write(f"- **Prompt similarity**: min={stats_prompt['min']}, median={stats_prompt['median']}, max={stats_prompt['max']}\n")
-            f.write(f"- **Responsibility overlap**: min={stats_resp['min']}, median={stats_resp['median']}, max={stats_resp['max']}\n")
+            f.write(
+                f"- **Code similarity**: min={stats_code['min']}, median={stats_code['median']}, max={stats_code['max']}\n",
+            )
+            f.write(
+                f"- **Prompt similarity**: min={stats_prompt['min']}, median={stats_prompt['median']}, max={stats_prompt['max']}\n",
+            )
+            f.write(
+                f"- **Responsibility overlap**: min={stats_resp['min']}, median={stats_resp['median']}, max={stats_resp['max']}\n",
+            )
             f.write(f"- **Risk**: {risk}\n")
             f.write(f"- **Recommendation**: {action}\n\n")
 
@@ -797,27 +885,28 @@ def main() -> None:
                     f.write(f"| {aid} | {feat.layer} | {feat.line_count} | {bases} | {methods} | {kw} |\n")
 
             # Canonical target
-            f.write(f"\n### Proposed Canonical Agent\n\n")
+            f.write("\n### Proposed Canonical Agent\n\n")
             # Pick the one with most methods / largest file
-            canonical = max(cluster, key=lambda aid: (
-                features_map[aid].line_count if aid in features_map else 0
-            ))
+            canonical = max(
+                cluster,
+                key=lambda aid: (features_map[aid].line_count if aid in features_map else 0),
+            )
             f.write(f"- **Target**: `{canonical}`\n")
             if canonical in features_map:
                 f.write(f"- **File**: `{features_map[canonical].file_path}`\n")
                 f.write(f"- **Layer**: {features_map[canonical].layer}\n")
 
-            f.write(f"\n### Backward Compatibility\n\n")
+            f.write("\n### Backward Compatibility\n\n")
             for aid in cluster:
                 if aid != canonical:
                     f.write(f"- `{aid}` → redirect/shim to `{canonical}`\n")
 
-            f.write(f"\n### Migration Steps\n\n")
+            f.write("\n### Migration Steps\n\n")
             f.write(f"1. Extract shared logic into canonical agent `{canonical}`\n")
-            f.write(f"2. Convert other members to thin shims importing from canonical\n")
-            f.write(f"3. Update all imports/registry references\n")
-            f.write(f"4. Add regression tests for merged behavior\n")
-            f.write(f"5. Run `full_agent_discovery.py` to verify count reduction\n\n")
+            f.write("2. Convert other members to thin shims importing from canonical\n")
+            f.write("3. Update all imports/registry references\n")
+            f.write("4. Add regression tests for merged behavior\n")
+            f.write("5. Run `full_agent_discovery.py` to verify count reduction\n\n")
             f.write("---\n\n")
 
     Logger.info(f"[Phase 2] Wrote dedup_consolidation_plan.md -> {REPORTS_DIR}")

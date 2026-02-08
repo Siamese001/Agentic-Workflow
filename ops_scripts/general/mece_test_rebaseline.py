@@ -20,7 +20,7 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 # FileType imported from classification kernel (SSOT)
 from agentic_core.core.classification_kernel import (

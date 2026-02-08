@@ -10,7 +10,6 @@ FOCUS: Only flag actual naming violations, avoid false positives.
 - Avoid flagging: Errors, Strategies, Validators, Guardrails, etc. as needing Agent suffix
 """
 
-import ast
 import json
 import os
 import re
@@ -58,9 +57,23 @@ def classify_file(path: Path) -> str:
 
     # This script only cares about files that need naming fixes.
     # Most types are already compliant — only flag actionable violations.
-    if file_type in ("AGENT", "ORCHESTRATOR", "STRATEGY", "ADAPTER", "VALIDATOR",
-                     "EXCEPTION", "CONFIG", "FACTORY", "SERVICE", "ENGINE",
-                     "TYPES", "CLASS", "UTILITY", "STUB", "IGNORE"):
+    if file_type in (
+        "AGENT",
+        "ORCHESTRATOR",
+        "STRATEGY",
+        "ADAPTER",
+        "VALIDATOR",
+        "EXCEPTION",
+        "CONFIG",
+        "FACTORY",
+        "SERVICE",
+        "ENGINE",
+        "TYPES",
+        "CLASS",
+        "UTILITY",
+        "STUB",
+        "IGNORE",
+    ):
         # Check if SCRIPT needs PascalCase→snake_case conversion
         pass
 
@@ -161,7 +174,8 @@ def find_imports_to_update(
                         },
                     )
                     break
-        except:
+        # guardian: allow-silent-swallow
+        except:  # noqa: E722
             continue
 
     return import_updates

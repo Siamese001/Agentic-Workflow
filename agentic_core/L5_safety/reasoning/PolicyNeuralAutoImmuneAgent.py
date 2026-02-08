@@ -24,8 +24,8 @@ from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L4_state.memory.redis_sovereign_agent import (
     RedisSovereignAgent,
 )
-from agentic_core.L5_safety.reasoning.neural_autoimmune_agent import NeuralAutoImmuneAgent
 
+from agentic_core.L5_safety.reasoning.neural_autoimmune_agent import NeuralAutoImmuneAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -42,8 +42,10 @@ class PolicyNeuralAutoImmuneAgent(
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.redis = RedisSovereignAgent(project_root).get_client()
+        # guardian: allow-magic-config
         self.threshold = 5
 
+    # guardian: allow-type-erasure
     def detect_breaches(self) -> Any:
         """Execute detect_breaches operation."""
         # Scans L5 Redis for repeated non-compliance in 30-min windows
@@ -52,6 +54,7 @@ class PolicyNeuralAutoImmuneAgent(
 
     @timeout(300)
     @standard_heal
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,

@@ -29,7 +29,6 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -39,85 +38,102 @@ KERNEL_PATH = "agentic_core/core/classification_kernel.py"
 
 # Files that are allowed to have classification-related function names
 # because they are direct consumers/wrappers of the kernel
-ALLOWLISTED_FILES: frozenset[str] = frozenset({
-    KERNEL_PATH,
-    # FCA is the high-level consumer that wraps the kernel
-    "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
-    # This guardrail itself
-    "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
-    # Contract tests reference the kernel
-    "tests/core/test_classification_contract.py",
-    # --- Phase 1 refactored wrappers (delegate to kernel) ---
-    # complexity_visitor_util: is_sovereign_agent() → kernel, is_agent_class() shim
-    "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
-    # full_agent_discovery: analyze_agent_integrity() → kernel classify_file_standalone()
-    "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
-    # run_classification: classify_file() → kernel classify_file_standalone()
-    "ops_scripts/maintenance/run_classification.py",
-    # discovery_util: _scan_file_for_agents() → kernel is_agent_file()
-    "agentic_core/runtime/utils/discovery_util.py",
-    # file_intent: _is_agent_class() aligned with kernel naming rules
-    "agentic_core/prompt_governance/scripts/file_intent.py",
-    # type_erasure_validator: _is_agent_class() aligned with kernel
-    "agentic_core/L5_safety/validators/type_erasure_validator.py",
-    # Dedup utilities: is_agent_file() aligned with kernel naming
-    "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
-    "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
-    # --- Phase 2 Step 1: Refactored to delegate to kernel ---
-    # generate_agent_table_simple_util: is_agent_file() wraps kernel for string paths
-    "agentic_core/L0_maintenance/scripts/generate_agent_table_simple_util.py",
-    # pascal_sovereignty_fixer: classify_file() → kernel classify_file_standalone()
-    "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
-    # mece_test_rebaseline: classify_file() → kernel classify_file_standalone()
-    "ops_scripts/general/mece_test_rebaseline.py",
-})
+ALLOWLISTED_FILES: frozenset[str] = frozenset(
+    {
+        KERNEL_PATH,
+        # FCA is the high-level consumer that wraps the kernel
+        "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+        # This guardrail itself
+        "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
+        # Contract tests reference the kernel
+        "tests/core/test_classification_contract.py",
+        # --- Phase 1 refactored wrappers (delegate to kernel) ---
+        # complexity_visitor_util: is_sovereign_agent() → kernel, is_agent_class() shim
+        "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
+        # full_agent_discovery: analyze_agent_integrity() → kernel classify_file_standalone()
+        "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        # run_classification: classify_file() → kernel classify_file_standalone()
+        "ops_scripts/maintenance/run_classification.py",
+        # discovery_util: _scan_file_for_agents() → kernel is_agent_file()
+        "agentic_core/runtime/utils/discovery_util.py",
+        # file_intent: _is_agent_class() aligned with kernel naming rules
+        "agentic_core/prompt_governance/scripts/file_intent.py",
+        # type_erasure_validator: _is_agent_class() aligned with kernel
+        "agentic_core/L5_safety/validators/type_erasure_validator.py",
+        # Dedup utilities: is_agent_file() aligned with kernel naming
+        "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
+        "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        # --- Phase 2 Step 1: Refactored to delegate to kernel ---
+        # generate_agent_table_simple_util: is_agent_file() wraps kernel for string paths
+        "agentic_core/L0_maintenance/scripts/generate_agent_table_simple_util.py",
+        # pascal_sovereignty_fixer: classify_file() → kernel classify_file_standalone()
+        "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
+        # mece_test_rebaseline: classify_file() → kernel classify_file_standalone()
+        "ops_scripts/general/mece_test_rebaseline.py",
+    },
+)
 
 # Function names that indicate shadow classification logic
-SHADOW_FUNCTION_NAMES: frozenset[str] = frozenset({
-    "is_agent_class",
-    "classify_file",
-    "classify_file_standalone",
-    "_is_agent_class",
-    "_classify_file",
-    "is_agent_file",
-})
+SHADOW_FUNCTION_NAMES: frozenset[str] = frozenset(
+    {
+        "is_agent_class",
+        "classify_file",
+        "classify_file_standalone",
+        "_is_agent_class",
+        "_classify_file",
+        "is_agent_file",
+    },
+)
 
 # Files allowed to have endswith('Agent') checks because they operate on
 # AST class nodes for metadata extraction (not classification)
-ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset({
-    KERNEL_PATH,
-    "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
-    "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
-    "tests/core/test_classification_contract.py",
-    # These use endswith("Agent") for metadata extraction, not classification:
-    "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
-    "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
-    # Naming/renaming scripts that check suffixes for compliance:
-    "agentic_core/L5_safety/enforcement/ssot_scanner.py",
-    "agentic_core/L5_safety/enforcement/registry_verification.py",
-    "agentic_core/L5_safety/enforcement/data.py",
-    "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
-    # Dedup/migration scripts:
-    "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
-    "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
-    # Naming convention enforcement:
-    "ops_scripts/maintenance/run_classification.py",
-})
+ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        KERNEL_PATH,
+        "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+        "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
+        "tests/core/test_classification_contract.py",
+        # These use endswith("Agent") for metadata extraction, not classification:
+        "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
+        "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        # Naming/renaming scripts that check suffixes for compliance:
+        "agentic_core/L5_safety/enforcement/ssot_scanner.py",
+        "agentic_core/L5_safety/enforcement/registry_verification.py",
+        "agentic_core/L5_safety/enforcement/data.py",
+        "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        # Dedup/migration scripts:
+        "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
+        "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        # Naming convention enforcement:
+        "ops_scripts/maintenance/run_classification.py",
+    },
+)
 
 # Directories to exclude from scanning
-EXCLUDE_DIRS: frozenset[str] = frozenset({
-    "__pycache__", ".git", "node_modules", ".backup", "archives",
-    ".healing_backups", ".venv", "venv", ".tox",
-})
+EXCLUDE_DIRS: frozenset[str] = frozenset(
+    {
+        "__pycache__",
+        ".git",
+        "node_modules",
+        ".backup",
+        "archives",
+        ".healing_backups",
+        ".venv",
+        "venv",
+        ".tox",
+    },
+)
 
 
 # ============================================================================
 # VIOLATION DATA MODEL
 # ============================================================================
 
+
 @dataclass
 class Violation:
     """A single guardrail violation."""
+
     file: str
     line: int
     rule: str
@@ -128,6 +144,7 @@ class Violation:
 @dataclass
 class ScanResult:
     """Aggregated scan results."""
+
     files_scanned: int = 0
     violations: list[Violation] = field(default_factory=list)
 
@@ -139,6 +156,7 @@ class ScanResult:
 # ============================================================================
 # AST SCANNERS
 # ============================================================================
+
 
 def _normalize_path(path: Path, project_root: Path) -> str:
     """Convert absolute path to forward-slash relative path."""
@@ -162,15 +180,17 @@ def scan_shadow_functions(
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if node.name in SHADOW_FUNCTION_NAMES:
-                violations.append(Violation(
-                    file=rel_path,
-                    line=node.lineno,
-                    rule="SHADOW_FUNCTION",
-                    detail=(
-                        f"Function '{node.name}()' reimplements classification logic. "
-                        f"Use: from agentic_core.core.classification_kernel import is_agent_file"
+                violations.append(
+                    Violation(
+                        file=rel_path,
+                        line=node.lineno,
+                        rule="SHADOW_FUNCTION",
+                        detail=(
+                            f"Function '{node.name}()' reimplements classification logic. "
+                            f"Use: from agentic_core.core.classification_kernel import is_agent_file"
+                        ),
                     ),
-                ))
+                )
     return violations
 
 
@@ -201,31 +221,35 @@ def scan_endswith_agent(
         for arg in node.args:
             if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
                 if "Agent" in arg.value:
-                    violations.append(Violation(
-                        file=rel_path,
-                        line=node.lineno,
-                        rule="ENDSWITH_AGENT",
-                        detail=(
-                            f"Inline endswith('{arg.value}') check detected. "
-                            f"Consider using classification_kernel.is_agent_file() instead."
+                    violations.append(
+                        Violation(
+                            file=rel_path,
+                            line=node.lineno,
+                            rule="ENDSWITH_AGENT",
+                            detail=(
+                                f"Inline endswith('{arg.value}') check detected. "
+                                f"Consider using classification_kernel.is_agent_file() instead."
+                            ),
+                            severity="WARNING",
                         ),
-                        severity="WARNING",
-                    ))
+                    )
             # Also check tuples: endswith(("Agent", "BaseAgent"))
             if isinstance(arg, ast.Tuple):
                 for elt in arg.elts:
                     if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
                         if "Agent" in elt.value:
-                            violations.append(Violation(
-                                file=rel_path,
-                                line=node.lineno,
-                                rule="ENDSWITH_AGENT",
-                                detail=(
-                                    f"Inline endswith((..., '{elt.value}', ...)) check detected. "
-                                    f"Consider using classification_kernel.is_agent_file() instead."
+                            violations.append(
+                                Violation(
+                                    file=rel_path,
+                                    line=node.lineno,
+                                    rule="ENDSWITH_AGENT",
+                                    detail=(
+                                        f"Inline endswith((..., '{elt.value}', ...)) check detected. "
+                                        f"Consider using classification_kernel.is_agent_file() instead."
+                                    ),
+                                    severity="WARNING",
                                 ),
-                                severity="WARNING",
-                            ))
+                            )
                             break  # One violation per call site is enough
     return violations
 
@@ -233,6 +257,7 @@ def scan_endswith_agent(
 # ============================================================================
 # MAIN SCANNER
 # ============================================================================
+
 
 def scan_repository(project_root: Path) -> ScanResult:
     """Scan all Python files in the repository for SSOT violations."""
@@ -275,6 +300,7 @@ def scan_repository(project_root: Path) -> ScanResult:
 # CLI
 # ============================================================================
 
+
 def main() -> int:
     """Run the SSOT guardrail scanner."""
     parser = argparse.ArgumentParser(
@@ -306,6 +332,7 @@ def main() -> int:
 
     if args.json:
         import json
+
         output = {
             "files_scanned": result.files_scanned,
             "violation_count": len(violations),
