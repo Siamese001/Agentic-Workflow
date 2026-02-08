@@ -2,7 +2,7 @@
 
 import pytest
 
-from apps_shared.integration.integration_config import (
+from apps_shared.config.integration_config import (
     LIC_CONFIG,
     RG_CONFIG,
     IntegrationConfig,

@@ -1274,7 +1274,7 @@ class TestEphemeralScriptDetection:
 
     def test_mutation_phase_exempted(self, agent):
         """mutation_phase.py should be exempted (pipeline concept)."""
-        path = Path("C:/repo/apps_shared/common_utils/mutation_phase.py")
+        path = Path("C:/repo/apps_shared/utils/mutation_phase.py")
         assert agent._detect_ephemeral_scripts(path) is None
 
     def test_regular_file_passes(self, agent):

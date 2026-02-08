@@ -18,9 +18,9 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Force Sovereign Imports
-from apps_rg.engines.base.sovereign_context import SovereignContext
+from apps_rg.engines.sovereign_context import SovereignContext
 
-from apps_rg.engines.orchestration.resume_orchestrator_engine import ResumeOrchestratorEngine
+from apps_rg.engines.resume_orchestrator_engine import ResumeOrchestratorEngine
 
 # Configure Logging
 logging.basicConfig(

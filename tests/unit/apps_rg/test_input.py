@@ -16,7 +16,7 @@ def validate_knowledge_base():
     print("1. KNOWLEDGE BASE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.domain.knowledge_base import FROZEN_SNAPSHOT, get_node_config, get_prompt
+    from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT, get_node_config, get_prompt
 
     print(f"✅ Knowledge base version: {FROZEN_SNAPSHOT.version}")
     print(f"✅ Total prompts: {len(FROZEN_SNAPSHOT.prompts)}")
@@ -42,7 +42,7 @@ def validate_base_engine():
     print("2. BASE ENGINE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.base.base_resume_agent import BaseRGEngine
+    from apps_rg.engines.base_resume_agent import BaseRGEngine
     from pydantic import BaseModel
 
     class TestInput(BaseModel):
@@ -73,8 +73,8 @@ def validate_hop_engines():
     print("3. HOP ENGINES VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkExtractionEngine, ClerkInput
-    from apps_rg.engines.hops.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
+    from apps_rg.engines.hop1_clerk_engine import ClerkExtractionEngine, ClerkInput
+    from apps_rg.engines.hop2_enrichment_engine import EnrichmentEngine, EnrichmentInput
 
     # Test HOP1 Clerk
     clerk = ClerkExtractionEngine()
@@ -114,7 +114,7 @@ def validate_orchestrator():
     print("4. ORCHESTRATOR VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.orchestration.resume_orchestrator_engine import (
+    from apps_rg.engines.resume_orchestrator_engine import (
         OrchestratorInput,
         ResumeOrchestratorEngine,
         WorkflowState,
@@ -154,7 +154,7 @@ def validate_void_compliance():
     print("5. VOID COMPLIANCE VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.safety.void_compliance_engine import ComplianceInput, VoidComplianceEngine
+    from apps_rg.engines.void_compliance_engine import ComplianceInput, VoidComplianceEngine
 
     engine = VoidComplianceEngine()
 
@@ -194,7 +194,7 @@ def validate_pydantic_models():
     print("6. PYDANTIC MODEL VALIDATION")
     print("-" * 60)
 
-    from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput, ExperienceSection
+    from apps_rg.engines.hop1_clerk_engine import ClerkInput, ExperienceSection
     from pydantic import ValidationError
 
     # Valid model
@@ -252,7 +252,7 @@ def validate_directory_structure():
 
     # Check for key files
     key_files = [
-        "apps_rg/domain/knowledge_base.py",
+        "apps_rg/config/knowledge_base.py",
         "apps_rg/engines/base/base_resume_agent.py",
         "apps_rg/engines/hops/hop1_clerk_engine.py",
         "apps_rg/engines/hops/hop2_enrichment_engine.py",

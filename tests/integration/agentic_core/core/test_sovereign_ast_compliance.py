@@ -38,7 +38,7 @@ class TestSovereignASTCompliance:
         Verify that FailureClassifierAgent is identified as an Enum, not a functional Agent.
         Triggers the 'failure_types.py' rename recommendation.
         """
-        model_path = Path("apps_lic/domain/FailureClassifierAgent.py")
+        model_path = Path("apps_lic/config/FailureClassifierAgent.py")
         tree = ast.parse(model_path.read_text(encoding="utf-8"))
 
         has_enum = False

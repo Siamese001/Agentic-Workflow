@@ -29,16 +29,16 @@ class TestAppsRgLCDCompliance:
         assert len(py_files) > 0, "apps_rg/engines/ should have Python files"
 
     def test_apps_rg_shared_structure(self):
-        """apps_rg/shared should have proper structure."""
-        shared_path = Path("apps_rg/shared")
+        """apps_rg/utils should have proper structure."""
+        shared_path = Path("apps_rg/utils")
         if not shared_path.exists():
-            pytest.skip("apps_rg/shared/ not found")
+            pytest.skip("apps_rg/utils/ not found")
 
         expected_subfolders = ["core", "reasoning", "tools", "utils"]
         for subfolder in expected_subfolders:
             path = shared_path / subfolder
             if not path.exists():
-                pytest.skip(f"apps_rg/shared/{subfolder}/ not found")
+                pytest.skip(f"apps_rg/utils/{subfolder}/ not found")
 
 
 class TestAppsRgAgentPlacement:
@@ -81,9 +81,9 @@ class TestAppsRgTypesSeparation:
 
     def test_no_types_in_shared_tools(self):
         """_types.py files should not be in shared/tools/."""
-        tools_path = Path("apps_rg/shared/tools")
+        tools_path = Path("apps_rg/tools")
         if not tools_path.exists():
-            pytest.skip("apps_rg/shared/tools/ not found")
+            pytest.skip("apps_rg/tools/ not found")
 
         type_files = list(tools_path.glob("*_types.py"))
         assert len(type_files) == 0, f"Found {len(type_files)} _types.py files in shared/tools/"

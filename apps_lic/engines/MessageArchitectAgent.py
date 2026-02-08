@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
+from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass

@@ -32,7 +32,7 @@ class TestDispatchResumeToolsAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.shared.tools.DispatchResumeToolsAgent import DispatchResumeToolsAgent
+            from apps_rg.tools.DispatchResumeToolsAgent import DispatchResumeToolsAgent
 
             return DispatchResumeToolsAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -81,7 +81,7 @@ class TestDispatchResumeToolsAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.shared.tools.DispatchResumeToolsAgent import (
+                from apps_rg.tools.DispatchResumeToolsAgent import (
                     DispatchResumeToolsAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

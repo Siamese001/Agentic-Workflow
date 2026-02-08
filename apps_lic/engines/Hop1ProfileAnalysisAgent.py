@@ -10,12 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_lic.shared.core.trace_registry_types import TraceRegistry
-
-from apps_lic.domain.config import load_agent_specs
-from apps_lic.logic_nodes.k1_router_types import K1Router
-from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
+from apps_lic.config import load_agent_specs
+from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
+from apps_lic.types.k1_router_types import K1Router
+from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass

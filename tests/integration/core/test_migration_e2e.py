@@ -31,16 +31,16 @@ from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
 )
 from agentic_core.primitives.feature_flags import FeatureFlagManager
 from agentic_core.utils.dependency_resolver import DynamicLoader
-from apps_shared.integration.domain_agent_mixin import (
+
+from agentic_core.mixins.domain_agent_mixin import (
     DomainAgentMixin,
     LICDomainMixin,
     RGDomainMixin,
 )
-
 from agentic_core.mixins.feature_flagged_agent_mixin import (
     FeatureFlaggedAgentMixin,
 )
-from apps_shared.integration.integration_config import get_domain_config
+from apps_shared.config.integration_config import get_domain_config
 
 
 class TestE2EFeatureFlagIntegration:

@@ -20,7 +20,7 @@ def test_configuration_parity():
     print("\n1. Testing Configuration Parity...")
 
     try:
-        from apps_rg.domain.config import load_rg_specs, reload_config
+        from apps_rg.config import load_rg_specs, reload_config
 
         # Test auto-loading
         specs = load_rg_specs()
@@ -52,7 +52,7 @@ def test_reasoning_toggles_parity():
     print("\n2. Testing Reasoning Toggles Parity...")
 
     try:
-        from apps_rg.shared.reasoning import get_toggles
+        from apps_rg.config.ReasoningToggles import get_toggles
 
         # Test default toggles
         toggles = get_toggles()
@@ -80,7 +80,7 @@ def test_trace_registry_parity():
     try:
         import tempfile
 
-        from apps_rg.shared.core.trace_registry_types import TraceRegistry
+        from apps_rg.types.SovereignContext import TraceRegistry
 
         # Test persistence
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
@@ -115,8 +115,8 @@ def test_base_engine_parity():
     print("\n4. Testing Base Engine Parity...")
 
     try:
-        from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
-        from apps_rg.engines.base.SovereignContext import SovereignContext
+        from apps_rg.engines.BaseRGEngine import BaseRGEngine
+        from apps_rg.engines.SovereignContext import SovereignContext
 
         ctx = SovereignContext()
 
@@ -146,10 +146,10 @@ def test_orchestrator_parity():
     print("\n5. Testing Orchestrator Parity...")
 
     try:
-        from apps_rg.engines.base.SovereignContext import SovereignContext
-        from apps_rg.engines.orchestration.ResumeOrchestratorEngine import (
+        from apps_rg.engines.ResumeOrchestratorEngine import (
             ResumeOrchestratorEngine,
         )
+        from apps_rg.engines.SovereignContext import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="test_parity")
@@ -178,10 +178,10 @@ def test_gap_closure_validation():
 
     # Gap 1: Cyclic Retry Logic
     try:
-        from apps_rg.engines.base.SovereignContext import SovereignContext
-        from apps_rg.engines.orchestration.ResumeOrchestratorEngine import (
+        from apps_rg.engines.ResumeOrchestratorEngine import (
             ResumeOrchestratorEngine,
         )
+        from apps_rg.engines.SovereignContext import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="gap_test")
@@ -195,8 +195,8 @@ def test_gap_closure_validation():
 
     # Gap 2: Auto-Configuration
     try:
-        from apps_rg.engines.base.BaseRGEngine import BaseRGEngine
-        from apps_rg.engines.base.SovereignContext import SovereignContext
+        from apps_rg.engines.BaseRGEngine import BaseRGEngine
+        from apps_rg.engines.SovereignContext import SovereignContext
 
         ctx = SovereignContext()
 
@@ -217,7 +217,7 @@ def test_gap_closure_validation():
     try:
         import tempfile
 
-        from apps_rg.shared.core.trace_registry_types import TraceRegistry
+        from apps_rg.types.SovereignContext import TraceRegistry
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
             trace_path = Path(f.name)
@@ -235,10 +235,10 @@ def test_gap_closure_validation():
 
     # Gap 4: Subatomic Testing
     try:
-        from apps_rg.engines.base.SovereignContext import SovereignContext
-        from apps_rg.engines.orchestration.ResumeOrchestratorEngine import (
+        from apps_rg.engines.ResumeOrchestratorEngine import (
             ResumeOrchestratorEngine,
         )
+        from apps_rg.engines.SovereignContext import SovereignContext
 
         ctx = SovereignContext()
         orch = ResumeOrchestratorEngine(ctx, mission_id="gap_test")

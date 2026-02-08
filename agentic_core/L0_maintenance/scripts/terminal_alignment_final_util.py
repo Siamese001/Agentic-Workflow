@@ -51,7 +51,7 @@ def fix_subatomic_mixin_imports(file_path: Path) -> bool:
     insert_idx = 0
 
     for i, line in enumerate(lines):
-        if line.startswith("from apps_lic.shared.core.agent_base"):
+        if line.startswith("from apps_lic.utils.LICAgentBase"):
             insert_idx = i + 1
             break
         elif line.startswith("from typing import"):
@@ -127,7 +127,7 @@ def add_missing_imports(file_path: Path, import_type: str) -> bool:
         "dataclass": "from dataclasses import dataclass, field",
         "Enum": "from enum import Enum",
         "Path": "from pathlib import Path",
-        "Agent": "from apps_lic.shared.core.agent_base import LICAgentBase as Agent",
+        "Agent": "from apps_lic.utils.LICAgentBase import LICAgentBase as Agent",
         "BaseAgent": "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as BaseAgent",
     }
 

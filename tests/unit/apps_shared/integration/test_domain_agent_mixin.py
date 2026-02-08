@@ -1,7 +1,8 @@
 """Tests for DomainAgentMixin."""
 
 from agentic_core.primitives.feature_flags import FeatureFlagManager
-from apps_shared.integration.domain_agent_mixin import (
+
+from agentic_core.mixins.domain_agent_mixin import (
     DomainAgentMixin,
     LICDomainMixin,
     RGDomainMixin,

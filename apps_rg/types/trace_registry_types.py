@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from apps_rg.shared.mixins import MCPHardenedMixin
+from apps_rg.utils.mixins import MCPHardenedMixin
 
 Logger = logging.getLogger(__name__)
 

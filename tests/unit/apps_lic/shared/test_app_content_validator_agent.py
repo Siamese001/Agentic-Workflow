@@ -36,7 +36,7 @@ class TestAppContentValidatorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.shared.app_content_validator_agent_types import AppContentValidatorAgent
+            from apps_lic.types.ImmutableStagingBuffer import AppContentValidatorAgent
 
             return AppContentValidatorAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -97,7 +97,7 @@ class TestAppContentValidatorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.shared.app_content_validator_agent_types import (
+                from apps_lic.types.ImmutableStagingBuffer import (
                     AppContentValidatorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

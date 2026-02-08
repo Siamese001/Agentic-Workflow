@@ -133,7 +133,7 @@ class MigrationExecutor:
         if tools:
             # Matches: from apps_rg.engines.toolname import ...
             pattern = r"from apps_rg\.engines\.(" + "|".join(map(re.escape, tools)) + r")"
-            replacement = r"from apps_rg.shared.tools.\1"
+            replacement = r"from apps_rg.tools.\1"
             self._apply_regex_patch(pattern, replacement)
 
         # 2. Patch Types Imports
@@ -144,7 +144,7 @@ class MigrationExecutor:
 
             # Case: from apps_rg.engines.OldAgent import X
             p1 = f"from apps_rg.engines.{old_module}"
-            r1 = f"from apps_rg.domain.types.{new_module}"
+            r1 = f"from apps_rg.types.{new_module}"
             self._apply_string_replace(p1, r1)
 
     def _apply_regex_patch(self, pattern: str, replacement: str):

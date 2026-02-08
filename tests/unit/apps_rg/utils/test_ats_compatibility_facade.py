@@ -184,7 +184,7 @@ class TestATSCompatibilityAgentFacade:
             mock_load.return_value = mock_config
 
             # Mock the parent class initialization
-            with patch("apps_rg.shared.core.RGAgentBaseAgent.RGAgentBase.__post_init__"):
+            with patch("apps_rg.utils.RGAgentBaseAgent.RGAgentBase.__post_init__"):
                 from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
 
                 agent = ATSCompatibilityAgent()
@@ -278,7 +278,7 @@ class TestLegacyCompatibility:
     def test_inherits_from_rg_base(self):
         """Test class still inherits from RGAgentBase."""
         from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
-        from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+        from apps_rg.utils.RGAgentBaseAgent import RGAgentBase
 
         assert issubclass(ATSCompatibilityAgent, RGAgentBase)
 

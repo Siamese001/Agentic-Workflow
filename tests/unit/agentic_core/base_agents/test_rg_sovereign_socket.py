@@ -61,7 +61,7 @@ class TestRGSovereignSocket:
 
     def test_utility_isolation(self):
         """Verify stateless tools are importable and functional."""
-        from apps_rg.shared.tools.text_utils import sanitize_campaign_text
+        from apps_rg.tools.text_utils import sanitize_campaign_text
 
         raw = "Hello!!! World**"
         clean = sanitize_campaign_text(raw)

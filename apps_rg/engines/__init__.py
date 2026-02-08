@@ -8,7 +8,7 @@ the Sovereign Architecture pattern.
 
 from __future__ import annotations
 
-from apps_shared.common_utils.Provider import Provider
+from apps_shared.utils.Provider import Provider
 
 # [Diff Start: Export AgentExecutor]
 from .agent_executor import (

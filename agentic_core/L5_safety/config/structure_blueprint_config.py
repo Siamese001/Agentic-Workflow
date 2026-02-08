@@ -890,85 +890,42 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     # === APPS_* LCD STRUCTURE (Mirrored between apps_rg and apps_lic) ===
     # ============================================================================
     # Both apps_rg and apps_lic follow the same LCD-inspired structure:
+    # LCD+ Canonical Skeleton for apps_*:
     # - config/: Application-specific configuration
     # - types/: Type definitions and data models
     # - reasoning/: Agent classes and business logic
-    # - engines/: Processing engines and pipelines
-    # - utils/: Utility functions
+    # - engines/: Processing engines and pipelines (flat, no subfolders)
+    # - validators/: Validation rules and checkers
+    # - utils/: Utility functions and base classes
+    # - tools/: Tool implementations
     # - scripts/: CLI entrypoints and one-off scripts
-    # - domain/: Domain models and entities
-    # - shared/: Shared components within the app
-    # - system_flow/: Workflow and pipeline definitions
-    # - asset_library/: Templates, wording, and static assets
     "apps_rg": {
-        "depth": 3,
-        "purpose": "Resume Generation Application domain.",
+        "depth": 2,
+        "purpose": "Resume Generation Application.",
         "subfolders": {
             "config": {"purpose": "Application-specific configuration", "subfolders": []},
             "types": {"purpose": "Type definitions and data models", "subfolders": []},
             "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
-            "engines": {
-                "purpose": "Processing engines and pipelines",
-                "subfolders": [
-                    "base",
-                    "generation",
-                    "hops",
-                    "orchestration",
-                    "quality",
-                    "refinement",
-                    "retrieval",
-                    "safety",
-                    "utils",
-                ],
-            },
-            "utils": {"purpose": "Utility functions", "subfolders": []},
+            "engines": {"purpose": "Processing engines and pipelines (flat)", "subfolders": []},
+            "validators": {"purpose": "Validation rules and checkers", "subfolders": []},
+            "utils": {"purpose": "Utility functions and base classes", "subfolders": []},
+            "tools": {"purpose": "Tool implementations", "subfolders": []},
             "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
-            "domain": {"purpose": "Domain models and entities", "subfolders": ["config", "utils"]},
-            "shared": {
-                "purpose": "Shared components within the app",
-                "subfolders": ["core", "reasoning", "tools", "utils"],
-            },
-            "system_flow": {"purpose": "Workflow and pipeline definitions", "subfolders": []},
-            "asset_library": {"purpose": "Templates, wording, and static assets", "subfolders": []},
-            "validation": {"purpose": "Validation rules and checkers", "subfolders": []},
-            "logic_nodes": {"purpose": "Logic node implementations", "subfolders": []},
         },
         "ast_signals": {"apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}},
     },
     "apps_lic": {
-        "depth": 3,
-        "purpose": "LinkedIn Canonical application domain.",
+        "depth": 2,
+        "purpose": "LinkedIn Canonical application.",
         "subfolders": {
             "config": {"purpose": "Application-specific configuration", "subfolders": []},
             "types": {"purpose": "Type definitions and data models", "subfolders": []},
             "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
-            "engines": {
-                "purpose": "Processing engines and pipelines",
-                "subfolders": [
-                    "base",
-                    "generation",
-                    "hops",
-                    "orchestration",
-                    "quality",
-                    "refinement",
-                    "retrieval",
-                    "safety",
-                    "utils",
-                ],
-            },
-            "utils": {"purpose": "Utility functions", "subfolders": []},
-            "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
-            "domain": {"purpose": "Domain models and entities", "subfolders": ["config", "utils"]},
-            "shared": {
-                "purpose": "Shared components within the app",
-                "subfolders": ["core", "reasoning", "tools", "utils"],
-            },
-            "system_flow": {"purpose": "Workflow and pipeline definitions", "subfolders": []},
-            "asset_library": {"purpose": "Templates, wording, and static assets", "subfolders": []},
-            "validation": {"purpose": "Validation rules and checkers", "subfolders": []},
-            "logic_nodes": {"purpose": "Logic node implementations", "subfolders": []},
-            "reports": {"purpose": "Report generation and output", "subfolders": []},
+            "engines": {"purpose": "Processing engines and pipelines (flat)", "subfolders": []},
+            "validators": {"purpose": "Validation rules and checkers", "subfolders": []},
+            "utils": {"purpose": "Utility functions and base classes", "subfolders": []},
             "tools": {"purpose": "Tool implementations", "subfolders": []},
+            "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
         },
         "ast_signals": {
             "apps_lic/engines": {"keyword_signals": ["linkedin", "connection", "messaging"], "weight": 90},
@@ -977,19 +934,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
     "apps_shared": {
         "depth": 2,
         "purpose": "Global utilities and shared logic accessible by all apps and core.",
-        "subfolders": [
-            "agents",
-            "config",
-            "core_components",
-            "data",
-            "tools",
-            "utils",
-            "common_utils",
-            "mixins",
-            "scripts",
-            "integration",
-            "llm",
-        ],
+        "subfolders": {
+            "config": {"purpose": "Shared configuration", "subfolders": []},
+            "types": {"purpose": "Shared type definitions", "subfolders": []},
+            "reasoning": {"purpose": "Shared agents, strategies, orchestrators", "subfolders": []},
+            "validators": {"purpose": "Shared validation logic", "subfolders": []},
+            "utils": {"purpose": "Shared utility functions", "subfolders": []},
+            "scripts": {"purpose": "Shared scripts and tooling", "subfolders": []},
+            "data": {"purpose": "Shared data assets", "subfolders": []},
+        },
         # [HARDENING] 2026-01-27: Strict Shared-Layer Independence
         "forbidden_imports": ["apps_rg", "apps_lic"],
         "ast_signals": {
@@ -997,10 +950,6 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "class_patterns": [".*Utility$", ".*Helper$", ".*Detector$"],
                 "keyword_signals": ["global", "shared", "generic", "cross_app"],
                 "weight": 95,  # Constitutional priority for shared code
-            },
-            "apps_shared/core_components": {
-                "base_classes": ["BaseNode", "BaseEngine", "BaseFlow"],
-                "weight": 92,
             },
         },
     },
@@ -1084,51 +1033,39 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "apps_lic": {
                         "purpose": "Unit tests for apps_lic modules",
                         "subfolders": {
-                            "asset_library": ["scripts", "templates", "hooks"],
-                            "domain": ["config", "utils", "models"],
-                            "engines": ["navigation", "interaction", "scraping", "drivers"],
-                            "logic_nodes": ["analysis", "connection", "messaging"],
-                            "reports": ["daily", "campaign", "performance"],
-                            "scripts": ["maintenance", "setup"],
-                            "shared": ["tools", "utils", "components"],
-                            "system_flow": ["campaigns", "cadence", "sequences"],
-                            "tools": ["browser", "network"],
+                            "config": [],
+                            "types": [],
+                            "reasoning": [],
+                            "engines": [],
+                            "validators": [],
+                            "utils": [],
+                            "tools": [],
+                            "scripts": [],
                         },
                     },
                     "apps_rg": {
                         "purpose": "Unit tests for apps_rg modules",
                         "subfolders": {
-                            "asset_library": ["templates", "wording", "taxonomy"],
-                            "core": ["config", "exceptions"],
-                            "domain": ["entities", "models", "value_objects"],
-                            "engines": [
-                                "base",
-                                "generation",
-                                "hops",
-                                "orchestration",
-                                "quality",
-                                "retrieval",
-                                "safety",
-                                "utils",
-                            ],
-                            "logic_nodes": ["extraction", "formatting", "parsing"],
-                            "shared": ["tools", "utils", "components"],
-                            "system_flow": ["pipelines", "lifecycle"],
-                            "validation": ["checkers", "rules"],
+                            "config": [],
+                            "types": [],
+                            "reasoning": [],
+                            "engines": [],
+                            "validators": [],
+                            "utils": [],
+                            "tools": [],
+                            "scripts": [],
                         },
                     },
                     "apps_shared": {
                         "purpose": "Unit tests for apps_shared modules",
                         "subfolders": {
-                            "common_utils": [],
                             "config": [],
-                            "core_components": [],
-                            "llm": [],
-                            "mixins": [],
-                            "scripts": [],
-                            "utils": [],
-                            "agents": [],
+                            "types": [],
+                            "reasoning": [],
                             "validators": [],
+                            "utils": [],
+                            "scripts": [],
+                            "data": [],
                         },
                     },
                     "utils": {"purpose": "Utility tests", "subfolders": []},
@@ -1160,16 +1097,10 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "types",
                             "reasoning",
                             "engines",
+                            "validators",
                             "utils",
-                            "scripts",
-                            "domain",
-                            "shared",
-                            "system_flow",
-                            "asset_library",
-                            "validation",
-                            "logic_nodes",
-                            "reports",
                             "tools",
+                            "scripts",
                         ],
                     },
                     "apps_rg": {
@@ -1179,19 +1110,15 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                             "types",
                             "reasoning",
                             "engines",
+                            "validators",
                             "utils",
+                            "tools",
                             "scripts",
-                            "domain",
-                            "shared",
-                            "system_flow",
-                            "asset_library",
-                            "validation",
-                            "logic_nodes",
                         ],
                     },
                     "apps_shared": {
                         "purpose": "Integration tests for apps_shared",
-                        "subfolders": ["common_utils", "core"],
+                        "subfolders": ["config", "types", "reasoning", "validators", "utils", "scripts"],
                     },
                     "core": {"purpose": "Cross-cutting integration tests", "subfolders": []},
                 },
@@ -5294,7 +5221,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "format",
                 "parse",
             ],
-            "imports": ["apps_rg.logic_nodes", "pydantic"],
+            "imports": ["apps_rg.types", "pydantic"],
             "bases": ["BaseNode", "ResumeNode", "ExtractionNode"],
             "examples": [
                 "ExperienceNode",
@@ -5403,7 +5330,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "scrutinize",
                 "analyze",
             ],
-            "imports": ["apps_lic.logic_nodes"],
+            "imports": ["apps_lic.types"],
             "bases": ["BaseNode", "LicNode", "MessagingNode"],
             "examples": [
                 "ConnectNode",
@@ -5531,7 +5458,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             "purpose": "Shared application-level agent templates and worker base classes - home for AppBase.py",
             "entity_types": ["Class"],
             "keywords": ["agent", "base_agent", "worker", "bot", "task_executor", "app_worker"],
-            "imports": ["agentic_core.L3_orchestration.reasoning", "apps_shared.agents.AppBase"],
+            "imports": ["agentic_core.L3_orchestration.reasoning", "apps_shared.utils.AppBase"],
             "bases": ["CanonBaseAgent", "AppBase"],
             "examples": ["AppBase", "TaskWorker", "AsyncAppWorker", "StatefulAppAgent"],
             "canonical_files": ["AppBase.py"],  # Zero-Ambiguity: Renamed from AppBaseAgent.py

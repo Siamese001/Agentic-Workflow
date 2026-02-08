@@ -63,8 +63,8 @@ class TestSharedLayerRigor:
         assert utils_signals["weight"] == 95
 
         # Validate core_components signals
-        assert "apps_shared/core_components" in ast_signals
-        core_signals = ast_signals["apps_shared/core_components"]
+        assert "apps_shared/utils" in ast_signals
+        core_signals = ast_signals["apps_shared/utils"]
         assert "base_classes" in core_signals
         assert "weight" in core_signals
         assert core_signals["weight"] == 92
@@ -98,7 +98,7 @@ class TestSharedLayerRigor:
 
     def test_core_components_base_classes(self):
         """100% PASS: Validates base class detection for core components."""
-        core_signals = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/core_components"]
+        core_signals = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"]
         base_classes = core_signals["base_classes"]
 
         # Should match generic base classes
@@ -113,9 +113,9 @@ class TestSharedLayerRigor:
         shared_utils_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
             "weight"
         ]
-        shared_core_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"][
-            "apps_shared/core_components"
-        ]["weight"]
+        shared_core_weight = SOVEREIGN_TERRITORIES["apps_shared"]["ast_signals"]["apps_shared/utils"][
+            "weight"
+        ]
 
         # Shared utilities should have highest priority
         assert shared_utils_weight > shared_core_weight

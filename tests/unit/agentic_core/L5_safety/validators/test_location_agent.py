@@ -129,7 +129,7 @@ class TestLocationAgentValidation:
         valid_paths = [
             "apps_lic/engines/HOP1ProfileAnalysisAgent.py",
             "apps_rg/engines/ATSCompatibilityAgent.py",
-            "apps_shared/common_utils/AdaptiveRecoveryLoop.py",
+            "apps_shared/utils/AdaptiveRecoveryLoop.py",
         ]
 
         for path in valid_paths:
