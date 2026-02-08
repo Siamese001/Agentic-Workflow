@@ -8,16 +8,17 @@ Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP4RoutingAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Navigator.
 
@@ -27,6 +28,12 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Gate 5 (Route Selection) -> Gate 6 (Premium Mismatch)
     - Output: 'hop4_routing' (route, constraints, metadata)
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop4_routing"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "mission_input",
+    ]
 
     # Sovereign Configuration
     routing_rules: dict[str, Any] = field(
@@ -47,12 +54,11 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
         4. Fetch Route Constraints.
         5. Write to Immutable Buffer.
         """
-        # 1. Read Sovereign Context
-        mission_input = buffer.read("mission_input")
-        if not mission_input:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing mission_input"})
-            raise RuntimeError("HOP-4 missing critical mission input")
+        # 1. Read Sovereign Context via capability
+        inputs = self.read_required_inputs(buffer, registry)
+        mission_input = inputs["mission_input"]
 
+        # Optional upstream context
         hop1 = buffer.read("hop1_analysis")
         premium_available = mission_input.get("premium_available", False)
         route_override = mission_input.get("route_override")
@@ -109,8 +115,12 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
             "metadata": {"premium_validated": True, "archetype_aligned": archetype},
         }
 
-        buffer.write_once("hop4_routing", output_data)
-        registry.add_trace("DECISION_FINAL", {"route": selected_route})
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"route": selected_route},
+        )
 
     def _check_conditions(self, conditions, status, msg_count) -> bool:
         """

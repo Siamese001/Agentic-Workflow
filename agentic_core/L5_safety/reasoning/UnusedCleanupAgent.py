@@ -3,7 +3,6 @@ from __future__ import annotations
 """Unused Cleanup Agent - Removes unused imports and variables using autoflake.
 
 This module provides an atomic agent that removes unused imports and variables
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from Python files using the autoflake tool.
 
 Typical usage:
@@ -17,41 +16,30 @@ Typical usage:
 # This boosts alignment detection — review and integrate appropriately
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.security import safe_execute
 
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.L5_safety.reasoning.code_tool_runner_core import CodeToolRunnerCapability
 
 
 @dataclass
-class UnusedCleanupAgent(SovereignBaseAgent):
+class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
     """L5 Safety agent that removes unused imports and variables using autoflake.
 
     This atomic agent uses autoflake to clean up unused imports and variables
     from Python files.
 
-    Attributes:
-        project_root: Root directory of the project.
-        ctx: Execution context.
-
-    Inherits:
-        SubatomicTestingMixin: Provides testing utilities.
-        HealerMixin: Provides healing chain support.
+    Architecture (Composition over Inheritance):
+        - SovereignBaseAgent: Provides sovereign infrastructure (config, healing, telemetry)
+        - CodeToolRunnerCapability: Provides shared heal_repository, heal plumbing
+        - This class: Provides execute() with autoflake logic
     """
 
-    def __init__(self, project_root: str, ctx: Any) -> None:
-        """Initialize the unused cleanup agent.
-
-        Args:
-            project_root: Root directory of the project.
-            ctx: Execution context.
-        """
-        self.project_root: Path = Path(project_root)
-        self.ctx: Any = ctx
+    ctx: Any = field(default=None)
 
     async def execute(self, file_path: str) -> dict[str, Any]:
         """
@@ -93,77 +81,4 @@ class UnusedCleanupAgent(SovereignBaseAgent):
 
         return {"healed": False}
 
-    @timeout(300)
-    @standard_heal
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set[str] | None = None,
-    ) -> dict[str, int]:
-        """Execute L5 safety healing operations.
-
-        This is an operational agent - no repository healing required.
-        Implements cycle detection and depth limiting.
-
-        Args:
-            dry_run: If True, only report what would be done (default: True).
-            execute: If True, execute healing actions (default: False).
-            depth: Current recursion depth for cycle detection (default: 0).
-            max_depth: Maximum recursion depth allowed (default: 3).
-            _call_path: Set of agent names in current call chain for cycle detection.
-
-        Returns:
-            Dictionary with healing results: {"skipped": 1} for operational agents.
-        """
-        super().heal_repository()
-
-        if _call_path is None:
-            _call_path = set()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
-        if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-        _call_path.add(agent_name)
-        try:
-            print(f"[{agent_name}] L5 safety - operational only")
-            return {"skipped": 1}
-        finally:
-            _call_path.discard(agent_name)
-
-    def heal(self, violation: dict) -> dict:
-        """Heal unused code violations using standard_heal decorator pattern.
-
-        Args:
-            violation: Dictionary containing violation details with keys:
-                - type: Type of violation (unused_import, unused_variable)
-                - path: Path to the file with unused code
-                - line_number: Line number of the unused code
-
-        Returns:
-            Dictionary with healing results following standard_heal format.
-        """
-        path = violation.get("path", "")
-
-        if path:
-            try:
-                from pathlib import Path as PathLib
-
-                file_path = PathLib(path)
-                if file_path.exists():
-                    import asyncio
-
-                    result = asyncio.get_event_loop().run_until_complete(self.execute(str(file_path)))
-                    return {
-                        "violations_fixed": 1 if result.get("healed") else 0,
-                        "violations_found": 1,
-                        "errors": 0,
-                        "skipped": 0,
-                    }
-            except Exception:
-                return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-
-        return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
+    # heal_repository() and heal() inherited from CodeToolRunnerCapability

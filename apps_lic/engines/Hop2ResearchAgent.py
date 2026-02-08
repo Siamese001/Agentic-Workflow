@@ -10,11 +10,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from apps_lic.config import load_agent_specs
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 
 # LIC Sovereign Architecture Imports
 from apps_lic.utils.LICAgentBase import LICAgentBase
@@ -27,7 +28,7 @@ except ImportError:
 
 
 @dataclass
-class HOP2ResearchAgent(LICAgentBase):
+class HOP2ResearchAgent(HOPStageCapability, LICAgentBase):
     """
     LIC Sovereign Strategist.
 
@@ -37,6 +38,12 @@ class HOP2ResearchAgent(LICAgentBase):
     - Logic: K.3 Retrieval Planning -> Evidence Artifact Generation
     - Output: 'hop2_research' with evidence_pack and strategic_brief
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop2_research"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "hop1_analysis",
+    ]
 
     # Optional dependencies for dataclass
     memory_store: Any | None = field(default=None)
@@ -106,13 +113,12 @@ class HOP2ResearchAgent(LICAgentBase):
         """
         Execute HOP-2 Logic: K.3 Retrieval Planning -> Evidence Artifacts.
         """
-        # 1. Read Sovereign Input and Mission Context
-        hop1 = buffer.read("hop1_analysis")
-        mission_input = buffer.read("mission_input")
+        # 1. Read Sovereign Input and Mission Context via capability
+        inputs = self.read_required_inputs(buffer, registry)
+        hop1 = inputs["hop1_analysis"]
 
-        if not hop1:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing hop1_analysis"})
-            raise RuntimeError("HOP-2 missing critical upstream context")
+        # Optional context
+        mission_input = buffer.read("mission_input")
 
         # Defensive check for C_LEVEL requirements
         archetype = hop1.get("Archetype", "UNKNOWN")
@@ -151,8 +157,12 @@ class HOP2ResearchAgent(LICAgentBase):
             "metadata": {"wants_count": len(wants), "retrieval_count": len(retrievals)},
         }
 
-        buffer.write_once("hop2_research", output_data)
-        registry.add_trace("RETRIEVAL_PLAN_COMPLETED", {"artifacts": len(evidence_pack)})
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"artifacts": len(evidence_pack)},
+        )
 
     def _derive_wants(self, archetype: str, mission_input: dict) -> list[str]:
         """K.3 Logic: Determines context needs based on seniority and mission targets."""

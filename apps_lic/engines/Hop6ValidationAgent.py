@@ -8,16 +8,17 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP6ValidationAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-6 QA.
 
@@ -27,6 +28,13 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Rule-based validation engine (Regex, Keyword matching).
     - Output: 'hop6_validation_report'
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop6_validation_report"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "hop5_generation",
+        "hop2_research",
+    ]
 
     # Sovereign Configuration
     validation_rules: dict[str, Any] = field(
@@ -46,15 +54,10 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
         3. Calculate Report and Failure Classification.
         4. Map Failures for HOP-7 Governor.
         """
-        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-
-        # 1. Read Generation and Research Context
-        try:
-            hop5 = buffer.read("hop5_generation")
-            hop2 = buffer.read("hop2_research")
-        except Exception as e:
-            registry.add_trace("DATA_ERROR", {"msg": str(e)})
-            raise RuntimeError("HOP-6 missing HOP-5 draft or HOP-2 research")
+        # 1. Read Generation and Research Context via capability
+        inputs = self.read_required_inputs(buffer, registry)
+        hop5 = inputs["hop5_generation"]
+        hop2 = inputs["hop2_research"]
 
         draft_text = hop5["selected_draft"]["text"]
 
@@ -87,8 +90,12 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
             "stats": {"critical": len(critical_issues), "total_checked": len(results)},
         }
 
-        buffer.write_once("hop6_validation_report", failure_report)
-        registry.add_trace("DECISION_FINAL", {"status": "PASS" if passed else "FAIL"})
+        self.write_output(
+            buffer,
+            registry,
+            failure_report,
+            decision_meta={"status": "PASS" if passed else "FAIL"},
+        )
 
     def _check_placeholders(self, text: str, config: Any) -> dict:
         """

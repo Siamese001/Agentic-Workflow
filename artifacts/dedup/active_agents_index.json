@@ -1,0 +1,6512 @@
+{
+  "total": 190,
+  "agents": [
+    {
+      "agent_id": "ASTValidatorAgent",
+      "class_name": "ASTValidatorAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "ASTValidatorBase",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "visit_ExceptHandler",
+        "visit_Call",
+        "heal_repository",
+        "validate_all",
+        "_run_self_tests",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 502,
+      "integrity_hash": "2f831ddacff1c474176d55746f63fb0b61df860785ad821cfb84b6be2bf31cfb",
+      "responsibility_keywords": [
+        "healermixin",
+        "healing",
+        "statements",
+        "testing",
+        "validates",
+        "validations",
+        "validator"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 17,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ATSCompatibilityAgent",
+      "class_name": "ATSCompatibilityAgent",
+      "file_path": "apps_rg\\reasoning\\ATSCompatibilityAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_calculate_keyword_score",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 277,
+      "integrity_hash": "729eede1d4699cf956c18bd21872e93f019bb6d2ffccaadfa971d9e071038c88",
+      "responsibility_keywords": [
+        "checks",
+        "formatting",
+        "tracking",
+        "validates"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 12,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AdversarialProbeAgent",
+      "class_name": "AdversarialProbeAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "act",
+        "_execute_attack_pattern",
+        "_test_adversarial_examples",
+        "_test_semantic_attacks",
+        "_test_contradiction_injection",
+        "_test_false_premise",
+        "_test_confidence_manipulation",
+        "_test_output_poisoning",
+        "_test_model_extraction",
+        "_run_self_tests",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 237,
+      "integrity_hash": "7cde4cfaf00e65d91a04492a4bcba8275b32abb985e0e34dd68d33031f5071cf",
+      "responsibility_keywords": [
+        "adversarial",
+        "attack",
+        "attacks",
+        "red team"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AdversarialRedTeamerAgent",
+      "class_name": "AdversarialRedTeamerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_build_test_suite",
+        "_build_preservation_tests",
+        "_build_sandbox_tests",
+        "_build_connectivity_tests",
+        "_build_edge_case_tests",
+        "_test_preservation_boundaries",
+        "_attempt_mass_deletion",
+        "_attempt_silent_truncation",
+        "_attempt_comment_only_preservation",
+        "_test_sandbox_escapes",
+        "_attempt_filesystem_escape",
+        "_attempt_network_escape",
+        "_attempt_subprocess_escape",
+        "_test_connectivity_breaks",
+        "_attempt_schema_drift",
+        "_attempt_missing_field",
+        "_attempt_circular_dependency",
+        "_test_edge_cases",
+        "_test_empty_file",
+        "_test_comment_only_file",
+        "_test_extreme_nesting",
+        "_generate_report",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 563,
+      "integrity_hash": "d614a594fadac93b59f5e1c154a067ad2817511d2fbf22114fa1b0e936c86bbd",
+      "responsibility_keywords": [
+        "adversarial",
+        "attacks",
+        "codejanitor",
+        "pipeline",
+        "probes",
+        "red team",
+        "security"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 30,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AgentCategory",
+      "class_name": "AgentCategory",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\UnifiedAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "Enum"
+      ],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 869,
+      "integrity_hash": "a917c97e05a1e76151c1102e951d35a1db4bfb574512618b7fa339e55e466dd6",
+      "responsibility_keywords": [
+        "classification"
+      ],
+      "import_count": 15,
+      "prompt_string_count": 27,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AgentFactory",
+      "class_name": "AgentFactory",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\AgentFactory.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "_create_impl",
+        "create_system_architect",
+        "create_healer_agent",
+        "create_generative_guard",
+        "create_code_janitor",
+        "create_dependency_sentinel",
+        "create_safety_inspector",
+        "create_pattern_enforcer"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 212,
+      "integrity_hash": "8beb5e43f9bafaf7baabca40ef10a57016a26be3811a6028b7b71ebe7b1ed86e",
+      "responsibility_keywords": [
+        "compliance"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 11,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AgentGym",
+      "class_name": "AgentGym",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\agent_gym_engine.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "register_scenario",
+        "run_benchmark",
+        "_execute_test_cases",
+        "_create_benchmark_result",
+        "_log_benchmark_start",
+        "run_training_session",
+        "get_scenario",
+        "list_scenarios",
+        "get_session_history",
+        "_load_default_scenarios",
+        "_classify_performance",
+        "_generate_recommendations",
+        "_identify_improvement_areas"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 396,
+      "integrity_hash": "4850c03f613193b573343fee67f12a3770bd65c9cd64fb828e9fc9022cfca7e9",
+      "responsibility_keywords": [
+        "tracking"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 15,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AgentInfo",
+      "class_name": "AgentInfo",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 207,
+      "integrity_hash": "0a0a5d6c50213f24739f0293262b45ee8e2a1ad1830919981d274bb7a3005c02",
+      "responsibility_keywords": [],
+      "import_count": 8,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AgentPermission",
+      "class_name": "AgentPermission",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 422,
+      "integrity_hash": "bf535ec02711b1abb911a6cbc2393b07319f08ba2a1948e13b86510c47fe2ccf",
+      "responsibility_keywords": [],
+      "import_count": 13,
+      "prompt_string_count": 10,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AgentPlan",
+      "class_name": "AgentPlan",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\StructuredEngineAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [],
+      "method_names": [
+        "__init__"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 54,
+      "integrity_hash": "5a68eb11c1e811070dcf1689b687df7e1f35164e27c55eda77f3ede04bc526a5",
+      "responsibility_keywords": [
+        "structure",
+        "structured"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 3,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "AppBase",
+      "class_name": "AppBase",
+      "file_path": "apps_shared\\utils\\AppBase.py",
+      "layer": "apps_shared",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "MetaLearningMixin",
+        "SovereignBaseAgent",
+        "HealerMixin"
+      ],
+      "method_names": [
+        "__post_init__",
+        "get_app_context",
+        "get_resource_key",
+        "validate_app_config",
+        "get_app_metadata"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 139,
+      "integrity_hash": "e7e1f13b8b87e9f2791f8a4b3f78df02c3e5543974d16c72623b329f2653a0ff",
+      "responsibility_keywords": [
+        "generation",
+        "healermixin",
+        "healing",
+        "naming"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ArchitectureGovernorAgent",
+      "class_name": "ArchitectureGovernorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_get_structure_validator",
+        "_get_gravity_repair_agent",
+        "_get_archival_gatekeeper",
+        "_get_cognitive_agent",
+        "heal",
+        "_do_heal",
+        "heal_repository",
+        "run_ci_verification_sync",
+        "run_audit",
+        "_orchestrate_guardian_scan",
+        "validate_layer_boundaries",
+        "_cognitive_triage_validation",
+        "validate_architectural_patterns",
+        "run_validation",
+        "_heal_violation",
+        "_heal_gravity_violation",
+        "_heal_naming_violation",
+        "_trigger_deduplication_audit",
+        "_resolve_collision",
+        "_cleanup_empty_dirs",
+        "finalize_sovereign_lockdown",
+        "capture_golden_baseline",
+        "_check_baseline_drift",
+        "_persist_audit_report",
+        "capture_sovereign_baseline",
+        "_log_categorical_drift",
+        "execute_sovereign_convergence",
+        "execute_cognitive_purge",
+        "comprehensive_territory_audit",
+        "generate_healing_plan",
+        "_process_cognitive_disposition"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 1641,
+      "integrity_hash": "7af11133bb141591248e87f0e15d43e92f8d32929547ab70acd7457641f1137a",
+      "responsibility_keywords": [
+        "code",
+        "detection",
+        "enforcement",
+        "enforcer",
+        "naming",
+        "prompts",
+        "scans",
+        "validation"
+      ],
+      "import_count": 28,
+      "prompt_string_count": 56,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AutonomicMonitorAgent",
+      "class_name": "AutonomicMonitorAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\AutonomicMonitorAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "record_metrics",
+        "check_health",
+        "get_metrics",
+        "get_alerts",
+        "register_alert_callback",
+        "_trigger_alert",
+        "_generate_recommendations",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 276,
+      "integrity_hash": "524d5987d9d58f035e54b4e7ac3ed8701a77a730550c8ec275188f22d5fbe268",
+      "responsibility_keywords": [
+        "detection",
+        "healing",
+        "health",
+        "metrics",
+        "monitoring"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 18,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AutonomousPromptEvolutionAgent",
+      "class_name": "AutonomousPromptEvolutionAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\AutonomousPromptEvolutionAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "meta_learning",
+        "get_prompt_performance",
+        "evolve_prompt",
+        "_mutate_word_choice",
+        "_mutate_structure",
+        "_mutate_emphasis",
+        "_validate_template",
+        "get_evolution_history",
+        "rollback_evolution",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 312,
+      "integrity_hash": "c408433f1316ab54c87dc41d650b2644d65d5a3ddf638f23eadf6a48ce75f651",
+      "responsibility_keywords": [
+        "metrics",
+        "prompt",
+        "prompts",
+        "structure",
+        "tracks",
+        "validates"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 15,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AutonomousThreatEvolutionAgent",
+      "class_name": "AutonomousThreatEvolutionAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "run",
+        "threat_evolution_loop",
+        "_perform_evolution_cycle",
+        "_load_recent_detections",
+        "_analyze_patterns",
+        "execute",
+        "heal_repository",
+        "stop",
+        "get_status",
+        "set_evolution_interval",
+        "set_confidence_threshold",
+        "manual_evolution_cycle",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 196,
+      "integrity_hash": "9ebb27f85f2fea1005dc2da803858579c9f5d99c5a71ef165e0800fe782b7b45",
+      "responsibility_keywords": [
+        "healing",
+        "security"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "AutonomyGuardianAgent",
+      "class_name": "AutonomyGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "validate_agent_autonomy",
+        "run",
+        "_check_forbidden_runner_scripts",
+        "_check_agent_autonomy_violations",
+        "heal_repository",
+        "generate_compliance_report",
+        "_save_modular_markdown_report",
+        "_generate_dashboard_v2_with_rows",
+        "heal_repository",
+        "search_healing_patterns"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 547,
+      "integrity_hash": "6e65b4e92f957c220310213c4164ce314c7b7b0b9b85e69b30041bbab35f792c",
+      "responsibility_keywords": [
+        "enforcement",
+        "guardian",
+        "heal_repository",
+        "observability",
+        "validate"
+      ],
+      "import_count": 20,
+      "prompt_string_count": 39,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "BenchmarkingAgent",
+      "class_name": "BenchmarkingAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "heal_repository",
+        "__init__",
+        "benchmark",
+        "benchmark_async",
+        "start_timer",
+        "end_timer",
+        "time_function",
+        "time_function_async",
+        "record_result",
+        "_alert_performance_degradation",
+        "get_benchmark_summary",
+        "get_all_summaries",
+        "compare_benchmarks",
+        "reset_benchmark",
+        "reset_all"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 515,
+      "integrity_hash": "f8db43990b915857b41abb9d2058b2107d6400f2f1bbbe4683bd2ef1bd413e40",
+      "responsibility_keywords": [
+        "detection",
+        "metrics",
+        "tracking",
+        "tracks"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 17,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "BootstrapAgent",
+      "class_name": "BootstrapAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBase"
+      ],
+      "method_names": [
+        "__init__",
+        "_verify_redis_connection",
+        "run_bootstrap",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 126,
+      "integrity_hash": "bfdc2dd8c535575502e29cc85a7c37bba2effa93f0fc50b46918c9592bb919cd",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 6,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "BoundaryTestingAgent",
+      "class_name": "BoundaryTestingAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "act",
+        "_execute_boundary_test",
+        "_test_empty_input",
+        "_test_null_input",
+        "_test_max_length",
+        "_test_special_characters",
+        "_test_unicode_edge_cases",
+        "_test_numeric_boundaries",
+        "_test_type_mismatches",
+        "_test_malformed_structures",
+        "_test_resource_limits",
+        "_run_self_tests",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 264,
+      "integrity_hash": "afb12c86eff5e3f19ea9e2cc2d68f061772fcc84c1913aa0800b499c0ca78d14",
+      "responsibility_keywords": [
+        "red team",
+        "structures",
+        "testing",
+        "tests"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 20,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "BrandComplianceAgent",
+      "class_name": "BrandComplianceAgent",
+      "file_path": "apps_rg\\reasoning\\BrandComplianceAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_to_string",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 221,
+      "integrity_hash": "b6416314528bb8bde53f4155a168b9ce5852d131ee8e6e51e231964b814d6087",
+      "responsibility_keywords": [
+        "checks"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 12,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "BudgetAgent",
+      "class_name": "BudgetAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\BudgetAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "execute",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 127,
+      "integrity_hash": "db0fafe8fed4571613f159ef28fce30c47603ab91957ebbecffcf0703c4f7b11",
+      "responsibility_keywords": [
+        "budget",
+        "code",
+        "enforcement",
+        "validates",
+        "validationcontext"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CachedSafetyShieldAgent",
+      "class_name": "CachedSafetyShieldAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CachedSafetyShieldAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "get_cached_verdict",
+        "store_verdict"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 29,
+      "integrity_hash": "7ba4b7427e3d35b814778ca726540639da87154de1f356a3a5fbdffa3e06c227",
+      "responsibility_keywords": [],
+      "import_count": 4,
+      "prompt_string_count": 1,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CachedStateLedgerAgent",
+      "class_name": "CachedStateLedgerAgent",
+      "file_path": "agentic_core\\L4_state\\reasoning\\cached_state_ledger.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "cache_validation_context",
+        "get_cached_validation_context",
+        "_record_successful_trace",
+        "get_successful_traces",
+        "append_audit_event",
+        "_run_self_tests",
+        "_perform_healing",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 203,
+      "integrity_hash": "b4a2ee11806f5273c5e4ba5c4c17e80f5778cafbf846d39be353426c63a16441",
+      "responsibility_keywords": [
+        "cache",
+        "redis",
+        "state"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 8,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CampaignBalanceAgent",
+      "class_name": "CampaignBalanceAgent",
+      "file_path": "apps_lic\\engines\\CampaignBalanceAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 111,
+      "integrity_hash": "182ed92bd4403eab2585caed98767ea1ba4d691e7f328b50984ea139f6488688",
+      "responsibility_keywords": [
+        "structure",
+        "validates",
+        "validator"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 6,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CampaignPlannerAgent",
+      "class_name": "CampaignPlannerAgent",
+      "file_path": "apps_rg\\reasoning\\CampaignPlannerAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "generate_strategy"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 58,
+      "integrity_hash": "06ec831d56fa6ef573907266306f3d9b5688afc64a116175e51d44c6820cc685",
+      "responsibility_keywords": [
+        "orchestrates"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CartographerAgent",
+      "class_name": "CartographerAgent",
+      "file_path": "agentic_core\\L4_state\\reasoning\\CartographerAgent.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "heal",
+        "can_run",
+        "execute",
+        "_map_file",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 125,
+      "integrity_hash": "a72fb8022dcd25467b84d0b63399910d4ea256cbb919170f6071cce938e25da9",
+      "responsibility_keywords": [
+        "codebase",
+        "embedding",
+        "memory"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ChaosEngineeringAgent",
+      "class_name": "ChaosEngineeringAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "act",
+        "_execute_chaos_scenario",
+        "_test_network_failure",
+        "_test_high_latency",
+        "_test_resource_exhaustion",
+        "_test_cascading_failure",
+        "_test_timeout",
+        "_test_partial_failure",
+        "_test_recovery",
+        "_run_self_tests",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 238,
+      "integrity_hash": "75bd581c7cf5f75abd40054e222b7f0b117dc83cf02b390d6a4e63a96a7fa3d2",
+      "responsibility_keywords": [
+        "healing",
+        "memory",
+        "red team",
+        "tests",
+        "tokens"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 11,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CodeDeduplicationAgent",
+      "class_name": "CodeDeduplicationAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeDeduplicationAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "_run_self_tests",
+        "_normalize_code",
+        "_filter_code_lines",
+        "_normalize_ast_tree",
+        "_normalize_ts_tree",
+        "_block_similarity",
+        "_hash_block",
+        "_extract_functions_classes",
+        "scan_for_duplicates",
+        "_create_shared_utility",
+        "auto_extract_duplicates",
+        "_hash_entire_file",
+        "scan_file_level_duplicates",
+        "scan_filename_duplicates",
+        "_suggest_unique_name",
+        "_get_target_dir_from_content",
+        "_get_unique_path",
+        "resolve_duplicates_safely",
+        "heal_repository",
+        "execute",
+        "_collect_ast_symbols",
+        "detect_dead_code",
+        "scan_dead_code",
+        "prune_dead_code"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 1019,
+      "integrity_hash": "ae79d69875f884cadd86b5565b386ff88c7b418cab0331b4548bb0db02e7ac91",
+      "responsibility_keywords": [
+        "code",
+        "detecting",
+        "detection",
+        "duplicate",
+        "duplicated",
+        "duplicates",
+        "enforcement",
+        "enforcing",
+        "pinecone",
+        "redis",
+        "structural",
+        "tracking"
+      ],
+      "import_count": 23,
+      "prompt_string_count": 51,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CodeDetectorAgent",
+      "class_name": "CodeDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "run_full_scan",
+        "detect_all",
+        "detect_dead_code",
+        "detect_deadlocks",
+        "detect_memory_leaks",
+        "detect_method_changes",
+        "_update_baseline",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 280,
+      "integrity_hash": "c48e6a3f309f786c506c862ab5cb8aaaeadc288e8ed625ca49298f2b4ccc0063",
+      "responsibility_keywords": [
+        "code",
+        "detection",
+        "detector",
+        "memoryleak"
+      ],
+      "import_count": 16,
+      "prompt_string_count": 7,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CodeEnforcerAgent",
+      "class_name": "CodeEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "validate_file",
+        "_check_standards",
+        "_check_patterns",
+        "_check_type_hints",
+        "_check_sovereignty_violations",
+        "_extract_layer",
+        "_extract_layer_from_import",
+        "_is_sovereignty_violation",
+        "check_sovereignty",
+        "grant_exception",
+        "sync_ssot_registry",
+        "update_ssot_registry",
+        "get_violations",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 537,
+      "integrity_hash": "be9f5cd395e5906d0e3d116b3edb98036c81ca14da92c99937b84ba6d5d28b92",
+      "responsibility_keywords": [
+        "check_sovereignty",
+        "code",
+        "codeenforceragent",
+        "codessotenforceragent",
+        "codestandardsenforceragent",
+        "enforcement",
+        "enforcer",
+        "validate",
+        "validate_file"
+      ],
+      "import_count": 16,
+      "prompt_string_count": 10,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CodeFormatterAgent",
+      "class_name": "CodeFormatterAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "CodeToolRunnerCapability",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 96,
+      "integrity_hash": "3f3e12ea6a6274b4eaa436b4168d61bf983edab11fccf9ed1eae0eb6f04e6063",
+      "responsibility_keywords": [
+        "code",
+        "codetoolrunnercapability",
+        "enforces",
+        "fixes",
+        "formatting",
+        "heal_repository",
+        "healing",
+        "safety",
+        "telemetry"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CodeHealerAgent",
+      "class_name": "CodeHealerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "CircuitBreakerMixin",
+        "SurgicalCSTHealerMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "atomic_write",
+        "heal_all",
+        "heal_imports",
+        "heal_canon",
+        "heal_structural",
+        "_backup_file",
+        "get_actions",
+        "heal",
+        "_heal_canon_violation",
+        "_heal_import_violation",
+        "_heal_structural_violation",
+        "_heal_syntax_violation"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 770,
+      "integrity_hash": "fa37e47005063a624bb9be7e018662d776f150b2f8013174c6a7dc6ea9a44944",
+      "responsibility_keywords": [
+        "code",
+        "codehealeragent",
+        "codehealingstrategy",
+        "heal_all",
+        "heal_imports",
+        "healer",
+        "structuralhealeragent",
+        "structure"
+      ],
+      "import_count": 24,
+      "prompt_string_count": 18,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CodeValidatorAgent",
+      "class_name": "CodeValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "validate_syntax",
+        "validate_canon",
+        "validate_async",
+        "validate_prints",
+        "validate_file",
+        "validate_directory",
+        "validate_project",
+        "heal_repository",
+        "heal",
+        "_heal_syntax_violation",
+        "_heal_canon_violation",
+        "_heal_async_violation",
+        "_heal_print_violation"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 568,
+      "integrity_hash": "5129576361533197251394ea3567a0c067a91b47299297411dbb1c46cf9871c7",
+      "responsibility_keywords": [
+        "code",
+        "codevalidatorstrategy",
+        "validates",
+        "validation"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 19,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CognitiveDispositionAgent",
+      "class_name": "CognitiveDispositionAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "analyze_violation_async",
+        "get_analytics",
+        "_build_prompt",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 266,
+      "integrity_hash": "d5c96b9b2aed01cbc88532d259d5f47f8c2a46568b3c4eaec0c5f0a0f6c5c75c",
+      "responsibility_keywords": [],
+      "import_count": 9,
+      "prompt_string_count": 8,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "ComplexityAnalyzerAgent",
+      "class_name": "ComplexityAnalyzerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "analyze_repository",
+        "analyze_file",
+        "_calculate_complexity",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 256,
+      "integrity_hash": "4e6a9670e0bbf7eb24409913b99ccdfc27dae007653696f55b2f2d5ed411227c",
+      "responsibility_keywords": [
+        "code",
+        "validator"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 10,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CompositeGuardrailAgent",
+      "class_name": "CompositeGuardrailAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CompositeGuardrailAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "enforce",
+        "get_statistics",
+        "enable_guardrail",
+        "disable_guardrail",
+        "heal_repository",
+        "_run_self_tests",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 453,
+      "integrity_hash": "ab95a33731b57858f77059f92c08153a0ae2d89be073f32fbc20ff8e7c059357",
+      "responsibility_keywords": [
+        "guardrail",
+        "guardrails"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 20,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ConfigurationSecurityGuardrailAgent",
+      "class_name": "ConfigurationSecurityGuardrailAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ConfigurationSecurityGuardrailAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "validate_config",
+        "_apply_rule",
+        "_detect_secrets",
+        "_validate_config_structure",
+        "_enforce_policies",
+        "_run_self_tests",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 180,
+      "integrity_hash": "74183937f88d551d6d60ed3c8b9b3ed075a9c54eedb142336a2dcec50cfdfd09",
+      "responsibility_keywords": [
+        "detection",
+        "enforcement",
+        "secret",
+        "security",
+        "validation"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ConstitutionalReviewerAgent",
+      "class_name": "ConstitutionalReviewerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "L5SafetyBase"
+      ],
+      "method_names": [
+        "run_async",
+        "heal_repository",
+        "_run_self_tests",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 169,
+      "integrity_hash": "eebcd67e73288b373237ce661c801974e9e5a7cfb056dbe6dcca09486387afd3",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 11,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "ContentQualityAgent",
+      "class_name": "ContentQualityAgent",
+      "file_path": "apps_rg\\reasoning\\ContentQualityAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_check_placeholders",
+        "_check_quantified_achievements",
+        "_validate_skills_with_logic_node",
+        "_resume_to_profile_text",
+        "_to_string",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 407,
+      "integrity_hash": "6d00c1882404551c4bde459451a73fc4933266b1f294342985baadae8a2a5b4a",
+      "responsibility_keywords": [
+        "checks",
+        "structure",
+        "validates",
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 23,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ContentStrategyAgent",
+      "class_name": "ContentStrategyAgent",
+      "file_path": "apps_rg\\reasoning\\ContentStrategyAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "analyze_topic"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 50,
+      "integrity_hash": "0d0a6e1e2ca4d36445cb6426052a320fdcc06b94c4067ff1d318bdb92c2ab62d",
+      "responsibility_keywords": [
+        "analyzes",
+        "generates"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ContextCuratorAgent",
+      "class_name": "ContextCuratorAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\ContextCuratorAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_take_snapshot",
+        "_classify_content",
+        "_is_ephemeral",
+        "_compress_context",
+        "_build_compression_prompt",
+        "_simple_compression",
+        "_parse_compression",
+        "_write_handoff_summary",
+        "_archive_logs",
+        "_wipe_active_memory",
+        "load_handoff_summary",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 451,
+      "integrity_hash": "395f48c81d0f8a29e5efe361109d4f0ae14b78e230371e917812eed92b4936bd",
+      "responsibility_keywords": [
+        "classify",
+        "memory",
+        "pipeline",
+        "prompt",
+        "structural"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 20,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CoordinateObservabilityOperationsAgent",
+      "class_name": "CoordinateObservabilityOperationsAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\CoordinateObservabilityOperationsAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "add_step",
+        "execute",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 177,
+      "integrity_hash": "7fe271382c49b9c7da72f633bfe83004e23138bfac96a10bfc90b1c9bd14fcc6",
+      "responsibility_keywords": [
+        "orchestrator"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "CostGovernorAgent",
+      "class_name": "CostGovernorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "track",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 148,
+      "integrity_hash": "d984511e0e3452fed08ab6ea8ac35e8f00dadc3407fa7647f45377753adba0d0",
+      "responsibility_keywords": [
+        "budget",
+        "budgetexceedederror",
+        "costs",
+        "enforces",
+        "guardrail",
+        "healermixin",
+        "healing",
+        "monitors",
+        "safety",
+        "testing",
+        "token",
+        "tracks"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CoverageAgent",
+      "class_name": "CoverageAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\coverage_engine.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_handle_param_update",
+        "_fetch_metrics",
+        "_compute_proportions",
+        "_shannon_entropy",
+        "act",
+        "_apply_routing_bias",
+        "_inject_synthetic_exercises",
+        "_run_self_tests",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 323,
+      "integrity_hash": "114f9bd1a4bb8ae4d899670fb6aba6a8a42441b2ad492ff9f4d1eef7a871ece4",
+      "responsibility_keywords": [],
+      "import_count": 14,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "CredentialScannerAgent",
+      "class_name": "CredentialScannerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "heal",
+        "scan_for_credentials",
+        "_get_scannable_files",
+        "_scan_file",
+        "_is_false_positive",
+        "_generate_summary",
+        "_generate_recommendations",
+        "_match_to_dict",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 492,
+      "integrity_hash": "c2b66874216877d15decc1745e97759d6ef128898f94909a71ee34edcaa6a37b",
+      "responsibility_keywords": [
+        "credentials",
+        "detecting",
+        "safety",
+        "scanning",
+        "secret",
+        "secrets",
+        "tokens"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 27,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DAGMutatorAgent",
+      "class_name": "DAGMutatorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\DAGMutatorAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "apply_mutation",
+        "_validate_mutation",
+        "_spawn_predecessor",
+        "_spawn_successor",
+        "_skip_successor",
+        "_replace_node",
+        "_update_depths",
+        "_store_mutation_result",
+        "get_mutation_history",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 590,
+      "integrity_hash": "26a53bb044bff501d63df2999a9a9662f1b07e1280d15652940e70727c8998f5",
+      "responsibility_keywords": [],
+      "import_count": 15,
+      "prompt_string_count": 20,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "DDDAlignmentAgent",
+      "class_name": "DDDAlignmentAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "heal",
+        "_get_file_context",
+        "_is_allowed_import",
+        "_check_file_imports",
+        "_should_skip_path",
+        "run",
+        "get_alignment_score",
+        "get_violation_summary",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 536,
+      "integrity_hash": "f7d9de0c93a62dae9b1c54b6c82c2ee3492b780fe4dff5c73e4f35512675a5ad",
+      "responsibility_keywords": [
+        "detection",
+        "detects",
+        "enforces",
+        "healing",
+        "scans"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 20,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DagRuntimeInspectorAgent",
+      "class_name": "DagRuntimeInspectorAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "diagnose",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 93,
+      "integrity_hash": "1008924811cdb0dc1d6fe083846f12ed286a55fbf40506b8f88d2edd111e3640",
+      "responsibility_keywords": [
+        "inspection"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 4,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "DeadlockDetectorAgent",
+      "class_name": "DeadlockDetectorAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\DeadlockDetectorAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "register_task",
+        "heartbeat",
+        "start_monitoring",
+        "_monitor_loop",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 182,
+      "integrity_hash": "35a34ad887b7b44a1a83f7af9dadf7a7d2dc8858200f4c58236ea130ec5eb62a",
+      "responsibility_keywords": [
+        "health",
+        "monitoring"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 12,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "DebateSynthesisAgent",
+      "class_name": "DebateSynthesisAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\DebateSynthesisAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "debate_failure",
+        "scan_violations",
+        "_query_llm"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 157,
+      "integrity_hash": "1d8feb60047b4fc9393074c2d74d955e247e83394edc50befbc4d1c99ec33d27",
+      "responsibility_keywords": [
+        "compliant",
+        "orchestration"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "DeliverabilityAgent",
+      "class_name": "DeliverabilityAgent",
+      "file_path": "apps_lic\\engines\\DeliverabilityAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 88,
+      "integrity_hash": "c2e854b69d7231b8a85d97cacd8ee2bc4cf8c05bd0cccd2015086c7fd3cd6226",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DependencyDiplomatAgent",
+      "class_name": "DependencyDiplomatAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DependencyDiplomatAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 57,
+      "integrity_hash": "2ea8353d99790afc2ef3d14ba51dd9c6fa2ef55ae2ea750cb95320cc73a2cb25",
+      "responsibility_keywords": [],
+      "import_count": 7,
+      "prompt_string_count": 2,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DependencyPruningAgent",
+      "class_name": "DependencyPruningAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_find_unused_deptry",
+        "_remove_from_requirements_txt",
+        "heal_repository",
+        "execute",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 222,
+      "integrity_hash": "c0c07d2d77b2e48dcf1533ee6997b577f57798cbf930cf28e70d6a9d5fca59e1",
+      "responsibility_keywords": [
+        "detection",
+        "detects",
+        "healermixin",
+        "healing",
+        "safety",
+        "testing"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DiscoveredAgent",
+      "class_name": "DiscoveredAgent",
+      "file_path": "agentic_core\\runtime\\utils\\discovery_util.py",
+      "layer": "runtime",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 222,
+      "integrity_hash": "fdb40a5d2fd2d0f2f9b9a37861111861f855fb55dcacbe3ee1e6152ac366a748",
+      "responsibility_keywords": [],
+      "import_count": 8,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DispatchOutreachToolsAgent",
+      "class_name": "DispatchOutreachToolsAgent",
+      "file_path": "apps_lic\\engines\\DispatchOutreachToolsAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "execute",
+        "_perform_action",
+        "heal_repository",
+        "_heal_timeout_settings",
+        "_heal_config_integrity",
+        "_run_outreach_diagnostics"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 131,
+      "integrity_hash": "78b384bdcccc55f3cc246b631032592153936a97f194f7a74e61f99bdfff476e",
+      "responsibility_keywords": [],
+      "import_count": 6,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DispatchResumeToolsAgent",
+      "class_name": "DispatchResumeToolsAgent",
+      "file_path": "apps_rg\\reasoning\\DispatchResumeToolsAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_run_self_tests",
+        "execute",
+        "_perform_action",
+        "_handle_search",
+        "_handle_search_with_sources",
+        "_handle_get_stats",
+        "heal_repository",
+        "_heal_titanium_config",
+        "_heal_timeout_settings",
+        "_heal_tool_availability",
+        "_run_rg_diagnostics"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 179,
+      "integrity_hash": "fe73b615396e915a0223b67ec33295534f515f0cd4e2a04892aa250689e91fab",
+      "responsibility_keywords": [
+        "rag"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 12,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DocstringComplianceAgent",
+      "class_name": "DocstringComplianceAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "heal_violation",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 181,
+      "integrity_hash": "501754f64b307c8911eabd3a43b49b47ff12ab7ccfd5d3629363f8c873846e5f",
+      "responsibility_keywords": [
+        "healing",
+        "statement"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "DocumentationAgent",
+      "class_name": "DocumentationAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DocumentationAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "heal",
+        "execute",
+        "_has_missing_docstring",
+        "_find_missing_docstring_violations_in_tree",
+        "check_no_missing_docstrings",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 150,
+      "integrity_hash": "2666365465f3161fadfb7dfc56cc986e50bd3ab7a19fbd232de0e0fbf3818b0a",
+      "responsibility_keywords": [
+        "enforcement",
+        "validates",
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DuplicateCodeDetectorAgent",
+      "class_name": "DuplicateCodeDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "HealerMixin",
+        "MCPHardenedMixin"
+      ],
+      "method_names": [
+        "__post_init__",
+        "__init__",
+        "execute",
+        "_scan_whole_files",
+        "_scan_code_blocks",
+        "_iter_files",
+        "_generate_deletion_plan",
+        "_choose_canonical_path",
+        "_generate_rationale",
+        "archive_duplicates",
+        "delete_duplicates",
+        "_hash_block_ast",
+        "_normalize_ast_tree",
+        "_normalize_ts_tree",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 477,
+      "integrity_hash": "affbc19ab187068570b4ca31dc7e034e0d2a0ead97f0e594dffed7882a4f5e69",
+      "responsibility_keywords": [
+        "code",
+        "detects",
+        "duplicate",
+        "duplicates",
+        "healermixin",
+        "healing",
+        "safety",
+        "telemetry",
+        "testing"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 17,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "DynamicSealAgent",
+      "class_name": "DynamicSealAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "heal",
+        "execute_sprint",
+        "_apply_seal",
+        "_is_dynamic_import",
+        "_remove_import_line",
+        "generate_report"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 359,
+      "integrity_hash": "fde896bc6bc8e09b8236008ce2ff4b9ebd1e0066703289f445e8b3faeeaec760",
+      "responsibility_keywords": [
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 16,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "EmbeddingSovereignAgent",
+      "class_name": "EmbeddingSovereignAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "RedisCacheMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "__new__",
+        "reset_instance",
+        "config",
+        "EXPECTED_DIMENSIONS",
+        "_audit",
+        "_content_hash",
+        "get_embedding",
+        "get_embeddings_batch",
+        "_get_gemini_embedding",
+        "_get_openai_embedding",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 367,
+      "integrity_hash": "14e595ff6d35139448c2b4bcf2de848bd70b1cbac662e1525050b1105bb1cb97",
+      "responsibility_keywords": [
+        "embedding",
+        "pineconesovereignagent",
+        "redis"
+      ],
+      "import_count": 17,
+      "prompt_string_count": 16,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "FactCheckAgent",
+      "class_name": "FactCheckAgent",
+      "file_path": "apps_rg\\reasoning\\FactCheckAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_extract_skills",
+        "_normalize",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 147,
+      "integrity_hash": "53ec3073d7e28cf8b995b101f0be6d28f64408855fc60ac275fdb43286ce9831",
+      "responsibility_keywords": [
+        "checks"
+      ],
+      "import_count": 4,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "FileClassificationAgent",
+      "class_name": "FileClassificationAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\FileClassificationAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "*BASE_CLASSES"
+      ],
+      "method_names": [
+        "__post_init__",
+        "enforce_kernel_structure",
+        "_get_correct_folder_for_type",
+        "run",
+        "_orchestrate_audit",
+        "classify_file",
+        "_detect_filename_tag_conflicts",
+        "_to_pascal_case",
+        "_to_smart_snake_case",
+        "_sanitize_filename",
+        "normalize_filename",
+        "_check_forbidden_patterns",
+        "validate_pascal_case_placement",
+        "validate_app_prefix_placement",
+        "validate_territory_alignment",
+        "validate_layer_alignment",
+        "suggest_manager_layer",
+        "validate_single_suffix",
+        "validate_folder_suffix_consistency",
+        "_enforce_folder_purity",
+        "_detect_cross_domain_violation",
+        "_detect_ephemeral_scripts",
+        "_detect_cross_layer_naming_violation",
+        "_detect_duplicate_files",
+        "_compute_layer_affinity",
+        "_compute_content_scores",
+        "classify_file_with_confidence",
+        "_detect_test_patterns",
+        "_detect_script_patterns",
+        "_detect_type_patterns",
+        "_fuzzy_match_name_or_content",
+        "_detect_config_patterns",
+        "_detect_validator_patterns",
+        "_is_true_agent",
+        "_is_service_class",
+        "_is_service_singleton",
+        "_is_factory_class",
+        "_is_async_agent",
+        "_is_adapter_class",
+        "_is_config_class",
+        "_is_model_class",
+        "_is_repository_class",
+        "cleanup_redundant_conflicts",
+        "update_file_header",
+        "sync_companion_test",
+        "refactor_non_python_assets",
+        "deep_refactor_name",
+        "update_imports",
+        "verify_environment",
+        "resolve_collision_and_rename",
+        "check_fake_config",
+        "check_domain_root_purity",
+        "check_base_agents_purity",
+        "check_utils_purity",
+        "check_layer_purity",
+        "check_territory_violation",
+        "_calculate_move_target",
+        "get_compliant_name",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 4312,
+      "integrity_hash": "e3da857601290196e3cbefd89f2b34c8aff4bb0c36648e3396d5bdc6fbfa197c",
+      "responsibility_keywords": [
+        "classification",
+        "enforcement",
+        "enforces",
+        "governance",
+        "naming"
+      ],
+      "import_count": 43,
+      "prompt_string_count": 102,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "FilesystemSSOTReconcilerAgent",
+      "class_name": "FilesystemSSOTReconcilerAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "L0MaintenanceBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "__init__",
+        "run_ci_verification_sync",
+        "run_ci_verification",
+        "_create_no_drift_result",
+        "_create_rejected_result",
+        "_create_applied_result",
+        "_handle_interactive_approval",
+        "enforce_gospel",
+        "_scan_filesystem",
+        "_scan_agents",
+        "_load_current_blueprint",
+        "_detect_drift",
+        "_check_registry_subfolders",
+        "_check_l2_subfolders",
+        "_check_canon_signals",
+        "_check_registry_subfolders",
+        "_check_l2_subfolders",
+        "_check_canon_signals",
+        "_generate_filesystem_proposals",
+        "_apply_filesystem_alignment",
+        "_backup_blueprint",
+        "_apply_proposals",
+        "_apply_sovereign_registry_update",
+        "_apply_core_map_update",
+        "_apply_signals_update",
+        "_request_user_approval",
+        "_validate_blueprint_syntax",
+        "_rollback_to_backup",
+        "_detect_action_opportunity",
+        "self_diagnose",
+        "_detect_action_opportunity",
+        "_execute_minimal",
+        "post_heal_validation",
+        "cleanup_violations",
+        "run_with_cleanup",
+        "detect_root_drift",
+        "scan_root_folders",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 1395,
+      "integrity_hash": "0efd1153fb4dede36bcbbd4ad77210d591eed4030c866cdce4446c82ee5ac8d3",
+      "responsibility_keywords": [
+        "enforcer",
+        "enforces",
+        "healermixin",
+        "healing_backups",
+        "hierarchyagent",
+        "locationagent",
+        "safety",
+        "structure_blueprint",
+        "validation"
+      ],
+      "import_count": 23,
+      "prompt_string_count": 77,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "GenerativeGuardAgent",
+      "class_name": "GenerativeGuardAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "HealerMixin",
+        "CanonBaseAgentInterface",
+        "MCPHardenedMixin"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "get_capabilities",
+        "validate_state",
+        "_execute_guard",
+        "_purge_single_file",
+        "_process_found_violations",
+        "_is_runaway_file",
+        "_find_runaway_violations_in_dir",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 260,
+      "integrity_hash": "8eb8227b234c9025800ffd9346c691bec05c1392f5d0cf7e5d3bc61a8bc04be2",
+      "responsibility_keywords": [
+        "code",
+        "detects",
+        "generated",
+        "generation"
+      ],
+      "import_count": 25,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GitAgent",
+      "class_name": "GitAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\GitAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "_run_self_tests",
+        "_perform_healing",
+        "_is_git_repo",
+        "heal_repository",
+        "_run_git",
+        "_generate_git_metadata",
+        "_get_modified_files",
+        "_check_for_secrets",
+        "stage_files",
+        "create_branch",
+        "commit_changes",
+        "push_to_remote",
+        "commit_healing_cycle",
+        "get_repo_status",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 497,
+      "integrity_hash": "c9115f229da352c0cf3041b0fcaa61513c9f00984b23b6c23f861450b9394dd5",
+      "responsibility_keywords": [
+        "checkpoint",
+        "checks",
+        "healing",
+        "safety",
+        "secrets"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 21,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GitHygieneAgent",
+      "class_name": "GitHygieneAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_git",
+        "_get_stale_branches",
+        "_get_large_files",
+        "_get_repo_status",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 322,
+      "integrity_hash": "69de8ee86e71826c6dfc878bf2b38d5d879e697240facc4e4573ef00babddb12",
+      "responsibility_keywords": [
+        "audits",
+        "detecting",
+        "enforces",
+        "healermixin",
+        "healing",
+        "health",
+        "hygiene",
+        "safety",
+        "testing"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 11,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GitSafetyHandlerAgent",
+      "class_name": "GitSafetyHandlerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GitSafetyHandlerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "create_rollback_point",
+        "verify_clean_state",
+        "stage_files",
+        "finalize_fission",
+        "rollback_to_branch",
+        "get_commit_history",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 262,
+      "integrity_hash": "c7771537b4f33cf53b07d17e771aff8a5a397a23213d36201f16e6730da11977",
+      "responsibility_keywords": [
+        "redis",
+        "safety",
+        "state"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 14,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GlobalComplianceAggregatorAgent",
+      "class_name": "GlobalComplianceAggregatorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GlobalComplianceAggregatorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "aggregate_results",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 108,
+      "integrity_hash": "2fccfe46812d0075f6a503e161c42649834be1e933abe82b06f13fe20401f2d1",
+      "responsibility_keywords": [
+        "compliance",
+        "naming"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 6,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GospelSyncAgent",
+      "class_name": "GospelSyncAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBase"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "perform_sync_audit",
+        "_get_canonical_files",
+        "_get_actual_files",
+        "report_drift",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 176,
+      "integrity_hash": "75b58e7c077289f00ad8c8cd1ae60f9ccea2ba7f56778c0bff7755a6efbb6ad5",
+      "responsibility_keywords": [
+        "detects",
+        "guardian",
+        "healermixin"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 11,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GovernanceAgent",
+      "class_name": "GovernanceAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "hierarchy_agent",
+        "import_agent",
+        "build_graph",
+        "check_root_hygiene",
+        "_check_root_file",
+        "_check_root_directory",
+        "_check_root_file",
+        "_check_root_directory",
+        "_sanitize_root_file",
+        "check_depth_law",
+        "check_atomicity_law",
+        "enforce_depth_law",
+        "_calculate_mccabe",
+        "_check_nesting_depth",
+        "check_complexity",
+        "get_blast_radius",
+        "_create_empty_report",
+        "_validate_single_file",
+        "_has_violations",
+        "validate_architecture",
+        "_init_backup_dir",
+        "post_hierarchy_validation",
+        "post_import_validation",
+        "cleanup_violations",
+        "run_with_cleanup",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 1158,
+      "integrity_hash": "d50db0e8e1366d87cbcfc5b44988cba01e620cde7edda7d2d0d38593986e669c",
+      "responsibility_keywords": [
+        "cleanup_violations",
+        "compliance",
+        "enforces",
+        "governance",
+        "healing",
+        "hierarchyagent",
+        "hygiene",
+        "structure",
+        "structured",
+        "validation"
+      ],
+      "import_count": 19,
+      "prompt_string_count": 41,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "GovernanceShieldAgent",
+      "class_name": "GovernanceShieldAgent",
+      "file_path": "apps_lic\\engines\\GovernanceShieldAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "sanitize_claims",
+        "generate_safety_protocol",
+        "audit_outreach",
+        "scan_risk_level",
+        "_critical_fix_zero_hallucinations",
+        "_fix_privacy_language",
+        "_generate_high_risk_protocol",
+        "_generate_standard_protocol"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 353,
+      "integrity_hash": "8f8a8ef3e512168965f1bc77c1fb404b0d621aca28d79632649f0e394167995f",
+      "responsibility_keywords": [
+        "audits",
+        "governance"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 33,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "GravityLeakRepairAgent",
+      "class_name": "GravityLeakRepairAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "analyze_violation",
+        "_suggest_utils_import",
+        "generate_fix_report",
+        "apply_fix",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 458,
+      "integrity_hash": "7803d75dc6b4578e009581356f506551adca8739d021ea35d13b909f61dd3c09",
+      "responsibility_keywords": [
+        "code",
+        "healer",
+        "healing",
+        "structureenforceragent"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 16,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "HOP1ProfileAnalysisAgent",
+      "class_name": "HOP1ProfileAnalysisAgent",
+      "file_path": "apps_lic\\engines\\Hop1ProfileAnalysisAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__setattr__",
+        "__getstate__",
+        "__setstate__",
+        "__post_init__",
+        "_process",
+        "_execute_reasoning",
+        "_classify_heuristic",
+        "heal_repository",
+        "_run_profile_diagnostics"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 285,
+      "integrity_hash": "a09f3a43b78cabb251b7750702fdeb803deafcb72734b957b740bd48dcd7d30a",
+      "responsibility_keywords": [
+        "classification",
+        "healing",
+        "tracing",
+        "validation"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP2ResearchAgent",
+      "class_name": "HOP2ResearchAgent",
+      "file_path": "apps_lic\\engines\\Hop2ResearchAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__setattr__",
+        "__getstate__",
+        "__setstate__",
+        "__post_init__",
+        "_process",
+        "_derive_wants",
+        "_generate_stable_id",
+        "_execute_plan",
+        "_summarize_for_archetype",
+        "_run_async",
+        "_query_vector_store",
+        "_critique_cache",
+        "_run_fallback_rag",
+        "_merge_contexts",
+        "_calculate_signal_score",
+        "_calculate_cache_confidence",
+        "_format_search_results",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 409,
+      "integrity_hash": "551ef5aac707a8dfb7fd1013f2f3e2de29330d4f130a1fab5bad15ad8b5c3240",
+      "responsibility_keywords": [
+        "generation",
+        "healing",
+        "retrieval",
+        "tracing"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 21,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP3SenderGroundingAgent",
+      "class_name": "HOP3SenderGroundingAgent",
+      "file_path": "apps_lic\\engines\\HOP3SenderGroundingAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process",
+        "_load_json_file",
+        "_extract_grounded_entities",
+        "_map_metrics",
+        "_extract_data_legacy",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 175,
+      "integrity_hash": "2d109f199c8b83779caca20496836b06fa20c6d9bfcc146890cbe024d37438af",
+      "responsibility_keywords": [
+        "metric_source_map"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP4RoutingAgent",
+      "class_name": "HOP4RoutingAgent",
+      "file_path": "apps_lic\\engines\\Hop4RoutingAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process",
+        "_check_conditions"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 136,
+      "integrity_hash": "f7fd0671bdbbbaeac49b37bcb1d88a61422c5f24347a2a0861b20560c2c23fcf",
+      "responsibility_keywords": [],
+      "import_count": 8,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP5GenerationAgent",
+      "class_name": "HOP5GenerationAgent",
+      "file_path": "apps_lic\\engines\\HOP5GenerationAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process",
+        "_construct_prompt",
+        "_score_and_select",
+        "_run_async",
+        "_run_k3_body_generation",
+        "_run_k5a_bullet_generation",
+        "_run_k5_cta_generation",
+        "_assemble_k7_final_message"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 411,
+      "integrity_hash": "0a5bf7fbe3f7e682c603d51efe1fe598b877eb86f05dd2830caaca323d00a6af",
+      "responsibility_keywords": [
+        "generation"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 14,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP6ValidationAgent",
+      "class_name": "HOP6ValidationAgent",
+      "file_path": "apps_lic\\engines\\Hop6ValidationAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process",
+        "_check_placeholders",
+        "_check_strategic_alignment",
+        "_check_forbidden_verbs"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 155,
+      "integrity_hash": "1dae01349151cb6be564d27ff3fbc71394224a8622c9aea6e7cc34a380b06c88",
+      "responsibility_keywords": [
+        "validation"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP7GateDecisionAgent",
+      "class_name": "HOP7GateDecisionAgent",
+      "file_path": "apps_lic\\engines\\HOP7GateDecisionAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 91,
+      "integrity_hash": "5bd86a46e53dd5cd96a7b55cf11faa8e82f3f73c82ea820d1131a5d4726ea7fe",
+      "responsibility_keywords": [
+        "classifies",
+        "classify"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP8QAReportAgent",
+      "class_name": "HOP8QAReportAgent",
+      "file_path": "apps_lic\\engines\\HOP8QAReportAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process",
+        "_calculate_scores",
+        "_generate_markdown",
+        "_save_report"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 149,
+      "integrity_hash": "51bcc8ee9253ac2ddc6c25588b6ccdc32326a6bbe3a6b165c1e782b004468664",
+      "responsibility_keywords": [
+        "generate"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HOP9IntegrationAgent",
+      "class_name": "HOP9IntegrationAgent",
+      "file_path": "apps_lic\\engines\\HOP9IntegrationAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_process"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 117,
+      "integrity_hash": "01ee52a24c4d113d436c9b45349ac9c8d35252762de148c42e7eab2c130a97ff",
+      "responsibility_keywords": [
+        "checksum",
+        "formatting",
+        "healing",
+        "tracing"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HealValidatorAgent",
+      "class_name": "HealValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\HealValidatorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "validate_healed_code",
+        "_validate_syntax",
+        "_validate_dangerous_patterns",
+        "_validate_static_analysis",
+        "_validate_diff_sanity",
+        "compute_code_hash",
+        "_run_self_tests"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 368,
+      "integrity_hash": "cf1ef8fe7129c8f3c0321801e2dce6d31a2871346ae4769b29e0f64106cc07f3",
+      "responsibility_keywords": [
+        "checks",
+        "code",
+        "detection",
+        "healed",
+        "pipeline",
+        "validation",
+        "validator"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 20,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "HierarchyAgent",
+      "class_name": "HierarchyAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\HierarchyAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "create_missing_structure",
+        "_create_dir_with_init",
+        "relocate_misplaced_files",
+        "_enforce_agentic_core_structure",
+        "_enforce_apps_structure",
+        "_enforce_tests_structure",
+        "_relocate_l2_layer_files",
+        "_relocate_file_to_l2",
+        "_relocate_l3_territory_files",
+        "_relocate_file_to_l3",
+        "_cleanup_empty_folder",
+        "enforce_depth_rules",
+        "_enforce_depth_for_root",
+        "_heal_depth_violation",
+        "_legacy_archive_depth_violation",
+        "_enforce_apps_depth",
+        "_enforce_tests_depth",
+        "_enforce_universal_depth",
+        "_remove_empty_dirs",
+        "purge_orphaned_files",
+        "_update_gitignore_for_purge",
+        "heal_hierarchy",
+        "heal_repository",
+        "heal",
+        "scan_root_violations",
+        "heal_root_violations",
+        "_merge_root_folder_to_ssot",
+        "_handle_coverage_html"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 1731,
+      "integrity_hash": "af5555997f86ff00efe32705c6bfede8a6b7b92c0ec265433555fc659135cdd6",
+      "responsibility_keywords": [
+        "cleanup",
+        "enforcement",
+        "enforcer",
+        "healer",
+        "hierarchy",
+        "hierarchyenforceragent",
+        "hierarchyhealeragent",
+        "locations",
+        "structure",
+        "tests"
+      ],
+      "import_count": 26,
+      "prompt_string_count": 46,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "HistorianAgent",
+      "class_name": "HistorianAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\HistorianAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "record_event",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 229,
+      "integrity_hash": "fe60eef10e569a277250346bd2e691bcb71c42d729c057ec1c200a0dd04b22db",
+      "responsibility_keywords": [
+        "validation"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 10,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "HygieneGuardianAgent",
+      "class_name": "HygieneGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal",
+        "_is_empty_file",
+        "_is_orphaned_init",
+        "_has_debug_prints",
+        "_has_commented_code",
+        "_has_repeated_filename_parts",
+        "_is_copy_pattern_filename",
+        "_scan_directory",
+        "_fix_violations",
+        "heal_repository",
+        "audit_naming_conventions",
+        "_check_filename_length",
+        "_generate_concise_suggestion",
+        "execute"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 591,
+      "integrity_hash": "23ce63ffe19fc94a0cfd5eacb88c78350aa210f558d2bff130f281ac050eebc8",
+      "responsibility_keywords": [
+        "code",
+        "detects",
+        "enforcement",
+        "fixes",
+        "healermixin",
+        "healing",
+        "hygiene",
+        "statements",
+        "testing"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 20,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "IntelligenceLibrarianAgent",
+      "class_name": "IntelligenceLibrarianAgent",
+      "file_path": "apps_lic\\engines\\IntelligenceLibrarianAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "query_intelligence"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 34,
+      "integrity_hash": "7783ce922120094daac08ab892795433cb3ea3d5c27c1bd15f6f229049fc01d1",
+      "responsibility_keywords": [
+        "retrieval"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "InterfaceBoundaryAgent",
+      "class_name": "InterfaceBoundaryAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "audit_boundaries",
+        "_analyze_file_complexity",
+        "generate_interface_stub",
+        "report",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 167,
+      "integrity_hash": "50f08b7cd5bac08579ae8c7ecb04b7cb0959060c854c8b196b0ad2ad21c77116",
+      "responsibility_keywords": [
+        "enforcing"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 12,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "L5SafetyExerciserAgent",
+      "class_name": "L5SafetyExerciserAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "act",
+        "_exercise_naming_validation",
+        "_exercise_hierarchy_check",
+        "_exercise_gravity_check",
+        "_exercise_healing_probe",
+        "_exercise_red_team_probe",
+        "_exercise_guardrail_limits",
+        "heal_repository",
+        "_run_self_tests",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 250,
+      "integrity_hash": "67cb1ab875e71f131d788b86861839165f15605121c5035e4f37c37ae374e881",
+      "responsibility_keywords": [
+        "checks",
+        "memory",
+        "metrics",
+        "safety"
+      ],
+      "import_count": 16,
+      "prompt_string_count": 24,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "LLMPromptGovernorAgent",
+      "class_name": "LLMPromptGovernorAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\LLMPromptGovernorAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "build_healing_prompt",
+        "build_fission_prompt",
+        "enforce_output_format",
+        "_sanitize_input",
+        "_contains_dangerous_patterns",
+        "compute_prompt_hash",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 350,
+      "integrity_hash": "19ea29c411b52b52e45f521e8f171083a44500399e431e9181ee87a986cfed35",
+      "responsibility_keywords": [
+        "enforces",
+        "governance",
+        "guards",
+        "prompt",
+        "prompts",
+        "safety",
+        "validation"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 21,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "LeadQualityAgent",
+      "class_name": "LeadQualityAgent",
+      "file_path": "apps_lic\\engines\\LeadQualityAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "_process",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 104,
+      "integrity_hash": "f1108f588b96e478e46623c070793c742b9a41b8b73eb51849a56df1fcf7b7ec",
+      "responsibility_keywords": [
+        "validates"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "LicS2SupervisorAgent",
+      "class_name": "LicS2SupervisorAgent",
+      "file_path": "apps_lic\\engines\\LicS2SupervisorAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "orchestrate_research",
+        "_run_adversarial_check",
+        "_extract_sender_grounding",
+        "_extract_names_from_text",
+        "_extract_capitalized_phrases",
+        "_critique_archetype_classification",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 410,
+      "integrity_hash": "c2691ecbc71b02fe146fae41b77ff153df871aa6e150f9f3167b31eda7d3ccae",
+      "responsibility_keywords": [
+        "validation"
+      ],
+      "import_count": 4,
+      "prompt_string_count": 12,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "LocationAgent",
+      "class_name": "LocationAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\LocationAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "LocationHealerAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "run",
+        "validate_file_location",
+        "validate_sovereign_roots"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": true,
+      "line_count": 70,
+      "integrity_hash": "f6cc9c5619fc3e67f0245865b198be669bc92d94765560d783499911c9da7145",
+      "responsibility_keywords": [
+        "locationhealeragent",
+        "locationvalidatoragent"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 4,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "LocationHealerAgent",
+      "class_name": "LocationHealerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\LocationHealerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_validate_project_root",
+        "naming_agent",
+        "import_agent",
+        "heal",
+        "heal_violations",
+        "_determine_target_directory",
+        "heal_repository",
+        "_init_backup_dir",
+        "_backup_file",
+        "safe_create_directory",
+        "safe_move",
+        "safe_delete",
+        "_backup_and_write_file",
+        "post_heal_validation",
+        "fix_imports_after_move",
+        "_apply_healing_strategy",
+        "_heal_broken_backup",
+        "_heal_via_archiving",
+        "_heal_app_specific_violation",
+        "_heal_territory_mismatch",
+        "_heal_void_violation",
+        "_relocate_to_existing_subfolder",
+        "_create_new_subfolder_and_update_ssot",
+        "_autonomous_void_violation_resolution",
+        "_calculate_subfolder_confidence",
+        "_calculate_semantic_similarity",
+        "_find_best_matching_subfolder",
+        "_autonomous_create_subfolder",
+        "_autonomous_relocate_to_subfolder",
+        "_heal_depth_violation",
+        "_collect_naming_violations",
+        "_apply_naming_heals",
+        "_apply_convention_fixes",
+        "_set_naming_final_status",
+        "_insert_semantic_keywords",
+        "_insert_sovereign_marker",
+        "_find_docstring_end",
+        "_remove_offending_imports",
+        "post_naming_validation",
+        "auto_heal_naming_issues",
+        "post_import_validation_and_heal",
+        "_heal_gravity_violations",
+        "post_naming_conventions_validation_and_heal",
+        "deep_import_validation_and_heal",
+        "deep_naming_validation_and_heal",
+        "_determine_target_root_from_metadata",
+        "enforce_void_compliance",
+        "cleanup_violations",
+        "run_with_cleanup"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 2542,
+      "integrity_hash": "715be5a3f5d7aa34b63d451244f4d8cb51088e72c9bf4d3bf5625af2b1c65ef9",
+      "responsibility_keywords": [
+        "detection",
+        "fixing",
+        "location",
+        "locationhealingstrategy",
+        "locationvalidatoragent",
+        "naming",
+        "validation"
+      ],
+      "import_count": 40,
+      "prompt_string_count": 110,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "LocationValidatorAgent",
+      "class_name": "LocationValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "heal",
+        "validate_sovereign_roots",
+        "validate_file_location",
+        "_validate_forbidden_patterns",
+        "_validate_root_whitelist",
+        "_validate_scripts_isolation",
+        "_validate_depth_requirements",
+        "_validate_app_specific_files",
+        "_validate_filename_patterns",
+        "_validate_final_checks",
+        "_validate_ast_violations",
+        "_check_forbidden_imports",
+        "_scan_imports_for_violations",
+        "_extract_modules_from_node",
+        "_is_forbidden_app_import",
+        "_check_layer_import_violation",
+        "_check_semantic_alignment",
+        "_calculate_semantic_scores",
+        "_check_app_domain_violation",
+        "_check_territory_alignment",
+        "_collect_ast_increments",
+        "_aggregate_ast_increments",
+        "_recompute_ast_scores",
+        "_score_identifier",
+        "_score_string",
+        "_score_variable",
+        "_score_assignments",
+        "_score_arguments",
+        "enforce_void_compliance",
+        "_check_naming_conventions",
+        "run"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 817,
+      "integrity_hash": "491843ec74fdfce22863f423196addf2182405a1b6e93ebce037718348805219",
+      "responsibility_keywords": [
+        "compliance",
+        "healing",
+        "locationhealeragent",
+        "validates",
+        "validation"
+      ],
+      "import_count": 27,
+      "prompt_string_count": 52,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "MCPGuardianAgent",
+      "class_name": "MCPGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\MCPGuardianAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "audit_mcp_call",
+        "heal",
+        "scan_codebase",
+        "_has_hardcoded_credentials",
+        "_emit_critique",
+        "generate_report",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 331,
+      "integrity_hash": "5490f4a1459a5af391124bbb45bd60f212620ec497490439391659665c71a575",
+      "responsibility_keywords": [
+        "compliance",
+        "credentials",
+        "enforcement",
+        "guardian",
+        "safety",
+        "validates"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 16,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "MemoryArchitectAgent",
+      "class_name": "MemoryArchitectAgent",
+      "file_path": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_detect_healing_successes",
+        "_hash_success",
+        "_harvest_success",
+        "_synthesize_pattern",
+        "_build_synthesis_prompt",
+        "_parse_synthesis_response",
+        "_create_fallback_pattern",
+        "_create_fallback_pattern_object",
+        "_inoculate_pattern",
+        "_create_pattern_text",
+        "_store_pattern_locally",
+        "post_heal_validation",
+        "cleanup_violations",
+        "run_with_cleanup",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 887,
+      "integrity_hash": "952c8d5d07dcc011cd6a08341c680aef82f856ac9a315def5319adf0e5e591c9",
+      "responsibility_keywords": [
+        "analyze",
+        "checkpoint",
+        "checkpointed",
+        "detection",
+        "healing",
+        "monitors",
+        "pinecone",
+        "structural_patterns"
+      ],
+      "import_count": 16,
+      "prompt_string_count": 49,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "MessageArchitectAgent",
+      "class_name": "MessageArchitectAgent",
+      "file_path": "apps_lic\\engines\\MessageArchitectAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "construct_framework"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 39,
+      "integrity_hash": "90d3106339201de04c9fe1dbc0b20cb8cb3020c01fc41626223972277224a36b",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "MessageDiversityValidator",
+      "class_name": "MessageDiversityValidator",
+      "file_path": "apps_lic\\engines\\MessageDiversityValidator.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "check_diversity",
+        "add_to_history",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 111,
+      "integrity_hash": "1ed995a35e29eabf87884546bf50fb6b2837c766bd7d9126eec5ea0fbbcc4b52",
+      "responsibility_keywords": [],
+      "import_count": 3,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "MetaLearningAgent",
+      "class_name": "MetaLearningAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\MetaLearningAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "store_experience",
+        "update_strategy_weights",
+        "extract_patterns",
+        "get_strategy_recommendation",
+        "get_live_statistics",
+        "get_statistics",
+        "_discover_patterns",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 254,
+      "integrity_hash": "696b98747d8372e5ac633ecc01553ca5c5070f2294fcb7ccfedf2ca8eea28ea1",
+      "responsibility_keywords": [
+        "observability",
+        "telemetry"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 14,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "MetricsAgent",
+      "class_name": "MetricsAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\MetricsAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_initialize_compliance_metrics",
+        "check_redis_monitor",
+        "increment",
+        "get_counter",
+        "increment_labeled",
+        "get_labeled_counter",
+        "set_gauge",
+        "get_gauge",
+        "set_metadata",
+        "get_metadata",
+        "generate_alerting_rules",
+        "record_compliance_scan",
+        "get_all_metrics",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 346,
+      "integrity_hash": "b1f7b1110ba921ce338593e37da8c6e9289d2323cddf23b4387b6b2dbaae11aa",
+      "responsibility_keywords": [
+        "generation",
+        "memory",
+        "metricsagent",
+        "state"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 20,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "MetricsWitnessAgent",
+      "class_name": "MetricsWitnessAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\MetricsWitnessAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBaseAgent",
+        "AutonomyMixin",
+        "AdaptiveExecutionMixin",
+        "SelfDiagnosisMixin"
+      ],
+      "method_names": [
+        "__init__",
+        "calculate_structural_ssot_score",
+        "calculate_healing_resilience_score",
+        "_detect_action_opportunity",
+        "_execute_conservative",
+        "_execute_minimal",
+        "_execute_standard",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 256,
+      "integrity_hash": "9d3623c640173bc0e7adae1e73381b4a32140feb5d43e16bcfc4a9f282669c11",
+      "responsibility_keywords": [
+        "governance",
+        "healermixin",
+        "healing",
+        "hierarchy",
+        "location",
+        "metrics",
+        "metricsagent",
+        "observability",
+        "state",
+        "structural",
+        "validated",
+        "validation"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 18,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "NamingAgent",
+      "class_name": "NamingAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\NamingAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "heal",
+        "__init__",
+        "validate_name",
+        "suggest_name",
+        "analyze_placement",
+        "validate_prefix_location_match",
+        "scan_repository_duplicates",
+        "move_to_canonical_location"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 156,
+      "integrity_hash": "2d85b43c740004800aa6b34fb0747e1ec4967f8fbf860217c0581f56a74c14e9",
+      "responsibility_keywords": [
+        "namingagent",
+        "testing"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 9,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "NervousSystemAgent",
+      "class_name": "NervousSystemAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_handle_bias_update",
+        "_decay_biases",
+        "force_exerciser_fallback",
+        "_run_self_tests",
+        "_iteration",
+        "_iteration",
+        "_restore_checkpoint_if_exists",
+        "run_mission",
+        "execute",
+        "should_continue",
+        "get_state",
+        "save_state",
+        "load_state",
+        "_extract_actions",
+        "get_impact_radius",
+        "validate_architecture",
+        "post_phase_validation",
+        "cleanup_violations",
+        "run_with_cleanup",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 846,
+      "integrity_hash": "41ec0ea2ea2a7aeabf2f9dc3245ec263efc8a4711d0800276d3bd558df1b5a3b",
+      "responsibility_keywords": [
+        "enforces",
+        "observe",
+        "orchestrator",
+        "state"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 28,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "NeuralAutoImmuneAgent",
+      "class_name": "NeuralAutoImmuneAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\neural_autoimmune_agent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 60,
+      "integrity_hash": "801bdf2513162a1b906edb3c0e0972416c7f4925cc522a98ef9d08a2f32ac5ab",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "OmniContextAgent",
+      "class_name": "OmniContextAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\OmniContextAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 78,
+      "integrity_hash": "c3d75f1a26acf80a464736fbdc5cc395c8de9c539d766a4c2b51d3d679cdef32",
+      "responsibility_keywords": [
+        "retrieval"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "OrchestrationHandshakeAgent",
+      "class_name": "OrchestrationHandshakeAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\orchestration_handshake.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "CoreOrchestrationAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "discover_capable_agents",
+        "delegate_task",
+        "execute_mission",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 168,
+      "integrity_hash": "38c6338add75b2044d4a53d2cde813246fec61aa77e0e7c7f1c9fe6cc6365c84",
+      "responsibility_keywords": [
+        "orchestrationhandshake"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 8,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachAgent",
+      "class_name": "OutreachAgent",
+      "file_path": "apps_lic\\engines\\LicReflectionAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 88,
+      "integrity_hash": "e105f80bb75545e58f3018b6221774a40c2279db5464653bd897a69784ffcfd7",
+      "responsibility_keywords": [],
+      "import_count": 3,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachAgent__LicTemplateOptimizerAgent",
+      "class_name": "OutreachAgent",
+      "file_path": "apps_lic\\engines\\LicTemplateOptimizerAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 85,
+      "integrity_hash": "b75013b90d80bafccbbf2a975dc612a32f2107ffd0e306e27ef2c299a91197c0",
+      "responsibility_keywords": [],
+      "import_count": 3,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachAgent__MessageComplianceAgent",
+      "class_name": "OutreachAgent",
+      "file_path": "apps_lic\\engines\\MessageComplianceAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 112,
+      "integrity_hash": "abe36f3c03886c8d4729495dbc8a73304d84aae7733f6eaca4070418432f6d0c",
+      "responsibility_keywords": [],
+      "import_count": 3,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachAgent__OutreachLearningAgent",
+      "class_name": "OutreachAgent",
+      "file_path": "apps_lic\\engines\\OutreachLearningAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 413,
+      "integrity_hash": "9386387150af8d6e1ab86b31f629354dff1b3450f86abffa2f067e0af0d768d3",
+      "responsibility_keywords": [],
+      "import_count": 9,
+      "prompt_string_count": 15,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachAgent__OutreachProactiveAgent",
+      "class_name": "OutreachAgent",
+      "file_path": "apps_lic\\engines\\OutreachProactiveAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [],
+      "method_names": [],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 133,
+      "integrity_hash": "a76eb1a43f039b93ef636fb074ed610bfb91585427b01ea3a08a28b1eefa0d1e",
+      "responsibility_keywords": [],
+      "import_count": 4,
+      "prompt_string_count": 8,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachSignalRouterAgent",
+      "class_name": "OutreachSignalRouterAgent",
+      "file_path": "apps_lic\\engines\\OutreachSignalRouterAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "get_agents_for_signals",
+        "has_critical_signal",
+        "determine_strategy",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 468,
+      "integrity_hash": "de3b1c6c562a1f7f8d3dbfeea6003be981af62046f57ce6e9b6d100a3d76a794",
+      "responsibility_keywords": [],
+      "import_count": 13,
+      "prompt_string_count": 18,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "OutreachValidationExecutorAgent",
+      "class_name": "OutreachValidationExecutorAgent",
+      "file_path": "apps_lic\\engines\\OutreachValidationExecutorAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_execute_check",
+        "_check_placeholders_lic",
+        "_check_forbidden_verbs",
+        "_check_filler_phrases",
+        "_check_metric_source_binding",
+        "_check_metric_context",
+        "_check_existing_redundancy",
+        "_check_transition_phrase",
+        "_check_signature_immutability",
+        "_extract_metric_context",
+        "_calculate_jaccard_similarity",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 531,
+      "integrity_hash": "4d0ad8897855f08166808b683c01c36f4be7fa2d83a48f791dd401cc75a9c823",
+      "responsibility_keywords": [
+        "detection",
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 26,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PIISanitizerAgent",
+      "class_name": "PIISanitizerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PIISanitizerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "run",
+        "_sanitize_text",
+        "heal_repository",
+        "_run_self_tests",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 170,
+      "integrity_hash": "b2b493b2b58036efd248700faf1b6c6d04f6b21088e0af573bb67ceaa6721014",
+      "responsibility_keywords": [
+        "detection",
+        "detects",
+        "healing",
+        "pii",
+        "pii_patterns",
+        "safety"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "PII_SanitizerSpecialistAgent",
+      "class_name": "PII_SanitizerSpecialistAgent",
+      "file_path": "apps_lic\\engines\\PIISanitizerSpecialistAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "run",
+        "_sanitize_text"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": true,
+      "line_count": 275,
+      "integrity_hash": "6327170488b52d178d23c6745e54656946d9ae642d5ff7d1a3435557c7efb0dc",
+      "responsibility_keywords": [
+        "detection",
+        "pii"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 15,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PeerIntelligenceAuditorAgent",
+      "class_name": "PeerIntelligenceAuditorAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\PeerIntelligenceAuditorAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "analyze_competitive_landscape",
+        "_execute_multi_hop_search",
+        "_generate_hop_queries",
+        "_execute_searches",
+        "_extract_keywords_from_results",
+        "_classify_keywords",
+        "_validate_search_count",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 416,
+      "integrity_hash": "101a72b9c246d7228c816f34f38625d65fe66ccb840857e0e52ee41e945f916a",
+      "responsibility_keywords": [
+        "classify",
+        "rag"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 21,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PerformanceAnalystAgent",
+      "class_name": "PerformanceAnalystAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\PerformanceAnalystAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "analyze",
+        "_analyze_performance_bottlenecks",
+        "_calculate_bottleneck_severity",
+        "_generate_performance_report",
+        "run_post_deployment_audit",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 282,
+      "integrity_hash": "ebcb3ba3de265a6219a7a897643f9d889b368ecbee3b20cf14daf9233d1f3215",
+      "responsibility_keywords": [
+        "analyzes",
+        "audits",
+        "generates",
+        "metrics"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 25,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PineconeSovereignAgent",
+      "class_name": "PineconeSovereignAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PineconeSovereignAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "sync_fission_state",
+        "_run_self_tests",
+        "get_embedding",
+        "_validate_and_repair_embedding",
+        "_get_sparse_vector",
+        "hybrid_search",
+        "purge_ghost_vector",
+        "bootstrap_territory_vectors",
+        "upsert_sovereign_chunks",
+        "upsert_file_vector",
+        "semantic_search",
+        "health_check",
+        "execute",
+        "heal_repository",
+        "heal",
+        "_heal_index_config",
+        "_heal_vector_quality",
+        "_heal_connection"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 650,
+      "integrity_hash": "3a2e3ddd8cea7f075a4b055494e6ac52b45dfbb5b8564bdf006bc08513bf80d6",
+      "responsibility_keywords": [
+        "pinecone"
+      ],
+      "import_count": 18,
+      "prompt_string_count": 27,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PolicyNeuralAutoImmuneAgent",
+      "class_name": "PolicyNeuralAutoImmuneAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "NeuralAutoImmuneAgent",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "detect_breaches",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 116,
+      "integrity_hash": "12aecaa383976a845a8fa3276168cc4fe16478bb537fea42766396495d742fd6",
+      "responsibility_keywords": [],
+      "import_count": 11,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PreCommitSovereignAgent",
+      "class_name": "PreCommitSovereignAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "L0MaintenanceBase"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "get_staged_files",
+        "_create_empty_result",
+        "_create_error_result",
+        "_paths_match",
+        "_filter_staged_violations",
+        "_print_violations",
+        "validate_staged_files",
+        "validate_sovereignty",
+        "_report_failure",
+        "install_hook",
+        "uninstall_hook",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 426,
+      "integrity_hash": "d1b4559fa978aadbaffe213c2b34258b918bf2380b48856c9cb86600e5e16d07",
+      "responsibility_keywords": [
+        "codebase",
+        "compliance",
+        "healermixin",
+        "validate_sovereignty",
+        "validate_staged_files",
+        "validates",
+        "validation"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 32,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "PredictiveCostAuditorAgent",
+      "class_name": "PredictiveCostAuditorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_load_healing_history",
+        "_audit_files",
+        "_audit_single_file",
+        "_generate_recommendation",
+        "_generate_cost_report",
+        "_generate_global_recommendations",
+        "_display_report",
+        "get_thermal_map",
+        "get_fission_candidates",
+        "generate_daily_mission_report",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 464,
+      "integrity_hash": "9145513070376d3ae271c229441ae48fec67bd8e872980416d21eb31571771c4",
+      "responsibility_keywords": [
+        "auditor",
+        "cost",
+        "healing",
+        "monitors",
+        "pipeline",
+        "tokens"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 15,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "ProactiveAgent",
+      "class_name": "ProactiveAgent",
+      "file_path": "apps_rg\\reasoning\\ProactiveAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "record_result",
+        "add_signal",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 121,
+      "integrity_hash": "6045aace4ba1452863ac93c46c05839a8e7ff70e2232595241496ac0e4faa1d0",
+      "responsibility_keywords": [],
+      "import_count": 4,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "PromptRegistryAgent",
+      "class_name": "PromptRegistryAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\PromptRegistryAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "__init__",
+        "_sync_with_constitution",
+        "_load_registry",
+        "_save_registry",
+        "_hash_content",
+        "_compute_embedding",
+        "_find_similar_prompts",
+        "register_prompt",
+        "get_active_version",
+        "list_active_prompts"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 446,
+      "integrity_hash": "fe83e7b2ca9b3d94fb147708111c3b2de71e55449a1e8d05e79c09416fcb8afc",
+      "responsibility_keywords": [
+        "prompt",
+        "prompts",
+        "state",
+        "traceability",
+        "track",
+        "tracking",
+        "tracks"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 19,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RagHealthCheckAgent",
+      "class_name": "RagHealthCheckAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\RagHealthCheckAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "check_health",
+        "_check_vector_store",
+        "_check_bm25_store",
+        "_check_embedder",
+        "_check_reranker",
+        "_check_cache",
+        "_check_latency",
+        "_check_dimensions",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 241,
+      "integrity_hash": "53d8f9ed40f6b65106453a27e8626eef2f886e4e9da7e9f02bb934f73bf1d84c",
+      "responsibility_keywords": [
+        "cache",
+        "embedder",
+        "health",
+        "rag",
+        "safety",
+        "validates",
+        "validator"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RedSentinelAgent",
+      "class_name": "RedSentinelAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "fuzz_function",
+        "_generate_hostile_inputs",
+        "_get_default_hostile_inputs",
+        "_test_with_input",
+        "_log_fuzz_results",
+        "scan_file",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 384,
+      "integrity_hash": "a89ae4e98cedd104beac79270585187c85c442b7d6a3bf1db3c915abc08d31cf",
+      "responsibility_keywords": [
+        "audit_path",
+        "fuzzing",
+        "generates",
+        "generating",
+        "healermixin",
+        "healing",
+        "safety",
+        "security",
+        "testing"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 24,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RedTeamAgent",
+      "class_name": "RedTeamAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\RedTeamAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute",
+        "_detect_bypass",
+        "_escalate_breach",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 343,
+      "integrity_hash": "bdf6f73bb6b72596fbb0fb25fa54b7f6075da71c104669f3bc5cd4a2f0d452d8",
+      "responsibility_keywords": [
+        "adversarial_fragments",
+        "governance",
+        "guardrail",
+        "penetration",
+        "prompt",
+        "prompt_governance",
+        "red-teaming",
+        "red_team_governance",
+        "red_team_validation",
+        "safety",
+        "testing"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 17,
+      "decorator_count": 2
+    },
+    {
+      "agent_id": "RedisSovereignAgent",
+      "class_name": "RedisSovereignAgent",
+      "file_path": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__new__",
+        "_init",
+        "_run_self_tests",
+        "get_client",
+        "_audit",
+        "invalidate_file_cache",
+        "invalidate_by_path",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 232,
+      "integrity_hash": "d413087a78b11de3863c9d65c961823c9bcb9bb63a5a15158b656f2fbba8ac77",
+      "responsibility_keywords": [
+        "auditing",
+        "compliance",
+        "monitored",
+        "redis",
+        "telemetry"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 10,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RegressionOracleAgent",
+      "class_name": "RegressionOracleAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_process_modified_file",
+        "_emit_regression_check_pass",
+        "heal_repository",
+        "post_heal_validation",
+        "cleanup_violations",
+        "run_with_cleanup",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 383,
+      "integrity_hash": "2da952c4039fc33456298edf9e2169d118b73dd95747e7151fa0ebd5394eb5bb",
+      "responsibility_keywords": [
+        "generate",
+        "generates",
+        "pinecone",
+        "tests"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 18,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ReportLocationAgent",
+      "class_name": "ReportLocationAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [],
+      "method_names": [
+        "__post_init__",
+        "validate",
+        "get_violations",
+        "get_inventory",
+        "is_git_tracked",
+        "git_move",
+        "backup_file",
+        "heal_file",
+        "heal",
+        "standard_heal",
+        "save_inventory"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 310,
+      "integrity_hash": "ebf7708c3138bcb7e4323f174eb4f4dde164b2ae80483980791ea884efbfde11",
+      "responsibility_keywords": [
+        "compliance",
+        "enforcement",
+        "generate",
+        "guardian",
+        "healing",
+        "heals",
+        "location",
+        "locations",
+        "testing",
+        "tests",
+        "validate",
+        "validates",
+        "validation"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ReportingAgent",
+      "class_name": "ReportingAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\ReportingAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "get_folder_scope_summary",
+        "generate_ascii_tree",
+        "_get_compliance_metrics",
+        "run_diagnostic_report",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 282,
+      "integrity_hash": "5978d5db88401a1aa1d1978aeb6d70ca463441792755b3f8de7c1a69f8614b0b",
+      "responsibility_keywords": [
+        "compliance",
+        "complianceorchestratoragent",
+        "observation",
+        "validation"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ResourceManagerAgent",
+      "class_name": "ResourceManagerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "set_budget",
+        "allocate",
+        "_apply_fallback",
+        "release",
+        "is_exhausted",
+        "get_utilization",
+        "get_budget_status",
+        "get_all_budgets",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 377,
+      "integrity_hash": "b28c48ee0ee74441d0af3c697d7297f1b0d8f5d842071d84643fdba0aa258903",
+      "responsibility_keywords": [
+        "budget",
+        "budgetmanageragent",
+        "tracking"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "RgReflectionAgent",
+      "class_name": "RgReflectionAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\RgReflectionAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_initialize_pinecone",
+        "_get_successful_traces",
+        "_is_valid_trace",
+        "_process_single_trace",
+        "execute",
+        "_analyze_success_pattern",
+        "_internalize_trace",
+        "_generate_recommendations",
+        "_self_critique",
+        "execute_structured_research",
+        "_synthesize_research",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 418,
+      "integrity_hash": "4a2bac77f5eee4981d35c0d408553d34221bc95554c853d190ebf022e368eba2",
+      "responsibility_keywords": [
+        "embedding_model",
+        "embeddings",
+        "generating",
+        "generation",
+        "healermixin",
+        "healing",
+        "memory",
+        "orchestrator",
+        "pinecone",
+        "pinecone_client",
+        "structured",
+        "testing",
+        "trace",
+        "traces",
+        "validationcontext"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 25,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "RgReflectionAgent__RgReflectionAgent",
+      "class_name": "RgReflectionAgent",
+      "file_path": "apps_rg\\reasoning\\RgReflectionAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_estimate_quality_score",
+        "heal_repository",
+        "heal",
+        "ml_cache_execution_insight",
+        "ml_recall_execution_insight",
+        "ml_cache_quality_pattern",
+        "ml_recall_quality_pattern",
+        "ml_record_reflection_success",
+        "ml_recall_similar_reflection"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 236,
+      "integrity_hash": "c398ae1b7094af9a5a490a5727dc8acde6bb67e01ba3b677aad6d1159268afba",
+      "responsibility_keywords": [
+        "analyzes",
+        "caches",
+        "generations",
+        "pinecone",
+        "redis"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RgStrategicPlannerAgent",
+      "class_name": "RgStrategicPlannerAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\RgStrategicPlannerAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 192,
+      "integrity_hash": "13921dadcb2f7bc18eb825aa597a7c0b84dd318e9e7e671102641ee58987f6be",
+      "responsibility_keywords": [
+        "analyzes",
+        "generates"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 12,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "class_name": "RgStrategicPlannerAgent",
+      "file_path": "apps_rg\\reasoning\\RgStrategicPlannerAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 98,
+      "integrity_hash": "22dd4d057c04c5bed7319ac9f60b83a36b5a0ca4e03e54bf67ad16a63471f0c3",
+      "responsibility_keywords": [
+        "analyzes",
+        "state"
+      ],
+      "import_count": 4,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RgTemplateOptimizerAgent",
+      "class_name": "RgTemplateOptimizerAgent",
+      "file_path": "apps_rg\\reasoning\\RgTemplateOptimizerAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_detect_job_type",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 115,
+      "integrity_hash": "55fabf0439cf90d6a372704466b60db2e3311577b064402e9aa5ac145d7f0145",
+      "responsibility_keywords": [
+        "analyzes"
+      ],
+      "import_count": 4,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RootHygieneAgent",
+      "class_name": "RootHygieneAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\RootHygieneAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "run",
+        "_enforce_root_hygiene",
+        "_evacuate_root_scripts",
+        "_evacuate_coverage_html",
+        "_relocate_purge_cache",
+        "scan_root_violations",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 364,
+      "integrity_hash": "42608864d21f0125d43bfb2b2aad9f44f12fac43d110ecd3a587f7ba0f66e55c",
+      "responsibility_keywords": [
+        "enforces",
+        "hygiene",
+        "orchestration",
+        "safety"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 23,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "RuntimeTelemetryAgent",
+      "class_name": "RuntimeTelemetryAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\RuntimeTelemetryAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "heal_repository",
+        "__init__",
+        "benchmark_startup",
+        "audit_security_overhead",
+        "report_performance"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 153,
+      "integrity_hash": "8a2ec256d9d963ca396b3d32288ad48088cf08b75e68e27eb8f5f7db5e36b2d3",
+      "responsibility_keywords": [
+        "enforce",
+        "guardian",
+        "monitors"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 12,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SSOTFolderCleanupAgent",
+      "class_name": "SSOTFolderCleanupAgent",
+      "file_path": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
+      "layer": "L0_maintenance",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_detect_project_root",
+        "_load_ssot_config",
+        "_build_approved_paths",
+        "_get_cognitive_agent",
+        "_get_archival_gatekeeper",
+        "is_path_ssot_approved",
+        "find_non_approved_files",
+        "triage_file",
+        "move_file_to_ssot",
+        "update_imports_for_moved_file",
+        "_path_to_module",
+        "_update_imports_in_content",
+        "delete_empty_folders",
+        "cleanup_repository",
+        "preview_cleanup",
+        "execute_cleanup",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 672,
+      "integrity_hash": "d56bfc5f096201411c7369e5aff0198f2ec574ce8add83aa353ace8a221ace1d",
+      "responsibility_keywords": [
+        "audited",
+        "cleanup",
+        "locations",
+        "safety"
+      ],
+      "import_count": 15,
+      "prompt_string_count": 21,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SafetyDetectorAgent",
+      "class_name": "SafetyDetectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "detect_all",
+        "detect_injection",
+        "detect_bias",
+        "detect_hallucination",
+        "is_safe",
+        "get_safety_score",
+        "get_threats",
+        "clear_threats",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 317,
+      "integrity_hash": "08370c4b8ede62f10199b2a095e321828bbe801f7ecbd13cbf4d552668500223",
+      "responsibility_keywords": [
+        "detect_bias",
+        "detect_injection",
+        "detector",
+        "promptinjectiondetectoragent",
+        "safety",
+        "safetydetectoragent",
+        "security"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 15,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SafetyExecutorAgent",
+      "class_name": "SafetyExecutorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "_init_default_gates",
+        "add_gate",
+        "execute",
+        "_run_safety_checks",
+        "_run_gates",
+        "check_and_block",
+        "get_stats",
+        "get_results",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 420,
+      "integrity_hash": "8dfdbed53f67a53e6dfcc472aa2eab493e65e8dbb5bd59beba22c592d34a7476",
+      "responsibility_keywords": [
+        "check_something",
+        "checks",
+        "safety",
+        "safetyexecutoragent"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 9,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SafetyInspectorAgent",
+      "class_name": "SafetyInspectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "scan_file",
+        "_socratic_verify",
+        "clear_false_positive_cache",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 507,
+      "integrity_hash": "fc4a0c9a7f33347af1c68e27ef62de7b7fc8954077a5eb3b7f5c9502562d310e",
+      "responsibility_keywords": [
+        "compliance",
+        "fixme",
+        "inspector",
+        "safety",
+        "secrets",
+        "security"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 32,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SectionBalanceAgent",
+      "class_name": "SectionBalanceAgent",
+      "file_path": "apps_rg\\reasoning\\SectionBalanceAgent.py",
+      "layer": "apps_rg",
+      "base_classes": [
+        "RGAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "execute",
+        "_to_string",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 129,
+      "integrity_hash": "e6d39d64f3c2263df4abc5bead6a71b9a2c2bbb3a37335dac3839f5fbd6d92d7",
+      "responsibility_keywords": [
+        "checks"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 6,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SelfUpdatingSafetyEngineAgent",
+      "class_name": "SelfUpdatingSafetyEngineAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_initialize_base_rules",
+        "_load_rules",
+        "_save_rules",
+        "detect_threats",
+        "_learn_from_detection",
+        "_generate_new_rules_if_needed",
+        "_generate_pattern_variations",
+        "report_false_positive",
+        "_compare_threat_levels",
+        "_generate_recommendations",
+        "escalate_threat_level",
+        "get_rule_effectiveness",
+        "get_threat_statistics",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 508,
+      "integrity_hash": "7d41a7dff51d6535e91596c2bb69646d800c2a07bac46bd639b29d7a0555c4b7",
+      "responsibility_keywords": [
+        "detection",
+        "generation",
+        "safety",
+        "tracking"
+      ],
+      "import_count": 14,
+      "prompt_string_count": 18,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SemanticGatekeeperAgent",
+      "class_name": "SemanticGatekeeperAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\SemanticGatekeeperAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "heal_repository",
+        "execute",
+        "heal",
+        "run_with_gating",
+        "get_dead_letters",
+        "clear_dead_letters",
+        "get_stats"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 217,
+      "integrity_hash": "32aa089da5068222ff20d9dec4ecb1b59899dd753e0580a74c97dc58155bd27e",
+      "responsibility_keywords": [],
+      "import_count": 10,
+      "prompt_string_count": 10,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SemanticMapperAgent",
+      "class_name": "SemanticMapperAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SemanticMapperAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 73,
+      "integrity_hash": "6f476a46c2609757affc165f13404efef33b6c06616ef11ff7b993acd9193fe2",
+      "responsibility_keywords": [
+        "analyzes"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 6,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SemanticTerritoryMapperAgent",
+      "class_name": "SemanticTerritoryMapperAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SemanticTerritoryMapperAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 51,
+      "integrity_hash": "e0c09cc95b23a4cfc5b6fe7ec2161769ab3d5ab8c1ead694912d6a94e195ebd9",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 4,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SherlockAgent",
+      "class_name": "SherlockAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\SherlockAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_perform_healing",
+        "can_run",
+        "trigger_investigation",
+        "execute",
+        "_analyze_failure",
+        "_extract_error_file",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 193,
+      "integrity_hash": "92ba7b7fb52b2b0b06f4f234079e1b219c40b9f5524e68c8cbd1a0691b933ee1",
+      "responsibility_keywords": [
+        "analyzes",
+        "checkpoint",
+        "checkpointed",
+        "fixes",
+        "state",
+        "testpilot",
+        "trace"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SignatureVerifierAgent",
+      "class_name": "SignatureVerifierAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_process",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 138,
+      "integrity_hash": "d3fb7d9ebe2ee9c6d1bbfa2de6ccc8b7a436d64ab10dbad93e965ca0eacf4662",
+      "responsibility_keywords": [
+        "inspection"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SovereignActionPlaneAgent",
+      "class_name": "SovereignActionPlaneAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "IActionPlane"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "get_capabilities",
+        "get_available_tools",
+        "execute",
+        "_log_to_signal_ledger",
+        "execute_batch",
+        "_execute_tool",
+        "_attempt_tool_repair",
+        "_create_diagnostic_tool",
+        "_execute_file_operation",
+        "cleanup",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 490,
+      "integrity_hash": "fc67833d4a357d08399a2f9487436b8643b92fd2dd6baab7a31885f225210551",
+      "responsibility_keywords": [],
+      "import_count": 14,
+      "prompt_string_count": 22,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SovereignMCPGatewayAgent",
+      "class_name": "SovereignMCPGatewayAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SovereignMCPGatewayAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__new__",
+        "_audit",
+        "llm_route",
+        "kg_query",
+        "archive_operation",
+        "_mock_tool_call"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 141,
+      "integrity_hash": "73adcd2270ce0dda43a2b7a0acbfad85e3287749a2d9f5d4834f5a06b16605c7",
+      "responsibility_keywords": [
+        "redissovereignagent"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SovereignObservabilityAgent",
+      "class_name": "SovereignObservabilityAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\SovereignObservabilityAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "MCPHardenedMixin",
+        "RedisCacheMixin",
+        "event_emission_mixin",
+        "ContextPropagationMixin"
+      ],
+      "method_names": [
+        "heal",
+        "heal_repository",
+        "__init__",
+        "_setup_consumer_group",
+        "process_stream",
+        "_analyze_event",
+        "sample_rate_check",
+        "_error_rate_limit_check",
+        "ingest_telemetry"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 265,
+      "integrity_hash": "847ab40b0a4360aa909a72958daefadda0e236e25fbb8c0c9be3d79ec78492ae",
+      "responsibility_keywords": [
+        "observability",
+        "redis",
+        "redis_client"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 11,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SovereignPineconeMcpClientAgent",
+      "class_name": "SovereignPineconeMcpClientAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SovereignPineconeMcpClientAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_audit",
+        "initialize",
+        "search",
+        "upsert",
+        "inference_embed",
+        "delete",
+        "describe_index_stats",
+        "health_check",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 274,
+      "integrity_hash": "0f3e3c9413826cce50334356be5162d0e2ed7ec3fd27d786fd1fcfdf95d4da3c",
+      "responsibility_keywords": [
+        "cached",
+        "enforcement",
+        "orchestration",
+        "pinecone",
+        "redis",
+        "safety",
+        "state",
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 17,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SovereignPineconeStoreAgent",
+      "class_name": "SovereignPineconeStoreAgent",
+      "file_path": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "_ensure_initialized",
+        "similarity_search",
+        "heal_repository",
+        "add_texts",
+        "upsert_file_vector",
+        "semantic_search",
+        "hybrid_search",
+        "purge_ghost_vector",
+        "health_check",
+        "execute",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 314,
+      "integrity_hash": "ddf4cdc733533229e57e7c0ad6de40d0cabdbd94aefc1c6b922a50852f1a6c59",
+      "responsibility_keywords": [],
+      "import_count": 9,
+      "prompt_string_count": 23,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SovereignRAGManagerAgent",
+      "class_name": "SovereignRAGManagerAgent",
+      "file_path": "agentic_core\\knowledge\\reasoning\\SovereignRAGManagerAgent.py",
+      "layer": "knowledge",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_load_static_index",
+        "ingest",
+        "_chunk_content",
+        "index_document",
+        "retrieve",
+        "_fuse_results",
+        "format_context"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 157,
+      "integrity_hash": "0cf3c35db0c7f0465548c8dc3bd915dd2864db61faebd2c5292d918e86efb11d",
+      "responsibility_keywords": [
+        "generation",
+        "orchestrates",
+        "pipeline",
+        "retrieval"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 2,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SprawlInspectorAgent",
+      "class_name": "SprawlInspectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "inspect",
+        "print_summary",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 164,
+      "integrity_hash": "97b8a490584cac439c5afb6fce6e2ee4d25c0dc856f73c5666e7669e44fe0fc1",
+      "responsibility_keywords": [
+        "inspector",
+        "sprawl"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 9,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "StrategicObservationAgent",
+      "class_name": "StrategicObservationAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\StrategicObservationAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "get_timestamp",
+        "generate_observations",
+        "analyze",
+        "run_observability_check",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 97,
+      "integrity_hash": "21a3907cf28715120af1263b53a113484a82b59dd3bf561ace59e3ce9ba3c552",
+      "responsibility_keywords": [
+        "monitoring",
+        "observations"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 8,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "StrategicRecommendationAgent",
+      "class_name": "StrategicRecommendationAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\StrategicRecommendationAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "plan",
+        "act",
+        "_parse_llm_response",
+        "_generate_fallback_recommendations",
+        "run",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": true,
+      "line_count": 489,
+      "integrity_hash": "a7920189b47099b5fa185a50e0f9625b980221c3ed74e0552bbd0644550e9b5e",
+      "responsibility_keywords": [
+        "analyzes",
+        "generates",
+        "generator",
+        "metrics",
+        "orchestration",
+        "structured"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 36,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "StrategistAgent",
+      "class_name": "StrategistAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\StrategistAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "can_run",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 87,
+      "integrity_hash": "6daece669b84bf21fe4c72a4533ed7f438d5a7b0237888a4f0df531c9456cef3",
+      "responsibility_keywords": [
+        "code"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 5,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "StructuralEngineerAgent",
+      "class_name": "StructuralEngineerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "HealerMixin"
+      ],
+      "method_names": [
+        "get_validation_keys",
+        "execute",
+        "check_no_large_classes",
+        "check_no_large_functions",
+        "check_cyclomatic_complexity",
+        "_calculate_complexity",
+        "_heal_violations",
+        "_smart_fix",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 276,
+      "integrity_hash": "287765987418922aa30ec551f78997978f4c8f982d14b11569321431be482f1e",
+      "responsibility_keywords": [
+        "code",
+        "structural",
+        "structure",
+        "validates"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "StructuralValidatorAgent",
+      "class_name": "StructuralValidatorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "config",
+        "validate_structure",
+        "violations",
+        "validate_file",
+        "_extract_layer",
+        "_extract_layer_from_module",
+        "_check_gravity",
+        "_check_naming",
+        "force_rename_class",
+        "check_duplicates",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 325,
+      "integrity_hash": "43e421fc72e7110ab243a4a50e4abcd190f8cb0931fe5ef5f73735efdf42891d",
+      "responsibility_keywords": [
+        "enforcement",
+        "naming",
+        "structuralvalidatorstrategy",
+        "structure",
+        "validation"
+      ],
+      "import_count": 18,
+      "prompt_string_count": 8,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "StructureEnforcerAgent",
+      "class_name": "StructureEnforcerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "__init__",
+        "validate_file",
+        "_extract_layer",
+        "_extract_layer_from_module",
+        "_check_gravity",
+        "_check_naming",
+        "_check_documentation",
+        "_check_ascii",
+        "check_gravity_import",
+        "force_rename_class",
+        "validate_hierarchy",
+        "get_violations",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 529,
+      "integrity_hash": "10bf12c81d432d25f533f8f41313c31c784dfcce48791e4149ad6f5b165b1895",
+      "responsibility_keywords": [
+        "check_gravity_import",
+        "enforcement",
+        "enforcer",
+        "hierarchy",
+        "hierarchyenforceragent",
+        "naming",
+        "namingenforceragent",
+        "structure",
+        "structureenforceragent",
+        "validate",
+        "validate_file"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "StructureHealerAgent",
+      "class_name": "StructureHealerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "heal_all",
+        "heal_naming",
+        "heal_gravity",
+        "heal_territory",
+        "_extract_layer",
+        "_extract_layer_from_module",
+        "_is_valid_gravity",
+        "_backup_file",
+        "get_actions",
+        "heal",
+        "_heal_gravity_violation",
+        "_heal_hierarchy_violation",
+        "_heal_naming_violation",
+        "_heal_territory_violation",
+        "_heal_blueprint_violation"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 528,
+      "integrity_hash": "960c1da15dc97f02f95f9753bf1b9b3502dc6219296c53bf4a435c16fc07abd4",
+      "responsibility_keywords": [
+        "heal_all",
+        "heal_naming",
+        "healer",
+        "hierarchy",
+        "hierarchyhealeragent",
+        "naming",
+        "naminglawhealeragent",
+        "structure",
+        "structurehealeragent",
+        "structurehealingstrategy"
+      ],
+      "import_count": 15,
+      "prompt_string_count": 11,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SubAtomicAgent",
+      "class_name": "SubAtomicAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\SubAtomicAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 166,
+      "integrity_hash": "c80f2a77df01869e2cd7c594dc4b23fb4590b4fda3225b369334da3d7d523847",
+      "responsibility_keywords": [
+        "structural"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 7,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SubAtomicRegistryAgent",
+      "class_name": "SubAtomicRegistryAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\sub_atomic_registry.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "extract_methods",
+        "rebuild_registry",
+        "find_method",
+        "find_and_invoke",
+        "invoke_method",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 504,
+      "integrity_hash": "a7aba799b2bb000c086de5dafd97182e9c2263333707d68bff4d5da057dca941",
+      "responsibility_keywords": [
+        "redis"
+      ],
+      "import_count": 33,
+      "prompt_string_count": 21,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SubatomicHopAgent",
+      "class_name": "SubatomicHopAgent",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\SubatomicHopAgent.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_run_self_tests",
+        "_ensure_dep",
+        "run",
+        "_run_with_zero_trust",
+        "_preflight_checks",
+        "_sanitize_input",
+        "_execute_think_stage",
+        "_assess_task_risk",
+        "_check_past_failures",
+        "_execute_act_stage",
+        "_execute_critique_stage",
+        "_execute_commit_stage",
+        "_handle_error",
+        "_cleanup",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": true,
+      "line_count": 408,
+      "integrity_hash": "b0ca9188ba8dd8250149a451b30ad177a0219fe2e8d4a088f1917d2807f47ee9",
+      "responsibility_keywords": [],
+      "import_count": 11,
+      "prompt_string_count": 16,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "SupremeCourtAgent",
+      "class_name": "SupremeCourtAgent",
+      "file_path": "agentic_core\\L1_cognition\\reasoning\\SupremeCourtAgent.py",
+      "layer": "L1_cognition",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "deliberate",
+        "_gather_opinions",
+        "_get_opinion",
+        "_analyze_consensus"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 141,
+      "integrity_hash": "56264f7c4c901a3707ab5aca832a0ae4c503e41eccec89c174fb8c1338badc30",
+      "responsibility_keywords": [],
+      "import_count": 8,
+      "prompt_string_count": 7,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "SystemArchitectAgent",
+      "class_name": "SystemArchitectAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "heal",
+        "get_validation_keys",
+        "execute",
+        "_check_file_headers",
+        "check_core_architecture",
+        "validate_core_architecture",
+        "check_no_deep_nesting",
+        "check_no_large_files",
+        "_heal_violations",
+        "_smart_fix",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 427,
+      "integrity_hash": "1185a2eb4f1d359ac78380bd0e23adef9b9ce1f2ede4f44e986fde2a50161978",
+      "responsibility_keywords": [
+        "structure",
+        "validates"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 23,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TelemetryAgent",
+      "class_name": "TelemetryAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\TelemetryAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "emit",
+        "_write_to_file",
+        "get_events",
+        "get_event_count",
+        "clear_events",
+        "emit_compliance_scan_started",
+        "emit_compliance_scan_completed",
+        "emit_violation_detected",
+        "emit_agent_action",
+        "export_to_file",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 296,
+      "integrity_hash": "09cfc558ceb1cba896d5114fac10ea7d9085c4f7e72f050beef46c55ed0c8750",
+      "responsibility_keywords": [
+        "observability",
+        "structured",
+        "telemetry"
+      ],
+      "import_count": 13,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TerritoryChangeHandlerAgent",
+      "class_name": "TerritoryChangeHandlerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "FileSystemEventHandler"
+      ],
+      "method_names": [
+        "__init__",
+        "on_modified",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 159,
+      "integrity_hash": "7ed654a515423526826f9c3571e47c0b0d3ccfccfe11cfea9a5b58810450adb0",
+      "responsibility_keywords": [
+        "safety"
+      ],
+      "import_count": 11,
+      "prompt_string_count": 13,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TestCoverageGuardianAgent",
+      "class_name": "TestCoverageGuardianAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TestCoverageGuardianAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_load_history",
+        "_save_history",
+        "_run_advanced_coverage",
+        "_discover_property_candidates",
+        "_generate_property_test",
+        "_discover_stateful_candidates",
+        "_generate_stateful_test",
+        "_run_mutmut",
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 743,
+      "integrity_hash": "1fab822a9e9ccc1a4ef1edf89f7e4967dbed059ac5d265335d23091fb264f1e2",
+      "responsibility_keywords": [
+        "enforces",
+        "generation",
+        "testing"
+      ],
+      "import_count": 17,
+      "prompt_string_count": 30,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TestGeneratorAgent",
+      "class_name": "TestGeneratorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "generate_tests_for_agent",
+        "_extract_classes",
+        "_get_base_name",
+        "_extract_args",
+        "_has_return",
+        "_generate_test_file",
+        "_generate_test_class",
+        "_generate_test_method",
+        "_generate_healer_tests",
+        "_generate_mcp_tests",
+        "_path_to_module",
+        "get_generation_history",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 325,
+      "integrity_hash": "d6be5122e12b60be15671d19d160eb2566db3dedc0e996c210fe50622e8799b9",
+      "responsibility_keywords": [
+        "detects",
+        "generates",
+        "tests"
+      ],
+      "import_count": 10,
+      "prompt_string_count": 23,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TokenBudgetInspectorAgent",
+      "class_name": "TokenBudgetInspectorAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "heal_repository",
+        "heal",
+        "diagnose"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 89,
+      "integrity_hash": "addb6e077c179aaa4f06339590fb8d2cb2c6dc5a0c3e723b55e30d417ba6c640",
+      "responsibility_keywords": [
+        "inspection"
+      ],
+      "import_count": 9,
+      "prompt_string_count": 4,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "ToolsmithAgent",
+      "class_name": "ToolsmithAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\ToolsmithAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "_load_templates",
+        "create_tool_from_spec",
+        "_is_simple_function",
+        "_generate_function_code",
+        "_generate_class_code",
+        "_get_implementation",
+        "_extract_imports",
+        "_identify_dependencies",
+        "_generate_test_code",
+        "create_file_tool",
+        "create_api_tool",
+        "get_tool",
+        "list_tools",
+        "save_tool",
+        "get_statistics",
+        "heal_repository",
+        "seed_territory",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 571,
+      "integrity_hash": "83e9b5ce5bd7b63765a3fda568a0daccad7c1c530c7af8872410bdb178645d7f",
+      "responsibility_keywords": [
+        "generates",
+        "validates"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 33,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "TracingAgent",
+      "class_name": "TracingAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\TracingAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_setup_sovereign_tracer",
+        "get_tracer",
+        "_ensure_export_dir",
+        "_get_export_filepath",
+        "export_trace_to_file",
+        "set_sample_probability",
+        "force_sample_trace",
+        "create_span",
+        "set_attribute",
+        "add_event",
+        "get_trace",
+        "get_all_traces",
+        "export_traces_json",
+        "trace_compliance_mission",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 481,
+      "integrity_hash": "c77dddd0d28890d04b2c9e331c96468216d2e11af3c01713124122ca6510c0bf",
+      "responsibility_keywords": [
+        "trace",
+        "tracing"
+      ],
+      "import_count": 21,
+      "prompt_string_count": 22,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "TrackObservabilityCostAgent",
+      "class_name": "TrackObservabilityCostAgent",
+      "file_path": "agentic_core\\L6_observability\\reasoning\\TrackObservabilityCostAgent.py",
+      "layer": "L6_observability",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_process",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 120,
+      "integrity_hash": "aee6056f0e5d2a3d3e3b0a9bccc36c2d0f74aed9d77492804eb0c537ebe1107c",
+      "responsibility_keywords": [],
+      "import_count": 10,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "TypeHintFixerAgent",
+      "class_name": "TypeHintFixerAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "ast.NodeTransformer"
+      ],
+      "method_names": [
+        "__init__",
+        "visit_FunctionDef",
+        "visit_AsyncFunctionDef",
+        "visit_Assign",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 81,
+      "integrity_hash": "a2efddd37e0010a75544191743d25ea8d269e56d3495909b510a4b3e39be3043",
+      "responsibility_keywords": [],
+      "import_count": 6,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "TypeMechanicAgent",
+      "class_name": "TypeMechanicAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "heal_repository",
+        "can_run",
+        "execute",
+        "_read_and_parse_file",
+        "_get_missing_type_hint_violations_for_tree",
+        "check_no_missing_type_hints",
+        "_check_function_for_unreachable_code",
+        "_get_unreachable_code_violations_for_tree",
+        "check_no_unreachable_code",
+        "_collect_variables",
+        "_get_function_violations_for_file",
+        "_process_file_for_unused_variables",
+        "check_no_unused_variables"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 210,
+      "integrity_hash": "0fdbb6a2ee9c8b7f9931b423cd493df8cb1003944f1f7fa2a11a57a9cc256b01",
+      "responsibility_keywords": [
+        "code",
+        "enforcement",
+        "validates"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 16,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "UiValidationAgent",
+      "class_name": "UiValidationAgent",
+      "file_path": "agentic_core\\L2_execution\\reasoning\\UiValidationAgent.py",
+      "layer": "L2_execution",
+      "base_classes": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "can_run",
+        "execute",
+        "heal",
+        "heal_repository"
+      ],
+      "has_execute": true,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 168,
+      "integrity_hash": "eeddf315ab23a2574c1bf16fb5349c1d5bf7c5f5f4c8b7932661ee868d9a0f9d",
+      "responsibility_keywords": [
+        "validate",
+        "validator"
+      ],
+      "import_count": 5,
+      "prompt_string_count": 14,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "UnusedCleanupAgent",
+      "class_name": "UnusedCleanupAgent",
+      "file_path": "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "CodeToolRunnerCapability",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "execute"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 85,
+      "integrity_hash": "45eb2f839bb851970725328873fb12f9d552bf89c0298357c8eb3047161bd708",
+      "responsibility_keywords": [
+        "codetoolrunnercapability",
+        "heal_repository",
+        "healing",
+        "safety",
+        "telemetry"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "ValidatorAgent",
+      "class_name": "ValidatorAgent",
+      "file_path": "apps_lic\\engines\\ValidatorAgent.py",
+      "layer": "apps_lic",
+      "base_classes": [
+        "LICAgentBase"
+      ],
+      "method_names": [
+        "__post_init__",
+        "check",
+        "_retry"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 54,
+      "integrity_hash": "d21b34e1908bcf5e3aed625ca8ef2316aaf4bbda33133d142418dc44c1dd2d7e",
+      "responsibility_keywords": [
+        "validator"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 3,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "context_curator_engine",
+      "class_name": "context_curator_engine",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\context_curator_engine.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "add_chunk",
+        "remove_chunk",
+        "pin_chunk",
+        "unpin_chunk",
+        "update_relevance",
+        "prune_by_relevance",
+        "get_context_window",
+        "get_formatted_context",
+        "_calculate_total_tokens",
+        "_make_space"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 292,
+      "integrity_hash": "a0a7a4f46d7aa89927a67bf9bda60924fb11b68fb1807df81711e397d99a5f49",
+      "responsibility_keywords": [
+        "budget",
+        "enforcement",
+        "safety",
+        "token"
+      ],
+      "import_count": 6,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "input_validation_guardrail",
+      "class_name": "input_validation_guardrail",
+      "file_path": "agentic_core\\L5_safety\\enforcement\\input_validation_guardrail.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__post_init__",
+        "validate",
+        "_apply_rule",
+        "_detect_pii",
+        "_detect_prompt_injection",
+        "_detect_bias",
+        "_validate_format",
+        "_run_self_tests",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 232,
+      "integrity_hash": "1b94537884c76d6a2eaabc5114401955d21acaa0ab2dc25f72929d43c1bc207e",
+      "responsibility_keywords": [
+        "detection",
+        "pii",
+        "prompt",
+        "validation"
+      ],
+      "import_count": 8,
+      "prompt_string_count": 7,
+      "decorator_count": 1
+    },
+    {
+      "agent_id": "omni_context_engine",
+      "class_name": "omni_context_engine",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\omni_context_engine.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "SubAtomicAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "execute",
+        "_build_context_buffer",
+        "consult"
+      ],
+      "has_execute": true,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 84,
+      "integrity_hash": "9e6daa5a2c242398d95ddee5d93187af7d4f934625321cd157b44c8c29b33b97",
+      "responsibility_keywords": [],
+      "import_count": 3,
+      "prompt_string_count": 4,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "sovereign_mcp_router",
+      "class_name": "sovereign_mcp_router",
+      "file_path": "agentic_core\\L3_orchestration\\reasoning\\sovereign_mcp_router.py",
+      "layer": "L3_orchestration",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "initialize",
+        "resolve_violation",
+        "cleanup"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 286,
+      "integrity_hash": "4e4debaaf28123f906079fd2a51ba8e1d507c7fa23ffd080f9aff6eacef052d8",
+      "responsibility_keywords": [],
+      "import_count": 9,
+      "prompt_string_count": 13,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "sovereign_reasoning_memory_ledger",
+      "class_name": "sovereign_reasoning_memory_ledger",
+      "file_path": "agentic_core\\L4_state\\memory\\sovereign_reasoning_memory_ledger.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "get_instance",
+        "add_thought",
+        "get_history"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 78,
+      "integrity_hash": "488ec19fce2e372ac099c6c809b3cda2b580c608aad02fda47d013610eec02b3",
+      "responsibility_keywords": [
+        "redis",
+        "rediscachemixin"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 2,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "sovereign_semantic_cache",
+      "class_name": "sovereign_semantic_cache",
+      "file_path": "agentic_core\\L4_state\\memory\\sovereign_semantic_cache.py",
+      "layer": "L4_state",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "_cache_key",
+        "_extract_ast_features",
+        "_calculate_depth",
+        "cache_file",
+        "invalidate",
+        "heal_repository"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 135,
+      "integrity_hash": "02af93257441eb042d974cec210b4c22fa16024a8b0ec102645393f63b090dc8",
+      "responsibility_keywords": [
+        "cache",
+        "pinecone",
+        "redis"
+      ],
+      "import_count": 12,
+      "prompt_string_count": 6,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "toxic_dependency_auditor",
+      "class_name": "toxic_dependency_auditor",
+      "file_path": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "audit_toxicity",
+        "_build_fan_in_map",
+        "_extract_internal_imports",
+        "_get_module_name",
+        "report",
+        "heal_repository",
+        "heal"
+      ],
+      "has_execute": false,
+      "has_heal": true,
+      "has_run": false,
+      "line_count": 185,
+      "integrity_hash": "82b2f05615e1fa67ce5e3a9fda2832f25d2f8af21647505b4c054ed21b45d2eb",
+      "responsibility_keywords": [],
+      "import_count": 5,
+      "prompt_string_count": 12,
+      "decorator_count": 0
+    },
+    {
+      "agent_id": "verification_gate",
+      "class_name": "verification_gate",
+      "file_path": "agentic_core\\L5_safety\\enforcement\\verification_gate.py",
+      "layer": "L5_safety",
+      "base_classes": [
+        "AtomicExecutionMixin",
+        "HallucinationDetectionMixin",
+        "SovereignBaseAgent"
+      ],
+      "method_names": [
+        "__init__",
+        "verify_action",
+        "_verify_target_in_ast",
+        "_verify_import_exists",
+        "_verify_function_exists",
+        "_verify_class_exists",
+        "_verify_variable_exists",
+        "_verify_method_exists",
+        "_verify_any_node_exists",
+        "verify_modification",
+        "_map_violation_to_action",
+        "_extract_target_from_violation",
+        "clear_cache",
+        "get_cache_stats"
+      ],
+      "has_execute": false,
+      "has_heal": false,
+      "has_run": false,
+      "line_count": 289,
+      "integrity_hash": "a7ab9d1bceade627d930939f5f30bd513fedefd19e6f1e59b8a957f9d3f9f349",
+      "responsibility_keywords": [
+        "codebase",
+        "structural",
+        "structure",
+        "validation"
+      ],
+      "import_count": 7,
+      "prompt_string_count": 11,
+      "decorator_count": 0
+    }
+  ]
+}

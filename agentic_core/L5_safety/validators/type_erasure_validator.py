@@ -114,17 +114,28 @@ class TypeErasureDetector(AntiPatternDetector):
         return violations
 
     def _is_agent_class(self, node: ast.ClassDef) -> bool:
-        """Check if class is an Agent or Validator."""
-        # Check class name
-        if "Agent" in node.name or "Validator" in node.name:
-            return True
+        """Check if class is an Agent or Validator.
 
-        # Check base classes
+        [REFACTORED 2026-02-08] Aligned with classification kernel:
+        - Agent: class name ends with 'Agent' (not just contains)
+        - Validator: class name ends with 'Validator' or inherits from Validator
+        - Excludes Mixin classes
+        """
+        name = node.name
+        # Exclude Mixins (kernel MIXIN priority)
+        if "Mixin" in name:
+            return False
+        # Agent check (kernel AGENT priority: endswith, not contains)
+        if name.endswith("Agent"):
+            return True
+        # Validator check
+        if name.endswith("Validator"):
+            return True
+        # Check base classes for Agent/Validator inheritance
         for base in node.bases:
             base_name = self._get_name(base)
-            if base_name and ("Agent" in base_name or "Validator" in base_name):
+            if base_name and (base_name.endswith("Agent") or base_name.endswith("Validator")):
                 return True
-
         return False
 
     def _check_function(

@@ -8,16 +8,17 @@ directing the workflow (Pass, Retry Research, or Retry Generation).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP7GateDecisionAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     V2.5 Governor Agent.
 
@@ -26,6 +27,12 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
     - Classify failures based on GateConfig.
     - Write a decision record (PASS/FAIL_FACTUAL/FAIL_CREATIVE).
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop7_gate_decision"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "hop6_validation_report",
+    ]
 
     # Sovereign Configuration
     gate_thresholds: dict[str, Any] = field(
@@ -45,15 +52,10 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
         3. Calculate Report and Failure Classification.
         4. Map Failures for Orchestrator Back-Hop Routing.
         """
-        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-
-        # 1. Read Inputs with Sovereign Defensiveness
-        try:
-            report = buffer.read("hop6_validation_report")
-            config = self.config.gate_decision_agent
-        except Exception:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing validation report"})
-            raise RuntimeError("HOP-7 requires HOP-6 report to proceed")
+        # 1. Read Inputs via capability
+        inputs = self.read_required_inputs(buffer, registry)
+        report = inputs["hop6_validation_report"]
+        config = self.config.gate_decision_agent
 
         registry.add_trace("PHASE_STEP", {"action": "evaluating_gate", "passed": report["passed"]})
 
@@ -85,6 +87,10 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
                 reason = f"Creative flaw detected: {failures[0]['rule_id']}"
                 registry.add_trace("CREATIVE_LOOP_TRIGGERED", {"rule": failures[0]["rule_id"]})
 
-        # 3. Write Decision to Immutable Buffer
-        buffer.write_once("hop7_gate_decision", {"decision": decision, "action": action, "reason": reason})
-        registry.add_trace("DECISION_FINAL", {"status": decision, "action": action})
+        # 3. Write Decision via capability
+        self.write_output(
+            buffer,
+            registry,
+            {"decision": decision, "action": action, "reason": reason},
+            decision_meta={"status": decision, "action": action},
+        )

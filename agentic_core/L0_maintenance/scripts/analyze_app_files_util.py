@@ -29,7 +29,7 @@ OUTREACH_KEYWORDS = [
 ]
 
 
-def classify_file(filepath: Path) -> tuple:
+def classify_app_domain(filepath: Path) -> tuple:
     """Classify a file as resume-related, outreach-related, or generic."""
     try:
         content = filepath.read_text(encoding="utf-8", errors="replace").lower()
@@ -71,7 +71,7 @@ def main():
         if "__pycache__" in str(f) or f.name == "__init__.py":
             continue
 
-        classification, rs, os = classify_file(f)
+        classification, rs, os = classify_app_domain(f)
         rel_path = str(f.relative_to(ROOT))
         app_files[classification].append((rel_path, rs, os))
 

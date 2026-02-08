@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.core.classification_kernel import is_agent_file
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 logger = logging.getLogger(__name__)
@@ -75,6 +76,9 @@ class AgentRegistry:
         """
         Scans a single Python file for agent classes.
 
+        [REFACTORED 2026-02-08] Uses classification kernel (SSOT) to determine
+        if a file is an agent. Only then extracts class metadata from AST.
+
         Args:
             file_path: Path to the Python file to scan
 
@@ -84,72 +88,62 @@ class AgentRegistry:
         agents = []
 
         try:
+            # SSOT: Use kernel to determine if this file is an agent
+            if not is_agent_file(file_path):
+                return agents
+
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
 
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ClassDef):
-                    # Check if this class looks like an agent
-                    if self._is_agent_class(node):
-                        layer = self._determine_layer(file_path, node)
+            # Find the primary agent class (name matching filename stem preferred)
+            class_nodes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+            if not class_nodes:
+                return agents
 
-                        # Create a mock instance for testing
-                        instance = None
-                        try:
-                            # Try to create an instance (may fail for abstract classes)
-                            class_ref = self._get_class_reference(file_path, node.name)
-                            if class_ref:
-                                instance = class_ref()
-                        except Exception:
-                            # Fallback to mock instance
-                            instance = Mock()
+            # Select primary class: prefer name matching stem, then first ending with 'Agent'
+            import re as _re
+            stem_clean = _re.sub(r"[^a-zA-Z0-9]", "", file_path.stem.lower())
+            primary = None
+            for node in class_nodes:
+                if _re.sub(r"[^a-zA-Z0-9]", "", node.name.lower()) == stem_clean:
+                    primary = node
+                    break
+            if primary is None:
+                for node in class_nodes:
+                    if node.name.endswith("Agent"):
+                        primary = node
+                        break
+            if primary is None:
+                primary = class_nodes[0]
 
-                        agent = DiscoveredAgent(
-                            name=node.name,
-                            layer=layer,
-                            instance=instance,
-                            class_ref=self._get_class_reference(file_path, node.name)
-                            or type(node.name, (), {}),
-                            file_path=file_path,
-                            module_path=self._get_module_path(file_path),
-                        )
-                        agents.append(agent)
+            layer = self._determine_layer(file_path, primary)
+
+            # Create a mock instance for testing
+            instance = None
+            try:
+                class_ref = self._get_class_reference(file_path, primary.name)
+                if class_ref:
+                    instance = class_ref()
+            except Exception:
+                instance = Mock()
+
+            agent = DiscoveredAgent(
+                name=primary.name,
+                layer=layer,
+                instance=instance,
+                class_ref=self._get_class_reference(file_path, primary.name)
+                or type(primary.name, (), {}),
+                file_path=file_path,
+                module_path=self._get_module_path(file_path),
+            )
+            agents.append(agent)
 
         except Exception as e:
             logger.debug(f"Failed to parse {file_path}: {e}")
 
         return agents
-
-    def _is_agent_class(self, class_node: ast.ClassDef) -> bool:
-        """
-        Determines if a class node represents an agent.
-
-        Args:
-            class_node: AST class node to analyze
-
-        Returns:
-            True if this appears to be an agent class
-        """
-        # Check if class name ends with "Agent"
-        if not class_node.name.endswith("Agent"):
-            return False
-
-        # Check if it has agent-like methods
-        agent_methods = {"execute", "run", "process", "handle", "heal", "validate"}
-        for node in class_node.body:
-            if isinstance(node, ast.FunctionDef):
-                if node.name in agent_methods:
-                    return True
-
-        # Check inheritance for agent-like base classes
-        if class_node.bases:
-            for base in class_node.bases:
-                if isinstance(base, ast.Name) and base.name.endswith("Agent"):
-                    return True
-
-        return class_node.name.endswith("Agent")  # Fallback to naming convention
 
     def _determine_layer(self, file_path: Path, class_node: ast.ClassDef) -> str:
         """

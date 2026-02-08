@@ -14,9 +14,11 @@ from __future__ import annotations
 import asyncio
 import logging
 import threading
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
+
+T = TypeVar("T")
 
 Logger = logging.getLogger(__name__)
 
@@ -185,6 +187,88 @@ class BatchingMixin:
         semaphore = await self.get_async_semaphore()
         async with semaphore:
             return await coro
+
+    # =========================================================================
+    # Parallel Batch Execution (merged from batch_operation_mixin.py)
+    # =========================================================================
+
+    async def execute_batch(
+        self,
+        tasks: Iterable[Awaitable[T]],
+        *,
+        concurrency: int = 10,
+        timeout: float | None = None,
+        return_exceptions: bool = False,
+    ) -> list[T]:
+        """Execute awaitables with bounded concurrency via asyncio.TaskGroup.
+
+        Args:
+            tasks: Iterable of awaitables to execute.
+            concurrency: Max concurrent tasks (semaphore limit).
+            timeout: Overall timeout in seconds (None = no limit).
+            return_exceptions: If True, exceptions are returned in the
+                result list instead of being raised.
+
+        Returns:
+            Ordered list of results matching the input task order.
+        """
+        task_list = list(tasks)
+        if not task_list:
+            return []
+
+        semaphore = asyncio.Semaphore(concurrency)
+        results: list[Any] = [None] * len(task_list)
+
+        async def _run(index: int, awaitable: Awaitable[T]) -> None:
+            async with semaphore:
+                results[index] = await awaitable
+
+        async def _run_safe(index: int, awaitable: Awaitable[T]) -> None:
+            async with semaphore:
+                try:
+                    results[index] = await awaitable
+                except Exception as exc:
+                    results[index] = exc
+
+        runner = _run_safe if return_exceptions else _run
+
+        async def _execute() -> None:
+            async with asyncio.TaskGroup() as tg:
+                for i, aw in enumerate(task_list):
+                    tg.create_task(runner(i, aw))
+
+        if timeout is not None:
+            await asyncio.wait_for(_execute(), timeout=timeout)
+        else:
+            await _execute()
+
+        return results
+
+    async def batch_execute(
+        self,
+        tasks: list,
+        max_workers: int = 5,
+        sequential: bool = False,
+    ) -> list[Any]:
+        """Backwards-compat alias for legacy batch_operation_mixin callers.
+
+        Prefer ``execute_batch`` for new code.
+        """
+        if sequential:
+            results = []
+            for task in tasks:
+                try:
+                    results.append(await task)
+                except Exception as e:
+                    results.append(e)
+            return results
+
+        return await self.execute_batch(
+            tasks,
+            concurrency=max_workers,
+            timeout=120.0,
+            return_exceptions=True,
+        )
 
     # =========================================================================
     # Status

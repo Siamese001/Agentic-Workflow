@@ -1,31 +1,17 @@
+"""NeuralAutoImmuneAgent - Sovereign Self-Defense.
+
+Relocated from agentic_core/mixins/neural_autoimmune_mixin.py.
+This is an AGENT (inherits SovereignBaseAgent), not a mixin.
+Stub shadow classes removed — use canonical mixin imports instead.
+"""
+
 from __future__ import annotations
 
-"""NeuralAutoImmuneAgent - Sovereign Self-Defense."""
 from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-
-
-class SubatomicTestingMixin:
-    pass
-
-
-class AutonomyMixin:
-    pass
-
-
-class AdaptiveExecutionMixin:
-    pass
-
-
-class SelfDiagnosisMixin:
-    pass
-
-
-class HealerMixin:
-    pass
 
 
 @dataclass
@@ -57,7 +43,6 @@ class NeuralAutoImmuneAgent(SovereignBaseAgent):
         violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
 
-        # Default implementation - NeuralAutoImmuneAgent provides self-defense
         try:
             return {
                 "status": "skipped",

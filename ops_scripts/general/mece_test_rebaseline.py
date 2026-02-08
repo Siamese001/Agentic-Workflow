@@ -22,26 +22,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-# FileType enum matching FileClassificationAgent
-FileType = Literal[
-    "AGENT",
-    "CLASS",
-    "MIXIN",
-    "UTILITY",
-    "PROTOCOL",
-    "ENGINE",
-    "STUB",
-    "TEST",
-    "SCRIPT",
-    "TYPES",
-    "GATEWAY",
-    "ORCHESTRATOR",
-    "VALIDATOR",
-    "FACTORY",
-    "CONFIG",
-    "ADAPTER",
-    "IGNORE",
-]
+# FileType imported from classification kernel (SSOT)
+from agentic_core.core.classification_kernel import (
+    FileType,
+    classify_file_standalone,
+)
 
 
 @dataclass
@@ -83,113 +68,12 @@ def detect_stuttering_suffix(name: str) -> bool:
 
 
 def classify_file(path: Path) -> FileType:
+    """Classify a file by its architectural role.
+
+    [REFACTORED 2026-02-08] Delegates to classification kernel (SSOT).
+    Replaces 108-line reimplementation with single kernel call.
     """
-    Classify a file by its architectural role using AST analysis.
-    Mirrors FileClassificationAgent.classify_file() logic.
-    """
-    critical_ignores = {"conftest.py", "__init__.py", "__main__.py", "setup.py"}
-    if path.name in critical_ignores:
-        return "IGNORE"
-
-    try:
-        if not path.exists() or path.stat().st_size == 0:
-            return "IGNORE"
-        content = path.read_text(encoding="utf-8")
-
-        # STUB Detection
-        if any(line.strip().startswith("NOT_AN_AGENT") for line in content.splitlines()):
-            return "STUB"
-
-        tree = ast.parse(content)
-    except (SyntaxError, UnicodeDecodeError, OSError):
-        return "IGNORE"
-
-    # TEST Detection
-    if path.name.startswith("test_") or "tests" in path.parts:
-        return "TEST"
-
-    # Collect class nodes
-    class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
-    if not class_nodes:
-        # Check for script patterns
-        for node in ast.walk(tree):
-            if isinstance(node, ast.If):
-                if (
-                    isinstance(node.test, ast.Compare)
-                    and isinstance(node.test.left, ast.Name)
-                    and node.test.left.id == "__name__"
-                ):
-                    return "SCRIPT"
-        return "UTILITY"
-
-    class_names = [node.name for node in class_nodes]
-
-    # Determine primary class (matches filename stem)
-    primary_name = class_names[0]
-    stem_clean = re.sub(r"[^a-zA-Z0-9]", "", path.stem.lower())
-    for name in class_names:
-        if re.sub(r"[^a-zA-Z0-9]", "", name.lower()) == stem_clean:
-            primary_name = name
-            break
-
-    primary_node = next(n for n in class_nodes if n.name == primary_name)
-
-    # Detect patterns
-    is_mixin = primary_name.endswith("Mixin")
-    is_factory = primary_name.endswith("Factory")
-    is_exception = primary_name.endswith(("Error", "Exception"))
-    is_protocol = False
-    is_agent = primary_name.endswith("Agent")
-
-    for base in primary_node.bases:
-        if isinstance(base, ast.Name):
-            if base.id == "Protocol":
-                is_protocol = True
-            if "Agent" in base.id:
-                is_agent = True
-        elif isinstance(base, ast.Attribute):
-            if base.attr == "Protocol":
-                is_protocol = True
-            if "Agent" in base.attr:
-                is_agent = True
-
-    # Architectural patterns
-    orchestrator_patterns = ["Orchestrator", "Coordinator", "Pipeline"]
-    is_orchestrator = any(p in primary_name for p in orchestrator_patterns)
-
-    adapter_patterns = ["Strategy", "Adapter"]
-    is_adapter = any(p in primary_name for p in adapter_patterns)
-
-    validator_patterns = ["Validator", "validator"]
-    is_validator = any(p in primary_name for p in validator_patterns) or "_validator" in path.name
-
-    config_patterns = ["Config", "config", "Settings", "Options"]
-    is_config = any(p in path.name for p in config_patterns)
-
-    # TYPES detection
-    if path.name.endswith("_types.py"):
-        return "TYPES"
-
-    # Priority order classification
-    if is_exception:
-        return "CLASS"
-    if is_mixin:
-        return "MIXIN"
-    if is_orchestrator:
-        return "ORCHESTRATOR"
-    if is_adapter:
-        return "ADAPTER"
-    if is_config:
-        return "CONFIG"
-    if is_validator:
-        return "VALIDATOR"
-    if is_protocol:
-        return "PROTOCOL"
-    if is_factory:
-        return "FACTORY"
-    if is_agent:
-        return "AGENT"
-    return "CLASS"
+    return classify_file_standalone(path)
 
 
 def get_primary_and_secondary_classes(path: Path) -> tuple[str, list[str]]:

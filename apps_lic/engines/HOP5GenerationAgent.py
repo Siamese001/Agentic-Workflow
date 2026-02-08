@@ -8,16 +8,17 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP5GenerationAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-5 Writer.
 
@@ -31,6 +32,15 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: N-Candidate Generation -> scoring -> Selection.
     - Output: 'hop5_generation'
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop5_generation"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "hop1_analysis",
+        "hop2_research",
+        "hop3_sender_grounding",
+        "hop4_routing",
+    ]
 
     # Sovereign Configuration
     generation_params: dict[str, Any] = field(
@@ -51,20 +61,12 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
         4. Score candidates based on constraints.
         5. Select best candidate and write output.
         """
-        # 1. Read Inputs
-        try:
-            hop1 = buffer.read("hop1_analysis")
-            hop2 = buffer.read("hop2_research")
-            hop3 = buffer.read("hop3_sender_grounding")
-            hop4 = buffer.read("hop4_routing")
-        except Exception:
-            registry.add_trace("DATA_ERROR", {"msg": "Failed to read required inputs"})
-            raise ValueError("HOP-5 requires outputs from HOPs 1, 2, 3, and 4")
-
-        # Validate existence
-        if not all([hop1, hop2, hop3, hop4]):
-            registry.add_trace("CRITICAL_FAILURE", {"msg": "One or more upstream inputs missing"})
-            raise RuntimeError("Missing required upstream state")
+        # 1. Read Inputs via capability
+        inputs = self.read_required_inputs(buffer, registry)
+        hop1 = inputs["hop1_analysis"]
+        hop2 = inputs["hop2_research"]
+        hop3 = inputs["hop3_sender_grounding"]
+        hop4 = inputs["hop4_routing"]
 
         # 2. Configure Generation
         config = self.config.generation_agent
@@ -133,10 +135,11 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
             },
         }
 
-        buffer.write_once("hop5_generation", output)
-        registry.add_trace(
-            "DECISION_FINAL",
-            {
+        self.write_output(
+            buffer,
+            registry,
+            output,
+            decision_meta={
                 "status": "SUCCESS",
                 "selected_id": selected["id"],
                 "length": len(selected["text"]),

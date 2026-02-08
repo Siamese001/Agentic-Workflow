@@ -41,12 +41,12 @@ class AppsLicASTAuditor:
             if "__pycache__" in str(py_file) or "__init__.py" in py_file.name:
                 continue
 
-            classification = self._classify_file(py_file)
+            classification = self._classify_audit_category(py_file)
             self.classifications.append(classification)
 
         return self.classifications
 
-    def _classify_file(self, file_path: Path) -> FileClassification:
+    def _classify_audit_category(self, file_path: Path) -> FileClassification:
         """Classify a single file using AST analysis."""
         try:
             content = file_path.read_text(encoding="utf-8")

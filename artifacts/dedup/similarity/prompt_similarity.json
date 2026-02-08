@@ -1,0 +1,333 @@
+{
+  "threshold": 0.8,
+  "total_pairs": 17955,
+  "pairs_above_040": 65,
+  "pairs_above_080": 1,
+  "top_pairs": [
+    {
+      "agent_a": "CoordinateObservabilityOperationsAgent",
+      "agent_b": "TrackObservabilityCostAgent",
+      "score": 0.8383
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.7045
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "OmniContextAgent",
+      "score": 0.7021
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.6784
+    },
+    {
+      "agent_a": "SemanticTerritoryMapperAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.656
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "SemanticMapperAgent",
+      "score": 0.6469
+    },
+    {
+      "agent_a": "OmniContextAgent",
+      "agent_b": "SemanticMapperAgent",
+      "score": 0.6005
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.5622
+    },
+    {
+      "agent_a": "CartographerAgent",
+      "agent_b": "DependencyDiplomatAgent",
+      "score": 0.5556
+    },
+    {
+      "agent_a": "PolicyNeuralAutoImmuneAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.5543
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "NeuralAutoImmuneAgent",
+      "score": 0.5543
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "OmniContextAgent",
+      "score": 0.5513
+    },
+    {
+      "agent_a": "OmniContextAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.5487
+    },
+    {
+      "agent_a": "DeliverabilityAgent",
+      "agent_b": "OutreachAgent__LicTemplateOptimizerAgent",
+      "score": 0.5475
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.5457
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "DagRuntimeInspectorAgent",
+      "score": 0.5411
+    },
+    {
+      "agent_a": "PolicyNeuralAutoImmuneAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.5382
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.5348
+    },
+    {
+      "agent_a": "SemanticMapperAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.5242
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.5232
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.5218
+    },
+    {
+      "agent_a": "OmniContextAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.5193
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.5169
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "RagHealthCheckAgent",
+      "score": 0.4986
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "SemanticMapperAgent",
+      "score": 0.4979
+    },
+    {
+      "agent_a": "DependencyDiplomatAgent",
+      "agent_b": "GlobalComplianceAggregatorAgent",
+      "score": 0.4962
+    },
+    {
+      "agent_a": "CodeHealerAgent",
+      "agent_b": "StructureHealerAgent",
+      "score": 0.4941
+    },
+    {
+      "agent_a": "RagHealthCheckAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4806
+    },
+    {
+      "agent_a": "SemanticMapperAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4776
+    },
+    {
+      "agent_a": "OmniContextAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.4713
+    },
+    {
+      "agent_a": "CodeFormatterAgent",
+      "agent_b": "UnusedCleanupAgent",
+      "score": 0.4683
+    },
+    {
+      "agent_a": "SherlockAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4656
+    },
+    {
+      "agent_a": "RagHealthCheckAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.4651
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.464
+    },
+    {
+      "agent_a": "DeliverabilityAgent",
+      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "score": 0.4595
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "OrchestrationHandshakeAgent",
+      "score": 0.4582
+    },
+    {
+      "agent_a": "ATSCompatibilityAgent",
+      "agent_b": "BrandComplianceAgent",
+      "score": 0.4545
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "OmniContextAgent",
+      "score": 0.4507
+    },
+    {
+      "agent_a": "OrchestrationHandshakeAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.4503
+    },
+    {
+      "agent_a": "StrategistAgent",
+      "agent_b": "NeuralAutoImmuneAgent",
+      "score": 0.4475
+    },
+    {
+      "agent_a": "SherlockAgent",
+      "agent_b": "DagRuntimeInspectorAgent",
+      "score": 0.4443
+    },
+    {
+      "agent_a": "DeliverabilityAgent",
+      "agent_b": "RgTemplateOptimizerAgent",
+      "score": 0.4429
+    },
+    {
+      "agent_a": "OutreachAgent",
+      "agent_b": "OutreachAgent__LicTemplateOptimizerAgent",
+      "score": 0.4422
+    },
+    {
+      "agent_a": "PolicyNeuralAutoImmuneAgent",
+      "agent_b": "SemanticMapperAgent",
+      "score": 0.4398
+    },
+    {
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "SprawlInspectorAgent",
+      "score": 0.4394
+    },
+    {
+      "agent_a": "CodeValidatorAgent",
+      "agent_b": "StructureHealerAgent",
+      "score": 0.4332
+    },
+    {
+      "agent_a": "OrchestrationHandshakeAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4325
+    },
+    {
+      "agent_a": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "agent_b": "RgTemplateOptimizerAgent",
+      "score": 0.4295
+    },
+    {
+      "agent_a": "SherlockAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.4282
+    },
+    {
+      "agent_a": "OutreachAgent__LicTemplateOptimizerAgent",
+      "agent_b": "RgTemplateOptimizerAgent",
+      "score": 0.4226
+    },
+    {
+      "agent_a": "BootstrapAgent",
+      "agent_b": "DagRuntimeInspectorAgent",
+      "score": 0.4212
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "SemanticMapperAgent",
+      "score": 0.4179
+    },
+    {
+      "agent_a": "SemanticTerritoryMapperAgent",
+      "agent_b": "SprawlInspectorAgent",
+      "score": 0.4171
+    },
+    {
+      "agent_a": "PolicyNeuralAutoImmuneAgent",
+      "agent_b": "RagHealthCheckAgent",
+      "score": 0.4144
+    },
+    {
+      "agent_a": "BootstrapAgent",
+      "agent_b": "NeuralAutoImmuneAgent",
+      "score": 0.4134
+    },
+    {
+      "agent_a": "BootstrapAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4094
+    },
+    {
+      "agent_a": "BootstrapAgent",
+      "agent_b": "SemanticTerritoryMapperAgent",
+      "score": 0.4085
+    },
+    {
+      "agent_a": "OrchestrationHandshakeAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.4085
+    },
+    {
+      "agent_a": "OutreachAgent__LicTemplateOptimizerAgent",
+      "agent_b": "OutreachAgent__MessageComplianceAgent",
+      "score": 0.4052
+    },
+    {
+      "agent_a": "SignatureVerifierAgent",
+      "agent_b": "SprawlInspectorAgent",
+      "score": 0.4046
+    },
+    {
+      "agent_a": "HistorianAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.4034
+    },
+    {
+      "agent_a": "CartographerAgent",
+      "agent_b": "GlobalComplianceAggregatorAgent",
+      "score": 0.402
+    },
+    {
+      "agent_a": "OrchestrationHandshakeAgent",
+      "agent_b": "NeuralAutoImmuneAgent",
+      "score": 0.4011
+    },
+    {
+      "agent_a": "NeuralAutoImmuneAgent",
+      "agent_b": "RagHealthCheckAgent",
+      "score": 0.4002
+    },
+    {
+      "agent_a": "BootstrapAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.4
+    }
+  ]
+}

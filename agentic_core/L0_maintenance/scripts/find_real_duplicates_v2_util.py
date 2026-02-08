@@ -10,13 +10,21 @@ from pathlib import Path
 
 
 def is_agent_file(path: Path) -> bool:
-    """Check if path is an actual agent file (not test)."""
+    """Check if path is an actual agent file (not test).
+
+    [REFACTORED 2026-02-08] Aligned with classification kernel naming rules.
+    For full AST-based classification, use:
+        from agentic_core.core.classification_kernel import is_agent_file
+    """
     if not path.name.endswith("Agent.py"):
         return False
     path_str = str(path).lower()
     if "test" in path_str or "\\tests\\" in path_str or "/tests/" in path_str:
         return False
     if "__pycache__" in path_str or ".venv" in path_str:
+        return False
+    # Exclude Mixin files (kernel MIXIN priority)
+    if "Mixin" in path.name:
         return False
     return True
 

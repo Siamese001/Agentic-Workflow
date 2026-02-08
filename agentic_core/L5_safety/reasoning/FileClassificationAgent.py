@@ -60,6 +60,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
+# SSOT: Import FileType from the zero-dependency classification kernel
+from agentic_core.core.classification_kernel import FileType  # noqa: E402
+from agentic_core.core.classification_kernel import classify_file_standalone  # noqa: E402
+from agentic_core.core.classification_kernel import is_agent_file  # noqa: E402
+
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -108,29 +113,9 @@ def get_python_files_fast(root: Path) -> list[Path]:
     return python_files
 
 
-FileType = Literal[
-    "AGENT",
-    "CLASS",
-    "MIXIN",
-    "UTILITY",
-    "PROTOCOL",
-    "ENGINE",
-    "STUB",
-    "TEST",
-    "SCRIPT",  # For ops_scripts and maintenance tools
-    "TYPES",  # For schemas/types/enums/collections
-    "GATEWAY",
-    # WINDSURF IMPLEMENTATION: New architectural categories
-    "ORCHESTRATOR",
-    "VALIDATOR",
-    "FACTORY",
-    "CONFIG",
-    "ADAPTER",  # Classes ending in Adapter, Wrapper, Bridge
-    "STRATEGY",  # Classes ending in Strategy
-    "EXCEPTION",  # Exception/Error classes (snake_case _exceptions.py)
-    "SERVICE",  # Singleton services, monitors, collectors (utils/, not reasoning/)
-    "IGNORE",
-]
+# FileType is now imported from agentic_core.core.classification_kernel (SSOT)
+# See: agentic_core/core/classification_kernel.py for the canonical definition.
+# The import is at the top of this file.
 
 
 @dataclass

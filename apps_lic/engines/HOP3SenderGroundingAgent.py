@@ -10,16 +10,17 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP3SenderGroundingAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Grounder.
 
@@ -29,6 +30,10 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Whitelist Extraction -> Achievement Binding -> Metric Mapping
     - Output: 'hop3_sender_grounding' with grounding_whitelists and metric_source_map
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop3_sender_grounding"
+    REQUIRED_INPUTS: ClassVar[list[str]] = []
 
     # Sovereign Configuration
     grounding_rules: dict[str, str] = field(
@@ -92,8 +97,12 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
             "metadata": {"sources_loaded": len(loaded_sources)},
         }
 
-        buffer.write_once("hop3_sender_grounding", output_data)
-        registry.add_trace("DECISION_FINAL", {"status": "GROUNDING_COMPLETE"})
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"status": "GROUNDING_COMPLETE"},
+        )
 
     def _load_json_file(self, filename: str) -> dict[str, Any] | None:
         """Load and parse a JSON file, returning None on failure."""

@@ -246,11 +246,11 @@ class SSOTScanner:
         except (SyntaxError, UnicodeDecodeError):
             return None
 
-        # Find agent class
+        # Find agent class (aligned with classification kernel: endswith "Agent", exclude Mixin)
         agent_class = None
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if node.name.endswith("Agent"):
+                if node.name.endswith("Agent") and "Mixin" not in node.name:
                     agent_class = node
                     break
 
