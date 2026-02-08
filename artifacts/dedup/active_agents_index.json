@@ -24,7 +24,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 502,
-      "integrity_hash": "2f831ddacff1c474176d55746f63fb0b61df860785ad821cfb84b6be2bf31cfb",
+      "integrity_hash": "adef209bba35c29ea7aabde6a9d56d7b2b288678c98719b714a30fe50e4196b7",
       "responsibility_keywords": [
         "healermixin",
         "healing",
@@ -44,11 +44,13 @@
       "file_path": "apps_rg\\reasoning\\ATSCompatibilityAgent.py",
       "layer": "apps_rg",
       "base_classes": [
+        "RGValidationCapability",
         "RGAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
+        "collect_issues",
         "_calculate_keyword_score",
         "heal_repository",
         "heal"
@@ -56,16 +58,16 @@
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 277,
-      "integrity_hash": "729eede1d4699cf956c18bd21872e93f019bb6d2ffccaadfa971d9e071038c88",
+      "line_count": 139,
+      "integrity_hash": "d8f9de99d272737d31565aca2dbeb4ce5b1559084bb8fd51abba190266ced472",
       "responsibility_keywords": [
         "checks",
         "formatting",
         "tracking",
         "validates"
       ],
-      "import_count": 12,
-      "prompt_string_count": 12,
+      "import_count": 8,
+      "prompt_string_count": 6,
       "decorator_count": 1
     },
     {
@@ -95,7 +97,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 237,
-      "integrity_hash": "7cde4cfaf00e65d91a04492a4bcba8275b32abb985e0e34dd68d33031f5071cf",
+      "integrity_hash": "a8a6277c1f177fb260ca4631fdd133a5b56333276c9177632e6ff0d6767b4d10",
       "responsibility_keywords": [
         "adversarial",
         "attack",
@@ -147,8 +149,8 @@
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 563,
-      "integrity_hash": "d614a594fadac93b59f5e1c154a067ad2817511d2fbf22114fa1b0e936c86bbd",
+      "line_count": 562,
+      "integrity_hash": "7d9e1b64b7b45554629a476e4e9a85b42d36aee66cfc4cefd827559411d408a7",
       "responsibility_keywords": [
         "adversarial",
         "attacks",
@@ -514,7 +516,7 @@
       "has_heal": true,
       "has_run": true,
       "line_count": 196,
-      "integrity_hash": "9ebb27f85f2fea1005dc2da803858579c9f5d99c5a71ef165e0800fe782b7b45",
+      "integrity_hash": "42d6c649dc73b28a361e6670a7c3935029389e81106717443e8e5292ff5c4df4",
       "responsibility_keywords": [
         "healing",
         "security"
@@ -624,7 +626,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 126,
-      "integrity_hash": "bfdc2dd8c535575502e29cc85a7c37bba2effa93f0fc50b46918c9592bb919cd",
+      "integrity_hash": "253ad223d606991e932031d14106fff015a430998c7e43c4712652d714ed411a",
       "responsibility_keywords": [],
       "import_count": 5,
       "prompt_string_count": 6,
@@ -659,7 +661,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 264,
-      "integrity_hash": "afb12c86eff5e3f19ea9e2cc2d68f061772fcc84c1913aa0800b499c0ca78d14",
+      "integrity_hash": "a9892d4238eb86cdcbed12263c4341f81582a0fc2115d5df9579f70bb3b28481",
       "responsibility_keywords": [
         "red team",
         "structures",
@@ -676,25 +678,26 @@
       "file_path": "apps_rg\\reasoning\\BrandComplianceAgent.py",
       "layer": "apps_rg",
       "base_classes": [
+        "RGValidationCapability",
         "RGAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
-        "_to_string",
+        "collect_issues",
         "heal_repository",
         "heal"
       ],
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 221,
-      "integrity_hash": "b6416314528bb8bde53f4155a168b9ce5852d131ee8e6e51e231964b814d6087",
+      "line_count": 110,
+      "integrity_hash": "600e831dd43015e3f02177726e739f98eeb84515e01af4ad6561d094867b6e3c",
       "responsibility_keywords": [
         "checks"
       ],
-      "import_count": 11,
-      "prompt_string_count": 12,
+      "import_count": 6,
+      "prompt_string_count": 6,
       "decorator_count": 1
     },
     {
@@ -715,8 +718,8 @@
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 127,
-      "integrity_hash": "db0fafe8fed4571613f159ef28fce30c47603ab91957ebbecffcf0703c4f7b11",
+      "line_count": 126,
+      "integrity_hash": "51867c9fd603120c1912bc04a0d973f8b3a84cd6e668db5775c8871c280c1b67",
       "responsibility_keywords": [
         "budget",
         "code",
@@ -791,26 +794,28 @@
       "file_path": "apps_lic\\engines\\CampaignBalanceAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "LICEngineValidationCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
+        "_validate",
         "heal_repository",
         "heal"
       ],
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 111,
-      "integrity_hash": "182ed92bd4403eab2585caed98767ea1ba4d691e7f328b50984ea139f6488688",
+      "line_count": 112,
+      "integrity_hash": "642756911de9d52539a5e58c673f5793c091aa110e05ff6327f0ecb25664ac92",
       "responsibility_keywords": [
         "structure",
         "validates",
         "validator"
       ],
-      "import_count": 6,
+      "import_count": 8,
       "prompt_string_count": 6,
       "decorator_count": 1
     },
@@ -896,7 +901,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 238,
-      "integrity_hash": "75bd581c7cf5f75abd40054e222b7f0b117dc83cf02b390d6a4e63a96a7fa3d2",
+      "integrity_hash": "502837d98ec60b53f12c5e48e41a07484767762c47fccc62bfc3739e4091466a",
       "responsibility_keywords": [
         "healing",
         "memory",
@@ -990,8 +995,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 280,
-      "integrity_hash": "c48e6a3f309f786c506c862ab5cb8aaaeadc288e8ed625ca49298f2b4ccc0063",
+      "line_count": 281,
+      "integrity_hash": "de90a86e9706ac42e5d96763d3bdab71199a6e3df90558b33941e9c9a4f44951",
       "responsibility_keywords": [
         "code",
         "detection",
@@ -1063,8 +1068,8 @@
       "has_execute": true,
       "has_heal": false,
       "has_run": false,
-      "line_count": 96,
-      "integrity_hash": "3f3e12ea6a6274b4eaa436b4168d61bf983edab11fccf9ed1eae0eb6f04e6063",
+      "line_count": 97,
+      "integrity_hash": "019394fe5f51344504b435f65575bea795df0f38907efb03ae71f8ff69b0ca86",
       "responsibility_keywords": [
         "code",
         "codetoolrunnercapability",
@@ -1210,7 +1215,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 256,
-      "integrity_hash": "4e6a9670e0bbf7eb24409913b99ccdfc27dae007653696f55b2f2d5ed411227c",
+      "integrity_hash": "2673728ee1a57ac581a2fa460833ab56cdd04e10ae9ce86820f9b8b3ddc9baae",
       "responsibility_keywords": [
         "code",
         "validator"
@@ -1303,8 +1308,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 169,
-      "integrity_hash": "eebcd67e73288b373237ce661c801974e9e5a7cfb056dbe6dcca09486387afd3",
+      "line_count": 168,
+      "integrity_hash": "48febd5fd32713d2b2b670736b88ee81c4b700ee89e7c7860279af02a6bba111",
       "responsibility_keywords": [],
       "import_count": 5,
       "prompt_string_count": 11,
@@ -1457,8 +1462,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 148,
-      "integrity_hash": "d984511e0e3452fed08ab6ea8ac35e8f00dadc3407fa7647f45377753adba0d0",
+      "line_count": 147,
+      "integrity_hash": "26f1b8d3748a6f4e0569fa48c55fed311cb7c09386ec38fb0cbf43c641b09352",
       "responsibility_keywords": [
         "budget",
         "budgetexceedederror",
@@ -1503,7 +1508,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 323,
-      "integrity_hash": "114f9bd1a4bb8ae4d899670fb6aba6a8a42441b2ad492ff9f4d1eef7a871ece4",
+      "integrity_hash": "54f002d8492c045cd1d06527e28f5cebe3922633177e50c3a4fdff7e171f192b",
       "responsibility_keywords": [],
       "import_count": 14,
       "prompt_string_count": 13,
@@ -1623,25 +1628,27 @@
       "file_path": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent.py",
       "layer": "L3_orchestration",
       "base_classes": [
+        "InspectionCapability",
         "AtomicExecutionMixin",
         "SubatomicTestingMixin",
         "SovereignBaseAgent"
       ],
       "method_names": [
         "__init__",
-        "heal_repository",
         "diagnose",
+        "heal_repository",
         "heal"
       ],
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 93,
-      "integrity_hash": "1008924811cdb0dc1d6fe083846f12ed286a55fbf40506b8f88d2edd111e3640",
+      "line_count": 56,
+      "integrity_hash": "617ace30d75bb5a595d9a595544f049010f5b4d27a44b275a4146d8fa08651eb",
       "responsibility_keywords": [
-        "inspection"
+        "dag",
+        "inspector"
       ],
-      "import_count": 5,
+      "import_count": 7,
       "prompt_string_count": 4,
       "decorator_count": 0
     },
@@ -1711,23 +1718,25 @@
       "file_path": "apps_lic\\engines\\DeliverabilityAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "LICEngineValidationCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
+        "_validate",
         "heal_repository",
         "heal"
       ],
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 88,
-      "integrity_hash": "c2e854b69d7231b8a85d97cacd8ee2bc4cf8c05bd0cccd2015086c7fd3cd6226",
+      "line_count": 93,
+      "integrity_hash": "8eb54717916e3f2d28ec7bb60ee1b25876fe4871a70db09d76891d4c290c8a6b",
       "responsibility_keywords": [],
-      "import_count": 5,
-      "prompt_string_count": 3,
+      "import_count": 8,
+      "prompt_string_count": 5,
       "decorator_count": 1
     },
     {
@@ -1774,7 +1783,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 222,
-      "integrity_hash": "c0c07d2d77b2e48dcf1533ee6997b577f57798cbf930cf28e70d6a9d5fca59e1",
+      "integrity_hash": "9033f18f16751184ac86e5cd1f9bb96e7519514e4be76381ffacc7493a5252dd",
       "responsibility_keywords": [
         "detection",
         "detects",
@@ -1797,8 +1806,8 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 222,
-      "integrity_hash": "fdb40a5d2fd2d0f2f9b9a37861111861f855fb55dcacbe3ee1e6152ac366a748",
+      "line_count": 225,
+      "integrity_hash": "c2e818b5c95333878758916fae8d1f396cd09043f1c7e108df998a69b91a7ec6",
       "responsibility_keywords": [],
       "import_count": 8,
       "prompt_string_count": 8,
@@ -2034,8 +2043,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 367,
-      "integrity_hash": "14e595ff6d35139448c2b4bcf2de848bd70b1cbac662e1525050b1105bb1cb97",
+      "line_count": 366,
+      "integrity_hash": "22e8b39d570c95d484d4f4d4defcfcab5d03a34acf4ae09a970cb905f7f4c141",
       "responsibility_keywords": [
         "embedding",
         "pineconesovereignagent",
@@ -2051,11 +2060,13 @@
       "file_path": "apps_rg\\reasoning\\FactCheckAgent.py",
       "layer": "apps_rg",
       "base_classes": [
+        "RGValidationCapability",
         "RGAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
+        "collect_issues",
         "_extract_skills",
         "_normalize",
         "heal_repository",
@@ -2064,12 +2075,12 @@
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 147,
-      "integrity_hash": "53ec3073d7e28cf8b995b101f0be6d28f64408855fc60ac275fdb43286ce9831",
+      "line_count": 139,
+      "integrity_hash": "7f093138c6db2ef0bd83d575eed6d8800a856d605cfddf0794458cc8265b2fb5",
       "responsibility_keywords": [
         "checks"
       ],
-      "import_count": 4,
+      "import_count": 5,
       "prompt_string_count": 7,
       "decorator_count": 1
     },
@@ -2146,8 +2157,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": true,
-      "line_count": 4312,
-      "integrity_hash": "e3da857601290196e3cbefd89f2b34c8aff4bb0c36648e3396d5bdc6fbfa197c",
+      "line_count": 4339,
+      "integrity_hash": "2c46c33909650f4b93badcb0286ab6ca749a6a6a047a812cfef7c965e25f388b",
       "responsibility_keywords": [
         "classification",
         "enforcement",
@@ -2155,7 +2166,7 @@
         "governance",
         "naming"
       ],
-      "import_count": 43,
+      "import_count": 40,
       "prompt_string_count": 102,
       "decorator_count": 1
     },
@@ -2336,7 +2347,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 322,
-      "integrity_hash": "69de8ee86e71826c6dfc878bf2b38d5d879e697240facc4e4573ef00babddb12",
+      "integrity_hash": "6c55c94f60ae8048e9ee3127419bdb981df61273c115ba8f315e652689687ea3",
       "responsibility_keywords": [
         "audits",
         "detecting",
@@ -2578,6 +2589,7 @@
       "file_path": "apps_lic\\engines\\Hop1ProfileAnalysisAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "LICAgentBase"
       ],
       "method_names": [
@@ -2594,15 +2606,15 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 285,
-      "integrity_hash": "a09f3a43b78cabb251b7750702fdeb803deafcb72734b957b740bd48dcd7d30a",
+      "line_count": 292,
+      "integrity_hash": "18bc656536df659c0504f831bf6e86255fab2662e00dc368c7281ce3fd5433c0",
       "responsibility_keywords": [
         "classification",
         "healing",
         "tracing",
         "validation"
       ],
-      "import_count": 10,
+      "import_count": 12,
       "prompt_string_count": 13,
       "decorator_count": 1
     },
@@ -2612,6 +2624,7 @@
       "file_path": "apps_lic\\engines\\Hop2ResearchAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "LICAgentBase"
       ],
       "method_names": [
@@ -2637,15 +2650,15 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 409,
-      "integrity_hash": "551ef5aac707a8dfb7fd1013f2f3e2de29330d4f130a1fab5bad15ad8b5c3240",
+      "line_count": 419,
+      "integrity_hash": "dfa9db6f72eca8d78c110af996a0dc5c89f409dad2772d078bd1265d195daa3c",
       "responsibility_keywords": [
         "generation",
         "healing",
         "retrieval",
         "tracing"
       ],
-      "import_count": 11,
+      "import_count": 13,
       "prompt_string_count": 21,
       "decorator_count": 1
     },
@@ -2655,6 +2668,7 @@
       "file_path": "apps_lic\\engines\\HOP3SenderGroundingAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2670,12 +2684,12 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 175,
-      "integrity_hash": "2d109f199c8b83779caca20496836b06fa20c6d9bfcc146890cbe024d37438af",
+      "line_count": 184,
+      "integrity_hash": "6d85f0e107cea9e62fd4f6416c9882495c5d63897aff52cd0b9988cf9e9ab567",
       "responsibility_keywords": [
         "metric_source_map"
       ],
-      "import_count": 10,
+      "import_count": 12,
       "prompt_string_count": 7,
       "decorator_count": 1
     },
@@ -2685,6 +2699,7 @@
       "file_path": "apps_lic\\engines\\Hop4RoutingAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2696,10 +2711,10 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 136,
-      "integrity_hash": "f7fd0671bdbbbaeac49b37bcb1d88a61422c5f24347a2a0861b20560c2c23fcf",
+      "line_count": 146,
+      "integrity_hash": "fac79b4a133cdc0ba2771e8a3da1cae81fd7f1e948f2e4fc2a66eb2d73fba8a3",
       "responsibility_keywords": [],
-      "import_count": 8,
+      "import_count": 10,
       "prompt_string_count": 5,
       "decorator_count": 1
     },
@@ -2709,6 +2724,7 @@
       "file_path": "apps_lic\\engines\\HOP5GenerationAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2726,13 +2742,13 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 411,
-      "integrity_hash": "0a5bf7fbe3f7e682c603d51efe1fe598b877eb86f05dd2830caaca323d00a6af",
+      "line_count": 414,
+      "integrity_hash": "c3ad9b348282a74635a4cfbc3e6484a6c57073daf9225d42703ec9201bc99bdd",
       "responsibility_keywords": [
         "generation"
       ],
-      "import_count": 10,
-      "prompt_string_count": 14,
+      "import_count": 12,
+      "prompt_string_count": 13,
       "decorator_count": 1
     },
     {
@@ -2741,6 +2757,7 @@
       "file_path": "apps_lic\\engines\\Hop6ValidationAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2754,13 +2771,13 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 155,
-      "integrity_hash": "1dae01349151cb6be564d27ff3fbc71394224a8622c9aea6e7cc34a380b06c88",
+      "line_count": 162,
+      "integrity_hash": "c44e5c338155113761d9ae33e05376a66234b5f32ba63696df7a9a76ce083567",
       "responsibility_keywords": [
         "validation"
       ],
-      "import_count": 9,
-      "prompt_string_count": 8,
+      "import_count": 11,
+      "prompt_string_count": 7,
       "decorator_count": 1
     },
     {
@@ -2769,6 +2786,7 @@
       "file_path": "apps_lic\\engines\\HOP7GateDecisionAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2779,13 +2797,13 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 91,
-      "integrity_hash": "5bd86a46e53dd5cd96a7b55cf11faa8e82f3f73c82ea820d1131a5d4726ea7fe",
+      "line_count": 97,
+      "integrity_hash": "39557b1c0d5a099b11e2dace939f6f6a9ad8cfb66953936a83a13a781ef77591",
       "responsibility_keywords": [
         "classifies",
         "classify"
       ],
-      "import_count": 8,
+      "import_count": 10,
       "prompt_string_count": 3,
       "decorator_count": 1
     },
@@ -2795,6 +2813,7 @@
       "file_path": "apps_lic\\engines\\HOP8QAReportAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2808,12 +2827,12 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 149,
-      "integrity_hash": "51bcc8ee9253ac2ddc6c25588b6ccdc32326a6bbe3a6b165c1e782b004468664",
+      "line_count": 157,
+      "integrity_hash": "eddc329a0054f5ada21f2b3fe095682114cac57fc298e73eb5d074602d0250e4",
       "responsibility_keywords": [
         "generate"
       ],
-      "import_count": 10,
+      "import_count": 12,
       "prompt_string_count": 7,
       "decorator_count": 1
     },
@@ -2823,6 +2842,7 @@
       "file_path": "apps_lic\\engines\\HOP9IntegrationAgent.py",
       "layer": "apps_lic",
       "base_classes": [
+        "HOPStageCapability",
         "SubatomicTestingMixin",
         "LICAgentBase"
       ],
@@ -2833,15 +2853,15 @@
       "has_execute": false,
       "has_heal": false,
       "has_run": false,
-      "line_count": 117,
-      "integrity_hash": "01ee52a24c4d113d436c9b45349ac9c8d35252762de148c42e7eab2c130a97ff",
+      "line_count": 119,
+      "integrity_hash": "cd41f43a78de013e7c0b936a6b7297ae1ce8b293faa262611d42f825f67faca5",
       "responsibility_keywords": [
         "checksum",
         "formatting",
         "healing",
         "tracing"
       ],
-      "import_count": 9,
+      "import_count": 11,
       "prompt_string_count": 4,
       "decorator_count": 1
     },
@@ -2927,7 +2947,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 1731,
-      "integrity_hash": "af5555997f86ff00efe32705c6bfede8a6b7b92c0ec265433555fc659135cdd6",
+      "integrity_hash": "a0c640d91e27f8ed5fe6f68c4dfad5cf102a710800b4f2f1e3050379b2adbf52",
       "responsibility_keywords": [
         "cleanup",
         "enforcement",
@@ -2964,7 +2984,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 229,
-      "integrity_hash": "fe60eef10e569a277250346bd2e691bcb71c42d729c057ec1c200a0dd04b22db",
+      "integrity_hash": "11daefa4d2e2d7e4c1176c9f720ed0c6920edeafa4ecd18e2ba737f9cadb6ada",
       "responsibility_keywords": [
         "validation"
       ],
@@ -3002,7 +3022,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 591,
-      "integrity_hash": "23ce63ffe19fc94a0cfd5eacb88c78350aa210f558d2bff130f281ac050eebc8",
+      "integrity_hash": "45a20e66f7a5191638f6f49303f44035942ef7ec7bacd07018f9e23be8eaa933",
       "responsibility_keywords": [
         "code",
         "detects",
@@ -3295,7 +3315,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 2542,
-      "integrity_hash": "715be5a3f5d7aa34b63d451244f4d8cb51088e72c9bf4d3bf5625af2b1c65ef9",
+      "integrity_hash": "df9128a382b9a5b0b2abfa40007a6db5aa0affa889e4d3aeaa219ae720e5e038",
       "responsibility_keywords": [
         "detection",
         "fixing",
@@ -3354,8 +3374,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": true,
-      "line_count": 817,
-      "integrity_hash": "491843ec74fdfce22863f423196addf2182405a1b6e93ebce037718348805219",
+      "line_count": 835,
+      "integrity_hash": "90a7ec3ee78c45c6c49219ecfec1241348864fc986931a1eae39502e1cb2ba4e",
       "responsibility_keywords": [
         "compliance",
         "healing",
@@ -3363,7 +3383,7 @@
         "validates",
         "validation"
       ],
-      "import_count": 27,
+      "import_count": 28,
       "prompt_string_count": 52,
       "decorator_count": 1
     },
@@ -3719,8 +3739,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 60,
-      "integrity_hash": "801bdf2513162a1b906edb3c0e0972416c7f4925cc522a98ef9d08a2f32ac5ab",
+      "line_count": 61,
+      "integrity_hash": "e094d1a97119f3f18c10e30a5e6ec4a1b562cf890f815771b2582d515c6a6cea",
       "responsibility_keywords": [],
       "import_count": 5,
       "prompt_string_count": 3,
@@ -3948,8 +3968,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": true,
-      "line_count": 170,
-      "integrity_hash": "b2b493b2b58036efd248700faf1b6c6d04f6b21088e0af573bb67ceaa6721014",
+      "line_count": 169,
+      "integrity_hash": "eed230daecc3fed21ecd06870814c2e9c3fba5c91891106da0a31f82c2ceecde",
       "responsibility_keywords": [
         "detection",
         "detects",
@@ -4014,7 +4034,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 416,
-      "integrity_hash": "101a72b9c246d7228c816f34f38625d65fe66ccb840857e0e52ee41e945f916a",
+      "integrity_hash": "87421b644e7089f6669801bbc94707106ac334307857c7d8561c03829d98abbb",
       "responsibility_keywords": [
         "classify",
         "rag"
@@ -4047,7 +4067,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 282,
-      "integrity_hash": "ebcb3ba3de265a6219a7a897643f9d889b368ecbee3b20cf14daf9233d1f3215",
+      "integrity_hash": "248823107c90d3e6549eb74f72663dd31ee3f29ccb079d401b053557dba06a12",
       "responsibility_keywords": [
         "analyzes",
         "audits",
@@ -4119,8 +4139,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 116,
-      "integrity_hash": "12aecaa383976a845a8fa3276168cc4fe16478bb537fea42766396495d742fd6",
+      "line_count": 119,
+      "integrity_hash": "7e446dc96e92a515b902056da740bf058b6ce4751666508bc4acc173e6fbcd7e",
       "responsibility_keywords": [],
       "import_count": 11,
       "prompt_string_count": 5,
@@ -4340,8 +4360,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 384,
-      "integrity_hash": "a89ae4e98cedd104beac79270585187c85c442b7d6a3bf1db3c915abc08d31cf",
+      "line_count": 383,
+      "integrity_hash": "684fffa5bbd951f07920d9582456b3f394c7934c1aefed826afdf70b9ce09065",
       "responsibility_keywords": [
         "audit_path",
         "fuzzing",
@@ -4376,8 +4396,8 @@
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 343,
-      "integrity_hash": "bdf6f73bb6b72596fbb0fb25fa54b7f6075da71c104669f3bc5cd4a2f0d452d8",
+      "line_count": 344,
+      "integrity_hash": "159deb8e9b1116a33c9143dded36505726d6f5c0b2014e7a77fb522b6b0471f2",
       "responsibility_keywords": [
         "adversarial_fragments",
         "governance",
@@ -4682,7 +4702,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 192,
-      "integrity_hash": "13921dadcb2f7bc18eb825aa597a7c0b84dd318e9e7e671102641ee58987f6be",
+      "integrity_hash": "62434af9d2c81b5aaee0d9552048378c34a76b2cc2ac964a1ac9650273a0c821",
       "responsibility_keywords": [
         "analyzes",
         "generates"
@@ -4768,7 +4788,7 @@
       "has_heal": true,
       "has_run": true,
       "line_count": 364,
-      "integrity_hash": "42608864d21f0125d43bfb2b2aad9f44f12fac43d110ecd3a587f7ba0f66e55c",
+      "integrity_hash": "8c8c3bd7f2cd83a3641757c1d0d50d407dea107c2ba99fd8d54de606c7b6e0e0",
       "responsibility_keywords": [
         "enforces",
         "hygiene",
@@ -4801,7 +4821,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 153,
-      "integrity_hash": "8a2ec256d9d963ca396b3d32288ad48088cf08b75e68e27eb8f5f7db5e36b2d3",
+      "integrity_hash": "01b7567b09dde7b4e2099fb13387f8e908d7c37a4d47e0a711f14159289944c2",
       "responsibility_keywords": [
         "enforce",
         "guardian",
@@ -4970,25 +4990,26 @@
       "file_path": "apps_rg\\reasoning\\SectionBalanceAgent.py",
       "layer": "apps_rg",
       "base_classes": [
+        "RGValidationCapability",
         "RGAgentBase"
       ],
       "method_names": [
         "__post_init__",
         "execute",
-        "_to_string",
+        "collect_issues",
         "heal_repository",
         "heal"
       ],
       "has_execute": true,
       "has_heal": true,
       "has_run": false,
-      "line_count": 129,
-      "integrity_hash": "e6d39d64f3c2263df4abc5bead6a71b9a2c2bbb3a37335dac3839f5fbd6d92d7",
+      "line_count": 98,
+      "integrity_hash": "c1500cc55118fed15a85d31b498a54c4078a96ed401f5a8cf388d1270fca27e3",
       "responsibility_keywords": [
         "checks"
       ],
       "import_count": 5,
-      "prompt_string_count": 6,
+      "prompt_string_count": 5,
       "decorator_count": 1
     },
     {
@@ -5022,7 +5043,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 508,
-      "integrity_hash": "7d41a7dff51d6535e91596c2bb69646d800c2a07bac46bd639b29d7a0555c4b7",
+      "integrity_hash": "e3e378a65b9ea8101763e56e3f2995dbbe008bb1ce9098a4654e5ecffe984ccb",
       "responsibility_keywords": [
         "detection",
         "generation",
@@ -5156,23 +5177,23 @@
       "file_path": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent.py",
       "layer": "L5_safety",
       "base_classes": [
+        "InspectionCapability",
         "SubatomicTestingMixin",
         "SovereignBaseAgent"
       ],
       "method_names": [
         "__init__",
-        "execute",
-        "_process",
+        "diagnose",
         "heal_repository",
         "heal"
       ],
-      "has_execute": true,
+      "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 138,
-      "integrity_hash": "d3fb7d9ebe2ee9c6d1bbfa2de6ccc8b7a436d64ab10dbad93e965ca0eacf4662",
+      "line_count": 100,
+      "integrity_hash": "2fb9ef41030c34a23f2539c8c30943d4e6033324dbfd4827bae7cb4eed49737d",
       "responsibility_keywords": [
-        "inspection"
+        "inspector"
       ],
       "import_count": 9,
       "prompt_string_count": 6,
@@ -5436,7 +5457,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 97,
-      "integrity_hash": "21a3907cf28715120af1263b53a113484a82b59dd3bf561ace59e3ce9ba3c552",
+      "integrity_hash": "89e305559bcdba7f511a112a2588a705dce4e0c825b30d343764b7cb591b3fc4",
       "responsibility_keywords": [
         "monitoring",
         "observations"
@@ -5694,8 +5715,8 @@
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 166,
-      "integrity_hash": "c80f2a77df01869e2cd7c594dc4b23fb4590b4fda3225b369334da3d7d523847",
+      "line_count": 165,
+      "integrity_hash": "7517d481a1f1c8e0c442bb3c8f6fa875534d9a88b77f5c5b5a20207a22824b46",
       "responsibility_keywords": [
         "structural"
       ],
@@ -5964,7 +5985,7 @@
       "has_heal": false,
       "has_run": false,
       "line_count": 325,
-      "integrity_hash": "d6be5122e12b60be15671d19d160eb2566db3dedc0e996c210fe50622e8799b9",
+      "integrity_hash": "008074aee0fdea661eee366a95da1b125c80c389683e791141c4fb05e922413a",
       "responsibility_keywords": [
         "detects",
         "generates",
@@ -5980,24 +6001,27 @@
       "file_path": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent.py",
       "layer": "L5_safety",
       "base_classes": [
+        "InspectionCapability",
         "SubatomicTestingMixin",
         "SovereignBaseAgent"
       ],
       "method_names": [
         "__init__",
+        "diagnose",
         "heal_repository",
-        "heal",
-        "diagnose"
+        "heal"
       ],
       "has_execute": false,
       "has_heal": true,
       "has_run": false,
-      "line_count": 89,
-      "integrity_hash": "addb6e077c179aaa4f06339590fb8d2cb2c6dc5a0c3e723b55e30d417ba6c640",
+      "line_count": 59,
+      "integrity_hash": "e2e95320e7e2151cf790f311c5bfb24cef9aa5e21e8858ea90df25ab8c63a028",
       "responsibility_keywords": [
-        "inspection"
+        "budget",
+        "inspector",
+        "token"
       ],
-      "import_count": 9,
+      "import_count": 8,
       "prompt_string_count": 4,
       "decorator_count": 0
     },
@@ -6035,7 +6059,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 571,
-      "integrity_hash": "83e9b5ce5bd7b63765a3fda568a0daccad7c1c530c7af8872410bdb178645d7f",
+      "integrity_hash": "3dc2a5cd7ed1bbf0b45a4fce384fe4c69d49cfbd05e56405c637fd3abedfbebb",
       "responsibility_keywords": [
         "generates",
         "validates"
@@ -6134,7 +6158,7 @@
       "has_heal": false,
       "has_run": false,
       "line_count": 81,
-      "integrity_hash": "a2efddd37e0010a75544191743d25ea8d269e56d3495909b510a4b3e39be3043",
+      "integrity_hash": "f6a20634fe712023ec8aa966d930f41c993a5767db6f66967bb3c2e93364b1c0",
       "responsibility_keywords": [],
       "import_count": 6,
       "prompt_string_count": 3,
@@ -6223,7 +6247,7 @@
       "has_heal": false,
       "has_run": false,
       "line_count": 85,
-      "integrity_hash": "45eb2f839bb851970725328873fb12f9d552bf89c0298357c8eb3047161bd708",
+      "integrity_hash": "c4826a833922f25cbd60f124778be4f5093eb56df896bb334be8f901d32a095b",
       "responsibility_keywords": [
         "codetoolrunnercapability",
         "heal_repository",
@@ -6321,7 +6345,7 @@
       "has_heal": true,
       "has_run": false,
       "line_count": 232,
-      "integrity_hash": "1b94537884c76d6a2eaabc5114401955d21acaa0ab2dc25f72929d43c1bc207e",
+      "integrity_hash": "055e58bc357a11b6b0e5af4cb6de46f9db5fbf9938174f212ee1c75d5a71b4f2",
       "responsibility_keywords": [
         "detection",
         "pii",
@@ -6429,7 +6453,7 @@
       "has_heal": false,
       "has_run": false,
       "line_count": 135,
-      "integrity_hash": "02af93257441eb042d974cec210b4c22fa16024a8b0ec102645393f63b090dc8",
+      "integrity_hash": "e0c55454a565ff57bd0dd64493ee48e1d0e43eb63fb9eb10f88a7e95cb1dcf26",
       "responsibility_keywords": [
         "cache",
         "pinecone",

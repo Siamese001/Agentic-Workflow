@@ -1,0 +1,4549 @@
+﻿[
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent",
+    "class_name": "BenchmarkingAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "BenchmarkingAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "f8db43990b915857b41abb9d2058b2107d6400f2f1bbbe4683bd2ef1bd413e40",
+      "file_size_bytes": 15730,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent",
+    "class_name": "BootstrapAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "BootstrapAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBase"
+      ],
+      "file_sha256": "253ad223d606991e932031d14106fff015a430998c7e43c4712652d714ed411a",
+      "file_size_bytes": 4468,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent",
+    "class_name": "DocstringComplianceAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DocstringComplianceAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "501754f64b307c8911eabd3a43b49b47ff12ab7ccfd5d3629363f8c873846e5f",
+      "file_size_bytes": 7116,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent",
+    "class_name": "FilesystemSSOTReconcilerAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "FilesystemSSOTReconcilerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "L0MaintenanceBaseAgent"
+      ],
+      "file_sha256": "c7e8742ccb146f79e80527f84909b005e589adcee2068334ac0456ba20f52936",
+      "file_size_bytes": 56652,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent",
+    "class_name": "GospelSyncAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "GospelSyncAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBase"
+      ],
+      "file_sha256": "75b58e7c077289f00ad8c8cd1ae60f9ccea2ba7f56778c0bff7755a6efbb6ad5",
+      "file_size_bytes": 6204,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
+    "module": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent",
+    "class_name": "SSOTFolderCleanupAgent",
+    "layer": "L0_maintenance",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SSOTFolderCleanupAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "d56bfc5f096201411c7369e5aff0198f2ec574ce8add83aa353ace8a221ace1d",
+      "file_size_bytes": 23050,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent",
+    "class_name": "ASTValidatorAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ASTValidatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "ASTValidatorBase",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "adef209bba35c29ea7aabde6a9d56d7b2b288678c98719b714a30fe50e4196b7",
+      "file_size_bytes": 18695,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent",
+    "class_name": "AgentInfo",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignCognitivePlaneAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "0a0a5d6c50213f24739f0293262b45ee8e2a1ad1830919981d274bb7a3005c02",
+      "file_size_bytes": 8778,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\AutonomousPromptEvolutionAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\AutonomousPromptEvolutionAgent",
+    "class_name": "AutonomousPromptEvolutionAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AutonomousPromptEvolutionAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c408433f1316ab54c87dc41d650b2644d65d5a3ddf638f23eadf6a48ce75f651",
+      "file_size_bytes": 12867,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\BudgetAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\BudgetAgent",
+    "class_name": "BudgetAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "BudgetAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "51867c9fd603120c1912bc04a0d973f8b3a84cd6e668db5775c8871c280c1b67",
+      "file_size_bytes": 4990,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\ContextCuratorAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\ContextCuratorAgent",
+    "class_name": "ContextCuratorAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ContextCuratorAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "395f48c81d0f8a29e5efe361109d4f0ae14b78e230371e917812eed92b4936bd",
+      "file_size_bytes": 17850,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\LLMPromptGovernorAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\LLMPromptGovernorAgent",
+    "class_name": "LLMPromptGovernorAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LLMPromptGovernorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "19ea29c411b52b52e45f521e8f171083a44500399e431e9181ee87a986cfed35",
+      "file_size_bytes": 12321,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\MetaLearningAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\MetaLearningAgent",
+    "class_name": "MetaLearningAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MetaLearningAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "696b98747d8372e5ac633ecc01553ca5c5070f2294fcb7ccfedf2ca8eea28ea1",
+      "file_size_bytes": 9892,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\RgReflectionAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\RgReflectionAgent",
+    "class_name": "RgReflectionAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RgReflectionAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "4a2bac77f5eee4981d35c0d408553d34221bc95554c853d190ebf022e368eba2",
+      "file_size_bytes": 15415,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\SherlockAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\SherlockAgent",
+    "class_name": "SherlockAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SherlockAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "92ba7b7fb52b2b0b06f4f234079e1b219c40b9f5524e68c8cbd1a0691b933ee1",
+      "file_size_bytes": 6757,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\StrategicRecommendationAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\StrategicRecommendationAgent",
+    "class_name": "StrategicRecommendationAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StrategicRecommendationAgent",
+      "methods": [
+        "act",
+        "run",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a7920189b47099b5fa185a50e0f9625b980221c3ed74e0552bbd0644550e9b5e",
+      "file_size_bytes": 20303,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\StrategistAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\StrategistAgent",
+    "class_name": "StrategistAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StrategistAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "6daece669b84bf21fe4c72a4533ed7f438d5a7b0237888a4f0df531c9456cef3",
+      "file_size_bytes": 3007,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L1_cognition\\reasoning\\SupremeCourtAgent.py",
+    "module": "agentic_core\\L1_cognition\\reasoning\\SupremeCourtAgent",
+    "class_name": "SupremeCourtAgent",
+    "layer": "L1_cognition",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SupremeCourt",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "56264f7c4c901a3707ab5aca832a0ae4c503e41eccec89c174fb8c1338badc30",
+      "file_size_bytes": 4929,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\StructuredEngineAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\StructuredEngineAgent",
+    "class_name": "AgentPlan",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StructuredEngineAgent",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "5a68eb11c1e811070dcf1689b687df7e1f35164e27c55eda77f3ede04bc526a5",
+      "file_size_bytes": 1650,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent",
+    "class_name": "EmbeddingSovereignAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "EmbeddingSovereignAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "RedisCacheMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "22e8b39d570c95d484d4f4d4defcfcab5d03a34acf4ae09a970cb905f7f4c141",
+      "file_size_bytes": 12432,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\GitAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\GitAgent",
+    "class_name": "GitAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GitAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c9115f229da352c0cf3041b0fcaa61513c9f00984b23b6c23f861450b9394dd5",
+      "file_size_bytes": 16391,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\HistorianAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\HistorianAgent",
+    "class_name": "HistorianAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "HistorianAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "11daefa4d2e2d7e4c1176c9f720ed0c6920edeafa4ecd18e2ba737f9cadb6ada",
+      "file_size_bytes": 8130,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\PeerIntelligenceAuditorAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\PeerIntelligenceAuditorAgent",
+    "class_name": "PeerIntelligenceAuditorAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PeerIntelligenceAuditorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "87421b644e7089f6669801bbc94707106ac334307857c7d8561c03829d98abbb",
+      "file_size_bytes": 15741,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\RgStrategicPlannerAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\RgStrategicPlannerAgent",
+    "class_name": "RgStrategicPlannerAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RgStrategicPlannerAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "62434af9d2c81b5aaee0d9552048378c34a76b2cc2ac964a1ac9650273a0c821",
+      "file_size_bytes": 7962,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\SovereignMCPGatewayAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\SovereignMCPGatewayAgent",
+    "class_name": "SovereignMCPGatewayAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignMCPGateway",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "73adcd2270ce0dda43a2b7a0acbfad85e3287749a2d9f5d4834f5a06b16605c7",
+      "file_size_bytes": 4997,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\SovereignPineconeMcpClientAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\SovereignPineconeMcpClientAgent",
+    "class_name": "SovereignPineconeMcpClientAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignPineconeMcpClientAgent",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "0f3e3c9413826cce50334356be5162d0e2ed7ec3fd27d786fd1fcfdf95d4da3c",
+      "file_size_bytes": 9686,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\sub_atomic_registry.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\sub_atomic_registry",
+    "class_name": "SubAtomicRegistryAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SubAtomicRegistryAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "00665dc3340d65d918d836dcbdfa903627623d0d73a0f1821dc326a0df86462d",
+      "file_size_bytes": 21267,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\ToolsmithAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\ToolsmithAgent",
+    "class_name": "ToolsmithAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ToolsmithAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "3dc2a5cd7ed1bbf0b45a4fce384fe4c69d49cfbd05e56405c637fd3abedfbebb",
+      "file_size_bytes": 23150,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L2_execution\\reasoning\\UiValidationAgent.py",
+    "module": "agentic_core\\L2_execution\\reasoning\\UiValidationAgent",
+    "class_name": "UiValidationAgent",
+    "layer": "L2_execution",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "UiValidationAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "eeddf315ab23a2574c1bf16fb5349c1d5bf7c5f5f4c8b7932661ee868d9a0f9d",
+      "file_size_bytes": 7080,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\UnifiedAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\UnifiedAgent",
+    "class_name": "AgentCategory",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "UnifiedAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a917c97e05a1e76151c1102e951d35a1db4bfb574512618b7fa339e55e466dd6",
+      "file_size_bytes": 31125,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\AgentFactory.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\AgentFactory",
+    "class_name": "AgentFactory",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AgentFactory",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "4f317dc75cb585830be154fc7a431c9b86f15d172bbffabc8e7489d1ae76dc46",
+      "file_size_bytes": 8048,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\agent_gym_engine.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\agent_gym_engine",
+    "class_name": "AgentGym",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AgentGym",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "4850c03f613193b573343fee67f12a3770bd65c9cd64fb828e9fc9022cfca7e9",
+      "file_size_bytes": 14214,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\coverage_engine.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\coverage_engine",
+    "class_name": "CoverageAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CoverageAgent",
+      "methods": [
+        "act",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "54f002d8492c045cd1d06527e28f5cebe3922633177e50c3a4fdff7e171f192b",
+      "file_size_bytes": 13533,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\DAGMutatorAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\DAGMutatorAgent",
+    "class_name": "DAGMutatorAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DAGMutatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "26a53bb044bff501d63df2999a9a9662f1b07e1280d15652940e70727c8998f5",
+      "file_size_bytes": 22039,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent",
+    "class_name": "DagRuntimeInspectorAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DagRuntimeInspectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "InspectionCapability",
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "617ace30d75bb5a595d9a595544f049010f5b4d27a44b275a4146d8fa08651eb",
+      "file_size_bytes": 1970,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent",
+    "class_name": "NervousSystemAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "NervousSystemAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "767a8015a052f269c9275ecfa8215409506fc958e015e0d2e8fb4f83452d209e",
+      "file_size_bytes": 34298,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\orchestration_handshake.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\orchestration_handshake",
+    "class_name": "OrchestrationHandshakeAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OrchestrationHandshakeAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "CoreOrchestrationAgent"
+      ],
+      "file_sha256": "38c6338add75b2044d4a53d2cde813246fec61aa77e0e7c7f1c9fe6cc6365c84",
+      "file_size_bytes": 6856,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\SemanticGatekeeperAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\SemanticGatekeeperAgent",
+    "class_name": "SemanticGatekeeperAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SemanticGatekeeperAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "32aa089da5068222ff20d9dec4ecb1b59899dd753e0580a74c97dc58155bd27e",
+      "file_size_bytes": 7709,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\SubAtomicAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\SubAtomicAgent",
+    "class_name": "SubAtomicAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SubAtomicAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "7517d481a1f1c8e0c442bb3c8f6fa875534d9a88b77f5c5b5a20207a22824b46",
+      "file_size_bytes": 5265,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\SubatomicHopAgent.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\SubatomicHopAgent",
+    "class_name": "SubatomicHopAgent",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SubatomicHopAgent",
+      "methods": [
+        "run"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c876b309f8ea3243a5f2681d20af62b5c91f03721b3d3c3b3188e345ab18881a",
+      "file_size_bytes": 16934,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\context_curator_engine.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\context_curator_engine",
+    "class_name": "context_curator_engine",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ContextCurator",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a0a7a4f46d7aa89927a67bf9bda60924fb11b68fb1807df81711e397d99a5f49",
+      "file_size_bytes": 9794,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\omni_context_engine.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\omni_context_engine",
+    "class_name": "omni_context_engine",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "OmniContext",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "9e6daa5a2c242398d95ddee5d93187af7d4f934625321cd157b44c8c29b33b97",
+      "file_size_bytes": 2862,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L3_orchestration\\reasoning\\sovereign_mcp_router.py",
+    "module": "agentic_core\\L3_orchestration\\reasoning\\sovereign_mcp_router",
+    "class_name": "sovereign_mcp_router",
+    "layer": "L3_orchestration",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignMcpRouter",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "4e4debaaf28123f906079fd2a51ba8e1d507c7fa23ffd080f9aff6eacef052d8",
+      "file_size_bytes": 13887,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\reasoning\\cached_state_ledger.py",
+    "module": "agentic_core\\L4_state\\reasoning\\cached_state_ledger",
+    "class_name": "CachedStateLedgerAgent",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CachedStateLedgerAgent",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "b4a2ee11806f5273c5e4ba5c4c17e80f5778cafbf846d39be353426c63a16441",
+      "file_size_bytes": 7774,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\reasoning\\CartographerAgent.py",
+    "module": "agentic_core\\L4_state\\reasoning\\CartographerAgent",
+    "class_name": "CartographerAgent",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CartographerAgent",
+      "methods": [
+        "heal",
+        "execute"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "a72fb8022dcd25467b84d0b63399910d4ea256cbb919170f6071cce938e25da9",
+      "file_size_bytes": 4313,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent.py",
+    "module": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent",
+    "class_name": "MemoryArchitectAgent",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MemoryArchitectAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "952c8d5d07dcc011cd6a08341c680aef82f856ac9a315def5319adf0e5e591c9",
+      "file_size_bytes": 37044,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent.py",
+    "module": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent",
+    "class_name": "RedisSovereignAgent",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RedisSovereignAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "d413087a78b11de3863c9d65c961823c9bcb9bb63a5a15158b656f2fbba8ac77",
+      "file_size_bytes": 8372,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent.py",
+    "module": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent",
+    "class_name": "SovereignPineconeStoreAgent",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignPineconeStoreAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "ddf4cdc733533229e57e7c0ad6de40d0cabdbd94aefc1c6b922a50852f1a6c59",
+      "file_size_bytes": 11995,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\memory\\sovereign_reasoning_memory_ledger.py",
+    "module": "agentic_core\\L4_state\\memory\\sovereign_reasoning_memory_ledger",
+    "class_name": "sovereign_reasoning_memory_ledger",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignReasoningMemory",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "488ec19fce2e372ac099c6c809b3cda2b580c608aad02fda47d013610eec02b3",
+      "file_size_bytes": 2747,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L4_state\\memory\\sovereign_semantic_cache.py",
+    "module": "agentic_core\\L4_state\\memory\\sovereign_semantic_cache",
+    "class_name": "sovereign_semantic_cache",
+    "layer": "L4_state",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignSemanticCache",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e0c55454a565ff57bd0dd64493ee48e1d0e43eb63fb9eb10f88a7e95cb1dcf26",
+      "file_size_bytes": 5423,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent",
+    "class_name": "AdversarialProbeAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AdversarialProbeAgent",
+      "methods": [
+        "act",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a8a6277c1f177fb260ca4631fdd133a5b56333276c9177632e6ff0d6767b4d10",
+      "file_size_bytes": 8921,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent",
+    "class_name": "AdversarialRedTeamerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AdversarialRedTeamerAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "7d9e1b64b7b45554629a476e4e9a85b42d36aee66cfc4cefd827559411d408a7",
+      "file_size_bytes": 22799,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent",
+    "class_name": "AgentPermission",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SecurityManagerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "bf535ec02711b1abb911a6cbc2393b07319f08ba2a1948e13b86510c47fe2ccf",
+      "file_size_bytes": 13113,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent",
+    "class_name": "ArchitectureGovernorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ArchitectureGovernorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "533068bf4ca14b3b2f55d36767ce9b7bd3af6790f591ddb1914bc6f2a5b2d05d",
+      "file_size_bytes": 68347,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent",
+    "class_name": "AutonomousThreatEvolutionAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AutonomousThreatEvolutionAgent",
+      "methods": [
+        "run",
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "42d6c649dc73b28a361e6670a7c3935029389e81106717443e8e5292ff5c4df4",
+      "file_size_bytes": 7814,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent",
+    "class_name": "AutonomyGuardianAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AutonomyGuardianAgent",
+      "methods": [
+        "heal",
+        "run"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "6e65b4e92f957c220310213c4164ce314c7b7b0b9b85e69b30041bbab35f792c",
+      "file_size_bytes": 25170,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent",
+    "class_name": "BoundaryTestingAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "BoundaryTestingAgent",
+      "methods": [
+        "act",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a9892d4238eb86cdcbed12263c4341f81582a0fc2115d5df9579f70bb3b28481",
+      "file_size_bytes": 9805,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CachedSafetyShieldAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CachedSafetyShieldAgent",
+    "class_name": "CachedSafetyShieldAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CachedSafetyShield",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "7ba4b7427e3d35b814778ca726540639da87154de1f356a3a5fbdffa3e06c227",
+      "file_size_bytes": 1162,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent",
+    "class_name": "ChaosEngineeringAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ChaosEngineeringAgent",
+      "methods": [
+        "act",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "502837d98ec60b53f12c5e48e41a07484767762c47fccc62bfc3739e4091466a",
+      "file_size_bytes": 8696,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeDeduplicationAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeDeduplicationAgent",
+    "class_name": "CodeDeduplicationAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeDeduplicationAgent",
+      "methods": [
+        "heal",
+        "execute"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "ae79d69875f884cadd86b5565b386ff88c7b418cab0331b4548bb0db02e7ac91",
+      "file_size_bytes": 43110,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent",
+    "class_name": "CodeDetectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeDetectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "de90a86e9706ac42e5d96763d3bdab71199a6e3df90558b33941e9c9a4f44951",
+      "file_size_bytes": 10027,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent",
+    "class_name": "CodeEnforcerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeEnforcerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "be9f5cd395e5906d0e3d116b3edb98036c81ca14da92c99937b84ba6d5d28b92",
+      "file_size_bytes": 19153,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent",
+    "class_name": "CodeFormatterAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeFormatterAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "CodeToolRunnerCapability",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "019394fe5f51344504b435f65575bea795df0f38907efb03ae71f8ff69b0ca86",
+      "file_size_bytes": 3680,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeHealerAgent",
+    "class_name": "CodeHealerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeHealerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "CircuitBreakerMixin",
+        "SurgicalCSTHealerMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "1fdcd276294da37d83c1429110714ab5163cb492348807f9c10ff9b82952a7cb",
+      "file_size_bytes": 28504,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent",
+    "class_name": "CodeValidatorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CodeValidatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "5129576361533197251394ea3567a0c067a91b47299297411dbb1c46cf9871c7",
+      "file_size_bytes": 22333,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent",
+    "class_name": "CognitiveDispositionAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CognitiveDispositionAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "d5c96b9b2aed01cbc88532d259d5f47f8c2a46568b3c4eaec0c5f0a0f6c5c75c",
+      "file_size_bytes": 10226,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent",
+    "class_name": "ComplexityAnalyzerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ComplexityAnalyzerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2673728ee1a57ac581a2fa460833ab56cdd04e10ae9ce86820f9b8b3ddc9baae",
+      "file_size_bytes": 9616,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CompositeGuardrailAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CompositeGuardrailAgent",
+    "class_name": "CompositeGuardrailAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CompositeGuardrailAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "ab95a33731b57858f77059f92c08153a0ae2d89be073f32fbc20ff8e7c059357",
+      "file_size_bytes": 16125,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ConfigurationSecurityGuardrailAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ConfigurationSecurityGuardrailAgent",
+    "class_name": "ConfigurationSecurityGuardrailAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ConfigurationSecurityGuardrail",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "74183937f88d551d6d60ed3c8b9b3ed075a9c54eedb142336a2dcec50cfdfd09",
+      "file_size_bytes": 6106,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent",
+    "class_name": "ConstitutionalReviewerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ConstitutionalReviewerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "L5SafetyBase"
+      ],
+      "file_sha256": "48febd5fd32713d2b2b670736b88ee81c4b700ee89e7c7860279af02a6bba111",
+      "file_size_bytes": 6267,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent",
+    "class_name": "CostGovernorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CostGovernorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "26f1b8d3748a6f4e0569fa48c55fed311cb7c09386ec38fb0cbf43c641b09352",
+      "file_size_bytes": 5418,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent",
+    "class_name": "CredentialScannerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CredentialScannerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c2b66874216877d15decc1745e97759d6ef128898f94909a71ee34edcaa6a37b",
+      "file_size_bytes": 16810,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent",
+    "class_name": "DDDAlignmentAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DDDAlignmentAgent",
+      "methods": [
+        "heal",
+        "run"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "f7d9de0c93a62dae9b1c54b6c82c2ee3492b780fe4dff5c73e4f35512675a5ad",
+      "file_size_bytes": 15713,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DependencyDiplomatAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DependencyDiplomatAgent",
+    "class_name": "DependencyDiplomatAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DependencyDiplomatAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2ea8353d99790afc2ef3d14ba51dd9c6fa2ef55ae2ea750cb95320cc73a2cb25",
+      "file_size_bytes": 1907,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent",
+    "class_name": "DependencyPruningAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DependencyPruningAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "9033f18f16751184ac86e5cd1f9bb96e7519514e4be76381ffacc7493a5252dd",
+      "file_size_bytes": 8218,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DocumentationAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DocumentationAgent",
+    "class_name": "DocumentationAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DocumentationAgent",
+      "methods": [
+        "heal",
+        "execute"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "2666365465f3161fadfb7dfc56cc986e50bd3ab7a19fbd232de0e0fbf3818b0a",
+      "file_size_bytes": 5039,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent",
+    "class_name": "DuplicateCodeDetectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "DuplicateCodeDetectorAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "HealerMixin",
+        "MCPHardenedMixin"
+      ],
+      "file_sha256": "affbc19ab187068570b4ca31dc7e034e0d2a0ead97f0e594dffed7882a4f5e69",
+      "file_size_bytes": 17735,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent",
+    "class_name": "DynamicSealAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DynamicSealAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "fde896bc6bc8e09b8236008ce2ff4b9ebd1e0066703289f445e8b3faeeaec760",
+      "file_size_bytes": 12234,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\FileClassificationAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\FileClassificationAgent",
+    "class_name": "FileClassificationAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "FileClassificationAgent",
+      "methods": [
+        "run",
+        "heal"
+      ],
+      "mro_signature": [
+        "*BASE_CLASSES"
+      ],
+      "file_sha256": "2c46c33909650f4b93badcb0286ab6ca749a6a6a047a812cfef7c965e25f388b",
+      "file_size_bytes": 186591,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent",
+    "class_name": "GenerativeGuardAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GenerativeGuardAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "HealerMixin",
+        "CanonBaseAgentInterface",
+        "MCPHardenedMixin"
+      ],
+      "file_sha256": "8eb8227b234c9025800ffd9346c691bec05c1392f5d0cf7e5d3bc61a8bc04be2",
+      "file_size_bytes": 9106,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent",
+    "class_name": "GitHygieneAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GitHygieneAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "6c55c94f60ae8048e9ee3127419bdb981df61273c115ba8f315e652689687ea3",
+      "file_size_bytes": 12238,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GitSafetyHandlerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GitSafetyHandlerAgent",
+    "class_name": "GitSafetyHandlerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GitSafetyHandlerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c7771537b4f33cf53b07d17e771aff8a5a397a23213d36201f16e6730da11977",
+      "file_size_bytes": 9205,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GlobalComplianceAggregatorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GlobalComplianceAggregatorAgent",
+    "class_name": "GlobalComplianceAggregatorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GlobalComplianceAggregatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2fccfe46812d0075f6a503e161c42649834be1e933abe82b06f13fe20401f2d1",
+      "file_size_bytes": 3746,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GovernanceAgent",
+    "class_name": "GovernanceAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GovernanceAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "d50db0e8e1366d87cbcfc5b44988cba01e620cde7edda7d2d0d38593986e669c",
+      "file_size_bytes": 45707,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent",
+    "class_name": "GravityLeakRepairAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "GravityLeakRepairAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "7803d75dc6b4578e009581356f506551adca8739d021ea35d13b909f61dd3c09",
+      "file_size_bytes": 17785,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\HealValidatorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\HealValidatorAgent",
+    "class_name": "HealValidatorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "HealValidatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "cf1ef8fe7129c8f3c0321801e2dce6d31a2871346ae4769b29e0f64106cc07f3",
+      "file_size_bytes": 14892,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\HierarchyAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\HierarchyAgent",
+    "class_name": "HierarchyAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "HierarchyAgent",
+      "methods": [
+        "heal",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a0c640d91e27f8ed5fe6f68c4dfad5cf102a710800b4f2f1e3050379b2adbf52",
+      "file_size_bytes": 72325,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent",
+    "class_name": "HygieneGuardianAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "HygieneGuardianAgent",
+      "methods": [
+        "heal",
+        "execute"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "45a20e66f7a5191638f6f49303f44035942ef7ec7bacd07018f9e23be8eaa933",
+      "file_size_bytes": 21799,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent",
+    "class_name": "InterfaceBoundaryAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "InterfaceBoundaryAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "50f08b7cd5bac08579ae8c7ecb04b7cb0959060c854c8b196b0ad2ad21c77116",
+      "file_size_bytes": 6582,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent",
+    "class_name": "L5SafetyExerciserAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "L5SafetyExerciserAgent",
+      "methods": [
+        "act",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "6a66373f6debb551d227db38bb5144a4e85f21917b62f805e2d44bbd5f8ab813",
+      "file_size_bytes": 10193,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\LocationAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\LocationAgent",
+    "class_name": "LocationAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "LocationAgent",
+      "methods": [
+        "run"
+      ],
+      "mro_signature": [
+        "LocationHealerAgent"
+      ],
+      "file_sha256": "f6cc9c5619fc3e67f0245865b198be669bc92d94765560d783499911c9da7145",
+      "file_size_bytes": 2619,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\LocationHealerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\LocationHealerAgent",
+    "class_name": "LocationHealerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LocationHealerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "df9128a382b9a5b0b2abfa40007a6db5aa0affa889e4d3aeaa219ae720e5e038",
+      "file_size_bytes": 107958,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent",
+    "class_name": "LocationValidatorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LocationValidatorAgent",
+      "methods": [
+        "heal",
+        "run"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "90a7ec3ee78c45c6c49219ecfec1241348864fc986931a1eae39502e1cb2ba4e",
+      "file_size_bytes": 33717,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\MCPGuardianAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\MCPGuardianAgent",
+    "class_name": "MCPGuardianAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MCPGuardianAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "44ba799d8e44f4b6c4ee382f3fa21852847d6969fb964112ac695a8cd5966c8d",
+      "file_size_bytes": 11592,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\NamingAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\NamingAgent",
+    "class_name": "NamingAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "NamingAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2d85b43c740004800aa6b34fb0747e1ec4967f8fbf860217c0581f56a74c14e9",
+      "file_size_bytes": 5278,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\neural_autoimmune_agent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\neural_autoimmune_agent",
+    "class_name": "NeuralAutoImmuneAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "NeuralAutoImmuneAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e094d1a97119f3f18c10e30a5e6ec4a1b562cf890f815771b2582d515c6a6cea",
+      "file_size_bytes": 2036,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\OmniContextAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\OmniContextAgent",
+    "class_name": "OmniContextAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OmniContextAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c3d75f1a26acf80a464736fbdc5cc395c8de9c539d766a4c2b51d3d679cdef32",
+      "file_size_bytes": 2700,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PIISanitizerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PIISanitizerAgent",
+    "class_name": "PIISanitizerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PIISanitizerAgent",
+      "methods": [
+        "run",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "eed230daecc3fed21ecd06870814c2e9c3fba5c91891106da0a31f82c2ceecde",
+      "file_size_bytes": 5910,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PineconeSovereignAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PineconeSovereignAgent",
+    "class_name": "PineconeSovereignAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PineconeSovereignAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "3a2e3ddd8cea7f075a4b055494e6ac52b45dfbb5b8564bdf006bc08513bf80d6",
+      "file_size_bytes": 26015,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent",
+    "class_name": "PolicyNeuralAutoImmuneAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PolicyNeuralAutoImmuneAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "NeuralAutoImmuneAgent",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "7e446dc96e92a515b902056da740bf058b6ce4751666508bc4acc173e6fbcd7e",
+      "file_size_bytes": 4344,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent",
+    "class_name": "PreCommitSovereignAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PreCommitSovereignAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "L0MaintenanceBase"
+      ],
+      "file_sha256": "d1b4559fa978aadbaffe213c2b34258b918bf2380b48856c9cb86600e5e16d07",
+      "file_size_bytes": 15621,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent",
+    "class_name": "PredictiveCostAuditorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PredictiveCostAuditorAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "9145513070376d3ae271c229441ae48fec67bd8e872980416d21eb31571771c4",
+      "file_size_bytes": 18228,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\PromptRegistryAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\PromptRegistryAgent",
+    "class_name": "PromptRegistryAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PromptRegistryAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "fe83e7b2ca9b3d94fb147708111c3b2de71e55449a1e8d05e79c09416fcb8afc",
+      "file_size_bytes": 17884,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\RagHealthCheckAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\RagHealthCheckAgent",
+    "class_name": "RagHealthCheckAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RagHealthCheckAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "53d8f9ed40f6b65106453a27e8626eef2f886e4e9da7e9f02bb934f73bf1d84c",
+      "file_size_bytes": 7888,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent",
+    "class_name": "RedSentinelAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RedSentinelAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "684fffa5bbd951f07920d9582456b3f394c7934c1aefed826afdf70b9ce09065",
+      "file_size_bytes": 14320,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\RedTeamAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\RedTeamAgent",
+    "class_name": "RedTeamAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RedTeamAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "159deb8e9b1116a33c9143dded36505726d6f5c0b2014e7a77fb522b6b0471f2",
+      "file_size_bytes": 13612,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent",
+    "class_name": "RegressionOracleAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RegressionOracleAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2da952c4039fc33456298edf9e2169d118b73dd95747e7151fa0ebd5394eb5bb",
+      "file_size_bytes": 15165,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent",
+    "class_name": "ReportLocationAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ReportLocationAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [],
+      "file_sha256": "ebf7708c3138bcb7e4323f174eb4f4dde164b2ae80483980791ea884efbfde11",
+      "file_size_bytes": 10297,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent",
+    "class_name": "ResourceManagerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ResourceManagerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "b28c48ee0ee74441d0af3c697d7297f1b0d8f5d842071d84643fdba0aa258903",
+      "file_size_bytes": 12714,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\RootHygieneAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\RootHygieneAgent",
+    "class_name": "RootHygieneAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RootHygieneAgent",
+      "methods": [
+        "run",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "8c8c3bd7f2cd83a3641757c1d0d50d407dea107c2ba99fd8d54de606c7b6e0e0",
+      "file_size_bytes": 13669,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent",
+    "class_name": "SafetyDetectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SafetyDetectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "08370c4b8ede62f10199b2a095e321828bbe801f7ecbd13cbf4d552668500223",
+      "file_size_bytes": 10246,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent",
+    "class_name": "SafetyExecutorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SafetyExecutorAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "8dfdbed53f67a53e6dfcc472aa2eab493e65e8dbb5bd59beba22c592d34a7476",
+      "file_size_bytes": 13528,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent",
+    "class_name": "SafetyInspectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SafetyInspectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "fc4a0c9a7f33347af1c68e27ef62de7b7fc8954077a5eb3b7f5c9502562d310e",
+      "file_size_bytes": 21635,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent",
+    "class_name": "SelfUpdatingSafetyEngineAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SelfUpdatingSafetyEngineAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e3e378a65b9ea8101763e56e3f2995dbbe008bb1ce9098a4654e5ecffe984ccb",
+      "file_size_bytes": 19787,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SemanticMapperAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SemanticMapperAgent",
+    "class_name": "SemanticMapperAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SemanticMapperAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "6f476a46c2609757affc165f13404efef33b6c06616ef11ff7b993acd9193fe2",
+      "file_size_bytes": 2722,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SemanticTerritoryMapperAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SemanticTerritoryMapperAgent",
+    "class_name": "SemanticTerritoryMapperAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SemanticTerritoryMapperAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e0c09cc95b23a4cfc5b6fe7ec2161769ab3d5ab8c1ead694912d6a94e195ebd9",
+      "file_size_bytes": 1900,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent",
+    "class_name": "SignatureVerifierAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SignatureVerifierAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "InspectionCapability",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2fb9ef41030c34a23f2539c8c30943d4e6033324dbfd4827bae7cb4eed49737d",
+      "file_size_bytes": 3262,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent",
+    "class_name": "SovereignActionPlaneAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignActionPlaneAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "IActionPlane"
+      ],
+      "file_sha256": "fc67833d4a357d08399a2f9487436b8643b92fd2dd6baab7a31885f225210551",
+      "file_size_bytes": 19748,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent",
+    "class_name": "SprawlInspectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SprawlInspectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "97b8a490584cac439c5afb6fce6e2ee4d25c0dc856f73c5666e7669e44fe0fc1",
+      "file_size_bytes": 6235,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent",
+    "class_name": "StructuralEngineerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StructuralEngineerAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "HealerMixin"
+      ],
+      "file_sha256": "287765987418922aa30ec551f78997978f4c8f982d14b11569321431be482f1e",
+      "file_size_bytes": 11370,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent",
+    "class_name": "StructuralValidatorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StructuralValidatorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "43e421fc72e7110ab243a4a50e4abcd190f8cb0931fe5ef5f73735efdf42891d",
+      "file_size_bytes": 12210,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent",
+    "class_name": "StructureEnforcerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StructureEnforcerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "10bf12c81d432d25f533f8f41313c31c784dfcce48791e4149ad6f5b165b1895",
+      "file_size_bytes": 18045,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent",
+    "class_name": "StructureHealerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StructureHealerAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "960c1da15dc97f02f95f9753bf1b9b3502dc6219296c53bf4a435c16fc07abd4",
+      "file_size_bytes": 19618,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent",
+    "class_name": "SystemArchitectAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SystemArchitectAgent",
+      "methods": [
+        "heal",
+        "execute"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "2e37f7901f526ca29ab67d85812974faafb48a45f0735b210512a4b4918faaab",
+      "file_size_bytes": 18883,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent",
+    "class_name": "TerritoryChangeHandlerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TerritoryChangeHandlerAgent",
+      "methods": [],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "FileSystemEventHandler"
+      ],
+      "file_sha256": "7ed654a515423526826f9c3571e47c0b0d3ccfccfe11cfea9a5b58810450adb0",
+      "file_size_bytes": 5861,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TestCoverageGuardianAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TestCoverageGuardianAgent",
+    "class_name": "TestCoverageGuardianAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TestCoverageGuardianAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "1fab822a9e9ccc1a4ef1edf89f7e4967dbed059ac5d265335d23091fb264f1e2",
+      "file_size_bytes": 30652,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent",
+    "class_name": "TestGeneratorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TestGeneratorAgent",
+      "methods": [],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "008074aee0fdea661eee366a95da1b125c80c389683e791141c4fb05e922413a",
+      "file_size_bytes": 12125,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent",
+    "class_name": "TokenBudgetInspectorAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TokenBudgetInspectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "InspectionCapability",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e2e95320e7e2151cf790f311c5bfb24cef9aa5e21e8858ea90df25ab8c63a028",
+      "file_size_bytes": 2005,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent",
+    "class_name": "TypeHintFixerAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TypeHintFixerAgent",
+      "methods": [],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "ast.NodeTransformer"
+      ],
+      "file_sha256": "f6a20634fe712023ec8aa966d930f41c993a5767db6f66967bb3c2e93364b1c0",
+      "file_size_bytes": 3031,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent",
+    "class_name": "TypeMechanicAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TypeMechanicAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent",
+        "SubAtomicAgent"
+      ],
+      "file_sha256": "0fdbb6a2ee9c8b7f9931b423cd493df8cb1003944f1f7fa2a11a57a9cc256b01",
+      "file_size_bytes": 8701,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent.py",
+    "module": "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent",
+    "class_name": "UnusedCleanupAgent",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "UnusedCleanupAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "CodeToolRunnerCapability",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c4826a833922f25cbd60f124778be4f5093eb56df896bb334be8f901d32a095b",
+      "file_size_bytes": 3027,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\enforcement\\input_validation_guardrail.py",
+    "module": "agentic_core\\L5_safety\\enforcement\\input_validation_guardrail",
+    "class_name": "input_validation_guardrail",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "InputValidationGuardrail",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "055e58bc357a11b6b0e5af4cb6de46f9db5fbf9938174f212ee1c75d5a71b4f2",
+      "file_size_bytes": 7625,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+    "module": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor",
+    "class_name": "toxic_dependency_auditor",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ToxicDependencyAuditor",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "82b2f05615e1fa67ce5e3a9fda2832f25d2f8af21647505b4c054ed21b45d2eb",
+      "file_size_bytes": 7133,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L5_safety\\enforcement\\verification_gate.py",
+    "module": "agentic_core\\L5_safety\\enforcement\\verification_gate",
+    "class_name": "verification_gate",
+    "layer": "L5_safety",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "VerificationGate",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "HallucinationDetectionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a7ab9d1bceade627d930939f5f30bd513fedefd19e6f1e59b8a957f9d3f9f349",
+      "file_size_bytes": 11362,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\AutonomicMonitorAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\AutonomicMonitorAgent",
+    "class_name": "AutonomicMonitorAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AutonomicMonitorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "524d5987d9d58f035e54b4e7ac3ed8701a77a730550c8ec275188f22d5fbe268",
+      "file_size_bytes": 9712,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\CoordinateObservabilityOperationsAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\CoordinateObservabilityOperationsAgent",
+    "class_name": "CoordinateObservabilityOperationsAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "CoordinateObservabilityOperationsAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "7fe271382c49b9c7da72f633bfe83004e23138bfac96a10bfc90b1c9bd14fcc6",
+      "file_size_bytes": 5931,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\DeadlockDetectorAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\DeadlockDetectorAgent",
+    "class_name": "DeadlockDetectorAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DeadlockDetectorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "35a34ad887b7b44a1a83f7af9dadf7a7d2dc8858200f4c58236ea130ec5eb62a",
+      "file_size_bytes": 6222,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\DebateSynthesisAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\DebateSynthesisAgent",
+    "class_name": "DebateSynthesisAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DebateSynthesisAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "1d8feb60047b4fc9393074c2d74d955e247e83394edc50befbc4d1c99ec33d27",
+      "file_size_bytes": 6097,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\MetricsAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\MetricsAgent",
+    "class_name": "MetricsAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MetricsAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "b1f7b1110ba921ce338593e37da8c6e9289d2323cddf23b4387b6b2dbaae11aa",
+      "file_size_bytes": 12762,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\MetricsWitnessAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\MetricsWitnessAgent",
+    "class_name": "MetricsWitnessAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MetricsWitnessAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "L0MaintenanceBaseAgent",
+        "AutonomyMixin",
+        "AdaptiveExecutionMixin",
+        "SelfDiagnosisMixin"
+      ],
+      "file_sha256": "9d3623c640173bc0e7adae1e73381b4a32140feb5d43e16bcfc4a9f282669c11",
+      "file_size_bytes": 8846,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\PerformanceAnalystAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\PerformanceAnalystAgent",
+    "class_name": "PerformanceAnalystAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "PerformanceAnalystAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "248823107c90d3e6549eb74f72663dd31ee3f29ccb079d401b053557dba06a12",
+      "file_size_bytes": 10245,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\ReportingAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\ReportingAgent",
+    "class_name": "ReportingAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "ReportingAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "5978d5db88401a1aa1d1978aeb6d70ca463441792755b3f8de7c1a69f8614b0b",
+      "file_size_bytes": 10424,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\RuntimeTelemetryAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\RuntimeTelemetryAgent",
+    "class_name": "RuntimeTelemetryAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "RuntimeTelemetryAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "01b7567b09dde7b4e2099fb13387f8e908d7c37a4d47e0a711f14159289944c2",
+      "file_size_bytes": 5559,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\SovereignObservabilityAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\SovereignObservabilityAgent",
+    "class_name": "SovereignObservabilityAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignObservabilityAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent",
+        "SubatomicTestingMixin",
+        "MCPHardenedMixin",
+        "RedisCacheMixin",
+        "event_emission_mixin",
+        "ContextPropagationMixin"
+      ],
+      "file_sha256": "847ab40b0a4360aa909a72958daefadda0e236e25fbb8c0c9be3d79ec78492ae",
+      "file_size_bytes": 9732,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\StrategicObservationAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\StrategicObservationAgent",
+    "class_name": "StrategicObservationAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "StrategicObservationAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "89e305559bcdba7f511a112a2588a705dce4e0c825b30d343764b7cb591b3fc4",
+      "file_size_bytes": 3566,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\TelemetryAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\TelemetryAgent",
+    "class_name": "TelemetryAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TelemetryAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "09cfc558ceb1cba896d5114fac10ea7d9085c4f7e72f050beef46c55ed0c8750",
+      "file_size_bytes": 9676,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\TracingAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\TracingAgent",
+    "class_name": "TracingAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TracingAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c77dddd0d28890d04b2c9e331c96468216d2e11af3c01713124122ca6510c0bf",
+      "file_size_bytes": 17206,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\L6_observability\\reasoning\\TrackObservabilityCostAgent.py",
+    "module": "agentic_core\\L6_observability\\reasoning\\TrackObservabilityCostAgent",
+    "class_name": "TrackObservabilityCostAgent",
+    "layer": "L6_observability",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "TrackObservabilityCostAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "aee6056f0e5d2a3d3e3b0a9bccc36c2d0f74aed9d77492804eb0c537ebe1107c",
+      "file_size_bytes": 4121,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\CampaignBalanceAgent.py",
+    "module": "apps_lic\\engines\\CampaignBalanceAgent",
+    "class_name": "CampaignBalanceAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "CampaignBalanceAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "LICEngineValidationCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "8c455a3d967163897c5aaff1621b6f6b06fc056c237662b0c10a98b1746dcdfb",
+      "file_size_bytes": 3875,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\DeliverabilityAgent.py",
+    "module": "apps_lic\\engines\\DeliverabilityAgent",
+    "class_name": "DeliverabilityAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "DeliverabilityAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "LICEngineValidationCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "f3a38daec9f141bf5799ca9760b467fa4d195e9d59970c807b6ebcb4af7ddd9f",
+      "file_size_bytes": 3406,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\DispatchOutreachToolsAgent.py",
+    "module": "apps_lic\\engines\\DispatchOutreachToolsAgent",
+    "class_name": "DispatchOutreachToolsAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DispatchOutreachToolsAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "78b384bdcccc55f3cc246b631032592153936a97f194f7a74e61f99bdfff476e",
+      "file_size_bytes": 4959,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\GovernanceShieldAgent.py",
+    "module": "apps_lic\\engines\\GovernanceShieldAgent",
+    "class_name": "GovernanceShieldAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "GovernanceShieldAgent",
+      "methods": [],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "058c885e8b21fbe98dc4a35ff2807f58606d8704fab29640b59d94dfda45658e",
+      "file_size_bytes": 13782,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\Hop1ProfileAnalysisAgent.py",
+    "module": "apps_lic\\engines\\Hop1ProfileAnalysisAgent",
+    "class_name": "HOP1ProfileAnalysisAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP1ProfileAnalysisAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "LICAgentBase"
+      ],
+      "file_sha256": "4357ba0270da6d0c504541ca5691342abc0ec6992fee940e3be8023368a8f1cd",
+      "file_size_bytes": 12025,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\Hop2ResearchAgent.py",
+    "module": "apps_lic\\engines\\Hop2ResearchAgent",
+    "class_name": "HOP2ResearchAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP2ResearchAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "LICAgentBase"
+      ],
+      "file_sha256": "ad828ce690a34d125db57874569d01a1634a7bcd71db986df7d6ffd59239231b",
+      "file_size_bytes": 16651,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\HOP3SenderGroundingAgent.py",
+    "module": "apps_lic\\engines\\HOP3SenderGroundingAgent",
+    "class_name": "HOP3SenderGroundingAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP3SenderGroundingAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "cd0659b4b68ae0cee56f2f093fec0105984dd06db97bb3a72a412a0846e4085a",
+      "file_size_bytes": 7779,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\Hop4RoutingAgent.py",
+    "module": "apps_lic\\engines\\Hop4RoutingAgent",
+    "class_name": "HOP4RoutingAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP4RoutingAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "91aef8d2c68389f7128e521fe4a000b0bd7e91956e6a2da9ce5eea984e2ee217",
+      "file_size_bytes": 5577,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\HOP5GenerationAgent.py",
+    "module": "apps_lic\\engines\\HOP5GenerationAgent",
+    "class_name": "HOP5GenerationAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP5GenerationAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "cf5f7c8afbba366a6ae86d4fb9fd65a40d370897560bd1aefab0adcc96aa4036",
+      "file_size_bytes": 14461,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\Hop6ValidationAgent.py",
+    "module": "apps_lic\\engines\\Hop6ValidationAgent",
+    "class_name": "HOP6ValidationAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP6ValidationAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "a6317b8b15f0caa49c6816f92bbf431bdd54e1a9694a14342e816f9b14874d79",
+      "file_size_bytes": 6106,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\HOP7GateDecisionAgent.py",
+    "module": "apps_lic\\engines\\HOP7GateDecisionAgent",
+    "class_name": "HOP7GateDecisionAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP7GateDecisionAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "ae92319f2831b9b3a334eac1e9df51a7064e53948c4e90a1aeff61de8bd9c057",
+      "file_size_bytes": 3977,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\HOP8QAReportAgent.py",
+    "module": "apps_lic\\engines\\HOP8QAReportAgent",
+    "class_name": "HOP8QAReportAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP8QAReportAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "03a5d3dca86ba7e3e53718d90a8faa3e9f989c5e8d908efe9d6badf0a8f369f7",
+      "file_size_bytes": 6336,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\HOP9IntegrationAgent.py",
+    "module": "apps_lic\\engines\\HOP9IntegrationAgent",
+    "class_name": "HOP9IntegrationAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "HOP9IntegrationAgent",
+      "methods": [],
+      "mro_signature": [
+        "HOPStageCapability",
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "edc20b5d7bdd5c3067d57d392139f82effb931791e5b35d5d498d31a6997eea6",
+      "file_size_bytes": 4358,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\IntelligenceLibrarianAgent.py",
+    "module": "apps_lic\\engines\\IntelligenceLibrarianAgent",
+    "class_name": "IntelligenceLibrarianAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "IntelligenceLibrarianAgent",
+      "methods": [],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "75f3ee7e55b27bb97ac1f261d40b66ade5e0c0caab3a38634584d58008033ac0",
+      "file_size_bytes": 1110,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\LeadQualityAgent.py",
+    "module": "apps_lic\\engines\\LeadQualityAgent",
+    "class_name": "LeadQualityAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "LeadQualityAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "LICAgentBase"
+      ],
+      "file_sha256": "184f65dd651f9cf377e4a3f9c4a360fd8adf3db18a367866f840122a83d9142b",
+      "file_size_bytes": 3709,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\LicS2SupervisorAgent.py",
+    "module": "apps_lic\\engines\\LicS2SupervisorAgent",
+    "class_name": "LicS2SupervisorAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LicS2SupervisorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "c2691ecbc71b02fe146fae41b77ff153df871aa6e150f9f3167b31eda7d3ccae",
+      "file_size_bytes": 16327,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\MessageArchitectAgent.py",
+    "module": "apps_lic\\engines\\MessageArchitectAgent",
+    "class_name": "MessageArchitectAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "MessageArchitectAgent",
+      "methods": [],
+      "mro_signature": [
+        "LICAgentBase"
+      ],
+      "file_sha256": "d38da8c408d62e385f2441130ae56d72ffc2675c60ddfb95d0735f6c0d3f0ebe",
+      "file_size_bytes": 1137,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\MessageDiversityValidator.py",
+    "module": "apps_lic\\engines\\MessageDiversityValidator",
+    "class_name": "MessageDiversityValidator",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MessageDiversityValidator",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "1ed995a35e29eabf87884546bf50fb6b2837c766bd7d9126eec5ea0fbbcc4b52",
+      "file_size_bytes": 3454,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\LicReflectionAgent.py",
+    "module": "apps_lic\\engines\\LicReflectionAgent",
+    "class_name": "OutreachAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LicReflectionAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "e105f80bb75545e58f3018b6221774a40c2279db5464653bd897a69784ffcfd7",
+      "file_size_bytes": 2694,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\LicTemplateOptimizerAgent.py",
+    "module": "apps_lic\\engines\\LicTemplateOptimizerAgent",
+    "class_name": "OutreachAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "LicTemplateOptimizerAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "b75013b90d80bafccbbf2a975dc612a32f2107ffd0e306e27ef2c299a91197c0",
+      "file_size_bytes": 2998,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\MessageComplianceAgent.py",
+    "module": "apps_lic\\engines\\MessageComplianceAgent",
+    "class_name": "OutreachAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "MessageComplianceAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "abe36f3c03886c8d4729495dbc8a73304d84aae7733f6eaca4070418432f6d0c",
+      "file_size_bytes": 3521,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\OutreachLearningAgent.py",
+    "module": "apps_lic\\engines\\OutreachLearningAgent",
+    "class_name": "OutreachAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OutreachLearningAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "9386387150af8d6e1ab86b31f629354dff1b3450f86abffa2f067e0af0d768d3",
+      "file_size_bytes": 11983,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\OutreachProactiveAgent.py",
+    "module": "apps_lic\\engines\\OutreachProactiveAgent",
+    "class_name": "OutreachAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OutreachProactiveAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "a76eb1a43f039b93ef636fb074ed610bfb91585427b01ea3a08a28b1eefa0d1e",
+      "file_size_bytes": 4476,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\OutreachSignalRouterAgent.py",
+    "module": "apps_lic\\engines\\OutreachSignalRouterAgent",
+    "class_name": "OutreachSignalRouterAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OutreachSignalRouterAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SubatomicTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "230be0775c0806bf5f6260ce0432fb65b44c780176f385f56dee7ad24429d63d",
+      "file_size_bytes": 14668,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\OutreachValidationExecutorAgent.py",
+    "module": "apps_lic\\engines\\OutreachValidationExecutorAgent",
+    "class_name": "OutreachValidationExecutorAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "OutreachValidationExecutorAgent",
+      "methods": [
+        "heal"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "4d0ad8897855f08166808b683c01c36f4be7fa2d83a48f791dd401cc75a9c823",
+      "file_size_bytes": 17228,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\PIISanitizerSpecialistAgent.py",
+    "module": "apps_lic\\engines\\PIISanitizerSpecialistAgent",
+    "class_name": "PII_SanitizerSpecialistAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "PII_SanitizerSpecialistAgent",
+      "methods": [
+        "run"
+      ],
+      "mro_signature": [
+        "LICAgentBase"
+      ],
+      "file_sha256": "5814fdb690964314765f7ffe4e81b6b63473fb2c365e1128e071c7eee0e883a7",
+      "file_size_bytes": 10328,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_lic\\engines\\ValidatorAgent.py",
+    "module": "apps_lic\\engines\\ValidatorAgent",
+    "class_name": "ValidatorAgent",
+    "layer": "apps_lic",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ValidatorAgent",
+      "methods": [],
+      "mro_signature": [
+        "LICAgentBase"
+      ],
+      "file_sha256": "8da124aa2537861e8ab5108c41410d80d65c52fb80d34964e9f0d5616a28b958",
+      "file_size_bytes": 1814,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\ATSCompatibilityAgent.py",
+    "module": "apps_rg\\reasoning\\ATSCompatibilityAgent",
+    "class_name": "ATSCompatibilityAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ATSCompatibilityAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGValidationCapability",
+        "RGAgentBase"
+      ],
+      "file_sha256": "28651d8aec4be144be25c6f7e10dbffe95747ffd078ed338902f3f3d7934e81d",
+      "file_size_bytes": 5263,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\BrandComplianceAgent.py",
+    "module": "apps_rg\\reasoning\\BrandComplianceAgent",
+    "class_name": "BrandComplianceAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "BrandComplianceAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGValidationCapability",
+        "RGAgentBase"
+      ],
+      "file_sha256": "9a70c2a0db2c2b04bf399a28a29863d6e5cf02664ff17beb46b5d65582e86cbe",
+      "file_size_bytes": 4195,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\CampaignPlannerAgent.py",
+    "module": "apps_rg\\reasoning\\CampaignPlannerAgent",
+    "class_name": "CampaignPlannerAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "CampaignPlannerAgent",
+      "methods": [],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "3dcf261b9c431ff4894fa0b362f57b8887e13425200769bcbcc68c2f64c2f72b",
+      "file_size_bytes": 2012,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\ContentQualityAgent.py",
+    "module": "apps_rg\\reasoning\\ContentQualityAgent",
+    "class_name": "ContentQualityAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ContentQualityAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "998e438e66135de64044fa3b0aadcf117b3eeb8b21cd028b23229a1a5ab7e249",
+      "file_size_bytes": 13852,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\ContentStrategyAgent.py",
+    "module": "apps_rg\\reasoning\\ContentStrategyAgent",
+    "class_name": "ContentStrategyAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ContentStrategyAgent",
+      "methods": [],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "78b6f93c7d3e51084f5ee6e3aa7a811c59ba31059bfdd62042cbcf1dfbdfb928",
+      "file_size_bytes": 1448,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\DispatchResumeToolsAgent.py",
+    "module": "apps_rg\\reasoning\\DispatchResumeToolsAgent",
+    "class_name": "DispatchResumeToolsAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "DispatchResumeToolsAgent",
+      "methods": [
+        "execute"
+      ],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "fe73b615396e915a0223b67ec33295534f515f0cd4e2a04892aa250689e91fab",
+      "file_size_bytes": 7338,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\FactCheckAgent.py",
+    "module": "apps_rg\\reasoning\\FactCheckAgent",
+    "class_name": "FactCheckAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "FactCheckAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGValidationCapability",
+        "RGAgentBase"
+      ],
+      "file_sha256": "ac47df410bac149fa20b8bc8f689600435d82078bf9606cfe4fdc7f08721718a",
+      "file_size_bytes": 5116,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\ProactiveAgent.py",
+    "module": "apps_rg\\reasoning\\ProactiveAgent",
+    "class_name": "ProactiveAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "ProactiveAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "f1a8dbddd9b49d746be8cc5f78bac2ddf089a6a9d5983881bc921bd8bab62240",
+      "file_size_bytes": 4210,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\RgReflectionAgent.py",
+    "module": "apps_rg\\reasoning\\RgReflectionAgent",
+    "class_name": "RgReflectionAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "RgReflectionAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "13ad5824ec1bb064aa0193381c63af7cd3831049c4bfc7368cc7312abf0669a5",
+      "file_size_bytes": 7283,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\RgStrategicPlannerAgent.py",
+    "module": "apps_rg\\reasoning\\RgStrategicPlannerAgent",
+    "class_name": "RgStrategicPlannerAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "RgStrategicPlannerAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "314a927617a29673bf15d0e9494666eadc31b0dba8028e75cb402b6927038e74",
+      "file_size_bytes": 3246,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\RgTemplateOptimizerAgent.py",
+    "module": "apps_rg\\reasoning\\RgTemplateOptimizerAgent",
+    "class_name": "RgTemplateOptimizerAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "RgTemplateOptimizerAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGAgentBase"
+      ],
+      "file_sha256": "a26bacb2d60c15eef5e5b1ba6551c3324f20bb5608f3c8e1b74d255b7b0c1140",
+      "file_size_bytes": 3712,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_rg\\reasoning\\SectionBalanceAgent.py",
+    "module": "apps_rg\\reasoning\\SectionBalanceAgent",
+    "class_name": "SectionBalanceAgent",
+    "layer": "apps_rg",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "SectionBalanceAgent",
+      "methods": [
+        "execute",
+        "heal"
+      ],
+      "mro_signature": [
+        "RGValidationCapability",
+        "RGAgentBase"
+      ],
+      "file_sha256": "e8718ac389ce3aff74374f81360d73d33482f2b30474cb7822f58b3489a90553",
+      "file_size_bytes": 3379,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "apps_shared\\utils\\AppBase.py",
+    "module": "apps_shared\\utils\\AppBase",
+    "class_name": "AppBase",
+    "layer": "apps_shared",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "AppBase",
+      "methods": [],
+      "mro_signature": [
+        "AtomicExecutionMixin",
+        "MetaLearningMixin",
+        "SovereignBaseAgent",
+        "HealerMixin"
+      ],
+      "file_sha256": "e7e1f13b8b87e9f2791f8a4b3f78df02c3e5543974d16c72623b329f2653a0ff",
+      "file_size_bytes": 4252,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\knowledge\\reasoning\\SovereignRAGManagerAgent.py",
+    "module": "agentic_core\\knowledge\\reasoning\\SovereignRAGManagerAgent",
+    "class_name": "SovereignRAGManagerAgent",
+    "layer": "knowledge",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "BASE_AGENT",
+      "class": "SovereignRAGManager",
+      "methods": [],
+      "mro_signature": [
+        "SovereignBaseAgent"
+      ],
+      "file_sha256": "0cf3c35db0c7f0465548c8dc3bd915dd2864db61faebd2c5292d918e86efb11d",
+      "file_size_bytes": 6095,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  },
+  {
+    "file": "agentic_core\\runtime\\utils\\discovery_util.py",
+    "module": "agentic_core\\runtime\\utils\\discovery_util",
+    "class_name": "DiscoveredAgent",
+    "layer": "runtime",
+    "fca_type": "AGENT",
+    "exists": true,
+    "verification_status": {
+      "valid": true,
+      "role": "Unknown",
+      "class": "DiscoveredAgent",
+      "methods": [],
+      "mro_signature": [],
+      "file_sha256": "c2e818b5c95333878758916fae8d1f396cd09043f1c7e108df998a69b91a7ec6",
+      "file_size_bytes": 7140,
+      "selection_reason": "Primary class selected by filename stem match",
+      "parse_error": ""
+    }
+  }
+]

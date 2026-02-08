@@ -2,60 +2,60 @@
 
 - **Total agents**: 190
 - **Total pairs**: 17955
-- **Pairs ≥ 0.50**: 107
-- **Pairs ≥ 0.75**: 8
+- **Pairs ≥ 0.50**: 102
+- **Pairs ≥ 0.75**: 11
 
 ## Top Code-Similar Pairs
 
 | Agent A | Agent B | Score | Shared Bases | Shared Methods |
 |---------|---------|-------|-------------|----------------|
 | CodeFormatterAgent | UnusedCleanupAgent | 0.925 | CodeToolRunnerCapability, SovereignBaseAgent | 1 |
-| CampaignBalanceAgent | DeliverabilityAgent | 0.828 | SubatomicTestingMixin, LICAgentBase | 4 |
-| ATSCompatibilityAgent | BrandComplianceAgent | 0.802 | RGAgentBase | 4 |
-| OmniContextAgent | SemanticMapperAgent | 0.795 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| UiValidationAgent | SemanticMapperAgent | 0.780 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| HOP7GateDecisionAgent | HOP9IntegrationAgent | 0.779 | SubatomicTestingMixin, LICAgentBase | 2 |
-| StrategistAgent | OmniContextAgent | 0.771 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| HOP4RoutingAgent | HOP7GateDecisionAgent | 0.750 | SubatomicTestingMixin, LICAgentBase | 2 |
-| SignatureVerifierAgent | TrackObservabilityCostAgent | 0.743 | SubatomicTestingMixin, SovereignBaseAgent | 5 |
+| CampaignBalanceAgent | DeliverabilityAgent | 0.867 | LICAgentBase, SubatomicTestingMixin, LICEngineValidationCapability | 5 |
+| SignatureVerifierAgent | TokenBudgetInspectorAgent | 0.837 | SovereignBaseAgent, InspectionCapability, SubatomicTestingMixin | 4 |
+| HOP7GateDecisionAgent | HOP9IntegrationAgent | 0.827 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| BrandComplianceAgent | SectionBalanceAgent | 0.821 | RGValidationCapability, RGAgentBase | 5 |
+| ATSCompatibilityAgent | BrandComplianceAgent | 0.804 | RGValidationCapability, RGAgentBase | 5 |
+| OmniContextAgent | SemanticMapperAgent | 0.795 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
+| HOP4RoutingAgent | HOP7GateDecisionAgent | 0.783 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| HOP4RoutingAgent | HOP9IntegrationAgent | 0.782 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| UiValidationAgent | SemanticMapperAgent | 0.780 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
+| StrategistAgent | OmniContextAgent | 0.771 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
+| DagRuntimeInspectorAgent | TokenBudgetInspectorAgent | 0.749 | SovereignBaseAgent, InspectionCapability, SubatomicTestingMixin | 4 |
+| BrandComplianceAgent | FactCheckAgent | 0.742 | RGValidationCapability, RGAgentBase | 5 |
+| ConfigurationSecurityGuardrailAgent | input_validation_guardrail | 0.741 | SovereignBaseAgent | 4 |
+| FactCheckAgent | SectionBalanceAgent | 0.740 | RGValidationCapability, RGAgentBase | 5 |
 | RgStrategicPlannerAgent__RgStrategicPlannerAgent | RgTemplateOptimizerAgent | 0.738 | RGAgentBase | 4 |
-| SemanticMapperAgent | SemanticTerritoryMapperAgent | 0.737 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
-| StrategistAgent | UiValidationAgent | 0.719 | SubatomicTestingMixin, SovereignBaseAgent | 4 |
-| HOP4RoutingAgent | HOP9IntegrationAgent | 0.717 | SubatomicTestingMixin, LICAgentBase | 2 |
-| FactCheckAgent | RgStrategicPlannerAgent__RgStrategicPlannerAgent | 0.697 | RGAgentBase | 4 |
-| UiValidationAgent | OmniContextAgent | 0.691 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| ConfigurationSecurityGuardrailAgent | input_validation_guardrail | 0.686 | SovereignBaseAgent | 4 |
-| RgStrategicPlannerAgent__RgStrategicPlannerAgent | SectionBalanceAgent | 0.678 | RGAgentBase | 4 |
-| StrategistAgent | SemanticMapperAgent | 0.677 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| BrandComplianceAgent | SectionBalanceAgent | 0.676 | RGAgentBase | 5 |
+| SemanticMapperAgent | SemanticTerritoryMapperAgent | 0.737 | SovereignBaseAgent, SubatomicTestingMixin | 2 |
+| StrategistAgent | UiValidationAgent | 0.719 | SovereignBaseAgent, SubatomicTestingMixin | 4 |
+| ATSCompatibilityAgent | SectionBalanceAgent | 0.709 | RGValidationCapability, RGAgentBase | 5 |
+| DagRuntimeInspectorAgent | SignatureVerifierAgent | 0.698 | SovereignBaseAgent, InspectionCapability, SubatomicTestingMixin | 4 |
+| UiValidationAgent | OmniContextAgent | 0.691 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
+| ATSCompatibilityAgent | FactCheckAgent | 0.679 | RGValidationCapability, RGAgentBase | 5 |
+| StrategistAgent | SemanticMapperAgent | 0.677 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
 | ProactiveAgent | RgStrategicPlannerAgent__RgStrategicPlannerAgent | 0.674 | RGAgentBase | 4 |
-| UiValidationAgent | SemanticTerritoryMapperAgent | 0.661 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
-| FactCheckAgent | RgTemplateOptimizerAgent | 0.660 | RGAgentBase | 4 |
+| UiValidationAgent | SemanticTerritoryMapperAgent | 0.661 | SovereignBaseAgent, SubatomicTestingMixin | 2 |
+| HOP6ValidationAgent | HOP7GateDecisionAgent | 0.651 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
 | BoundaryTestingAgent | ChaosEngineeringAgent | 0.646 | SovereignBaseAgent | 5 |
 | ProactiveAgent | RgTemplateOptimizerAgent | 0.645 | RGAgentBase | 4 |
-| OmniContextAgent | SemanticTerritoryMapperAgent | 0.645 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
+| OmniContextAgent | SemanticTerritoryMapperAgent | 0.645 | SovereignBaseAgent, SubatomicTestingMixin | 2 |
 | AdversarialProbeAgent | BoundaryTestingAgent | 0.643 | SovereignBaseAgent | 5 |
-| ContentQualityAgent | SectionBalanceAgent | 0.636 | RGAgentBase | 5 |
-| FactCheckAgent | SectionBalanceAgent | 0.636 | RGAgentBase | 4 |
+| HOP4RoutingAgent | HOP6ValidationAgent | 0.631 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
 | AdversarialProbeAgent | ChaosEngineeringAgent | 0.630 | SovereignBaseAgent | 5 |
-| RgTemplateOptimizerAgent | SectionBalanceAgent | 0.630 | RGAgentBase | 4 |
-| DependencyDiplomatAgent | SemanticMapperAgent | 0.629 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
-| CoordinateObservabilityOperationsAgent | TrackObservabilityCostAgent | 0.625 | AtomicExecutionMixin, SovereignBaseAgent, SubatomicTestingMixin | 4 |
-| FactCheckAgent | ProactiveAgent | 0.623 | RGAgentBase | 4 |
+| DependencyDiplomatAgent | SemanticMapperAgent | 0.629 | SovereignBaseAgent, SubatomicTestingMixin | 2 |
+| CoordinateObservabilityOperationsAgent | TrackObservabilityCostAgent | 0.625 | SovereignBaseAgent, SubatomicTestingMixin, AtomicExecutionMixin | 4 |
+| HOP6ValidationAgent | HOP9IntegrationAgent | 0.622 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| HOP7GateDecisionAgent | HOP8QAReportAgent | 0.612 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
 | DependencyDiplomatAgent | NeuralAutoImmuneAgent | 0.612 | SovereignBaseAgent | 2 |
-| StrategistAgent | CartographerAgent | 0.599 | SubatomicTestingMixin, SovereignBaseAgent | 4 |
-| HOP6ValidationAgent | HOP7GateDecisionAgent | 0.598 | SubatomicTestingMixin, LICAgentBase | 2 |
-| ProactiveAgent | SectionBalanceAgent | 0.597 | RGAgentBase | 4 |
+| StrategistAgent | CartographerAgent | 0.599 | SovereignBaseAgent, SubatomicTestingMixin | 4 |
+| HOP4RoutingAgent | HOP8QAReportAgent | 0.594 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| HOP5GenerationAgent | HOP9IntegrationAgent | 0.592 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
 | RgReflectionAgent__RgReflectionAgent | RgStrategicPlannerAgent__RgStrategicPlannerAgent | 0.591 | RGAgentBase | 4 |
-| GitSafetyHandlerAgent | GlobalComplianceAggregatorAgent | 0.583 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| GlobalComplianceAggregatorAgent | SignatureVerifierAgent | 0.583 | SubatomicTestingMixin, SovereignBaseAgent | 3 |
-| HOP4RoutingAgent | HOP6ValidationAgent | 0.582 | SubatomicTestingMixin, LICAgentBase | 2 |
-| HOP6ValidationAgent | HOP9IntegrationAgent | 0.578 | SubatomicTestingMixin, LICAgentBase | 2 |
-| DagRuntimeInspectorAgent | TokenBudgetInspectorAgent | 0.572 | SubatomicTestingMixin, SovereignBaseAgent | 4 |
-| BudgetAgent | RgStrategicPlannerAgent | 0.572 | AtomicExecutionMixin, SovereignBaseAgent | 4 |
-| StrategistAgent | SemanticTerritoryMapperAgent | 0.570 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
-| DependencyDiplomatAgent | OmniContextAgent | 0.570 | SubatomicTestingMixin, SovereignBaseAgent | 2 |
-| DeliverabilityAgent | LeadQualityAgent | 0.568 | SubatomicTestingMixin, LICAgentBase | 2 |
-| IntelligenceLibrarianAgent | MessageArchitectAgent | 0.567 | LICAgentBase | 1 |
-| UiValidationAgent | CartographerAgent | 0.565 | SubatomicTestingMixin, SovereignBaseAgent | 4 |
-| BudgetAgent | DependencyDiplomatAgent | 0.562 | AtomicExecutionMixin, SovereignBaseAgent | 2 |
+| HOP8QAReportAgent | HOP9IntegrationAgent | 0.591 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| CostGovernorAgent | GlobalComplianceAggregatorAgent | 0.587 | SovereignBaseAgent | 3 |
+| GitSafetyHandlerAgent | GlobalComplianceAggregatorAgent | 0.583 | SovereignBaseAgent, SubatomicTestingMixin | 3 |
+| RgStrategicPlannerAgent__RgStrategicPlannerAgent | SectionBalanceAgent | 0.578 | RGAgentBase | 4 |
+| HOP3SenderGroundingAgent | HOP7GateDecisionAgent | 0.573 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| BudgetAgent | RgStrategicPlannerAgent | 0.572 | SovereignBaseAgent, AtomicExecutionMixin | 4 |
+| HOP3SenderGroundingAgent | HOP4RoutingAgent | 0.571 | LICAgentBase, SubatomicTestingMixin, HOPStageCapability | 2 |
+| StrategistAgent | SemanticTerritoryMapperAgent | 0.570 | SovereignBaseAgent, SubatomicTestingMixin | 2 |
+| DependencyDiplomatAgent | OmniContextAgent | 0.570 | SovereignBaseAgent, SubatomicTestingMixin | 2 |

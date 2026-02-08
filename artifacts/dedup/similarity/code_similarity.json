@@ -1,8 +1,8 @@
 {
   "threshold": 0.75,
   "total_pairs": 17955,
-  "pairs_above_050": 107,
-  "pairs_above_075": 8,
+  "pairs_above_050": 102,
+  "pairs_above_075": 11,
   "top_pairs": [
     {
       "agent_a": "CodeFormatterAgent",
@@ -12,12 +12,27 @@
     {
       "agent_a": "CampaignBalanceAgent",
       "agent_b": "DeliverabilityAgent",
-      "score": 0.8276
+      "score": 0.8667
+    },
+    {
+      "agent_a": "SignatureVerifierAgent",
+      "agent_b": "TokenBudgetInspectorAgent",
+      "score": 0.8365
+    },
+    {
+      "agent_a": "HOP7GateDecisionAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.8273
+    },
+    {
+      "agent_a": "BrandComplianceAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.8214
     },
     {
       "agent_a": "ATSCompatibilityAgent",
       "agent_b": "BrandComplianceAgent",
-      "score": 0.802
+      "score": 0.8042
     },
     {
       "agent_a": "OmniContextAgent",
@@ -25,14 +40,19 @@
       "score": 0.7952
     },
     {
+      "agent_a": "HOP4RoutingAgent",
+      "agent_b": "HOP7GateDecisionAgent",
+      "score": 0.7833
+    },
+    {
+      "agent_a": "HOP4RoutingAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.7824
+    },
+    {
       "agent_a": "UiValidationAgent",
       "agent_b": "SemanticMapperAgent",
       "score": 0.7804
-    },
-    {
-      "agent_a": "HOP7GateDecisionAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.7789
     },
     {
       "agent_a": "StrategistAgent",
@@ -40,14 +60,24 @@
       "score": 0.7708
     },
     {
-      "agent_a": "HOP4RoutingAgent",
-      "agent_b": "HOP7GateDecisionAgent",
-      "score": 0.75
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "TokenBudgetInspectorAgent",
+      "score": 0.7492
     },
     {
-      "agent_a": "SignatureVerifierAgent",
-      "agent_b": "TrackObservabilityCostAgent",
-      "score": 0.7434
+      "agent_a": "BrandComplianceAgent",
+      "agent_b": "FactCheckAgent",
+      "score": 0.7421
+    },
+    {
+      "agent_a": "ConfigurationSecurityGuardrailAgent",
+      "agent_b": "input_validation_guardrail",
+      "score": 0.7414
+    },
+    {
+      "agent_a": "FactCheckAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.7396
     },
     {
       "agent_a": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
@@ -65,14 +95,14 @@
       "score": 0.7195
     },
     {
-      "agent_a": "HOP4RoutingAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.7175
+      "agent_a": "ATSCompatibilityAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.7087
     },
     {
-      "agent_a": "FactCheckAgent",
-      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
-      "score": 0.6967
+      "agent_a": "DagRuntimeInspectorAgent",
+      "agent_b": "SignatureVerifierAgent",
+      "score": 0.6982
     },
     {
       "agent_a": "UiValidationAgent",
@@ -80,24 +110,14 @@
       "score": 0.6911
     },
     {
-      "agent_a": "ConfigurationSecurityGuardrailAgent",
-      "agent_b": "input_validation_guardrail",
-      "score": 0.6859
-    },
-    {
-      "agent_a": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.6783
+      "agent_a": "ATSCompatibilityAgent",
+      "agent_b": "FactCheckAgent",
+      "score": 0.6792
     },
     {
       "agent_a": "StrategistAgent",
       "agent_b": "SemanticMapperAgent",
       "score": 0.6772
-    },
-    {
-      "agent_a": "BrandComplianceAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.6761
     },
     {
       "agent_a": "ProactiveAgent",
@@ -110,9 +130,9 @@
       "score": 0.6607
     },
     {
-      "agent_a": "FactCheckAgent",
-      "agent_b": "RgTemplateOptimizerAgent",
-      "score": 0.6595
+      "agent_a": "HOP6ValidationAgent",
+      "agent_b": "HOP7GateDecisionAgent",
+      "score": 0.651
     },
     {
       "agent_a": "BoundaryTestingAgent",
@@ -135,24 +155,14 @@
       "score": 0.6432
     },
     {
-      "agent_a": "ContentQualityAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.6362
-    },
-    {
-      "agent_a": "FactCheckAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.6357
+      "agent_a": "HOP4RoutingAgent",
+      "agent_b": "HOP6ValidationAgent",
+      "score": 0.6306
     },
     {
       "agent_a": "AdversarialProbeAgent",
       "agent_b": "ChaosEngineeringAgent",
       "score": 0.6305
-    },
-    {
-      "agent_a": "RgTemplateOptimizerAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.6303
     },
     {
       "agent_a": "DependencyDiplomatAgent",
@@ -165,9 +175,14 @@
       "score": 0.625
     },
     {
-      "agent_a": "FactCheckAgent",
-      "agent_b": "ProactiveAgent",
-      "score": 0.6233
+      "agent_a": "HOP6ValidationAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.622
+    },
+    {
+      "agent_a": "HOP7GateDecisionAgent",
+      "agent_b": "HOP8QAReportAgent",
+      "score": 0.6122
     },
     {
       "agent_a": "DependencyDiplomatAgent",
@@ -180,14 +195,14 @@
       "score": 0.599
     },
     {
-      "agent_a": "HOP6ValidationAgent",
-      "agent_b": "HOP7GateDecisionAgent",
-      "score": 0.5984
+      "agent_a": "HOP4RoutingAgent",
+      "agent_b": "HOP8QAReportAgent",
+      "score": 0.5935
     },
     {
-      "agent_a": "ProactiveAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.5967
+      "agent_a": "HOP5GenerationAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.5919
     },
     {
       "agent_a": "RgReflectionAgent__RgReflectionAgent",
@@ -195,34 +210,39 @@
       "score": 0.5909
     },
     {
+      "agent_a": "HOP8QAReportAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.5906
+    },
+    {
+      "agent_a": "CostGovernorAgent",
+      "agent_b": "GlobalComplianceAggregatorAgent",
+      "score": 0.5871
+    },
+    {
       "agent_a": "GitSafetyHandlerAgent",
       "agent_b": "GlobalComplianceAggregatorAgent",
       "score": 0.5829
     },
     {
-      "agent_a": "GlobalComplianceAggregatorAgent",
-      "agent_b": "SignatureVerifierAgent",
-      "score": 0.5829
+      "agent_a": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.5776
     },
     {
-      "agent_a": "HOP4RoutingAgent",
-      "agent_b": "HOP6ValidationAgent",
-      "score": 0.5817
-    },
-    {
-      "agent_a": "HOP6ValidationAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.5783
-    },
-    {
-      "agent_a": "DagRuntimeInspectorAgent",
-      "agent_b": "TokenBudgetInspectorAgent",
-      "score": 0.5722
+      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_b": "HOP7GateDecisionAgent",
+      "score": 0.5726
     },
     {
       "agent_a": "BudgetAgent",
       "agent_b": "RgStrategicPlannerAgent",
       "score": 0.5717
+    },
+    {
+      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_b": "HOP4RoutingAgent",
+      "score": 0.5708
     },
     {
       "agent_a": "StrategistAgent",
@@ -235,11 +255,6 @@
       "score": 0.5698
     },
     {
-      "agent_a": "DeliverabilityAgent",
-      "agent_b": "LeadQualityAgent",
-      "score": 0.5679
-    },
-    {
       "agent_a": "IntelligenceLibrarianAgent",
       "agent_b": "MessageArchitectAgent",
       "score": 0.5667
@@ -250,24 +265,29 @@
       "score": 0.5651
     },
     {
+      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_b": "HOP8QAReportAgent",
+      "score": 0.5628
+    },
+    {
       "agent_a": "BudgetAgent",
       "agent_b": "DependencyDiplomatAgent",
       "score": 0.5625
     },
     {
-      "agent_a": "SignatureVerifierAgent",
-      "agent_b": "CoordinateObservabilityOperationsAgent",
-      "score": 0.5625
+      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_b": "HOP9IntegrationAgent",
+      "score": 0.5604
     },
     {
-      "agent_a": "HOP7GateDecisionAgent",
-      "agent_b": "HOP8QAReportAgent",
-      "score": 0.5615
+      "agent_a": "HOP1ProfileAnalysisAgent",
+      "agent_b": "HOP2ResearchAgent",
+      "score": 0.556
     },
     {
-      "agent_a": "CampaignBalanceAgent",
-      "agent_b": "IntelligenceLibrarianAgent",
-      "score": 0.5545
+      "agent_a": "HOP5GenerationAgent",
+      "agent_b": "HOP7GateDecisionAgent",
+      "score": 0.5539
     },
     {
       "agent_a": "UiValidationAgent",
@@ -275,24 +295,34 @@
       "score": 0.5536
     },
     {
+      "agent_a": "HOP4RoutingAgent",
+      "agent_b": "HOP5GenerationAgent",
+      "score": 0.5472
+    },
+    {
+      "agent_a": "HOP5GenerationAgent",
+      "agent_b": "HOP6ValidationAgent",
+      "score": 0.5471
+    },
+    {
+      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_b": "HOP6ValidationAgent",
+      "score": 0.5469
+    },
+    {
       "agent_a": "CartographerAgent",
       "agent_b": "OmniContextAgent",
       "score": 0.5467
     },
     {
-      "agent_a": "HOP5GenerationAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.5454
+      "agent_a": "HOP6ValidationAgent",
+      "agent_b": "HOP8QAReportAgent",
+      "score": 0.546
     },
     {
       "agent_a": "CostGovernorAgent",
       "agent_b": "NeuralAutoImmuneAgent",
       "score": 0.5452
-    },
-    {
-      "agent_a": "CampaignBalanceAgent",
-      "agent_b": "LeadQualityAgent",
-      "score": 0.545
     },
     {
       "agent_a": "RgReflectionAgent__RgReflectionAgent",
@@ -305,24 +335,9 @@
       "score": 0.5436
     },
     {
-      "agent_a": "BrandComplianceAgent",
-      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
-      "score": 0.5423
-    },
-    {
       "agent_a": "GlobalComplianceAggregatorAgent",
       "agent_b": "SemanticMapperAgent",
       "score": 0.5396
-    },
-    {
-      "agent_a": "FactCheckAgent",
-      "agent_b": "RgReflectionAgent__RgReflectionAgent",
-      "score": 0.5394
-    },
-    {
-      "agent_a": "ATSCompatibilityAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.5389
     },
     {
       "agent_a": "DependencyDiplomatAgent",
@@ -330,34 +345,19 @@
       "score": 0.5375
     },
     {
-      "agent_a": "HOP8QAReportAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.537
+      "agent_a": "FactCheckAgent",
+      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "score": 0.5371
     },
     {
-      "agent_a": "HOP4RoutingAgent",
-      "agent_b": "HOP8QAReportAgent",
-      "score": 0.5352
-    },
-    {
-      "agent_a": "CostGovernorAgent",
-      "agent_b": "GlobalComplianceAggregatorAgent",
-      "score": 0.535
-    },
-    {
-      "agent_a": "SignatureVerifierAgent",
-      "agent_b": "TokenBudgetInspectorAgent",
-      "score": 0.5343
+      "agent_a": "BrandComplianceAgent",
+      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
+      "score": 0.5351
     },
     {
       "agent_a": "NeuralAutoImmuneAgent",
       "agent_b": "SemanticMapperAgent",
       "score": 0.531
-    },
-    {
-      "agent_a": "HOP7GateDecisionAgent",
-      "agent_b": "IntelligenceLibrarianAgent",
-      "score": 0.5308
     },
     {
       "agent_a": "BudgetAgent",
@@ -375,19 +375,9 @@
       "score": 0.5275
     },
     {
-      "agent_a": "GlobalComplianceAggregatorAgent",
-      "agent_b": "TokenBudgetInspectorAgent",
-      "score": 0.5272
-    },
-    {
       "agent_a": "DispatchOutreachToolsAgent",
       "agent_b": "DispatchResumeToolsAgent",
       "score": 0.5268
-    },
-    {
-      "agent_a": "ATSCompatibilityAgent",
-      "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
-      "score": 0.5259
     },
     {
       "agent_a": "DependencyDiplomatAgent",
@@ -395,9 +385,9 @@
       "score": 0.525
     },
     {
-      "agent_a": "HOP1ProfileAnalysisAgent",
-      "agent_b": "HOP2ResearchAgent",
-      "score": 0.523
+      "agent_a": "RgTemplateOptimizerAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.525
     },
     {
       "agent_a": "CartographerAgent",
@@ -405,19 +395,14 @@
       "score": 0.5229
     },
     {
-      "agent_a": "HOP3SenderGroundingAgent",
-      "agent_b": "HOP4RoutingAgent",
-      "score": 0.5218
+      "agent_a": "BrandComplianceAgent",
+      "agent_b": "RgTemplateOptimizerAgent",
+      "score": 0.5215
     },
     {
-      "agent_a": "HOP3SenderGroundingAgent",
-      "agent_b": "HOP7GateDecisionAgent",
-      "score": 0.5214
-    },
-    {
-      "agent_a": "SemanticMapperAgent",
-      "agent_b": "CampaignBalanceAgent",
-      "score": 0.5213
+      "agent_a": "BudgetAgent",
+      "agent_b": "TrackObservabilityCostAgent",
+      "score": 0.5205
     },
     {
       "agent_a": "ProactiveAgent",
@@ -430,24 +415,19 @@
       "score": 0.5188
     },
     {
+      "agent_a": "BudgetAgent",
+      "agent_b": "OmniContextAgent",
+      "score": 0.5173
+    },
+    {
       "agent_a": "GlobalComplianceAggregatorAgent",
       "agent_b": "RegressionOracleAgent",
       "score": 0.516
     },
     {
-      "agent_a": "HOP3SenderGroundingAgent",
-      "agent_b": "HOP9IntegrationAgent",
-      "score": 0.5153
-    },
-    {
-      "agent_a": "BrandComplianceAgent",
-      "agent_b": "ContentQualityAgent",
-      "score": 0.515
-    },
-    {
-      "agent_a": "BrandComplianceAgent",
-      "agent_b": "RgTemplateOptimizerAgent",
-      "score": 0.5138
+      "agent_a": "BudgetAgent",
+      "agent_b": "PolicyNeuralAutoImmuneAgent",
+      "score": 0.5141
     },
     {
       "agent_a": "BudgetAgent",
@@ -465,6 +445,11 @@
       "score": 0.5123
     },
     {
+      "agent_a": "SemanticGatekeeperAgent",
+      "agent_b": "CostGovernorAgent",
+      "score": 0.5121
+    },
+    {
       "agent_a": "ContentQualityAgent",
       "agent_b": "RgStrategicPlannerAgent__RgStrategicPlannerAgent",
       "score": 0.5111
@@ -473,16 +458,6 @@
       "agent_a": "UiValidationAgent",
       "agent_b": "GlobalComplianceAggregatorAgent",
       "score": 0.511
-    },
-    {
-      "agent_a": "HOP4RoutingAgent",
-      "agent_b": "IntelligenceLibrarianAgent",
-      "score": 0.51
-    },
-    {
-      "agent_a": "RgReflectionAgent__RgReflectionAgent",
-      "agent_b": "SectionBalanceAgent",
-      "score": 0.51
     },
     {
       "agent_a": "DocstringComplianceAgent",
@@ -495,14 +470,39 @@
       "score": 0.5091
     },
     {
-      "agent_a": "GitSafetyHandlerAgent",
-      "agent_b": "SignatureVerifierAgent",
-      "score": 0.5062
+      "agent_a": "FactCheckAgent",
+      "agent_b": "RgTemplateOptimizerAgent",
+      "score": 0.506
     },
     {
-      "agent_a": "HOP3SenderGroundingAgent",
+      "agent_a": "ProactiveAgent",
+      "agent_b": "SectionBalanceAgent",
+      "score": 0.506
+    },
+    {
+      "agent_a": "BudgetAgent",
+      "agent_b": "SubAtomicAgent",
+      "score": 0.5046
+    },
+    {
+      "agent_a": "SovereignPineconeStoreAgent",
+      "agent_b": "CostGovernorAgent",
+      "score": 0.5043
+    },
+    {
+      "agent_a": "HOP5GenerationAgent",
       "agent_b": "HOP8QAReportAgent",
-      "score": 0.5058
+      "score": 0.5029
+    },
+    {
+      "agent_a": "CostGovernorAgent",
+      "agent_b": "DependencyPruningAgent",
+      "score": 0.5028
+    },
+    {
+      "agent_a": "StructuralValidatorAgent",
+      "agent_b": "StructureEnforcerAgent",
+      "score": 0.5016
     }
   ]
 }

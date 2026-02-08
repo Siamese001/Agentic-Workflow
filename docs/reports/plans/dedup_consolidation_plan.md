@@ -1,13 +1,13 @@
 # Agent Consolidation Plan
 
 **Generated from**: 190 active agents
-**Clusters identified**: 7
+**Clusters identified**: 10
 
 ## Cluster 1
 
-- **Members** (13): CoordinateObservabilityOperationsAgent, DagRuntimeInspectorAgent, IntelligenceLibrarianAgent, OmniContextAgent, RgStrategicPlannerAgent__RgStrategicPlannerAgent, RgTemplateOptimizerAgent, SemanticMapperAgent, SemanticTerritoryMapperAgent, SignatureVerifierAgent, StrategistAgent, TokenBudgetInspectorAgent, TrackObservabilityCostAgent, UiValidationAgent
-- **Code similarity**: min=0.107, median=0.384, max=0.795
-- **Prompt similarity**: min=0.006, median=0.113, max=0.838
+- **Members** (8): IntelligenceLibrarianAgent, OmniContextAgent, RgStrategicPlannerAgent__RgStrategicPlannerAgent, RgTemplateOptimizerAgent, SemanticMapperAgent, SemanticTerritoryMapperAgent, StrategistAgent, UiValidationAgent
+- **Code similarity**: min=0.229, median=0.385, max=0.795
+- **Prompt similarity**: min=0.006, median=0.191, max=0.702
 - **Responsibility overlap**: min=0.0, median=0.0, max=1.0
 - **Risk**: high
 - **Recommendation**: RE-SCOPE agents (responsibilities ambiguous)
@@ -16,44 +16,34 @@
 
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
-| CoordinateObservabilityOperationsAgent | L6_observability | 177 | AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent | __init__, add_step, execute, heal, heal_repository | orchestrator |
-| DagRuntimeInspectorAgent | L3_orchestration | 93 | AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent | __init__, heal_repository, diagnose, heal | inspection |
 | IntelligenceLibrarianAgent | apps_lic | 34 | SubatomicTestingMixin, LICAgentBase | __post_init__, query_intelligence | retrieval |
 | OmniContextAgent | L5_safety | 78 | SubatomicTestingMixin, SovereignBaseAgent | execute, heal_repository, heal | retrieval |
 | RgStrategicPlannerAgent__RgStrategicPlannerAgent | apps_rg | 98 | RGAgentBase | __post_init__, execute, heal_repository, heal | analyzes, state |
 | RgTemplateOptimizerAgent | apps_rg | 115 | RGAgentBase | __post_init__, execute, _detect_job_type, heal_repository, heal | analyzes |
 | SemanticMapperAgent | L5_safety | 73 | SubatomicTestingMixin, SovereignBaseAgent | execute, heal_repository, heal | analyzes |
 | SemanticTerritoryMapperAgent | L5_safety | 51 | SubatomicTestingMixin, SovereignBaseAgent | execute, heal | - |
-| SignatureVerifierAgent | L5_safety | 138 | SubatomicTestingMixin, SovereignBaseAgent | __init__, execute, _process, heal_repository, heal | inspection |
 | StrategistAgent | L1_cognition | 87 | SubatomicTestingMixin, SovereignBaseAgent | can_run, execute, heal_repository, heal | code |
-| TokenBudgetInspectorAgent | L5_safety | 89 | SubatomicTestingMixin, SovereignBaseAgent | __init__, heal_repository, heal, diagnose | inspection |
-| TrackObservabilityCostAgent | L6_observability | 120 | AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent | __init__, execute, _process, heal, heal_repository | - |
 | UiValidationAgent | L2_execution | 168 | SubatomicTestingMixin, SovereignBaseAgent | can_run, execute, heal, heal_repository | validate, validator |
 
 ### Proposed Canonical Agent
 
-- **Target**: `CoordinateObservabilityOperationsAgent`
-- **File**: `agentic_core\L6_observability\reasoning\CoordinateObservabilityOperationsAgent.py`
-- **Layer**: L6_observability
+- **Target**: `UiValidationAgent`
+- **File**: `agentic_core\L2_execution\reasoning\UiValidationAgent.py`
+- **Layer**: L2_execution
 
 ### Backward Compatibility
 
-- `DagRuntimeInspectorAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `IntelligenceLibrarianAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `OmniContextAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `RgStrategicPlannerAgent__RgStrategicPlannerAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `RgTemplateOptimizerAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `SemanticMapperAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `SemanticTerritoryMapperAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `SignatureVerifierAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `StrategistAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `TokenBudgetInspectorAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `TrackObservabilityCostAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
-- `UiValidationAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
+- `IntelligenceLibrarianAgent` → redirect/shim to `UiValidationAgent`
+- `OmniContextAgent` → redirect/shim to `UiValidationAgent`
+- `RgStrategicPlannerAgent__RgStrategicPlannerAgent` → redirect/shim to `UiValidationAgent`
+- `RgTemplateOptimizerAgent` → redirect/shim to `UiValidationAgent`
+- `SemanticMapperAgent` → redirect/shim to `UiValidationAgent`
+- `SemanticTerritoryMapperAgent` → redirect/shim to `UiValidationAgent`
+- `StrategistAgent` → redirect/shim to `UiValidationAgent`
 
 ### Migration Steps
 
-1. Extract shared logic into canonical agent `CoordinateObservabilityOperationsAgent`
+1. Extract shared logic into canonical agent `UiValidationAgent`
 2. Convert other members to thin shims importing from canonical
 3. Update all imports/registry references
 4. Add regression tests for merged behavior
@@ -64,20 +54,20 @@
 ## Cluster 2
 
 - **Members** (4): ATSCompatibilityAgent, BrandComplianceAgent, FactCheckAgent, SectionBalanceAgent
-- **Code similarity**: min=0.49, median=0.636, max=0.802
-- **Prompt similarity**: min=0.152, median=0.245, max=0.455
+- **Code similarity**: min=0.679, median=0.742, max=0.821
+- **Prompt similarity**: min=0.265, median=0.303, max=0.416
 - **Responsibility overlap**: min=0.25, median=1.0, max=1.0
 - **Risk**: medium
-- **Recommendation**: RE-SCOPE agents (responsibilities ambiguous)
+- **Recommendation**: SPLIT shared core into library + thin wrappers
 
 ### Member Details
 
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
-| ATSCompatibilityAgent | apps_rg | 277 | RGAgentBase | __post_init__, execute, _calculate_keyword_score, heal_repository, heal | checks, formatting, tracking, validates |
-| BrandComplianceAgent | apps_rg | 221 | RGAgentBase | __post_init__, execute, _to_string, heal_repository, heal | checks |
-| FactCheckAgent | apps_rg | 147 | RGAgentBase | __post_init__, execute, _extract_skills, _normalize, heal_repository | checks |
-| SectionBalanceAgent | apps_rg | 129 | RGAgentBase | __post_init__, execute, _to_string, heal_repository, heal | checks |
+| ATSCompatibilityAgent | apps_rg | 139 | RGValidationCapability, RGAgentBase | __post_init__, execute, collect_issues, _calculate_keyword_score, heal_repository | checks, formatting, tracking, validates |
+| BrandComplianceAgent | apps_rg | 110 | RGValidationCapability, RGAgentBase | __post_init__, execute, collect_issues, heal_repository, heal | checks |
+| FactCheckAgent | apps_rg | 139 | RGValidationCapability, RGAgentBase | __post_init__, execute, collect_issues, _extract_skills, _normalize | checks |
+| SectionBalanceAgent | apps_rg | 98 | RGValidationCapability, RGAgentBase | __post_init__, execute, collect_issues, heal_repository, heal | checks |
 
 ### Proposed Canonical Agent
 
@@ -104,7 +94,7 @@
 ## Cluster 3
 
 - **Members** (4): DynamicSealAgent, HOP6ValidationAgent, HistorianAgent, LicS2SupervisorAgent
-- **Code similarity**: min=0.044, median=0.197, max=0.254
+- **Code similarity**: min=0.037, median=0.197, max=0.268
 - **Prompt similarity**: min=0.038, median=0.094, max=0.202
 - **Responsibility overlap**: min=1.0, median=1.0, max=1.0
 - **Risk**: medium
@@ -115,7 +105,7 @@
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
 | DynamicSealAgent | L5_safety | 359 | SubatomicTestingMixin, SovereignBaseAgent | heal_repository, __init__, heal, execute_sprint, _apply_seal | validation |
-| HOP6ValidationAgent | apps_lic | 155 | SubatomicTestingMixin, LICAgentBase | __post_init__, _process, _check_placeholders, _check_strategic_alignment, _check_forbidden_verbs | validation |
+| HOP6ValidationAgent | apps_lic | 162 | HOPStageCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, _process, _check_placeholders, _check_strategic_alignment, _check_forbidden_verbs | validation |
 | HistorianAgent | L2_execution | 229 | AtomicExecutionMixin, SovereignBaseAgent | __init__, execute, record_event, heal_repository, heal | validation |
 | LicS2SupervisorAgent | apps_lic | 410 | SovereignBaseAgent | heal_repository, __init__, orchestrate_research, _run_adversarial_check, _extract_sender_grounding | validation |
 
@@ -143,8 +133,46 @@
 
 ## Cluster 4
 
+- **Members** (3): DagRuntimeInspectorAgent, SignatureVerifierAgent, TokenBudgetInspectorAgent
+- **Code similarity**: min=0.698, median=0.749, max=0.837
+- **Prompt similarity**: min=0.206, median=0.208, max=0.605
+- **Responsibility overlap**: min=0.25, median=0.333, max=0.5
+- **Risk**: low
+- **Recommendation**: SPLIT shared core into library + thin wrappers
+
+### Member Details
+
+| Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
+|-------|-------|-------|-------------|-------------|------------------------|
+| DagRuntimeInspectorAgent | L3_orchestration | 56 | InspectionCapability, AtomicExecutionMixin, SubatomicTestingMixin | __init__, diagnose, heal_repository, heal | dag, inspector |
+| SignatureVerifierAgent | L5_safety | 100 | InspectionCapability, SubatomicTestingMixin, SovereignBaseAgent | __init__, diagnose, heal_repository, heal | inspector |
+| TokenBudgetInspectorAgent | L5_safety | 59 | InspectionCapability, SubatomicTestingMixin, SovereignBaseAgent | __init__, diagnose, heal_repository, heal | budget, inspector, token |
+
+### Proposed Canonical Agent
+
+- **Target**: `SignatureVerifierAgent`
+- **File**: `agentic_core\L5_safety\reasoning\SignatureVerifierAgent.py`
+- **Layer**: L5_safety
+
+### Backward Compatibility
+
+- `DagRuntimeInspectorAgent` → redirect/shim to `SignatureVerifierAgent`
+- `TokenBudgetInspectorAgent` → redirect/shim to `SignatureVerifierAgent`
+
+### Migration Steps
+
+1. Extract shared logic into canonical agent `SignatureVerifierAgent`
+2. Convert other members to thin shims importing from canonical
+3. Update all imports/registry references
+4. Add regression tests for merged behavior
+5. Run `full_agent_discovery.py` to verify count reduction
+
+---
+
+## Cluster 5
+
 - **Members** (3): HOP4RoutingAgent, HOP7GateDecisionAgent, HOP9IntegrationAgent
-- **Code similarity**: min=0.717, median=0.75, max=0.779
+- **Code similarity**: min=0.782, median=0.783, max=0.827
 - **Prompt similarity**: min=0.083, median=0.109, max=0.166
 - **Responsibility overlap**: min=0.0, median=0.0, max=0.0
 - **Risk**: low
@@ -154,9 +182,9 @@
 
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
-| HOP4RoutingAgent | apps_lic | 136 | SubatomicTestingMixin, LICAgentBase | __post_init__, _process, _check_conditions | - |
-| HOP7GateDecisionAgent | apps_lic | 91 | SubatomicTestingMixin, LICAgentBase | __post_init__, _process | classifies, classify |
-| HOP9IntegrationAgent | apps_lic | 117 | SubatomicTestingMixin, LICAgentBase | __post_init__, _process | checksum, formatting, healing, tracing |
+| HOP4RoutingAgent | apps_lic | 146 | HOPStageCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, _process, _check_conditions | - |
+| HOP7GateDecisionAgent | apps_lic | 97 | HOPStageCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, _process | classifies, classify |
+| HOP9IntegrationAgent | apps_lic | 119 | HOPStageCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, _process | checksum, formatting, healing, tracing |
 
 ### Proposed Canonical Agent
 
@@ -179,21 +207,21 @@
 
 ---
 
-## Cluster 5
+## Cluster 6
 
 - **Members** (2): CampaignBalanceAgent, DeliverabilityAgent
-- **Code similarity**: min=0.828, median=0.828, max=0.828
-- **Prompt similarity**: min=0.251, median=0.251, max=0.251
+- **Code similarity**: min=0.867, median=0.867, max=0.867
+- **Prompt similarity**: min=0.246, median=0.246, max=0.246
 - **Responsibility overlap**: min=0.0, median=0.0, max=0.0
 - **Risk**: low
-- **Recommendation**: SPLIT shared core into library + thin wrappers
+- **Recommendation**: MERGE
 
 ### Member Details
 
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
-| CampaignBalanceAgent | apps_lic | 111 | SubatomicTestingMixin, LICAgentBase | __post_init__, execute, heal_repository, heal | structure, validates, validator |
-| DeliverabilityAgent | apps_lic | 88 | SubatomicTestingMixin, LICAgentBase | __post_init__, execute, heal_repository, heal | - |
+| CampaignBalanceAgent | apps_lic | 112 | LICEngineValidationCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, execute, _validate, heal_repository, heal | structure, validates, validator |
+| DeliverabilityAgent | apps_lic | 93 | LICEngineValidationCapability, SubatomicTestingMixin, LICAgentBase | __post_init__, execute, _validate, heal_repository, heal | - |
 
 ### Proposed Canonical Agent
 
@@ -215,7 +243,7 @@
 
 ---
 
-## Cluster 6
+## Cluster 7
 
 - **Members** (2): CodeFormatterAgent, UnusedCleanupAgent
 - **Code similarity**: min=0.925, median=0.925, max=0.925
@@ -228,7 +256,7 @@
 
 | Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
 |-------|-------|-------|-------------|-------------|------------------------|
-| CodeFormatterAgent | L5_safety | 96 | CodeToolRunnerCapability, SovereignBaseAgent | execute | code, codetoolrunnercapability, enforces, fixes, formatting |
+| CodeFormatterAgent | L5_safety | 97 | CodeToolRunnerCapability, SovereignBaseAgent | execute | code, codetoolrunnercapability, enforces, fixes, formatting |
 | UnusedCleanupAgent | L5_safety | 85 | CodeToolRunnerCapability, SovereignBaseAgent | execute | codetoolrunnercapability, heal_repository, healing, safety, telemetry |
 
 ### Proposed Canonical Agent
@@ -251,7 +279,43 @@
 
 ---
 
-## Cluster 7
+## Cluster 8
+
+- **Members** (2): ConfigurationSecurityGuardrailAgent, input_validation_guardrail
+- **Code similarity**: min=0.741, median=0.741, max=0.741
+- **Prompt similarity**: min=0.152, median=0.152, max=0.152
+- **Responsibility overlap**: min=0.286, median=0.286, max=0.286
+- **Risk**: low
+- **Recommendation**: SPLIT shared core into library + thin wrappers
+
+### Member Details
+
+| Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
+|-------|-------|-------|-------------|-------------|------------------------|
+| ConfigurationSecurityGuardrailAgent | L5_safety | 180 | SovereignBaseAgent | __post_init__, validate_config, _apply_rule, _detect_secrets, _validate_config_structure | detection, enforcement, secret, security, validation |
+| input_validation_guardrail | L5_safety | 232 | SovereignBaseAgent | __post_init__, validate, _apply_rule, _detect_pii, _detect_prompt_injection | detection, pii, prompt, validation |
+
+### Proposed Canonical Agent
+
+- **Target**: `input_validation_guardrail`
+- **File**: `agentic_core\L5_safety\enforcement\input_validation_guardrail.py`
+- **Layer**: L5_safety
+
+### Backward Compatibility
+
+- `ConfigurationSecurityGuardrailAgent` → redirect/shim to `input_validation_guardrail`
+
+### Migration Steps
+
+1. Extract shared logic into canonical agent `input_validation_guardrail`
+2. Convert other members to thin shims importing from canonical
+3. Update all imports/registry references
+4. Add regression tests for merged behavior
+5. Run `full_agent_discovery.py` to verify count reduction
+
+---
+
+## Cluster 9
 
 - **Members** (2): ContentStrategyAgent, RgStrategicPlannerAgent
 - **Code similarity**: min=0.028, median=0.028, max=0.028
@@ -280,6 +344,42 @@
 ### Migration Steps
 
 1. Extract shared logic into canonical agent `RgStrategicPlannerAgent`
+2. Convert other members to thin shims importing from canonical
+3. Update all imports/registry references
+4. Add regression tests for merged behavior
+5. Run `full_agent_discovery.py` to verify count reduction
+
+---
+
+## Cluster 10
+
+- **Members** (2): CoordinateObservabilityOperationsAgent, TrackObservabilityCostAgent
+- **Code similarity**: min=0.625, median=0.625, max=0.625
+- **Prompt similarity**: min=0.838, median=0.838, max=0.838
+- **Responsibility overlap**: min=0.0, median=0.0, max=0.0
+- **Risk**: low
+- **Recommendation**: RETIRE redundant agent (if superseded)
+
+### Member Details
+
+| Agent | Layer | Lines | Base Classes | Key Methods | Responsibility Keywords |
+|-------|-------|-------|-------------|-------------|------------------------|
+| CoordinateObservabilityOperationsAgent | L6_observability | 177 | AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent | __init__, add_step, execute, heal, heal_repository | orchestrator |
+| TrackObservabilityCostAgent | L6_observability | 120 | AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent | __init__, execute, _process, heal, heal_repository | - |
+
+### Proposed Canonical Agent
+
+- **Target**: `CoordinateObservabilityOperationsAgent`
+- **File**: `agentic_core\L6_observability\reasoning\CoordinateObservabilityOperationsAgent.py`
+- **Layer**: L6_observability
+
+### Backward Compatibility
+
+- `TrackObservabilityCostAgent` → redirect/shim to `CoordinateObservabilityOperationsAgent`
+
+### Migration Steps
+
+1. Extract shared logic into canonical agent `CoordinateObservabilityOperationsAgent`
 2. Convert other members to thin shims importing from canonical
 3. Update all imports/registry references
 4. Add regression tests for merged behavior

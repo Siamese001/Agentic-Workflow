@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "timestamp": "2026-02-08T13:06:35.294569",
+    "test_suite": "SovereignContractGuard",
+    "version": "1.0.0",
+    "project_root": "C:\\Git\\Agentic-Workflow\\Agentic-Workflow\\tests\\integration",
+    "validators_dir": "C:\\Git\\Agentic-Workflow\\Agentic-Workflow\\tests\\integration\\agentic_core\\L5_safety\\validators"
+  },
+  "summary": {
+    "total_classes_found": 0,
+    "total_classes_tested": 0,
+    "import_validation": {
+      "successful": 0,
+      "failed": 0,
+      "success_rate": 0.0,
+      "missing_subatomic_mixin": 0
+    },
+    "signature_validation": {
+      "valid": 0,
+      "missing_heal_method": 0,
+      "legacy_signatures": 0,
+      "success_rate": 0.0
+    },
+    "mro_validation": {
+      "valid": 0,
+      "shadowing_detected": 0,
+      "missing_mixins": 0,
+      "success_rate": 0.0
+    },
+    "mock_execution": {
+      "successful": 0,
+      "dict_returns": 0,
+      "success_rate": 0.0
+    },
+    "overall_success_rate": 0.0
+  },
+  "detailed_results": {
+    "import_validation": [],
+    "signature_validation": [],
+    "mro_audit": [],
+    "mock_execution": []
+  },
+  "failed_agents": {
+    "import_failures": [],
+    "signature_violations": [],
+    "mro_violations": [],
+    "execution_failures": []
+  },
+  "compliance_status": {
+    "passes_100_percent_requirement": false,
+    "individual_pillar_status": {
+      "import_validation": false,
+      "signature_enforcement": false,
+      "mro_audit": false,
+      "mock_execution": false
+    }
+  }
+}

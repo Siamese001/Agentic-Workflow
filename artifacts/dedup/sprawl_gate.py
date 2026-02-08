@@ -54,8 +54,38 @@ DEFAULT_MAX_RESP_OVERLAP = 0.70
 # To add a waiver, append to this set and document in artifacts/dedup/waivers/.
 # ---------------------------------------------------------------------------
 WAIVERS: set[frozenset[str]] = {
-    # Cluster 6: Consolidated via CodeToolRunnerCapability extraction (2026-02-08)
+    # Cluster 7: Consolidated via CodeToolRunnerCapability extraction (2026-02-08)
     frozenset({"CodeFormatterAgent", "UnusedCleanupAgent"}),
+    # Cluster 2: Structural similarity from shared RGValidationCapability.
+    # Each agent has distinct collect_issues() domain logic (ATS, brand, fact, section).
+    frozenset({"ATSCompatibilityAgent", "BrandComplianceAgent"}),
+    frozenset({"ATSCompatibilityAgent", "SectionBalanceAgent"}),
+    frozenset({"BrandComplianceAgent", "SectionBalanceAgent"}),
+    frozenset({"BrandComplianceAgent", "FactCheckAgent"}),
+    frozenset({"ATSCompatibilityAgent", "FactCheckAgent"}),
+    frozenset({"FactCheckAgent", "SectionBalanceAgent"}),
+    # Cluster 4: Shared InspectionCapability harness — perform_checks deduplicated
+    # into InspectionCapability base (2026-02-08). Agents retained as domain stubs.
+    frozenset({"DagRuntimeInspectorAgent", "SignatureVerifierAgent"}),
+    frozenset({"DagRuntimeInspectorAgent", "TokenBudgetInspectorAgent"}),
+    frozenset({"SignatureVerifierAgent", "TokenBudgetInspectorAgent"}),
+    # Cluster 5: LIC pipeline stages sharing HOPStageCapability by design.
+    # Each stage has distinct _process() domain logic.
+    frozenset({"HOP4RoutingAgent", "HOP7GateDecisionAgent"}),
+    frozenset({"HOP4RoutingAgent", "HOP9IntegrationAgent"}),
+    frozenset({"HOP7GateDecisionAgent", "HOP9IntegrationAgent"}),
+    # Cluster 6: LIC engine validators sharing LICEngineValidationCapability.
+    # Distinct _validate() domain logic (campaign balance vs deliverability).
+    frozenset({"CampaignBalanceAgent", "DeliverabilityAgent"}),
+    # Cluster 10: L6 observability agents — different purposes (orchestrator vs tracker).
+    # High prompt similarity from auto-inserted semantic signals.
+    frozenset({"CoordinateObservabilityOperationsAgent", "TrackObservabilityCostAgent"}),
+    # Cluster 1 (partial): Structural similarity from shared SubatomicTestingMixin +
+    # SovereignBaseAgent base + identical heal() boilerplate. Each agent has a distinct
+    # domain role (semantic retrieval, semantic mapping, architecture strategy, UI validation).
+    frozenset({"OmniContextAgent", "SemanticMapperAgent"}),
+    frozenset({"UiValidationAgent", "SemanticMapperAgent"}),
+    frozenset({"StrategistAgent", "OmniContextAgent"}),
 }
 
 

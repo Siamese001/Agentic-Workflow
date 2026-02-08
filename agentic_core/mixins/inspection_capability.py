@@ -95,7 +95,10 @@ class InspectionCapability:
         target: Any,
         context: dict[str, Any] | None = None,
     ) -> tuple[list[str], dict[str, Any]]:
-        """Execute domain-specific inspection logic. Must be overridden.
+        """Execute domain-specific inspection logic.
+
+        Default implementation provides structural type-checking and metrics
+        collection. Subclasses SHOULD override this with domain-specific logic.
 
         Args:
             target: The object to inspect.
@@ -104,9 +107,19 @@ class InspectionCapability:
         Returns:
             Tuple of (issues list, metrics dict).
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement perform_checks()",
-        )
+        issues: list[str] = []
+        metrics: dict[str, Any] = {}
+
+        if target is None:
+            issues.append("Target is null")
+        elif isinstance(target, dict):
+            metrics["field_count"] = len(target)
+        elif isinstance(target, list):
+            metrics["item_count"] = len(target)
+
+        metrics["type"] = type(target).__name__
+
+        return issues, metrics
 
     def make_heal_result(
         self,

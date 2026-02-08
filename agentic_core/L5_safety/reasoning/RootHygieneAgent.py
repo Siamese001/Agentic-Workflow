@@ -21,8 +21,8 @@ from typing import Any
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.base_agents.decorators import standard_heal
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     HAS_SOVEREIGN_BASE = True
 except ImportError:

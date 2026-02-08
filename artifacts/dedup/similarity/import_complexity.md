@@ -5,16 +5,16 @@ changes to this agent ripple through more of the codebase.
 
 - **Agents analyzed**: 190
 - **Average blast radius**: 4.3
-- **Max blast radius**: FileClassificationAgent (29)
+- **Max blast radius**: FileClassificationAgent (27)
 
 ## Per-Agent Breakdown
 
 | Agent | Layer | Total | Internal | Stdlib | 3rd Party | Blast Radius |
 |-------|-------|-------|----------|--------|-----------|-------------|
-| FileClassificationAgent | L5_safety | 43 | 29 | 12 | 2 | 29 |
+| FileClassificationAgent | L5_safety | 40 | 27 | 11 | 2 | 27 |
 | LocationHealerAgent | L5_safety | 40 | 26 | 12 | 2 | 26 |
+| LocationValidatorAgent | L5_safety | 28 | 22 | 5 | 1 | 22 |
 | SubAtomicRegistryAgent | L2_execution | 33 | 21 | 11 | 1 | 21 |
-| LocationValidatorAgent | L5_safety | 27 | 21 | 5 | 1 | 21 |
 | HierarchyAgent | L5_safety | 26 | 18 | 7 | 1 | 18 |
 | ArchitectureGovernorAgent | L5_safety | 28 | 16 | 11 | 1 | 16 |
 | GenerativeGuardAgent | L5_safety | 25 | 16 | 8 | 1 | 16 |
@@ -35,14 +35,16 @@ changes to this agent ripple through more of the codebase.
 | StructuralValidatorAgent | L5_safety | 18 | 7 | 11 | 0 | 7 |
 | TestCoverageGuardianAgent | L5_safety | 17 | 7 | 9 | 1 | 7 |
 | PeerIntelligenceAuditorAgent | L2_execution | 10 | 6 | 3 | 1 | 6 |
+| DagRuntimeInspectorAgent | L3_orchestration | 7 | 6 | 1 | 0 | 6 |
 | RagHealthCheckAgent | L5_safety | 10 | 6 | 3 | 1 | 6 |
 | RedTeamAgent | L5_safety | 10 | 6 | 3 | 1 | 6 |
 | ReportLocationAgent | L5_safety | 14 | 6 | 7 | 1 | 6 |
+| SignatureVerifierAgent | L5_safety | 9 | 6 | 2 | 1 | 6 |
 | SovereignActionPlaneAgent | L5_safety | 14 | 6 | 7 | 1 | 6 |
 | ReportingAgent | L6_observability | 11 | 6 | 4 | 1 | 6 |
+| HOP1ProfileAnalysisAgent | apps_lic | 12 | 6 | 5 | 1 | 6 |
+| HOP2ResearchAgent | apps_lic | 13 | 6 | 6 | 1 | 6 |
 | OutreachSignalRouterAgent | apps_lic | 13 | 6 | 6 | 1 | 6 |
-| ATSCompatibilityAgent | apps_rg | 12 | 6 | 5 | 1 | 6 |
-| BrandComplianceAgent | apps_rg | 11 | 6 | 4 | 1 | 6 |
 | SovereignRAGManagerAgent | knowledge | 9 | 6 | 3 | 0 | 6 |
 | DocstringComplianceAgent | L0_maintenance | 9 | 5 | 3 | 1 | 5 |
 | SherlockAgent | L1_cognition | 11 | 5 | 5 | 1 | 5 |
@@ -56,12 +58,18 @@ changes to this agent ripple through more of the codebase.
 | InterfaceBoundaryAgent | L5_safety | 9 | 5 | 4 | 0 | 5 |
 | PredictiveCostAuditorAgent | L5_safety | 11 | 5 | 5 | 1 | 5 |
 | SystemArchitectAgent | L5_safety | 12 | 5 | 6 | 1 | 5 |
+| TokenBudgetInspectorAgent | L5_safety | 8 | 5 | 2 | 1 | 5 |
 | CoordinateObservabilityOperationsAgent | L6_observability | 12 | 5 | 6 | 1 | 5 |
 | MetricsAgent | L6_observability | 14 | 5 | 8 | 1 | 5 |
 | TelemetryAgent | L6_observability | 13 | 5 | 7 | 1 | 5 |
 | TrackObservabilityCostAgent | L6_observability | 10 | 5 | 4 | 1 | 5 |
-| HOP1ProfileAnalysisAgent | apps_lic | 10 | 5 | 4 | 1 | 5 |
-| HOP2ResearchAgent | apps_lic | 11 | 5 | 5 | 1 | 5 |
+| HOP3SenderGroundingAgent | apps_lic | 12 | 5 | 6 | 1 | 5 |
+| HOP4RoutingAgent | apps_lic | 10 | 5 | 4 | 1 | 5 |
+| HOP5GenerationAgent | apps_lic | 12 | 5 | 6 | 1 | 5 |
+| HOP6ValidationAgent | apps_lic | 11 | 5 | 5 | 1 | 5 |
+| HOP7GateDecisionAgent | apps_lic | 10 | 5 | 4 | 1 | 5 |
+| HOP8QAReportAgent | apps_lic | 12 | 5 | 6 | 1 | 5 |
+| HOP9IntegrationAgent | apps_lic | 11 | 5 | 5 | 1 | 5 |
 | ASTValidatorAgent | L1_cognition | 10 | 4 | 5 | 1 | 4 |
 | BudgetAgent | L1_cognition | 7 | 4 | 2 | 1 | 4 |
 | LLMPromptGovernorAgent | L1_cognition | 10 | 4 | 5 | 1 | 4 |
@@ -69,7 +77,6 @@ changes to this agent ripple through more of the codebase.
 | GitAgent | L2_execution | 12 | 4 | 7 | 1 | 4 |
 | ToolsmithAgent | L2_execution | 12 | 4 | 7 | 1 | 4 |
 | DAGMutatorAgent | L3_orchestration | 15 | 4 | 6 | 5 | 4 |
-| DagRuntimeInspectorAgent | L3_orchestration | 5 | 4 | 1 | 0 | 4 |
 | OrchestrationHandshakeAgent | L3_orchestration | 9 | 4 | 4 | 1 | 4 |
 | SubAtomicAgent | L3_orchestration | 7 | 4 | 2 | 1 | 4 |
 | sovereign_mcp_router | L3_orchestration | 9 | 4 | 4 | 1 | 4 |
@@ -93,18 +100,10 @@ changes to this agent ripple through more of the codebase.
 | RedSentinelAgent | L5_safety | 13 | 4 | 8 | 1 | 4 |
 | RegressionOracleAgent | L5_safety | 8 | 4 | 3 | 1 | 4 |
 | SelfUpdatingSafetyEngineAgent | L5_safety | 14 | 4 | 9 | 1 | 4 |
-| SignatureVerifierAgent | L5_safety | 9 | 4 | 4 | 1 | 4 |
 | SprawlInspectorAgent | L5_safety | 11 | 4 | 6 | 1 | 4 |
 | PerformanceAnalystAgent | L6_observability | 9 | 4 | 5 | 0 | 4 |
 | RuntimeTelemetryAgent | L6_observability | 9 | 4 | 5 | 0 | 4 |
 | SovereignObservabilityAgent | L6_observability | 8 | 4 | 3 | 1 | 4 |
-| HOP3SenderGroundingAgent | apps_lic | 10 | 4 | 5 | 1 | 4 |
-| HOP4RoutingAgent | apps_lic | 8 | 4 | 3 | 1 | 4 |
-| HOP5GenerationAgent | apps_lic | 10 | 4 | 5 | 1 | 4 |
-| HOP6ValidationAgent | apps_lic | 9 | 4 | 4 | 1 | 4 |
-| HOP7GateDecisionAgent | apps_lic | 8 | 4 | 3 | 1 | 4 |
-| HOP8QAReportAgent | apps_lic | 10 | 4 | 5 | 1 | 4 |
-| HOP9IntegrationAgent | apps_lic | 9 | 4 | 4 | 1 | 4 |
 | LeadQualityAgent | apps_lic | 6 | 4 | 1 | 1 | 4 |
 | PII_SanitizerSpecialistAgent | apps_lic | 12 | 4 | 5 | 3 | 4 |
 | BenchmarkingAgent | L0_maintenance | 13 | 3 | 8 | 2 | 3 |
@@ -131,14 +130,17 @@ changes to this agent ripple through more of the codebase.
 | StructuralEngineerAgent | L5_safety | 9 | 3 | 5 | 1 | 3 |
 | StructureHealerAgent | L5_safety | 15 | 3 | 11 | 1 | 3 |
 | TestGeneratorAgent | L5_safety | 10 | 3 | 6 | 1 | 3 |
-| TokenBudgetInspectorAgent | L5_safety | 9 | 3 | 5 | 1 | 3 |
 | TypeHintFixerAgent | L5_safety | 6 | 3 | 2 | 1 | 3 |
 | TypeMechanicAgent | L5_safety | 6 | 3 | 3 | 0 | 3 |
 | UnusedCleanupAgent | L5_safety | 8 | 3 | 4 | 1 | 3 |
 | toxic_dependency_auditor | L5_safety | 5 | 3 | 2 | 0 | 3 |
 | MetricsWitnessAgent | L6_observability | 8 | 3 | 4 | 1 | 3 |
 | StrategicObservationAgent | L6_observability | 7 | 3 | 4 | 0 | 3 |
+| CampaignBalanceAgent | apps_lic | 8 | 3 | 4 | 1 | 3 |
+| DeliverabilityAgent | apps_lic | 8 | 3 | 4 | 1 | 3 |
 | ValidatorAgent | apps_lic | 8 | 3 | 4 | 1 | 3 |
+| ATSCompatibilityAgent | apps_rg | 8 | 3 | 4 | 1 | 3 |
+| BrandComplianceAgent | apps_rg | 6 | 3 | 2 | 1 | 3 |
 | AppBase | apps_shared | 9 | 3 | 5 | 1 | 3 |
 | BootstrapAgent | L0_maintenance | 5 | 2 | 2 | 1 | 2 |
 | GospelSyncAgent | L0_maintenance | 7 | 2 | 5 | 0 | 2 |
@@ -167,8 +169,6 @@ changes to this agent ripple through more of the codebase.
 | DeadlockDetectorAgent | L6_observability | 9 | 2 | 7 | 0 | 2 |
 | DebateSynthesisAgent | L6_observability | 8 | 2 | 5 | 1 | 2 |
 | TracingAgent | L6_observability | 21 | 2 | 9 | 10 | 2 |
-| CampaignBalanceAgent | apps_lic | 6 | 2 | 3 | 1 | 2 |
-| DeliverabilityAgent | apps_lic | 5 | 2 | 2 | 1 | 2 |
 | GovernanceShieldAgent | apps_lic | 7 | 2 | 4 | 1 | 2 |
 | IntelligenceLibrarianAgent | apps_lic | 6 | 2 | 3 | 1 | 2 |
 | LicS2SupervisorAgent | apps_lic | 4 | 2 | 1 | 1 | 2 |
@@ -180,6 +180,8 @@ changes to this agent ripple through more of the codebase.
 | OutreachValidationExecutorAgent | apps_lic | 7 | 2 | 4 | 1 | 2 |
 | CampaignPlannerAgent | apps_rg | 6 | 2 | 3 | 1 | 2 |
 | ContentQualityAgent | apps_rg | 7 | 2 | 4 | 1 | 2 |
+| FactCheckAgent | apps_rg | 5 | 2 | 2 | 1 | 2 |
+| SectionBalanceAgent | apps_rg | 5 | 2 | 2 | 1 | 2 |
 | DiscoveredAgent | runtime | 8 | 2 | 6 | 0 | 2 |
 | omni_context_engine | L3_orchestration | 3 | 1 | 1 | 1 | 1 |
 | sovereign_reasoning_memory_ledger | L4_state | 7 | 1 | 5 | 1 | 1 |
@@ -195,12 +197,10 @@ changes to this agent ripple through more of the codebase.
 | OutreachAgent__OutreachLearningAgent | apps_lic | 9 | 1 | 8 | 0 | 1 |
 | ContentStrategyAgent | apps_rg | 5 | 1 | 3 | 1 | 1 |
 | DispatchResumeToolsAgent | apps_rg | 11 | 1 | 6 | 4 | 1 |
-| FactCheckAgent | apps_rg | 4 | 1 | 2 | 1 | 1 |
 | ProactiveAgent | apps_rg | 4 | 1 | 2 | 1 | 1 |
 | RgReflectionAgent__RgReflectionAgent | apps_rg | 5 | 1 | 3 | 1 | 1 |
 | RgStrategicPlannerAgent__RgStrategicPlannerAgent | apps_rg | 4 | 1 | 2 | 1 | 1 |
 | RgTemplateOptimizerAgent | apps_rg | 4 | 1 | 2 | 1 | 1 |
-| SectionBalanceAgent | apps_rg | 5 | 1 | 3 | 1 | 1 |
 
 ## Layer Summary
 
@@ -209,12 +209,12 @@ changes to this agent ripple through more of the codebase.
 | L0_maintenance | 6 | 5.2 | 11 |
 | L1_cognition | 12 | 3.2 | 5 |
 | L2_execution | 11 | 4.9 | 21 |
-| L3_orchestration | 14 | 4.0 | 8 |
+| L3_orchestration | 14 | 4.1 | 8 |
 | L4_state | 7 | 3.1 | 4 |
-| L5_safety | 84 | 5.2 | 29 |
+| L5_safety | 84 | 5.2 | 27 |
 | L6_observability | 14 | 4.1 | 8 |
-| apps_lic | 27 | 3.0 | 6 |
-| apps_rg | 12 | 2.0 | 6 |
+| apps_lic | 27 | 3.4 | 6 |
+| apps_rg | 12 | 1.7 | 3 |
 | apps_shared | 1 | 3.0 | 3 |
 | knowledge | 1 | 6.0 | 6 |
 | runtime | 1 | 2.0 | 2 |

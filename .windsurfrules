@@ -138,6 +138,92 @@ L6: Observability (dashboards, telemetry, logging)
 3. Update imports if needed
 4. Re-run agent discovery
 
+## Iteration-Minimization Protocol [2026-02-08]
+**Goal:** Turn each Windsurf run into a self-contained "evidence-producing, invariant-gated, single-commit (or small commit-set) transaction" with pre-scoped blast radius and machine-checkable exit criteria.
+
+### 8. Front-Load an Executable Acceptance Harness
+- Create (or reuse) a single `verify.sh` / `verify.ps1` (or `nox -s verify`) that:
+  - Runs the exact commands that prove invariants.
+  - Prints counts, diffs, and exit codes.
+  - Fails fast on first invariant violation.
+- **"DONE" is contingent on `./verify.sh` returning 0 and pasting the output inline.**
+
+### 9. Make Every Requirement Measurable and AST-Checkable
+- Replace prose like "no forbidden imports" with:
+  - "AST scan of `agentic_core/**/*.py`: `ImportFrom` target X count == 0 (except allowlist files)."
+- Prefer "single scanner script + one test" over ad-hoc greps sprinkled across steps.
+
+### 10. Explicitly Constrain Scope with Allowlist/Denylist
+- For enforcement: define exact allowed files and exact forbidden import targets up front.
+- For test isolation: define which directories are in `unit_min_deps` collection and which are excluded.
+- **Effect:** Prevents "found unrelated violations" detours.
+
+### 11. Enforce "No Narrative, Only Artifacts"
+- Required output bundle for every run:
+  - `git show --stat`
+  - `git diff --name-status`
+  - `pytest` outputs for each target
+  - Scanner outputs
+  - Pre-commit output
+- **If any artifact is missing, the run is considered failed.**
+
+### 12. Commit Slicing with Hard Boundaries
+- Predeclare commits with exact file sets and invariants per commit.
+- Example:
+  - **Commit A:** Only shim/canonical move + identity tests (no unrelated edits).
+  - **Commit B:** Only import rewrites + scanner count goes to zero.
+  - **Commit C:** Only test isolation + marker runs succeed.
+- **Effect:** Smaller diffs, fewer accidental regressions, easier review.
+
+### 13. Stop Conditions and Escalation Rules
+- If Windsurf hits unrelated failures (e.g., pre-existing pydantic-dependent unit tests), it must:
+  - Classify as "pre-existing."
+  - Propose one of 2 deterministic options you pre-approve (move/mark/ignore_collect).
+  - Pick the option without asking.
+- **Effect:** Avoids long loops about "this is pre-existing."
+
+### 14. Repo-Specific Policy Matrix
+Provide a short table at top of prompt to eliminate interpretation drift:
+
+| Domain | Policy |
+|---|---|
+| Unit tests | Must run without optional deps; collection must not error |
+| Integration tests | Must fail when selected and deps missing; must pass under deps |
+| Shims | Re-export-only; canonicals: local definitions only |
+| Evidence | Required commands + outputs per §11 |
+
+### 15. Idempotent Replay Design
+- Re-run `verify` at **start** and **end** of every run.
+- If already compliant, do nothing and only output evidence.
+- **Effect:** Prevents unnecessary changes and reduces iterations caused by redundant edits.
+
+### 16. Diff Budget and Blast Radius Limiter
+- **"No more than N files modified unless explicitly listed."**
+- If more are needed, **stop and produce a plan + counts first.**
+- **Effect:** Prevents surprise wide refactors that create new review cycles.
+
+### 17. Pre-Bake Templates for Recurring Tasks
+Have reusable prompt blocks for:
+- AST enforcement creation
+- Markerization + pytest isolation
+- Nox/tox runner creation
+- Evidence report format
+- **Effect:** Reduces prompt drafting iterations and interpretation mismatches.
+
+### 18. Phase Gates for Early Failure Detection
+After each phase, run only the minimal gate for that phase:
+- After import rewrites: run scanner + a small smoke test.
+- After markers: run `pytest -m unit_min_deps -q`.
+- After integration runner: run `nox -s integration`.
+- **Effect:** Catches errors at the smallest change point.
+
+### 19. Pre-Existing Landmines as First-Class Tracked Artifact
+- Generate `known_failures.md` (or JSON) with:
+  - File, reason, dependency, recommended classification (unit vs integration).
+  - Proposed remediation path.
+- Windsurf must either **fix** or **reclassify** them in the same run.
+- **Effect:** Avoids repeated rediscovery across iterations.
+
 ## References
 - **RCA Reports:** See `RCA_*.md` files for root cause analyses
 - **Boundary Tests:** `BOUNDARY_STRESS_TEST_FINDINGS.md`

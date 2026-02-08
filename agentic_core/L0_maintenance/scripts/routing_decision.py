@@ -10,14 +10,12 @@ import json
 import re
 import shutil
 
-# Import the SSOT routing configuration
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-sys.path.append(str(Path(__file__).parent / "agentic_core" / "L5_safety" / "validators"))
-from structure_blueprint import (
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     ARTIFACT_ROUTING_MAP,
     AST_PLACEMENT_SIGNALS,
     LEGACY_AST_SIGNALS,
@@ -26,10 +24,6 @@ from structure_blueprint import (
     TEST_TYPE_SIGNALS,
     get_validated_project_root,
 )
-
-# Import SovereignBaseAgent for inheritance
-sys.path.append(str(Path(__file__).parent.parent.parent.parent / "base_agents"))
-from SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass

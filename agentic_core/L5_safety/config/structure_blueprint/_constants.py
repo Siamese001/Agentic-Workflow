@@ -10,14 +10,26 @@ from HERE, eliminating circular dependency patterns.
 Contents:
   - SubfolderDefinition / TerritoryDefinition TypedDicts
   - LAYER_OVERRIDES (layer-specific template overrides)
-  - build_sovereign_territories() and helpers
+  - build_sovereign_territories() and private helpers
   - SOVEREIGN_TERRITORIES (materialized at import time)
-  - ROOT_WHITELIST (materialized from SOVEREIGN_TERRITORIES keys)
+  - ROOT_WHITELIST (frozenset, materialized from SOVEREIGN_TERRITORIES keys)
+
+Design rationale:
+  The private builder functions (_build_lcd_subfolders_template,
+  _build_layer_definition) are co-located with LAYER_OVERRIDES and
+  build_sovereign_territories() because they form a single build pipeline
+  that runs exactly once at import time.  They are:
+    - pure and deterministic (no I/O, no side-effects),
+    - consumed only within this module,
+    - prefixed with underscore to signal internal use.
+  Extracting them into a separate module would add an unnecessary node to
+  the dependency graph with no maintainability benefit.
 """
 
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from types import MappingProxyType
 from typing import Any, Final, TypedDict
 
 # ============================================================================
@@ -914,9 +926,27 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     return territories
 
 
-# Build and export at import time
-SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = build_sovereign_territories()
+def _deep_freeze(obj: Any) -> Any:
+    """Recursively convert mutable containers to immutable equivalents.
 
-# Materialized at import time — consumers get a real set, not a lazy proxy.
-# This is the canonical set of top-level territory names.
-ROOT_WHITELIST: set[str] = set(SOVEREIGN_TERRITORIES.keys())
+    - dict  → MappingProxyType (wrapping recursed values)
+    - list  → tuple (of recursed elements)
+    - set   → frozenset (of recursed elements)
+    - other → returned as-is (str, int, bool, None, etc.)
+    """
+    if isinstance(obj, dict):
+        return MappingProxyType({k: _deep_freeze(v) for k, v in obj.items()})
+    if isinstance(obj, list):
+        return tuple(_deep_freeze(item) for item in obj)
+    if isinstance(obj, set):
+        return frozenset(_deep_freeze(item) for item in obj)
+    return obj
+
+
+# Build and deep-freeze at import time
+SOVEREIGN_TERRITORIES: Final[Mapping[str, Any]] = _deep_freeze(build_sovereign_territories())
+
+# Materialized at import time — consumers get a real frozenset, not a lazy proxy.
+# frozenset guarantees immutability: no downstream code can accidentally mutate
+# the SSOT whitelist and cause global side-effects.
+ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
