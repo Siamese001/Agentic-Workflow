@@ -17,52 +17,32 @@ import logging
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.timeout_decorator import timeout
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.mixins.inspection_capability import (
     InspectionCapability,
     InspectionResult,
 )
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
 class SignatureVerifierAgent(
     InspectionCapability,
-    SubatomicTestingMixin,
     SovereignBaseAgent,
 ):
     """Verification inspector for file and agent signatures."""
 
     INSPECTION_LOG_PREFIX = "Running signature verification..."
 
-    def __init__(self, config: dict[str, Any] | None = None) -> None:
+    def __init__(self, inspector_config: dict[str, Any] | None = None) -> None:
         """Initialize the verifier."""
         super().__init__()
-        self.config = config or {}
+        self._inspector_config = inspector_config or {}
         Logger.info("Initialized %s", self.__class__.__name__)
 
-    def perform_checks(
-        self,
-        target: Any,
-        context: dict[str, Any] | None = None,
-    ) -> tuple[list[str], dict[str, Any]]:
-        """Verify a target object for integrity issues."""
-        issues: list[str] = []
-        metrics: dict[str, Any] = {}
-
-        if target is None:
-            issues.append("Target is null")
-        elif isinstance(target, dict):
-            metrics["field_count"] = len(target)
-        elif isinstance(target, list):
-            metrics["item_count"] = len(target)
-
-        metrics["type"] = type(target).__name__
-
-        return issues, metrics
+    # perform_checks() inherited from InspectionCapability (default structural checks).
+    # Override here when domain-specific signature verification logic is added.
 
     def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
         """Run verification via InspectionCapability harness."""

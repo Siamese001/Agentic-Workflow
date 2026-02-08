@@ -26,7 +26,7 @@ class CoreIntegrityVerifier:
     For now, it dynamically calculates self-consistency.
     """
 
-    CORE_PATH: Final[Path] = Path(__file__).parent.parent.absolute() / "base_agents"
+    CORE_PATH: Final[Path] = Path(__file__).parent.parent.parent.absolute() / "base_agents"
     GOLDEN_SEAL_FILE: Final[Path] = Path(__file__).parent.absolute() / ".core_golden_seal"
 
     @classmethod
@@ -66,8 +66,8 @@ class CoreIntegrityVerifier:
                     import shutil
 
                     shutil.rmtree(pycache)
-                except Exception:
-                    pass  # Ignore cleanup errors
+                except OSError:
+                    continue  # pycache removal is best-effort; skip on permission/lock errors
 
         if unsafe_files:
             raise ConfigurationError(f"Integrity Breach: Unsafe artifacts found in Core: {unsafe_files}")

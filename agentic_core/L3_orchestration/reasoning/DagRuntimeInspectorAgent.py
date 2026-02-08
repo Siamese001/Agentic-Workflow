@@ -7,50 +7,30 @@ Refactored: 2026-02-08 (Cluster 1B — InspectionCapability extraction)
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.inspection_capability import (
     InspectionCapability,
     InspectionResult,
 )
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class DagRuntimeInspectorAgent(
     InspectionCapability,
     AtomicExecutionMixin,
-    SubatomicTestingMixin,
     SovereignBaseAgent,
 ):
     """Runtime diagnostics inspector for DAG execution graphs."""
 
     INSPECTION_LOG_PREFIX = "Running DAG runtime diagnostics..."
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, inspector_config: dict[str, Any] | None = None):
         """Initialize the inspector."""
         super().__init__()
-        self.config = config or {}
+        self._inspector_config = inspector_config or {}
 
-    def perform_checks(
-        self,
-        target: Any,
-        context: dict[str, Any] | None = None,
-    ) -> tuple[list[str], dict[str, Any]]:
-        """Inspect a target object for structural issues."""
-        issues: list[str] = []
-        metrics: dict[str, Any] = {}
-
-        if target is None:
-            issues.append("Target is null")
-        elif isinstance(target, dict):
-            metrics["field_count"] = len(target)
-        elif isinstance(target, list):
-            metrics["item_count"] = len(target)
-
-        metrics["type"] = type(target).__name__
-
-        return issues, metrics
+    # perform_checks() inherited from InspectionCapability (default structural checks).
+    # Override here when domain-specific DAG runtime logic is added.
 
     def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
         """Run diagnostics via InspectionCapability harness."""
