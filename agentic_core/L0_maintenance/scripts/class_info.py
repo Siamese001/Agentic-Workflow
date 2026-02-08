@@ -277,7 +277,7 @@ def find_modern_equivalent(file_path: Path, file_name: str) -> tuple[str | None,
     return (None, "REVIEW_NEEDED")
 
 
-def classify_file(analysis: FileAnalysis) -> tuple[str, str, str, str]:
+def classify_migration_disposition(analysis: FileAnalysis) -> tuple[str, str, str, str]:
     """Classify file and determine action.
 
     Returns:
@@ -475,7 +475,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
             analysis.docstring = f"ANALYSIS_ERROR: {e}"
 
     # Classification
-    classification, action, justification, risk = classify_file(analysis)
+    classification, action, justification, risk = classify_migration_disposition(analysis)
     analysis.classification = classification
     analysis.recommended_action = action
     analysis.justification = justification

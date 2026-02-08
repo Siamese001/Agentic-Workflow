@@ -33,6 +33,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.core.classification_kernel import classification_cache_context
 from agentic_core.L0_maintenance.utils.ssot_discovery_util import (
     get_healers,
     invalidate_cache,
@@ -154,16 +155,19 @@ def main() -> bool:
         except Exception as e:
             raise DiscoveryError(f"Project root validation failed: {e}")
 
-        # Load agent discovery data from SSOT (The List)
-        raw_agents = load_agent_discovery(project_root, force_reload=True)
-        raw_agents = sorted(
-            raw_agents,
-            key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", "")),
-        )
-        Logger.info(f"[DISCOVERY] Loaded {len(raw_agents)} candidates from SSOT registry")
+        # Run discovery inside a cache context so classifications are fresh
+        # on entry and don't leak stale state to subsequent operations.
+        with classification_cache_context():
+            # Load agent discovery data from SSOT (The List)
+            raw_agents = load_agent_discovery(project_root, force_reload=True)
+            raw_agents = sorted(
+                raw_agents,
+                key=lambda a: (a.get("layer", ""), a.get("name", a.get("class_name", "")), a.get("path", a.get("file", ""))),
+            )
+            Logger.info(f"[DISCOVERY] Loaded {len(raw_agents)} candidates from SSOT registry")
 
-        # Perform Deep AST Integrity Scan (The Verification)
-        valid_agents, validation_stats = perform_deep_integrity_scan(raw_agents, project_root)
+            # Perform Deep AST Integrity Scan (The Verification)
+            valid_agents, validation_stats = perform_deep_integrity_scan(raw_agents, project_root)
 
         # Log Validation Results
         Logger.info("[DISCOVERY] Deep Scan Complete:")
@@ -196,13 +200,18 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     """
     Performs deep AST analysis on a file to verify it is a legitimate Agent.
 
-    Criteria matches FileClassificationAgent logic:
-    1. Checks for STUB markers (Priority 1)
-    2. Parses AST for ClassDef
-    3. Verifies Inheritance (SovereignBaseAgent, etc.)
-    4. Verifies Decorators (@agent)
-    5. Verifies Method Signatures (execute, act, run)
+    [REFACTORED 2026-02-08] Classification decision now delegated to the
+    zero-dependency kernel (agentic_core.core.classification_kernel).
+    This function still extracts metadata (inheritance, decorators, methods)
+    for the integrity report but no longer uses bespoke class_score() logic.
+
+    Steps:
+    1. Kernel classification (AGENT vs other FileType)
+    2. AST metadata extraction (inheritance, decorators, methods)
+    3. Integrity report generation
     """
+    from agentic_core.core.classification_kernel import classify_file_standalone
+
     report = AgentIntegrityReport(path=file_path)
 
     if not file_path.exists():
@@ -212,17 +221,22 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     try:
         report.file_size_bytes = file_path.stat().st_size
         report.file_sha256 = sha256_file(file_path)
-        content = file_path.read_text(encoding="utf-8", errors="replace")
 
-        # [CRITICAL] Priority 1: Explicit Stub Detection
-        # Mirrors FileClassificationAgent logic exactly
-        head = "\n".join(content.splitlines()[:60])
-        if any(line.strip() == "NOT_AN_AGENT" for line in head.splitlines()):
+        # --- KERNEL CLASSIFICATION (SSOT) ---
+        file_type = classify_file_standalone(file_path)
+
+        if file_type == "STUB":
             report.is_stub = True
             report.is_valid = False
             report.rejection_reason = "Explicit NOT_AN_AGENT marker found"
             report.architectural_role = "STUB"
             return report
+
+        if file_type == "IGNORE":
+            report.rejection_reason = "File ignored by kernel (empty, critical, or unparseable)"
+            return report
+
+        content = file_path.read_text(encoding="utf-8", errors="replace")
 
         try:
             tree = ast.parse(content)
@@ -231,93 +245,65 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
             report.rejection_reason = report.parse_error
             return report
 
-        # Markers for synthesis
-        has_agent_inheritance = False
-        has_agent_decorator = False
-        has_execute_method = False
+        # --- AST METADATA EXTRACTION (for integrity report) ---
         class_nodes: list[ast.ClassDef] = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
         if not class_nodes:
             report.rejection_reason = "No ClassDef nodes"
             return report
 
-        # Deterministic selection: score by explicit agent bases, then name signals, then critical methods
         def extract_mro_signature(cls: ast.ClassDef) -> list[str]:
             return [safe_unparse(b) for b in cls.bases]
 
-        def class_score(cls: ast.ClassDef) -> int:
-            bases = " ".join(extract_mro_signature(cls))
-            methods = [i.name for i in cls.body if isinstance(i, ast.FunctionDef | ast.AsyncFunctionDef)]
-            s = 0
-            if "SovereignBaseAgent" in bases or "BaseAgent" in bases:
-                s += 100
-            if "Agent" in cls.name:
-                s += 10
-            if "Healer" in cls.name:
-                s += 5
-            if "heal" in methods:
-                s += 20
-            if any(m in methods for m in ("execute", "run", "act")):
-                s += 8
-            return s
-
-        chosen = sorted(class_nodes, key=lambda c: (class_score(c), c.name), reverse=True)[0]
-        if class_score(chosen) <= 0:
-            report.rejection_reason = "No viable agent-like class (score<=0)"
-            return report
+        # Select primary class: prefer name matching filename stem, then first with "Agent"
+        import re as _re
+        stem_clean = _re.sub(r"[^a-zA-Z0-9]", "", file_path.stem.lower())
+        chosen = class_nodes[0]
+        for node in class_nodes:
+            if _re.sub(r"[^a-zA-Z0-9]", "", node.name.lower()) == stem_clean:
+                chosen = node
+                break
 
         report.class_name = chosen.name
         report.mro_signature = extract_mro_signature(chosen)
-        report.selection_reason = "Selected highest-scoring ClassDef deterministically"
+        report.selection_reason = "Primary class selected by filename stem match"
 
-        # Check Inheritance
+        # Extract Inheritance
         for base_expr in chosen.bases:
             base_id = safe_unparse(base_expr)
             if base_id:
                 report.inheritance.append(base_id)
-
-                # Detect Base Agents vs Implementations
                 if "BaseAgent" in base_id:
                     report.is_base_agent = True
                     report.architectural_role = "BASE_AGENT"
-                    has_agent_inheritance = True
-                elif "Agent" in base_id:
-                    has_agent_inheritance = True
 
-        # Check Decorators
+        # Extract Decorators
         for dec in chosen.decorator_list:
             dec_id = ""
             if isinstance(dec, ast.Name):
                 dec_id = dec.id
             elif isinstance(dec, ast.Attribute):
                 dec_id = dec.attr
-
             if dec_id:
                 report.decorators.append(dec_id)
-                if dec_id in ["agent", "sovereign_agent", "register_agent"]:
-                    has_agent_decorator = True
 
-        # Check Methods
+        # Extract Critical Methods
         for item in chosen.body:
             if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                 if item.name in ["execute", "act", "run", "heal"]:
                     report.critical_methods.append(item.name)
-                    has_execute_method = True
 
-        # [SYNTHESIS] Determine Validity
-        # A valid agent must have Inheritance OR Decorator OR (Execute method + 'Agent' in name)
-        is_named_agent = report.class_name and "Agent" in report.class_name
-
-        if report.is_base_agent:
-            report.is_valid = True  # Base agents are valid architectural components
-        elif has_agent_inheritance or has_agent_decorator:
+        # --- VALIDITY DECISION (kernel-based) ---
+        if file_type == "AGENT":
             report.is_valid = True
-            report.architectural_role = "AGENT"
-        elif is_named_agent and has_execute_method:
+            if not report.architectural_role:
+                report.architectural_role = "AGENT"
+        elif report.is_base_agent:
             report.is_valid = True
-            report.architectural_role = "AGENT (Implicit)"
         else:
             report.is_valid = False
-            report.rejection_reason = "Lacks Agent inheritance, decorators, or execution patterns"
+            report.rejection_reason = (
+                f"Kernel classified as {file_type}, not AGENT"
+            )
 
         return report
 
@@ -340,7 +326,7 @@ def perform_deep_integrity_scan(
 
     for agent_entry in agents:
         # Normalize path
-        rel_path = agent_entry.get("path", "")
+        rel_path = agent_entry.get("path", "") or agent_entry.get("file", "")
         if not rel_path:
             stats["invalid"] += 1
             continue
@@ -477,7 +463,7 @@ def discover_all_agents(strict_mode: bool = True) -> list[dict[str, Any]]:
         raw_agents = load_agent_discovery(project_root)
         raw_agents = sorted(
             raw_agents,
-            key=lambda a: (a.get("layer", ""), a.get("name", ""), a.get("path", "")),
+            key=lambda a: (a.get("layer", ""), a.get("name", a.get("class_name", "")), a.get("path", a.get("file", ""))),
         )
 
         if not strict_mode:
@@ -563,7 +549,7 @@ def get_structured_agent_paths() -> list[str]:
         paths = []
 
         for agent in agents:
-            path = agent.get("path", "")
+            path = agent.get("path", "") or agent.get("file", "")
             if path:
                 normalized_path = path.replace("\\", "/")
                 paths.append(normalized_path)
@@ -664,10 +650,10 @@ def cli_interface() -> None:
             print(f"Found {stats['invalid']} invalid agents:")
             for agent in raw:
                 # Re-run single analysis to print reason (inefficient but fine for CLI)
-                path = project_root / agent.get("path", "")
+                path = project_root / (agent.get("path", "") or agent.get("file", ""))
                 report = analyze_agent_integrity(path)
                 if not report.is_valid and not report.is_stub:
-                    print(f"  - {agent.get('name')}: {report.rejection_reason}")
+                    print(f"  - {agent.get('name', agent.get('class_name', '?'))}: {report.rejection_reason}")
 
         else:
             # Default: run full discovery

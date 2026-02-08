@@ -1,27 +1,14 @@
 {
-  "schema_version": "3.0.0-lcd-plus",
-  "generated_at": "2026-02-07T09:20:00Z",
-  "total_agents": 175,
+  "schema_version": "3.1.0-lcd-plus",
+  "generated_at": "2026-02-08T12:55:42Z",
+  "total_agents": 190,
   "agents": [
-    {
-      "file": "agentic_core\\base_agents\\SovereignBaseAgent.py",
-      "module": "agentic_core\\base_agents\\SovereignBaseAgent",
-      "class_name": "SovereignBaseAgent",
-      "layer": "base_agents",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\knowledge\\document_loaders\\SovereignRAGManagerAgent.py",
-      "module": "agentic_core\\knowledge\\document_loaders\\SovereignRAGManagerAgent",
-      "class_name": "SovereignRAGManagerAgent",
-      "layer": "unknown",
-      "exists": true
-    },
     {
       "file": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
       "module": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent",
       "class_name": "BenchmarkingAgent",
       "layer": "L0_maintenance",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -29,6 +16,7 @@
       "module": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent",
       "class_name": "BootstrapAgent",
       "layer": "L0_maintenance",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -36,20 +24,31 @@
       "module": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent",
       "class_name": "DocstringComplianceAgent",
       "layer": "L0_maintenance",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\scripts\\fs_reconciler_agent.py",
-      "module": "agentic_core\\L0_maintenance\\scripts\\fs_reconciler_agent",
-      "class_name": "fs_reconciler_agent",
+      "file": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+      "module": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent",
+      "class_name": "FilesystemSSOTReconcilerAgent",
       "layer": "L0_maintenance",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\scripts\\gospel_sync_agent.py",
-      "module": "agentic_core\\L0_maintenance\\scripts\\gospel_sync_agent",
-      "class_name": "gospel_sync_agent",
+      "file": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
+      "module": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent",
+      "class_name": "GospelSyncAgent",
       "layer": "L0_maintenance",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
+      "module": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent",
+      "class_name": "SSOTFolderCleanupAgent",
+      "layer": "L0_maintenance",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -57,6 +56,15 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent",
       "class_name": "ASTValidatorAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent.py",
+      "module": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent",
+      "class_name": "AgentInfo",
+      "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -64,6 +72,7 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\AutonomousPromptEvolutionAgent",
       "class_name": "AutonomousPromptEvolutionAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -71,13 +80,15 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\BudgetAgent",
       "class_name": "BudgetAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L1_cognition\\reasoning\\context_curator_agent.py",
-      "module": "agentic_core\\L1_cognition\\reasoning\\context_curator_agent",
-      "class_name": "context_curator_agent",
+      "file": "agentic_core\\L1_cognition\\reasoning\\ContextCuratorAgent.py",
+      "module": "agentic_core\\L1_cognition\\reasoning\\ContextCuratorAgent",
+      "class_name": "ContextCuratorAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -85,6 +96,7 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\LLMPromptGovernorAgent",
       "class_name": "LLMPromptGovernorAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -92,27 +104,23 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\MetaLearningAgent",
       "class_name": "MetaLearningAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L1_cognition\\reasoning\\reflection_agent.py",
-      "module": "agentic_core\\L1_cognition\\reasoning\\reflection_agent",
-      "class_name": "reflection_agent",
+      "file": "agentic_core\\L1_cognition\\reasoning\\RgReflectionAgent.py",
+      "module": "agentic_core\\L1_cognition\\reasoning\\RgReflectionAgent",
+      "class_name": "RgReflectionAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L1_cognition\\reasoning\\sherlock_agent.py",
-      "module": "agentic_core\\L1_cognition\\reasoning\\sherlock_agent",
-      "class_name": "sherlock_agent",
+      "file": "agentic_core\\L1_cognition\\reasoning\\SherlockAgent.py",
+      "module": "agentic_core\\L1_cognition\\reasoning\\SherlockAgent",
+      "class_name": "SherlockAgent",
       "layer": "L1_cognition",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent.py",
-      "module": "agentic_core\\L1_cognition\\reasoning\\SovereignCognitivePlaneAgent",
-      "class_name": "SovereignCognitivePlaneAgent",
-      "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -120,13 +128,15 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\StrategicRecommendationAgent",
       "class_name": "StrategicRecommendationAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L1_cognition\\reasoning\\strategist_agent.py",
-      "module": "agentic_core\\L1_cognition\\reasoning\\strategist_agent",
-      "class_name": "strategist_agent",
+      "file": "agentic_core\\L1_cognition\\reasoning\\StrategistAgent.py",
+      "module": "agentic_core\\L1_cognition\\reasoning\\StrategistAgent",
+      "class_name": "StrategistAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -134,664 +144,935 @@
       "module": "agentic_core\\L1_cognition\\reasoning\\SupremeCourtAgent",
       "class_name": "SupremeCourtAgent",
       "layer": "L1_cognition",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\enforcement\\EmbeddingSovereignAgent.py",
-      "module": "agentic_core\\L2_execution\\enforcement\\EmbeddingSovereignAgent",
+      "file": "agentic_core\\L2_execution\\reasoning\\StructuredEngineAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\StructuredEngineAgent",
+      "class_name": "AgentPlan",
+      "layer": "L2_execution",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\EmbeddingSovereignAgent",
       "class_name": "EmbeddingSovereignAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\enforcement\\SovereignMCPGatewayAgent.py",
-      "module": "agentic_core\\L2_execution\\enforcement\\SovereignMCPGatewayAgent",
+      "file": "agentic_core\\L2_execution\\reasoning\\GitAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\GitAgent",
+      "class_name": "GitAgent",
+      "layer": "L2_execution",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L2_execution\\reasoning\\HistorianAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\HistorianAgent",
+      "class_name": "HistorianAgent",
+      "layer": "L2_execution",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L2_execution\\reasoning\\PeerIntelligenceAuditorAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\PeerIntelligenceAuditorAgent",
+      "class_name": "PeerIntelligenceAuditorAgent",
+      "layer": "L2_execution",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L2_execution\\reasoning\\RgStrategicPlannerAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\RgStrategicPlannerAgent",
+      "class_name": "RgStrategicPlannerAgent",
+      "layer": "L2_execution",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L2_execution\\reasoning\\SovereignMCPGatewayAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\SovereignMCPGatewayAgent",
       "class_name": "SovereignMCPGatewayAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\enforcement\\SovereignPineconeMcpClientAgent.py",
-      "module": "agentic_core\\L2_execution\\enforcement\\SovereignPineconeMcpClientAgent",
+      "file": "agentic_core\\L2_execution\\reasoning\\SovereignPineconeMcpClientAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\SovereignPineconeMcpClientAgent",
       "class_name": "SovereignPineconeMcpClientAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\reasoning\\structured_engine_agent.py",
-      "module": "agentic_core\\L2_execution\\reasoning\\structured_engine_agent",
-      "class_name": "structured_engine_agent",
+      "file": "agentic_core\\L2_execution\\reasoning\\sub_atomic_registry.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\sub_atomic_registry",
+      "class_name": "SubAtomicRegistryAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\tools\\historian_agent.py",
-      "module": "agentic_core\\L2_execution\\tools\\historian_agent",
-      "class_name": "historian_agent",
+      "file": "agentic_core\\L2_execution\\reasoning\\ToolsmithAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\ToolsmithAgent",
+      "class_name": "ToolsmithAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\tools\\strategic_planner_agent.py",
-      "module": "agentic_core\\L2_execution\\tools\\strategic_planner_agent",
-      "class_name": "strategic_planner_agent",
+      "file": "agentic_core\\L2_execution\\reasoning\\UiValidationAgent.py",
+      "module": "agentic_core\\L2_execution\\reasoning\\UiValidationAgent",
+      "class_name": "UiValidationAgent",
       "layer": "L2_execution",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L2_execution\\tools\\toolsmith_agent.py",
-      "module": "agentic_core\\L2_execution\\tools\\toolsmith_agent",
-      "class_name": "toolsmith_agent",
-      "layer": "L2_execution",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L2_execution\\tools\\ui_validation_agent.py",
-      "module": "agentic_core\\L2_execution\\tools\\ui_validation_agent",
-      "class_name": "ui_validation_agent",
-      "layer": "L2_execution",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\agent_factory_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\agent_factory_agent",
-      "class_name": "agent_factory_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\UnifiedAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\UnifiedAgent",
+      "class_name": "AgentCategory",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\nervous_system_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\nervous_system_agent",
-      "class_name": "nervous_system_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\AgentFactory.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\AgentFactory",
+      "class_name": "AgentFactory",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\semantic_gatekeeper_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\semantic_gatekeeper_agent",
-      "class_name": "semantic_gatekeeper_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\agent_gym_engine.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\agent_gym_engine",
+      "class_name": "AgentGym",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\sub_atomic_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\sub_atomic_agent",
-      "class_name": "sub_atomic_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\coverage_engine.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\coverage_engine",
+      "class_name": "CoverageAgent",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\subatomic_hop_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\subatomic_hop_agent",
-      "class_name": "subatomic_hop_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\DAGMutatorAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\DAGMutatorAgent",
+      "class_name": "DAGMutatorAgent",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L3_orchestration\\reasoning\\unified_agent.py",
-      "module": "agentic_core\\L3_orchestration\\reasoning\\unified_agent",
-      "class_name": "unified_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent",
+      "class_name": "DagRuntimeInspectorAgent",
       "layer": "L3_orchestration",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L4_state\\memory\\cartographer_agent.py",
-      "module": "agentic_core\\L4_state\\memory\\cartographer_agent",
-      "class_name": "cartographer_agent",
+      "file": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent",
+      "class_name": "NervousSystemAgent",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\orchestration_handshake.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\orchestration_handshake",
+      "class_name": "OrchestrationHandshakeAgent",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\SemanticGatekeeperAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\SemanticGatekeeperAgent",
+      "class_name": "SemanticGatekeeperAgent",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\SubAtomicAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\SubAtomicAgent",
+      "class_name": "SubAtomicAgent",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\SubatomicHopAgent.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\SubatomicHopAgent",
+      "class_name": "SubatomicHopAgent",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\context_curator_engine.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\context_curator_engine",
+      "class_name": "context_curator_engine",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\omni_context_engine.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\omni_context_engine",
+      "class_name": "omni_context_engine",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L3_orchestration\\reasoning\\sovereign_mcp_router.py",
+      "module": "agentic_core\\L3_orchestration\\reasoning\\sovereign_mcp_router",
+      "class_name": "sovereign_mcp_router",
+      "layer": "L3_orchestration",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L4_state\\reasoning\\cached_state_ledger.py",
+      "module": "agentic_core\\L4_state\\reasoning\\cached_state_ledger",
+      "class_name": "CachedStateLedgerAgent",
       "layer": "L4_state",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L4_state\\memory\\memory_architect_agent.py",
-      "module": "agentic_core\\L4_state\\memory\\memory_architect_agent",
-      "class_name": "memory_architect_agent",
+      "file": "agentic_core\\L4_state\\reasoning\\CartographerAgent.py",
+      "module": "agentic_core\\L4_state\\reasoning\\CartographerAgent",
+      "class_name": "CartographerAgent",
       "layer": "L4_state",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L4_state\\memory\\pinecone_agent.py",
-      "module": "agentic_core\\L4_state\\memory\\pinecone_agent",
-      "class_name": "pinecone_agent",
+      "file": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent.py",
+      "module": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent",
+      "class_name": "MemoryArchitectAgent",
       "layer": "L4_state",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L4_state\\memory\\redis_agent.py",
-      "module": "agentic_core\\L4_state\\memory\\redis_agent",
-      "class_name": "redis_agent",
+      "file": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent.py",
+      "module": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent",
+      "class_name": "RedisSovereignAgent",
       "layer": "L4_state",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\adversarial_red_teamer_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\adversarial_red_teamer_agent",
-      "class_name": "adversarial_red_teamer_agent",
+      "file": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent.py",
+      "module": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent",
+      "class_name": "SovereignPineconeStoreAgent",
+      "layer": "L4_state",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L4_state\\memory\\sovereign_reasoning_memory_ledger.py",
+      "module": "agentic_core\\L4_state\\memory\\sovereign_reasoning_memory_ledger",
+      "class_name": "sovereign_reasoning_memory_ledger",
+      "layer": "L4_state",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L4_state\\memory\\sovereign_semantic_cache.py",
+      "module": "agentic_core\\L4_state\\memory\\sovereign_semantic_cache",
+      "class_name": "sovereign_semantic_cache",
+      "layer": "L4_state",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\AdversarialProbeAgent",
+      "class_name": "AdversarialProbeAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\architecture_governor_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\architecture_governor_agent",
-      "class_name": "architecture_governor_agent",
+      "file": "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent",
+      "class_name": "AdversarialRedTeamerAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\autonomous_threat_evolution_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\autonomous_threat_evolution_agent",
-      "class_name": "autonomous_threat_evolution_agent",
+      "file": "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent",
+      "class_name": "AgentPermission",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\cached_safety_shield_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\cached_safety_shield_agent",
-      "class_name": "cached_safety_shield_agent",
+      "file": "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ArchitectureGovernorAgent",
+      "class_name": "ArchitectureGovernorAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\code_formatter_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\code_formatter_agent",
-      "class_name": "code_formatter_agent",
+      "file": "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\AutonomousThreatEvolutionAgent",
+      "class_name": "AutonomousThreatEvolutionAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\enforcement\\compliance_aggregator_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\compliance_aggregator_agent",
-      "class_name": "compliance_aggregator_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\constitutional_overseer_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\constitutional_overseer_agent",
-      "class_name": "constitutional_overseer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\dependency_pruning_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\dependency_pruning_agent",
-      "class_name": "dependency_pruning_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\dynamic_seal_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\dynamic_seal_agent",
-      "class_name": "dynamic_seal_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\generative_guard_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\generative_guard_agent",
-      "class_name": "generative_guard_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\git_hygiene_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\git_hygiene_agent",
-      "class_name": "git_hygiene_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\git_safety_handler_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\git_safety_handler_agent",
-      "class_name": "git_safety_handler_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\governance_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\governance_agent",
-      "class_name": "governance_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\gravity_leak_repair_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\gravity_leak_repair_agent",
-      "class_name": "gravity_leak_repair_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\pii_sanitizer_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\pii_sanitizer_agent",
-      "class_name": "pii_sanitizer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\enforcement\\unused_cleanup_agent.py",
-      "module": "agentic_core\\L5_safety\\enforcement\\unused_cleanup_agent",
-      "class_name": "unused_cleanup_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\adversarial_probe_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\adversarial_probe_agent",
-      "class_name": "adversarial_probe_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\boundary_testing_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\boundary_testing_agent",
-      "class_name": "boundary_testing_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\chaos_engineering_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\chaos_engineering_agent",
-      "class_name": "chaos_engineering_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\code_healer_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\code_healer_agent",
-      "class_name": "code_healer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\complexity_analyzer_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\complexity_analyzer_agent",
-      "class_name": "complexity_analyzer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\constitutional_reviewer_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\constitutional_reviewer_agent",
-      "class_name": "constitutional_reviewer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\cost_governor_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\cost_governor_agent",
-      "class_name": "cost_governor_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\red_sentinel_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\red_sentinel_agent",
-      "class_name": "red_sentinel_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\red_team_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\red_team_agent",
-      "class_name": "red_team_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\safety_executor_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\safety_executor_agent",
-      "class_name": "safety_executor_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\safety_inspector_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\safety_inspector_agent",
-      "class_name": "safety_inspector_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\self_updating_safety_engine_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\self_updating_safety_engine_agent",
-      "class_name": "self_updating_safety_engine_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\ssot_cleanup_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\ssot_cleanup_agent",
-      "class_name": "ssot_cleanup_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\structural_validator_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\structural_validator_agent",
-      "class_name": "structural_validator_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\reasoning\\structure_healer_agent.py",
-      "module": "agentic_core\\L5_safety\\reasoning\\structure_healer_agent",
-      "class_name": "structure_healer_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\AutonomyGuardianAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\AutonomyGuardianAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent",
       "class_name": "AutonomyGuardianAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\CodeDeduplicationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\CodeDeduplicationAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\BoundaryTestingAgent",
+      "class_name": "BoundaryTestingAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CachedSafetyShieldAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CachedSafetyShieldAgent",
+      "class_name": "CachedSafetyShieldAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ChaosEngineeringAgent",
+      "class_name": "ChaosEngineeringAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeDeduplicationAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeDeduplicationAgent",
       "class_name": "CodeDeduplicationAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\CognitiveDispositionAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\CognitiveDispositionAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent",
+      "class_name": "CodeDetectorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent",
+      "class_name": "CodeEnforcerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeFormatterAgent",
+      "class_name": "CodeFormatterAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeHealerAgent",
+      "class_name": "CodeHealerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent",
+      "class_name": "CodeValidatorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent",
       "class_name": "CognitiveDispositionAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\CompositeGuardrailAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\CompositeGuardrailAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent",
+      "class_name": "ComplexityAnalyzerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CompositeGuardrailAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CompositeGuardrailAgent",
       "class_name": "CompositeGuardrailAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\ConfigurationSecurityGuardrailAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\ConfigurationSecurityGuardrailAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\ConfigurationSecurityGuardrailAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ConfigurationSecurityGuardrailAgent",
       "class_name": "ConfigurationSecurityGuardrailAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\DDDAlignmentAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\DDDAlignmentAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent",
+      "class_name": "ConstitutionalReviewerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CostGovernorAgent",
+      "class_name": "CostGovernorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent",
+      "class_name": "CredentialScannerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent",
       "class_name": "DDDAlignmentAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\DependencyDiplomatAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\DependencyDiplomatAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\DependencyDiplomatAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DependencyDiplomatAgent",
       "class_name": "DependencyDiplomatAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\DocumentationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\DocumentationAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DependencyPruningAgent",
+      "class_name": "DependencyPruningAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\DocumentationAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DocumentationAgent",
       "class_name": "DocumentationAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\core\\FileClassificationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\FileClassificationAgent",
-      "class_name": "FileClassificationAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\GitAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\GitAgent",
-      "class_name": "GitAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\HealValidatorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\HealValidatorAgent",
-      "class_name": "HealValidatorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\HierarchyAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\HierarchyAgent",
-      "class_name": "HierarchyAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\InterfaceBoundaryAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\InterfaceBoundaryAgent",
-      "class_name": "InterfaceBoundaryAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\L5SafetyExerciserAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\L5SafetyExerciserAgent",
-      "class_name": "L5SafetyExerciserAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\LicS2SupervisorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\LicS2SupervisorAgent",
-      "class_name": "LicS2SupervisorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\LocationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\LocationAgent",
-      "class_name": "LocationAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\LocationHealerAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\LocationHealerAgent",
-      "class_name": "LocationHealerAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\LocationValidatorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\LocationValidatorAgent",
-      "class_name": "LocationValidatorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\MCPGuardianAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\MCPGuardianAgent",
-      "class_name": "MCPGuardianAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\OmniContextAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\OmniContextAgent",
-      "class_name": "OmniContextAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\PineconeSovereignAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\PineconeSovereignAgent",
-      "class_name": "PineconeSovereignAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\PolicyNeuralAutoImmuneAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\PolicyNeuralAutoImmuneAgent",
-      "class_name": "PolicyNeuralAutoImmuneAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\PreCommitSovereignAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\PreCommitSovereignAgent",
-      "class_name": "PreCommitSovereignAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\PredictiveCostAuditorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\PredictiveCostAuditorAgent",
-      "class_name": "PredictiveCostAuditorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\PromptRegistryAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\PromptRegistryAgent",
-      "class_name": "PromptRegistryAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\RegressionOracleAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\RegressionOracleAgent",
-      "class_name": "RegressionOracleAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\ReportLocationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\ReportLocationAgent",
-      "class_name": "ReportLocationAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\RootHygieneAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\RootHygieneAgent",
-      "class_name": "RootHygieneAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SemanticMapperAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SemanticMapperAgent",
-      "class_name": "SemanticMapperAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SemanticTerritoryMapperAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SemanticTerritoryMapperAgent",
-      "class_name": "SemanticTerritoryMapperAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SignatureVerifierAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SignatureVerifierAgent",
-      "class_name": "SignatureVerifierAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SovereignActionPlaneAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SovereignActionPlaneAgent",
-      "class_name": "SovereignActionPlaneAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SprawlInspectorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SprawlInspectorAgent",
-      "class_name": "SprawlInspectorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\StructuralEngineerAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\StructuralEngineerAgent",
-      "class_name": "StructuralEngineerAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\SystemArchitectAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\SystemArchitectAgent",
-      "class_name": "SystemArchitectAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\TerritoryChangeHandlerAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\TerritoryChangeHandlerAgent",
-      "class_name": "TerritoryChangeHandlerAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\test_sovereignty_agent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\test_sovereignty_agent",
-      "class_name": "test_sovereignty_agent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\TestGeneratorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\TestGeneratorAgent",
-      "class_name": "TestGeneratorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\TokenBudgetInspectorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\TokenBudgetInspectorAgent",
-      "class_name": "TokenBudgetInspectorAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\TypeHintFixerAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\TypeHintFixerAgent",
-      "class_name": "TypeHintFixerAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\core\\TypeMechanicAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\core\\TypeMechanicAgent",
-      "class_name": "TypeMechanicAgent",
-      "layer": "L5_safety",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L5_safety\\validators\\DuplicateCodeDetectorAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\DuplicateCodeDetectorAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent",
       "class_name": "DuplicateCodeDetectorAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\LocationAgent.py",
-      "module": "agentic_core\\L5_safety\\validators\\LocationAgent",
+      "file": "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\DynamicSealAgent",
+      "class_name": "DynamicSealAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\FileClassificationAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\FileClassificationAgent",
+      "class_name": "FileClassificationAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent",
+      "class_name": "GenerativeGuardAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GitHygieneAgent",
+      "class_name": "GitHygieneAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GitSafetyHandlerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GitSafetyHandlerAgent",
+      "class_name": "GitSafetyHandlerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GlobalComplianceAggregatorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GlobalComplianceAggregatorAgent",
+      "class_name": "GlobalComplianceAggregatorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GovernanceAgent",
+      "class_name": "GovernanceAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent",
+      "class_name": "GravityLeakRepairAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\HealValidatorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\HealValidatorAgent",
+      "class_name": "HealValidatorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\HierarchyAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\HierarchyAgent",
+      "class_name": "HierarchyAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent",
+      "class_name": "HygieneGuardianAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\InterfaceBoundaryAgent",
+      "class_name": "InterfaceBoundaryAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent",
+      "class_name": "L5SafetyExerciserAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\LocationAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\LocationAgent",
       "class_name": "LocationAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L5_safety\\validators\\test_coverage_guardian_agent.py",
-      "module": "agentic_core\\L5_safety\\validators\\test_coverage_guardian_agent",
-      "class_name": "test_coverage_guardian_agent",
+      "file": "agentic_core\\L5_safety\\reasoning\\LocationHealerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\LocationHealerAgent",
+      "class_name": "LocationHealerAgent",
       "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L6_observability\\enforcement\\reporting_agent.py",
-      "module": "agentic_core\\L6_observability\\enforcement\\reporting_agent",
-      "class_name": "reporting_agent",
-      "layer": "L6_observability",
+      "file": "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent",
+      "class_name": "LocationValidatorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\MCPGuardianAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\MCPGuardianAgent",
+      "class_name": "MCPGuardianAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\NamingAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\NamingAgent",
+      "class_name": "NamingAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\neural_autoimmune_agent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\neural_autoimmune_agent",
+      "class_name": "NeuralAutoImmuneAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\OmniContextAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\OmniContextAgent",
+      "class_name": "OmniContextAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PIISanitizerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PIISanitizerAgent",
+      "class_name": "PIISanitizerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PineconeSovereignAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PineconeSovereignAgent",
+      "class_name": "PineconeSovereignAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PolicyNeuralAutoImmuneAgent",
+      "class_name": "PolicyNeuralAutoImmuneAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent",
+      "class_name": "PreCommitSovereignAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent",
+      "class_name": "PredictiveCostAuditorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\PromptRegistryAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\PromptRegistryAgent",
+      "class_name": "PromptRegistryAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\RagHealthCheckAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\RagHealthCheckAgent",
+      "class_name": "RagHealthCheckAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\RedSentinelAgent",
+      "class_name": "RedSentinelAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\RedTeamAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\RedTeamAgent",
+      "class_name": "RedTeamAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\RegressionOracleAgent",
+      "class_name": "RegressionOracleAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ReportLocationAgent",
+      "class_name": "ReportLocationAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent",
+      "class_name": "ResourceManagerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\RootHygieneAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\RootHygieneAgent",
+      "class_name": "RootHygieneAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent",
+      "class_name": "SafetyDetectorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent",
+      "class_name": "SafetyExecutorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent",
+      "class_name": "SafetyInspectorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent",
+      "class_name": "SelfUpdatingSafetyEngineAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SemanticMapperAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SemanticMapperAgent",
+      "class_name": "SemanticMapperAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SemanticTerritoryMapperAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SemanticTerritoryMapperAgent",
+      "class_name": "SemanticTerritoryMapperAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SignatureVerifierAgent",
+      "class_name": "SignatureVerifierAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent",
+      "class_name": "SovereignActionPlaneAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SprawlInspectorAgent",
+      "class_name": "SprawlInspectorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\StructuralEngineerAgent",
+      "class_name": "StructuralEngineerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent",
+      "class_name": "StructuralValidatorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent",
+      "class_name": "StructureEnforcerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\StructureHealerAgent",
+      "class_name": "StructureHealerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\SystemArchitectAgent",
+      "class_name": "SystemArchitectAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent",
+      "class_name": "TerritoryChangeHandlerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TestCoverageGuardianAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TestCoverageGuardianAgent",
+      "class_name": "TestCoverageGuardianAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TestGeneratorAgent",
+      "class_name": "TestGeneratorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TokenBudgetInspectorAgent",
+      "class_name": "TokenBudgetInspectorAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TypeHintFixerAgent",
+      "class_name": "TypeHintFixerAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\TypeMechanicAgent",
+      "class_name": "TypeMechanicAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent.py",
+      "module": "agentic_core\\L5_safety\\reasoning\\UnusedCleanupAgent",
+      "class_name": "UnusedCleanupAgent",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\enforcement\\input_validation_guardrail.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\input_validation_guardrail",
+      "class_name": "input_validation_guardrail",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor",
+      "class_name": "toxic_dependency_auditor",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L5_safety\\enforcement\\verification_gate.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\verification_gate",
+      "class_name": "verification_gate",
+      "layer": "L5_safety",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -799,6 +1080,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\AutonomicMonitorAgent",
       "class_name": "AutonomicMonitorAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -806,6 +1088,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\CoordinateObservabilityOperationsAgent",
       "class_name": "CoordinateObservabilityOperationsAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -813,6 +1096,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\DeadlockDetectorAgent",
       "class_name": "DeadlockDetectorAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -820,13 +1104,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\DebateSynthesisAgent",
       "class_name": "DebateSynthesisAgent",
       "layer": "L6_observability",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L6_observability\\reasoning\\metrics_witness_agent.py",
-      "module": "agentic_core\\L6_observability\\reasoning\\metrics_witness_agent",
-      "class_name": "metrics_witness_agent",
-      "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -834,6 +1112,15 @@
       "module": "agentic_core\\L6_observability\\reasoning\\MetricsAgent",
       "class_name": "MetricsAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L6_observability\\reasoning\\MetricsWitnessAgent.py",
+      "module": "agentic_core\\L6_observability\\reasoning\\MetricsWitnessAgent",
+      "class_name": "MetricsWitnessAgent",
+      "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -841,6 +1128,15 @@
       "module": "agentic_core\\L6_observability\\reasoning\\PerformanceAnalystAgent",
       "class_name": "PerformanceAnalystAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\L6_observability\\reasoning\\ReportingAgent.py",
+      "module": "agentic_core\\L6_observability\\reasoning\\ReportingAgent",
+      "class_name": "ReportingAgent",
+      "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -848,6 +1144,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\RuntimeTelemetryAgent",
       "class_name": "RuntimeTelemetryAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -855,6 +1152,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\SovereignObservabilityAgent",
       "class_name": "SovereignObservabilityAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -862,6 +1160,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\StrategicObservationAgent",
       "class_name": "StrategicObservationAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -869,6 +1168,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\TelemetryAgent",
       "class_name": "TelemetryAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -876,6 +1176,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\TracingAgent",
       "class_name": "TracingAgent",
       "layer": "L6_observability",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -883,20 +1184,7 @@
       "module": "agentic_core\\L6_observability\\reasoning\\TrackObservabilityCostAgent",
       "class_name": "TrackObservabilityCostAgent",
       "layer": "L6_observability",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\domain\\config\\ArchetypeIndicatorsAgent.py",
-      "module": "apps_lic\\domain\\config\\ArchetypeIndicatorsAgent",
-      "class_name": "ArchetypeIndicatorsAgent",
-      "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\architecture_visualizer_agent.py",
-      "module": "apps_lic\\engines\\architecture_visualizer_agent",
-      "class_name": "architecture_visualizer_agent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -904,13 +1192,7 @@
       "module": "apps_lic\\engines\\CampaignBalanceAgent",
       "class_name": "CampaignBalanceAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\CulturalDecoderAgent.py",
-      "module": "apps_lic\\engines\\CulturalDecoderAgent",
-      "class_name": "CulturalDecoderAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -918,6 +1200,7 @@
       "module": "apps_lic\\engines\\DeliverabilityAgent",
       "class_name": "DeliverabilityAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -925,6 +1208,7 @@
       "module": "apps_lic\\engines\\DispatchOutreachToolsAgent",
       "class_name": "DispatchOutreachToolsAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -932,20 +1216,23 @@
       "module": "apps_lic\\engines\\GovernanceShieldAgent",
       "class_name": "GovernanceShieldAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\Hop1ProfileAnalysisAgent.py",
       "module": "apps_lic\\engines\\Hop1ProfileAnalysisAgent",
-      "class_name": "Hop1ProfileAnalysisAgent",
+      "class_name": "HOP1ProfileAnalysisAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\Hop2ResearchAgent.py",
       "module": "apps_lic\\engines\\Hop2ResearchAgent",
-      "class_name": "Hop2ResearchAgent",
+      "class_name": "HOP2ResearchAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -953,13 +1240,15 @@
       "module": "apps_lic\\engines\\HOP3SenderGroundingAgent",
       "class_name": "HOP3SenderGroundingAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\Hop4RoutingAgent.py",
       "module": "apps_lic\\engines\\Hop4RoutingAgent",
-      "class_name": "Hop4RoutingAgent",
+      "class_name": "HOP4RoutingAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -967,13 +1256,15 @@
       "module": "apps_lic\\engines\\HOP5GenerationAgent",
       "class_name": "HOP5GenerationAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\Hop6ValidationAgent.py",
       "module": "apps_lic\\engines\\Hop6ValidationAgent",
-      "class_name": "Hop6ValidationAgent",
+      "class_name": "HOP6ValidationAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -981,6 +1272,7 @@
       "module": "apps_lic\\engines\\HOP7GateDecisionAgent",
       "class_name": "HOP7GateDecisionAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -988,6 +1280,7 @@
       "module": "apps_lic\\engines\\HOP8QAReportAgent",
       "class_name": "HOP8QAReportAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -995,6 +1288,7 @@
       "module": "apps_lic\\engines\\HOP9IntegrationAgent",
       "class_name": "HOP9IntegrationAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1002,6 +1296,7 @@
       "module": "apps_lic\\engines\\IntelligenceLibrarianAgent",
       "class_name": "IntelligenceLibrarianAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1009,13 +1304,7 @@
       "module": "apps_lic\\engines\\LeadQualityAgent",
       "class_name": "LeadQualityAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\LicReflectionAgent.py",
-      "module": "apps_lic\\engines\\LicReflectionAgent",
-      "class_name": "LicReflectionAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1023,20 +1312,7 @@
       "module": "apps_lic\\engines\\LicS2SupervisorAgent",
       "class_name": "LicS2SupervisorAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\LicTemplateOptimizerAgent.py",
-      "module": "apps_lic\\engines\\LicTemplateOptimizerAgent",
-      "class_name": "LicTemplateOptimizerAgent",
-      "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\LogReaderAgent.py",
-      "module": "apps_lic\\engines\\LogReaderAgent",
-      "class_name": "LogReaderAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1044,34 +1320,55 @@
       "module": "apps_lic\\engines\\MessageArchitectAgent",
       "class_name": "MessageArchitectAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "apps_lic\\engines\\MessageDiversityValidator.py",
+      "module": "apps_lic\\engines\\MessageDiversityValidator",
+      "class_name": "MessageDiversityValidator",
+      "layer": "apps_lic",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "apps_lic\\engines\\LicReflectionAgent.py",
+      "module": "apps_lic\\engines\\LicReflectionAgent",
+      "class_name": "OutreachAgent",
+      "layer": "apps_lic",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "apps_lic\\engines\\LicTemplateOptimizerAgent.py",
+      "module": "apps_lic\\engines\\LicTemplateOptimizerAgent",
+      "class_name": "OutreachAgent",
+      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\MessageComplianceAgent.py",
       "module": "apps_lic\\engines\\MessageComplianceAgent",
-      "class_name": "MessageComplianceAgent",
+      "class_name": "OutreachAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\OutreachCapabilityMonitorAgent.py",
-      "module": "apps_lic\\engines\\OutreachCapabilityMonitorAgent",
-      "class_name": "OutreachCapabilityMonitorAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\OutreachLearningAgent.py",
       "module": "apps_lic\\engines\\OutreachLearningAgent",
-      "class_name": "OutreachLearningAgent",
+      "class_name": "OutreachAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\OutreachProactiveAgent.py",
       "module": "apps_lic\\engines\\OutreachProactiveAgent",
-      "class_name": "OutreachProactiveAgent",
+      "class_name": "OutreachAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1079,13 +1376,7 @@
       "module": "apps_lic\\engines\\OutreachSignalRouterAgent",
       "class_name": "OutreachSignalRouterAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\OutreachTestPilotAgent.py",
-      "module": "apps_lic\\engines\\OutreachTestPilotAgent",
-      "class_name": "OutreachTestPilotAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1093,34 +1384,15 @@
       "module": "apps_lic\\engines\\OutreachValidationExecutorAgent",
       "class_name": "OutreachValidationExecutorAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
       "file": "apps_lic\\engines\\PIISanitizerSpecialistAgent.py",
       "module": "apps_lic\\engines\\PIISanitizerSpecialistAgent",
-      "class_name": "PIISanitizerSpecialistAgent",
+      "class_name": "PII_SanitizerSpecialistAgent",
       "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\pre_mortem_agent.py",
-      "module": "apps_lic\\engines\\pre_mortem_agent",
-      "class_name": "pre_mortem_agent",
-      "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\QAConductorAgent.py",
-      "module": "apps_lic\\engines\\QAConductorAgent",
-      "class_name": "QAConductorAgent",
-      "layer": "apps_lic",
-      "exists": true
-    },
-    {
-      "file": "apps_lic\\engines\\TwoPhaseDeduplicationAgent.py",
-      "module": "apps_lic\\engines\\TwoPhaseDeduplicationAgent",
-      "class_name": "TwoPhaseDeduplicationAgent",
-      "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
@@ -1128,104 +1400,127 @@
       "module": "apps_lic\\engines\\ValidatorAgent",
       "class_name": "ValidatorAgent",
       "layer": "apps_lic",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\ats_compatibility_agent.py",
-      "module": "apps_rg\\engines\\utils\\ats_compatibility_agent",
-      "class_name": "ats_compatibility_agent",
+      "file": "apps_rg\\reasoning\\ATSCompatibilityAgent.py",
+      "module": "apps_rg\\reasoning\\ATSCompatibilityAgent",
+      "class_name": "ATSCompatibilityAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\brand_compliance_agent.py",
-      "module": "apps_rg\\engines\\utils\\brand_compliance_agent",
-      "class_name": "brand_compliance_agent",
+      "file": "apps_rg\\reasoning\\BrandComplianceAgent.py",
+      "module": "apps_rg\\reasoning\\BrandComplianceAgent",
+      "class_name": "BrandComplianceAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\CampaignPlannerAgent.py",
-      "module": "apps_rg\\engines\\utils\\CampaignPlannerAgent",
+      "file": "apps_rg\\reasoning\\CampaignPlannerAgent.py",
+      "module": "apps_rg\\reasoning\\CampaignPlannerAgent",
       "class_name": "CampaignPlannerAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\ContentQualityAgent.py",
-      "module": "apps_rg\\engines\\utils\\ContentQualityAgent",
+      "file": "apps_rg\\reasoning\\ContentQualityAgent.py",
+      "module": "apps_rg\\reasoning\\ContentQualityAgent",
       "class_name": "ContentQualityAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\ContentStrategyAgent.py",
-      "module": "apps_rg\\engines\\utils\\ContentStrategyAgent",
+      "file": "apps_rg\\reasoning\\ContentStrategyAgent.py",
+      "module": "apps_rg\\reasoning\\ContentStrategyAgent",
       "class_name": "ContentStrategyAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\executive_summary_output_agent.py",
-      "module": "apps_rg\\engines\\utils\\executive_summary_output_agent",
-      "class_name": "executive_summary_output_agent",
+      "file": "apps_rg\\reasoning\\DispatchResumeToolsAgent.py",
+      "module": "apps_rg\\reasoning\\DispatchResumeToolsAgent",
+      "class_name": "DispatchResumeToolsAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\FactCheckAgent.py",
-      "module": "apps_rg\\engines\\utils\\FactCheckAgent",
+      "file": "apps_rg\\reasoning\\FactCheckAgent.py",
+      "module": "apps_rg\\reasoning\\FactCheckAgent",
       "class_name": "FactCheckAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\headline_output_agent.py",
-      "module": "apps_rg\\engines\\utils\\headline_output_agent",
-      "class_name": "headline_output_agent",
-      "layer": "apps_rg",
-      "exists": true
-    },
-    {
-      "file": "apps_rg\\engines\\utils\\ProactiveAgent.py",
-      "module": "apps_rg\\engines\\utils\\ProactiveAgent",
+      "file": "apps_rg\\reasoning\\ProactiveAgent.py",
+      "module": "apps_rg\\reasoning\\ProactiveAgent",
       "class_name": "ProactiveAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\RgReflectionAgent.py",
-      "module": "apps_rg\\engines\\utils\\RgReflectionAgent",
+      "file": "apps_rg\\reasoning\\RgReflectionAgent.py",
+      "module": "apps_rg\\reasoning\\RgReflectionAgent",
       "class_name": "RgReflectionAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\RgStrategicPlannerAgent.py",
-      "module": "apps_rg\\engines\\utils\\RgStrategicPlannerAgent",
+      "file": "apps_rg\\reasoning\\RgStrategicPlannerAgent.py",
+      "module": "apps_rg\\reasoning\\RgStrategicPlannerAgent",
       "class_name": "RgStrategicPlannerAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\RgTemplateOptimizerAgent.py",
-      "module": "apps_rg\\engines\\utils\\RgTemplateOptimizerAgent",
+      "file": "apps_rg\\reasoning\\RgTemplateOptimizerAgent.py",
+      "module": "apps_rg\\reasoning\\RgTemplateOptimizerAgent",
       "class_name": "RgTemplateOptimizerAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\engines\\utils\\SectionBalanceAgent.py",
-      "module": "apps_rg\\engines\\utils\\SectionBalanceAgent",
+      "file": "apps_rg\\reasoning\\SectionBalanceAgent.py",
+      "module": "apps_rg\\reasoning\\SectionBalanceAgent",
       "class_name": "SectionBalanceAgent",
       "layer": "apps_rg",
+      "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "apps_rg\\shared\\tools\\dispatch_resume_tools_agent.py",
-      "module": "apps_rg\\shared\\tools\\dispatch_resume_tools_agent",
-      "class_name": "dispatch_resume_tools_agent",
-      "layer": "apps_rg",
+      "file": "apps_shared\\utils\\AppBase.py",
+      "module": "apps_shared\\utils\\AppBase",
+      "class_name": "AppBase",
+      "layer": "apps_shared",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\knowledge\\reasoning\\SovereignRAGManagerAgent.py",
+      "module": "agentic_core\\knowledge\\reasoning\\SovereignRAGManagerAgent",
+      "class_name": "SovereignRAGManagerAgent",
+      "layer": "knowledge",
+      "fca_type": "AGENT",
+      "exists": true
+    },
+    {
+      "file": "agentic_core\\runtime\\utils\\discovery_util.py",
+      "module": "agentic_core\\runtime\\utils\\discovery_util",
+      "class_name": "DiscoveredAgent",
+      "layer": "runtime",
+      "fca_type": "AGENT",
       "exists": true
     }
   ]

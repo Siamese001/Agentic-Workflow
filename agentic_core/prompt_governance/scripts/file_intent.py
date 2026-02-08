@@ -126,31 +126,34 @@ class HardenedNamingAuditor:
             return {"error": str(e)}
 
     def _is_agent_class(self, class_node: ast.ClassDef, content: str) -> bool:
-        """Detect if class is an Agent (SovereignBaseAgent inheritance or naming)."""
-        # Check inheritance
+        """Detect if class is an Agent — delegates to kernel naming convention.
+
+        [REFACTORED 2026-02-08] Removed bespoke docstring keyword matching.
+        Now uses the same criteria as the classification kernel:
+        class name ends with 'Agent' OR inherits from *Agent base.
+        """
+        # Check naming pattern (kernel AGENT priority)
+        if class_node.name.endswith("Agent"):
+            # Exclude Mixin classes (kernel MIXIN priority)
+            if "Mixin" in class_node.name:
+                return False
+            return True
+
+        # Check inheritance for Agent base classes
         for base in class_node.bases:
             if isinstance(base, ast.Name) and "Agent" in base.id:
                 return True
-            if isinstance(base, ast.Attribute) and "Agent" in str(base):
+            if isinstance(base, ast.Attribute) and "Agent" in base.attr:
                 return True
-
-        # Check naming pattern
-        if class_node.name.endswith("Agent"):
-            return True
-
-        # Check docstring for agent keywords
-        docstring = ast.get_docstring(class_node) or ""
-        agent_keywords = ["agent", "sovereign", "validator", "governor", "healer"]
-        if any(keyword in docstring.lower() for keyword in agent_keywords):
-            return True
 
         return False
 
     def _inherits_from_agent(self, class_node: ast.ClassDef) -> bool:
         """Check if class inherits from any Agent base class."""
-        agent_bases = ["SovereignBaseAgent", "Agent", "ValidatorAgent"]
         for base in class_node.bases:
-            if isinstance(base, ast.Name) and any(agent_base in base.id for agent_base in agent_bases):
+            if isinstance(base, ast.Name) and "Agent" in base.id:
+                return True
+            if isinstance(base, ast.Attribute) and "Agent" in base.attr:
                 return True
         return False
 

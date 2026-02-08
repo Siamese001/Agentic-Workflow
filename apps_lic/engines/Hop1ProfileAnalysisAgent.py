@@ -8,17 +8,18 @@ Implements mandatory LIC 7 Entrance Gates and CXO Precedence Rules.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from apps_lic.config import load_agent_specs
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.k1_router_types import K1Router
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP1ProfileAnalysisAgent(LICAgentBase):
+class HOP1ProfileAnalysisAgent(HOPStageCapability, LICAgentBase):
     """
     LIC Sovereign Gatekeeper.
 
@@ -28,6 +29,10 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
     - Logic: Gate Validation -> CXO Precedence -> Heuristic Classification
     - Output: 'hop1_analysis' (Dict) to ImmutableStagingBuffer
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop1_analysis"
+    REQUIRED_INPUTS: ClassVar[list[str]] = []
 
     # Sovereign Seal: Runtime immutability flag
     _sealed: bool = field(default=False, init=False, repr=False)
@@ -86,8 +91,6 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
         4. L3 Slow Path trigger for low confidence.
         5. Final Gate Approval & Write.
         """
-        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
-
         # 1. Read Mission Input (Sovereign Defensiveness)
         # Support both mission_input (new) and recipient_profile (legacy)
         mission_input = buffer.read("mission_input")
@@ -217,8 +220,12 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
             "metadata": {"title": title},
         }
 
-        buffer.write_once("hop1_analysis", output_data)
-        registry.add_trace("DECISION_FINAL", {"archetype": archetype, "confidence": confidence})
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"archetype": archetype, "confidence": confidence},
+        )
 
     def _execute_reasoning(self, title: str, current_result: dict[str, Any]) -> dict[str, Any]:
         """

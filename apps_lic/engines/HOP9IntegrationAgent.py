@@ -9,16 +9,17 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP9IntegrationAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     LIC Sovereign Dispatcher.
 
@@ -28,6 +29,13 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
     - Logic: Checksum Integrity -> Payload Formatting -> Delivery Seal
     - Output: 'hop9_integration' to ImmutableStagingBuffer
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop9_integration"
+    REQUIRED_INPUTS: ClassVar[list[str]] = [
+        "hop5_generation",
+        "hop4_routing",
+    ]
 
     # Sovereign Configuration
     integration_config: dict[str, Any] = field(
@@ -47,21 +55,14 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
         3. Format Delivery Payload.
         4. Write to Buffer and Seal.
         """
-        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
+        # 1. Read Sovereign Mission Output (required inputs via capability)
+        inputs = self.read_required_inputs(buffer, registry)
+        hop5 = inputs["hop5_generation"]
+        hop4 = inputs["hop4_routing"]
 
-        # 1. Read Sovereign Mission Output
-        try:
-            hop5 = buffer.read("hop5_generation")
-            hop8 = buffer.read("hop8_qa_report")
-            hop4 = buffer.read("hop4_routing")
-            mission_input = buffer.read("mission_input")
-        except Exception as e:
-            registry.add_trace("DATA_ERROR", {"msg": str(e)})
-            raise RuntimeError("HOP-9 missing final mission artifacts")
-
-        if not hop5 or not hop4:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing required HOP outputs"})
-            raise RuntimeError("HOP-9 missing final mission artifacts")
+        # Optional inputs (tolerant reads)
+        hop8 = buffer.read("hop8_qa_report")
+        mission_input = buffer.read("mission_input")
 
         registry.add_trace("PHASE_STEP", {"action": "starting_integration_handoff"})
 
@@ -103,14 +104,15 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
             "priority": priority,
         }
 
-        # 4. Write to Buffer and Seal
-        buffer.write_once(
-            "hop9_integration",
-            {
-                "status": "READY_FOR_DELIVERY",
-                "payload": delivery_payload,
-                "checksum": current_checksum,
-            },
+        # 4. Write to Buffer and Seal (via capability)
+        output_data = {
+            "status": "READY_FOR_DELIVERY",
+            "payload": delivery_payload,
+            "checksum": current_checksum,
+        }
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"status": "SUCCESS", "route": route, "archetype": archetype},
         )
-
-        registry.add_trace("MISSION_COMPLETED", {"status": "SUCCESS", "route": route, "archetype": archetype})

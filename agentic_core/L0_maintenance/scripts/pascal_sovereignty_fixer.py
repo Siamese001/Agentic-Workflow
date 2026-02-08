@@ -60,90 +60,27 @@ class PascalSovereigntyFixer:
         self.file_registry: list[Path] = []
 
     def classify_file(self, path: Path) -> FileType:
-        """Classify file by delegating to FileClassificationAgent (SSOT).
+        """Classify file by delegating to classification kernel (SSOT).
 
-        [DEDUP 2026-02-07] Replaced independent AST analysis with FCA delegation.
-        Maps FCA's rich type taxonomy back to PSF's simpler FileType.
+        [REFACTORED 2026-02-08] Replaced FCA instantiation with lightweight
+        kernel delegation. Maps kernel's rich FileType to PSF's simpler set.
         """
-        # Preserve original exemptions that FCA doesn't handle
-        if path.name.startswith("test_") or path.name.endswith("_test.py") or "tests" in path.parts:
-            return "IGNORE"
-        if path.name in ("conftest.py", "__init__.py"):
-            return "IGNORE"
-        if path.name.endswith("_mixin.py") or path.name.endswith("Mixin.py"):
-            return "MIXIN"
+        from agentic_core.core.classification_kernel import classify_file_standalone
 
-        critical_ssot_files = {
-            "structure_blueprint.py",
-            "tool_registry.py",
-            "execute_ssot.py",
+        kernel_type = classify_file_standalone(path)
+
+        # Map kernel types → PSF FileType
+        kernel_to_psf = {
+            "AGENT": "AGENT",
+            "MIXIN": "MIXIN",
+            "IGNORE": "IGNORE",
+            "TEST": "IGNORE",
+            "STUB": "IGNORE",
+            "UTILITY": "UTILITY",
+            "SCRIPT": "UTILITY",
         }
-        if path.name in critical_ssot_files:
-            return "IGNORE"
-
-        try:
-            if not path.exists() or path.stat().st_size == 0:
-                return "IGNORE"
-        except OSError:
-            return "IGNORE"
-
-        # Delegate to FCA — single source of truth for file classification
-        try:
-            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-                FileClassificationAgent,
-            )
-
-            fca = FileClassificationAgent(
-                project_root=path.parent,
-                dry_run=True,
-                validate_only=True,
-            )
-            fca_type = fca.classify_file(path)
-
-            # Map FCA types -> PSF FileType
-            fca_to_psf = {
-                "AGENT": "AGENT",
-                "TYPES": "CLASS",
-                "CONFIG": "CLASS",
-                "VALIDATOR": "CLASS",
-                "UTILITY": "UTILITY",
-                "SCRIPT": "UTILITY",
-                "STRATEGY": "CLASS",
-                "ADAPTER": "CLASS",
-                "PROTOCOL": "CLASS",
-                "MIXIN": "MIXIN",
-                "EXCEPTION": "CLASS",
-                "ENGINE": "CLASS",
-                "GUARDRAIL": "CLASS",
-                "MANAGER": "CLASS",
-                "SCANNER": "CLASS",
-                "FACTORY": "CLASS",
-                "ORCHESTRATOR": "CLASS",
-                "SHIELD": "CLASS",
-                "SANITIZER": "CLASS",
-                "GUARD": "CLASS",
-                "DETECTOR": "CLASS",
-                "ENFORCER": "CLASS",
-            }
-            return fca_to_psf.get(fca_type, "UTILITY")
-        except Exception:
-            # Fallback: if FCA unavailable, use minimal AST check
-            try:
-                content = path.read_text(encoding="utf-8")
-                tree = ast.parse(content)
-            except (SyntaxError, UnicodeDecodeError, OSError):
-                return "IGNORE"
-
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ClassDef):
-                    if node.name.endswith("Agent") or any(
-                        (isinstance(b, ast.Name) and "Agent" in b.id)
-                        or (isinstance(b, ast.Attribute) and "Agent" in b.attr)
-                        for b in node.bases
-                    ):
-                        return "AGENT"
-                    return "CLASS"
-            return "UTILITY"
+        # Everything else (CLASS, CONFIG, VALIDATOR, PROTOCOL, etc.) → CLASS
+        return kernel_to_psf.get(kernel_type, "CLASS")
 
     def update_imports(self, old_name: str, new_name: str) -> int:
         """Refactor imports using the in-memory registry.

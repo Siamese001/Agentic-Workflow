@@ -33,8 +33,18 @@ class EmbeddingMixin:
     def embedding_gateway(self) -> Any:
         """Lazy-load embedding gateway singleton."""
         if self._embedding_gateway is None:
-            # self._embedding_gateway = get_embedding_gateway()
-            self._embedding_gateway = None  # Stub for now
+            try:
+                from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
+                    get_embedding_gateway,
+                )
+
+                self._embedding_gateway = get_embedding_gateway()
+            except ImportError:
+                raise NotImplementedError(
+                    "EmbeddingMixin: Embedding gateway is not available. "
+                    "Install the required dependencies or configure "
+                    "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent."
+                )
         return self._embedding_gateway
 
     async def get_embedding(
@@ -44,8 +54,7 @@ class EmbeddingMixin:
         use_cache: bool = True,
     ) -> list[float]:
         """Get embedding through gateway."""
-        # return await self.embedding_gateway.get_embedding(content, provider, use_cache)
-        return [0.0] * 1536  # Stub embedding
+        return await self.embedding_gateway.get_embedding(content, provider, use_cache)
 
     async def get_embeddings_batch(
         self,
@@ -53,5 +62,4 @@ class EmbeddingMixin:
         provider: EmbeddingProvider = "gemini",
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
-        # return await self.embedding_gateway.get_embeddings_batch(contents, provider)
-        return [[0.0] * 1536 for _ in contents]  # Stub embeddings
+        return await self.embedding_gateway.get_embeddings_batch(contents, provider)

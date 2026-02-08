@@ -1,0 +1,41 @@
+name: Agent Sprawl Check
+
+on:
+  pull_request:
+    branches: [ main, agentic-testing ]
+  push:
+    branches: [ main, agentic-testing ]
+
+jobs:
+  sprawl-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Run Agent Discovery (SSOT refresh)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m agentic_core.L0_maintenance.scripts.full_agent_discovery --summary
+
+      - name: Run Dedup Analysis (regenerate similarity artifacts)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python artifacts/dedup/run_dedup_analysis.py
+
+      - name: Enforce Sprawl Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python artifacts/dedup/sprawl_gate.py --max-code-sim 0.85 --max-prompt-sim 0.85

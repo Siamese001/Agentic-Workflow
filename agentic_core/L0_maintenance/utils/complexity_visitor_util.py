@@ -1,28 +1,20 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║ CANONICAL AST AGENT DISCOVERY - SINGLE SOURCE OF TRUTH (SSOT)                ║
+║ AGENT DISCOVERY & DASHBOARD METRICS EXTRACTION                               ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║ This is THE authoritative agent discovery scan for the entire repository.    ║
-║ All other discovery scripts are DEPRECATED and should use this output.       ║
+║ Agent classification is delegated to the SSOT kernel:                        ║
+║   agentic_core/core/classification_kernel.py                                 ║
 ║                                                                              ║
-║ Output: agent_discovery_full.json (407 agents as of 2026-01-02)              ║
+║ This module provides:                                                        ║
+║ - Dashboard metrics extraction (healing, testing, MCP, observability)        ║
+║ - AST utilities (extract_bases, extract_methods, extract_decorators, etc.)   ║
+║ - MRO-aware healing chain detection                                          ║
+║ - Manifest generation and validation                                         ║
 ║                                                                              ║
-║ Features:                                                                    ║
-║ - Full AST parsing of all Python files                                       ║
-║ - Complete class inheritance chain resolution (MRO-aware)                    ║
-║ - Method signature extraction                                                ║
-║ - Decorator analysis                                                         ║
-║ - Import tracking per file                                                   ║
-║ - Class attribute detection                                                  ║
-║ - MRO-aware healing detection                                                ║
+║ Output: agent_discovery_full.json                                            ║
 ║                                                                              ║
-║ Usage: python scripts/full_agent_discovery.py                                ║
-║                                                                              ║
-║ Consumers:                                                                   ║
-║ - canon_validator_agentic_v2_thin.py (--list-agents, --report)               ║
-║ - AutonomyGuardianAgent.generate_compliance_report()                         ║
-║ - NamingAgent._build_agent_stem_cache()                                      ║
-║ - HierarchyAgent.detect_layer_sprawl_violations()                            ║
+║ IMPORTANT: Do NOT add agent classification logic here.                       ║
+║ Use: from agentic_core.core.classification_kernel import is_agent_file       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -114,7 +106,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.validators.canonical_truth_validator import (
+from agentic_core.L5_safety.utils.canonical_truth_util import (
     categorize_agent,
     get_canonical_layer,
 )
@@ -1101,285 +1093,46 @@ def count_loc(source: str) -> int:
 
 def is_sovereign_agent(class_node: ast.ClassDef, bases: set[str], rel_path: Path | None = None) -> bool:
     """
-    STRICT SOVEREIGN AGENT TYPING (v4 Hardening – Jan 22, 2026)
+    STRICT SOVEREIGN AGENT TYPING — DELEGATES TO CLASSIFICATION KERNEL (SSOT).
 
-    Determines if a class is a TRUE Sovereign Agent vs infrastructure.
-    This is the GATE function that prevents misclassification of:
-    - Scripts (standalone utilities)
-    - Data classes (Pydantic models, TypedDicts, dataclasses)
-    - Mixins (capability providers)
-    - Helpers/Clients/Factories (infrastructure)
+    [REFACTORED 2026-02-08] All bespoke scoring logic removed.
+    Now delegates to the zero-dependency classification kernel for the
+    canonical "is this an agent?" decision.
 
-    A TRUE Sovereign Agent MUST:
-    1. Have class name ending with 'Agent'
-    2. Inherit from SovereignBaseAgent or a Layer Base (directly or transitively)
-    3. NOT be in an infrastructure path (scripts/, utils/, mixins/) unless whitelisted
-    4. NOT be a Mixin class
+    The kernel uses the same priority ordering as FileClassificationAgent:
+    AST-based primary class detection, suffix matching, inheritance checks,
+    with proper exclusions for MIXIN, PROTOCOL, STRATEGY, ORCHESTRATOR, etc.
+
+    Args:
+        class_node: AST ClassDef node (used for class name fallback only).
+        bases: Set of base class names (unused — kernel does its own AST parse).
+        rel_path: Relative path to the file.
 
     Returns:
-        True if class is a TRUE Sovereign Agent, False otherwise
+        True if the file is classified as AGENT by the kernel.
     """
-    name = class_node.name
-    path_str = str(rel_path).replace("\\", "/") if rel_path else ""
-    path_lower = path_str.lower()
+    from agentic_core.core.classification_kernel import is_agent_file
 
-    # =========================================================================
-    # LAYER 0: WHITELIST CHECK (Highest Priority)
-    # =========================================================================
-    # Some files in infrastructure paths ARE legitimate agents
-    if path_str in AGENT_PATH_WHITELIST:
-        # Still must pass basic agent checks
-        if name.endswith("Agent") or name.endswith("BaseAgent"):
-            return True
+    if rel_path is None:
+        # Without a file path, fall back to name-based heuristic
+        return class_node.name.endswith("Agent") and "Mixin" not in class_node.name
 
-    # =========================================================================
-    # LAYER 1: INFRASTRUCTURE PATH EXCLUSION
-    # =========================================================================
-    # Files in scripts/, utils/, mixins/ are NOT agents (unless whitelisted above)
-    for pattern in INFRASTRUCTURE_PATH_PATTERNS:
-        if pattern in path_lower:
-            log.debug(f"EXCLUDED {name}: infrastructure path '{pattern}' in {path_str}")
-            return False
-
-    # =========================================================================
-    # LAYER 2: INFRASTRUCTURE CLASS NAME EXCLUSION
-    # =========================================================================
-    # Classes ending with infrastructure suffixes are NOT agents
-    for suffix in INFRASTRUCTURE_CLASS_PATTERNS:
-        if name.endswith(suffix) and not name.endswith("Agent"):
-            log.debug(f"EXCLUDED {name}: infrastructure suffix '{suffix}'")
-            return False
-
-    # Delegate to existing is_agent_class for remaining checks
-    return is_agent_class(class_node, bases, rel_path)
+    # Resolve to absolute path for kernel classification
+    abs_path = (PROJECT_ROOT / rel_path) if not rel_path.is_absolute() else rel_path
+    return is_agent_file(abs_path)
 
 
 def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | None = None) -> bool:
     """
-    STRICT Agent Classification (Post-Bulk Extraction Enforcement – Jan 06, 2026)
+    DEPRECATED — Delegates to classification kernel (SSOT).
 
-    Enforces canonical naming and 1:1 file structure after bulk extraction completion.
+    [REFACTORED 2026-02-08] All 200+ lines of bespoke scoring logic removed.
+    Now delegates to is_sovereign_agent() which uses the kernel.
 
-    STRICT REQUIREMENTS (ALL must pass):
-    1. Class name MUST end with 'Agent'
-    2. Class name MUST exactly match filename stem (1:1 enforcement)
-    3. Must have strong inheritance signal (agent base or healing chain)
-
-    NEGATIVE SIGNALS (ANY one → immediate exclusion):
-    - Class name contains 'Mixin'
-    - Inherits from Protocol/ABC/BaseModel/etc.
-    - Non-agent infrastructure suffixes without 'Agent'
-    - Path in excluded directories
-
-    Returns:
-        True if class passes strict validation, False otherwise
+    Kept as a shim for any internal callers. All new code should use:
+        from agentic_core.core.classification_kernel import is_agent_file
     """
-    name = class_node.name
-    path_str = str(rel_path).replace("\\", "/").lower() if rel_path else ""
-
-    # =========================================================================
-    # LAYER 0: BASE AGENT IDENTIFICATION (Highest Priority)
-    # =========================================================================
-    # Identify base agents FIRST before any exclusion logic
-    # This ensures L0SovereignBaseAgent-L6Agent and *BaseAgent classes are always discoverable
-    is_l_series_base = name in {
-        "L0MaintenanceBaseAgent",
-        "L1CognitionBase",
-        "L2Agent",
-        "L3Agent",
-        "L4Agent",
-        "L5Agent",
-        "L6Agent",
-    }
-    is_suffix_base = name.endswith("BaseAgent")
-    is_base_agent = is_l_series_base or is_suffix_base
-
-    # =========================================================================
-    # LAYER 1: IMMEDIATE HARD NEGATIVES (Fast path exclusion)
-    # =========================================================================
-
-    # 1a. Mixin exclusion - class name contains 'Mixin' anywhere
-    if "Mixin" in name:
-        log.debug(f"TRACE: {name} excluded - contains 'Mixin'")
-        return False
-
-    # 1b. Test/mock prefixes without 'Agent'
-    skip_patterns = ("Test", "Mock", "Stub", "Fake", "Dummy", "Baseline", "Sample", "Example")
-    if name.startswith(skip_patterns) and "Agent" not in name:
-        log.debug(f"EXCLUDED {name}: test/mock prefix without 'Agent'")
-        return False
-
-    # 1c. Non-agent base classes (Protocol, ABC, etc.)
-    # EXCEPTION: Base agents (L0SovereignBaseAgent-L6Agent, *BaseAgent) can inherit from ABC
-    non_agent_bases = {
-        "Protocol",
-        "ABC",
-        "BaseModel",
-        "TypedDict",
-        "Enum",
-        "Exception",
-        "BaseException",
-        "TestCase",
-    }
-    if bases & non_agent_bases:
-        # Allow base agents to inherit from ABC (e.g., SovereignBaseAgent)
-        if not is_base_agent:
-            log.debug(f"TRACE: {name} excluded - inherits from non-agent base {bases & non_agent_bases}")
-            return False
-
-    # 1d. Data container suffixes without 'Agent'
-    data_container_suffixes = ("Config", "Settings", "Context", "Options", "schema", "State")
-    if name.endswith(data_container_suffixes) and "Agent" not in name:
-        log.debug(f"EXCLUDED {name}: data container suffix without 'Agent'")
-        return False
-
-    # 1e. Non-agent infrastructure classes (CRITICAL FIX: these are NOT agents)
-    # These classes may inherit from HealerMixin for self-repair but are NOT agents
-    non_agent_suffixes = (
-        "Client",  # MCP clients: SovereignFilesystemMcpClient, SovereignGitKrakenMcpClient
-        "Factory",  # Infrastructure: AgentFactory, OutreachAgentFactory
-        "Registry",  # Infrastructure: AgentRegistry
-        "Info",  # Data classes: AgentInfo
-        "Serializer",  # Utilities: StateSerializer
-        "Gym",  # Infrastructure: AgentGym
-        "Card",  # Data: DummyAgentCard
-        "Blueprint",  # Data: WorkflowBlueprint
-        "Hop",  # Data: SubatomicHop
-        "Curator",  # Infrastructure: ContextCurator
-        "Blackboard",  # Infrastructure: AtomicBlackboard
-        "Ledger",  # Infrastructure: CachedStateLedgerAgent
-        "Lock",  # Infrastructure: RedisDistributedLock
-        "cache",  # Infrastructure: RedisHotCache
-        "Guardrail",  # Guardrails are NOT agents (different from GuardrailAgent)
-        "Generator",  # Infrastructure: ResumeGenerator
-        "Executor",  # Infrastructure: BaseTaskExecutor (unless ends with Agent)
-    )
-    if name.endswith(non_agent_suffixes) and not name.endswith("Agent"):
-        log.debug(f"EXCLUDED {name}: non-agent infrastructure suffix")
-        return False
-
-    # 1f. Sovereign infrastructure classes that aren't agents
-    if name.startswith("Sovereign") and not name.endswith("Agent"):
-        log.debug(f"EXCLUDED {name}: Sovereign* without Agent suffix")
-        return False
-
-    # 1g. Path-based mixin exclusion (backup check)
-    if rel_path and "mixin" in str(rel_path).lower():
-        # Exception: allow files like "healer_mixin_agent.py" if class name ends with Agent
-        if not name.endswith("Agent"):
-            log.debug(f"EXCLUDED {name}: path contains 'mixin' and name doesn't end with 'Agent'")
-            return False
-
-    # =========================================================================
-    # LAYER 2: AGENT CANDIDATE DETECTION
-    # =========================================================================
-    # First determine if this is even an agent candidate before applying strict rules
-
-    method_names = extract_methods(class_node)
-    in_tests = path_str.startswith("tests/") or "/tests/" in path_str
-
-    # Known agent base classes
-    agent_bases = {
-        "L0MaintenanceBaseAgent",
-        "L1CognitionBase",
-        "L2Agent",
-        "L3Agent",
-        "L4Agent",
-        "L5Agent",
-        "L6Agent",
-        "L2ExecutionBase",
-        "L3OrchestrationBase",
-        "L4StateBase",
-        "L5SafetyBase",
-        "ExecutionCanonBaseAgent",
-        "CognitionCanonBaseAgent",
-        "CanonASTValidator",
-        "CanonBaseAgentInterface",
-        "BaseAgent",
-        "SovereignBaseAgent",
-    }
-
-    # Allow L-series (L0SovereignBaseAgent, etc) and *BaseAgent classes to pass through even if in agent_bases
-    if name in agent_bases and not is_base_agent:
-        log.debug(f"TRACE: {name} excluded - strictly a base class without discovery flag")
-        return False
-
-    has_strong_positive_signal = (
-        name.endswith("Agent")
-        or bool(bases & agent_bases)
-        or has_healing_in_chain(name, bases)  # MRO-aware healing is the gold standard
-    )
-
-    # If not an agent candidate, exclude early
-    if not has_strong_positive_signal:
-        log.debug(
-            f"TRACE: {name} excluded - not an agent candidate (no Agent suffix, base class, or healing)",
-        )
-        return False
-
-    # =========================================================================
-    # LAYER 3: STRICT ENFORCEMENT (Only for agent candidates)
-    # =========================================================================
-
-    # STRICT REQUIREMENT 1: Must end with 'Agent' (for confirmed agent candidates)
-    if not name.endswith("Agent"):
-        log.info(
-            f"VIOLATION {name} in {rel_path}: agent candidate lacks 'Agent' suffix. "
-            f"Fix: Rename class to {name}Agent",
-        )
-        return False
-
-    # STRICT REQUIREMENT 2: Class name MUST exactly match filename stem (1:1 enforcement)
-    if rel_path:
-        filename_stem = rel_path.stem
-        if name != filename_stem:
-            log.info(
-                f"VIOLATION {name} in {rel_path}: "
-                f"class name '{name}' does not match filename stem '{filename_stem}'. "
-                "Enforced: one canonical agent per file. "
-                f"Fix: Move to {name}.py or rename class to {filename_stem}",
-            )
-            return False
-
-    # REMOVED: Legacy role-suffix recovery block (Signal 4)
-    # Post-bulk extraction, all agents must have explicit 'Agent' suffix.
-
-    decorators = extract_decorators(class_node)
-    # Conditional negative: dataclass/attrs only disqualifies absent strong positive
-    # Base agents bypass this check (is_base_agent set at Layer 0)
-    if (
-        any(d in {"dataclass", "attrs", "attr.s"} for d in decorators)
-        and not has_strong_positive_signal
-        and not is_base_agent
-    ):
-        log.debug(f"TRACE: {name} excluded - dataclass without strong signal or base agent flag")
-        return False
-
-    # Remaining conditional negatives removed - strict enforcement already applied above
-
-    # TEST HARNESS REJECTION (Strongest in tests/, weaker elsewhere)
-    # - In tests/: unconditionally reject obvious harness patterns (Test* name or test_* methods)
-    # - Outside tests/: reject only if NO strong positive signal (allows real agents with test_ methods)
-    is_harness = name.startswith("Test") or any(m.startswith("test_") for m in method_names)
-    if in_tests:
-        if is_harness:
-            return False  # Unconditional in tests/ — eliminates FP explosion
-    else:
-        if is_harness and not has_strong_positive_signal:
-            return False  # Conditional outside — prevents stray harnesses but allows real agents
-
-    # Sovereign edge case: covered by primary 'Agent' suffix signal above — no special path needed
-
-    # === ADDITIONAL VALIDATION FOR EMPTY INHERITANCE ===
-    # Classes with NO bases are suspicious - require name ends with 'Agent'
-    if not bases:
-        if not name.endswith("Agent"):
-            log.debug(f"EXCLUDED {name}: empty inheritance without Agent suffix")
-            return False
-
-    # === FINAL DECISION ===
-    # Single return point: accept only if any strong positive signal exists
-    return has_strong_positive_signal
+    return is_sovereign_agent(class_node, bases, rel_path)
 
 
 def get_docstring(class_node: ast.ClassDef) -> str:

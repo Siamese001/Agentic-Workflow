@@ -1,5 +1,5 @@
 """
-Tests for LCD+ Migration Remediation (RCA_LCD_MIGRATION_FAILURES_2026-02-07).
+Tests for LCD+ Migration Remediation (docs/reports/audit/RCA_LCD_MIGRATION_FAILURES_2026-02-07.md).
 
 Covers:
 - Phase 1: Compound suffix pre-validation

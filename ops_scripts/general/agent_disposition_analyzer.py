@@ -40,7 +40,7 @@ class AgentDispositionAnalyzer:
             functions = self._extract_functions(tree)
 
             # Classification logic
-            classification, details = self._classify_file(
+            classification, details = self._classify_disposition(
                 file_path.name,
                 content,
                 classes,
@@ -112,7 +112,7 @@ class AgentDispositionAnalyzer:
                 )
         return functions
 
-    def _classify_file(
+    def _classify_disposition(
         self,
         filename: str,
         content: str,

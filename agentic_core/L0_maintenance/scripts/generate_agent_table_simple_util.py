@@ -8,17 +8,17 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.core.classification_kernel import is_agent_file as _kernel_is_agent
 from agentic_core.utils.security import safe_execute
 
 
 def is_agent_file(path: str) -> bool:
-    """Check if path is an actual agent file (not test)."""
-    if not path.endswith("Agent.py"):
-        return False
-    path_lower = path.lower()
-    if "test" in path_lower or "/tests/" in path or "\\tests\\" in path:
-        return False
-    return True
+    """Check if path is an actual agent file (not test).
+
+    [REFACTORED 2026-02-08] Delegates to classification kernel SSOT.
+    Accepts string paths for backwards compatibility with JSON data.
+    """
+    return _kernel_is_agent(Path(path))
 
 
 def infer_rationale(canonical: str, dup_path: str, action: str) -> str:

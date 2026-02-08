@@ -9,16 +9,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
+class HOP8QAReportAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBase):
     """
     V2 Implementation of HOP-8.
 
@@ -27,6 +28,10 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
     - Calculate a multi-dimensional Quality Score.
     - Generate and save a Markdown report to disk.
     """
+
+    # HOPStageCapability configuration
+    HOP_STAGE_NAME: ClassVar[str] = "hop8_qa_report"
+    REQUIRED_INPUTS: ClassVar[list[str]] = []
 
     # Sovereign Configuration
     report_config: dict[str, Any] = field(
@@ -76,9 +81,12 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-        buffer.write_once("hop8_qa_report", output_data)
-
-        registry.add_trace("DECISION_FINAL", {"score": total_score, "path": str(report_path)})
+        self.write_output(
+            buffer,
+            registry,
+            output_data,
+            decision_meta={"score": total_score, "path": str(report_path)},
+        )
 
     def _calculate_scores(self, states: dict[str, Any]) -> dict[str, float]:
         """Calculates weighted scores across 4 dimensions."""

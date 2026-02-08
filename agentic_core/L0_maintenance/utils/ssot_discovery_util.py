@@ -87,7 +87,11 @@ def load_agent_discovery(
         if isinstance(data, list):
             agents = data
         elif isinstance(data, dict):
-            agents = list(data.values())
+            # Handle wrapped format: {"agents": [...], "schema_version": ...}
+            if "agents" in data and isinstance(data["agents"], list):
+                agents = data["agents"]
+            else:
+                agents = list(data.values())
         else:
             Logger.warning(f"[SSOT] Unexpected data format: {type(data)}")
             agents = []
@@ -128,7 +132,7 @@ def get_agent_paths(
     paths = []
 
     for agent in agents:
-        path_str = agent.get("path", "")
+        path_str = agent.get("path", "") or agent.get("file", "")
         if not path_str:
             continue
 
@@ -162,7 +166,7 @@ def get_agents_by_layer(project_root: Path | None = None, layer: str = None) -> 
     return [
         agent
         for agent in agents
-        if agent.get("layer", "").upper() == layer.upper() or layer.upper() in agent.get("path", "").upper()
+        if agent.get("layer", "").upper() == layer.upper() or layer.upper() in (agent.get("path", "") or agent.get("file", "")).upper()
     ]
 
 

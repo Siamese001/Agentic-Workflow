@@ -1,43 +1,21 @@
-from __future__ import annotations
-
 """
-MCPHardenedMixin - Eternal Hardening for All MCP Integrations
-[PHASE 17 REFACTOR] Purged of direct dependencies. Pure Logic.
+MCPHardenedMixin - Backwards Compatibility Shim
+
+[MIXIN REFACTOR] All hardened MCP logic has been consolidated into
+MCPOperationMixin (mcp_operation_mixin.py). This file re-exports the
+class under the old name to preserve 89+ existing import sites.
+
+Canonical location: agentic_core.mixins.mcp_operation_mixin.MCPOperationMixin
 """
-import asyncio
-import logging
-import time
-from typing import Any
 
-Logger = logging.getLogger(__name__)
+from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
 
 
-class MCPHardenedMixin:
-    """
-    Provides hardened MCP call logic.
-    Assumes host class provides logging and config (SovereignBaseAgent).
-    """
+class MCPHardenedMixin(MCPOperationMixin):
+    """Backwards-compat alias. Use MCPOperationMixin directly for new code."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._mcp_audit_log = []
+    pass
 
-    async def safe_mcp_call(self, tool_name: str, args: dict, retry_count: int = 3) -> Any:
-        for attempt in range(retry_count):
-            try:
-                start = time.time()
-                duration = (time.time() - start) * 1000
-                self._audit_mcp(tool_name, "SUCCESS", duration)
-                return {"status": "success", "data": "mock_result"}
-            except Exception as e:
-                Logger.warning(f"MCP Call {tool_name} failed: {e}")
-                await asyncio.sleep(0.5 * (2**attempt))
 
-        self._audit_mcp(tool_name, "FAILED", 0)
-        raise RuntimeError("MCP call failed")
-
-    def _audit_mcp(self, tool: str, status: str, duration: float):
-        entry = {"tool": tool, "status": status, "duration": duration, "ts": time.time()}
-        self._mcp_audit_log.append(entry)
-        if len(self._mcp_audit_log) > 100:
-            self._mcp_audit_log.pop(0)
+# snake_case alias used by some import sites
+mcp_hardened_mixin = MCPHardenedMixin

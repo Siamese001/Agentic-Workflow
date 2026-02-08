@@ -43,136 +43,52 @@ def get_python_files_fast(root: Path) -> list[Path]:
 
 def classify_file(path: Path) -> str:
     """
-    Classify file by type using AST analysis.
+    Classify file by type — delegates to the classification kernel (SSOT).
 
-    REFINED LOGIC to avoid false positives:
-    - Don't flag Error/Exception classes as Agents
-    - Don't flag Strategy/Engine/Guardrail/Validator classes as needing Agent suffix
-    - Focus on actual naming convention violations
+    [REFACTORED 2026-02-08] Removed 130-line reimplementation.
+    Now delegates to the zero-dependency classification kernel for
+    consistent results across all tools.
+
+    This script's purpose is to flag naming violations, so it wraps the
+    kernel result to determine if a file needs renaming or not.
     """
-    critical_ignores = {
-        "conftest.py",
-        "__init__.py",
-        "__main__.py",
-        "setup.py",
-        "structure_blueprint.py",
-        "tool_registry.py",
-    }
-    if path.name in critical_ignores:
-        return "IGNORE"
+    from agentic_core.core.classification_kernel import classify_file_standalone
 
-    try:
-        if not path.exists() or path.stat().st_size == 0:
-            return "IGNORE"
-        content = path.read_text(encoding="utf-8")
+    file_type = classify_file_standalone(path)
 
-        if "NOT_AN_AGENT" in content or "# NOT_AN_AGENT" in content:
-            return "STUB"
+    # This script only cares about files that need naming fixes.
+    # Most types are already compliant — only flag actionable violations.
+    if file_type in ("AGENT", "ORCHESTRATOR", "STRATEGY", "ADAPTER", "VALIDATOR",
+                     "EXCEPTION", "CONFIG", "FACTORY", "SERVICE", "ENGINE",
+                     "TYPES", "CLASS", "UTILITY", "STUB", "IGNORE"):
+        # Check if SCRIPT needs PascalCase→snake_case conversion
+        pass
 
-        tree = ast.parse(content)
-    except:
-        return "IGNORE"
-
-    # Test detection - files in tests/ folder
-    is_structural_test = "tests" in path.parts
-    if is_structural_test:
-        # Already compliant test files - don't touch them
-        if path.name.startswith("test_") or path.name.endswith("_test.py"):
-            return "IGNORE"
-        # Files in tests/ that don't follow test naming convention
-        return "TEST"
-
-    # Script detection - files in ops_scripts/ or scripts/ folders
-    if "ops_scripts" in path.parts or ("scripts" in path.parts and "agents" not in path.parts):
+    if file_type == "SCRIPT":
         # Only flag if it's PascalCase (needs conversion to snake_case)
         if re.match(r"^[A-Z]", path.stem):
             return "SCRIPT"
-        return "IGNORE"  # Already snake_case
+        return "IGNORE"
 
-    # Types/Collections detection - exempt from renaming
-    type_collections = {"types", "schemas", "models", "errors", "exceptions", "consts", "dtos"}
-    if path.stem in type_collections or path.name.startswith("_"):
-        return "TYPES"
+    if file_type == "TEST":
+        # Only flag if missing test_ prefix
+        if path.name.startswith("test_") or path.name.endswith("_test.py"):
+            return "IGNORE"
+        return "TEST"
 
-    # Parse classes for detailed analysis
-    is_pure_mixin = False  # Only true if primary class is a Mixin AND file is PascalCase
-    is_error = False
-    is_exception = False
-    is_strategy = False
-    is_guardrail = False
-    is_validator = False
-    is_engine_class = False
-    is_protocol = False
-    is_gateway = False
-    is_enum = False
-    is_agent = False
-    primary_class_name = None
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.ClassDef):
-            name = node.name
-            if primary_class_name is None:
-                primary_class_name = name
-
-            # Check inheritance
-            for base in node.bases:
-                base_name = None
-                if isinstance(base, ast.Name):
-                    base_name = base.id
-                elif isinstance(base, ast.Attribute):
-                    base_name = base.attr
-
-                if base_name:
-                    if base_name == "Protocol":
-                        is_protocol = True
-                    if base_name in ("Exception", "BaseException", "Error"):
-                        is_exception = True
-                    if base_name == "Enum":
-                        is_enum = True
-                    if "Agent" in base_name:
-                        is_agent = True
-                    if "Mixin" in base_name:
-                        # Inherits from a Mixin, but doesn't mean this file IS a mixin
-                        pass
-
-            # Name-based classification - check the PRIMARY class
-            if "Gateway" in name:
-                is_gateway = True
-            if name.endswith("Error") or name.endswith("Exception"):
-                is_error = True
-            if name.endswith("Strategy"):
-                is_strategy = True
-            if name.endswith("Guardrail"):
-                is_guardrail = True
-            if name.endswith("Validator"):
-                is_validator = True
-            if name.endswith("Engine"):
-                is_engine_class = True
-            if name.endswith("Agent"):
-                is_agent = True
-
-    # Check if primary class is a Mixin (class name ends with Mixin AND file is PascalCase)
-    if primary_class_name and primary_class_name.endswith("Mixin"):
+    if file_type == "MIXIN":
         # Only flag if filename is PascalCase (not already snake_case)
         if re.match(r"^[A-Z]", path.stem) and not path.stem.islower():
-            is_pure_mixin = True
-
-    # REFINED: Don't flag these - they're correctly named
-    if is_error or is_exception or is_strategy or is_guardrail or is_validator or is_engine_class:
+            return "MIXIN"
         return "IGNORE"
-    if is_enum:
-        return "IGNORE"
-    if is_agent:
-        return "IGNORE"  # Agents are correctly named with Agent suffix
 
-    if is_protocol:
+    if file_type == "PROTOCOL":
         return "PROTOCOL"
-    elif is_gateway:
+
+    if file_type == "GATEWAY":
         return "GATEWAY"
-    elif is_pure_mixin:
-        return "MIXIN"
-    else:
-        return "IGNORE"  # Don't flag other classes
+
+    return "IGNORE"
 
 
 def get_compliant_name(path: Path, file_type: str) -> str | None:
