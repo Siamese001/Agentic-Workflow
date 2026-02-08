@@ -4,10 +4,9 @@ Tests follow MECE principle: Mutually Exclusive, Collectively Exhaustive
 coverage of helper methods like cleanup, update_file_header, etc.
 """
 
+import sys
 import tempfile
 from pathlib import Path
-import pytest
-import sys
 from unittest.mock import MagicMock, patch
 
 # Add project root to path

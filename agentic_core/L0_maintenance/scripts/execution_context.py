@@ -10,10 +10,9 @@ This module consolidates duplicate code blocks found across:
 Import from here instead of duplicating code.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
-from dataclasses import field
 
 try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (

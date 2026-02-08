@@ -7,9 +7,9 @@ Validates:
 - validate()/verify() function exports considered
 """
 
-import pytest
 import ast
-from pathlib import Path
+
+import pytest
 
 
 def is_validator_by_ast(content: str) -> bool:
@@ -55,11 +55,11 @@ class TestValidatorByAST:
 
     def test_validator_class_detected(self):
         """Class ending with Validator should be detected."""
-        content = '''
+        content = """
 class MyValidator:
     def validate(self, data):
         return True
-'''
+"""
         assert is_validator_by_ast(content)
 
     def test_validate_function_detected(self):
@@ -82,20 +82,20 @@ def verify(data):
 
     def test_non_validator_not_detected(self):
         """Regular class should not be detected as Validator."""
-        content = '''
+        content = """
 class RegularClass:
     def process(self, data):
         return data
-'''
+"""
         assert not is_validator_by_ast(content)
 
     def test_agent_not_detected_as_validator(self):
         """Agent class should not be detected as Validator."""
-        content = '''
+        content = """
 class MyAgent:
     def execute(self):
         pass
-'''
+"""
         assert not is_validator_by_ast(content)
 
 
@@ -135,11 +135,11 @@ def check_syntax(code):
 
     def test_filename_matching_false_negative(self):
         """Validator class in file without 'validator' in name."""
-        content = '''
+        content = """
 class InputValidator:
     def validate(self, data):
         return True
-'''
+"""
         filename = "input_processor.py"  # No validator keywords
 
         # Filename-only says no (WRONG for this case)
@@ -152,22 +152,25 @@ class InputValidator:
 class TestValidatorClassNaming:
     """Tests for Validator class naming conventions."""
 
-    @pytest.mark.parametrize("class_name,expected", [
-        ("MyValidator", True),
-        ("InputValidator", True),
-        ("SchemaValidator", True),
-        ("DataValidator", True),
-        ("MyAgent", False),
-        ("ValidatorHelper", False),  # Helper, not Validator
-        ("PreValidator", True),  # DOES end with Validator
-        ("Validator", True),  # Just "Validator" is valid
-    ])
+    @pytest.mark.parametrize(
+        "class_name,expected",
+        [
+            ("MyValidator", True),
+            ("InputValidator", True),
+            ("SchemaValidator", True),
+            ("DataValidator", True),
+            ("MyAgent", False),
+            ("ValidatorHelper", False),  # Helper, not Validator
+            ("PreValidator", True),  # DOES end with Validator
+            ("Validator", True),  # Just "Validator" is valid
+        ],
+    )
     def test_validator_class_name_patterns(self, class_name: str, expected: bool):
         """Test various Validator class name patterns."""
-        content = f'''
+        content = f"""
 class {class_name}:
     pass
-'''
+"""
         result = is_validator_by_ast(content)
         assert result == expected, f"{class_name} should be {expected}"
 
@@ -181,11 +184,11 @@ class TestValidatorInContext:
         validators_dir.mkdir()
 
         validator_file = validators_dir / "my_validator.py"
-        validator_file.write_text('''
+        validator_file.write_text("""
 class MyValidator:
     def validate(self, data):
         return True
-''')
+""")
 
         content = validator_file.read_text()
         assert is_validator_by_ast(content)
@@ -196,10 +199,10 @@ class MyValidator:
         validators_dir.mkdir()
 
         helper_file = validators_dir / "helper.py"
-        helper_file.write_text('''
+        helper_file.write_text("""
 def helper_function():
     pass
-''')
+""")
 
         content = helper_file.read_text()
         assert not is_validator_by_ast(content)

@@ -10,7 +10,8 @@ This module provides advanced intelligence capabilities:
 """
 
 from __future__ import annotations
-from typing import Callable
+
+from collections.abc import Callable
 
 """
 Security Level Agent Types

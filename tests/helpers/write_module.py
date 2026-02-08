@@ -69,9 +69,9 @@ class SomeClass:
 
 '''
     if with_main:
-        content += '''if __name__ == "__main__":
+        content += """if __name__ == "__main__":
     main()
-'''
+"""
     return content
 
 

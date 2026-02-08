@@ -288,9 +288,7 @@ class LICValidator:
         else:
             return RECENCY_FACTORS["180+_days"]
 
-    def _calculate_source_weight(
-        self, source: dict[str, object], recency_days: int | None
-    ) -> float:
+    def _calculate_source_weight(self, source: dict[str, object], recency_days: int | None) -> float:
         """Calculate weight for a single source."""
         SourceType = source.get("SourceType", "GENERIC_SEARCH")
         base_weight = SIGNAL_SOURCE_WEIGHTS.get(SourceType, 0.4)
@@ -309,9 +307,7 @@ class LICValidator:
         if not sources:
             return 0.0
 
-        total_weight = sum(
-            self._calculate_source_weight(source, recency_days) for source in sources
-        )
+        total_weight = sum(self._calculate_source_weight(source, recency_days) for source in sources)
         return min(1.0, total_weight / len(sources))
 
     def validate_message(self, text: str) -> dict[str, object]:
@@ -331,7 +327,7 @@ class LICValidator:
                     "code": "LIC-E001",
                     "message": f"implementations found: {implementations}",
                     "Severity": "CRITICAL",
-                }
+                },
             )
 
         # Check forbidden verbs (MEDIUM)
@@ -342,7 +338,7 @@ class LICValidator:
                     "code": "LIC-E008",
                     "message": f"Forbidden verbs found: {forbidden}",
                     "Severity": "MEDIUM",
-                }
+                },
             )
 
         # Check filler phrases (MEDIUM)
@@ -353,7 +349,7 @@ class LICValidator:
                     "code": "LIC-E009",
                     "message": f"Filler phrases found: {fillers}",
                     "Severity": "MEDIUM",
-                }
+                },
             )
 
         return results

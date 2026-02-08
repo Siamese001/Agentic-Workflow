@@ -7,6 +7,7 @@ class LedgerRetentionConfig:
     L4 Configuration: Ledger & Audit Policies.
     Controls how long the truth is kept and how it is verified.
     """
+
     # Audit Trail
     AUDIT_RETENTION_DAYS: int = 90
     ENABLE_HASH_CHAINING: bool = True  # Cryptographic linkage
@@ -18,5 +19,6 @@ class LedgerRetentionConfig:
     # Genealogy (Provenance)
     TRACK_FILE_LINEAGE: bool = True
     MAX_GENEALOGY_GENERATIONS: int = 20
+
 
 ledger_config = LedgerRetentionConfig()

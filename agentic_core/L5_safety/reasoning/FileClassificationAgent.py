@@ -62,9 +62,9 @@ from typing import Any, Literal
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
-    from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.L5_safety.utils.decorators_util import standard_heal
+    from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin  # noqa: F401
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
@@ -235,11 +235,28 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Files in any of these folders are considered "in sovereign territory" and are
         # NOT subject to territory moves unless explicitly miscategorized.
         self.apps_valid_folders = {
-            "engines", "reasoning", "types", "tools", "validation",
-            "shared", "domain", "config", "scripts", "utils",
-            "core", "logic_nodes", "system_flow", "asset_library",
-            "reports", "mixins", "agents", "common_utils",
-            "core_components", "data", "integration", "llm",
+            "engines",
+            "reasoning",
+            "types",
+            "tools",
+            "validation",
+            "shared",
+            "domain",
+            "config",
+            "scripts",
+            "utils",
+            "core",
+            "logic_nodes",
+            "system_flow",
+            "asset_library",
+            "reports",
+            "mixins",
+            "agents",
+            "common_utils",
+            "core_components",
+            "data",
+            "integration",
+            "llm",
         }
 
         # STANDARD KERNEL: All layers should have these subfolders (LCD+ canonical skeleton)
@@ -295,19 +312,17 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Find the layer root (L0-L6) if not provided
         if layer_root is None:
             layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
-            layer_idx = None
 
             for i, part in enumerate(parts):
                 if any(part.startswith(prefix) for prefix in layer_prefixes):
                     layer_root = Path(*parts[: i + 1])
-                    layer_idx = i
                     break
 
             if not layer_root:
                 return None
         else:
             # Calculate layer_idx from provided layer_root
-            layer_idx = len(layer_root.parts) - 1
+            len(layer_root.parts) - 1
 
         # Determine current file depth relative to layer
         file_depth = len(parts) - 1  # Index of filename
@@ -456,7 +471,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 self.logger.warning(
                     f"[COMPOUND_SUFFIX] {path.name} has {len(compound_violation['found_suffixes'])} "
                     f"suffixes: {compound_violation['found_suffixes']}. "
-                    f"Suggested: {compound_violation['suggested_name']}"
+                    f"Suggested: {compound_violation['suggested_name']}",
                 )
                 suggested = compound_violation["suggested_name"]
                 if suggested != path.name and not self.validate_only:
@@ -491,7 +506,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 purity_violation = self.check_layer_purity(path, file_content, ftype)
                 if purity_violation:
                     self.logger.warning(
-                        f"[{purity_violation['type']}] {path.name}: {purity_violation['message']}"
+                        f"[{purity_violation['type']}] {path.name}: {purity_violation['message']}",
                     )
                     # Force reclassification for passive agents
                     if purity_violation["type"] == "PASSIVE_AGENT_NAMING":
@@ -517,7 +532,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             domain_violation = self.check_domain_root_purity(path)
             if domain_violation:
                 self.logger.warning(
-                    f"[{domain_violation['type']}] {path.name}: {domain_violation['message']}"
+                    f"[{domain_violation['type']}] {path.name}: {domain_violation['message']}",
                 )
 
             # [NEW] Territory Enforcement (Move before Rename)
@@ -552,7 +567,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             if folder_suffix_violation:
                 self.logger.warning(
                     f"[FOLDER_SUFFIX] {path.name} in {folder_suffix_violation['folder']}/ "
-                    f"missing required suffix. Suggested: {folder_suffix_violation['suggested_name']}"
+                    f"missing required suffix. Suggested: {folder_suffix_violation['suggested_name']}",
                 )
                 fs_suggested = folder_suffix_violation["suggested_name"]
                 if fs_suggested != path.name and not self.validate_only:
@@ -576,14 +591,12 @@ class FileClassificationAgent(*BASE_CLASSES):
             if purity_violation:
                 self.logger.warning(
                     f"[FOLDER_PURITY] {path.name} in {purity_violation['current_folder']}/ "
-                    f"violates purity rules. Should be in {purity_violation['suggested_folder']}/"
+                    f"violates purity rules. Should be in {purity_violation['suggested_folder']}/",
                 )
                 if purity_violation.get("target_path") and not self.validate_only:
                     target = purity_violation["target_path"]
                     target.parent.mkdir(parents=True, exist_ok=True)
-                    if self.resolve_collision_and_rename(
-                        path, target.name, target_dir=target.parent
-                    ):
+                    if self.resolve_collision_and_rename(path, target.name, target_dir=target.parent):
                         if not self.dry_run:
                             self.stats.setdefault("purity_evictions", 0)
                             self.stats["purity_evictions"] += 1
@@ -594,17 +607,13 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Detect app-domain agents misplaced in agentic_core/
             cross_domain = self._detect_cross_domain_violation(path)
             if cross_domain:
-                self.logger.warning(
-                    f"[CROSS_DOMAIN] {cross_domain['message']}"
-                )
+                self.logger.warning(f"[CROSS_DOMAIN] {cross_domain['message']}")
 
             # [LCD+ P4] EPHEMERAL SCRIPT DETECTION
             # Flag numbered phase/wave/sprint scripts for deletion
             ephemeral = self._detect_ephemeral_scripts(path)
             if ephemeral:
-                self.logger.warning(
-                    f"[EPHEMERAL] {ephemeral['message']}"
-                )
+                self.logger.warning(f"[EPHEMERAL] {ephemeral['message']}")
                 self.stats.setdefault("ephemeral_scripts", 0)
                 self.stats["ephemeral_scripts"] += 1
 
@@ -612,9 +621,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Files with layer indicators in their name must match their actual layer
             cross_layer = self._detect_cross_layer_naming_violation(path)
             if cross_layer:
-                self.logger.warning(
-                    f"[CROSS_LAYER] {cross_layer['message']}"
-                )
+                self.logger.warning(f"[CROSS_LAYER] {cross_layer['message']}")
                 self.stats.setdefault("cross_layer_violations", 0)
                 self.stats["cross_layer_violations"] += 1
 
@@ -798,7 +805,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         if len(filename_tags) > 1:
             self.logger.warning(
                 f"[DUAL-TAG] {path.name} carries conflicting tags: {filename_tags}. "
-                f"Resolving via folder context."
+                f"Resolving via folder context.",
             )
             # Folder context wins: if the file lives in types/, it's TYPES
             # NOTE: reasoning/ is intentionally EXCLUDED — files in reasoning/ with
@@ -806,9 +813,13 @@ class FileClassificationAgent(*BASE_CLASSES):
             # determine if it's actually an AGENT, SERVICE, CLASS, etc.
             parent_folder = path.parent.name
             folder_to_filetype = {
-                "types": "TYPES", "config": "CONFIG",
-                "validators": "VALIDATOR", "utils": "UTILITY", "scripts": "SCRIPT",
-                "enforcement": "STRATEGY", "mixins": "MIXIN",
+                "types": "TYPES",
+                "config": "CONFIG",
+                "validators": "VALIDATOR",
+                "utils": "UTILITY",
+                "scripts": "SCRIPT",
+                "enforcement": "STRATEGY",
+                "mixins": "MIXIN",
             }
             if parent_folder in folder_to_filetype:
                 return folder_to_filetype[parent_folder]
@@ -829,7 +840,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             if "tests" not in path.parts:
                 self.logger.warning(
                     f"[MISPLACED-TEST] {path.name} is a test file outside tests/ directory. "
-                    f"Current location: {path.parent}. Move to tests/ mirror structure."
+                    f"Current location: {path.parent}. Move to tests/ mirror structure.",
                 )
             return "TEST"
 
@@ -1312,7 +1323,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         "pattern": rule["pattern"],
                         "reason": rule["reason"],
                         "filename": filename,
-                    }
+                    },
                 )
         return violations
 
@@ -1326,9 +1337,14 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns None if compliant, or a violation dict.
         """
-        PASCAL_ALLOWED_FOLDERS = frozenset({
-            "reasoning", "enforcement", "base_agents", "mixins",
-        })
+        PASCAL_ALLOWED_FOLDERS = frozenset(
+            {
+                "reasoning",
+                "enforcement",
+                "base_agents",
+                "mixins",
+            },
+        )
         if not path.name.endswith(".py") or path.name.startswith("__"):
             return None
         # Check if PascalCase: first char uppercase, no leading underscore, contains lowercase
@@ -1380,7 +1396,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     "correct_prefix": correct,
                     "message": (
                         f"Stuttering prefix '{stutter}' in '{path.name}' — "
-                        f"should be '{correct}'. Rename to '{correct}{stem[len(stutter):]}.py'."
+                        f"should be '{correct}'. Rename to '{correct}{stem[len(stutter) :]}.py'."
                     ),
                 }
 
@@ -1553,6 +1569,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- SCRIPTS PURITY GATE ---
         if "scripts" in parts:
             import re as _re
+
             for pattern in SCRIPTS_FORBIDDEN_PATTERNS:
                 if _re.match(pattern, path.name):
                     vtype = "PASCALCASE_IN_SCRIPTS" if pattern.startswith(r"^[A-Z]") else "TEST_IN_SCRIPTS"
@@ -1595,8 +1612,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                         "file": str(path),
                         "violation": "L6_SUBPROCESS_NOT_ALLOWED",
                         "message": (
-                            f"'{path.name}' imports subprocess in L6 but is NOT on the "
-                            f"L6_HYBRID_ALLOWLIST."
+                            f"'{path.name}' imports subprocess in L6 but is NOT on the L6_HYBRID_ALLOWLIST."
                         ),
                     }
 
@@ -1608,6 +1624,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 content = ""
             # Quick heuristic: look for concrete Agent class definitions
             import re as _re
+
             agent_classes = _re.findall(r"^class\s+(\w+Agent)\s*[\(:]", content, _re.MULTILINE)
             if agent_classes:
                 # Exclude files in base_agents/ (constitutional location)
@@ -1871,6 +1888,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         if correct_folder is None and folder_name == "reasoning" and filename.endswith(".py"):
             file_type = self.classify_file(path)
             from agentic_core.L5_safety.config.structure_blueprint_config import FILETYPE_TO_FOLDER
+
             correct_folder = FILETYPE_TO_FOLDER.get(file_type)
             # SERVICE/singleton files route to enforcement/ even if they mention "agent"
             if correct_folder is None and file_type == "SERVICE":
@@ -2011,8 +2029,12 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # Map layer numbers to names for readable messages
         layer_names = {
-            "0": "L0_maintenance", "1": "L1_cognition", "2": "L2_execution",
-            "3": "L3_orchestration", "4": "L4_state", "5": "L5_safety",
+            "0": "L0_maintenance",
+            "1": "L1_cognition",
+            "2": "L2_execution",
+            "3": "L3_orchestration",
+            "4": "L4_state",
+            "5": "L5_safety",
             "6": "L6_observability",
         }
 
@@ -2078,17 +2100,19 @@ class FileClassificationAgent(*BASE_CLASSES):
             duplicates = scored[1:]
 
             for dup in duplicates:
-                violations.append({
-                    "type": "DUPLICATE_FILE",
-                    "filename": filename,
-                    "canonical_path": str(canonical),
-                    "duplicate_path": str(dup),
-                    "message": (
-                        f"{filename} exists in multiple locations. "
-                        f"Canonical: {canonical.parent}. "
-                        f"Duplicate: {dup.parent} — should be deleted."
-                    ),
-                })
+                violations.append(
+                    {
+                        "type": "DUPLICATE_FILE",
+                        "filename": filename,
+                        "canonical_path": str(canonical),
+                        "duplicate_path": str(dup),
+                        "message": (
+                            f"{filename} exists in multiple locations. "
+                            f"Canonical: {canonical.parent}. "
+                            f"Duplicate: {dup.parent} — should be deleted."
+                        ),
+                    },
+                )
 
         return violations
 
@@ -2109,7 +2133,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             LAYER_KEYWORD_AFFINITY,
         )
 
-        scores: dict[str, float] = {layer: 0.0 for layer in LAYER_KEYWORD_AFFINITY}
+        scores: dict[str, float] = dict.fromkeys(LAYER_KEYWORD_AFFINITY, 0.0)
 
         try:
             content = path.read_text(encoding="utf-8", errors="replace")
@@ -2285,7 +2309,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             if len(sorted_scores) > 1:
                 runner_up_name, runner_up_score = sorted_scores[1]
                 warnings.append(
-                    f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up_name} ({runner_up_score})"
+                    f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up_name} ({runner_up_score})",
                 )
 
         return ClassificationResult(
@@ -3284,7 +3308,9 @@ class FileClassificationAgent(*BASE_CLASSES):
                     # in the previous run. The correct action is to leave the source file
                     # in place and log the collision for manual review.
                     print("  [ANALYSIS] Files are DIFFERENT. ABORTING rename (no .CONFLICT creation).")
-                    print(f"  [SKIPPED] {src.name} stays in place — target {dest_name} already exists with different content.")
+                    print(
+                        f"  [SKIPPED] {src.name} stays in place — target {dest_name} already exists with different content.",
+                    )
                     return False  # Violation NOT resolved — requires manual review
 
             except Exception as e:  # guardian: allow-silent_swallower

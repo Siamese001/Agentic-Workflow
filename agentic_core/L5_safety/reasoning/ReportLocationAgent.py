@@ -139,6 +139,7 @@ class ReportLocationAgent:
             from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
                 safe_subprocess_run,
             )
+
             result = safe_subprocess_run(
                 ["git", "ls-files", "--error-unmatch", str(file_path)],
                 cwd=str(self.project_root),
@@ -154,6 +155,7 @@ class ReportLocationAgent:
             from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
                 safe_subprocess_run,
             )
+
             result = safe_subprocess_run(
                 ["git", "mv", str(source), str(destination)],
                 cwd=str(self.project_root),

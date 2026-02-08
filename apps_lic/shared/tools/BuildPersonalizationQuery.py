@@ -33,8 +33,6 @@ class BuildPersonalizationQuery:
         return []
 
 
-def retrieve(
-    query: str, config: dict | None = None, **kwargs: dict[str, object]
-) -> RetrievalResult:
+def retrieve(query: str, config: dict | None = None, **kwargs: dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return BuildPersonalizationQuery(config).retrieve(query, **kwargs)

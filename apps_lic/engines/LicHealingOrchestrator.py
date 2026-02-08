@@ -40,7 +40,7 @@ class LicHealingOrchestrator(SubatomicTestingMixin, LICAgentBase):
         default_factory=lambda: {
             "database_lock": "release_and_retry",
             "api_timeout": "exponential_backoff",
-        }
+        },
     )
 
     def __post_init__(self) -> None:
@@ -374,7 +374,9 @@ class LicHealingOrchestrator(SubatomicTestingMixin, LICAgentBase):
                 "success_rate": results["resolved"] / results["total"],
             }
             self.cache_pattern_with_metadata(
-                "incident_recovery", f"recovery_{len(self.active_incidents)}", recovery_pattern
+                "incident_recovery",
+                f"recovery_{len(self.active_incidents)}",
+                recovery_pattern,
             )
 
         return results

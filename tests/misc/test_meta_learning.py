@@ -326,7 +326,7 @@ class TestEnhancedSovereignBaseAgent:
 
         # Mock the integrity check to prevent shutdown
         with patch(
-            "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+            "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
         ):
             # Create test agent
             agent = SovereignBaseAgent(project_root=Path.cwd())
@@ -337,7 +337,7 @@ class TestEnhancedSovereignBaseAgent:
                     "status": "fixed",
                     "source": "meta_learning_cache",
                     "violation_id": "test_123",
-                }
+                },
             )
             agent._do_heal = MagicMock(return_value={"status": "fixed", "source": "direct_heal"})
 
@@ -350,7 +350,7 @@ class TestEnhancedSovereignBaseAgent:
             agent.ml_enhanced_heal.assert_called_once()
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_fallback_to_default_heal(self, mock_integrity):
         """Test fallback to default heal when meta-learning unavailable."""
@@ -542,7 +542,7 @@ class TestTop12AgentsIntegration:
     def test_GravityLeakRepairAgent_caching(self, mock_ml_infrastructure):
         """Test GravityLeakRepairAgent AST analysis caching."""
         with patch(
-            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__"
+            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.SovereignBaseAgent.__post_init__",
         ):
             agent = agentic_core.L5_safety.reasoning.GravityLeakRepairAgent()
 
@@ -596,7 +596,7 @@ class TestTop12AgentsIntegration:
                 "threat_type": "sql_injection",
                 "pattern_signature": "SELECT.*FROM.*WHERE",
                 "healing_strategy": {"action": "sanitize_input", "rule": "parameterized_queries"},
-            }
+            },
         ]
 
         # Test pattern recall for similar threats

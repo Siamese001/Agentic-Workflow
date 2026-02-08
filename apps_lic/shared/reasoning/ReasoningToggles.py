@@ -25,12 +25,8 @@ class ReasoningToggles(BaseModel):
     min_tot_depth: int = Field(default=2, description="Minimum depth for tree exploration.")
 
     # Sampling Parameters
-    self_consistency_samples: int = Field(
-        default=3, description="Number of samples for majority voting."
-    )
-    temperature_cap: float = Field(
-        default=0.5, description="Maximum temperature for reasoning steps."
-    )
+    self_consistency_samples: int = Field(default=3, description="Number of samples for majority voting.")
+    temperature_cap: float = Field(default=0.5, description="Maximum temperature for reasoning steps.")
 
     @field_validator("tot_branches")
     @classmethod

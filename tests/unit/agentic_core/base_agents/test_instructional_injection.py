@@ -108,6 +108,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+
         from agentic_core.mixins.healer_mixin import HealerMixin
 
         assert issubclass(HealerMixin, instructional_injection_mixin)
@@ -117,6 +118,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+
         from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
         assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
@@ -126,6 +128,7 @@ class TestInstructionalInjectionMixin:
         from agentic_core.base_agents.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
+
         from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
 
         assert issubclass(MCPHardenedMixin, instructional_injection_mixin)

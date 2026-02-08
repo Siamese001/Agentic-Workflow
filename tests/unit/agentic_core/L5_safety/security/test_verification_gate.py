@@ -202,7 +202,10 @@ def main():
             fix_type="delete",
         )
         hallucinated_violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="numpy", node_type="Import"
+            line=1,
+            column=0,
+            node_id="numpy",
+            node_type="Import",
         )
 
         # Step 3: Attempt to heal with hallucinated violation
@@ -244,7 +247,10 @@ def main():
             fix_type="delete",
         )
         valid_violation.target_coordinate = ASTCoordinate(
-            line=1, column=0, node_id="numpy", node_type="Import"
+            line=1,
+            column=0,
+            node_id="numpy",
+            node_type="Import",
         )
 
         # Attempt to heal with valid violation
@@ -286,7 +292,10 @@ def main():
             fix_type="delete",
         )
         hallucinated_violation.target_coordinate = ASTCoordinate(
-            line=2, column=0, node_id="numpy", node_type="Import"
+            line=2,
+            column=0,
+            node_id="numpy",
+            node_type="Import",
         )
 
         # Attempt to heal with mixed violations

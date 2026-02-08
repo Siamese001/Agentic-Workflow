@@ -117,7 +117,7 @@ class TestStructuralValidatorAgentFacade:
                     "enable_naming": True,
                     "enable_documentation": True,
                     "agent_suffix": "Agent",
-                }
+                },
             )
             return agent
 
@@ -233,10 +233,11 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L5_safety.reasoning.StructuralValidatorAgent_types import (
             StructuralValidatorAgent,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         assert issubclass(StructuralValidatorAgent, SovereignBaseAgent)
 

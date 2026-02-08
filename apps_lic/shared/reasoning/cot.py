@@ -29,9 +29,7 @@ def expand_thought_process(prompt: str, steps: int = 3) -> list[str]:
     if not prompt or not prompt.strip():
         return ["Step 1: Analyze empty request"]
 
-    base_steps = [
-        f"Step {i + 1}: {action}" for i, action in enumerate(_generate_generic_steps(steps))
-    ]
+    base_steps = [f"Step {i + 1}: {action}" for i, action in enumerate(_generate_generic_steps(steps))]
 
     # Inject context into the first step
     base_steps[0] = f"Step 1: Analyze context for '{prompt}'"

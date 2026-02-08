@@ -7,9 +7,10 @@ managing timeouts safely, and ensuring proper cleanup of async resources.
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -382,8 +383,6 @@ class AsyncCoordinator:
         task_id = await self.create_task(coro, timeout, cleanup_callback=cleanup_callback)
         try:
             yield task_id
-            result = await self.wait_for_task(task_id)
-            return result
         finally:
             await self.cancel_task(task_id)
 

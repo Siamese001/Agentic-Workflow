@@ -159,7 +159,7 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                         "purpose": "Cognitive constraint enforcement and guardrails.",
                     },
                     "validators": {
-                        "purpose": "Cognitive validation logic (consensus, reasoning checks, meta-learning guardrails)."
+                        "purpose": "Cognitive validation logic (consensus, reasoning checks, meta-learning guardrails).",
                     },
                     "utils": {"purpose": "Cognitive helper functions."},
                 },
@@ -909,7 +909,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
             "engines": {
                 "purpose": "Processing engines and pipelines",
-                "subfolders": ["base", "generation", "hops", "orchestration", "quality", "refinement", "retrieval", "safety", "utils"],
+                "subfolders": [
+                    "base",
+                    "generation",
+                    "hops",
+                    "orchestration",
+                    "quality",
+                    "refinement",
+                    "retrieval",
+                    "safety",
+                    "utils",
+                ],
             },
             "utils": {"purpose": "Utility functions", "subfolders": []},
             "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
@@ -934,7 +944,17 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
             "engines": {
                 "purpose": "Processing engines and pipelines",
-                "subfolders": ["base", "generation", "hops", "orchestration", "quality", "refinement", "retrieval", "safety", "utils"],
+                "subfolders": [
+                    "base",
+                    "generation",
+                    "hops",
+                    "orchestration",
+                    "quality",
+                    "refinement",
+                    "retrieval",
+                    "safety",
+                    "utils",
+                ],
             },
             "utils": {"purpose": "Utility functions", "subfolders": []},
             "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
@@ -950,7 +970,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "reports": {"purpose": "Report generation and output", "subfolders": []},
             "tools": {"purpose": "Tool implementations", "subfolders": []},
         },
-        "ast_signals": {"apps_lic/engines": {"keyword_signals": ["linkedin", "connection", "messaging"], "weight": 90}},
+        "ast_signals": {
+            "apps_lic/engines": {"keyword_signals": ["linkedin", "connection", "messaging"], "weight": 90},
+        },
     },
     "apps_shared": {
         "depth": 2,
@@ -1519,7 +1541,15 @@ def verify_derived_registries() -> list[str]:
 
     # Check that all L0-L6 layers have the standard LCD subfolders
     standard_lcd = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
-    for layer in ["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"]:
+    for layer in [
+        "L0_maintenance",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+    ]:
         derived = set(CORE_SUBFOLDER_MAP.get(layer, []))
         if not standard_lcd.issubset(derived):
             missing = standard_lcd - derived
@@ -1722,8 +1752,8 @@ APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
 # Root cause: healing passes that tokenize abbreviations letter-by-letter.
 # Used by FCA.validate_app_prefix_placement() to flag and auto-correct.
 STUTTERING_PREFIX_MAP: Final[Mapping[str, str]] = {
-    "r_g_": "rg_",      # r_g_sovereign_auditor → rg_sovereign_auditor
-    "l_i_c_": "lic_",   # l_i_c_scraper → lic_scraper
+    "r_g_": "rg_",  # r_g_sovereign_auditor → rg_sovereign_auditor
+    "l_i_c_": "lic_",  # l_i_c_scraper → lic_scraper
 }
 
 # Central SSOT — all agents should use get_correct_app_path() for precise suggestions
@@ -1949,7 +1979,7 @@ CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
     "config/core": {
-        "primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"})
+        "primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"}),
     },
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
     "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
@@ -2176,14 +2206,14 @@ GLOBAL_INTERFACES_FOLDER: Final[str] = "agentic_core/interfaces"
 # Exemptions: "two_phase" (algorithm name), "execution_phase" (domain concept),
 #             "mutation_phase" (pipeline concept) — these use "phase" semantically.
 FORBIDDEN_EPHEMERAL_PATTERNS: Final[Sequence[str]] = [
-    r"(?i)phase\s*\d",       # phase1, phase_2, phase 3, Phase10
-    r"(?i)wave\s*[\d_]",     # wave_9, wave1, Wave 2
-    r"(?i)sprint\d",         # sprint4, Sprint1
+    r"(?i)phase\s*\d",  # phase1, phase_2, phase 3, Phase10
+    r"(?i)wave\s*[\d_]",  # wave_9, wave1, Wave 2
+    r"(?i)sprint\d",  # sprint4, Sprint1
 ]
 EPHEMERAL_PATTERN_EXEMPTIONS: Final[Sequence[str]] = [
-    r"(?i)two_?phase",       # TwoPhaseDeduplication (algorithm name)
+    r"(?i)two_?phase",  # TwoPhaseDeduplication (algorithm name)
     r"(?i)execution_phase",  # execution_phase_types (domain concept)
-    r"(?i)mutation_phase",   # mutation_phase (pipeline concept)
+    r"(?i)mutation_phase",  # mutation_phase (pipeline concept)
     r"(?i)research_hop_phase",  # research_hop_phase (domain concept)
 ]
 
@@ -2199,7 +2229,7 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
     "PROTOCOL": "types",
     "VALIDATOR": "validators",
     "UTILITY": "utils",
-    "MIXIN": "GLOBAL_MIXINS",       # Sentinel: routed to agentic_core/mixins/
+    "MIXIN": "GLOBAL_MIXINS",  # Sentinel: routed to agentic_core/mixins/
     "SCRIPT": "scripts",
     "FACTORY": "enforcement",
     # "ADAPTER": removed — adapters inherit subfolder from wrapped component (RCA_Adapter_Classification)
@@ -2207,7 +2237,7 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
     "EXCEPTION": "types",
     "ENGINE": "reasoning",
     "GATEWAY": "enforcement",
-    "SERVICE": "utils",             # Singleton services, monitors, collectors → utils/
+    "SERVICE": "utils",  # Singleton services, monitors, collectors → utils/
     # CLASS, STUB, TEST, IGNORE → no routing (stay where they are)
 }
 
@@ -2216,21 +2246,21 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
 # by this priority order. Higher priority locations win.
 # Used by FileClassificationAgent._detect_duplicate_files().
 CANONICAL_LOCATION_PRIORITY: Final[Sequence[str]] = [
-    "runtime",            # Runtime types/config are most canonical
-    "interfaces",         # Global interfaces
-    "base_agents",        # Base agents
-    "mixins",             # Global mixins
-    "config/core",        # Core config
-    "config",             # Global config
-    "utils",              # Global utils
+    "runtime",  # Runtime types/config are most canonical
+    "interfaces",  # Global interfaces
+    "base_agents",  # Base agents
+    "mixins",  # Global mixins
+    "config/core",  # Core config
+    "config",  # Global config
+    "utils",  # Global utils
     "prompt_governance",  # Domain-specific governance
-    "L5_safety",          # Safety layer
-    "L6_observability",   # Observability layer
-    "L4_state",           # State layer
-    "L3_orchestration",   # Orchestration layer
-    "L2_execution",       # Execution layer
-    "L1_cognition",       # Cognition layer
-    "L0_maintenance",     # Maintenance layer
+    "L5_safety",  # Safety layer
+    "L6_observability",  # Observability layer
+    "L4_state",  # State layer
+    "L3_orchestration",  # Orchestration layer
+    "L2_execution",  # Execution layer
+    "L1_cognition",  # Cognition layer
+    "L0_maintenance",  # Maintenance layer
 ]
 
 # Files exempt from duplicate detection (legitimately exist in multiple locations)
@@ -2307,76 +2337,76 @@ CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
 # Format: (regex_pattern, tag_A, tag_B, example)
 COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
     # AGENT compounds
-    (r"_agent_types$",       "AGENT", "TYPES",     "code_detector_agent_types.py"),
-    (r"_agent_config$",      "AGENT", "CONFIG",     "security_level_agent_config.py"),
-    (r"_agent_validator$",   "AGENT", "VALIDATOR",   "routing_decision_agent_validator.py"),
-    (r"_agent_util$",        "AGENT", "UTILITY",     "extract_pattern_agent_util.py"),
-    (r"Agent_types$",        "AGENT", "TYPES",       "CodeDetectorAgent_types.py"),
-    (r"Agent_config$",       "AGENT", "CONFIG",      "SomeAgent_config.py"),
+    (r"_agent_types$", "AGENT", "TYPES", "code_detector_agent_types.py"),
+    (r"_agent_config$", "AGENT", "CONFIG", "security_level_agent_config.py"),
+    (r"_agent_validator$", "AGENT", "VALIDATOR", "routing_decision_agent_validator.py"),
+    (r"_agent_util$", "AGENT", "UTILITY", "extract_pattern_agent_util.py"),
+    (r"Agent_types$", "AGENT", "TYPES", "CodeDetectorAgent_types.py"),
+    (r"Agent_config$", "AGENT", "CONFIG", "SomeAgent_config.py"),
     # ENGINE compounds
-    (r"_engine_types$",      "ENGINE", "TYPES",      "safety_engine_types.py"),
-    (r"_engine_validator$",  "ENGINE", "VALIDATOR",   "consensus_engine_validator.py"),
-    (r"_engine_config$",     "ENGINE", "CONFIG",      "engine_config.py"),
+    (r"_engine_types$", "ENGINE", "TYPES", "safety_engine_types.py"),
+    (r"_engine_validator$", "ENGINE", "VALIDATOR", "consensus_engine_validator.py"),
+    (r"_engine_config$", "ENGINE", "CONFIG", "engine_config.py"),
     # GUARDRAIL compounds
-    (r"_guardrail_types$",   "GUARDRAIL", "TYPES",    "mcp_security_guardrail_types.py"),
-    (r"_guardrail_mixin$",   "GUARDRAIL", "MIXIN",    "cost_guardrail_mixin.py"),
-    (r"_guardrail_config$",  "GUARDRAIL", "CONFIG",   "guardrail_config.py"),
+    (r"_guardrail_types$", "GUARDRAIL", "TYPES", "mcp_security_guardrail_types.py"),
+    (r"_guardrail_mixin$", "GUARDRAIL", "MIXIN", "cost_guardrail_mixin.py"),
+    (r"_guardrail_config$", "GUARDRAIL", "CONFIG", "guardrail_config.py"),
     # MANAGER compounds
-    (r"_manager_types$",     "MANAGER", "TYPES",      "resource_manager_types.py"),
-    (r"_manager_config$",    "MANAGER", "CONFIG",     "sovereign_manager_config.py"),
-    (r"_manager_validator$", "MANAGER", "VALIDATOR",  "context_manager_validator.py"),
+    (r"_manager_types$", "MANAGER", "TYPES", "resource_manager_types.py"),
+    (r"_manager_config$", "MANAGER", "CONFIG", "sovereign_manager_config.py"),
+    (r"_manager_validator$", "MANAGER", "VALIDATOR", "context_manager_validator.py"),
     # STRATEGY compounds
-    (r"_strategy_types$",    "STRATEGY", "TYPES",     "context_pruning_strategy_types.py"),
-    (r"_strategy_config$",   "STRATEGY", "CONFIG",    "mcpservermode_strategy_config.py"),
-    (r"_strategy_mixin$",    "STRATEGY", "MIXIN",     "healing_strategy_mixin.py"),
+    (r"_strategy_types$", "STRATEGY", "TYPES", "context_pruning_strategy_types.py"),
+    (r"_strategy_config$", "STRATEGY", "CONFIG", "mcpservermode_strategy_config.py"),
+    (r"_strategy_mixin$", "STRATEGY", "MIXIN", "healing_strategy_mixin.py"),
     (r"_strategy_validator$", "STRATEGY", "VALIDATOR", "reasoningnode_strategy_validator.py"),
     # VALIDATOR compounds
-    (r"_validator_types$",   "VALIDATOR", "TYPES",    "code_validator_types.py"),
-    (r"_validator_util$",    "VALIDATOR", "UTILITY",   "check_sovereign_base_validator_util.py"),
+    (r"_validator_types$", "VALIDATOR", "TYPES", "code_validator_types.py"),
+    (r"_validator_util$", "VALIDATOR", "UTILITY", "check_sovereign_base_validator_util.py"),
     # SCANNER compounds
-    (r"_scanner_types$",     "SCANNER", "TYPES",      "credential_scanner_types.py"),
-    (r"_scanner_util$",      "SCANNER", "UTILITY",    "sovereign_scanner_util.py"),
+    (r"_scanner_types$", "SCANNER", "TYPES", "credential_scanner_types.py"),
+    (r"_scanner_util$", "SCANNER", "UTILITY", "sovereign_scanner_util.py"),
     # PROTOCOL compounds
-    (r"_protocol_types$",    "PROTOCOL", "TYPES",     "healer_protocol_types.py"),
-    (r"_protocol_config$",   "PROTOCOL", "CONFIG",    "detection_protocol_config.py"),
+    (r"_protocol_types$", "PROTOCOL", "TYPES", "healer_protocol_types.py"),
+    (r"_protocol_config$", "PROTOCOL", "CONFIG", "detection_protocol_config.py"),
     (r"_protocol_guardrail$", "PROTOCOL", "GUARDRAIL", "airlock_protocol_guardrail.py"),
     # SUITE compounds
-    (r"_suite_types$",       "SUITE", "TYPES",        "security_validation_suite_types.py"),
+    (r"_suite_types$", "SUITE", "TYPES", "security_validation_suite_types.py"),
     # FACTORY compounds
-    (r"_factory_config$",    "FACTORY", "CONFIG",     "gateway_factory_config.py"),
-    (r"_factory_util$",      "FACTORY", "UTILITY",    "component_factory_util.py"),
+    (r"_factory_config$", "FACTORY", "CONFIG", "gateway_factory_config.py"),
+    (r"_factory_util$", "FACTORY", "UTILITY", "component_factory_util.py"),
     # ORCHESTRATOR compounds
     (r"_orchestrator_types$", "ORCHESTRATOR", "TYPES", "recursive_orchestrator_types.py"),
     # SHIELD compounds
-    (r"_shield_validator$",  "SHIELD", "VALIDATOR",   "governance_shield_validator.py"),
+    (r"_shield_validator$", "SHIELD", "VALIDATOR", "governance_shield_validator.py"),
     # SANITIZER compounds
-    (r"_sanitizer_util$",    "SANITIZER", "UTILITY",  "telemetry_sanitizer_util.py"),
+    (r"_sanitizer_util$", "SANITIZER", "UTILITY", "telemetry_sanitizer_util.py"),
     # GUARD compounds
-    (r"_guard_util$",        "GUARD", "UTILITY",      "scan_guard_util.py"),
-    (r"_guard_mixin$",       "GUARD", "MIXIN",        "cost_guard_mixin.py"),
+    (r"_guard_util$", "GUARD", "UTILITY", "scan_guard_util.py"),
+    (r"_guard_mixin$", "GUARD", "MIXIN", "cost_guard_mixin.py"),
     # DETECTOR compounds
-    (r"_detector_types$",    "DETECTOR", "TYPES",     "code_detector_types.py"),
-    (r"_detector_config$",   "DETECTOR", "CONFIG",    "gravity_leak_detector_config.py"),
+    (r"_detector_types$", "DETECTOR", "TYPES", "code_detector_types.py"),
+    (r"_detector_config$", "DETECTOR", "CONFIG", "gravity_leak_detector_config.py"),
     # ENFORCER compounds
-    (r"_enforcer_types$",    "ENFORCER", "TYPES",     "code_enforcer_types.py"),
-    (r"_enforcer_util$",     "ENFORCER", "UTILITY",   "root_hygiene_enforcer_util.py"),
+    (r"_enforcer_types$", "ENFORCER", "TYPES", "code_enforcer_types.py"),
+    (r"_enforcer_util$", "ENFORCER", "UTILITY", "root_hygiene_enforcer_util.py"),
     # CONFIG compounds
-    (r"_config_types$",      "CONFIG", "TYPES",       "blueprint_config_types.py"),
-    (r"_config_util$",       "CONFIG", "UTILITY",     "sync_mcp_config_util.py"),
-    (r"_config_detector$",   "CONFIG", "DETECTOR",    "magic_config_detector.py"),
+    (r"_config_types$", "CONFIG", "TYPES", "blueprint_config_types.py"),
+    (r"_config_util$", "CONFIG", "UTILITY", "sync_mcp_config_util.py"),
+    (r"_config_detector$", "CONFIG", "DETECTOR", "magic_config_detector.py"),
     # ADAPTER compounds
-    (r"_adapter_types$",     "ADAPTER", "TYPES",      "open_telemetry_tracing_adapter_types.py"),
-    (r"_adapter_config$",    "ADAPTER", "CONFIG",     "storage_adapter_config.py"),
-    (r"_adapter_util$",      "ADAPTER", "UTILITY",    "mcp_adapter_util.py"),
-    (r"Adapter_types$",      "ADAPTER", "TYPES",      "SomeAdapter_types.py"),
+    (r"_adapter_types$", "ADAPTER", "TYPES", "open_telemetry_tracing_adapter_types.py"),
+    (r"_adapter_config$", "ADAPTER", "CONFIG", "storage_adapter_config.py"),
+    (r"_adapter_util$", "ADAPTER", "UTILITY", "mcp_adapter_util.py"),
+    (r"Adapter_types$", "ADAPTER", "TYPES", "SomeAdapter_types.py"),
     # MIXIN compounds (RCA: healing-pass suffix accumulation)
-    (r"_mixin_agent_mixin$", "MIXIN",  "AGENT",       "autonomy_mixin_agent_mixin.py"),
-    (r"_mixin_agent$",       "MIXIN",  "AGENT",       "some_mixin_agent.py"),
-    (r"_agent_mixin$",       "AGENT",  "MIXIN",       "feature_flagged_agent_mixin.py"),
-    (r"_mixin_types$",       "MIXIN",  "TYPES",       "healer_mixin_types.py"),
-    (r"_mixin_config$",      "MIXIN",  "CONFIG",      "autonomy_mixin_config.py"),
-    (r"_mixin_util$",        "MIXIN",  "UTILITY",     "healer_mixin_util.py"),
-    (r"_mixin_validator$",   "MIXIN",  "VALIDATOR",   "agent_mixin_validator.py"),
+    (r"_mixin_agent_mixin$", "MIXIN", "AGENT", "autonomy_mixin_agent_mixin.py"),
+    (r"_mixin_agent$", "MIXIN", "AGENT", "some_mixin_agent.py"),
+    (r"_agent_mixin$", "AGENT", "MIXIN", "feature_flagged_agent_mixin.py"),
+    (r"_mixin_types$", "MIXIN", "TYPES", "healer_mixin_types.py"),
+    (r"_mixin_config$", "MIXIN", "CONFIG", "autonomy_mixin_config.py"),
+    (r"_mixin_util$", "MIXIN", "UTILITY", "healer_mixin_util.py"),
+    (r"_mixin_validator$", "MIXIN", "VALIDATOR", "agent_mixin_validator.py"),
 ]
 
 # === FOLDER PURITY RULES (BIDIRECTIONAL ENFORCEMENT) ===
@@ -2384,23 +2414,57 @@ COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
 # Used by FileClassificationAgent._enforce_folder_purity() to EVICT misplaced files.
 # Key = folder name, Value = list of allowed filename patterns (suffix or regex).
 FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
-    "reasoning": [r".*Agent\.py$"],  # ONLY *Agent.py files allowed (snake_case services/monitors → enforcement/)
+    "reasoning": [
+        r".*Agent\.py$",
+    ],  # ONLY *Agent.py files allowed (snake_case services/monitors → enforcement/)
     "validators": [r".*_validator\.py$", r".*Validator.*\.py$"],
     "config": [r".*_config\.py$", r".*_config\.yaml$", r".*_config\.json$"],
-    "types": [r".*_types\.py$", r".*_protocol\.py$", r"I[A-Z].*Protocol\.py$",
-              r".*Error\.py$", r".*Exception\.py$"],  # Exception classes live in types/
-    "utils": [r".*_util\.py$", r".*_mixin\.py$", r".*_helper\.py$",
-              r".*_collector\.py$", r".*_monitor\.py$"],  # Service singletons route here
-    "scripts": [r"^[a-z][a-z0-9_]*\.py$", r".*_util\.py$"],  # snake_case .py files (no _script suffix needed — folder is the signal)
-    "enforcement": [r".*_guardrail\.py$", r".*_enforcer\.py$",
-                    r".*_gate\.py$", r".*_manager\.py$", r".*_shield\.py$",
-                    r".*_firewall\.py$", r".*_sanitizer\.py$", r".*_governor\.py$",
-                    r".*_policy\.py$", r".*_guard\.py$", r".*_strategy\.py$",
-                    r".*Strategy\.py$", r".*Adapter\.py$", r".*Monitor\.py$",
-                    r".*Factory\.py$", r".*Gateway\.py$", r".*_adapter\.py$",
-                    r"^[a-z][a-z0-9_]*\.py$"],  # Plain snake_case .py (no suffix) allowed
-    "dashboards": [r".*\.html$", r".*\.js$", r".*\.css$", r".*\.yaml$",
-                   r".*\.json$", r".*\.py$"],  # Dashboard assets: HTML/JS/CSS/YAML/JSON/PY
+    "types": [
+        r".*_types\.py$",
+        r".*_protocol\.py$",
+        r"I[A-Z].*Protocol\.py$",
+        r".*Error\.py$",
+        r".*Exception\.py$",
+    ],  # Exception classes live in types/
+    "utils": [
+        r".*_util\.py$",
+        r".*_mixin\.py$",
+        r".*_helper\.py$",
+        r".*_collector\.py$",
+        r".*_monitor\.py$",
+    ],  # Service singletons route here
+    "scripts": [
+        r"^[a-z][a-z0-9_]*\.py$",
+        r".*_util\.py$",
+    ],  # snake_case .py files (no _script suffix needed — folder is the signal)
+    "enforcement": [
+        r".*_guardrail\.py$",
+        r".*_enforcer\.py$",
+        r".*_gate\.py$",
+        r".*_manager\.py$",
+        r".*_shield\.py$",
+        r".*_firewall\.py$",
+        r".*_sanitizer\.py$",
+        r".*_governor\.py$",
+        r".*_policy\.py$",
+        r".*_guard\.py$",
+        r".*_strategy\.py$",
+        r".*Strategy\.py$",
+        r".*Adapter\.py$",
+        r".*Monitor\.py$",
+        r".*Factory\.py$",
+        r".*Gateway\.py$",
+        r".*_adapter\.py$",
+        r"^[a-z][a-z0-9_]*\.py$",
+    ],  # Plain snake_case .py (no suffix) allowed
+    "dashboards": [
+        r".*\.html$",
+        r".*\.js$",
+        r".*\.css$",
+        r".*\.yaml$",
+        r".*\.json$",
+        r".*\.py$",
+    ],  # Dashboard assets: HTML/JS/CSS/YAML/JSON/PY
 }
 
 # === NON-PYTHON FILE ROUTING ===
@@ -2408,12 +2472,12 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
 # Used by FCA._enforce_folder_purity() and _classify_non_python_file().
 # Files that don't match any layer's expected non-Python patterns are flagged.
 NON_PYTHON_FOLDER_ROUTES: Final[Mapping[str, str]] = {
-    "dashboard_ssot.yaml": "dashboards",   # Dashboard config belongs with dashboards
-    ".yaml": "config",                      # Default: YAML files → config/
-    ".json": "config",                      # Default: JSON files → config/
-    ".html": "dashboards",                  # HTML → dashboards/
-    ".js": "dashboards",                    # JS → dashboards/
-    ".css": "dashboards",                   # CSS → dashboards/
+    "dashboard_ssot.yaml": "dashboards",  # Dashboard config belongs with dashboards
+    ".yaml": "config",  # Default: YAML files → config/
+    ".json": "config",  # Default: JSON files → config/
+    ".html": "dashboards",  # HTML → dashboards/
+    ".js": "dashboards",  # JS → dashboards/
+    ".css": "dashboards",  # CSS → dashboards/
 }
 
 # === DOMAIN-SPECIFIC PYTHON FILE ROUTING ===
@@ -2422,8 +2486,8 @@ NON_PYTHON_FOLDER_ROUTES: Final[Mapping[str, str]] = {
 # files to utils/, but dashboard-specific utils belong in dashboards/.
 # Used by FCA to flag misplaced domain-specific files.
 DOMAIN_CONTENT_SIGNALS: Final[Mapping[str, str]] = {
-    "dashboard": "L6_observability/dashboards",   # dashboard-specific utils/scripts
-    "playwright": "L6_observability/dashboards",   # E2E dashboard testing
+    "dashboard": "L6_observability/dashboards",  # dashboard-specific utils/scripts
+    "playwright": "L6_observability/dashboards",  # E2E dashboard testing
 }
 
 # === SERVICE CLASS DETECTION PATTERNS ===
@@ -2448,30 +2512,77 @@ SERVICE_CLASS_INDICATORS: Final[Sequence[str]] = [
 # Filename prefixes that indicate an agent belongs to an app domain, NOT agentic_core.
 # If a file in agentic_core/ matches these, it's a cross-domain violation.
 APP_DOMAIN_PREFIXES: Final[Sequence[str]] = [
-    "Lic",        # apps_lic (Letter of Intent/Correspondence)
-    "Campaign",   # apps_lic campaign logic
-    "Outreach",   # apps_lic outreach logic
+    "Lic",  # apps_lic (Letter of Intent/Correspondence)
+    "Campaign",  # apps_lic campaign logic
+    "Outreach",  # apps_lic outreach logic
 ]
 
 # === LAYER KEYWORD AFFINITY ===
 # Keywords in docstrings/class names that indicate layer affinity.
 # Used by FileClassificationAgent._compute_layer_affinity() for semantic scoring.
 LAYER_KEYWORD_AFFINITY: Final[Mapping[str, Sequence[str]]] = {
-    "L0_maintenance": ["cleanup", "maintenance", "bootstrap", "heal", "repair",
-                       "reconcile", "ssot", "folder cleanup", "hygiene", "migration",
-                       "discovery", "manifest", "sync", "gospel"],
-    "L1_cognition": ["thought", "intent", "planning", "cognition", "reasoning",
-                     "decision", "analysis", "understanding"],
-    "L2_execution": ["tool", "mcp", "action", "execute", "invoke", "run",
-                     "embed", "search", "index"],
-    "L3_orchestration": ["workflow", "orchestrat", "meta-learn", "pipeline",
-                         "coordinate", "schedule", "batch", "tier"],
-    "L4_state": ["state", "memory", "ledger", "cache", "redis", "pinecone",
-                 "persist", "store", "context"],
-    "L5_safety": ["safety", "guard", "valid", "enforce", "protect", "sentinel",
-                  "threat", "adversarial", "compliance", "audit", "inspect"],
-    "L6_observability": ["observ", "telemetry", "monitor", "metric", "dashboard",
-                         "report", "log", "trace", "health"],
+    "L0_maintenance": [
+        "cleanup",
+        "maintenance",
+        "bootstrap",
+        "heal",
+        "repair",
+        "reconcile",
+        "ssot",
+        "folder cleanup",
+        "hygiene",
+        "migration",
+        "discovery",
+        "manifest",
+        "sync",
+        "gospel",
+    ],
+    "L1_cognition": [
+        "thought",
+        "intent",
+        "planning",
+        "cognition",
+        "reasoning",
+        "decision",
+        "analysis",
+        "understanding",
+    ],
+    "L2_execution": ["tool", "mcp", "action", "execute", "invoke", "run", "embed", "search", "index"],
+    "L3_orchestration": [
+        "workflow",
+        "orchestrat",
+        "meta-learn",
+        "pipeline",
+        "coordinate",
+        "schedule",
+        "batch",
+        "tier",
+    ],
+    "L4_state": ["state", "memory", "ledger", "cache", "redis", "pinecone", "persist", "store", "context"],
+    "L5_safety": [
+        "safety",
+        "guard",
+        "valid",
+        "enforce",
+        "protect",
+        "sentinel",
+        "threat",
+        "adversarial",
+        "compliance",
+        "audit",
+        "inspect",
+    ],
+    "L6_observability": [
+        "observ",
+        "telemetry",
+        "monitor",
+        "metric",
+        "dashboard",
+        "report",
+        "log",
+        "trace",
+        "health",
+    ],
 }
 
 # === COMPREHENSIVE NAMING CONVENTIONS (SSOT) ===
@@ -5708,21 +5819,42 @@ DOCS_SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
 # Enforces: layer roots, required subfolders, nested-LCD prevention, scripts purity,
 # subprocess allowlists, and "Purpose Over Mechanism" policy.
 
-LAYER_ROOTS: Final[frozenset[str]] = frozenset({
-    "L0_maintenance", "L1_cognition", "L2_execution",
-    "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
-})
+LAYER_ROOTS: Final[frozenset[str]] = frozenset(
+    {
+        "L0_maintenance",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+    },
+)
 
-REQUIRED_LCD_SUBFOLDERS: Final[frozenset[str]] = frozenset({
-    "reasoning", "enforcement", "config", "types", "validators", "utils",
-})
+REQUIRED_LCD_SUBFOLDERS: Final[frozenset[str]] = frozenset(
+    {
+        "reasoning",
+        "enforcement",
+        "config",
+        "types",
+        "validators",
+        "utils",
+    },
+)
 
 # Only layer roots may contain LCD subfolders. Leaf domains listed here
 # are forbidden from sprouting reasoning/enforcement/config/types/validators/utils.
-LEAF_DOMAINS_NO_LCD: Final[frozenset[str]] = frozenset({
-    "prompt_governance", "knowledge", "mixins", "runtime",
-    "interfaces", "base_agents", "config",
-})
+LEAF_DOMAINS_NO_LCD: Final[frozenset[str]] = frozenset(
+    {
+        "prompt_governance",
+        "knowledge",
+        "mixins",
+        "runtime",
+        "interfaces",
+        "base_agents",
+        "config",
+    },
+)
 
 
 def is_layer_root(name: str) -> bool:
@@ -5756,9 +5888,7 @@ def validate_no_nested_lcd(path_parts: Sequence[str]) -> dict[str, Any] | None:
                 child = path_parts[j]
                 if child in REQUIRED_LCD_SUBFOLDERS:
                     # Allow if the child is ALSO inside a layer root higher up
-                    has_layer_root_ancestor = any(
-                        path_parts[k] in LAYER_ROOTS for k in range(i)
-                    )
+                    has_layer_root_ancestor = any(path_parts[k] in LAYER_ROOTS for k in range(i))
                     if has_layer_root_ancestor:
                         break  # e.g. L0_maintenance/scripts/prompt_governance — OK
                     return {
@@ -5776,21 +5906,25 @@ def validate_no_nested_lcd(path_parts: Sequence[str]) -> dict[str, Any] | None:
 # These L5 files are PERMITTED to import subprocess because their PRIMARY PURPOSE
 # is safety enforcement — subprocess is merely the mechanism.
 # Any L5 file importing subprocess NOT on this list is a TERRITORY_MISALIGNMENT.
-L5_SUBPROCESS_ALLOWLIST: Final[frozenset[str]] = frozenset({
-    "safe_subprocess_handler.py",
-    "subprocess_security_util.py",
-    "PreCommitSovereignAgent.py",
-    "ArchitectureGovernorAgent.py",
-    "AutonomyGuardianAgent.py",
-    "SovereignActionPlaneAgent.py",
-    "pre_deploy_check_util.py",
-})
+L5_SUBPROCESS_ALLOWLIST: Final[frozenset[str]] = frozenset(
+    {
+        "safe_subprocess_handler.py",
+        "subprocess_security_util.py",
+        "PreCommitSovereignAgent.py",
+        "ArchitectureGovernorAgent.py",
+        "AutonomyGuardianAgent.py",
+        "SovereignActionPlaneAgent.py",
+        "pre_deploy_check_util.py",
+    },
+)
 
 # === L6 HYBRID ALLOWLIST ===
 # L6 files permitted to use subprocess/playwright for dashboard E2E.
-L6_HYBRID_ALLOWLIST: Final[frozenset[str]] = frozenset({
-    "verify_dashboard_e2e_playwright_util.py",
-})
+L6_HYBRID_ALLOWLIST: Final[frozenset[str]] = frozenset(
+    {
+        "verify_dashboard_e2e_playwright_util.py",
+    },
+)
 
 # === SCRIPTS PURITY POLICY ===
 # scripts/ folders may contain ONLY:
@@ -5798,6 +5932,6 @@ L6_HYBRID_ALLOWLIST: Final[frozenset[str]] = frozenset({
 #   - _util.py helper scripts
 # FORBIDDEN in scripts/:
 SCRIPTS_FORBIDDEN_PATTERNS: Final[Sequence[str]] = [
-    r"^[A-Z]",         # PascalCase module filenames (classes belong elsewhere)
-    r"^test_",          # Test files belong in tests/
+    r"^[A-Z]",  # PascalCase module filenames (classes belong elsewhere)
+    r"^test_",  # Test files belong in tests/
 ]

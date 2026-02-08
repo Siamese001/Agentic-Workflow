@@ -7,9 +7,8 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
-from pydantic import BaseModel, Field
-from pydantic import confloat
-from pydantic import validator
+
+from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 

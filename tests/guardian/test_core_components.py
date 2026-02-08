@@ -83,7 +83,7 @@ class TestCoreComponents:
             critical_files=[
                 "nonexistent_file.py",
                 "tests/guardian/test_core_components.py",
-            ]
+            ],
         )
 
         result = validator.validate()
@@ -104,7 +104,7 @@ class TestCoreComponents:
                 "nonexistent_file_1.py",
                 "tests/guardian/test_core_components.py",
                 "nonexistent_file_2.py",
-            ]
+            ],
         )
 
         result = validator.validate()

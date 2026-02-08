@@ -8,9 +8,9 @@ and messages.
 import json
 import logging
 from dataclasses import dataclass
+from typing import Any
 
 from .instructional_injections import get_instructional_injections, get_required_injections
-from typing import Any
 
 try:
     from agentic_core.L5_safety.validators.prompt_governance_types import (

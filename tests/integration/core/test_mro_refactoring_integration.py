@@ -65,10 +65,11 @@ class TestCrossPhaseImports:
 
     def test_all_phases_import_together(self):
         """All phase components should import without conflicts."""
-        from agentic_core.mixins.caching_mixin import CachingMixin
-        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.base_agents.trait_system import with_traits
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
+
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
+        from agentic_core.mixins.caching_mixin import CachingMixin
 
         # All imports successful
         assert GatewayFactory is not None
@@ -82,8 +83,9 @@ class TestGatewayFactoryWithMixins:
 
     def test_gateway_factory_with_caching_mixin(self):
         """GatewayFactory should work with CachingMixin agents."""
-        from agentic_core.mixins.caching_mixin import CachingMixin
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
+
+        from agentic_core.mixins.caching_mixin import CachingMixin
 
         class TestAgent(CachingMixin):
             def __init__(self):
@@ -102,8 +104,9 @@ class TestGatewayFactoryWithMixins:
         """GatewayFactory should work with LightweightAgentBase."""
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
+
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         @dataclass
         class TestAgent(LightweightAgentBase):
@@ -198,8 +201,9 @@ class TestLightweightBaseWithTraits:
         """LightweightAgentBase can be extended with BatchingTrait."""
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.base_agents.trait_system import BatchingTrait, with_traits
+
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         # Note: traits are applied to the class before dataclass
         @with_traits(BatchingTrait)

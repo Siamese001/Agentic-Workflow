@@ -116,7 +116,7 @@ class TestConsolidationStaticAnalysis:
                             imported_name = name.name
                             if imported_name in bad_agents or "*" in bad_agents:
                                 violations.append(
-                                    f"Line {node.lineno}: Imports '{imported_name}' from deprecated '{module}'"
+                                    f"Line {node.lineno}: Imports '{imported_name}' from deprecated '{module}'",
                                 )
 
             # Check: import X (less common for deep nesting, but good to check)
@@ -125,7 +125,7 @@ class TestConsolidationStaticAnalysis:
                     for bad_path, bad_agents in DEPRECATED_PATHS.items():
                         if name.name == bad_path:
                             violations.append(
-                                f"Line {node.lineno}: Direct import of deprecated module '{name.name}'"
+                                f"Line {node.lineno}: Direct import of deprecated module '{name.name}'",
                             )
 
         return violations

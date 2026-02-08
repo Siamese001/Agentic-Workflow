@@ -47,7 +47,7 @@ async def main():
     if not all([sender_profile, recipient_profile, job_description]):
         print(
             "FATAL: mission_input.json is missing one or more required top-level keys: "
-            "'sender_profile', 'recipient_profile', 'job_description'"
+            "'sender_profile', 'recipient_profile', 'job_description'",
         )
         sys.exit(1)
 
@@ -67,7 +67,7 @@ async def main():
     print(f"Sender: {mission.sender_profile.get('name', 'N/A')}")
     print(f"Recipient: {mission.recipient_profile.get('name', 'N/A')}")
     print(
-        f"Job: {mission.job_description.get('title', 'N/A')} at {mission.job_description.get('company', 'N/A')}"
+        f"Job: {mission.job_description.get('title', 'N/A')} at {mission.job_description.get('company', 'N/A')}",
     )
 
     orchestrator = create_orchestrator()

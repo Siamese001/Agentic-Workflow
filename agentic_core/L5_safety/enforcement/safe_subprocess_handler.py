@@ -19,6 +19,7 @@ import subprocess
 from typing import Any
 
 from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
+
 from agentic_core.L5_safety.enforcement.process_guard import ProcessGuard
 
 logger = logging.getLogger(__name__)

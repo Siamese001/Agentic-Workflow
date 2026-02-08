@@ -37,9 +37,7 @@ class ResumeGenerator:
         if self.llm_client is None:
             raise ValueError(f"Failed to initialize LLM client for Provider {self.Provider}")
 
-    def generate(
-        self, resume_data: dict[str, Any], analysis_results: dict[str, Any]
-    ) -> dict[str, Any]:
+    def generate(self, resume_data: dict[str, Any], analysis_results: dict[str, Any]) -> dict[str, Any]:
         """
         Generate a tailored resume based on job analysis.
 
@@ -57,18 +55,18 @@ class ResumeGenerator:
             # Tailor each section
             if "summary" in tailored_resume:
                 tailored_resume["summary"] = self._tailor_summary(
-                    tailored_resume["summary"], analysis_results
+                    tailored_resume["summary"],
+                    analysis_results,
                 )
 
             if "experience" in tailored_resume:
                 tailored_resume["experience"] = self._tailor_experience(
-                    tailored_resume["experience"], analysis_results
+                    tailored_resume["experience"],
+                    analysis_results,
                 )
 
             if "skills" in tailored_resume:
-                tailored_resume["skills"] = self._tailor_skills(
-                    tailored_resume["skills"], analysis_results
-                )
+                tailored_resume["skills"] = self._tailor_skills(tailored_resume["skills"], analysis_results)
 
             # Add metadata about tailoring
             tailored_resume["_tailoring_metadata"] = {
@@ -120,7 +118,9 @@ Return ONLY the rewritten summary, no additional text."""
             return original_summary
 
     def _tailor_experience(
-        self, experience_list: list[dict[str, Any]], analysis: dict[str, Any]
+        self,
+        experience_list: list[dict[str, Any]],
+        analysis: dict[str, Any],
     ) -> list[dict[str, Any]]:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
@@ -133,17 +133,19 @@ Return ONLY the rewritten summary, no additional text."""
             # Tailor responsibilities/description
             if "responsibilities" in exp:
                 tailored_exp["responsibilities"] = self._tailor_bullets(
-                    exp["responsibilities"], target_skills, analysis.get("key_responsibilities", [])
+                    exp["responsibilities"],
+                    target_skills,
+                    analysis.get("key_responsibilities", []),
                 )
             elif "description" in exp:
-                tailored_exp["description"] = self._tailor_description(
-                    exp["description"], target_skills
-                )
+                tailored_exp["description"] = self._tailor_description(exp["description"], target_skills)
 
             # Tailor achievements if present
             if "achievements" in exp:
                 tailored_exp["achievements"] = self._tailor_bullets(
-                    exp["achievements"], target_skills, analysis.get("key_responsibilities", [])
+                    exp["achievements"],
+                    target_skills,
+                    analysis.get("key_responsibilities", []),
                 )
 
             tailored_experience.append(tailored_exp)
@@ -189,7 +191,10 @@ Return ONLY the rewritten summary, no additional text."""
         return final_skills[:15]  # Limit to 15 skills
 
     def _tailor_bullets(
-        self, bullets: list[str], target_skills: list[str], job_responsibilities: list[str]
+        self,
+        bullets: list[str],
+        target_skills: list[str],
+        job_responsibilities: list[str],
     ) -> list[str]:
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
@@ -276,9 +281,7 @@ Return ONLY the rewritten description, no additional text."""
             response = self.llm_client.complete(prompt, temperature=temperature)
             return response.text if hasattr(response, "text") else str(response)
 
-    def optimize_for_ats(
-        self, resume_data: dict[str, Any], analysis: dict[str, Any]
-    ) -> dict[str, Any]:
+    def optimize_for_ats(self, resume_data: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]:
         """
         Optimize resume for Applicant Tracking Systems (ATS).
 

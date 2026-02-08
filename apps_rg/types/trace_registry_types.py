@@ -73,16 +73,12 @@ class TraceRegistry(MCPHardenedMixin):
     def start_span(self, trace_id: str, agent_name: str, action: str) -> str:
         """Begin tracking an action."""
         span_key = f"{trace_id}:{agent_name}:{action}:{time.time()}"
-        trace = AgentTrace(
-            trace_id=trace_id, agent_name=agent_name, action=action, start_time=time.time()
-        )
+        trace = AgentTrace(trace_id=trace_id, agent_name=agent_name, action=action, start_time=time.time())
         self._traces.append(trace)
         self._active_spans[span_key] = trace
         return span_key
 
-    def end_span(
-        self, span_key: str, status: str = "SUCCESS", error: str = None, tokens: int = 0
-    ) -> None:
+    def end_span(self, span_key: str, status: str = "SUCCESS", error: str = None, tokens: int = 0) -> None:
         """Complete an active action."""
         if span_key not in self._active_spans:
             Logger.warning(f"Attempted to close unknown span: {span_key}")

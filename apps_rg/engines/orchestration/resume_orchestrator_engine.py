@@ -82,7 +82,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
                 if step_count > self.GLOBAL_STEP_LIMIT:
                     self.ctx.trace.add_trace("CRITICAL_FAILURE", {"reason": "Global step limit exceeded"})
                     raise RuntimeError(
-                        f"Mission aborted: Exceeded global step limit of {self.GLOBAL_STEP_LIMIT}"
+                        f"Mission aborted: Exceeded global step limit of {self.GLOBAL_STEP_LIMIT}",
                     )
                 await self._run_engine(hop_engine, hop_id)
 

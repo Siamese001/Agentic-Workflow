@@ -11,8 +11,9 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 @dataclass

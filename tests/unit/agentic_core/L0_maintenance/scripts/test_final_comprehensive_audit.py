@@ -34,16 +34,17 @@ def test_case_1_signal_saturation_sweep():
     print("=" * 70)
 
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.base_agents.L1CognitionBase import (
-            L1CognitionBase,
-        )
         from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
             L2ExecutionBase,
         )
         from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
+
+        from agentic_core.base_agents.L1CognitionBase import (
+            L1CognitionBase,
+        )
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Step 1: Create Orchestrator (top of chain)
         orchestrator = L3OrchestrationBase()
@@ -83,21 +84,27 @@ def test_case_1_signal_saturation_sweep():
         # Execution Layer
         executor = L2ExecutionBase(ctx=None)
         exec_result = executor.heal_repository(
-            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Execution"
+            dry_run=True,
+            custom_telemetry_id="AUDIT-2026",
+            layer_test="Execution",
         )
         print(f"  Execution accepts signals: {exec_result}")
 
         # Cognition Layer
         cognition = L1CognitionBase()
         cog_result = cognition.heal_repository(
-            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Cognition"
+            dry_run=True,
+            custom_telemetry_id="AUDIT-2026",
+            layer_test="Cognition",
         )
         print(f"  Cognition accepts signals: {cog_result}")
 
         # Sovereign Root
         sovereign = SovereignBaseAgent()
         sov_result = sovereign.heal_repository(
-            dry_run=True, custom_telemetry_id="AUDIT-2026", layer_test="Sovereign"
+            dry_run=True,
+            custom_telemetry_id="AUDIT-2026",
+            layer_test="Sovereign",
         )
         print(f"  Sovereign accepts signals: {sov_result}")
 
@@ -153,7 +160,9 @@ def test_case_2_terminal_independence():
         start_time = time.time()
 
         approval = hierarchy_agent._prompt_user_for_move_approval(
-            test_source, test_target, "Terminal independence test"
+            test_source,
+            test_target,
+            "Terminal independence test",
         )
 
         elapsed_time = time.time() - start_time
@@ -171,7 +180,9 @@ def test_case_2_terminal_independence():
 
         # Step 4: Test archive approval
         archive_approval = hierarchy_agent._prompt_user_for_archive_approval(
-            test_source, test_target, "Archive test"
+            test_source,
+            test_target,
+            "Archive test",
         )
         print(f"✓ Step 4: Archive approval granted: {archive_approval}")
 
@@ -187,7 +198,9 @@ def test_case_2_terminal_independence():
         safety_agent = L5SafetyBase()
 
         orch_result = orchestrator.heal_repository(
-            dry_run=True, auto_approve=True, terminal_test="Orchestration"
+            dry_run=True,
+            auto_approve=True,
+            terminal_test="Orchestration",
         )
         print(f"  Orchestration autonomous execution: {orch_result}")
 
@@ -223,14 +236,15 @@ def test_case_3_depth_constraint_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.base_agents.L1CognitionBase import (
-            L1CognitionBase,
-        )
         from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
             L2ExecutionBase,
         )
         from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
+        )
+
+        from agentic_core.base_agents.L1CognitionBase import (
+            L1CognitionBase,
         )
 
         # Step 1: Test with max_depth=2
@@ -265,15 +279,27 @@ def test_case_3_depth_constraint_persistence():
         call_path = set()
 
         orchestrator.heal_repository(
-            dry_run=True, depth=0, max_depth=3, _call_path=call_path, chain_test="agent_a"
+            dry_run=True,
+            depth=0,
+            max_depth=3,
+            _call_path=call_path,
+            chain_test="agent_a",
         )
 
         executor.heal_repository(
-            dry_run=True, depth=1, max_depth=3, _call_path=call_path, chain_test="agent_b"
+            dry_run=True,
+            depth=1,
+            max_depth=3,
+            _call_path=call_path,
+            chain_test="agent_b",
         )
 
         cognition.heal_repository(
-            dry_run=True, depth=2, max_depth=3, _call_path=call_path, chain_test="agent_c"
+            dry_run=True,
+            depth=2,
+            max_depth=3,
+            _call_path=call_path,
+            chain_test="agent_c",
         )
 
         print("\n✅ PASS: Depth Constraint Persistence")

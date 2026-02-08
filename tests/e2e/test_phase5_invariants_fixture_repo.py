@@ -11,18 +11,17 @@ Validates all 7 hard invariants after remediation:
 7. Repo imports resolve
 """
 
-import pytest
 import ast
 import re
 from pathlib import Path
+
+import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
     SCRIPTS_FORBIDDEN_PATTERNS,
     validate_no_nested_lcd,
-    LEAF_DOMAINS_NO_LCD,
-    REQUIRED_LCD_SUBFOLDERS,
 )
 
 
@@ -113,8 +112,7 @@ class TestInvariant2_NoAgentsOutsideReasoning:
                         if isinstance(node, ast.ClassDef):
                             if node.name.endswith("Agent") and not node.name.startswith("I"):
                                 is_protocol = any(
-                                    (isinstance(b, ast.Name) and b.id == "Protocol")
-                                    for b in node.bases
+                                    (isinstance(b, ast.Name) and b.id == "Protocol") for b in node.bases
                                 )
                                 if not is_protocol:
                                     violations.append(f"{py_file}: {node.name}")
@@ -160,11 +158,14 @@ class TestInvariant4_NoOrphanedUtils:
 class TestInvariant5_BlueprintRejectsNestedLCD:
     """Invariant 5: Blueprint rejects nested LCD subtrees."""
 
-    @pytest.mark.parametrize("leaf_domain,lcd_subfolder", [
-        ("prompt_governance", "reasoning"),
-        ("knowledge", "enforcement"),
-        ("runtime", "validators"),
-    ])
+    @pytest.mark.parametrize(
+        "leaf_domain,lcd_subfolder",
+        [
+            ("prompt_governance", "reasoning"),
+            ("knowledge", "enforcement"),
+            ("runtime", "validators"),
+        ],
+    )
     def test_nested_lcd_rejected(self, leaf_domain: str, lcd_subfolder: str):
         """Nested LCD under leaf domains must be rejected."""
         path_parts = ["agentic_core", leaf_domain, lcd_subfolder]
@@ -198,6 +199,7 @@ class TestInvariant7_ImportsResolve:
         try:
             from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
             from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
             # These imports may fail due to missing optional dependencies (pydantic, etc.)
             # The key test is that the blueprint and FCA imports work
             assert CORE_SUBFOLDER_MAP is not None
@@ -211,12 +213,13 @@ class TestInvariant7_ImportsResolve:
     def test_blueprint_imports_resolve(self):
         """Blueprint module imports should resolve."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
-                SOVEREIGN_TERRITORIES,
+            from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
                 LAYER_ROOTS,
                 REQUIRED_LCD_SUBFOLDERS,
+                SOVEREIGN_TERRITORIES,
                 verify_derived_registries,
             )
+
             assert True
         except ImportError as e:
             pytest.fail(f"Blueprint import failed: {e}")

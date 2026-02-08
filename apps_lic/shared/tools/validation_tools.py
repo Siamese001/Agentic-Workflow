@@ -37,9 +37,7 @@ class ValidationResult:
         return self
 
 
-def validate_schema_policy(
-    data: dict[str, Any], schema: dict[str, Any] | None = None
-) -> ValidationResult:
+def validate_schema_policy(data: dict[str, Any], schema: dict[str, Any] | None = None) -> ValidationResult:
     """
     Validate data against a schema policy.
 

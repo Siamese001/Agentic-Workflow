@@ -25,13 +25,9 @@ class GenerateSubjectLine:
         start: Any = time.time()
         try:
             output: Any = self._perform_action(action, params)
-            return ExecutionResult(
-                success=True, output=output, duration_ms=(time.time() - start) * 1000
-            )
+            return ExecutionResult(success=True, output=output, duration_ms=(time.time() - start) * 1000)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
-                success=False, error=str(e), duration_ms=(time.time() - start) * 1000
-            )
+            return ExecutionResult(success=False, error=str(e), duration_ms=(time.time() - start) * 1000)
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""

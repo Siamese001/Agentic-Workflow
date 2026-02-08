@@ -10,10 +10,11 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -30,7 +31,7 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     validation_rules: dict[str, Any] = field(
-        default_factory=lambda: {"strict_mode": True, "max_violations": 5}
+        default_factory=lambda: {"strict_mode": True, "max_violations": 5},
     )
 
     def __post_init__(self) -> None:
@@ -150,7 +151,5 @@ class HOP6ValidationAgent(SubatomicTestingMixin, LICAgentBase):
             "rule_id": "LIC-E008",
             "severity": "MEDIUM",
             "passed": len(found) == 0,
-            "message": f"Found forbidden verbs: {found}"
-            if found
-            else "No forbidden verbs detected",
+            "message": f"Found forbidden verbs: {found}" if found else "No forbidden verbs detected",
         }

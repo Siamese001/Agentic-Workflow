@@ -19,11 +19,12 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
-from agentic_core.utils.security import safe_execute
 
 
 class FastDashboardE2EPipeline:
@@ -177,10 +178,7 @@ class FastDashboardE2EPipeline:
                 content = content.replace(old_class_def, new_class_def)
 
                 # Add import if needed
-                if (
-                    "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
-                    not in content
-                ):
+                if "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin" not in content:
                     lines = content.split("\n")
                     insert_idx = 0
                     for i, line in enumerate(lines):

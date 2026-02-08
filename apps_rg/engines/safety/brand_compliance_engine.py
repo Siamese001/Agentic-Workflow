@@ -37,9 +37,7 @@ class BrandComplianceEngine(BaseRGEngine):
 
             for phrase in forbidden_phrases:
                 if phrase in text:
-                    violations.append(
-                        {"section": section_name, "phrase": phrase, "severity": "high"}
-                    )
+                    violations.append({"section": section_name, "phrase": phrase, "severity": "high"})
 
         result = {
             "compliant": len(violations) == 0,

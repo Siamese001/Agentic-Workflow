@@ -70,16 +70,12 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
             "You are crafting an executive-level message that demonstrates "
             "thought leadership and strategic alignment."
         ),
-        tone=(
-            "Strategic, confident, focused on business impact and organizational transformation."
-        ),
+        tone=("Strategic, confident, focused on business impact and organizational transformation."),
         approach=(
             "Lead with macro trends, demonstrate understanding of strategic "
             "challenges, position yourself as a peer with complementary expertise."
         ),
-        avoid=(
-            "Tactical details, overt sales language, assumptions about their specific pain points."
-        ),
+        avoid=("Tactical details, overt sales language, assumptions about their specific pain points."),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
                 word_count=(4, 7),
@@ -101,12 +97,9 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
     RecipientArchetype.EXECUTIVE: ArchetypeTemplate(
         Archetype=RecipientArchetype.EXECUTIVE,
         system_instructions=(
-            "You are crafting a professional message that emphasizes "
-            "collaboration and mutual value."
+            "You are crafting a professional message that emphasizes collaboration and mutual value."
         ),
-        tone=(
-            "Professional, collaborative, focused on team objectives and operational excellence."
-        ),
+        tone=("Professional, collaborative, focused on team objectives and operational excellence."),
         approach=(
             "Reference their role and responsibilities, demonstrate understanding "
             "of their team's challenges, offer concrete value."
@@ -166,20 +159,14 @@ ARCHETYPE_TEMPLATES: dict[RecipientArchetype, ArchetypeTemplate] = {
     RecipientArchetype.RECRUITER: ArchetypeTemplate(
         Archetype=RecipientArchetype.RECRUITER,
         system_instructions=(
-            "You are crafting a job-focused message that centers on role fit "
-            "and candidate qualifications."
+            "You are crafting a job-focused message that centers on role fit and candidate qualifications."
         ),
-        tone=(
-            "Warm, professional, focused on alignment between candidate skills "
-            "and role requirements."
-        ),
+        tone=("Warm, professional, focused on alignment between candidate skills and role requirements."),
         approach=(
             "Lead with relevant experience, highlight specific skills that match "
             "job description, emphasize career growth potential."
         ),
-        avoid=(
-            "standard qualifications, vague interest statements, over-selling unrelated experience."
-        ),
+        avoid=("standard qualifications, vague interest statements, over-selling unrelated experience."),
         creative_brief=CreativeBrief(
             subject_line=SubjectLineBrief(
                 word_count=(6, 9),

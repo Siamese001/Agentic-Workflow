@@ -33,7 +33,9 @@ class TestMixinEnforcement(unittest.TestCase):
 
         new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
         self.assertEqual(
-            new_name, "hygiene_mixin.py", "HygieneMixin.py should be renamed to hygiene_mixin.py"
+            new_name,
+            "hygiene_mixin.py",
+            "HygieneMixin.py should be renamed to hygiene_mixin.py",
         )
 
     def test_acronym_mixin_rename(self):
@@ -75,7 +77,9 @@ class TestMixinEnforcement(unittest.TestCase):
 
         new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
         self.assertEqual(
-            new_name, "cognitive_recovery_mixin.py", "CognitiveRecoveryMixin.py should be renamed"
+            new_name,
+            "cognitive_recovery_mixin.py",
+            "CognitiveRecoveryMixin.py should be renamed",
         )
 
     def test_mcp_hardened_mixin_rename(self):
@@ -112,7 +116,9 @@ class TestMixinEnforcement(unittest.TestCase):
 
         new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
         self.assertEqual(
-            new_name, "tracing_mixin.py", "TracingMixin.py should be renamed to tracing_mixin.py"
+            new_name,
+            "tracing_mixin.py",
+            "TracingMixin.py should be renamed to tracing_mixin.py",
         )
 
     def test_config_mixin_rename(self):

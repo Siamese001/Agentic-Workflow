@@ -9,7 +9,6 @@ Validates:
 """
 
 import pytest
-from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     L5_SUBPROCESS_ALLOWLIST,
@@ -43,11 +42,14 @@ class TestPurposeOverMechanism:
         # Dashboard E2E is L6 ownership - playwright is mechanism
         assert "verify_dashboard_e2e_playwright_util.py" in L6_HYBRID_ALLOWLIST
 
-    @pytest.mark.parametrize("not_allowed", [
-        "random_subprocess_user.py",
-        "git_executor.py",
-        "shell_runner.py",
-    ])
+    @pytest.mark.parametrize(
+        "not_allowed",
+        [
+            "random_subprocess_user.py",
+            "git_executor.py",
+            "shell_runner.py",
+        ],
+    )
     def test_random_subprocess_not_allowed(self, not_allowed: str):
         """Random subprocess users should not be in L5 allowlist."""
         assert not_allowed not in L5_SUBPROCESS_ALLOWLIST
@@ -60,6 +62,7 @@ class TestLayerSuggestionByPurpose:
     def fca(self):
         """Create FCA instance."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_safety_wrapper_suggests_l5(self, fca, tmp_path):

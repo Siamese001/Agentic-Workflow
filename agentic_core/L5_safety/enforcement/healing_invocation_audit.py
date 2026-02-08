@@ -6,14 +6,15 @@ Comprehensive audit of all heal_repository() methods to verify super() presence
 and chain completeness across the entire codebase.
 """
 
+import re
 from datetime import datetime
 from pathlib import Path
+
+from agentic_core.utils.security import safe_execute
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.security import safe_execute
-import re
 
 
 class HealingInvocationAudit:

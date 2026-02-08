@@ -71,7 +71,10 @@ except Exception as e:
     sys.exit(3)
 """
         result = subprocess.run(
-            [sys.executable, "-c", import_script], capture_output=True, text=True, timeout=30
+            [sys.executable, "-c", import_script],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
 
         assert result.returncode == 0, (

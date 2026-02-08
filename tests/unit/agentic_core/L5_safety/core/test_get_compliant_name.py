@@ -4,10 +4,9 @@ Tests follow MECE principle: Mutually Exclusive, Collectively Exhaustive
 coverage of get_compliant_name method behavior.
 """
 
+import sys
 import tempfile
 from pathlib import Path
-import pytest
-import sys
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))

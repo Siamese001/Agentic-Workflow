@@ -77,7 +77,10 @@ print(f"ENV_VAR_STATUS: {test_var}")
 
             # Run test with isolated environment
             result = subprocess.run(
-                [sys.executable, str(test_file)], capture_output=True, text=True, cwd=temp_dir
+                [sys.executable, str(test_file)],
+                capture_output=True,
+                text=True,
+                cwd=temp_dir,
             )
 
             # Verify test ran in isolation

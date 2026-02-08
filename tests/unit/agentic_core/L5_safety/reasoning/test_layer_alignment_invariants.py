@@ -19,10 +19,10 @@ from pathlib import Path
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_py(tmp_path: Path, rel: str, content: str = "") -> Path:
     """Create a .py file under tmp_path at the given relative path."""
@@ -37,6 +37,7 @@ def _get_fca():
     from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
+
     return FileClassificationAgent
 
 
@@ -44,11 +45,13 @@ def _get_fca():
 # Blueprint API unit tests
 # ---------------------------------------------------------------------------
 
+
 class TestBlueprintAPI:
     """Tests for structure_blueprint_config layer validation API."""
 
     def test_is_layer_root(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import is_layer_root
+
         assert is_layer_root("L0_maintenance") is True
         assert is_layer_root("L5_safety") is True
         assert is_layer_root("L6_observability") is True
@@ -57,6 +60,7 @@ class TestBlueprintAPI:
 
     def test_is_allowed_subfolder(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import is_allowed_subfolder
+
         assert is_allowed_subfolder("L5_safety", "reasoning") is True
         assert is_allowed_subfolder("L5_safety", "enforcement") is True
         assert is_allowed_subfolder("L5_safety", "scripts") is False  # not an LCD subfolder
@@ -64,11 +68,13 @@ class TestBlueprintAPI:
 
     def test_validate_no_nested_lcd_clean(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+
         parts = ("agentic_core", "L5_safety", "reasoning", "FileClassificationAgent.py")
         assert validate_no_nested_lcd(parts) is None
 
     def test_validate_no_nested_lcd_violation(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+
         # prompt_governance sprouting its own reasoning/ is forbidden
         parts = ("agentic_core", "prompt_governance", "reasoning", "SomeAgent.py")
         result = validate_no_nested_lcd(parts)
@@ -78,6 +84,7 @@ class TestBlueprintAPI:
 
     def test_validate_no_nested_lcd_allowed_under_layer(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+
         # L0_maintenance/scripts/prompt_governance — OK because layer root is ancestor
         parts = ("agentic_core", "L0_maintenance", "scripts", "prompt_governance", "reasoning", "x.py")
         result = validate_no_nested_lcd(parts)
@@ -85,17 +92,21 @@ class TestBlueprintAPI:
 
     def test_l5_subprocess_allowlist_populated(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import L5_SUBPROCESS_ALLOWLIST
+
         assert "safe_subprocess_handler.py" in L5_SUBPROCESS_ALLOWLIST
         assert "PreCommitSovereignAgent.py" in L5_SUBPROCESS_ALLOWLIST
         assert len(L5_SUBPROCESS_ALLOWLIST) >= 7
 
     def test_l6_hybrid_allowlist_populated(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import L6_HYBRID_ALLOWLIST
+
         assert "verify_dashboard_e2e_playwright_util.py" in L6_HYBRID_ALLOWLIST
 
     def test_scripts_forbidden_patterns(self):
         import re
+
         from agentic_core.L5_safety.config.structure_blueprint_config import SCRIPTS_FORBIDDEN_PATTERNS
+
         # PascalCase should match
         assert any(re.match(p, "AgentAuditResult.py") for p in SCRIPTS_FORBIDDEN_PATTERNS)
         # test_ should match
@@ -107,6 +118,7 @@ class TestBlueprintAPI:
 # ---------------------------------------------------------------------------
 # FCA validate_layer_alignment() tests
 # ---------------------------------------------------------------------------
+
 
 class TestFCALayerAlignment:
     """Tests for FCA.validate_layer_alignment() enforcement checks."""
@@ -130,14 +142,22 @@ class TestFCALayerAlignment:
     def test_scripts_purity_allows_snake_case(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
-        p = _make_py(tmp_path, "agentic_core/L0_maintenance/scripts/run_audit.py", "if __name__ == '__main__': pass")
+        p = _make_py(
+            tmp_path,
+            "agentic_core/L0_maintenance/scripts/run_audit.py",
+            "if __name__ == '__main__': pass",
+        )
         result = fca.validate_layer_alignment(p)
         assert result is None
 
     def test_l5_subprocess_flagged_when_not_allowlisted(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
-        p = _make_py(tmp_path, "agentic_core/L5_safety/enforcement/bad_tool.py", "import subprocess\nsubprocess.run(['ls'])")
+        p = _make_py(
+            tmp_path,
+            "agentic_core/L5_safety/enforcement/bad_tool.py",
+            "import subprocess\nsubprocess.run(['ls'])",
+        )
         result = fca.validate_layer_alignment(p)
         assert result is not None
         assert result["violation"] == "L5_SUBPROCESS_NOT_ALLOWED"
@@ -145,7 +165,11 @@ class TestFCALayerAlignment:
     def test_l5_subprocess_allowed_when_allowlisted(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
-        p = _make_py(tmp_path, "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py", "import subprocess")
+        p = _make_py(
+            tmp_path,
+            "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py",
+            "import subprocess",
+        )
         result = fca.validate_layer_alignment(p)
         assert result is None
 
@@ -190,6 +214,7 @@ class TestFCALayerAlignment:
 # Invariant: No Agent classes exist outside reasoning/ in the real repo
 # ---------------------------------------------------------------------------
 
+
 class TestRepoInvariants:
     """Scan the actual repo for known invariant violations."""
 
@@ -203,6 +228,7 @@ class TestRepoInvariants:
                 continue
             content = f.read_text(encoding="utf-8", errors="ignore")
             import re
+
             agents = re.findall(r"^class\s+(\w+Agent)\s*[\(:]", content, re.MULTILINE)
             assert not agents, f"{f.name} still contains Agent class(es): {agents}"
 

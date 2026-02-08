@@ -159,7 +159,7 @@ class K1Router:
         logger.info(
             f"Gate 4: Archetype = {archetype_result.archetype} "
             f"(confidence={archetype_result.confidence:.2f}, "
-            f"CXO_precedence={archetype_result.cxo_precedence_triggered})"
+            f"CXO_precedence={archetype_result.cxo_precedence_triggered})",
         )
 
         # Gate 5: Route selection
@@ -175,9 +175,7 @@ class K1Router:
         # Gate 6: Premium routing mismatch detection (CRITICAL)
         if route_result.premium_routing_mismatch:
             entrance_gates_passed.append("GATE_6_PREMIUM_MISMATCH_DETECTED")
-            logger.critical(
-                f"Gate 6: PREMIUM ROUTING MISMATCH BLOCKER - {route_result.blocking_reason}"
-            )
+            logger.critical(f"Gate 6: PREMIUM ROUTING MISMATCH BLOCKER - {route_result.blocking_reason}")
             raise ValueError(f"GATE_6_BLOCKED: {route_result.blocking_reason}")
 
         entrance_gates_passed.append("GATE_6_PREMIUM_ROUTING_VALIDATED")

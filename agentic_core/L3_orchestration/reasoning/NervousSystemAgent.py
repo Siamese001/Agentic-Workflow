@@ -6,8 +6,9 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.

@@ -178,7 +178,9 @@ class ResumeSectionNode:
         }
 
     def __call__(
-        self, job_description: str, additional_context: dict[str, Any] = None
+        self,
+        job_description: str,
+        additional_context: dict[str, Any] = None,
     ) -> ResumeSectionOutput:
         """
         Executes resume section analysis using functor pattern.
@@ -195,9 +197,7 @@ class ResumeSectionNode:
 
         return self.analyze_resume_sections(job_description, additional_context or {})
 
-    def analyze_resume_sections(
-        self, job_description: str, context: dict[str, Any]
-    ) -> ResumeSectionOutput:
+    def analyze_resume_sections(self, job_description: str, context: dict[str, Any]) -> ResumeSectionOutput:
         """Analyze job description and determine optimal resume sections.
 
         Args:
@@ -211,23 +211,17 @@ class ResumeSectionNode:
 
         # Extract role information
         role_result = self._extract_role(job_description)
-        logger.info(
-            f"Role extracted: {role_result.role} (confidence: {role_result.confidence:.2f})"
-        )
+        logger.info(f"Role extracted: {role_result.role} (confidence: {role_result.confidence:.2f})")
 
         # Extract industry information
         industry_result = self._extract_industry(job_description)
         logger.info(
-            f"Industry extracted: {industry_result.industry} (confidence: {industry_result.confidence:.2f})"
+            f"Industry extracted: {industry_result.industry} (confidence: {industry_result.confidence:.2f})",
         )
 
         # Analyze section requirements
-        section_analysis = self._analyze_section_requirements(
-            role_result, industry_result, job_description
-        )
-        logger.info(
-            f"Section analysis complete: {len(section_analysis.required_sections)} required sections"
-        )
+        section_analysis = self._analyze_section_requirements(role_result, industry_result, job_description)
+        logger.info(f"Section analysis complete: {len(section_analysis.required_sections)} required sections")
 
         # Build output
         output = ResumeSectionOutput(
@@ -241,9 +235,7 @@ class ResumeSectionNode:
             },
         )
 
-        logger.info(
-            f"Resume section analysis complete: {role_result.role} in {industry_result.industry}"
-        )
+        logger.info(f"Resume section analysis complete: {role_result.role} in {industry_result.industry}")
 
         return output
 
@@ -374,10 +366,7 @@ class ResumeSectionNode:
 
         # Check for specific requirements in job description
         if "certification" in job_description.lower():
-            if (
-                "certifications" not in required_sections
-                and "certifications" not in optional_sections
-            ):
+            if "certifications" not in required_sections and "certifications" not in optional_sections:
                 optional_sections.append("certifications")
 
         if "project" in job_description.lower() or "portfolio" in job_description.lower():
@@ -396,9 +385,7 @@ class ResumeSectionNode:
             section_weights=section_weights,
         )
 
-    def generate_experience_section(
-        self, profile: dict[str, Any], thematic_output: Any
-    ) -> dict[str, Any]:
+    def generate_experience_section(self, profile: dict[str, Any], thematic_output: Any) -> dict[str, Any]:
         """
         [Enhanced] Generates experience using Two-Phase K-Node pattern.
         """
@@ -451,7 +438,9 @@ class ResumeSectionNode:
         return self.section_templates.get(industry_key, self.section_templates["default"])
 
     def validate_section_completeness(
-        self, sections: list[str], required_sections: list[str]
+        self,
+        sections: list[str],
+        required_sections: list[str],
     ) -> dict[str, Any]:
         """Validate if all required sections are present.
 

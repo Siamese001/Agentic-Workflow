@@ -76,7 +76,7 @@ class TestCodeQualityMetrics:
                         "file": str(file_path.relative_to(PROJECT_ROOT)),
                         "size_bytes": file_size,
                         "size_kb": round(file_size / 1024, 2),
-                    }
+                    },
                 )
 
             # Count lines of code (excluding comments and blank lines)
@@ -211,7 +211,7 @@ class TestCodeQualityMetrics:
                                     "function": node.name,
                                     "line": node.lineno,
                                     "complexity": complexity,
-                                }
+                                },
                             )
 
             except (SyntaxError, UnicodeDecodeError):
@@ -225,7 +225,7 @@ class TestCodeQualityMetrics:
             print(f"\n[REPORT] {len(complex_functions)} complex functions:")
             for func_info in complex_functions[:10]:
                 print(
-                    f"  - {func_info['file']}:{func_info['line']} {func_info['function']}() (complexity: {func_info['complexity']})"
+                    f"  - {func_info['file']}:{func_info['line']} {func_info['function']}() (complexity: {func_info['complexity']})",
                 )
             if len(complex_functions) > 10:
                 print(f"  ... and {len(complex_functions) - 10} more")
@@ -303,7 +303,7 @@ class TestCodeQualityMetrics:
                             pass  # Has docstring
                         else:
                             undocumented_classes.append(
-                                {"file": rel_path, "name": node.name, "line": node.lineno}
+                                {"file": rel_path, "name": node.name, "line": node.lineno},
                             )
 
                     elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
@@ -325,7 +325,7 @@ class TestCodeQualityMetrics:
                             pass  # Has docstring
                         else:
                             undocumented_functions.append(
-                                {"file": rel_path, "name": node.name, "line": node.lineno}
+                                {"file": rel_path, "name": node.name, "line": node.lineno},
                             )
 
             except (SyntaxError, UnicodeDecodeError):
@@ -419,7 +419,7 @@ class TestCodeQualityMetrics:
                                         "line": i + 1,
                                         "type": "missing_blank_after_imports",
                                         "description": "Missing blank line after imports",
-                                    }
+                                    },
                                 )
                         continue
 
@@ -482,7 +482,7 @@ class TestCodeQualityMetrics:
                                 "line": "multiple",
                                 "type": "import_order",
                                 "description": "Imports not properly ordered (stdlib, third-party, local)",
-                            }
+                            },
                         )
 
                 # Check for multiple imports on one line (except specific cases)
@@ -499,7 +499,7 @@ class TestCodeQualityMetrics:
                                     "line": line_num,
                                     "type": "multiple_imports_one_line",
                                     "description": "Multiple imports on one line",
-                                }
+                                },
                             )
 
             except (UnicodeDecodeError, PermissionError):

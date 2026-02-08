@@ -6,10 +6,9 @@ Evaluates agent outputs against golden test cases.
 
 import json
 import logging
-from dataclasses import dataclass
-from typing import Any
-from dataclasses import field
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 try:
     from apps_rg.core.JudgeEvaluation import (

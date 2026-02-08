@@ -55,7 +55,8 @@ class TestSovereignPurification(unittest.TestCase):
 
         # SUCCESS: 100% PASS - Core integrity hash must validate the new sovereign state
         self.assertTrue(
-            verifier.verify_core_integrity(), "Core integrity lock failed post-Phase 7 migration."
+            verifier.verify_core_integrity(),
+            "Core integrity lock failed post-Phase 7 migration.",
         )
 
     def test_remaining_unified_artifacts_exist(self):

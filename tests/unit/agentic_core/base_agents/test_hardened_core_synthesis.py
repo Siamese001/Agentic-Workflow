@@ -70,7 +70,7 @@ class TestHardenedCoreSynthesis:
             if not sovereign_path.exists():
                 # Try absolute path
                 sovereign_path = Path(
-                    "c:/Git/Agentic-Workflow/agentic_core/base_agents/SovereignBaseAgent.py"
+                    "c:/Git/Agentic-Workflow/agentic_core/base_agents/SovereignBaseAgent.py",
                 )
                 print(f"Absolute path: {sovereign_path}")
                 print(f"Absolute path exists: {sovereign_path.exists()}")
@@ -91,7 +91,9 @@ class TestHardenedCoreSynthesis:
             assert "get_sovereign_capabilities" in content, "Missing get_sovereign_capabilities method"
 
             # Test proper imports
-            assert "from agentic_core.runtime.exceptions.sovereign_errors import" in content, "Missing sovereign errors import"
+            assert "from agentic_core.runtime.exceptions.sovereign_errors import" in content, (
+                "Missing sovereign errors import"
+            )
 
         except Exception as e:
             pytest.fail(f"CRITICAL: SovereignBaseAgent test failed: {e}")
@@ -215,7 +217,7 @@ class TestHardenedCoreSynthesis:
             # Allow some violations for now during transition
             if len(violations) > 0:
                 print(
-                    f"WARNING: Found {len(violations)} dependency leaks (expected during transition): {violations[:5]}"
+                    f"WARNING: Found {len(violations)} dependency leaks (expected during transition): {violations[:5]}",
                 )
 
             # Only fail if critical base_agents have violations
@@ -230,8 +232,9 @@ class TestHardenedCoreSynthesis:
     def test_canonical_schema_compliance(self):
         """Test that heal_repository methods use canonical schema."""
         try:
-            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
             from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
+
+            from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
 
             # Test HealerMixin
             healer_method = HealerMixin.heal_repository
@@ -254,7 +257,7 @@ class TestHardenedCoreSynthesis:
             if not sovereign_path.exists():
                 # Try absolute path
                 sovereign_path = Path(
-                    "c:/Git/Agentic-Workflow/agentic_core/base_agents/SovereignBaseAgent.py"
+                    "c:/Git/Agentic-Workflow/agentic_core/base_agents/SovereignBaseAgent.py",
                 )
 
             assert sovereign_path.exists(), "SovereignBaseAgent.py file missing"
@@ -275,11 +278,12 @@ class TestHardenedCoreSynthesis:
     def test_error_boundary_integration(self):
         """Test that proper exception hierarchy is integrated."""
         try:
+            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
+
             from agentic_core.mixins.healer_mixin import healer_mixin  # noqa: F401
             from agentic_core.mixins.structural_healing_mixin import (
                 structural_healing_mixin,  # noqa: F401
             )
-            from agentic_core.base_agents.unified_hygiene_mixin import hygiene_mixin  # noqa: F401
             from agentic_core.runtime.exceptions.sovereign_errors import (  # noqa: F401
                 HealerError,
                 HygieneError,

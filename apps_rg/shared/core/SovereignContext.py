@@ -38,16 +38,12 @@ class SovereignContext:
         CRITICAL: REQUIRES a valid cryptographic signature to prove validation passed.
         """
         if not validation_signature:
-            raise ValueError(
-                "SECURITY VIOLATION: Cannot commit airlock without validation signature."
-            )
+            raise ValueError("SECURITY VIOLATION: Cannot commit airlock without validation signature.")
 
         # Atomic commit of all staged changes
         for key, value in self._airlock.items():
             self._state[key] = deepcopy(value)
-            self._transaction_log.append(
-                {"action": "COMMIT", "key": key, "signature": validation_signature}
-            )
+            self._transaction_log.append({"action": "COMMIT", "key": key, "signature": validation_signature})
 
         # Flush airlock after successful commit
         self._airlock.clear()

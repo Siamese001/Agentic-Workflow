@@ -7,9 +7,10 @@ Validates:
 - After remediation: no violations
 """
 
-import pytest
 import ast
 from pathlib import Path
+
+import pytest
 
 
 def find_agents_outside_reasoning(root: Path) -> list[str]:
@@ -43,8 +44,8 @@ def find_agents_outside_reasoning(root: Path) -> list[str]:
                     if node.name.endswith("Agent") and not node.name.startswith("I"):
                         # Check if it's a Protocol
                         is_protocol = any(
-                            (isinstance(base, ast.Name) and base.id == "Protocol") or
-                            (isinstance(base, ast.Attribute) and base.attr == "Protocol")
+                            (isinstance(base, ast.Name) and base.id == "Protocol")
+                            or (isinstance(base, ast.Attribute) and base.attr == "Protocol")
                             for base in node.bases
                         )
                         # Check if it's in a docstring/comment (class name in string)
@@ -153,11 +154,11 @@ class TestFixtureRepoAgentPlacement:
         # Create a violation: Agent in types/
         types_dir = tmp_path / "agentic_core" / "L5_safety" / "types"
         types_dir.mkdir(parents=True)
-        (types_dir / "bad_agent.py").write_text('''
+        (types_dir / "bad_agent.py").write_text("""
 class BadAgent:
     def execute(self):
         pass
-''')
+""")
 
         violations = find_agents_outside_reasoning(tmp_path)
         assert len(violations) > 0, "Should detect Agent in types/"
@@ -167,11 +168,11 @@ class BadAgent:
         # Create proper placement: Agent in reasoning/
         reasoning_dir = tmp_path / "agentic_core" / "L5_safety" / "reasoning"
         reasoning_dir.mkdir(parents=True)
-        (reasoning_dir / "good_agent.py").write_text('''
+        (reasoning_dir / "good_agent.py").write_text("""
 class GoodAgent:
     def execute(self):
         pass
-''')
+""")
 
         violations = find_agents_outside_reasoning(tmp_path)
         assert len(violations) == 0, f"Should have no violations: {violations}"

@@ -291,7 +291,7 @@ def find_misplaced_tests(project_root: Path) -> list[Path]:
 def find_obsolete_tests(project_root: Path, classifications: list[FileClassification]) -> list[Path]:
     """Find test files that no longer have corresponding source files or are catch-all."""
     obsolete = []
-    source_stems = {c.path.stem for c in classifications}
+    {c.path.stem for c in classifications}
 
     test_dirs = [
         project_root / "tests" / "unit" / "apps_lic",

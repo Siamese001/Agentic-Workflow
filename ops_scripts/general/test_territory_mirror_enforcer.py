@@ -169,7 +169,7 @@ def get_source_for_test(test_path: Path, project_root: Path) -> tuple[Path | Non
     # test_PIISanitizerAgent.py -> PIISanitizerAgent.py (approximate)
     test_stem = test_path.stem
     if test_stem.startswith("test_"):
-        source_stem = test_stem[5:]  # Remove test_ prefix
+        test_stem[5:]  # Remove test_ prefix
         # This is the expected subfolder structure
         expected_source_dir = project_root / Path(*parts[:-1])
         return expected_source_dir, territory
@@ -213,7 +213,7 @@ def scan_source_files(project_root: Path) -> list[SourceFile]:
                     file_type=file_type,
                     class_name=class_name,
                     expected_test_path=expected_test,
-                )
+                ),
             )
 
     return source_files
@@ -237,63 +237,6 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
     anarchy_zones = {"misc", "temp", "old", "deprecated", "archive", "scratch"}
 
     # Valid source territory folders that tests CAN mirror
-    valid_territories = {
-        "engines",
-        "validators",
-        "core",
-        "config",
-        "scripts",
-        "tools",
-        "adapters",
-        "strategies",
-        "mixins",
-        "base_agents",
-        "guardrails",
-        "thought_engine",
-        "workflow_engines",
-        "red_teaming",
-        "policy_engine",
-        "gravity",
-        "security",
-        "cognition",
-        "utils",
-        "helpers",
-        "common_utils",
-        "domain",
-        "shared",
-        "logic_nodes",
-        "asset_library",
-        "validation",
-        "retrieval",
-        "generation",
-        "quality",
-        "safety",
-        "orchestration",
-        "fission_logic",
-        "interfaces",
-        "mcp",
-        "tool_registry",
-        "execution_bridge",
-        "validation_context",
-        "ledger",
-        "memory",
-        "dashboards",
-        "agents",
-        "reports",
-        "telemetry",
-        "models",
-        "messages",
-        "templates",
-        "rendering",
-        "embeddings",
-        "store",
-        "document_loaders",
-        "fixtures",
-        "llm",
-        "core_components",
-        "data",
-        "integration",
-    }
 
     # Build source lookup by expected test path
     source_lookup = {}
@@ -365,7 +308,7 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
                     source_file=matched_source,
                     is_violation=is_violation,
                     target_path=target_path,
-                )
+                ),
             )
 
     return test_files
@@ -381,7 +324,7 @@ def move_test_file(test_file: TestFile, dry_run: bool = True) -> bool:
 
     if dry_run:
         print(
-            f"  [PLAN] MOVE {src.relative_to(src.parent.parent.parent.parent)} -> {dest.relative_to(dest.parent.parent.parent.parent)}"
+            f"  [PLAN] MOVE {src.relative_to(src.parent.parent.parent.parent)} -> {dest.relative_to(dest.parent.parent.parent.parent)}",
         )
         return True
 
@@ -483,7 +426,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test Territory Mirror Enforcer")
     parser.add_argument("--execute", action="store_true", help="Execute moves (default: dry run)")
     parser.add_argument(
-        "--output", type=str, default="territory_mirror_report.json", help="Report output file"
+        "--output",
+        type=str,
+        default="territory_mirror_report.json",
+        help="Report output file",
     )
     args = parser.parse_args()
 

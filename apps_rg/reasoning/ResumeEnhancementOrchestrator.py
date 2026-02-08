@@ -49,12 +49,14 @@ class ResumeEnhancementOrchestrator:
         """Setup event subscriptions for component coordination."""
         # Subscribe to resume generation events
         await self.infrastructure.event_bus.subscribe(
-            "events.resume_generation_started", self._handle_resume_generation_started
+            "events.resume_generation_started",
+            self._handle_resume_generation_started,
         )
 
         # Subscribe to persona analysis events
         await self.infrastructure.event_bus.subscribe(
-            "events.persona_analyzed", self._handle_persona_analyzed
+            "events.persona_analyzed",
+            self._handle_persona_analyzed,
         )
 
         logger.info("Setup resume enhancement event subscriptions")
@@ -128,9 +130,7 @@ class ResumeEnhancementOrchestrator:
 
             # This could trigger additional persona-specific logic
             # For now, just log the analysis
-            logger.info(
-                f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})"
-            )
+            logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
 
         except Exception as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
@@ -231,9 +231,7 @@ class ResumeEnhancementOrchestrator:
 
             # 6. Add competitive insights to prompt if available
             if recon_signal and recon_signal.position.value != "UNRELATED":
-                prompt_template += (
-                    f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommendation}"
-                )
+                prompt_template += f"\n\nCompetitive Intelligence:\n{recon_signal.strategy_recommendation}"
 
             # 7. Generate final resume through infrastructure
             result = await self.infrastructure.execute_with_infrastructure(
@@ -255,9 +253,7 @@ class ResumeEnhancementOrchestrator:
                         "persona": persona.title,
                         "enhanced_bullets": len(enhanced_bullets),
                         "links_injected": self.evidence_injector._links_used,
-                        "competitive_insights": recon_signal.position.value
-                        if recon_signal
-                        else None,
+                        "competitive_insights": recon_signal.position.value if recon_signal else None,
                     },
                     causation_id=trace_id,
                 ),
@@ -292,9 +288,7 @@ class ResumeEnhancementOrchestrator:
 
             raise
 
-    def _calculate_complexity(
-        self, persona: ReaderPersona, recon_signal: ReconSignal | None
-    ) -> int:
+    def _calculate_complexity(self, persona: ReaderPersona, recon_signal: ReconSignal | None) -> int:
         """Calculate task complexity based on persona and signals.
 
         Args:
@@ -333,9 +327,7 @@ class ResumeEnhancementOrchestrator:
             "evidence_injector": self.evidence_injector.get_stats(),
             "recon_agent": {
                 "companies_in_db": len(self.recon_agent.competitor_db),
-                "industries_covered": len(
-                    {c.industry for c in self.recon_agent.competitor_db.values()}
-                ),
+                "industries_covered": len({c.industry for c in self.recon_agent.competitor_db.values()}),
             },
         }
 
@@ -388,5 +380,9 @@ async def enhance_resume(
     """
     orchestrator = await get_resume_enhancement_orchestrator()
     return await orchestrator.generate_enhanced_resume(
-        job_description, candidate_history, resume_bullets, evidence_library_path, trace_id
+        job_description,
+        candidate_history,
+        resume_bullets,
+        evidence_library_path,
+        trace_id,
     )

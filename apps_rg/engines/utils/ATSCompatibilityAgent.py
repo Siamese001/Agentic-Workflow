@@ -225,7 +225,9 @@ class ATSCompatibilityAgent(RGAgentBase):
 
         # Execute via unified strategy
         result: ValidationResult = await self._unified_strategy.execute(
-            mock_agent, resume=resume, job_desc=job_desc
+            mock_agent,
+            resume=resume,
+            job_desc=job_desc,
         )
 
         # Preserve legacy signal handling

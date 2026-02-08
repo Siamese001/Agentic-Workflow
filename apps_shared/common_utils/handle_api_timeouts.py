@@ -6,7 +6,8 @@ Generated: 2025-12-07T13:28:54.250342
 """
 
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 

@@ -7,10 +7,10 @@ Phase 1C - Knowledge Extraction Integration
 """
 
 import logging
-
-from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
 from dataclasses import dataclass, field
 from typing import Any
+
+from .agent_executor import AgentExecutor, AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 

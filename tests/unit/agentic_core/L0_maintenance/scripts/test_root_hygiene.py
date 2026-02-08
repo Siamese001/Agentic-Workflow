@@ -5,7 +5,6 @@ Rationale:
 """
 
 import pytest
-
 from agentic_core.L0_maintenance.scripts.root_hygiene_enforcer import enforce_root_hygiene
 
 

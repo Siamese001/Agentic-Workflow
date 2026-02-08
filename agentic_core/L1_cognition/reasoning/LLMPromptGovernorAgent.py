@@ -5,9 +5,9 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from typing import Any
 
 """
 LLMPromptGovernorAgent - Hardened Prompt Governor for LLM Safety
@@ -30,6 +30,7 @@ import re
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)

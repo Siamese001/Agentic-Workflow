@@ -74,7 +74,7 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
         self.k_node_id = "K.9"
         Logger.info(
             f"GapClosureArchitect initialized: COUNT={competency_count}, "
-            f"words={word_count_min}-{word_count_max}, gap_coverage≥{gap_coverage_minimum:.0%}"
+            f"words={word_count_min}-{word_count_max}, gap_coverage≥{gap_coverage_minimum:.0%}",
         )
 
     def _build_initial_prompt(
@@ -106,7 +106,9 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
         return keywords
 
     def _calculate_gap_coverage(
-        self, competencies: list[CompetencyItem], jd_keyword_gap: list[str]
+        self,
+        competencies: list[CompetencyItem],
+        jd_keyword_gap: list[str],
     ) -> set[str]:
         """Calculate gap coverage."""
         covered: set[str] = set()
@@ -118,9 +120,7 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
                 covered.add(keyword)
         return covered
 
-    def _check_industry_first_ranking(
-        self, competencies: list[CompetencyItem], target_industry: str
-    ) -> bool:
+    def _check_industry_first_ranking(self, competencies: list[CompetencyItem], target_industry: str) -> bool:
         """Check if competencies follow Industry-First ranking."""
         if competencies:
             first_comp_text = f"{competencies[0].title} {competencies[0].description}".lower()
@@ -147,7 +147,10 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
         """
         # Build prompt and generate (placeholder implementation)
         prompt = self._build_initial_prompt(
-            jd_keyword_gap, authentic_phrasing, base_competency_pool, target_industry
+            jd_keyword_gap,
+            authentic_phrasing,
+            base_competency_pool,
+            target_industry,
         )
         Logger.debug(f"Generated prompt: {prompt[:100]}...")
 

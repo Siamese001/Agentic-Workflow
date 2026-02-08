@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
+from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 """
 L6 Sovereign Code Graph & Governance Infrastructure
@@ -55,6 +56,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
+
 from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin

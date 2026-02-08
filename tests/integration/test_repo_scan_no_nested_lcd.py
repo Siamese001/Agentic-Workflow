@@ -6,8 +6,9 @@ Validates:
 - Layer roots may have LCD subfolders
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     LEAF_DOMAINS_NO_LCD,
@@ -68,15 +69,18 @@ class TestNoNestedLCD:
             result = validate_no_nested_lcd(path_parts)
             assert result is not None, f"Should flag {leaf_domain}/{lcd_subfolder}"
 
-    @pytest.mark.parametrize("layer", [
-        "L0_maintenance",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ])
+    @pytest.mark.parametrize(
+        "layer",
+        [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ],
+    )
     def test_validate_no_nested_lcd_allows_layer_roots(self, layer: str):
         """validate_no_nested_lcd should allow LCD under layer roots."""
         for lcd_subfolder in ["reasoning", "enforcement", "types"]:

@@ -10,10 +10,11 @@ import logging
 import os
 import time
 import uuid
+from collections.abc import Callable
 from datetime import datetime
-from pydantic import BaseModel, Field
-from typing import Any, Callable
-from pydantic import validator
+from typing import Any
+
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 

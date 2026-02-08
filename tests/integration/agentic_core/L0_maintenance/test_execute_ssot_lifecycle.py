@@ -74,7 +74,9 @@ class TestSovereignLifecycle(unittest.TestCase):
 
         # Test confidence calculation with real territory
         conf = decision_engine.calculate_healing_confidence(
-            violations_count=5, violation_types=["SHALLOW", "NAMING"], territory="L5_safety"
+            violations_count=5,
+            violation_types=["SHALLOW", "NAMING"],
+            territory="L5_safety",
         )
 
         # Verify confidence is calculated
@@ -158,12 +160,16 @@ class TestSovereignLifecycle(unittest.TestCase):
 
         # Test trusted territory
         trusted_conf = engine.calculate_healing_confidence(
-            violations_count=20, violation_types=["NAMING"], territory="prompt_governance"
+            violations_count=20,
+            violation_types=["NAMING"],
+            territory="prompt_governance",
         )
 
         # Test critical territory with same violations
         critical_conf = engine.calculate_healing_confidence(
-            violations_count=20, violation_types=["NAMING"], territory="base_agents"
+            violations_count=20,
+            violation_types=["NAMING"],
+            territory="base_agents",
         )
 
         # Trusted should have higher confidence
@@ -187,7 +193,9 @@ class TestSovereignLifecycle(unittest.TestCase):
 
         for territory in territories:
             conf = engine.calculate_healing_confidence(
-                violations_count=0, violation_types=[], territory=territory
+                violations_count=0,
+                violation_types=[],
+                territory=territory,
             )
             self.assertEqual(conf.value, 1.0, f"Zero violations in {territory} should be 1.0")
             self.assertTrue(conf.is_high_confidence)
@@ -290,7 +298,12 @@ class TestSovereignLifecycle(unittest.TestCase):
 
         # 4. RUN PHASE 1 (Discovery)
         drift_report, violations = execute_ssot.execute_phase1_discovery_impl(
-            agents, "L5_safety", decision_engine, state_mgr, dry_run=False, auto_approve=True
+            agents,
+            "L5_safety",
+            decision_engine,
+            state_mgr,
+            dry_run=False,
+            auto_approve=True,
         )
 
         # 5. VERIFY DETECTION

@@ -409,9 +409,7 @@ if __name__ == "__main__":
         temp_path = Path(f.name)
 
     try:
-        result = subprocess.run(
-            [sys.executable, str(temp_path)], capture_output=True, text=True, timeout=30
-        )
+        result = subprocess.run([sys.executable, str(temp_path)], capture_output=True, text=True, timeout=30)
         assert result.returncode == 1
         assert "VIOLATION" in result.stdout
         assert "Found: 1" in result.stdout

@@ -83,7 +83,7 @@ def compare_snapshots(t_minus_1: list[dict], t: list[dict]) -> dict[str, Any]:
         # Check for issues
         if len(agents_t) > 1:
             results["issues"].append(
-                f"CRITICAL: {layer} has {len(agents_t)} base classes (expected 1): {agents_t}"
+                f"CRITICAL: {layer} has {len(agents_t)} base classes (expected 1): {agents_t}",
             )
         elif len(agents_t) == 0:
             results["issues"].append(f"WARNING: {layer} has no base class")
@@ -100,7 +100,7 @@ def compare_snapshots(t_minus_1: list[dict], t: list[dict]) -> dict[str, Any]:
 
         if delta != 0:
             results["territory_changes"].append(
-                {"territory": territory, "t-1": count_t1, "t": count_t, "delta": delta}
+                {"territory": territory, "t-1": count_t1, "t": count_t, "delta": delta},
             )
 
     # Compare agent lists

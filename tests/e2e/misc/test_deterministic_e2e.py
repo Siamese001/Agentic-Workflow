@@ -62,7 +62,7 @@ class TestFullPipelineE2E:
                 "ats_unfriendly_patterns": [],
                 "allowed_non_standard_sections": ["projects"],
                 "keyword_optimization": {"min_score_threshold": 0.3, "stop_words": []},
-            }
+            },
         )
         content = ContentQualityDeterministic(
             {
@@ -70,7 +70,7 @@ class TestFullPipelineE2E:
                 "quantified_patterns": [r"\d+\s*(?:%|years?)"],
                 "skill_keywords": ["Python", "JavaScript"],
                 "min_skill_matches": 1,
-            }
+            },
         )
         governance = GovernanceShieldDeterministic({})
 
@@ -89,7 +89,7 @@ class TestFullPipelineE2E:
         ats_result = ats.validate_ats_compatibility(resume)
         content_result = content.validate_content_quality(resume)
         gov_result = governance.audit_content_compliance(
-            "Professional software engineer with excellent skills"
+            "Professional software engineer with excellent skills",
         )
 
         # All should pass
@@ -202,7 +202,9 @@ class TestCrossPhaseIntegration:
         # Run all validators
         results = {
             "campaign": campaign.validate_campaign_balance(
-                {"name": "Test", "goal": "Success"}, ["lead"], ["msg"]
+                {"name": "Test", "goal": "Success"},
+                ["lead"],
+                ["msg"],
             ),
             "lead": lead.validate_lead_quality([]),
             "deliverability": deliverability.validate_deliverability([]),
@@ -281,7 +283,7 @@ class TestProductionSimulation:
                 "ats_unfriendly_patterns": [],  # No patterns to avoid false positives
                 "allowed_non_standard_sections": ["projects", "certifications"],
                 "keyword_optimization": {"min_score_threshold": 0.3, "stop_words": ["the", "and"]},
-            }
+            },
         )
 
         content = ContentQualityDeterministic(
@@ -294,7 +296,7 @@ class TestProductionSimulation:
                 ],
                 "skill_keywords": ["Python", "JavaScript", "React", "Node.js", "SQL"],
                 "min_skill_matches": 2,
-            }
+            },
         )
 
         governance = GovernanceShieldDeterministic({})
@@ -315,7 +317,7 @@ class TestProductionSimulation:
         ats_result = ats.validate_ats_compatibility(resume)
         content_result = content.validate_content_quality(resume)
         gov_result = governance.audit_content_compliance(
-            "Experienced software engineer with strong technical skills"
+            "Experienced software engineer with strong technical skills",
         )
 
         # Should all pass for a well-formed resume
@@ -331,7 +333,7 @@ class TestProductionSimulation:
                 "contact_fields": ["email", "contact_name"],
                 "suspicious_domains": [".xyz", ".top"],
                 "spam_indicators": ["noreply@", "test@"],
-            }
+            },
         )
 
         deliverability = DeliverabilityDeterministic(
@@ -339,14 +341,14 @@ class TestProductionSimulation:
                 "spam_triggers": ["FREE", "BUY NOW", "$$$"],
                 "max_links": 3,
                 "max_images": 2,
-            }
+            },
         )
 
         campaign = CampaignBalanceDeterministic(
             {
                 "max_leads_per_message": 100,
                 "min_leads_per_message": 1,
-            }
+            },
         )
 
         # Production-like data

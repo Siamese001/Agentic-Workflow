@@ -21,10 +21,11 @@ def test_unified_api_exports():
     """Verify cleaner import paths for Agents."""
     # New clean import
     # Old deep import
+    from agentic_core.unified import CodeValidatorAgent
+
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
         CodeValidatorAgent as Original,
     )
-    from agentic_core.unified import CodeValidatorAgent
 
     assert CodeValidatorAgent is Original
     assert inspect.isclass(CodeValidatorAgent)
@@ -43,20 +44,22 @@ def test_unified_structure_validator_export():
 
 def test_unified_code_enforcer_export():
     """Verify CodeEnforcerAgent is exported."""
+    from agentic_core.unified import CodeEnforcerAgent
+
     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import (
         CodeEnforcerAgent as Original,
     )
-    from agentic_core.unified import CodeEnforcerAgent
 
     assert CodeEnforcerAgent is Original
 
 
 def test_unified_resource_manager_export():
     """Verify ResourceManagerAgent is exported."""
+    from agentic_core.unified import ResourceManagerAgent
+
     from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
         ResourceManagerAgent as Original,
     )
-    from agentic_core.unified import ResourceManagerAgent
 
     assert ResourceManagerAgent is Original
 

@@ -79,9 +79,7 @@ class FactCheckAgent(RGAgentBase):
                     self._normalize(e.get("company", "")) for e in resume_exp if isinstance(e, dict)
                 }
                 profile_companies: set[str] = {
-                    self._normalize(e.get("company", ""))
-                    for e in profile_exp
-                    if isinstance(e, dict)
+                    self._normalize(e.get("company", "")) for e in profile_exp if isinstance(e, dict)
                 }
 
                 if profile_companies:
@@ -117,9 +115,7 @@ class FactCheckAgent(RGAgentBase):
             elif isinstance(skill_data, dict):
                 for category_skills in skill_data.values():
                     if isinstance(category_skills, list):
-                        skills.update(
-                            self._normalize(s) for s in category_skills if isinstance(s, str)
-                        )
+                        skills.update(self._normalize(s) for s in category_skills if isinstance(s, str))
 
         return skills
 
@@ -127,9 +123,7 @@ class FactCheckAgent(RGAgentBase):
         """Normalize text for comparison."""
         return text.lower().strip()
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()
 

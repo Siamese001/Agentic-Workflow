@@ -268,7 +268,7 @@ class MathProcessor:
             )
 
         if weights is None:
-            weights = {key: 1.0 for key in components.keys()}
+            weights = dict.fromkeys(components.keys(), 1.0)
 
         total_weight = sum(weights.get(key, 0.0) for key in components.keys())
         if total_weight == 0:

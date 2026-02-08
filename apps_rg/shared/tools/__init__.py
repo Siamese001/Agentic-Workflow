@@ -67,9 +67,7 @@ def get_agent(agent_id: str) -> Any:
     try:
         agent_cls = getattr(module, attr)
     except AttributeError as exc:  # pragma: no cover - misconfiguration guard
-        raise KeyError(
-            f"Module '{module_name}' does not expose '{attr}' for agent '{agent_id}'"
-        ) from exc
+        raise KeyError(f"Module '{module_name}' does not expose '{attr}' for agent '{agent_id}'") from exc
 
     _AGENT_CACHE[agent_id] = agent_cls
     return agent_cls

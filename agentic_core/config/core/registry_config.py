@@ -197,7 +197,6 @@ L4_APPROVED_FOLDERS: set = {
     "agentic_core/L1_cognition/thought_engine",
     "agentic_core/L5_safety/enforcement",
     "agentic_core/L5_safety/validators",
-    "agentic_core/L5_safety/enforcement",
     "agentic_core/L2_execution/reasoning",
     "agentic_core/L2_execution/enforcement",
     "agentic_core/L4_state/memory",

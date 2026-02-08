@@ -239,7 +239,10 @@ class SovereignContractGuard:
         This is the core of Pillar 2: Signature Enforcement.
         """
         result = SignatureResult(
-            class_name=class_name, has_heal_method=False, signature_valid=False, signature_str=""
+            class_name=class_name,
+            has_heal_method=False,
+            signature_valid=False,
+            signature_str="",
         )
 
         try:
@@ -356,7 +359,7 @@ class SovereignContractGuard:
                 logger.info(f"✓ MRO valid for {class_name}: {' -> '.join(result.mro_list)}")
             else:
                 logger.warning(
-                    f"⚠ MRO issues for {class_name}: Shadowing={result.shadowing_detected}, Missing={result.missing_mixins}"
+                    f"⚠ MRO issues for {class_name}: Shadowing={result.shadowing_detected}, Missing={result.missing_mixins}",
                 )
 
         except Exception as e:
@@ -419,12 +422,12 @@ class SovereignContractGuard:
                     result.result_dict = True
                     result.result_content = heal_result
                     logger.info(
-                        f"✓ Mock execution successful for {class_name}: returned dict with {len(heal_result)} keys"
+                        f"✓ Mock execution successful for {class_name}: returned dict with {len(heal_result)} keys",
                     )
                 else:
                     result.result_content = {"raw_output": str(heal_result)}
                     logger.warning(
-                        f"⚠ Mock execution for {class_name} returned non-dict: {type(heal_result)}"
+                        f"⚠ Mock execution for {class_name} returned non-dict: {type(heal_result)}",
                     )
 
             except Exception as e:

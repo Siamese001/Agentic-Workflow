@@ -329,7 +329,9 @@ class TestRestoreFromArchive:
 
         # Restore it
         restore_result = gatekeeper.restore_from_archive(
-            archive_result.destination_path, "TestAgent", "Restoring file"
+            archive_result.destination_path,
+            "TestAgent",
+            "Restoring file",
         )
 
         assert restore_result.success is True

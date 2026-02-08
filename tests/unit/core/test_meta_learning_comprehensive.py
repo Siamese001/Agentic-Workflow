@@ -138,11 +138,12 @@ class TestMetaLearningClientMixin:
 
     def test_cache_operations(self):
         """Test cache get/set operations through mixin."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         class TestAgent(MetaLearningClientMixin):
@@ -182,11 +183,12 @@ class TestMetaLearningClientMixin:
 
     def test_violation_signature_generation(self):
         """Test violation signature generation."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.HealingMemoryEmbedder import (
             HealingMemoryEmbedder,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         class TestAgent(MetaLearningClientMixin):
@@ -234,7 +236,7 @@ class TestSovereignBaseAgentIntegration:
             patch.object(MetaLearningClient, "_initialize_pinecone"),
             patch.object(HealingMemoryEmbedder, "_initialize_embedding_agent"),
             patch(
-                "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+                "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
             ),
         ):
             from agentic_core.base_agents.sovereign_base_agent import SovereignBaseAgent
@@ -265,11 +267,12 @@ class TestDomainIsolation:
 
     def test_lic_domain_isolation(self):
         """Test LIC domain isolation."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         class LicHealingAgent(MetaLearningClientMixin):
@@ -287,11 +290,12 @@ class TestDomainIsolation:
 
     def test_rg_domain_isolation(self):
         """Test RG domain isolation."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         class RgReflectionAgent(MetaLearningClientMixin):
@@ -309,11 +313,12 @@ class TestDomainIsolation:
 
     def test_cross_domain_isolation(self):
         """Test that domains are properly isolated."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.MetaLearningClient import (
             MetaLearningClient,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         class LicAgent(MetaLearningClientMixin):
@@ -356,7 +361,7 @@ class MockLicHealingOrchestrator:
         default_factory=lambda: {
             "database_lock": "release_and_retry",
             "api_timeout": "exponential_backoff",
-        }
+        },
     )
 
     def __post_init__(self):

@@ -111,7 +111,7 @@ class DispatchResumeToolsAgent(SovereignBaseAgent):
                 {
                     "content": f"Sample content for {QUERY}",
                     "metadata": {"source": "knowledge_base", "confidence": 0.95},
-                }
+                },
             ],
             "pipeline": "titanium",
         }

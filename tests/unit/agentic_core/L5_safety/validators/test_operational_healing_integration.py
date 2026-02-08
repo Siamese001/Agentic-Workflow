@@ -46,12 +46,13 @@ class TestSingletonPatternFixed:
 
     def test_singleton_preserves_registered_strategies(self):
         """Verify strategies persist across singleton access."""
+        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
+            get_historian_strategy,
+        )
+
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             HealingSovereignOrchestrator,
             get_healing_orchestrator,
-        )
-        from agentic_core.L5_safety.validators.operational_healing_integration_types import (
-            get_historian_strategy,
         )
 
         # Register via first access
@@ -86,10 +87,10 @@ class TestFullIntegrationFunctional:
 
     def test_all_strategies_registered_and_accessible(self):
         """Verify all 5 strategies are registered after initialization."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         result = register_all_validators.initialize()
 
@@ -107,10 +108,10 @@ class TestFullIntegrationFunctional:
 
     def test_historian_strategy_executes(self):
         """Verify HistorianLoggingStrategy can execute."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()
@@ -128,10 +129,10 @@ class TestFullIntegrationFunctional:
 
     def test_cost_governor_strategy_executes(self):
         """Verify CostGovernorStrategy can execute."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()
@@ -149,10 +150,10 @@ class TestFullIntegrationFunctional:
 
     def test_task_decomposition_strategy_executes(self):
         """Verify TaskDecompositionStrategy can execute."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()
@@ -170,10 +171,10 @@ class TestFullIntegrationFunctional:
 
     def test_chaos_resilience_strategy_executes(self):
         """Verify ChaosResilienceStrategy can execute."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()
@@ -191,10 +192,10 @@ class TestFullIntegrationFunctional:
 
     def test_dependency_pruning_strategy_executes(self):
         """Verify DependencyPruningStrategy can execute."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.types.healing_orchestration_types import (
             get_healing_orchestrator,
         )
+        from agentic_core.L5_safety.validators import register_all_validators
 
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()

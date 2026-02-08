@@ -7,10 +7,10 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
-from pydantic import BaseModel, Field
 from typing import Any
+
 import numpy as np
-from pydantic import validator
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 

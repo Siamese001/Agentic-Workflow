@@ -238,7 +238,7 @@ def typed_function(x: int) -> int:
 
         # Run Phase 1
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             # The impl returns raw data, decorator standardizes it
             mock_impl.return_value = {"raw_data": "test"}

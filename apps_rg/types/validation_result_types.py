@@ -72,7 +72,7 @@ class AdaptiveRecoveryLoop:  # Placeholder for AdaptiveRecoveryLoop
                 "message": MESSAGE,
                 "details": DETAILS,
                 "temperature": self.current_temperature,
-            }
+            },
         )
         # Simple retry logic for placeholder using environment temperature
         max_temp = float(os.getenv("VALIDATION_TEMPERATURE", "0.6"))
@@ -91,11 +91,9 @@ class SectionIntegratorConfig:
     """[HARDENED] Environment-aware configuration for section integration."""
 
     max_similarity_threshold: float = Field(
-        default_factory=lambda: float(os.getenv("VALIDATION_MAX_SIMILARITY_THRESHOLD", "0.75"))
+        default_factory=lambda: float(os.getenv("VALIDATION_MAX_SIMILARITY_THRESHOLD", "0.75")),
     )
-    TEMPERATURE: float = Field(
-        default_factory=lambda: float(os.getenv("VALIDATION_TEMPERATURE", "0.6"))
-    )
+    TEMPERATURE: float = Field(default_factory=lambda: float(os.getenv("VALIDATION_TEMPERATURE", "0.6")))
     max_attempts: int = 3
 
 
@@ -144,19 +142,20 @@ class SectionScopeIntegrator:
         gate_executor: IntegrityGateExecutorAgent | None = None,
         recovery_loop: AdaptiveRecoveryLoop | None = None,
     ):
-        self.config = (
-            config or SectionIntegratorConfig()
-        )  # Fixed: Changed SELF.CONFIG to self.config
+        self.config = config or SectionIntegratorConfig()  # Fixed: Changed SELF.CONFIG to self.config
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = (
             recovery_loop
             or AdaptiveRecoveryLoop(
-                initial_temperature=self.config.TEMPERATURE  # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
+                initial_temperature=self.config.TEMPERATURE,  # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
             )
         )
 
     def generate_overview(  # Fixed: Removed misplaced docstring from here
-        self, bullets: list[str], master_baseline: str, context: dict[str, Any]
+        self,
+        bullets: list[str],
+        master_baseline: str,
+        context: dict[str, Any],
     ) -> SectionIntegratorResult:
         """
         Generate section overview with anti-prefix and deduplication validation.
@@ -170,7 +169,7 @@ class SectionScopeIntegrator:
             SectionIntegratorResult with overview and validation details
         """
         self.recovery_loop.reset(
-            self.config.TEMPERATURE
+            self.config.TEMPERATURE,
         )  # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
         validation_results = []
 
@@ -244,7 +243,11 @@ class SectionScopeIntegrator:
         )
 
     def _generate_content(
-        self, bullets: list[str], context: dict[str, Any], temperature: float, attempt: int
+        self,
+        bullets: list[str],
+        context: dict[str, Any],
+        temperature: float,
+        attempt: int,
     ) -> str:
         """
         Generate overview content using LLM.

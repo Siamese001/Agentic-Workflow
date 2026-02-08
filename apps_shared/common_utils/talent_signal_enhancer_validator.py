@@ -7,9 +7,9 @@ AI leadership roles.
 
 import logging
 import re
-from pydantic import BaseModel, Field
 from typing import Any
-from pydantic import validator
+
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 

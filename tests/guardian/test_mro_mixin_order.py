@@ -144,7 +144,7 @@ class TestMROMixinOrder:
                 f"FIX: Move safety mixins to the LEFT of base classes:\n"
                 f"  WRONG: class MyAgent(L3OrchestrationBase, AtomicExecutionMixin)\n"
                 f"  RIGHT: class MyAgent(AtomicExecutionMixin, L3OrchestrationBase)\n\n"
-                f"This commit is BLOCKED until the violation is fixed."
+                f"This commit is BLOCKED until the violation is fixed.",
             )
 
         # Print MRO for verification
@@ -181,7 +181,7 @@ class TestMROMixinOrder:
                 f"FIX: Move safety mixins to the LEFT of base classes:\n"
                 f"  WRONG: class MyAgent(L5SafetyBase, AtomicExecutionMixin)\n"
                 f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBase)\n\n"
-                f"This commit is BLOCKED until all violations are fixed."
+                f"This commit is BLOCKED until all violations are fixed.",
             )
 
         print(f"\n[PASS] All {len(all_agents)} agents have correct MRO ordering")
@@ -210,7 +210,7 @@ class TestMROMixinOrder:
 
                 if mixin_index > base_index:
                     violations.append(
-                        f"{agent_class.__name__}: {mixin_name} @ {mixin_index}, {base} @ {base_index}"
+                        f"{agent_class.__name__}: {mixin_name} @ {mixin_index}, {base} @ {base_index}",
                     )
 
         if violations:

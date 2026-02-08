@@ -5,8 +5,8 @@ Targets agents with 50-83% quality scores.
 """
 
 import json
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"

@@ -100,7 +100,7 @@ class Executive_Title_Composer(Agent):
 
         logger.info(
             f"Executive_Title_Composer initialized: "
-            f"words={word_count_min}-{word_count_max}, chars≤{char_limit}"
+            f"words={word_count_min}-{word_count_max}, chars≤{char_limit}",
         )
 
     async def execute(self, context: dict[str, Any]) -> HeadlineOutput:
@@ -131,7 +131,10 @@ class Executive_Title_Composer(Agent):
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
             prompt = self._build_initial_prompt(
-                target_industry, target_role, value_propositions, job_description
+                target_industry,
+                target_role,
+                value_propositions,
+                job_description,
             )
 
         # Generate headline
@@ -169,12 +172,12 @@ class Executive_Title_Composer(Agent):
 
         logger.info(
             f"Executive_Title_Composer complete: {word_count} words, {char_count} chars, "
-            f"Industry-First={industry_first_compliant}"
+            f"Industry-First={industry_first_compliant}",
         )
 
         if not industry_first_compliant:
             logger.error(
-                f"INDUSTRY-FIRST VIOLATION: Technology keywords in Segment 1: {tech_keywords_in_seg1}"
+                f"INDUSTRY-FIRST VIOLATION: Technology keywords in Segment 1: {tech_keywords_in_seg1}",
             )
 
         return output

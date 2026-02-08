@@ -9,7 +9,6 @@ from structure_blueprint_config.py (2026-02-05)
 import sys
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (

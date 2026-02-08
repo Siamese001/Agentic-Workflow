@@ -94,9 +94,7 @@ class ActionCallGenerator:
         self.gate_executor = gate_executor or Any()
         self.recovery_loop = recovery_loop or Any(initial_temperature=self.config.TEMPERATURE)
 
-    def generate_cta(
-        self, RouteType: RouteType, message_body: str, context: dict[str, Any]
-    ) -> CTAResult:
+    def generate_cta(self, RouteType: RouteType, message_body: str, context: dict[str, Any]) -> CTAResult:
         """Docstring.
         Generate CTA with Route-specific validation.
 
@@ -131,7 +129,9 @@ class ActionCallGenerator:
             total_message: Any = f"{message_body}\n\n{cta}"
             char_count: Any = len(total_message)
             char_limit_result: Any = self._validate_character_limit(
-                RouteType=RouteType, total_message=total_message, char_count=char_count
+                RouteType=RouteType,
+                total_message=total_message,
+                char_count=char_count,
             )
             validation_results.append(char_limit_result)
             if not char_limit_result.passed:
@@ -181,7 +181,11 @@ class ActionCallGenerator:
         )
 
     def _generate_content(
-        self, RouteType: RouteType, context: dict[str, Any], temperature: float, attempt: int
+        self,
+        RouteType: RouteType,
+        context: dict[str, Any],
+        temperature: float,
+        attempt: int,
     ) -> str:
         """
         Generate CTA content using LLM.
@@ -196,9 +200,7 @@ class ActionCallGenerator:
         else:
             return "Looking forward to continuing our conversation. Are you available for a quick call this week?"
 
-    def _validate_character_limit(
-        self, RouteType: RouteType, total_message: str, char_count: int
-    ) -> Any:
+    def _validate_character_limit(self, RouteType: RouteType, total_message: str, char_count: int) -> Any:
         """
         Validate Route-specific character limits.
         BLOCKS if limit exceeded.

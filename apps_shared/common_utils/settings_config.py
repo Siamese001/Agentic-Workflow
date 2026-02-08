@@ -8,7 +8,7 @@ within the shared application layer.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class Settings:
 
     def process(
         self,
-        payload: Union[str, int, float, bool, list, dict],
+        payload: str | int | float | bool | list | dict,
         context: dict | None = None,
     ) -> ExecutionResult:
         """
@@ -63,14 +63,14 @@ class Settings:
 
     def _execute_logic(
         self,
-        data: Union[str, int, float, bool, list, dict],
+        data: str | int | float | bool | list | dict,
         context: dict | None,
-    ) -> Union[str, int, float, bool, list, dict]:
+    ) -> str | int | float | bool | list | dict:
         """Internal execution executor to be implemented or extended."""
         return data
 
 
-def run_process(data: Union[str, int, float, bool, list, dict]) -> ExecutionResult:
+def run_process(data: str | int | float | bool | list | dict) -> ExecutionResult:
     """Module-level entry point."""
     executor = Settings()
     return executor.process(data)

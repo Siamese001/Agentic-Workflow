@@ -58,7 +58,7 @@ class InvalidLocationAgent:
                 "type": "LOCATION",
                 "message": "File in invalid location: temp_test_location",
                 "severity": "medium",
-            }
+            },
         ]
 
         plan = {

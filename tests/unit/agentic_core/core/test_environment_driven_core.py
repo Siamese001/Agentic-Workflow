@@ -51,7 +51,8 @@ class TestEnvironmentDrivenCore(unittest.TestCase):
 
         # Test with custom environment thresholds
         with patch.dict(
-            os.environ, {"SOVEREIGN_HIGH_CONFIDENCE": "0.85", "SOVEREIGN_MEDIUM_CONFIDENCE": "0.45"}
+            os.environ,
+            {"SOVEREIGN_HIGH_CONFIDENCE": "0.85", "SOVEREIGN_MEDIUM_CONFIDENCE": "0.45"},
         ):
             score = ConfidenceScore(value=0.80, reasoning="Test")
             self.assertTrue(score.is_medium_confidence)

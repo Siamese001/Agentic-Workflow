@@ -7,8 +7,8 @@ from the legacy K-node system to the new functional role architecture.
 import json
 import logging
 import re
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

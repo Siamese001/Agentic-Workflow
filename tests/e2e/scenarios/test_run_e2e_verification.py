@@ -17,7 +17,7 @@ def test_run_e2e_verification():
     if result.returncode != 0:
         if "KeyError" in result.stderr or "Signature" in result.stderr:
             pytest.fail(
-                f"E2E FAIL: Architectural Disconnect detected. Signature not propagating?\n{result.stderr}"
+                f"E2E FAIL: Architectural Disconnect detected. Signature not propagating?\n{result.stderr}",
             )
         else:
             pytest.fail(f"E2E FAIL: System Integration Error.\n{result.stderr}\n{result.stdout}")

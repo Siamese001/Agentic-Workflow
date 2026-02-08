@@ -77,7 +77,7 @@ class TestVerifyDomainPlannerGolden:
 
             # Get current MRO depth
             current_mro_depth = len(
-                [c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")]
+                [c for c in agent.__class__.__mro__ if c.__name__ not in ("object", "ABC")],
             )
 
             # Try different execution methods

@@ -65,7 +65,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
 
         # Use the actual regex patterns from the fixer
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
         regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
 
@@ -82,7 +82,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         content = "import old_tool, other_module, third_module"
 
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
         result = regex_import.sub(rf"\g<prefix>{new_mod}\g<suffix>", content)
 
@@ -97,7 +97,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
 
         regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
 
         step1 = regex_from.sub(rf"\g<prefix>{new_mod}\g<suffix>", content)

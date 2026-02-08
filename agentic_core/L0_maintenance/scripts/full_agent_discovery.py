@@ -33,6 +33,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_maintenance.utils.ssot_discovery_util import (
+    get_healers,
+    invalidate_cache,
+    load_agent_discovery,
+)
+
 # CRITICAL SSOT Imports - ALL directory constants MUST come from structure_blueprint.py
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
@@ -49,11 +55,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
     validate_path_within_project,
-)
-from agentic_core.L0_maintenance.utils.ssot_discovery_util import (
-    get_healers,
-    invalidate_cache,
-    load_agent_discovery,
 )
 
 # Standard error logging wrapper configuration

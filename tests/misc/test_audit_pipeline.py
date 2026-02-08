@@ -111,7 +111,7 @@ class TestSSOTCompliance:
         Test that compliance gate uses SSOT constants for directory validation.
         """
         with patch(
-            "agentic_core.L0_maintenance.scripts.full_agent_discovery.get_validated_project_root"
+            "agentic_core.L0_maintenance.scripts.full_agent_discovery.get_validated_project_root",
         ) as mock_root:
             with patch(
                 "agentic_core.L0_maintenance.scripts.full_agent_discovery.AGENTIC_CORE_DIR",

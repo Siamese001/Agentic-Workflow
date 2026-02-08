@@ -143,7 +143,7 @@ class CodeQualityGuardrail:
                         file_path=file_path,
                         line_number=i,
                         suggestion="Consider breaking this line",
-                    )
+                    ),
                 )
 
         # Check file length
@@ -155,7 +155,7 @@ class CodeQualityGuardrail:
                     message=f"File exceeds {self.max_file_length} lines ({len(lines)})",
                     file_path=file_path,
                     suggestion="Consider splitting into multiple files",
-                )
+                ),
             )
 
         # Check trailing whitespace
@@ -168,7 +168,7 @@ class CodeQualityGuardrail:
                         message="Trailing whitespace",
                         file_path=file_path,
                         line_number=i,
-                    )
+                    ),
                 )
 
         return issues
@@ -193,7 +193,7 @@ class CodeQualityGuardrail:
                             file_path=file_path,
                             line_number=i + 1,
                             suggestion="Consider extracting to shared function",
-                        )
+                        ),
                     )
             else:
                 self.code_hashes[block_hash] = []
@@ -219,7 +219,7 @@ class CodeQualityGuardrail:
                             file_path=file_path,
                             line_number=i,
                             suggestion="Review and remove if no longer needed",
-                        )
+                        ),
                     )
 
         return issues
@@ -245,7 +245,7 @@ class CodeQualityGuardrail:
                         severity="error",
                         message="Commit message too short or unclear",
                         suggestion="Use descriptive commit messages",
-                    )
+                    ),
                 )
 
         # Check minimum length
@@ -256,7 +256,7 @@ class CodeQualityGuardrail:
                     severity="warning",
                     message="Commit message is too short",
                     suggestion="Add more context to the commit message",
-                )
+                ),
             )
 
         return QualityResult(valid=not any(i.severity == "error" for i in issues), issues=issues)
@@ -282,7 +282,7 @@ class CodeQualityGuardrail:
                     severity="warning",
                     message=f"Unused dependency: {dep}",
                     suggestion="Consider removing from dependencies",
-                )
+                ),
             )
 
         return QualityResult(

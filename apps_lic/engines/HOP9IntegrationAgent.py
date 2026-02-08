@@ -11,10 +11,11 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -31,7 +32,7 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     integration_config: dict[str, Any] = field(
-        default_factory=lambda: {"checksum_enabled": True, "audit_trail": True}
+        default_factory=lambda: {"checksum_enabled": True, "audit_trail": True},
     )
 
     def __post_init__(self) -> None:
@@ -74,13 +75,9 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
         stored_checksum = hop5["selected_draft"].get("checksum")
 
         if not stored_checksum:
-            registry.add_trace(
-                "INTEGRITY_WARNING", {"msg": "No stored checksum found in HOP-5 output"}
-            )
+            registry.add_trace("INTEGRITY_WARNING", {"msg": "No stored checksum found in HOP-5 output"})
         elif current_checksum != stored_checksum:
-            registry.add_trace(
-                "INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum}
-            )
+            registry.add_trace("INTEGRITY_FAILURE", {"expected": stored_checksum, "actual": current_checksum})
             raise ValueError("HOP-9 Integrity Violation: Final draft checksum mismatch")
 
         # 3. Format Delivery Payload
@@ -117,6 +114,4 @@ class HOP9IntegrationAgent(SubatomicTestingMixin, LICAgentBase):
             },
         )
 
-        registry.add_trace(
-            "MISSION_COMPLETED", {"status": "SUCCESS", "route": route, "archetype": archetype}
-        )
+        registry.add_trace("MISSION_COMPLETED", {"status": "SUCCESS", "route": route, "archetype": archetype})

@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
+
 
 @dataclass
 class MemoryStoreConfig:
@@ -7,6 +8,7 @@ class MemoryStoreConfig:
     L4 Configuration: Memory Storage Parameters.
     Controls the physical and semantic limits of the Sovereign Memory.
     """
+
     # Vector Database (Pinecone/Chroma)
     VECTOR_DIMENSIONS: int = 1536
     VECTOR_METRIC: str = "cosine"
@@ -22,5 +24,6 @@ class MemoryStoreConfig:
 
     # Paths
     STORAGE_ROOT: str = os.getenv("L4_STORAGE_ROOT", "./data/l4_state")
+
 
 memory_config = MemoryStoreConfig()

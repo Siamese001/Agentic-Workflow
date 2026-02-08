@@ -127,9 +127,7 @@ class OutreachLearningLoop:
         confidence: float = 0.8,
     ) -> Any:
         """Record a successful outreach pattern."""
-        example_id = hashlib.sha256(
-            f"{TaskType}:{input_context}:{output_result}".encode()
-        ).hexdigest()[:12]
+        example_id = hashlib.sha256(f"{TaskType}:{input_context}:{output_result}".encode()).hexdigest()[:12]
 
         example = OutreachLearningExample(
             example_id=example_id,
@@ -365,9 +363,7 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 priority=7,
             )
 
-        self.record_result(
-            True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}"
-        )
+        self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
         print(f"   [{self.name}] ✅ Analysis complete")
 
     def inject_instruction(self, instruction: str, priority: int = 5) -> Any:

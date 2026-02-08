@@ -7,8 +7,9 @@ violations, and remediation recommendations.
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 
 class ViolationAssertion:
@@ -28,16 +29,22 @@ class ViolationAssertion:
 
     def assert_violation_code(self, code: str, msg: str = "") -> None:
         """Assert that a violation with the given code exists."""
-        assert self.has_violation(code), f"Expected violation code '{code}' not found. {msg}\nViolations: {self.violations}"
+        assert self.has_violation(code), (
+            f"Expected violation code '{code}' not found. {msg}\nViolations: {self.violations}"
+        )
 
     def assert_no_violation_code(self, code: str, msg: str = "") -> None:
         """Assert that no violation with the given code exists."""
-        assert not self.has_violation(code), f"Unexpected violation code '{code}' found. {msg}\nViolations: {self.violations}"
+        assert not self.has_violation(code), (
+            f"Unexpected violation code '{code}' found. {msg}\nViolations: {self.violations}"
+        )
 
     def assert_violation_count(self, expected: int, msg: str = "") -> None:
         """Assert the number of violations."""
         actual = len(self.violations)
-        assert actual == expected, f"Expected {expected} violations, got {actual}. {msg}\nViolations: {self.violations}"
+        assert actual == expected, (
+            f"Expected {expected} violations, got {actual}. {msg}\nViolations: {self.violations}"
+        )
 
     def assert_no_violations(self, msg: str = "") -> None:
         """Assert that no violations exist."""
@@ -80,7 +87,9 @@ class ClassificationAssertion:
 
     def assert_target_subfolder(self, expected: str, msg: str = "") -> None:
         """Assert the target subfolder."""
-        assert self.target_subfolder == expected, f"Expected subfolder '{expected}', got '{self.target_subfolder}'. {msg}"
+        assert self.target_subfolder == expected, (
+            f"Expected subfolder '{expected}', got '{self.target_subfolder}'. {msg}"
+        )
 
     def assert_is_agent(self, msg: str = "") -> None:
         """Assert that the file is classified as AGENT."""
@@ -124,6 +133,7 @@ def assert_file_not_contains(path: Path, substring: str, msg: str = "") -> None:
 def assert_import_resolves(module_path: str) -> None:
     """Assert that a module can be imported."""
     import importlib
+
     try:
         importlib.import_module(module_path)
     except ImportError as e:
@@ -137,6 +147,7 @@ def assert_no_agents_outside_reasoning(root: Path) -> list[str]:
     Returns empty list if all agents are in reasoning/.
     """
     import ast
+
     violations = []
 
     for py_file in root.rglob("*.py"):
@@ -153,8 +164,8 @@ def assert_no_agents_outside_reasoning(root: Path) -> list[str]:
                     if node.name.endswith("Agent") and not node.name.startswith("I"):
                         # Check if it's a Protocol
                         is_protocol = any(
-                            (isinstance(base, ast.Name) and base.id == "Protocol") or
-                            (isinstance(base, ast.Attribute) and base.attr == "Protocol")
+                            (isinstance(base, ast.Name) and base.id == "Protocol")
+                            or (isinstance(base, ast.Attribute) and base.attr == "Protocol")
                             for base in node.bases
                         )
                         if not is_protocol:

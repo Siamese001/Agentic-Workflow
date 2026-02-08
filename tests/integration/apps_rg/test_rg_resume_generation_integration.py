@@ -16,8 +16,9 @@ MECE Categories:
 - Safety Validation: Compliance and ATS checks
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 @pytest.fixture
@@ -112,7 +113,6 @@ class TestRgGenerationFlow:
 
     def test_section_assembly_order(self, mock_rg_engines, sample_resume_request):
         """Verify sections are assembled in correct order."""
-        expected_order = ["header", "summary", "experience", "skills", "education"]
         pytest.skip("Implementation pending - verify section assembly order")
 
 
@@ -179,5 +179,4 @@ class TestRgSafetyValidation:
 
     def test_full_safety_pipeline_execution(self, mock_rg_engines, sample_resume_request):
         """Verify all safety engines execute in sequence."""
-        safety_order = ["ats_compatibility", "fact_checker", "hallucination_detector"]
         pytest.skip("Implementation pending - verify safety pipeline order")

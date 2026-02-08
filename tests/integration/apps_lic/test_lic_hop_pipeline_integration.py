@@ -20,8 +20,9 @@ MECE Categories:
 - End-to-End: Complete pipeline execution scenarios
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 @pytest.fixture
@@ -113,7 +114,6 @@ class TestLicPipelineDataFlow:
     def test_hop5_generation_receives_all_context(self, mock_hop_agents):
         """Verify generation agent receives accumulated context from HOP1-4."""
         # Generation needs: profile, research, grounding, routing decisions
-        required_context_keys = ["profile_signals", "research_data", "sender_context", "routing_tier"]
         pytest.skip("Implementation pending - verify context accumulation")
 
     def test_hop6_validation_receives_generated_message(self, mock_hop_agents):

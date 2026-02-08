@@ -88,7 +88,7 @@ class TestHealthReport:
                     status=HealthStatus.HEALTHY,
                     message="OK",
                     duration_ms=10.5,
-                )
+                ),
             ],
             version="1.0.0",
         )

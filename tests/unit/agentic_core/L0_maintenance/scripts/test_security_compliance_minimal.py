@@ -39,7 +39,8 @@ def test_manifest_integrity_lock(clean_manifest_environment):
     """
     # Import the ManifestGuardian directly to avoid circular imports
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 
@@ -64,7 +65,8 @@ def test_manifest_missing_lock_file(clean_manifest_environment):
     Verify that missing lock file is detected as integrity breach.
     """
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 
@@ -78,7 +80,8 @@ def test_manifest_missing_manifest_file():
     Verify that missing manifest file raises appropriate error.
     """
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 
@@ -92,7 +95,8 @@ def test_manifest_checksum_calculation(clean_manifest_environment):
     Verify checksum calculation is consistent and accurate.
     """
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 
@@ -113,7 +117,8 @@ def test_manifest_tampering_detection(clean_manifest_environment):
     Verify that various types of tampering are detected.
     """
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 
@@ -220,7 +225,8 @@ def test_full_security_pipeline(clean_manifest_environment):
     Test the complete security pipeline from manifest sealing to integrity verification.
     """
     sys.path.insert(
-        0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security")
+        0,
+        str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_maintenance" / "security"),
     )
     from ManifestGuardian import ManifestGuardian
 

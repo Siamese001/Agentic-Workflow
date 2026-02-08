@@ -15,7 +15,6 @@ Exit codes:
 
 from __future__ import annotations
 
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -96,14 +95,14 @@ def main() -> int:
         file_display = [str(p.relative_to(root)) for p in paths]
 
     violations = 0
-    for filepath, display in zip(files, file_display):
+    for filepath, display in zip(files, file_display, strict=False):
         filename = Path(filepath).name
         found = check_compound_suffix(filename)
         if found:
             violations += 1
             print(f"  VIOLATION: {display}")
             print(f"    Suffixes: {found}")
-            print(f"    Rule: Files must have exactly ONE architectural suffix.")
+            print("    Rule: Files must have exactly ONE architectural suffix.")
             print()
 
     if violations:

@@ -11,10 +11,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -30,7 +31,7 @@ class HOP8QAReportAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     report_config: dict[str, Any] = field(
-        default_factory=lambda: {"output_dir": "reports", "include_timestamps": True}
+        default_factory=lambda: {"output_dir": "reports", "include_timestamps": True},
     )
 
     def __post_init__(self) -> None:

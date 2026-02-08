@@ -16,8 +16,9 @@ MECE Categories:
 - Cross-App Compatibility: Shared components work in LIC and RG contexts
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 @pytest.fixture

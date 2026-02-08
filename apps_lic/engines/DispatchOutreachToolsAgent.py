@@ -72,13 +72,9 @@ class DispatchOutreachToolsAgent(SovereignBaseAgent):
         START: Any = time.time()
         try:
             OUTPUT: Any = self._perform_action(action, params)
-            return ExecutionResult(
-                SUCCESS=True, OUTPUT=OUTPUT, duration_ms=(time.time() - START) * 1000
-            )
+            return ExecutionResult(SUCCESS=True, OUTPUT=OUTPUT, duration_ms=(time.time() - START) * 1000)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
-                SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - START) * 1000
-            )
+            return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - START) * 1000)
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""

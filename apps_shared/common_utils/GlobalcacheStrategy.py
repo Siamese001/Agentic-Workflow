@@ -9,9 +9,10 @@ import hashlib
 import logging
 import time
 from collections import OrderedDict
-from pydantic import BaseModel, Field
 from typing import Any
+
 import numpy as np
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

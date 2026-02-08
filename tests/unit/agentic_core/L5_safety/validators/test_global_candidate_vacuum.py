@@ -13,7 +13,9 @@ from pathlib import Path
 
 
 def _check_app_domain_violation_logic(
-    app_rg_score: float, app_lic_score: float, rel_path: Path
+    app_rg_score: float,
+    app_lic_score: float,
+    rel_path: Path,
 ) -> tuple[bool, str]:
     """
     Standalone implementation of Global Candidate Detection logic.

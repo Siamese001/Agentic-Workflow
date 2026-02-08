@@ -221,7 +221,7 @@ class TestGatekeeperCompliance:
                 violation_type="stale_backup",
                 message="Test backup file",
                 auto_fixable=True,
-            )
+            ),
         ]
 
         # Mock the gatekeeper's safe_delete method
@@ -266,7 +266,7 @@ class TestGatekeeperCompliance:
                 violation_type="empty_file",
                 message="Empty file",
                 auto_fixable=True,
-            )
+            ),
         ]
 
         # Patch Path.unlink to detect if it's called directly
@@ -436,7 +436,7 @@ class TestHealRepository:
         # Create only valid files (no violations)
         # Note: print() is detected as debug_print violation, so use logging instead
         (temp_project / "valid_module.py").write_text(
-            "# Valid module\nimport logging\nlogger = logging.getLogger(__name__)"
+            "# Valid module\nimport logging\nlogger = logging.getLogger(__name__)",
         )
 
         result = agent.heal_repository(dry_run=True)

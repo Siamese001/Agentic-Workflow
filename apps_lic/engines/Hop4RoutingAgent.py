@@ -10,10 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -30,7 +31,7 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     routing_rules: dict[str, Any] = field(
-        default_factory=lambda: {"default_route": "INMAIL", "premium_required": False}
+        default_factory=lambda: {"default_route": "INMAIL", "premium_required": False},
     )
 
     def __post_init__(self) -> None:
@@ -76,9 +77,7 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
         # 3. Gate 6: Premium Routing Mismatch Detection (CRITICAL)
         if selected_route == "INMAIL" and not premium_available:
             registry.add_trace("GATE_6_FAILED", {"reason": "premium_unavailable_for_inmail"})
-            raise ValueError(
-                "GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available"
-            )
+            raise ValueError("GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available")
 
         # 4. Fetch Route Constraints from Specs
         config = self.config.routing_agent
@@ -128,19 +127,10 @@ class HOP4RoutingAgent(SubatomicTestingMixin, LICAgentBase):
         """
         if conditions.connection_status and conditions.connection_status != status:
             return False
-        if (
-            conditions.prior_message_count is not None
-            and conditions.prior_message_count != msg_count
-        ):
+        if conditions.prior_message_count is not None and conditions.prior_message_count != msg_count:
             return False
-        if (
-            conditions.prior_message_count_gt is not None
-            and msg_count <= conditions.prior_message_count_gt
-        ):
+        if conditions.prior_message_count_gt is not None and msg_count <= conditions.prior_message_count_gt:
             return False
-        if (
-            conditions.prior_message_count_gte is not None
-            and msg_count < conditions.prior_message_count_gte
-        ):
+        if conditions.prior_message_count_gte is not None and msg_count < conditions.prior_message_count_gte:
             return False
         return True

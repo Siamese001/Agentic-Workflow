@@ -342,7 +342,8 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
         with sync_playwright() as p:
             print(f"   Launching browser (headless={headless})...")
             browser = p.chromium.launch(
-                headless=headless, args=["--disable-cache", "--disable-application-cache"]
+                headless=headless,
+                args=["--disable-cache", "--disable-application-cache"],
             )
 
             context = browser.new_context(viewport={"width": 1920, "height": 1080})
@@ -392,7 +393,7 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
                 table_count = page.locator("table").count()
                 if table_count > 0:
                     print(
-                        f"   ⚠️  Test 7: {table_count} table(s) in DOM (visibility check failed: {str(e)[:50]})"
+                        f"   ⚠️  Test 7: {table_count} table(s) in DOM (visibility check failed: {str(e)[:50]})",
                     )
                     passed += 1  # Tables exist, just visibility check failed
                 else:
@@ -529,7 +530,10 @@ def main():
     )
     parser.add_argument("--skip-regenerate", action="store_true", help="Skip auto-regeneration check")
     parser.add_argument(
-        "--headless", action="store_true", default=True, help="Run Playwright headless (default)"
+        "--headless",
+        action="store_true",
+        default=True,
+        help="Run Playwright headless (default)",
     )
     parser.add_argument("--headed", action="store_true", help="Run Playwright with visible browser")
 

@@ -75,7 +75,8 @@ class TestASTAuditVerification:
         results = json.loads(audit_results_path.read_text())
 
         detector = next(
-            (c for c in results["classifications"] if "PlaceholderDetectorAgent" in c["file"]), None
+            (c for c in results["classifications"] if "PlaceholderDetectorAgent" in c["file"]),
+            None,
         )
         assert detector is not None, "PlaceholderDetectorAgent not found in audit results"
         assert detector["category"] == "SOVEREIGN_AGENT", "Heuristic failed to catch Mixin inheritance"

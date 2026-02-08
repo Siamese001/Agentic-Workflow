@@ -16,7 +16,9 @@ def test_trusted_territory_mass_edit_confidence():
 
     # 100 Naming violations in Trusted territory
     score = engine.calculate_healing_confidence(
-        violations_count=100, violation_types=["NAMING", "STRUCTURE"], territory="prompt_governance"
+        violations_count=100,
+        violation_types=["NAMING", "STRUCTURE"],
+        territory="prompt_governance",
     )
 
     # Calculation Estimate:
@@ -38,7 +40,9 @@ def test_critical_territory_caution():
 
     # 100 Naming violations in Critical territory
     score = engine.calculate_healing_confidence(
-        violations_count=100, violation_types=["NAMING"], territory="L5_safety"
+        violations_count=100,
+        violation_types=["NAMING"],
+        territory="L5_safety",
     )
 
     # Calculation Estimate:
@@ -74,7 +78,9 @@ def test_standard_territory_behavior():
     engine = AutonomousDecisionEngine(enable_llm=False)
 
     score = engine.calculate_healing_confidence(
-        violations_count=20, violation_types=["IMPORT"], territory="agentic_core/some_new_feature"
+        violations_count=20,
+        violation_types=["IMPORT"],
+        territory="agentic_core/some_new_feature",
     )
 
     assert "STANDARD" in score.reasoning
@@ -87,7 +93,9 @@ def test_trusted_territory_mass_edit_with_llm_override():
 
     # Use violation count that would normally be concerning
     score = engine.calculate_healing_confidence(
-        violations_count=200, violation_types=["NAMING"], territory="scripts"
+        violations_count=200,
+        violation_types=["NAMING"],
+        territory="scripts",
     )
 
     # Should still be high confidence (trusted zones are very resilient)
@@ -106,7 +114,9 @@ def test_critical_territory_no_llm_override():
 
     # Extreme violation count in critical territory to force low confidence
     score = engine.calculate_healing_confidence(
-        violations_count=500, violation_types=["NAMING", "UNKNOWN_ERROR"], territory="L5_safety"
+        violations_count=500,
+        violation_types=["NAMING", "UNKNOWN_ERROR"],
+        territory="L5_safety",
     )
 
     # Should be low confidence with extreme violations and unknown types
@@ -134,7 +144,9 @@ def test_all_trusted_territories():
 
     for territory in trusted_territories:
         score = engine.calculate_healing_confidence(
-            violations_count=50, violation_types=["NAMING"], territory=territory
+            violations_count=50,
+            violation_types=["NAMING"],
+            territory=territory,
         )
 
         assert "TRUSTED" in score.reasoning
@@ -151,7 +163,9 @@ def test_all_critical_territories():
 
     for territory in critical_territories:
         score = engine.calculate_healing_confidence(
-            violations_count=50, violation_types=["NAMING"], territory=territory
+            violations_count=50,
+            violation_types=["NAMING"],
+            territory=territory,
         )
 
         assert "CRITICAL" in score.reasoning
@@ -168,7 +182,9 @@ def test_zero_violations_always_high_confidence():
 
     for territory in territories:
         score = engine.calculate_healing_confidence(
-            violations_count=0, violation_types=[], territory=territory
+            violations_count=0,
+            violation_types=[],
+            territory=territory,
         )
 
         assert score.is_high_confidence is True
@@ -183,7 +199,9 @@ def test_decision_audit_trail():
     engine = AutonomousDecisionEngine(enable_llm=True)
 
     score = engine.calculate_healing_confidence(
-        violations_count=10, violation_types=["NAMING"], territory="prompt_governance"
+        violations_count=10,
+        violation_types=["NAMING"],
+        territory="prompt_governance",
     )
 
     # Make a decision

@@ -13,10 +13,6 @@ import os
 import tempfile
 
 import pytest
-
-from agentic_core.mixins.feature_flagged_agent_mixin import (
-    FeatureFlaggedAgentMixin,
-)
 from agentic_core.integration.component_factory import ComponentFactory
 from agentic_core.integration.migration_helper import (
     MigrationHelper,
@@ -33,12 +29,16 @@ from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAda
 from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
     VerificationGateAdapter,
 )
-from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.primitives.feature_flags import FeatureFlagManager
+from agentic_core.utils.dependency_resolver import DynamicLoader
 from apps_shared.integration.domain_agent_mixin import (
     DomainAgentMixin,
     LICDomainMixin,
     RGDomainMixin,
+)
+
+from agentic_core.mixins.feature_flagged_agent_mixin import (
+    FeatureFlaggedAgentMixin,
 )
 from apps_shared.integration.integration_config import get_domain_config
 

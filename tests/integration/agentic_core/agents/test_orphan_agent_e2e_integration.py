@@ -61,13 +61,14 @@ class TestE2EInitializationWorkflow:
 
     def test_e2e_initialization_with_suites(self):
         """E2E: Initialize and verify suites are ready."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.validators.healing_orchestration_types import (
             get_healing_suite,
         )
         from agentic_core.L5_safety.validators.security_validation_types import (
             get_security_suite,
         )
+
+        from agentic_core.L5_safety.validators import register_all_validators
 
         # Initialize
         register_all_validators.initialize()
@@ -279,13 +280,14 @@ class TestE2ECombinedWorkflow:
 
     def test_e2e_full_pipeline(self):
         """E2E: Complete pipeline from init to validation to healing."""
-        from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.validators.healing_orchestration_types import (
             run_healing_operation,
         )
         from agentic_core.L5_safety.validators.security_validation_types import (
             run_security_validation,
         )
+
+        from agentic_core.L5_safety.validators import register_all_validators
 
         # Reset and initialize
         register_all_validators.reset()

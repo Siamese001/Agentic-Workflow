@@ -20,9 +20,7 @@ class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
 
     industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
-    compliance_keywords: list[str] = Field(
-        default_factory=list, description="Required compliance frameworks"
-    )
+    compliance_keywords: list[str] = Field(default_factory=list, description="Required compliance frameworks")
     data_sensitivity: list[str] = Field(default_factory=list, description="Sensitive data types")
 
     @property
@@ -37,16 +35,12 @@ class SafetyProtocol(BaseModel):
     validation_strategy: str = Field(..., description="Model validation approach")
     data_privacy_approach: str = Field(..., description="Data privacy protection method")
     human_in_the_loop_policy: str = Field(..., description="Human oversight requirements")
-    compliance_frameworks: list[str] = Field(
-        default_factory=list, description="Compliance standards"
-    )
+    compliance_frameworks: list[str] = Field(default_factory=list, description="Compliance standards")
 
     @property
     def is_comprehensive(self) -> bool:
         """Check if protocol covers all major areas."""
-        return all(
-            [self.validation_strategy, self.data_privacy_approach, self.human_in_the_loop_policy]
-        )
+        return all([self.validation_strategy, self.data_privacy_approach, self.human_in_the_loop_policy])
 
 
 class GovernanceShieldLevel(IntEnum):

@@ -108,7 +108,7 @@ async def test_generate_hostile_inputs_with_mcp():
     ]
 
     with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
     ) as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {"response": json.dumps(mock_response)}
@@ -127,7 +127,7 @@ async def test_generate_hostile_inputs_fallback():
     agent = RedSentinelAgent()
 
     with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
     ) as mock_get_client:
         mock_get_client.side_effect = Exception("MCP connection failed")
 
@@ -219,11 +219,11 @@ async def test_json_decode_error_handling():
     agent = RedSentinelAgent()
 
     with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client"
+        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
     ) as mock_get_client:
         mock_router = AsyncMock()
         mock_router.validate_content.return_value = {
-            "response": "invalid json response"  # Malformed JSON
+            "response": "invalid json response",  # Malformed JSON
         }
         mock_get_client.return_value = mock_router
 

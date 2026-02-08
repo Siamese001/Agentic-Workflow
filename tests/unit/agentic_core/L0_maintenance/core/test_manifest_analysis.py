@@ -7,7 +7,6 @@ Mandate: 100% Pass.
 from unittest.mock import patch
 
 import pytest
-
 from agentic_core.L0_maintenance.scripts.verify_manifest import analyze_impact
 
 
@@ -21,7 +20,7 @@ class TestManifestAnalysis:
                 "violations_found": [
                     {"type": "NAMING", "file": "a.py"},
                     {"type": "IMPORT", "file": "b.py"},
-                ]
+                ],
             },
             "phase2": {
                 "modifications": [
@@ -75,7 +74,7 @@ class TestManifestAnalysis:
             assert result is False
             # Verify that high blast radius warning was logged
             mock_warning.assert_any_call(
-                "🚨 HIGH BLAST RADIUS: 100 files would be modified. Manual review required."
+                "🚨 HIGH BLAST RADIUS: 100 files would be modified. Manual review required.",
             )
 
     def test_analysis_warns_on_live_run(self, safe_report):
@@ -133,7 +132,7 @@ class TestManifestAnalysis:
                     {"type": "NAMING", "file": "b.py"},
                     {"type": "IMPORT", "file": "c.py"},
                     {"type": "UNKNOWN", "file": "d.py"},
-                ]
+                ],
             },
             "phase2": {"modifications": [], "failures": []},
         }

@@ -10,10 +10,10 @@ from unittest.mock import Mock, mock_open, patch
 
 import pytest
 
-from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     HEALING_CONFIG,
 )
+from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
 
 class TestSharedUpgradeCircuitBreaker:
@@ -62,17 +62,17 @@ class TestSharedUpgradeCircuitBreaker:
         # Mock the import agent to prevent initialization errors
         mock_import_agent = Mock()
         mock_import_agent.run.return_value = [
-            (generic_file, ["GRAVITY VIOLATION: test"])
+            (generic_file, ["GRAVITY VIOLATION: test"]),
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer",
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard",
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -122,17 +122,17 @@ class TestSharedUpgradeCircuitBreaker:
         # Mock the import agent to prevent initialization errors
         mock_import_agent = Mock()
         mock_import_agent.run.return_value = [
-            (tiny_file, ["GRAVITY VIOLATION: test"])
+            (tiny_file, ["GRAVITY VIOLATION: test"]),
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer",
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard",
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -155,7 +155,9 @@ class TestSharedUpgradeCircuitBreaker:
                         with patch("builtins.open", mock_open(read_data=tiny_content)):
                             # Trigger the deep import validation logic
                             agent.deep_import_validation_and_heal(
-                                affected_paths=[tiny_file], import_touched_paths=[], dry_run=False
+                                affected_paths=[tiny_file],
+                                import_touched_paths=[],
+                                dry_run=False,
                             )
 
                         # Verify no move was made due to dust threshold
@@ -183,17 +185,17 @@ class TestSharedUpgradeCircuitBreaker:
         # Mock the import agent to prevent initialization errors
         mock_import_agent = Mock()
         mock_import_agent.run.return_value = [
-            (valid_file, ["GRAVITY VIOLATION: test"])
+            (valid_file, ["GRAVITY VIOLATION: test"]),
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer",
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard",
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()
@@ -214,7 +216,9 @@ class TestSharedUpgradeCircuitBreaker:
                         with patch("builtins.open", mock_open(read_data="".join(content_lines))):
                             # Trigger the deep import validation logic
                             agent.deep_import_validation_and_heal(
-                                affected_paths=[valid_file], import_touched_paths=[], dry_run=False
+                                affected_paths=[valid_file],
+                                import_touched_paths=[],
+                                dry_run=False,
                             )
 
                         # Verify move was made (under limit)
@@ -242,17 +246,17 @@ class TestSharedUpgradeCircuitBreaker:
         # Mock the import agent to prevent initialization errors
         mock_import_agent = Mock()
         mock_import_agent.run.return_value = [
-            (trigger_file, ["GRAVITY VIOLATION: test"])
+            (trigger_file, ["GRAVITY VIOLATION: test"]),
         ]  # Return gravity violation
 
         with patch(
-            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer"
+            "agentic_core.L5_safety.reasoning.CodeHealerAgent.create_legacy_import_healer",
         ) as mock_create:
             mock_create.return_value = mock_import_agent
 
             # Mock RuntimeStateGuard class before it's instantiated
             with patch(
-                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard"
+                "agentic_core.L4_state.memory.runtime_state_guard.RuntimeStateGuard",
             ) as mock_guard_class:
                 # Configure mock instance
                 mock_guard_instance = Mock()

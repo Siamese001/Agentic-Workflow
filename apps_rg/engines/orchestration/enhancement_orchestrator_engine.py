@@ -22,7 +22,9 @@ class EnhancementOrchestratorEngine(BaseRGEngine):
         super().__init__(ctx, node_id="ORCHESTRATION.ENHANCEMENT")
 
     async def execute(
-        self, resume_data: dict[str, Any], enhancement_config: dict[str, Any]
+        self,
+        resume_data: dict[str, Any],
+        enhancement_config: dict[str, Any],
     ) -> dict[str, Any]:
         """
         Coordinate external enhancement tools.

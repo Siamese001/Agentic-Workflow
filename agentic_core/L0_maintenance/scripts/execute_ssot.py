@@ -2012,14 +2012,14 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
     """
     try:
         # Dynamic import to avoid hard dependency on L3 (Graceful Degradation)
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+            FilesystemSSOTReconcilerAgent,  # noqa: F401
+        )
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import (
             get_consolidated_orchestrator,
         )
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
-        )
-        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,  # noqa: F401
         )
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
@@ -2226,17 +2226,14 @@ Examples:
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness
     try:
+        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+            FilesystemSSOTReconcilerAgent,
+        )
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )
-        from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
-        )
-        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,
         )
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
@@ -2244,6 +2241,9 @@ Examples:
             RootHygieneAgent,  # noqa: F401
         )
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
+        from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
+        )
         from agentic_core.L6_observability.reasoning.DebateSynthesisAgent import (
             DebateSynthesisAgent,
         )

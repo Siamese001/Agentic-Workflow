@@ -4,8 +4,8 @@ Removes ```python and ``` from files that have them.
 """
 
 import re
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 
 def fix_markdown_fences(file_path: str) -> bool:

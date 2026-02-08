@@ -22,7 +22,7 @@ class MessageArchitectAgent(LICAgentBase):
         default_factory=lambda: {
             "intro": "Hi {name}, I noticed {observation}...",
             "value": "We help companies like {company} to {benefit}...",
-        }
+        },
     )
 
     def __post_init__(self) -> None:

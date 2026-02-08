@@ -57,19 +57,21 @@ class TestSSOTE2EReporting:
         # Mock an agent discovering this
         mock_agent = MagicMock()
         mock_agent.scan.return_value = [
-            ReconciliationViolation(is_valid=False, message="Naming Error", file_path=bad_file)
+            ReconciliationViolation(is_valid=False, message="Naming Error", file_path=bad_file),
         ]
 
         # Execute Phase 1 in Dry Run - mock the implementation directly
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             mock_impl.return_value = {
                 "status": "success",
                 "violations_found": [
                     ReconciliationViolation(
-                        is_valid=False, message="Naming Error", file_path=bad_file
-                    ).to_dict()
+                        is_valid=False,
+                        message="Naming Error",
+                        file_path=bad_file,
+                    ).to_dict(),
                 ],
             }
             results = execute_phase1_discovery(
@@ -214,7 +216,7 @@ class TestSSOTE2EReporting:
 
         # Execute
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl"
+            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             # Simulate the impl catching the error
             mock_impl.return_value = {

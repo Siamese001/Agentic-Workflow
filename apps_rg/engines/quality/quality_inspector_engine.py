@@ -55,9 +55,7 @@ class QualityInspectorEngine(BaseRGEngine):
 
         if total_issues > 5:
             inspection_results["overall_quality"] = "fail"
-            self.record_fail(
-                f"Quality inspection failed: {total_issues} issues", data=inspection_results
-            )
+            self.record_fail(f"Quality inspection failed: {total_issues} issues", data=inspection_results)
         else:
             self.record_pass(f"Quality inspection passed: {total_issues} minor issues")
 

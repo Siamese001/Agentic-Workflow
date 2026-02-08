@@ -341,7 +341,7 @@ class LICRouter:
             if len(text) > constraints.char_limit:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Character count {len(text)} exceeds limit {constraints.char_limit}"
+                    f"Character count {len(text)} exceeds limit {constraints.char_limit}",
                 )
 
         # Check word range

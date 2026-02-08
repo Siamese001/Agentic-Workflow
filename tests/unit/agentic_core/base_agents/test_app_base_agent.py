@@ -87,6 +87,7 @@ class TestAppBaseAgentInheritance:
     def test_inherits_from_sovereign_base(self, mock_core_integrity):
         """Test AppBaseAgent inherits from SovereignBaseAgent."""
         from agentic_core.base_agents.AppBaseAgent import AppBaseAgent
+
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         agent = AppBaseAgent()

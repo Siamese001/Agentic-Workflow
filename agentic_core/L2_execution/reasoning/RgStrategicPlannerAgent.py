@@ -3,9 +3,10 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, orchestrator, workflow
 from __future__ import annotations
 
+from typing import Any
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from typing import Any
 
 """
 Planning and reflection agents for strategic decision-making.

@@ -519,7 +519,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 correct_folder = fca._get_correct_folder_for_type(file_type)
 
                 # Extract current subfolder from territory
-                current_subfolder = current_territory.split("/")[-1] if "/" in current_territory else current_territory
+                current_subfolder = (
+                    current_territory.split("/")[-1] if "/" in current_territory else current_territory
+                )
                 if correct_folder and current_subfolder != correct_folder:
                     # Only flag if FCA is confident (not UTILITY which is the default)
                     if file_type != "UTILITY":

@@ -171,7 +171,7 @@ class TestDataGenerator:
                         "title": "Senior Developer",
                         "company": "Tech Inc",
                         "duration": "2020-2024",
-                    }
+                    },
                 ],
             ),
             "education": kwargs.get(

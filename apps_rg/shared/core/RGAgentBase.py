@@ -25,8 +25,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-# CORE SOCKETING: Align with Phase 2A Unified Base Class
-from apps_shared.agents.AppBase import AppBase
+# PHASE 2.1: MetaLearningClient Integration
+from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
+    HealingPattern,
+    MetaLearningClient,
+    get_meta_learning_client,
+)
 
 # PHASE 1.1: Guardrails Integration
 from agentic_core.L1_cognition.reasoning.guardrails import (
@@ -34,12 +38,8 @@ from agentic_core.L1_cognition.reasoning.guardrails import (
     get_guardrails,
 )
 
-# PHASE 2.1: MetaLearningClient Integration
-from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
-    HealingPattern,
-    MetaLearningClient,
-    get_meta_learning_client,
-)
+# CORE SOCKETING: Align with Phase 2A Unified Base Class
+from apps_shared.agents.AppBase import AppBase
 
 Logger = logging.getLogger(__name__)
 
@@ -93,7 +93,7 @@ class RGAgentBase(AppBase):
         self._initialize_meta_client()
 
         Logger.debug(
-            f"[{self.__class__.__name__}] RG Meta-Learning activated with guardrails and MetaLearningClient"
+            f"[{self.__class__.__name__}] RG Meta-Learning activated with guardrails and MetaLearningClient",
         )
 
     def _initialize_guardrails(self) -> None:
@@ -103,7 +103,7 @@ class RGAgentBase(AppBase):
         self._guardrails.guardrails.default_similarity_threshold = self._similarity_threshold
         self._guardrails.guardrails.default_ttl = self._rg_ttl
         Logger.debug(
-            f"[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})"
+            f"[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})",
         )
 
     def _initialize_meta_client(self) -> None:
@@ -268,7 +268,9 @@ class RGAgentBase(AppBase):
 
         # Use isolated cache operation
         success, namespaced_key = self.isolate_cache_operation(
-            "set", f"{pattern_type}:{pattern_id}", enhanced_data
+            "set",
+            f"{pattern_type}:{pattern_id}",
+            enhanced_data,
         )
         if not success:
             return False

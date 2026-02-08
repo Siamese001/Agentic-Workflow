@@ -25,9 +25,7 @@ class ReasoningToggles(BaseModel):
     use_cot: bool = Field(default=True, description="Enable Chain-of-Thought reasoning.")
     use_reflexion: bool = Field(default=True, description="Enable self-correction loops.")
     strict_mode: bool = Field(default=True, description="Fail on minor validation errors.")
-    use_persistent_tracing: bool = Field(
-        default=True, description="Enable persistent trace storage."
-    )
+    use_persistent_tracing: bool = Field(default=True, description="Enable persistent trace storage.")
     use_cyclic_validation: bool = Field(default=True, description="Enable cyclic retry validation.")
 
     # Tree of Thought Parameters

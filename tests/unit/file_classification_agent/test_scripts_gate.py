@@ -8,8 +8,9 @@ Validates:
 - Rejects test_*.py files
 """
 
-import pytest
 import re
+
+import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint_config import SCRIPTS_FORBIDDEN_PATTERNS
 
@@ -22,48 +23,57 @@ class TestScriptsGatePatterns:
         """Compile forbidden patterns for testing."""
         return [re.compile(p) for p in SCRIPTS_FORBIDDEN_PATTERNS]
 
-    @pytest.mark.parametrize("forbidden_name", [
-        "AgentAuditResult.py",
-        "BatchEmbeddingService.py",
-        "GitKrakenHealingStrategy.py",
-        "InMemoryVectorCache.py",
-        "SovereignHealingEngine.py",
-        "SovereignReport.py",
-        "StrategistBioWriter.py",
-        "VectorHealingStrategy.py",
-        "MyClass.py",
-        "SomeAgent.py",
-    ])
+    @pytest.mark.parametrize(
+        "forbidden_name",
+        [
+            "AgentAuditResult.py",
+            "BatchEmbeddingService.py",
+            "GitKrakenHealingStrategy.py",
+            "InMemoryVectorCache.py",
+            "SovereignHealingEngine.py",
+            "SovereignReport.py",
+            "StrategistBioWriter.py",
+            "VectorHealingStrategy.py",
+            "MyClass.py",
+            "SomeAgent.py",
+        ],
+    )
     def test_pascalcase_rejected(self, compiled_patterns, forbidden_name: str):
         """PascalCase filenames must be rejected."""
         matched = any(p.match(forbidden_name) for p in compiled_patterns)
         assert matched, f"'{forbidden_name}' should be rejected by scripts gate"
 
-    @pytest.mark.parametrize("forbidden_name", [
-        "test_boundary_stress_test.py",
-        "test_lifecycle_audit.py",
-        "test_runtime_verify_installation.py",
-        "test_verify_meta_learning_integration.py",
-        "test_verify_self_healing.py",
-        "test_generator.py",
-        "test_something.py",
-        "test_.py",
-    ])
+    @pytest.mark.parametrize(
+        "forbidden_name",
+        [
+            "test_boundary_stress_test.py",
+            "test_lifecycle_audit.py",
+            "test_runtime_verify_installation.py",
+            "test_verify_meta_learning_integration.py",
+            "test_verify_self_healing.py",
+            "test_generator.py",
+            "test_something.py",
+            "test_.py",
+        ],
+    )
     def test_test_files_rejected(self, compiled_patterns, forbidden_name: str):
         """test_*.py files must be rejected."""
         matched = any(p.match(forbidden_name) for p in compiled_patterns)
         assert matched, f"'{forbidden_name}' should be rejected by scripts gate"
 
-    @pytest.mark.parametrize("allowed_name", [
-        "run_healing.py",
-        "colors.py",
-        "full_agent_discovery.py",
-        "check_syntax_util.py",
-        "generate_report_util.py",
-        "migrate_imports_util.py",
-        "__init__.py",
-        "conftest.py",
-    ])
+    @pytest.mark.parametrize(
+        "allowed_name",
+        [
+            "run_healing.py",
+            "colors.py",
+            "full_agent_discovery.py",
+            "check_syntax_util.py",
+            "generate_report_util.py",
+            "migrate_imports_util.py",
+            "__init__.py",
+            "conftest.py",
+        ],
+    )
     def test_valid_scripts_accepted(self, compiled_patterns, allowed_name: str):
         """Valid script names must be accepted."""
         matched = any(p.match(allowed_name) for p in compiled_patterns)

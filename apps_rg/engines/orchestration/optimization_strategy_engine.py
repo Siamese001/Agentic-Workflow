@@ -22,14 +22,15 @@ class OptimizationStrategyEngine(BaseRGEngine):
         super().__init__(ctx, node_id="ORCHESTRATION.OPTIMIZATION")
 
     async def execute(
-        self, iteration_count: int, quality_score: float, budget_remaining: float
+        self,
+        iteration_count: int,
+        quality_score: float,
+        budget_remaining: float,
     ) -> dict[str, Any]:
         """
         Determine if optimization should continue or stop early.
         """
-        self._mcp_audit(
-            "optimization_check", {"iteration": iteration_count, "score": quality_score}
-        )
+        self._mcp_audit("optimization_check", {"iteration": iteration_count, "score": quality_score})
 
         decision = {"should_continue": True, "reason": "", "pruning_recommendations": []}
 

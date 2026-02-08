@@ -488,7 +488,8 @@ class ArchitectureGapAnalyzer:
 
             if combined_score > 0.2:  # Threshold for considering as potential match
                 cap_score, matched_caps, missing_caps = self.ast_analyzer.analyze_class_capabilities(
-                    class_info, component
+                    class_info,
+                    component,
                 )
 
                 if cap_score > 0 or combined_score > 0.5:

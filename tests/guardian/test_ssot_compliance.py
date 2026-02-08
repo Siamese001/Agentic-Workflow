@@ -125,7 +125,7 @@ class TestSSOTCompliance:
                 ".github",
                 ".windsurf",
                 ".gravity_state",
-            }
+            },
         )
 
         violations = []
@@ -168,7 +168,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} files in unknown territories:\n"
-                + "\n".join(f"  - {v['path']}" for v in violations[:20])
+                + "\n".join(f"  - {v['path']}" for v in violations[:20]),
             )
 
     def test_agentic_core_subfolder_compliance(self, report_builder):
@@ -192,7 +192,7 @@ class TestSSOTCompliance:
             if path.is_dir():
                 if path.name not in valid_subfolders:
                     violations.append(
-                        f"Invalid subfolder '{path.name}' in agentic_core. Valid: {sorted(valid_subfolders)}"
+                        f"Invalid subfolder '{path.name}' in agentic_core. Valid: {sorted(valid_subfolders)}",
                     )
             elif path.suffix == ".py":
                 # Python files at agentic_core root are allowed (e.g., __init__.py)
@@ -209,7 +209,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} agentic_core structure violations:\n"
-                + "\n".join(f"  - {v}" for v in violations[:10])
+                + "\n".join(f"  - {v}" for v in violations[:10]),
             )
 
     def test_base_agents_constitutional_location(self, report_builder):
@@ -245,7 +245,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING [CONSTITUTIONAL]: {len(violations)} base agents in wrong location:\n"
-                + "\n".join(f"  - {v['path']}" for v in violations[:10])
+                + "\n".join(f"  - {v['path']}" for v in violations[:10]),
             )
 
     def test_apps_shared_independence(self, report_builder):
@@ -278,7 +278,7 @@ class TestSSOTCompliance:
                                         "file": str(self._get_relative_path(py_file)),
                                         "import": alias.name,
                                         "line": node.lineno,
-                                    }
+                                    },
                                 )
                                 report_builder.add_violation(
                                     code=ViolationCode.SSOT_INDEPENDENCE,
@@ -294,7 +294,7 @@ class TestSSOTCompliance:
                                     "file": str(self._get_relative_path(py_file)),
                                     "import": node.module,
                                     "line": node.lineno,
-                                }
+                                },
                             )
                             report_builder.add_violation(
                                 code=ViolationCode.SSOT_INDEPENDENCE,
@@ -311,7 +311,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} apps_shared independence violations:\n"
-                + "\n".join(f"  - {v['file']}:{v['line']} imports {v['import']}" for v in violations[:20])
+                + "\n".join(f"  - {v['file']}:{v['line']} imports {v['import']}" for v in violations[:20]),
             )
 
     def test_test_files_in_tests_directory(self, report_builder):
@@ -347,7 +347,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} test files outside tests/ directory:\n"
-                + "\n".join(f"  - {v['path']}" for v in violations[:20])
+                + "\n".join(f"  - {v['path']}" for v in violations[:20]),
             )
 
     def test_layer_hierarchy_integrity(self, report_builder):
@@ -444,7 +444,7 @@ class TestSSOTCompliance:
                                                     "to_layer": imported_layer,
                                                     "file": str(self._get_relative_path(py_file)),
                                                     "line": node.lineno if hasattr(node, "lineno") else 1,
-                                                }
+                                                },
                                             )
                                             report_builder.add_violation(
                                                 code=ViolationCode.SSOT_LAYER_HIERARCHY,
@@ -461,7 +461,9 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} layer hierarchy violations:\n"
-                + "\n".join(f"  - {v['from_layer']} -> {v['to_layer']}: {v['file']}" for v in violations[:20])
+                + "\n".join(
+                    f"  - {v['from_layer']} -> {v['to_layer']}: {v['file']}" for v in violations[:20]
+                ),
             )
 
     def test_void_compliance_whitelist(self, report_builder):
@@ -513,7 +515,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} void compliance violations:\n"
-                + "\n".join(f"  - {v['folder']}: {v['count']} files ({v['type']})" for v in violations)
+                + "\n".join(f"  - {v['folder']}: {v['count']} files ({v['type']})" for v in violations),
             )
 
     def test_sub_atomic_granularity(self, report_builder):
@@ -549,7 +551,7 @@ class TestSSOTCompliance:
                             "file": str(rel_path),
                             "loc": loc_count,
                             "limit": MAX_LOC,
-                        }
+                        },
                     )
                     report_builder.add_violation(
                         code=ViolationCode.SUBATOMIC_MONOLITH,
@@ -566,7 +568,7 @@ class TestSSOTCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} monolith files exceed {MAX_LOC} LOC:\n"
-                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10])
+                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10]),
             )
 
 

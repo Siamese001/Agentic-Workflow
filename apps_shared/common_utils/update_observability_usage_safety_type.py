@@ -14,10 +14,10 @@ Implements L5 Safety/Policy Layer for update observability usage operations
 
 
 import logging
+import re
 from abc import ABC, abstractmethod
 from dataclasses import field
 from enum import Enum
-import re
 
 logging.basicConfig(level=logging.INFO)
 

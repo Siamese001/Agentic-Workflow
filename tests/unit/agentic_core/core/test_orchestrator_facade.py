@@ -191,8 +191,9 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         assert issubclass(OrchestratorAgent, SovereignBaseAgent)
 

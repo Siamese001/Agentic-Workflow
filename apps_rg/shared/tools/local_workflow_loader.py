@@ -52,9 +52,7 @@ class execute_resume_generation:
             creative_brief=creative_brief,
             validation_rules=self.workflow.get_validation_rules(),
         )
-        LOGGER.info(
-            f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}"
-        )
+        LOGGER.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
 
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""

@@ -3,6 +3,7 @@ Script to add _run_self_tests method to agents missing test coverage.
 This ensures 100% test coverage in the dashboard.
 """
 
+import ast
 import json
 import re
 from pathlib import Path
@@ -11,7 +12,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )
-import ast
 
 TEST_METHOD = '''
     def _run_self_tests(self) -> dict:

@@ -10,9 +10,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import Sovereign Agents
-from agentic_core.L0_maintenance.enforcement.core_integrity_util import CoreIntegrityVerifier
 from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
 from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
+
+from agentic_core.L0_maintenance.enforcement.core_integrity_util import CoreIntegrityVerifier
 
 # Setup Console Logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

@@ -158,7 +158,9 @@ class RGFlowRouter:
         thematic_analysis = context.get("thematic_analysis")
         if thematic_analysis:
             flow_result = self._classify_flow_with_thematic_analysis(
-                task_description, has_master_resume, thematic_analysis
+                task_description,
+                has_master_resume,
+                thematic_analysis,
             )
         else:
             flow_result = self._classify_flow(task_description, has_master_resume)
@@ -169,9 +171,7 @@ class RGFlowRouter:
         quality_requirements = context.get("quality_requirements", {})
         if quality_requirements:
             entrance_gates_passed.append("GATE_5_QUALITY_REQUIREMENTS_APPLIED")
-            logger.info(
-                f"Gate 5: Quality requirements applied = {list(quality_requirements.keys())}"
-            )
+            logger.info(f"Gate 5: Quality requirements applied = {list(quality_requirements.keys())}")
 
         # Gate 6: Final routing validation
         self._validate_routing_requirements(flow_result, context)
@@ -225,9 +225,7 @@ class RGFlowRouter:
                     retry_enabled=self.flow_configs["tailor_existing"]["retry_enabled"],
                 )
             else:
-                logger.warning(
-                    "Tailor requested but no master resume available - falling back to generate"
-                )
+                logger.warning("Tailor requested but no master resume available - falling back to generate")
 
         # Check for generate-specific keywords
         if any(keyword in task_lower for keyword in self.generate_keywords):
@@ -294,9 +292,7 @@ class RGFlowRouter:
                 flow_type="strategic_tailor_node",
                 confidence=0.98,
                 required_hops=self.flow_configs["strategic_tailor_node"]["required_hops"],
-                validation_required=self.flow_configs["strategic_tailor_node"][
-                    "validation_required"
-                ],
+                validation_required=self.flow_configs["strategic_tailor_node"]["validation_required"],
                 retry_enabled=self.flow_configs["strategic_tailor_node"]["retry_enabled"],
             )
 
@@ -311,9 +307,7 @@ class RGFlowRouter:
                     retry_enabled=self.flow_configs["tailor_existing"]["retry_enabled"],
                 )
             else:
-                logger.warning(
-                    "Tailor requested but no master resume available - falling back to generate"
-                )
+                logger.warning("Tailor requested but no master resume available - falling back to generate")
 
         # Check for generate-specific keywords
         if any(keyword in task_lower for keyword in self.generate_keywords):
@@ -353,9 +347,7 @@ class RGFlowRouter:
                 retry_enabled=self.flow_configs["generate_scratch"]["retry_enabled"],
             )
 
-    def _validate_routing_requirements(
-        self, flow_result: ResumeFlowResult, context: dict[str, Any]
-    ) -> None:
+    def _validate_routing_requirements(self, flow_result: ResumeFlowResult, context: dict[str, Any]) -> None:
         """Validate that routing requirements are met.
 
         Args:
@@ -369,13 +361,10 @@ class RGFlowRouter:
         if flow_result.flow_type in ["tailor_existing", "enhance_current"]:
             if not context.get("has_master_resume", False):
                 raise ValueError(
-                    f"ROUTING_VALIDATION_FAILED: Flow '{flow_result.flow_type}' "
-                    f"requires master resume"
+                    f"ROUTING_VALIDATION_FAILED: Flow '{flow_result.flow_type}' requires master resume",
                 )
 
         # Check if job description meets minimum length
         job_description = context.get("job_description", "")
         if len(job_description) < 50:
-            raise ValueError(
-                "ROUTING_VALIDATION_FAILED: Job description too short (minimum 50 characters)"
-            )
+            raise ValueError("ROUTING_VALIDATION_FAILED: Job description too short (minimum 50 characters)")

@@ -63,7 +63,10 @@ class MockAtomicExecutionMixin:
             return cls._file_locks[file_path]
 
     def execute_atomic(
-        self, operation: callable, target_file: Path | None = None, timeout: float = 5.0
+        self,
+        operation: callable,
+        target_file: Path | None = None,
+        timeout: float = 5.0,
     ) -> Any:
         """
         Execute an operation atomically with file locking.
@@ -182,7 +185,9 @@ class TestAtomicConcurrency:
         return result
 
     def test_concurrent_file_access_no_corruption(
-        self, test_file: Path, atomic_mixin: MockAtomicExecutionMixin
+        self,
+        test_file: Path,
+        atomic_mixin: MockAtomicExecutionMixin,
     ):
         """
         Test that concurrent file access does not cause corruption.
@@ -247,7 +252,11 @@ class TestAtomicConcurrency:
             for i in range(self.NUM_THREADS):
                 should_fail = i == fail_thread_id
                 future = executor.submit(
-                    self.simulate_concurrent_operation, atomic_mixin, test_file, i, should_fail
+                    self.simulate_concurrent_operation,
+                    atomic_mixin,
+                    test_file,
+                    i,
+                    should_fail,
                 )
                 futures.append(future)
 
@@ -381,7 +390,7 @@ class TestAtomicConcurrency:
             # Update plan state
             current["counter"] += 1
             current.setdefault("plans", []).append(
-                {"thread_id": thread_id, "plan_id": f"plan_{thread_id}", "status": "completed"}
+                {"thread_id": thread_id, "plan_id": f"plan_{thread_id}", "status": "completed"},
             )
 
             test_file.write_text(json.dumps(current, indent=2))
@@ -402,7 +411,7 @@ class TestAtomicConcurrency:
                         thread_id=tid,
                         success=True,
                         final_state=atomic_mixin.execute_atomic(make_operation(tid), target_file=test_file),
-                    )
+                    ),
                 )
                 futures.append((i, future))
 

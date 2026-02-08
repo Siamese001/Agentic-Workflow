@@ -17,7 +17,7 @@ class ValidatorAgent(LICAgentBase):
     # Sovereign Configuration
     max_retries: int = 3
     validation_rules: dict[str, Any] = field(
-        default_factory=lambda: {"strict_mode": True, "quality_threshold": 0.8}
+        default_factory=lambda: {"strict_mode": True, "quality_threshold": 0.8},
     )
 
     def __post_init__(self) -> None:

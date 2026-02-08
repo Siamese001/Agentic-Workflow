@@ -5,9 +5,10 @@ numbered system. Agents are identified by their function, not by numbers.
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

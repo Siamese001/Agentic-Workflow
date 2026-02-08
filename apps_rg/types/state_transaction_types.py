@@ -90,9 +90,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
             snapshot = copy.deepcopy(value)
         except TypeError:
             # Fallback for non-pickleable objects (e.g., connections), store as-is but warn
-            Logger.warning(
-                f"[{source_agent}] Object for '{key}' is not deep-copyable. Storing reference."
-            )
+            Logger.warning(f"[{source_agent}] Object for '{key}' is not deep-copyable. Storing reference.")
             snapshot = value
 
         self._buffer[key] = snapshot
@@ -110,7 +108,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
                 if isinstance(snapshot, dict)
                 else 0,
                 cycle_id=self._cycle_id,
-            )
+            ),
         )
 
         self._mcp_audit("buffer_write", {"key": key, "agent": source_agent})

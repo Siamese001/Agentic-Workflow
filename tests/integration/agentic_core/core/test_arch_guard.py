@@ -104,7 +104,7 @@ def _check_module(module_name: str, file_path: Path) -> list[str]:
             # If the file using the SDK is NOT in the allowed list
             if file_name not in allowed_files:
                 violations.append(
-                    f"VIOLATION: '{file_name}' imports '{module_name}'. Only allowed in: {allowed_files}"
+                    f"VIOLATION: '{file_name}' imports '{module_name}'. Only allowed in: {allowed_files}",
                 )
 
     return violations
@@ -156,7 +156,7 @@ def test_structure_lock():
             count = len(get_python_files(layer_path))
             if count > limit * 1.2:
                 print(
-                    f"⚠️ WARNING: {layer} file count ({count}) exceeds baseline ({limit}). Check for sprawl."
+                    f"⚠️ WARNING: {layer} file count ({count}) exceeds baseline ({limit}). Check for sprawl.",
                 )
 
 

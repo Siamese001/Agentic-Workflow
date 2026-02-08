@@ -5,9 +5,10 @@ Uses LLM to evaluate agent outputs against quality criteria.
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

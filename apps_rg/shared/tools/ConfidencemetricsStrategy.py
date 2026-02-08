@@ -36,7 +36,10 @@ class EarlyStoppingStrategy:
         self.max_steps = max_steps
 
     def should_stop_early(
-        self, steps: list[dict[str, Any]], current_confidence: float, current_step: int
+        self,
+        steps: list[dict[str, Any]],
+        current_confidence: float,
+        current_step: int,
     ) -> tuple:
         """
         Determine if reasoning should stop early.
@@ -192,9 +195,7 @@ class ConfidenceEstimator:
 
         # Simple heuristics for coherence
         has_subject = any(word in thought.lower() for word in ["the", "this", "that", "a", "an"])
-        has_verb = any(
-            word in thought.lower() for word in ["is", "are", "was", "were", "be", "have", "has"]
-        )
+        has_verb = any(word in thought.lower() for word in ["is", "are", "was", "were", "be", "have", "has"])
 
         return has_subject and has_verb and len(thought) > 5
 
@@ -231,9 +232,7 @@ class PathPruningStrategy:
         return {
             "total_paths": self.total_paths,
             "pruned_paths": self.pruned_count,
-            "prune_rate": (self.pruned_count / self.total_paths * 100)
-            if self.total_paths > 0
-            else 0,
+            "prune_rate": (self.pruned_count / self.total_paths * 100) if self.total_paths > 0 else 0,
         }
 
 
@@ -272,21 +271,15 @@ class OptimizedReasoningEngine:
             chain_confidence = self.confidence_estimator.estimate_chain_confidence(steps)
 
             # Check for early stopping
-            should_stop, reason = self.early_stopping.should_stop_early(
-                steps, chain_confidence, step_count
-            )
+            should_stop, reason = self.early_stopping.should_stop_early(steps, chain_confidence, step_count)
 
             if should_stop:
-                steps.append(
-                    {"type": "early_stop", "reason": reason, "confidence": chain_confidence}
-                )
+                steps.append({"type": "early_stop", "reason": reason, "confidence": chain_confidence})
                 break
 
             # Check for path pruning
             if self.path_pruning.should_prune(step_confidence):
-                steps.append(
-                    {"type": "pruned", "reason": "low_confidence", "confidence": step_confidence}
-                )
+                steps.append({"type": "pruned", "reason": "low_confidence", "confidence": step_confidence})
                 break
 
             current = step.get("next", problem)
@@ -296,9 +289,7 @@ class OptimizedReasoningEngine:
             "final_confidence": self.confidence_estimator.estimate_chain_confidence(steps),
             "step_count": step_count,
             "optimization_stats": {
-                "early_stopping": reason
-                if step_count < self.early_stopping.max_steps
-                else "max_steps",
+                "early_stopping": reason if step_count < self.early_stopping.max_steps else "max_steps",
                 "path_pruning": self.path_pruning.get_statistics(),
             },
         }

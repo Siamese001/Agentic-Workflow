@@ -1,7 +1,7 @@
 import logging
-from typing import Any, List
+from typing import Any
 
-from .sovereign_policy_registry import SovereignPolicyRegistry, PolicySeverity
+from .sovereign_policy_registry import PolicySeverity, SovereignPolicyRegistry
 
 Logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class ComplianceAuditManager:
 
     def __init__(self):
         self.registry = SovereignPolicyRegistry
-        self.violations: List[dict] = []
+        self.violations: list[dict] = []
 
     def audit_event(self, policy_id: str, context: dict[str, Any]) -> bool:
         """

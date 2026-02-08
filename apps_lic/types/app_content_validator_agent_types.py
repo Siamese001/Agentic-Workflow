@@ -17,10 +17,10 @@ Features:
 import logging
 import re
 import warnings
-from datetime import datetime
-from typing import Any
-from enum import Enum, auto
 from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum, auto
+from typing import Any
 
 Logger = logging.getLogger(__name__)
 
@@ -117,7 +117,7 @@ class ContentConfig:
             r"TODO",
             r"PLACEHOLDER",
             r"INSERT.*HERE",
-        ]
+        ],
     )
 
 
@@ -180,7 +180,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                         field_name="email",
                         severity="error",
                         rule_id="CONTACT-001",
-                    )
+                    ),
                 )
             return violations
 
@@ -194,7 +194,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                     severity="error",
                     rule_id="CONTACT-002",
                     suggestion="Provide a valid email address",
-                )
+                ),
             )
 
         return violations
@@ -216,7 +216,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                     severity="warning",
                     rule_id="CONTACT-003",
                     suggestion="Provide a valid LinkedIn profile URL",
-                )
+                ),
             )
 
         return violations
@@ -243,7 +243,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                             severity="error",
                             rule_id="CLEAN-001",
                             suggestion="Replace placeholder with actual content",
-                        )
+                        ),
                     )
 
         # Check for spam patterns
@@ -258,7 +258,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                             severity="warning",
                             rule_id="CLEAN-002",
                             suggestion="Remove or rephrase spam-like content",
-                        )
+                        ),
                     )
 
         # Check length
@@ -269,7 +269,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                     message=f"Content too short: {len(content)} chars (min: {self.config.min_length})",
                     severity="warning",
                     rule_id="CLEAN-003",
-                )
+                ),
             )
 
         if len(content) > self.config.max_length:
@@ -279,7 +279,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                     message=f"Content too long: {len(content)} chars (max: {self.config.max_length})",
                     severity="warning",
                     rule_id="CLEAN-004",
-                )
+                ),
             )
 
         return violations
@@ -325,7 +325,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                             rule_id="DIV-001",
                             similarity_score=similarity,
                             suggestion="Increase message variation to improve personalization",
-                        )
+                        ),
                     )
 
         # Calculate pass/fail

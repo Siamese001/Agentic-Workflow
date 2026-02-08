@@ -117,7 +117,7 @@ class TestAgent:
                 "file": str(test_file),
                 "message": "File in invalid location (dict format)",
                 "type": "LOCATION",
-            }
+            },
         ]
 
         result3 = agent.heal_violations(dict_violations, auto_approve=True)

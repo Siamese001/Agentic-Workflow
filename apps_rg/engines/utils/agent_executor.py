@@ -253,7 +253,7 @@ class AgentExecutor:
                             "name": block.name,
                             "arguments": block.input,
                         },
-                    }
+                    },
                 )
 
         return AgentResponse(
@@ -284,7 +284,12 @@ class AgentExecutor:
         if hasattr(client, "interactions"):
             # NEW: Use v1beta Interactions API
             return self._execute_google_interactions(
-                client, messages, model, tools, previous_interaction_id, **kwargs
+                client,
+                messages,
+                model,
+                tools,
+                previous_interaction_id,
+                **kwargs,
             )
         else:
             # FALLBACK: Use legacy SDK
@@ -313,9 +318,7 @@ class AgentExecutor:
                     if msg["role"] == "system":
                         # System prompt becomes first user message with model acknowledgment
                         input_messages.append({"role": "user", "content": msg["content"]})
-                        input_messages.append(
-                            {"role": "model", "content": "Understood. I am ready."}
-                        )
+                        input_messages.append({"role": "model", "content": "Understood. I am ready."})
                     else:
                         input_messages.append({"role": msg["role"], "content": msg["content"]})
 
@@ -458,9 +461,7 @@ class AgentExecutor:
         """
         # Special handling for Google GenAI with Interactions API
         if self.config.provider == Provider.GOOGLE:
-            return self._execute_google_structured(
-                messages, response_model, system_prompt, **kwargs
-            )
+            return self._execute_google_structured(messages, response_model, system_prompt, **kwargs)
 
         # Use Instructor for other providers
         instructor_client = get_instructor_client(self.config.provider)
@@ -521,9 +522,7 @@ class AgentExecutor:
             # Try to get schema from response_model if it has one
             schema = getattr(response_model, "json_schema", None)
             if not schema:
-                raise ValueError(
-                    "response_model must be a Pydantic BaseModel or have json_schema method"
-                )
+                raise ValueError("response_model must be a Pydantic BaseModel or have json_schema method")
 
         # Prepare input for interactions.create
         input_messages = []

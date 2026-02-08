@@ -20,9 +20,7 @@ class DeliverabilityAgent(SubatomicTestingMixin, LICAgentBase):
     # Sovereign Configuration
     monitored_domains: list[str] = field(default_factory=list)
     thresholds: dict[str, float] = field(default_factory=lambda: {"spam_rate": 0.01})
-    spam_triggers: list[str] = field(
-        default_factory=lambda: ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW"]
-    )
+    spam_triggers: list[str] = field(default_factory=lambda: ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW"])
 
     def __post_init__(self) -> None:
         """Initialize Sovereign Capabilities."""

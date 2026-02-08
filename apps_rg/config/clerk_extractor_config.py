@@ -67,7 +67,7 @@ class ClerkExtractor:
                     "overview": exp.get("overview", ""),
                     "bullets": BULLETS,
                     "highlights": [b["bullet_text"] for b in BULLETS],
-                }
+                },
             )
         return SECTIONS
 

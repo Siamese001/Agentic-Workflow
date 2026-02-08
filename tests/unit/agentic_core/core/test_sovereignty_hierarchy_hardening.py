@@ -207,7 +207,9 @@ class TestHierarchyScopedHealing:
     def test_heal_hierarchy_passes_target_territory_to_enforce_depth(self, workspace, hierarchy_agent):
         """Verify heal_hierarchy passes target_territory to enforce_depth_rules."""
         with patch.object(
-            hierarchy_agent, "enforce_depth_rules", return_value={"violations_found": 0}
+            hierarchy_agent,
+            "enforce_depth_rules",
+            return_value={"violations_found": 0},
         ) as mock_depth:
             hierarchy_agent.heal_hierarchy(
                 target_territory="prompt_governance",

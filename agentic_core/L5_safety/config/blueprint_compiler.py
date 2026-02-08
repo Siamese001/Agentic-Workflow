@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Final
 
 # Standard LCD subfolders for L0-L6 layers
@@ -107,9 +107,7 @@ def _extract_nested_subfolders(subfolders: Any) -> Mapping[str, Sequence[str]]:
     return result
 
 
-def _build_subfolder_metadata(
-    territory_name: str, territory_def: Mapping[str, Any]
-) -> Mapping[str, Any]:
+def _build_subfolder_metadata(territory_name: str, territory_def: Mapping[str, Any]) -> Mapping[str, Any]:
     """Build metadata entry for a territory."""
     purpose = territory_def.get("purpose", f"{territory_name} domain")
     notes = territory_def.get("notes", "")
@@ -131,9 +129,9 @@ def _build_subfolder_metadata(
     }
 
 
-def _identify_l4_folders(territories: Mapping[str, Any]) -> tuple[
-    Mapping[str, Mapping[str, Sequence[str]]], frozenset[str]
-]:
+def _identify_l4_folders(
+    territories: Mapping[str, Any],
+) -> tuple[Mapping[str, Mapping[str, Sequence[str]]], frozenset[str]]:
     """Identify L4-depth folders and their specializations."""
     l4_map: dict[str, dict[str, list[str]]] = {}
     l4_approved: set[str] = set()
@@ -175,9 +173,7 @@ def _identify_l4_folders(territories: Mapping[str, Any]) -> tuple[
     return l4_map, frozenset(l4_approved)
 
 
-def _identify_variable_depth_subfolders(
-    territories: Mapping[str, Any]
-) -> frozenset[str]:
+def _identify_variable_depth_subfolders(territories: Mapping[str, Any]) -> frozenset[str]:
     """Identify subfolders that allow variable depth."""
     variable_depth: set[str] = set()
 
@@ -205,9 +201,7 @@ def _identify_variable_depth_subfolders(
     return frozenset(variable_depth)
 
 
-def compile_blueprint(
-    territories: Mapping[str, Any]
-) -> CompiledBlueprint:
+def compile_blueprint(territories: Mapping[str, Any]) -> CompiledBlueprint:
     """
     Compile SOVEREIGN_TERRITORIES into all derived registries.
 
@@ -245,9 +239,7 @@ def compile_blueprint(
                     core_subfolder_map[domain_name] = _extract_subfolder_names(nested_sfs)
 
                     # Build metadata
-                    subfolder_metadata[domain_name] = _build_subfolder_metadata(
-                        domain_name, domain_def
-                    )
+                    subfolder_metadata[domain_name] = _build_subfolder_metadata(domain_name, domain_def)
 
                     # Track layer subfolder lists
                     if domain_name.startswith("L") and "_" in domain_name:
@@ -302,7 +294,7 @@ def verify_blueprint_consistency(
             elif set(legacy_core_map[key]) != set(compiled.core_subfolder_map.get(key, [])):
                 discrepancies.append(
                     f"Mismatch for {key}: legacy={list(legacy_core_map[key])}, "
-                    f"compiled={list(compiled.core_subfolder_map.get(key, []))}"
+                    f"compiled={list(compiled.core_subfolder_map.get(key, []))}",
                 )
 
     if legacy_metadata:

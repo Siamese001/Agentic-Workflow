@@ -60,7 +60,10 @@ class WordCountEnforcementEngine:
         return ValidationResult(True, word_count, min_w, max_w, None)
 
     def enforce_with_regeneration(
-        self, content: str, content_type: str, max_attempts: int = 3
+        self,
+        content: str,
+        content_type: str,
+        max_attempts: int = 3,
     ) -> dict[str, Any]:
         """
         Attempt to enforce constraints and return signed result.
@@ -93,6 +96,4 @@ class WordCountEnforcementEngine:
                 {"min_required": result.min_required, "max_allowed": result.max_allowed},
             )
 
-        raise ValueError(
-            f"Failed to enforce word count for {content_type} after {max_attempts} attempts."
-        )
+        raise ValueError(f"Failed to enforce word count for {content_type} after {max_attempts} attempts.")

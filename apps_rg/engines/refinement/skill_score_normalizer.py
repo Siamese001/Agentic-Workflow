@@ -42,7 +42,7 @@ class SkillScoreNormalizer(BaseRGEngine):
                 normalized[skill] = (score - min_val) / (max_val - min_val)
         else:
             # All scores are the same
-            normalized = {skill: 1.0 for skill in raw_scores}
+            normalized = dict.fromkeys(raw_scores, 1.0)
 
         self.record_pass(f"Normalized {len(normalized)} skill scores")
         return normalized

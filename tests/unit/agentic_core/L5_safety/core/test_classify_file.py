@@ -4,11 +4,9 @@ Tests follow MECE principle: Mutually Exclusive, Collectively Exhaustive
 coverage of classify_file method behavior.
 """
 
-import ast
+import sys
 import tempfile
 from pathlib import Path
-import pytest
-import sys
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
@@ -136,7 +134,7 @@ class TestClassifyFile:
             # Test unittest.TestCase inheritance
             test_file3 = tmpdir / "my_test.py"
             test_file3.write_text(
-                "import unittest\nclass MyTestCase(unittest.TestCase):\n    def test_something(self): pass\n"
+                "import unittest\nclass MyTestCase(unittest.TestCase):\n    def test_something(self): pass\n",
             )
 
             result = agent.classify_file(test_file3)
@@ -268,7 +266,7 @@ class TestClassifyFile:
             # Agent with main guard should still be AGENT
             agent_file = tmpdir / "MyAgent.py"
             agent_file.write_text(
-                "class MyAgent:\n    def run(self): pass\nif __name__ == '__main__':\n    MyAgent().run()\n"
+                "class MyAgent:\n    def run(self): pass\nif __name__ == '__main__':\n    MyAgent().run()\n",
             )
 
             result = agent.classify_file(agent_file)
@@ -390,7 +388,7 @@ class TestClassifyFile:
             protocol_file.write_text(
                 "from typing import Protocol\n"
                 "class MyProtocol(Protocol):\n"
-                "    def method(self) -> None: ...\n"
+                "    def method(self) -> None: ...\n",
             )
 
             result = agent.classify_file(protocol_file)

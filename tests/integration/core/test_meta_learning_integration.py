@@ -25,6 +25,7 @@ def reset_all_singletons():
     import agentic_core.L1_cognition.reasoning.engine.memory_embedder as hme
     import agentic_core.L1_cognition.reasoning.engine.meta_client as mlc
     import agentic_core.L1_cognition.reasoning.engine.meta_observability as mlo
+
     from agentic_core.mixins.meta_learning_client_mixin import (
         MetaLearningClientMixin,
     )

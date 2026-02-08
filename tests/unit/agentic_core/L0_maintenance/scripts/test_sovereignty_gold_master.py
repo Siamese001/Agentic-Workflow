@@ -48,7 +48,11 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("from HealerMixin import", updated, "Absolute import should be updated to new module name")
+        self.assertIn(
+            "from HealerMixin import",
+            updated,
+            "Absolute import should be updated to new module name",
+        )
 
     def test_relative_import_triple_dots(self):
         """Edge Case: Triple-dot relative imports (from ...module)."""
@@ -130,7 +134,11 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("from .TracingMixin import", updated, "Direct relative import should be updated to new module name")
+        self.assertIn(
+            "from .TracingMixin import",
+            updated,
+            "Direct relative import should be updated to new module name",
+        )
 
     def test_import_alias_with_relative(self):
         """Verify import aliases work with absolute imports."""
@@ -139,11 +147,15 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         content = "import healer_mixin as hm"
 
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
         updated = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
 
-        self.assertIn("import HealerMixin as hm", updated, "Import alias should be updated to new module name")
+        self.assertIn(
+            "import HealerMixin as hm",
+            updated,
+            "Import alias should be updated to new module name",
+        )
 
 
 class TestRelativeImportPatterns(unittest.TestCase):

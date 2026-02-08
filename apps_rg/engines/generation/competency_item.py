@@ -102,14 +102,10 @@ class GapClosureEngine(BaseRGEngine):
         # Generate competencies for each gap skill
         for _i, skill in enumerate(gap_skills[:6]):  # Ensure exactly 6
             title = f"{skill} Leadership"
-            description = (
-                f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
-            )
+            description = f"Demonstrated expertise in {skill} with measurable impact and team collaboration."
             word_count = len(description.split())
 
-            competencies.append(
-                CompetencyItem(title=title, description=description, word_count=word_count)
-            )
+            competencies.append(CompetencyItem(title=title, description=description, word_count=word_count))
 
         # If less than 6 gaps, fill with generic leadership competencies
         generic_competencies = [
@@ -123,8 +119,7 @@ class GapClosureEngine(BaseRGEngine):
             ),
             (
                 "Change Management",
-                "Leading organizational change with effective communication "
-                "and stakeholder engagement.",
+                "Leading organizational change with effective communication and stakeholder engagement.",
             ),
             (
                 "Results Orientation",

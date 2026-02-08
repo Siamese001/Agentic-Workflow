@@ -126,7 +126,7 @@ STOP_WORDS = frozenset(
         "there",
         "any",
         "about",
-    ]
+    ],
 )
 
 
@@ -168,8 +168,7 @@ class LICCodeInterpreter:
         """
         if function_name not in self.functions:
             raise ValueError(
-                f"Function '{function_name}' not registered. "
-                f"Available: {list(self.functions.keys())}"
+                f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}",
             )
 
         func = self.functions[function_name]
@@ -236,9 +235,7 @@ class LICCodeInterpreter:
             scores: dict[str, float] = {}
 
             # 1. Strategic alignment (cosine similarity to brief)
-            alignment_result = self.run_similarity_check(
-                candidate, strategic_brief, method="cosine"
-            )
+            alignment_result = self.run_similarity_check(candidate, strategic_brief, method="cosine")
             scores["strategic_alignment"] = alignment_result.score
 
             # 2. Keyword density (how many strategic keywords present)
@@ -266,7 +263,7 @@ class LICCodeInterpreter:
                     candidate_text=candidate,
                     scores=scores,
                     total_score=total_score,
-                )
+                ),
             )
 
         # Sort by total score (highest first)
@@ -411,14 +408,14 @@ class LICCodeInterpreter:
             if word_count < requirements["min_words"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Word count {word_count} below minimum {requirements['min_words']}"
+                    f"Word count {word_count} below minimum {requirements['min_words']}",
                 )
 
         if "max_words" in requirements:
             if word_count > requirements["max_words"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Word count {word_count} above maximum {requirements['max_words']}"
+                    f"Word count {word_count} above maximum {requirements['max_words']}",
                 )
 
         # Character count validation
@@ -429,7 +426,7 @@ class LICCodeInterpreter:
             if char_count > requirements["max_chars"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Character count {char_count} above maximum {requirements['max_chars']}"
+                    f"Character count {char_count} above maximum {requirements['max_chars']}",
                 )
 
         # Sentence count validation
@@ -441,7 +438,7 @@ class LICCodeInterpreter:
             if sentence_count < requirements["min_sentences"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Sentence count {sentence_count} below minimum {requirements['min_sentences']}"
+                    f"Sentence count {sentence_count} below minimum {requirements['min_sentences']}",
                 )
 
         return result

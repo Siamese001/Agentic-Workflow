@@ -97,7 +97,9 @@ class ParityTestBase(ABC):
         return agent.execute(**kwargs)
 
     async def execute_unified(
-        self, agent: UnifiedAgent, **kwargs: Any
+        self,
+        agent: UnifiedAgent,
+        **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Execute unified agent."""
         return await agent.execute(**kwargs)
@@ -161,7 +163,7 @@ class ParityTestBase(ABC):
                 if isinstance(legacy, dict):
                     return self._compare_validation_with_dict(legacy, unified)
             differences.append(
-                f"Type mismatch: legacy={type(legacy).__name__}, unified={type(unified).__name__}"
+                f"Type mismatch: legacy={type(legacy).__name__}, unified={type(unified).__name__}",
             )
             return differences
 
@@ -195,7 +197,7 @@ class ParityTestBase(ABC):
                 differences.append(f"Key '{key}' only in legacy result")
             elif legacy[key] != unified[key]:
                 differences.append(
-                    f"Value mismatch for '{key}': legacy={legacy[key]}, unified={unified[key]}"
+                    f"Value mismatch for '{key}': legacy={legacy[key]}, unified={unified[key]}",
                 )
 
         return differences
@@ -223,7 +225,9 @@ class ParityTestBase(ABC):
         return differences
 
     def _compare_orchestration_results(
-        self, legacy: OrchestrationResult, unified: OrchestrationResult
+        self,
+        legacy: OrchestrationResult,
+        unified: OrchestrationResult,
     ) -> list[str]:
         """Compare OrchestrationResult instances."""
         differences = []
@@ -243,13 +247,13 @@ class ParityTestBase(ABC):
         if legacy.violations_found != unified.violations_found:
             differences.append(
                 f"violations_found mismatch: legacy={legacy.violations_found}, "
-                f"unified={unified.violations_found}"
+                f"unified={unified.violations_found}",
             )
 
         if legacy.violations_fixed != unified.violations_fixed:
             differences.append(
                 f"violations_fixed mismatch: legacy={legacy.violations_fixed}, "
-                f"unified={unified.violations_fixed}"
+                f"unified={unified.violations_fixed}",
             )
 
         return differences
@@ -282,7 +286,7 @@ class ReturnTypeValidator:
             if not isinstance(unified_result, expected_type):
                 errors.append(
                     f"Unified result type mismatch: expected {expected_type.__name__}, "
-                    f"got {type(unified_result).__name__}"
+                    f"got {type(unified_result).__name__}",
                 )
 
         # Ensure dict doesn't become list or vice versa

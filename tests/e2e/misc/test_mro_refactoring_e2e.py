@@ -291,8 +291,9 @@ class TestAllPhasesIntegrated:
         """Test recommended combined usage pattern."""
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
         from agentic_core.L2_execution.gateway_factory import GatewayFactory
+
+        from agentic_core.base_agents.LightweightBase import LightweightAgentBase
 
         @dataclass
         class ModernAgent(LightweightAgentBase):

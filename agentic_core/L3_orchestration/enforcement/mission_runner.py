@@ -30,7 +30,7 @@ Logger = logging.getLogger(__name__)
 
 # L5 Watchman: File System Monitoring
 try:
-    from watchdog.events import FileSystemEventhandler
+    from watchdog.events import FileSystemEventhandler  # noqa: F401
     from watchdog.observers import Observer
 
     WATCHDOG_AVAILABLE = True

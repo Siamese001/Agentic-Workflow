@@ -232,7 +232,7 @@ class TestDetectionSignalProtocol:
                 severity=Severity.LOW,
                 file_path="/file1.py",
                 message="msg1",
-            )
+            ),
         )
         emitter.emit_signal(
             DetectionResult(
@@ -241,7 +241,7 @@ class TestDetectionSignalProtocol:
                 severity=Severity.LOW,
                 file_path="/file2.py",
                 message="msg2",
-            )
+            ),
         )
         signals = emitter.get_signals(file_path="/file1.py")
         assert len(signals) == 1
@@ -257,7 +257,7 @@ class TestDetectionSignalProtocol:
                 severity=Severity.LOW,
                 file_path="/test.py",
                 message="low",
-            )
+            ),
         )
         emitter.emit_signal(
             DetectionResult(
@@ -266,7 +266,7 @@ class TestDetectionSignalProtocol:
                 severity=Severity.HIGH,
                 file_path="/test.py",
                 message="high",
-            )
+            ),
         )
         signals = emitter.get_signals(severity=Severity.HIGH)
         assert len(signals) == 1

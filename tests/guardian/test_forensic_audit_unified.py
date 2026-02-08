@@ -279,7 +279,7 @@ class TestUnifiedForensicAudit:
                             "agent": agent_info.class_name,
                             "file": str(agent_info.file_path),
                             "pattern": method,
-                        }
+                        },
                     )
                     report_builder.add_violation(
                         code=ViolationCode.FORENSIC_LLM_VALIDATION,
@@ -292,7 +292,7 @@ class TestUnifiedForensicAudit:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} LLM-based validation patterns detected:\n"
-                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10]),
             )
 
     def test_structural_validation_violations(self, audit_result, scanner, report_builder):
@@ -311,7 +311,7 @@ class TestUnifiedForensicAudit:
                             "agent": agent_info.class_name,
                             "file": str(agent_info.file_path),
                             "pattern": pattern,
-                        }
+                        },
                     )
                     report_builder.add_violation(
                         code=ViolationCode.FORENSIC_STRUCTURAL,
@@ -324,7 +324,7 @@ class TestUnifiedForensicAudit:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} structural validation violations:\n"
-                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10]),
             )
 
     def test_dynamic_introspection_violations(self, audit_result, scanner, report_builder):
@@ -343,7 +343,7 @@ class TestUnifiedForensicAudit:
                             "agent": agent_info.class_name,
                             "file": str(agent_info.file_path),
                             "pattern": pattern,
-                        }
+                        },
                     )
                     report_builder.add_violation(
                         code=ViolationCode.FORENSIC_INTROSPECTION,
@@ -356,7 +356,7 @@ class TestUnifiedForensicAudit:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} dynamic introspection violations:\n"
-                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10])
+                + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10]),
             )
 
     def test_no_critical_ai_checking_ai_violations(self, audit_result, report_builder):
@@ -376,7 +376,7 @@ class TestUnifiedForensicAudit:
                                 "agent": agent.class_name,
                                 "file": str(agent.file_path),
                                 "violation": violation,
-                            }
+                            },
                         )
                         report_builder.add_violation(
                             code=ViolationCode.FORENSIC_LLM_VALIDATION,
@@ -389,7 +389,7 @@ class TestUnifiedForensicAudit:
         if critical_violations:
             pytest.fail(
                 f"BLOCKING [CRITICAL]: {len(critical_violations)} AI-Checking-AI violations:\n"
-                + "\n".join(f"  - {v['agent']}: {v['violation']}" for v in critical_violations[:10])
+                + "\n".join(f"  - {v['agent']}: {v['violation']}" for v in critical_violations[:10]),
             )
 
 
@@ -405,7 +405,7 @@ def test_forensic_audit_comprehensive():
     if result.total_violations > 0:
         pytest.fail(
             f"BLOCKING: {result.total_violations} forensic violations detected "
-            f"across {result.agents_with_violations} agents"
+            f"across {result.agents_with_violations} agents",
         )
 
 

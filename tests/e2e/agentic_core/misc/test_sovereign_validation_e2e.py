@@ -90,7 +90,7 @@ class TestSovereignValidationE2E:
                         "file": str(file_path),
                         "violation": "base_agent_wrong_location",
                         "fix": "move_to_base_agents",
-                    }
+                    },
                 )
 
         assert len(violations) == 1, "Should detect one violation"
@@ -132,7 +132,7 @@ class TestPascalSovereigntyE2E:
         # Create test structure
         (tmp_path / "agentic_core" / "base_agents").mkdir(parents=True)
         (tmp_path / "agentic_core" / "base_agents" / "SovereignBaseAgent.py").write_text(
-            "class SovereignBaseAgent:\n    pass"
+            "class SovereignBaseAgent:\n    pass",
         )
 
         # Run validation
@@ -150,7 +150,7 @@ class TestPascalSovereigntyE2E:
         # Create violation: lowercase agent name
         (tmp_path / "agentic_core" / "L5_safety").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L5_safety" / "lowercase_agent.py").write_text(
-            "class lowercase_agent:\n    pass"
+            "class lowercase_agent:\n    pass",
         )
 
         # Detect naming violation
@@ -163,7 +163,7 @@ class TestPascalSovereigntyE2E:
                         "file": str(file_path),
                         "violation": "naming_convention",
                         "expected": "PascalCase",
-                    }
+                    },
                 )
 
         assert len(violations) == 1, "Should detect naming violation"

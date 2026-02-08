@@ -37,9 +37,7 @@ class ClerkExtractionEngine(BaseRGEngine):
         # 1. READ from Buffer (Deep Copy Enforced)
         mission_input = self.ctx.buffer.read("mission_input")
         if not mission_input or "master_resume" not in mission_input:
-            self.record_fail(
-                "Missing 'mission_input' or 'master_resume' in Buffer", signal="DATA_MISSING"
-            )
+            self.record_fail("Missing 'mission_input' or 'master_resume' in Buffer", signal="DATA_MISSING")
             raise ValueError("Buffer missing mission_input")
 
         source = mission_input["master_resume"]
@@ -81,7 +79,7 @@ class ClerkExtractionEngine(BaseRGEngine):
                     "company": exp.get("company", "Unknown"),
                     "title": exp.get("title", "Unknown"),
                     "bullets": [{"bullet_text": b} for b in exp.get("bullets", [])],
-                }
+                },
             )
         return sections
 

@@ -42,7 +42,7 @@ from pathlib import Path
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
 # ==============================================================================
 try:
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
         AGENT_DISCOVERY_JSON,
         get_validated_project_root,
         validate_path_within_project,
