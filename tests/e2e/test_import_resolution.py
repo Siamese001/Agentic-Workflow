@@ -90,6 +90,40 @@ class TestSyntaxValidity:
         assert len(errors) == 0, f"Syntax errors found: {errors[:5]}"
 
 
+class TestTrackedImportDebt:
+    """Tests that explicitly track known-broken import chains.
+
+    These are NOT ignored — they are marked xfail(strict=True) so that:
+    - CI stays green today.
+    - If someone fixes the module, the test auto-promotes to a real pass.
+    - If the breakage silently changes shape, CI catches it.
+    """
+
+    @pytest.mark.xfail(
+        strict=True,
+        reason="Legacy broken import chain: meta_learning_client_types does not exist",
+    )
+    def test_meta_learning_client_types_import(self):
+        """The meta_learning_client_types module should be importable.
+
+        RGAgentBase (apps_rg/utils/RGAgentBase.py:29) imports
+        HealingPattern, MetaLearningClient, get_meta_learning_client from
+        agentic_core.L1_cognition.reasoning.meta_learning_client_types.
+
+        That module does not exist, making the entire RGAgentBase import
+        chain broken at runtime. This test tracks the debt explicitly.
+        """
+        from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
+            HealingPattern,
+            MetaLearningClient,
+            get_meta_learning_client,
+        )
+
+        assert HealingPattern is not None
+        assert MetaLearningClient is not None
+        assert get_meta_learning_client is not None
+
+
 class TestNoCircularImports:
     """Tests for circular import detection."""
 

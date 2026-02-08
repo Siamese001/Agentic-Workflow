@@ -8,14 +8,15 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.utils.lic_engine_validation_capability import LICEngineValidationCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
+class CampaignBalanceAgent(LICEngineValidationCapability, SubatomicTestingMixin, LICAgentBase):
     """
     Sovereign Campaign Balance Validator.
 
@@ -24,6 +25,10 @@ class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
     - Campaign has required elements (name, goal)
     - Proper campaign structure
     """
+
+    # LICEngineValidationCapability configuration
+    SIGNAL_NAME: ClassVar[str] = "CAMPAIGN_BALANCE_ISSUE"
+    VALIDATION_LABEL: ClassVar[str] = "Campaign balanced"
 
     # Sovereign Configuration
     balance_thresholds: dict[str, Any] = field(
@@ -43,13 +48,15 @@ class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
         - Campaign has name and goal
         - Raises CAMPAIGN_BALANCE_ISSUE signal if issues found
         """
-        print(f"   [{self.name}] Checking campaign balance...")
+        self.run_validation()
 
+    def _validate(self) -> list[str]:
+        """Campaign-specific validation rules."""
         campaign = self.ctx.current_campaign
         leads = self.ctx.leads
         messages = self.ctx.messages
 
-        balance_issues = []
+        issues: list[str] = []
 
         # Check lead to message ratio using sovereign thresholds
         if leads and messages:
@@ -58,24 +65,18 @@ class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
             min_ratio = self.balance_thresholds["min_leads_per_message"]
 
             if ratio > max_ratio:
-                balance_issues.append("Too many leads per message template")
+                issues.append("Too many leads per message template")
             elif ratio < min_ratio:
-                balance_issues.append("More templates than leads")
+                issues.append("More templates than leads")
 
         # Check campaign has required elements
         if not campaign.get("name"):
-            balance_issues.append("Campaign Missing name")
+            issues.append("Campaign Missing name")
 
         if not campaign.get("goal"):
-            balance_issues.append("Campaign Missing goal")
+            issues.append("Campaign Missing goal")
 
-        if balance_issues:
-            self.add_signal("CAMPAIGN_BALANCE_ISSUE")
-            self.record_result(False, f"Balance issues: {len(balance_issues)}")
-            print(f"   [{self.name}] ❌ Balance issues: {len(balance_issues)}")
-        else:
-            self.record_result(True, "Campaign balanced")
-            print(f"   [{self.name}] ✅ Campaign balanced")
+        return issues
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """

@@ -8,14 +8,20 @@ Extracted: 2026-01-06 (Surgical Extraction)
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any, ClassVar
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.utils.lic_engine_validation_capability import LICEngineValidationCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 @dataclass
-class DeliverabilityAgent(SubatomicTestingMixin, LICAgentBase):
+class DeliverabilityAgent(LICEngineValidationCapability, SubatomicTestingMixin, LICAgentBase):
     """Sovereign Deliverability Monitor."""
+
+    # LICEngineValidationCapability configuration
+    SIGNAL_NAME: ClassVar[str] = "DELIVERABILITY_ISSUE"
+    VALIDATION_LABEL: ClassVar[str] = "Deliverability OK"
 
     # Sovereign Configuration
     monitored_domains: list[str] = field(default_factory=list)
@@ -27,15 +33,19 @@ class DeliverabilityAgent(SubatomicTestingMixin, LICAgentBase):
         super().__post_init__()
 
     async def execute(self) -> None:
-        print(f"   [{self.name}] Checking deliverability...")
-
+        """Execute deliverability validation via capability harness."""
         messages = self.ctx.messages
 
         if not messages:
             self.record_result(True, "No messages to check")
             return
 
-        deliverability_issues = []
+        self.run_validation()
+
+    def _validate(self) -> list[str]:
+        """Deliverability-specific validation rules."""
+        messages = self.ctx.messages
+        issues: list[str] = []
 
         # Sovereign deliverability check using configured triggers
         for i, message in enumerate(messages):
@@ -44,26 +54,21 @@ class DeliverabilityAgent(SubatomicTestingMixin, LICAgentBase):
             # Check for spam triggers using sovereign configuration
             for trigger in self.spam_triggers:
                 if trigger in content:
-                    deliverability_issues.append(f"Message {i}: Spam trigger '{trigger}'")
+                    issues.append(f"Message {i}: Spam trigger '{trigger}'")
 
             # Check link count
             link_count = content.count("http")
             if link_count > 3:
-                deliverability_issues.append(f"Message {i}: Too many links ({link_count})")
+                issues.append(f"Message {i}: Too many links ({link_count})")
 
             # Check image count (placeholder check)
             img_count = content.count("<img")
             if img_count > 2:
-                deliverability_issues.append(f"Message {i}: Too many images ({img_count})")
+                issues.append(f"Message {i}: Too many images ({img_count})")
 
-        if deliverability_issues:
-            self.add_signal("DELIVERABILITY_ISSUE")
-            self.record_result(False, f"Deliverability issues: {len(deliverability_issues)}")
-            print(f"   [{self.name}] ❌ Deliverability issues: {len(deliverability_issues)}")
-        else:
-            self.record_result(True, "Deliverability OK")
-            print(f"   [{self.name}] ✅ Deliverability OK")
+        return issues
 
+    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()
