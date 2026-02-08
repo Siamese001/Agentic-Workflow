@@ -170,19 +170,34 @@ class TestAgentStructure:
         AGENT_FILES,
         ids=lambda p: p.stem,
     )
-    def test_implements_perform_checks(self, agent_path: Path) -> None:
-        """Each agent must implement perform_checks()."""
+    def test_has_perform_checks(self, agent_path: Path) -> None:
+        """Each agent must have perform_checks() — either locally or inherited from InspectionCapability."""
         source = agent_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
+                # Check local definition
                 method_names = [
                     item.name
                     for item in node.body
                     if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
                 ]
-                assert "perform_checks" in method_names, f"{node.name} must implement perform_checks()"
+                if "perform_checks" in method_names:
+                    return  # locally defined — OK
+
+                # Check inheritance from InspectionCapability
+                base_names = []
+                for base in node.bases:
+                    if isinstance(base, ast.Name):
+                        base_names.append(base.id)
+                    elif isinstance(base, ast.Attribute):
+                        base_names.append(base.attr)
+
+                assert "InspectionCapability" in base_names, (
+                    f"{node.name} must either implement perform_checks() locally "
+                    f"or inherit from InspectionCapability. Bases: {base_names}"
+                )
                 return
 
         pytest.fail(f"No Agent class found in {agent_path.stem}")

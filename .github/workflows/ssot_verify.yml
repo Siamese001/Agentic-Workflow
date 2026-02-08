@@ -1,0 +1,76 @@
+name: SSOT Structure Verification
+
+on:
+  pull_request:
+    paths:
+      - "agentic_core/L5_safety/config/structure_blueprint/**"
+      - "agentic_core/L5_safety/config/structure_blueprint_config.py"
+      - "docs/reports/plans/phantom_baseline.json"
+      - "docs/reports/plans/allowlist_hash.txt"
+      - "docs/policies/ssot_enforcement_policy.md"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install verifier dependencies (only if dedicated file exists)
+        run: |
+          if [ -f requirements-ssot-verify.txt ]; then
+            pip install -r requirements-ssot-verify.txt
+          fi
+
+      - name: Print Python version
+        run: python --version
+
+      - name: Verify lock files exist
+        run: |
+          test -f docs/reports/plans/phantom_baseline.json || { echo "FAIL: phantom_baseline.json missing"; exit 1; }
+          test -f docs/reports/plans/allowlist_hash.txt || { echo "FAIL: allowlist_hash.txt missing"; exit 1; }
+
+      - name: Guard against maintenance flags
+        run: |
+          python3 -c "
+          import sys
+          MODULE = 'agentic_core.L5_safety.config.structure_blueprint._verify'
+          FORBIDDEN = [
+              '--init-phantom-baseline',
+              '--update-phantom-baseline',
+              '--repair-phantom-baseline',
+              '--acknowledge-import-change',
+          ]
+          with open('.github/workflows/ssot_verify.yml') as f:
+              lines = f.read().splitlines()
+          invoke_lines = []
+          for line in lines:
+              s = line.strip()
+              if s.startswith('#') or s.startswith('\"') or s.startswith(\"'\"):
+                  continue
+              if 'python' in s and '-m' in s and MODULE in s:
+                  invoke_lines.append(s)
+          print(f'invocation_count: {len(invoke_lines)}')
+          for il in invoke_lines:
+              print(f'  matched: {il}')
+          if not invoke_lines:
+              print('FAIL: no verifier invocation found in workflow')
+              sys.exit(1)
+          violations = []
+          for line in invoke_lines:
+              for flag in FORBIDDEN:
+                  if flag in line:
+                      violations.append(f'line contains {flag}: {line}')
+          if violations:
+              for v in violations:
+                  print(f'FAIL: {v}')
+              sys.exit(1)
+          print(f'PASS: {len(invoke_lines)} verifier invocation(s), no maintenance flags')
+          "
+
+      - name: Run SSOT verifier
+        run: python -m agentic_core.L5_safety.config.structure_blueprint._verify

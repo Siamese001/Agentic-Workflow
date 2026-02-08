@@ -296,41 +296,41 @@ def get_sovereign_territories() -> Mapping[str, Any]:
 @lru_cache(maxsize=1)
 def get_core_subfolder_map() -> Mapping[str, Sequence[str]]:
     """Return CORE_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint import derived
+    from agentic_core.L5_safety.config.structure_blueprint.derived import CORE_SUBFOLDER_MAP
 
-    return derived.CORE_SUBFOLDER_MAP
+    return CORE_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_subfolder_metadata() -> Mapping[str, Mapping[str, Any]]:
     """Return SUBFOLDER_METADATA from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint import derived
+    from agentic_core.L5_safety.config.structure_blueprint.derived import SUBFOLDER_METADATA
 
-    return derived.SUBFOLDER_METADATA
+    return SUBFOLDER_METADATA
 
 
 @lru_cache(maxsize=1)
 def get_apps_rg_subfolder_map() -> Mapping[str, Sequence[str]]:
     """Return APPS_RG_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint import derived
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RG_SUBFOLDER_MAP
 
-    return derived.APPS_RG_SUBFOLDER_MAP
+    return APPS_RG_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_apps_lic_subfolder_map() -> Mapping[str, Sequence[str]]:
     """Return APPS_LIC_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint import derived
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_LIC_SUBFOLDER_MAP
 
-    return derived.APPS_LIC_SUBFOLDER_MAP
+    return APPS_LIC_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_apps_shared_subfolder_map() -> Mapping[str, Sequence[str]]:
     """Return APPS_SHARED_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint import derived
+    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_SHARED_SUBFOLDER_MAP
 
-    return derived.APPS_SHARED_SUBFOLDER_MAP
+    return APPS_SHARED_SUBFOLDER_MAP
 
 
 # ============================================================================

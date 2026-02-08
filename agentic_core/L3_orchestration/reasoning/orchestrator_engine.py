@@ -35,12 +35,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
-
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
     OrchestrationStrategy,
@@ -53,7 +53,6 @@ from agentic_core.L3_orchestration.types import (
     MissionResult,
 )
 from agentic_core.L5_safety.config.structure_blueprint_config import get_validated_project_root
-from agentic_core.base_agents.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

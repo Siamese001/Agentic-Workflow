@@ -14,14 +14,15 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from pathlib import Path
 from typing import Any
 
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
     get_sovereign_prompt_renderer,
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
 from agentic_core.base_agents.decorators import standard_heal
+
+# [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Template content loading for registry

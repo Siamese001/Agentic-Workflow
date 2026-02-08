@@ -1,11 +1,36 @@
 """
-Structure Blueprint Config — Pure Re-export Shim (Hard Shim Strategy).
+Structure Blueprint Config — Backward-Compatible Re-export Shim.
 
 SSOT: agentic_core.L5_safety.config.structure_blueprint/
 
-This file contains NO data definitions and NO logic.  It strictly imports
-from the modular package and re-exports names so that every existing
+This file contains NO data definitions and NO domain logic.  It re-exports
+names from the modular package so that every existing
 ``from structure_blueprint_config import X`` continues to work unchanged.
+
+The only "logic" present is structural contract enforcement:
+  1. ``from package import *`` to pull in the canonical public API.
+  2. Explicit re-imports for 18 backward-compat names.
+  3. ``__all__ = list(_pkg_all)`` to mirror the package surface.
+
+Import-Path Policy
+~~~~~~~~~~~~~~~~~~
+- **Supported import path (external consumers):**
+  ``from agentic_core.L5_safety.config.structure_blueprint_config import X``
+  This is the stable backward-compatible entry point.
+
+- **SSOT import path (package internals / new code):**
+  ``from agentic_core.L5_safety.config.structure_blueprint import X``
+  The package ``__all__`` (163 names) is the canonical public API.
+
+Contract
+~~~~~~~~
+- ``__all__`` mirrors the package's ``__all__`` exactly (163 names).
+  ``from structure_blueprint_config import *`` exposes only these names.
+- 18 additional internal/scaffolding names (types, builders, lazy getters,
+  derived registries) are explicitly re-exported below for backward
+  compatibility.  They are importable via
+  ``from structure_blueprint_config import X`` but are NOT in ``__all__``
+  and are NOT exposed by ``import *``.
 
 DO NOT add new definitions here. Add them to the modular package instead.
 """
@@ -51,5 +76,7 @@ from agentic_core.L5_safety.config.structure_blueprint.territories import (  # n
     build_sovereign_territories,
 )
 
-# Mirror the package's __all__ exactly — no additions, no removals.
+# __all__ mirrors the package's __all__ exactly (163 names).
+# The 18 backward-compat re-exports above are importable by explicit import
+# but are intentionally excluded from __all__ / import *.
 __all__ = list(_pkg_all)

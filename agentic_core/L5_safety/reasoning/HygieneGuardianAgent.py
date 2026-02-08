@@ -21,9 +21,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # --- SOVEREIGN GUARDRAILS ---
