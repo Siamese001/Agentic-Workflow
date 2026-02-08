@@ -8,6 +8,17 @@
     "infra_required",
     "runtime_error"
   ],
+  "ceiling": {
+    "_description": "Non-increasing ceilings. To raise: update ceiling value + add rationale to commit message.",
+    "total": 49,
+    "by_category": {
+      "assertion_rot": 4,
+      "infra_required": 20,
+      "missing_dep": 7,
+      "missing_module": 11,
+      "runtime_error": 7
+    }
+  },
   "entries": [
     {
       "path": "tests/_quarantine/integration/agentic_core/agents_dir/test_orphan_agent_e2e_integration.py",

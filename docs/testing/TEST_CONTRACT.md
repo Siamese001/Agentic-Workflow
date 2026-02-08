@@ -63,6 +63,21 @@ Broken tests live in `tests/_quarantine/`. This directory is in `norecursedirs` 
 2. Move the file back to `tests/integration/agentic_core/` (or appropriate testpath).
 3. Remove the entry from `QUARANTINE_MANIFEST.json`.
 4. Run `pytest -q` to verify clean collection.
+5. Ceilings auto-shrink: the contract test enforces `count <= ceiling`, so removing entries is always safe.
+
+### Raising the quarantine ceiling
+
+The manifest contains a `ceiling` section with `total` and `by_category` counts. These are **non-increasing** by default.
+
+To raise a ceiling (i.e., add new quarantined tests):
+
+1. Update `ceiling.total` and the relevant `ceiling.by_category.<cat>` value.
+2. Add a rationale line to the commit message explaining **why** the ceiling increased.
+3. The contract test `test_quarantine_manifest_contract.py::TestQuarantineCeiling` enforces both limits.
+
+## Integration Placement
+
+All integration test files must reside under an allowed root declared in `pytest.ini testpaths`. No top-level files in `tests/integration/` are permitted. Enforced by `test_integration_allowlist_contract.py`.
 
 ## Governance Contract Tests
 
