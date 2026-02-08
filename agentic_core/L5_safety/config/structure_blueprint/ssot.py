@@ -14,9 +14,12 @@ Design Principles:
 
 from __future__ import annotations
 
+import os
+import re
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from pathlib import Path
+from re import Pattern
 from typing import Any, Final
 
 # ============================================================================
@@ -321,3 +324,639 @@ def get_apps_shared_subfolder_map() -> Mapping[str, Sequence[str]]:
     from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_SHARED_SUBFOLDER_MAP
 
     return APPS_SHARED_SUBFOLDER_MAP
+
+
+# ============================================================================
+# MIGRATED FROM MONOLITH (structure_blueprint_config.py) — 2026-02-08
+# ============================================================================
+
+
+# File extensions that NamingAgent should validate
+VALIDATED_FILE_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        # Python
+        ".py",
+        # Templates
+        ".jinja",
+        ".jinja2",
+        ".j2",
+        # Config
+        ".json",
+        ".yaml",
+        ".yml",
+        ".toml",
+        # Documentation
+        ".md",
+        ".txt",
+        ".rst",
+        # Web
+        ".html",
+        ".css",
+        ".js",
+        ".ts",
+    },
+)
+
+
+# Files exempt from naming validation (infrastructure files)
+NAMING_EXEMPT_FILES: frozenset[str] = frozenset(
+    {
+        # Python infrastructure
+        "__init__.py",
+        "__main__.py",
+        "conftest.py",
+        "setup.py",
+        # Config files
+        "pyproject.toml",
+        ".env",
+        ".gitignore",
+        ".dockerignore",
+        "Dockerfile",
+        "Makefile",
+        "requirements.txt",
+        # Documentation
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "LICENSE.md",
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md",
+        # IDE/Editor
+        ".editorconfig",
+        ".prettierrc",
+        ".eslintrc",
+        # Git
+        ".gitattributes",
+    },
+)
+
+
+# Directories exempt from naming validation
+NAMING_EXEMPT_DIRS: frozenset[str] = frozenset(
+    {
+        "archives",
+        "data",
+        "docs",  # [ADDED] Valid root
+        "legacy_code",
+        "legacy_engines",
+        "__pycache__",
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        ".pytest_cache",
+        ".mypy_cache",
+        "dist",
+        "build",
+        ".tox",
+        "logs",
+    },
+)
+
+FORBIDDEN_PATTERNS: Final[Sequence[Pattern]] = [
+    re.compile("^utils\\.py$"),
+    re.compile("^helper\\.py$"),
+    re.compile("^temp\\.py$"),
+    re.compile(".*_v\\d+\\.py$"),
+    re.compile("^main\\.py$"),
+    re.compile("^test\\.py$"),
+    re.compile(".*_final\\.py$"),
+    re.compile(".*_new\\.py$"),
+    re.compile(".*_old\\.py$"),
+    re.compile(".*_copy\\.py$"),
+    re.compile(".*_backup\\.py$"),
+    re.compile("^legacy_.*\\.py$"),
+    re.compile("^.+_\\d+\\.py$"),
+    re.compile("^draft_.*\\.py$"),
+    # Schema Dissolution + Utils Sanitization
+    re.compile(r"^utilities_.*"),  # Redundant prefix. Use simple snake_case.
+    re.compile(r".*_util_util\.py$"),  # Stuttering suffix violation.
+]
+
+# Static protected files (hard-coded core infrastructure)
+_STATIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
+    {
+        "canon_validator_agentic_v2.py",
+        "canon_validator_agentic_v2_thin.py",
+        "pyproject.toml",
+        "README.md",
+        "langgraph.json",
+        ".env",
+        "windsurfrules.md",
+        ".gitignore",
+        ".pre-commit-config.yaml",
+        ".coverage",
+        "pytest.ini",
+        "tox.ini",
+        ".python-version",
+        ".schema_violations_tracking.yaml",
+        ".secrets.baseline",
+        "archives_restoration_manifest.json",
+        "audit_residual_rglob_results.json",
+        "git.code-workspace",
+        "current_test_status.txt",
+        "mission_audit.csv",
+    },
+)
+
+
+# Dynamic protected files derived from SSOT constants
+_DYNAMIC_ROOT_PROTECTED_FILES: frozenset[str] = frozenset(
+    {
+        AGENT_DISCOVERY_JSON,
+        AGENT_DISCOVERY_MANIFEST_JSON,
+        RUNTIME_STATE_JSON,
+    },
+)
+
+
+# Final combined immutable set - Single Source of Truth for all root-level protection
+ROOT_PROTECTED_FILES: frozenset[str] = _STATIC_ROOT_PROTECTED_FILES | _DYNAMIC_ROOT_PROTECTED_FILES
+
+
+# 2. ENFORCE ROOT PURITY
+# Only these folders are allowed at the project root level
+PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
+    {
+        "agentic_core",
+        "apps_rg",
+        "apps_lic",
+        "apps_shared",
+        "ops_scripts",
+        "tests",
+        "docs",
+        "data",
+        "archives",
+        ".git",
+        ".github",
+        ".gravity_state",
+        ".backup",
+        ".vscode",
+    },
+)
+
+
+# [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns
+# is considered "Drift" and must be routed via ARTIFACT_ROUTING_MAP.
+ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
+    re.compile(r"^trace_.*\.jsonl$"),  # Allowed: Mission Traces
+    re.compile(r"^mission_.*\.log$"),  # Allowed: Mission Logs
+    re.compile(r"^.*\.bat$"),  # Allowed: Windows Batch scripts
+    re.compile(r"^.*\.sh$"),  # Allowed: Shell scripts
+    re.compile(r"^root_drift_.*\.py$"),  # Allowed: Remediation scripts (Temp)
+]
+
+
+SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
+    {
+        ".git",
+        ".venv",
+        "venv",
+        "venv_stable",
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        "node_modules",
+        ".mypy_cache",
+        ".tox",
+        "archives",
+        "legacy_code",
+        "legacy_engines",
+        "legacy_resume_gen",
+        "data",
+        "docs",
+        "env",
+        "build",
+        "dist",
+        "_build",
+        "Lib",
+        "site-packages",
+        "google",
+        "gapic",
+        "logging",
+        "licenses",
+        "src",
+        "pip",
+        "dist-info",
+        "raw",
+        "golden_state",
+        "logs",
+        "processed",
+        "shared",
+        "refs",
+        "remotes",
+        "v",
+        "stubs",
+        ".sovereign_healing_backup",
+        ".idea",
+        ".vscode",
+        ".DS_Store",
+        "Thumbs.db",
+    },
+)
+
+FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r"^\d+_")
+
+FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset(
+    {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"},
+)
+
+TESTS_ROOT_FILE_WHITELIST: frozenset[str] = frozenset(
+    {"conftest.py", "pytest.ini", "sovereign_smoke_test.py", "test_autonomous_improvements.py"},
+)
+
+AUTONOMOUS_AGENT_WHITELIST: frozenset[str] = frozenset(
+    {
+        "autonomous_checkpoint_manager.py",
+        "autonomous_state_guardian.py",
+        "self_updating_safety_engine.py",
+        "neural_auto_immune_agent.py",
+    },
+)
+
+protected_folders: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+
+ignore_dirs: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+
+sovereign_ignored_folders: Final[frozenset[str]] = SOVEREIGN_EXCLUDED_FOLDERS
+
+SCOPE_SUMMARY_EXCLUSIONS: frozenset[str] = frozenset({"stubs", ".sovereign_healing_backup", "__pycache__"})
+
+
+# === ALLOWED DUPLICATE FILENAMES ===
+# These files are permitted to exist with the same name across multiple directories.
+# This is the SSOT for filename uniqueness exceptions - all agents must respect this list.
+ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset(
+    {
+        # Python package infrastructure (MUST exist in every package)
+        "__init__.py",
+        "__main__.py",
+        # Testing infrastructure (pytest requires these in test directories)
+        "conftest.py",
+        # Common module patterns (legitimate per-package definitions)
+        "context.py",
+        "config.py",
+        "constants.py",
+        "exceptions.py",
+        "types.py",
+        "models.py",
+        "base.py",
+        "utils.py",
+        "helpers.py",
+        "common.py",
+        # observability patterns (per-engine instrumentation)
+        "observability.py",
+        "metrics.py",
+        "logging.py",
+        "tracing.py",
+        # Autonomous agent patterns (per-engine autonomy)
+        "proactive.py",
+        "autonomous.py",
+        "self_healing.py",
+        # Prompt patterns (per-domain prompts)
+        "prompts.py",
+        "templates.py",
+    },
+)
+
+
+def safe_prefixed_filename(prefix: str, filename: str) -> str:
+    """
+    SSOT safeguard: Generate a prefixed filename WITHOUT duplicate prefixes.
+
+    Prevents name sprawl like:
+        healing_strategies.py -> healing_healing_strategies.py (BAD)
+
+    Instead produces:
+        healing_strategies.py -> healing_strategies.py (already has prefix)
+        strategies.py -> healing_strategies.py (prefix added)
+
+    Args:
+        prefix: The prefix to add (e.g., 'healing', 'auditors')
+        filename: The original filename
+
+    Returns:
+        Filename with prefix added only if not already present
+    """
+    if not prefix:
+        return filename
+
+    # Normalize prefix (remove trailing underscore if present)
+    prefix = prefix.rstrip("_")
+
+    # Check if filename already starts with the prefix
+    stem = filename.rsplit(".", 1)[0] if "." in filename else filename
+    "." + filename.rsplit(".", 1)[1] if "." in filename else ""
+
+    # If already has prefix, return unchanged
+    if stem.startswith(prefix + "_") or stem == prefix:
+        return filename
+
+    # Add prefix
+    return f"{prefix}_{filename}"
+
+
+def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
+    """
+    SSOT safeguard: Detect if a filename has duplicate prefixes.
+
+    Examples of violations:
+        healing_healing_strategies.py -> True, "Duplicate prefix: healing_"
+        auditors_auditors_report.py -> True, "Duplicate prefix: auditors_"
+
+    Returns:
+        (has_violation, message)
+    """
+    stem = filename.rsplit(".", 1)[0] if "." in filename else filename
+    parts = stem.split("_")
+
+    # Check for consecutive duplicate parts
+    for i in range(len(parts) - 1):
+        if parts[i] == parts[i + 1] and parts[i]:  # Non-empty consecutive duplicates
+            return True, f"Duplicate prefix detected: '{parts[i]}_' repeated in '{filename}'"
+
+    return False, ""
+
+
+DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset(
+    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"},
+)
+
+PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
+    {
+        "os",
+        "sys",
+        "pathlib",
+        "logging",
+        "asyncio",
+        "typing",
+        "dataclasses",
+        "collections",
+        "json",
+        "re",
+        "datetime",
+        "functools",
+        "itertools",
+        "abc",
+        "enum",
+        "contextlib",
+        "threading",
+        "time",
+        "random",
+        "math",
+        "urllib",
+        "http",
+        "socket",
+        "subprocess",
+        "shutil",
+        "hashlib",
+        "uuid",
+        "copy",
+        "io",
+        "traceback",
+        "inspect",
+        "importlib",
+        "warnings",
+        "pickle",
+    },
+)
+
+
+def _get_root_whitelist() -> set[str]:
+    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
+
+    return set(SOVEREIGN_TERRITORIES.keys())
+
+
+# Lazy — evaluated on first access via __init__.py __getattr__
+ROOT_WHITELIST: set[str] = set()  # Populated lazily
+
+
+# ============================================================================
+# GLOBAL EXCLUDED DIRECTORIES - Production Lens SSOT
+# ============================================================================
+GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
+    {
+        # Build/cache directories
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        "build",
+        "dist",
+        ".eggs",
+        # Version control
+        ".git",
+        ".svn",
+        ".hg",
+        # Virtual environments
+        ".venv",
+        "venv",
+        "env",
+        ".env",
+        "node_modules",
+        # Coverage/reports
+        "coverage_html",
+        "htmlcov",
+        ".coverage",
+        "reports",
+        # Archives and backups
+        "archives",
+        ".sovereign_healing_backup",
+        # Test directories (Production Lens)
+        "tests",
+    },
+)
+
+
+def is_path_allowed(rel_path: str | Path) -> bool:
+    """
+    [ULTRA-HARDENED] Determines if a path conforms to SOVEREIGN_TERRITORIES.
+    Enforces path normalization, cross-domain deportation, and depth precision.
+    """
+    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
+
+    # 1. Path Normalization: Neutralize traversal (../) and redundant slashes (//)
+    original_path = str(rel_path).replace("\\", "/")
+
+    # [CRITICAL] Block paths with redundant slashes for security
+    if "//" in original_path:
+        return False
+
+    # guardian: allow-path-string
+    normalized_path = os.path.normpath(original_path).replace("\\", "/")
+
+    # Reject paths that normalize to parent directories or empty
+    if not normalized_path or normalized_path.startswith("..") or normalized_path == ".":
+        return False
+
+    # Filter out empty parts from normalized path
+    parts = [p for p in normalized_path.split("/") if p]
+    if not parts:
+        return False
+
+    if len(parts) == 1:
+        # Allow sovereign territory directories at root level
+        if parts[0] in SOVEREIGN_TERRITORIES:
+            return True
+        return parts[0] in ROOT_PROTECTED_FILES or parts[0] in ALLOWED_DUPLICATE_FILENAMES
+
+    root = parts[0]
+    if root not in SOVEREIGN_TERRITORIES:
+        return False
+
+    config = SOVEREIGN_TERRITORIES[root]
+
+    # 2. Cross-Sovereign Deportation: Prevent App/Test leakage into Core
+    filename = parts[-1]
+    if root == "agentic_core":
+        # Critical Analysis: Blocks 'rg_', 'lic_', and 'test_' prefixes to prevent
+        # semantic drift while allowing __init__.py and L0 scripts.
+        if filename.startswith(("rg_", "lic_", "test_")):
+            if not (filename == "__init__.py" or "L0_maintenance/scripts" in normalized_path):
+                return False
+
+    # 3. Depth Enforcement: L4 applies to folder structure, not the filename
+    path_depth = len(parts)
+    # If the last part is a file, the 'folder depth' is path_depth - 1
+    folder_depth = path_depth - 1 if "." in filename else path_depth
+
+    # [CRITICAL] For L4 specializations, ensure we don't exceed depth 5 (L4 + 1 for file)
+    if folder_depth > config["depth"] + 1 and not is_l4_approved(normalized_path):
+        return False
+
+    # [CRITICAL] Even for L4-approved paths, don't allow depth 6+ (L4 + L5 + file)
+    if folder_depth > config["depth"] + 2:
+        return False
+
+    # Check subfolder existence and nested forbidden patterns
+    if len(parts) > 1:
+        sub_name = parts[1]
+        allowed_subs = config["subfolders"]
+
+        # [HARDENING] Check for forbidden patterns at the subfolder level (e.g., L3_ prefixes)
+        if isinstance(allowed_subs, dict) and sub_name in allowed_subs:
+            sub_cfg = allowed_subs[sub_name]
+            if isinstance(sub_cfg, dict):
+                patterns = sub_cfg.get("forbidden_patterns", [])
+                if any(re.search(p, normalized_path) for p in patterns):
+                    return False  # BLOCK: Legacy structure detected
+
+        if isinstance(allowed_subs, dict):
+            if sub_name not in allowed_subs:
+                return sub_name.endswith(".py")  # Root files like __init__.py
+        elif isinstance(allowed_subs, list):
+            if sub_name not in allowed_subs:
+                # Allow files at the correct depth (not subdirectories)
+                if "." in sub_name and len(parts) <= config["depth"] + 1:
+                    return True
+                return False
+
+    return True
+
+
+def is_l4_approved(path: str) -> bool:
+    """
+    [HARDENED] Helper to verify L4 specializations.
+    Safely navigates both List-based (Apps) and Dict-based (Core) subfolders.
+    ONLY approves exactly depth 4 folder structures (excluding filename).
+    """
+    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
+
+    parts = [p for p in path.split("/") if p]
+    if len(parts) < 4:
+        return False
+
+    root, l2, l3, l4 = parts[0], parts[1], parts[2], parts[3]
+
+    # Remove filename to check folder structure (depth should be exactly 4 folders)
+    folder_parts = parts[:-1] if parts and "." in parts[-1] else parts
+
+    # Must be exactly depth 4 folders for L4 approval
+    if len(folder_parts) != 4:
+        return False
+
+    try:
+        # Check if this is an L4-approved folder path first
+        full_folder_path = f"{root}/{l2}/{l3}"
+        if full_folder_path in L4_APPROVED_FOLDERS:
+            # For approved folders, check if l4 is a valid L4 subfolder in L4_SUBFOLDER_MAP
+            # Need to find the right key in L4_SUBFOLDER_MAP and navigate the nested structure
+            l4_structure = L4_SUBFOLDER_MAP.get(l2, {})
+            if isinstance(l4_structure, dict) and l3 in l4_structure:
+                l3_structure = l4_structure[l3]
+                if isinstance(l3_structure, dict):
+                    # Check if l4 is directly a key in the L3 structure
+                    if l4 in l3_structure:
+                        return True
+                    # Check if l4 is in any of the subfolder lists within the L3 structure
+                    for subfolder_list in l3_structure.values():
+                        if isinstance(subfolder_list, list) and l4 in subfolder_list:
+                            return True
+
+        # Fallback: Check l3-specific configuration for l4_specializations
+        root_cfg = SOVEREIGN_TERRITORIES.get(root, {})
+        subs = root_cfg.get("subfolders", {})
+
+        # Critical Analysis: Prevent TypeError by ensuring 'subs' is a Dict
+        # before attempting L2/L3 key lookups (fixes apps_rg crash).
+        if not isinstance(subs, dict):
+            return False
+
+        # Check both L2 and L3 for the specialization map (Fallback lookup)
+        l2_cfg = subs.get(l2, {})
+        if isinstance(l2_cfg, dict):
+            l3_cfg = l2_cfg.get(l3, {})
+            if isinstance(l3_cfg, dict):
+                specs = l3_cfg.get("l4_specializations", [])
+                if l4 in specs:
+                    return True
+
+        return False
+    except (KeyError, TypeError, AttributeError):
+        return False
+
+
+# === FLAT DIRECTORIES (No Subfolders Allowed) ===
+# Directories marked "flat": True in SOVEREIGN_TERRITORIES.
+# Files MUST live directly in these directories — any subdirectory is a violation.
+# Derived from territories where "flat" is explicitly True.
+FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
+    {
+        "mixins",  # contracts/ dissolved 2026-02-08 — all files flat
+        "base_agents",  # Strict identity only — flat by constitution
+        "interfaces",  # Protocol contracts — flat
+    },
+)
+
+
+def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
+    """Detect files nested inside directories that must be flat (no subfolders).
+
+    Args:
+        path_parts: tuple/list of path components (e.g. Path.parts).
+
+    Returns:
+        None if compliant, or a violation dict with:
+        - domain: the flat directory that was violated
+        - illegal_child: the subdirectory found inside it
+        - message: human-readable explanation
+    """
+    for i, part in enumerate(path_parts):
+        if part in FLAT_DIRECTORIES:
+            # If there are 2+ parts after the flat directory before the filename,
+            # that means there's a subdirectory inside it.
+            remaining = path_parts[i + 1 :]
+            if len(remaining) > 1:
+                # remaining[-1] is the filename, remaining[:-1] are subdirs
+                illegal_child = remaining[0]
+                if illegal_child == "__pycache__":
+                    return None
+                return {
+                    "domain": part,
+                    "illegal_child": illegal_child,
+                    "message": (
+                        f"FLAT VIOLATION: '{part}/' must not contain subdirectory "
+                        f"'{illegal_child}/'. All files must live directly in '{part}/'."
+                    ),
+                }
+    return None
