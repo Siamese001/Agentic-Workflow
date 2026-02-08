@@ -22,6 +22,15 @@ from pathlib import Path
 from re import Pattern
 from typing import Any, Final
 
+from agentic_core.L5_safety.config.structure_blueprint._constants import (
+    ROOT_WHITELIST,  # noqa: F401 — re-exported via __init__.py
+    SOVEREIGN_TERRITORIES,
+)
+from agentic_core.L5_safety.config.structure_blueprint.derived import (
+    L4_APPROVED_FOLDERS,
+    L4_SUBFOLDER_MAP,
+)
+
 # ============================================================================
 # LAYER VALIDATION API (Phase 1 Hardening — 2026-02-07)
 # ============================================================================
@@ -280,50 +289,48 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
 
 @lru_cache(maxsize=1)
 def get_sovereign_territories() -> Mapping[str, Any]:
-    """Lazy load SOVEREIGN_TERRITORIES from territories module."""
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
-
+    """Return SOVEREIGN_TERRITORIES (now eagerly available from _constants)."""
     return SOVEREIGN_TERRITORIES
 
 
 @lru_cache(maxsize=1)
 def get_core_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Lazy load CORE_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import CORE_SUBFOLDER_MAP
+    """Return CORE_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint import derived
 
-    return CORE_SUBFOLDER_MAP
+    return derived.CORE_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_subfolder_metadata() -> Mapping[str, Mapping[str, Any]]:
-    """Lazy load SUBFOLDER_METADATA from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import SUBFOLDER_METADATA
+    """Return SUBFOLDER_METADATA from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint import derived
 
-    return SUBFOLDER_METADATA
+    return derived.SUBFOLDER_METADATA
 
 
 @lru_cache(maxsize=1)
 def get_apps_rg_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Lazy load APPS_RG_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RG_SUBFOLDER_MAP
+    """Return APPS_RG_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint import derived
 
-    return APPS_RG_SUBFOLDER_MAP
+    return derived.APPS_RG_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_apps_lic_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Lazy load APPS_LIC_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_LIC_SUBFOLDER_MAP
+    """Return APPS_LIC_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint import derived
 
-    return APPS_LIC_SUBFOLDER_MAP
+    return derived.APPS_LIC_SUBFOLDER_MAP
 
 
 @lru_cache(maxsize=1)
 def get_apps_shared_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Lazy load APPS_SHARED_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_SHARED_SUBFOLDER_MAP
+    """Return APPS_SHARED_SUBFOLDER_MAP from derived module."""
+    from agentic_core.L5_safety.config.structure_blueprint import derived
 
-    return APPS_SHARED_SUBFOLDER_MAP
+    return derived.APPS_SHARED_SUBFOLDER_MAP
 
 
 # ============================================================================
@@ -722,14 +729,8 @@ PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
 )
 
 
-def _get_root_whitelist() -> set[str]:
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
-
-    return set(SOVEREIGN_TERRITORIES.keys())
-
-
-# Lazy — evaluated on first access via __init__.py __getattr__
-ROOT_WHITELIST: set[str] = set()  # Populated lazily
+# ROOT_WHITELIST is materialized at import time in _constants.py and imported
+# at the top of this module. No lazy loading needed.
 
 
 # ============================================================================
@@ -773,7 +774,6 @@ def is_path_allowed(rel_path: str | Path) -> bool:
     [ULTRA-HARDENED] Determines if a path conforms to SOVEREIGN_TERRITORIES.
     Enforces path normalization, cross-domain deportation, and depth precision.
     """
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
 
     # 1. Path Normalization: Neutralize traversal (../) and redundant slashes (//)
     original_path = str(rel_path).replace("\\", "/")
@@ -860,7 +860,6 @@ def is_l4_approved(path: str) -> bool:
     Safely navigates both List-based (Apps) and Dict-based (Core) subfolders.
     ONLY approves exactly depth 4 folder structures (excluding filename).
     """
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
 
     parts = [p for p in path.split("/") if p]
     if len(parts) < 4:

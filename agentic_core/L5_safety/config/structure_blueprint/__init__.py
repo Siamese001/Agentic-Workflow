@@ -240,15 +240,28 @@ def __getattr__(name: str):
 
         return getattr(governance, name)
 
-    # ROOT_WHITELIST is lazy-computed from SOVEREIGN_TERRITORIES
-    if name == "ROOT_WHITELIST":
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import _get_root_whitelist
-
-        return _get_root_whitelist()
-
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
+# ---------------------------------------------------------------------------
+# PUBLIC API — exactly 163 names.
+#
+# Internal helpers, sub-module scaffolding, lazy loaders, and TypedDicts used
+# only by the build machinery are intentionally excluded.  They remain
+# importable via explicit ``from … import …`` but are NOT part of the
+# stable public surface exposed by ``from … import *``.
+#
+# Excluded (18 internal names):
+#   SubfolderDefinition, TerritoryDefinition, build_sovereign_territories,
+#   LAYER_OVERRIDES, get_sovereign_territories, get_core_subfolder_map,
+#   get_subfolder_metadata, get_apps_lic_subfolder_map,
+#   get_apps_rg_subfolder_map, get_apps_shared_subfolder_map,
+#   agentic_core_registry, verify_derived_registries, L4_SUBFOLDER_MAP,
+#   L4_APPROVED_FOLDERS, SCRIPTS_PLACEMENT_RULES,
+#   get_app_specific_patterns_compiled,
+#   get_classification_suffix_patterns_compiled,
+#   get_compound_suffix_patterns_compiled
+# ---------------------------------------------------------------------------
 __all__ = [
     "AGENTIC_CORE_DIR",
     "AGENT_DISCOVERY_JSON",
@@ -323,9 +336,7 @@ __all__ = [
     "L2_EXECUTION_DIR",
     "L2_TO_L1_MAP",
     "L3_ORCHESTRATION_DIR",
-    "L4_APPROVED_FOLDERS",
     "L4_STATE_DIR",
-    "L4_SUBFOLDER_MAP",
     "L5_ENFORCEMENT_ALLOWED_SUFFIXES",
     "L5_SAFETY_DIR",
     "L5_SUBPROCESS_ALLOWLIST",
@@ -333,7 +344,6 @@ __all__ = [
     "L6_OBSERVABILITY_DIR",
     "LAYER_FORBIDDEN_IMPORTS",
     "LAYER_KEYWORD_AFFINITY",
-    "LAYER_OVERRIDES",
     "LAYER_PREFIX_PATTERN",
     "LAYER_ROOTS",
     "LEAF_DOMAINS_NO_LCD",
@@ -364,7 +374,6 @@ __all__ = [
     "SCHEMAS_DIR",
     "SCOPE_SUMMARY_EXCLUSIONS",
     "SCRIPTS_FORBIDDEN_PATTERNS",
-    "SCRIPTS_PLACEMENT_RULES",
     "SEMANTIC_L2_REGISTRY",
     "SERVICE_CLASS_INDICATORS",
     "SOVEREIGN_EXCLUDED_FOLDERS",
@@ -374,7 +383,6 @@ __all__ = [
     "STUTTERING_PREFIX_MAP",
     "SUBFOLDER_METADATA",
     "SUFFIX_TO_FOLDER",
-    "SubfolderDefinition",
     "TERRITORY_MISMATCH_THRESHOLD",
     "TESTS_AUTOGEN_DIR",
     "TESTS_DIR",
@@ -385,23 +393,13 @@ __all__ = [
     "TESTS_SUBFOLDER_MAP",
     "TESTS_UNIT_DIR",
     "TEST_TYPE_SIGNALS",
-    "TerritoryDefinition",
     "UPSTREAM_SOVEREIGN_ROOTS",
     "UTILS_DIR",
     "VALIDATED_FILE_EXTENSIONS",
     "VARIABLE_DEPTH_SUBFOLDERS",
     "VARIABLE_HIT_WEIGHT",
     "VIOLATION_SEVERITY",
-    "agentic_core_registry",
-    "build_sovereign_territories",
     "check_forbidden_signals",
-    "get_app_specific_patterns_compiled",
-    "get_apps_lic_subfolder_map",
-    "get_apps_rg_subfolder_map",
-    "get_apps_shared_subfolder_map",
-    "get_classification_suffix_patterns_compiled",
-    "get_compound_suffix_patterns_compiled",
-    "get_core_subfolder_map",
     "get_correct_app_folder",
     "get_correct_app_path",
     "get_ephemeral_exemption_patterns_compiled",
@@ -409,8 +407,6 @@ __all__ = [
     "get_forbidden_backup_patterns_compiled",
     "get_forbidden_compound_patterns_compiled",
     "get_forbidden_ephemeral_patterns_compiled",
-    "get_sovereign_territories",
-    "get_subfolder_metadata",
     "get_validated_project_root",
     "has_forbidden_layer_prefix",
     "ignore_dirs",
@@ -430,5 +426,4 @@ __all__ = [
     "validate_no_duplicate_prefix",
     "validate_no_nested_lcd",
     "validate_path_within_project",
-    "verify_derived_registries",
 ]

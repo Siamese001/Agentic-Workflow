@@ -12,6 +12,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from agentic_core.L5_safety.config.structure_blueprint._constants import (
+    SOVEREIGN_TERRITORIES,
+)
+
 # ============================================================================
 # DERIVATION FUNCTIONS
 # ============================================================================
@@ -19,8 +23,6 @@ from typing import Any, Final
 
 def _derive_core_subfolder_map() -> dict[str, list[str]]:
     """Derive CORE_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
-
     result: dict[str, list[str]] = {}
     agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
     subfolders = agentic_core.get("subfolders", {})
@@ -40,8 +42,6 @@ def _derive_core_subfolder_map() -> dict[str, list[str]]:
 
 def _derive_subfolder_metadata() -> dict[str, dict[str, Any]]:
     """Derive SUBFOLDER_METADATA from SOVEREIGN_TERRITORIES."""
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
-
     result: dict[str, dict[str, Any]] = {}
     agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
     subfolders = agentic_core.get("subfolders", {})
@@ -60,8 +60,6 @@ def _derive_subfolder_metadata() -> dict[str, dict[str, Any]]:
 
 def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
     """Derive APPS_*_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES
-
     result: dict[str, list[str]] = {}
     territory = SOVEREIGN_TERRITORIES.get(territory_name, {})
     if not isinstance(territory, dict):

@@ -9,6 +9,8 @@ Tests:
 5. All 3 agents delegate diagnose() to run_inspection()
 6. InspectionResult has canonical fields
 7. make_heal_result returns canonical schema
+8. DiagnosticReport adapter contract (to_diagnostic_report)
+9. SignatureVerifierAgent preserves execute() entrypoint
 """
 
 from __future__ import annotations
@@ -243,3 +245,77 @@ class TestMakeHealResult:
     def test_includes_class_name(self) -> None:
         result = self.cap.make_heal_result({"type": "x"})
         assert "InspectionCapability" in result["details"]
+
+
+# ============================================================================
+# 4. ADAPTER CONTRACT TESTS
+# ============================================================================
+
+
+class TestDiagnosticReportAdapter:
+    """Verify the DiagnosticReport adapter preserves the pre-refactor contract."""
+
+    def test_adapter_type_is_diagnostic_report(self) -> None:
+        from agentic_core.mixins.inspection_capability import DiagnosticReport, InspectionResult
+
+        result = InspectionResult(healthy=False, issues=["x"], metrics={"k": 1})
+        adapted = result.to_diagnostic_report()
+        assert isinstance(adapted, DiagnosticReport)
+
+    def test_adapter_preserves_fields(self) -> None:
+        from agentic_core.mixins.inspection_capability import InspectionResult
+
+        result = InspectionResult(healthy=False, issues=["issue1"], metrics={"m": 42})
+        adapted = result.to_diagnostic_report()
+        assert adapted.healthy is False
+        assert adapted.issues == ["issue1"]
+        assert adapted.metrics == {"m": 42}
+
+    def test_adapter_returns_defensive_copy(self) -> None:
+        from agentic_core.mixins.inspection_capability import InspectionResult
+
+        result = InspectionResult(issues=["a"], metrics={"k": "v"})
+        adapted = result.to_diagnostic_report()
+        adapted.issues.append("mutated")
+        adapted.metrics["new"] = "value"
+        assert result.issues == ["a"], "Adapter must not alias issues list"
+        assert "new" not in result.metrics, "Adapter must not alias metrics dict"
+
+    def test_diagnostic_report_has_canonical_attrs(self) -> None:
+        from agentic_core.mixins.inspection_capability import DiagnosticReport
+
+        report = DiagnosticReport()
+        assert hasattr(report, "healthy")
+        assert hasattr(report, "issues")
+        assert hasattr(report, "metrics")
+
+
+# ============================================================================
+# 5. SIGNATURE VERIFIER execute() ENTRYPOINT PRESERVATION
+# ============================================================================
+
+SIGNATURE_VERIFIER_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SignatureVerifierAgent.py"
+
+
+class TestSignatureVerifierExecutePreservation:
+    """Verify SignatureVerifierAgent preserves the execute() entrypoint."""
+
+    def test_execute_method_exists_in_ast(self) -> None:
+        """AST check: SignatureVerifierAgent must define execute()."""
+        source = SIGNATURE_VERIFIER_PATH.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "SignatureVerifierAgent":
+                method_names = [
+                    item.name
+                    for item in node.body
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                ]
+                assert "execute" in method_names, (
+                    "SignatureVerifierAgent MUST have execute() method "
+                    "(downstream test_signature_verifier_agent.py checks hasattr)"
+                )
+                return
+
+        pytest.fail("SignatureVerifierAgent class not found in AST")
