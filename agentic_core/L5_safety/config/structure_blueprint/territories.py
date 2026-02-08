@@ -490,12 +490,11 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "naming_convention": r"^[a-z][a-z0-9_]*_(util|types|exceptions|engine|config)\.py$",
             },
             "mixins": {
-                "purpose": "ALL shared mixins and behavioral contracts. Canonical home for *_mixin.py files.",
-                "notes": "36 mixins migrated from base_agents/. configuration_mixin.py migrated from config/core/.",
-                "subfolders": {
-                    "contracts": {"purpose": "Abstract interfaces and behavioral contracts."},
-                },
-                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract)\.py$",
+                "purpose": "ALL shared mixins and behavioral contracts. Canonical home for *_mixin.py and *_contract.py files.",
+                "notes": "36 mixins migrated from base_agents/. FLAT: no subfolders allowed (contracts/ dissolved 2026-02-08).",
+                "subfolders": {},
+                "flat": True,
+                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract|engine|storage|client_mixin)\.py$",
             },
             "utils": {
                 "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",
