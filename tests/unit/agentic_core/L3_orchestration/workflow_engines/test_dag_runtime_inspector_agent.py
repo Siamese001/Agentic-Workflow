@@ -48,8 +48,8 @@ _METHOD_NAMES = [
 # ---------------------------------------------------------------------------
 # 1. AST STRUCTURAL TESTS
 # ---------------------------------------------------------------------------
-class TestDagRuntimeInspectorStructure:
-    """AST-based structural verification."""
+class TestDagRuntimeInspectorStructuralContract:
+    """AST structural contract: agent shape, inheritance, method presence."""
 
     def test_correct_import_path(self) -> None:
         """Agent module exists at expected path."""
@@ -127,8 +127,8 @@ class _DagInspectorStub(InspectionCapability):
         return issues, metrics
 
 
-class TestDagRuntimeInspectorBehavior:
-    """Behavioral tests using InspectionResult natively."""
+class TestInspectionCapabilityContractViaDagStub:
+    """InspectionCapability behavioral contract tested via DagRuntimeInspector stub."""
 
     @pytest.fixture
     def inspector(self) -> _DagInspectorStub:

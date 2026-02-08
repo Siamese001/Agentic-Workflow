@@ -9,6 +9,9 @@ Tests:
 5. All 3 agents delegate diagnose() to run_inspection()
 6. InspectionResult has canonical fields
 7. make_heal_result returns canonical schema
+8. No legacy DiagnosticReport type in inspection_capability (post-cleanup invariant)
+9. All agents' diagnose() return-type annotation is InspectionResult (post-cleanup invariant)
+10. No inspector agent defines execute() (post-cleanup invariant)
 """
 
 from __future__ import annotations

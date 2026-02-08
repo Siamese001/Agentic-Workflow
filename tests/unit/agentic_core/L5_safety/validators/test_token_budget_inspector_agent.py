@@ -47,8 +47,8 @@ _METHOD_NAMES = [
 # ---------------------------------------------------------------------------
 # 1. AST STRUCTURAL TESTS
 # ---------------------------------------------------------------------------
-class TestTokenBudgetInspectorStructure:
-    """AST-based structural verification."""
+class TestTokenBudgetInspectorStructuralContract:
+    """AST structural contract: agent shape, inheritance, method presence."""
 
     def test_correct_import_path(self) -> None:
         """Agent module exists at expected path."""
@@ -126,8 +126,8 @@ class _TokenBudgetInspectorStub(InspectionCapability):
         return issues, metrics
 
 
-class TestTokenBudgetInspectorBehavior:
-    """Behavioral tests using InspectionResult natively."""
+class TestInspectionCapabilityContractViaTokenBudgetStub:
+    """InspectionCapability behavioral contract tested via TokenBudgetInspector stub."""
 
     @pytest.fixture
     def inspector(self) -> _TokenBudgetInspectorStub:
