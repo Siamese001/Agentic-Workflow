@@ -1,22 +1,19 @@
 """
-Timeout decorator - placeholder implementation.
+Backward-compatibility shim for timeout decorator imports.
 
-Currently a pass-through decorator as timeout functionality
-is not implemented in the current architecture.
+DEPRECATED: Import from agentic_core.base_agents.timeout_decorator instead.
+
+This module re-exports symbols from the canonical location for backward
+compatibility with existing code. New code should import directly from:
+    from agentic_core.base_agents.timeout_decorator import timeout
+
+Canonical location: agentic_core/base_agents/timeout_decorator.py
 """
 
+from __future__ import annotations
 
-def timeout(seconds: int):
-    """Placeholder timeout decorator.
+from agentic_core.base_agents.timeout_decorator import timeout  # noqa: F401
 
-    Args:
-        seconds: Timeout duration in seconds (currently ignored).
-
-    Returns:
-        Decorator function that returns the original function unchanged.
-    """
-
-    def decorator(func):
-        return func
-
-    return decorator
+__all__ = [
+    "timeout",
+]
