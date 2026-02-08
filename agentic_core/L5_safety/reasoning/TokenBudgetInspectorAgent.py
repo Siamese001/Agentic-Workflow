@@ -13,8 +13,8 @@ from agentic_core.base_agents.decorators import standard_heal
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.inspection_capability import (
-    DiagnosticReport,
     InspectionCapability,
+    InspectionResult,
 )
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -56,14 +56,9 @@ class TokenBudgetInspectorAgent(
 
         return issues, metrics
 
-    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> DiagnosticReport:
-        """Run diagnostics via InspectionCapability harness.
-
-        Returns DiagnosticReport (adapter) to preserve the pre-refactor
-        external contract.
-        """
-        result = self.run_inspection(target, context)
-        return result.to_diagnostic_report()
+    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
+        """Run diagnostics via InspectionCapability harness."""
+        return self.run_inspection(target, context)
 
     @standard_heal
     def heal_repository(self, **kwargs: Any) -> dict[str, Any]:
@@ -75,6 +70,6 @@ class TokenBudgetInspectorAgent(
         return self.make_heal_result(violation)
 
 
-def diagnose(target: Any, config: dict[str, Any] | None = None) -> DiagnosticReport:
+def diagnose(target: Any, config: dict[str, Any] | None = None) -> InspectionResult:
     """Convenience function for diagnostics."""
     return TokenBudgetInspectorAgent(config).diagnose(target)
