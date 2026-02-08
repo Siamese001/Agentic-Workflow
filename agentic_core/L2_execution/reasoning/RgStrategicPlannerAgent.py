@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # DUPLICATE ACCEPTED: App-specific customization valid

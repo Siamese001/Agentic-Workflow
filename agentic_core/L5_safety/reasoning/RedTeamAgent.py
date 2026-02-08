@@ -21,7 +21,7 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Template content loading for registry
