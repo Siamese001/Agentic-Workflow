@@ -48,8 +48,8 @@ _METHOD_NAMES = [
 # ---------------------------------------------------------------------------
 # 1. AST STRUCTURAL TESTS
 # ---------------------------------------------------------------------------
-class TestSignatureVerifierStructure:
-    """AST-based structural verification."""
+class TestSignatureVerifierStructuralContract:
+    """AST structural contract: agent shape, inheritance, method presence."""
 
     def test_correct_import_path(self) -> None:
         """Agent module exists at expected path."""
@@ -133,8 +133,8 @@ class _SignatureVerifierStub(InspectionCapability):
         return issues, metrics
 
 
-class TestSignatureVerifierBehavior:
-    """Behavioral tests using InspectionResult natively."""
+class TestInspectionCapabilityContractViaSignatureVerifierStub:
+    """InspectionCapability behavioral contract tested via SignatureVerifier stub."""
 
     @pytest.fixture
     def inspector(self) -> _SignatureVerifierStub:
