@@ -54,13 +54,13 @@ def _get_UnifiedAgent_mapping() -> dict[str, type]:
     from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
-    from agentic_core.L4_state.memory.checkpoint_manager import (
+    from agentic_core.L4_state.reasoning.checkpoint_manager import (
         CheckpointManagerAgent,
     )
     from agentic_core.L3_orchestration.reasoning.state_management_engine import (
         StateManagementAgent,
     )
-    from agentic_core.L5_safety.reasoning.code_enforcement_types import CodeEnforcerAgent
+    from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import (
         StructureValidatorAgent,
     )
@@ -111,14 +111,14 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy manager/enforcer names to unified classes.
     """
-    from agentic_core.L5_safety.reasoning.code_enforcement_types import CodeEnforcerAgent
-    from agentic_core.L5_safety.reasoning.resource_types import (
+    from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+    from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
         ResourceManagerAgent,
     )
-    from agentic_core.L5_safety.reasoning.security_types import (
+    from agentic_core.L5_safety.reasoning.SecurityManagerAgent import (
         SecurityManagerAgent,
     )
-    from agentic_core.L5_safety.reasoning.structure_enforcement_types import (
+    from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (
         StructureEnforcerAgent,
     )
 
@@ -156,9 +156,9 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
         Dictionary mapping legacy detector/healer/router/executor names to unified classes.
     """
     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
-    from agentic_core.L5_safety.reasoning.code_detection_types import CodeDetectorAgent
+    from agentic_core.L5_safety.reasoning.CodeDetectorAgent import CodeDetectorAgent
     from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-    from agentic_core.L5_safety.reasoning.safety_detection_types import SafetyDetectorAgent
+    from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import SafetyDetectorAgent
     from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import SafetyExecutorAgent
     from agentic_core.L5_safety.reasoning.StructureHealerAgent_types import (
         StructureHealerAgent,
@@ -205,7 +205,7 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
     Returns:
         Dictionary mapping legacy validator names to unified validator classes.
     """
-    from agentic_core.L5_safety.reasoning.code_validation_types import CodeValidatorAgent
+    from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import (
         StructureValidatorAgent,
     )

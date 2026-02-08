@@ -134,7 +134,7 @@ def test_adapter_base():
     print("TEST 2: Adapter Base")
     print("=" * 60)
 
-    from agentic_core.L5_safety.reasoning.adapter_base import (
+    from agentic_core.L5_safety.enforcement.AdapterBase import (
         AdapterBase,
     )
 

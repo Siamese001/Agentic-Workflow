@@ -12,7 +12,7 @@ Dashboard SSOT Synchronization Engine
 
 Generates Python and JavaScript constants from the canonical YAML configuration.
 
-This script reads agentic_core/L6_observability/config/dashboard_ssot.yaml and generates:
+This script reads agentic_core/L6_observability/dashboards/dashboard_ssot.yaml and generates:
   1. Python constants (updates dashboard_ssot_definitions.py)
   2. JavaScript constants (generates js/constants/dashboard-constants.js)
 
@@ -33,7 +33,7 @@ import yaml
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
-YAML_CONFIG = PROJECT_ROOT / "L6_observability" / "config" / "dashboard_ssot.yaml"
+YAML_CONFIG = PROJECT_ROOT / "L6_observability" / "dashboards" / "dashboard_ssot.yaml"
 PYTHON_OUTPUT = PROJECT_ROOT / "scripts" / "dashboard_ssot_definitions.py"
 JS_OUTPUT = (
     PROJECT_ROOT
@@ -86,7 +86,7 @@ Dashboard SSOT Definitions
 ==========================
 SINGLE SOURCE OF TRUTH for all dashboard metric calculations.
 
-⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/config/dashboard_ssot.yaml
+⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/dashboards/dashboard_ssot.yaml
 ⚠️  DO NOT EDIT CONSTANTS MANUALLY - Edit the YAML file instead
 ⚠️  Run: python agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py
 
@@ -262,7 +262,7 @@ def generate_js_constants(config):
     output = f"""// ============================================================================
 // DASHBOARD CONSTANTS
 // ============================================================================
-// ⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/config/dashboard_ssot.yaml
+// ⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/dashboards/dashboard_ssot.yaml
 // ⚠️  DO NOT EDIT MANUALLY - Edit the YAML file instead
 // ⚠️  Run: python scripts/generate_dashboard_ssot_util.py
 //

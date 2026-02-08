@@ -18,7 +18,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.reasoning.adapter_base import (
+from agentic_core.L5_safety.enforcement.AdapterBase import (
     AdapterContext,
     AdapterResult,
     HealingAdapter,

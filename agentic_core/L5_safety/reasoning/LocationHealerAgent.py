@@ -119,7 +119,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
             try:
-                from agentic_core.L5_safety.validators.naming_validator import (
+                from agentic_core.L5_safety.reasoning.NamingAgent import (
                     get_naming_agent,
                 )
 

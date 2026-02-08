@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.reasoning.code_validation_types import CodeValidatorAgent
+from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 
 
 def main():

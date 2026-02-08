@@ -23,7 +23,7 @@ from typing import Any
 Logger = logging.getLogger(__name__)
 
 # L2 Resource awareness - Use ResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
-from agentic_core.L5_safety.reasoning.resource_types import (
+from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
     create_proactive_resource_manager,
 )
 

@@ -3,7 +3,7 @@ Dashboard SSOT Definitions
 ==========================
 SINGLE SOURCE OF TRUTH for all dashboard metric calculations.
 
-⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/config/dashboard_ssot.yaml
+⚠️  AUTO-GENERATED FROM agentic_core/L6_observability/dashboards/dashboard_ssot.yaml
 ⚠️  DO NOT EDIT CONSTANTS MANUALLY - Edit the YAML file instead
 ⚠️  Run: python agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py
 

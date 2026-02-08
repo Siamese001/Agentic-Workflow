@@ -64,7 +64,7 @@ class AdapterResult:
         }
 
 
-class AdapterBaseAdapter(ABC, Generic[T]):
+class AdapterBase(ABC, Generic[T]):
     """
     Base class for V10-compliant Legacy Adapters.
 
@@ -74,7 +74,7 @@ class AdapterBaseAdapter(ABC, Generic[T]):
     - Preserves exact legacy behavior
 
     Usage:
-        class EmbeddingAdapter(AdapterBaseAdapter[EmbeddingSovereignAgent]):
+        class EmbeddingAdapter(AdapterBase[EmbeddingSovereignAgent]):
             def __init__(self, legacy_agent: EmbeddingSovereignAgent):
                 super().__init__(legacy_agent, "embedding_service")
 
@@ -114,7 +114,7 @@ class AdapterBaseAdapter(ABC, Generic[T]):
         self._verification_gate = None  # Lazy load
 
         logger.info(
-            f"AdapterBaseAdapter initialized for '{service_name}' wrapping {type(legacy_agent).__name__}",
+            f"AdapterBase initialized for '{service_name}' wrapping {type(legacy_agent).__name__}",
         )
 
     @property
@@ -405,7 +405,7 @@ class AdapterBaseAdapter(ABC, Generic[T]):
         }
 
 
-class HealingAdapter(AdapterBaseAdapter[T]):
+class HealingAdapter(AdapterBase[T]):
     """
     Specialized adapter for healing operations.
 
@@ -451,8 +451,12 @@ class HealingAdapter(AdapterBaseAdapter[T]):
         return gate.verify_action(file_path, action_type, target_node)
 
 
+# Backwards-compat alias for code that still references the old class name
+AdapterBaseAdapter = AdapterBase
+
 __all__ = [
-    "AdapterBaseAdapter",
+    "AdapterBase",
+    "AdapterBaseAdapter",  # Backwards-compat alias
     "AdapterContext",
     "AdapterResult",
     "HealingAdapter",

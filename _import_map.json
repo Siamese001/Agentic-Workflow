@@ -121,7 +121,7 @@
   "L0_maintenance.scripts.general_scripts.": "L0_maintenance.scripts.",
   "L0_maintenance.scripts.ci.": "L0_maintenance.scripts.",
   "L5_safety.validators.core.healing_mixin": "mixins.healing_mixin",
-  "L5_safety.validators.core.neuralautoimmuneagent_mixin": "mixins.neuralautoimmuneagent_mixin",
+  "L5_safety.validators.core.neuralautoimmuneagent_mixin": "mixins.neural_autoimmune_mixin",
   "L5_safety.validators.core.surgical_healer_mixin": "mixins.surgical_healer_mixin",
   "L5_safety.validators.core.validator_mixin": "mixins.validator_mixin"
 }

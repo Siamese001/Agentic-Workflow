@@ -117,9 +117,9 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "utils": {
                         "purpose": "Maintenance helper functions and bootstrap utilities.",
                     },
-                    # NUANCE: scripts/ preserved — home for *_script.py files
+                    # NUANCE: scripts/ preserved — home for operational scripts
                     "scripts": {
-                        "purpose": "Maintenance and operational scripts - home for *_script.py files (Zero-Ambiguity Standard)",
+                        "purpose": "Maintenance and operational scripts (Zero-Ambiguity Standard)",
                         "subfolders": {
                             ".github": {"purpose": "GitHub workflow scripts"},
                             "ci": {"purpose": "CI/CD pipeline scripts"},
@@ -886,35 +886,71 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
             "agentic_core/utils/core_extensions",
         ],
     },
+    # ============================================================================
+    # === APPS_* LCD STRUCTURE (Mirrored between apps_rg and apps_lic) ===
+    # ============================================================================
+    # Both apps_rg and apps_lic follow the same LCD-inspired structure:
+    # - config/: Application-specific configuration
+    # - types/: Type definitions and data models
+    # - reasoning/: Agent classes and business logic
+    # - engines/: Processing engines and pipelines
+    # - utils/: Utility functions
+    # - scripts/: CLI entrypoints and one-off scripts
+    # - domain/: Domain models and entities
+    # - shared/: Shared components within the app
+    # - system_flow/: Workflow and pipeline definitions
+    # - asset_library/: Templates, wording, and static assets
     "apps_rg": {
-        "depth": 2,
+        "depth": 3,
         "purpose": "Resume Generation Application domain.",
-        "subfolders": [
-            "asset_library",
-            "core",
-            "domain",
-            "engines",
-            "logic_nodes",
-            "shared",
-            "system_flow",
-            "validation",
-        ],
+        "subfolders": {
+            "config": {"purpose": "Application-specific configuration", "subfolders": []},
+            "types": {"purpose": "Type definitions and data models", "subfolders": []},
+            "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
+            "engines": {
+                "purpose": "Processing engines and pipelines",
+                "subfolders": ["base", "generation", "hops", "orchestration", "quality", "refinement", "retrieval", "safety", "utils"],
+            },
+            "utils": {"purpose": "Utility functions", "subfolders": []},
+            "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
+            "domain": {"purpose": "Domain models and entities", "subfolders": ["config", "utils"]},
+            "shared": {
+                "purpose": "Shared components within the app",
+                "subfolders": ["core", "reasoning", "tools", "utils"],
+            },
+            "system_flow": {"purpose": "Workflow and pipeline definitions", "subfolders": []},
+            "asset_library": {"purpose": "Templates, wording, and static assets", "subfolders": []},
+            "validation": {"purpose": "Validation rules and checkers", "subfolders": []},
+            "logic_nodes": {"purpose": "Logic node implementations", "subfolders": []},
+        },
         "ast_signals": {"apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}},
     },
     "apps_lic": {
-        "depth": 2,
+        "depth": 3,
         "purpose": "LinkedIn Canonical application domain.",
-        "subfolders": [
-            "asset_library",
-            "domain",
-            "engines",
-            "logic_nodes",
-            "reports",
-            "scripts",
-            "shared",
-            "system_flow",
-            "tools",
-        ],
+        "subfolders": {
+            "config": {"purpose": "Application-specific configuration", "subfolders": []},
+            "types": {"purpose": "Type definitions and data models", "subfolders": []},
+            "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
+            "engines": {
+                "purpose": "Processing engines and pipelines",
+                "subfolders": ["base", "generation", "hops", "orchestration", "quality", "refinement", "retrieval", "safety", "utils"],
+            },
+            "utils": {"purpose": "Utility functions", "subfolders": []},
+            "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
+            "domain": {"purpose": "Domain models and entities", "subfolders": ["config", "utils"]},
+            "shared": {
+                "purpose": "Shared components within the app",
+                "subfolders": ["core", "reasoning", "tools", "utils"],
+            },
+            "system_flow": {"purpose": "Workflow and pipeline definitions", "subfolders": []},
+            "asset_library": {"purpose": "Templates, wording, and static assets", "subfolders": []},
+            "validation": {"purpose": "Validation rules and checkers", "subfolders": []},
+            "logic_nodes": {"purpose": "Logic node implementations", "subfolders": []},
+            "reports": {"purpose": "Report generation and output", "subfolders": []},
+            "tools": {"purpose": "Tool implementations", "subfolders": []},
+        },
+        "ast_signals": {"apps_lic/engines": {"keyword_signals": ["linkedin", "connection", "messaging"], "weight": 90}},
     },
     "apps_shared": {
         "depth": 2,
@@ -1098,28 +1134,37 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                     "apps_lic": {
                         "purpose": "Integration tests for apps_lic",
                         "subfolders": [
-                            "asset_library",
-                            "domain",
+                            "config",
+                            "types",
+                            "reasoning",
                             "engines",
-                            "logic_nodes",
-                            "reports",
+                            "utils",
                             "scripts",
+                            "domain",
                             "shared",
                             "system_flow",
+                            "asset_library",
+                            "validation",
+                            "logic_nodes",
+                            "reports",
                             "tools",
                         ],
                     },
                     "apps_rg": {
                         "purpose": "Integration tests for apps_rg",
                         "subfolders": [
-                            "asset_library",
-                            "core",
-                            "domain",
+                            "config",
+                            "types",
+                            "reasoning",
                             "engines",
-                            "logic_nodes",
+                            "utils",
+                            "scripts",
+                            "domain",
                             "shared",
                             "system_flow",
+                            "asset_library",
                             "validation",
+                            "logic_nodes",
                         ],
                     },
                     "apps_shared": {
@@ -1367,6 +1412,132 @@ KNOWN_GOOD_HASHES: Final[Mapping[str, str]] = {
 }
 
 # ============================================================================
+# === DERIVED REGISTRIES (Compiled from SOVEREIGN_TERRITORIES) ===
+# ============================================================================
+# These registries are derived from SOVEREIGN_TERRITORIES to eliminate duplication.
+# The derivation functions extract subfolder lists, metadata, and L4 structures
+# from the single SSOT above.
+
+
+def _derive_core_subfolder_map() -> dict[str, list[str]]:
+    """Derive CORE_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
+    result: dict[str, list[str]] = {}
+    agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
+    subfolders = agentic_core.get("subfolders", {})
+
+    for domain_name, domain_def in subfolders.items():
+        if isinstance(domain_def, dict):
+            nested = domain_def.get("subfolders", {})
+            if isinstance(nested, dict):
+                result[domain_name] = list(nested.keys())
+            else:
+                result[domain_name] = []
+        else:
+            result[domain_name] = []
+
+    return result
+
+
+def _derive_subfolder_metadata() -> dict[str, dict[str, Any]]:
+    """Derive SUBFOLDER_METADATA from SOVEREIGN_TERRITORIES."""
+    result: dict[str, dict[str, Any]] = {}
+    agentic_core = SOVEREIGN_TERRITORIES.get("agentic_core", {})
+    subfolders = agentic_core.get("subfolders", {})
+
+    for domain_name, domain_def in subfolders.items():
+        if isinstance(domain_def, dict):
+            result[domain_name] = {
+                "purpose": domain_def.get("purpose", f"{domain_name} domain"),
+                "content_types": list(domain_def.get("subfolders", {}).keys()) or [domain_name],
+                "execution_allowed": domain_def.get("execution_allowed", False),
+                "notes": domain_def.get("notes", ""),
+            }
+
+    return result
+
+
+def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
+    """Derive APPS_*_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
+    result: dict[str, list[str]] = {}
+    territory = SOVEREIGN_TERRITORIES.get(territory_name, {})
+    if not isinstance(territory, dict):
+        return result
+
+    subfolders = territory.get("subfolders", {})
+
+    # Handle case where subfolders is a list (e.g., apps_rg has list of subfolder names)
+    if isinstance(subfolders, (list, tuple)):
+        for sf_name in subfolders:
+            result[sf_name] = []
+        return result
+
+    if not isinstance(subfolders, dict):
+        return result
+
+    for sf_name, sf_def in subfolders.items():
+        if isinstance(sf_def, dict):
+            nested = sf_def.get("subfolders", {})
+            if isinstance(nested, dict):
+                result[sf_name] = list(nested.keys())
+            elif isinstance(nested, (list, tuple)):
+                result[sf_name] = list(nested)
+            else:
+                result[sf_name] = []
+        elif isinstance(sf_def, (list, tuple)):
+            result[sf_name] = list(sf_def)
+        else:
+            result[sf_name] = []
+
+    return result
+
+
+# === DERIVED: CORE_SUBFOLDER_MAP ===
+# Extracted from SOVEREIGN_TERRITORIES["agentic_core"]["subfolders"]
+CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_core_subfolder_map()
+
+# === DERIVED: SUBFOLDER_METADATA ===
+# Extracted from SOVEREIGN_TERRITORIES["agentic_core"]["subfolders"] purpose/notes
+SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = _derive_subfolder_metadata()
+
+# === DERIVED: APPS_*_SUBFOLDER_MAP ===
+APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_rg")
+APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_lic")
+APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_shared")
+
+# Type-safe aliases
+agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP
+
+
+def verify_derived_registries() -> list[str]:
+    """
+    Invariant self-check: verify derived registries are consistent with SOVEREIGN_TERRITORIES.
+
+    Returns list of discrepancies (empty if all consistent).
+    Call this during tests or startup to catch SSOT drift.
+    """
+    discrepancies: list[str] = []
+
+    # Check that all L0-L6 layers have the standard LCD subfolders
+    standard_lcd = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
+    for layer in ["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"]:
+        derived = set(CORE_SUBFOLDER_MAP.get(layer, []))
+        if not standard_lcd.issubset(derived):
+            missing = standard_lcd - derived
+            discrepancies.append(f"{layer} missing LCD subfolders: {missing}")
+
+    # Check that SUBFOLDER_METADATA has entries for all CORE_SUBFOLDER_MAP keys
+    for key in CORE_SUBFOLDER_MAP:
+        if key not in SUBFOLDER_METADATA:
+            discrepancies.append(f"SUBFOLDER_METADATA missing key: {key}")
+
+    # Check that APPS_RG has expected structure
+    if not APPS_RG_SUBFOLDER_MAP:
+        discrepancies.append("APPS_RG_SUBFOLDER_MAP is empty")
+
+    return discrepancies
+
+
+# ============================================================================
 # === L4 SUBFOLDER MAP (Depth-4 Structure for Complex L3 Folders) ===
 # ============================================================================
 # Some L3 folders have grown beyond manageable size and warrant L4 subfolders.
@@ -1507,278 +1678,16 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
     },
 }
 
-CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    # === LAYERED ARCHITECTURE (L0-L6) — LCD+ CANONICAL SKELETON ===
-    "base_agents": [],  # Pure library domain - foundational classes and mixins only
-    # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
-    "L0_maintenance": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-        "scripts",  # NUANCE: preserved
-    ],  # LCD+ 6-folder + scripts/ nuance
-    "L1_cognition": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-    ],  # LCD+ 6-folder canonical
-    "L2_execution": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-        "tools",  # NUANCE: preserved
-    ],  # LCD+ 6-folder + tools/ nuance
-    "L3_orchestration": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-    ],  # LCD+ 6-folder canonical
-    "L4_state": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-        "memory",  # NUANCE: preserved
-    ],  # LCD+ 6-folder + memory/ nuance
-    "L5_safety": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-    ],  # LCD+ 6-folder canonical
-    "L6_observability": [
-        "config",
-        "types",
-        "reasoning",
-        "enforcement",
-        "validators",
-        "utils",
-        "dashboards",  # NUANCE: preserved
-    ],  # LCD+ 6-folder + dashboards/ nuance
-    # === SPECIALIZED DOMAINS ===
-    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
-    "config": ["core"],  # Configuration management - blueprint_sovereign DISSOLVED into core
-    "prompt_governance": [
-        "domain",
-        "security",
-        "core",
-        "optimization",
-        "scripts",
-        "utils",
-        "templates",
-        "meta_prompts",
-        "registry",
-    ],  # Standard Kernel + Prompt Governance Extensions
-    "runtime": [
-        "utils",
-        "config",
-        "domain",
-        "agents",
-    ],  # Standard Kernel - shared_runtime DEPRECATED
-    "utils": [],  # Utility functions - no subfolders currently (flat structure)
-    # DEPRECATED: "patterns" removed - evacuate contents to base_agents
-    # DEPRECATED: "semantic_memory" removed - annexed to L4_state/memory/semantic
-    "knowledge": ["document_loaders", "static_index", "research_cache"],  # Knowledge management
-}
+# [REMOVED] Old CORE_SUBFOLDER_MAP - now derived from SOVEREIGN_TERRITORIES above
+# See _derive_core_subfolder_map() for the derivation logic
 
-# === SUBFOLDER METADATA AND CONTENT GUIDELINES ===
-SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
-    # === LAYERED ARCHITECTURE ===
-    "base_agents": {
-        "purpose": "Foundational agent classes and mixins for inheritance",
-        "content_types": ["abstract_classes", "mixins", "base_classes", "interfaces"],
-        "execution_allowed": False,
-        "notes": "Pure library domain - no executable scripts or operational logic",
-    },
-    # DISSOLVED: "domain" removed — deported to runtime/exceptions, runtime/types, config/core
-    "L0_maintenance": {
-        "purpose": "System maintenance, healing, and operational tasks",
-        "content_types": ["maintenance_scripts", "healing_tools", "logs", "benchmarks", "mixins"],
-        "execution_allowed": True,
-        "notes": "Operational domain - contains system maintenance and healing scripts",
-    },
-    "L1_cognition": {
-        "purpose": "Cognitive processing and thought patterns",
-        "content_types": ["thought_engines", "intent_analyzers", "planners", "cognitive_models"],
-        "execution_allowed": False,
-        "notes": "Pure cognitive domain - no execution scripts, cognitive processing only",
-    },
-    "L2_execution": {
-        "purpose": "Tool execution and action handling",
-        "content_types": ["execution_engines", "tool_registries", "action_handlers", "mcp_clients"],
-        "execution_allowed": True,
-        "notes": "Execution domain - core contains fundamental execution abstractions",
-    },
-    "L3_orchestration": {
-        "purpose": "Workflow orchestration and fission logic",
-        "content_types": [
-            "workflow_engines",
-            "fission_logic",
-            "orchestration_interfaces",
-            "coordination_tools",
-        ],
-        "execution_allowed": True,
-        "notes": "Orchestration domain - coordinates multiple execution components",
-    },
-    "L4_state": {
-        "purpose": "State management and persistence",
-        "content_types": [
-            "state_ledgers",
-            "memory_systems",
-            "validation_contexts",
-            "persistence_tools",
-        ],
-        "execution_allowed": True,
-        "notes": "State domain - manages data persistence and validation",
-    },
-    "L5_safety": {
-        "purpose": "Security, validation, and safety enforcement",
-        "content_types": [
-            "guardrails",
-            "validators",
-            "safety_agents",
-            "security_policies",
-            "audit_tools",
-        ],
-        "execution_allowed": True,
-        "notes": "Security domain - core contains fundamental safety abstractions",
-    },
-    "L6_observability": {
-        "purpose": "Monitoring, telemetry, and compliance reporting",
-        "content_types": [
-            "dashboards",
-            "telemetry_systems",
-            "compliance_tools",
-            "monitoring_agents",
-        ],
-        "execution_allowed": True,
-        "notes": "Observability domain - core contains fundamental monitoring abstractions",
-    },
-    # === SPECIALIZED DOMAINS ===
-    # DISSOLVED: "schemas" removed — deported to runtime/types, L4/contracts, L6/engine+types
-    "config": {
-        "purpose": "Configuration management and environment settings",
-        "content_types": [
-            "config_files",
-            "environment_settings",
-            "feature_flags",
-            "secret_managers",
-        ],
-        "execution_allowed": True,
-        "notes": "Configuration domain - scripts for config management and deployment",
-    },
-    "prompt_governance": {
-        "purpose": "Prompt template management and security validation",
-        "content_types": ["prompt_templates", "meta_prompts", "security_rules", "governance_tools"],
-        "execution_allowed": True,
-        "notes": "Governance domain - scripts for prompt validation and management",
-    },
-    "runtime": {
-        "purpose": "Runtime environment setup and resource management",
-        "content_types": ["runtime_engines", "environment_configs", "resource_managers"],
-        "execution_allowed": False,
-        "notes": "Pure runtime domain - no execution scripts, runtime configuration only",
-    },
-    "utils": {
-        "purpose": "General utility functions and helpers",
-        "content_types": ["utility_functions", "helper_classes", "extensions", "wrappers"],
-        "execution_allowed": False,
-        "notes": "Pure utility domain - no execution scripts, reusable utilities only",
-    },
-    "patterns": {
-        "purpose": "Architectural and behavioral patterns for agents",
-        "content_types": ["reasoning_patterns", "behavior_patterns", "interaction_patterns"],
-        "execution_allowed": False,
-        "notes": "Fundamental patterns used across all agent layers - no execution scripts, pure patterns",
-    },
-    "semantic_memory": {
-        "purpose": "Vector storage and semantic retrieval systems",
-        "content_types": [
-            "memory_models",
-            "vector_stores",
-            "retrieval_algorithms",
-            "storage_interfaces",
-            "search_indexes",
-        ],
-        "execution_allowed": False,
-        "notes": "Core architectural components for agent memory and learning - no execution scripts",
-    },
-    "knowledge": {
-        "purpose": "Knowledge management and RAG systems for agents",
-        "content_types": [
-            "document_loaders",
-            "knowledge_types",
-            "rag_systems",
-            "processing_pipelines",
-        ],
-        "execution_allowed": False,
-        "notes": "Core architectural components for agent cognition and reasoning - no execution scripts",
-    },
-}
+# [REMOVED] Old SUBFOLDER_METADATA - now derived from SOVEREIGN_TERRITORIES above
+# See _derive_subfolder_metadata() for the derivation logic
 
-# === ACTUAL REPOSITORY STRUCTURE (2026-01-26 AUDIT) ===
-# [ULTRA-DIFF] RECONCILIATION: Formalizing App-Level Subfolder Structure as SSOT
-# These mappings represent the AUTHORITATIVE intended structure for apps_rg and apps_lic.
-# The tests/unit mirror MUST be kept in sync with these definitions.
-# Derived from current repository audit (2026-01-26) and existing test mirroring patterns.
+# [REMOVED] Old APPS_*_SUBFOLDER_MAP - now derived from SOVEREIGN_TERRITORIES above
+# See _derive_apps_subfolder_map() for the derivation logic
 
-APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "asset_library": ["templates", "wording", "taxonomy"],
-    "core": ["config", "exceptions"],
-    "domain": ["entities", "models", "value_objects"],
-    "engines": [
-        "base",
-        "generation",
-        "hops",
-        "orchestration",
-        "quality",
-        "retrieval",
-        "safety",
-        "utils",
-    ],
-    "logic_nodes": ["extraction", "formatting", "parsing"],
-    "shared": ["tools", "utils", "components"],
-    "system_flow": ["pipelines", "lifecycle"],
-    "validation": ["checkers", "rules"],
-}
-
-APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "asset_library": ["scripts", "templates", "hooks"],
-    "domain": ["config", "utils", "models"],
-    "engines": ["navigation", "interaction", "scraping", "drivers"],
-    "logic_nodes": ["analysis", "connection", "messaging"],
-    "reports": ["daily", "campaign", "performance"],
-    "scripts": ["maintenance", "setup"],
-    "shared": ["tools", "utils", "components"],
-    "system_flow": ["campaigns", "cadence", "sequences"],
-    "tools": ["browser", "network"],
-}
-
-APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "agents": [],  # RECONCILED: Formerly base_agents
-    "config": [],  # Has 2 items (flat structure)
-    "core_components": [],  # Has 4 items (flat structure)
-    "data": [],  # Has 3 items (flat structure)
-    "tools": [],  # Empty in actual repo
-    "utils": [],  # Has 7 items (flat structure) - Absorbs common_utils
-}
-
+# Tests subfolder map (kept as explicit since tests/ has unique structure)
 TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "unit": [],  # Has 229 items (flat structure) - LARGE FOLDER
     "integration": [],  # Has 23 items (flat structure)
@@ -1789,13 +1698,13 @@ TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "apps_rg": [],  # Has 19 items (flat structure)
     "apps_lic": [],  # RECONCILED: Added parity with apps_rg
 }
-# Type-safe aliases
-agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP
 TESTS_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = TESTS_L2_SUBFOLDER_MAP
 
 # === APP-SPECIFIC FILE PLACEMENT RULES ===
 # Files with these prefixes MUST be placed in their respective app folders, NOT agentic_core
-# This is enforced by LocationAgent and HierarchyAgent during validation
+# Enforced by FCA.validate_app_prefix_placement() (prefix-based)
+# and FCA.validate_territory_alignment() (import/content-based).
+# LocationAgent and HierarchyAgent also consume these during validation.
 
 APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
     "rg_": "apps_rg",  # Resume Gen executors/tools
@@ -1806,6 +1715,15 @@ APP_SPECIFIC_PREFIXES: Final[Mapping[str, str]] = {
     "dispatch_outreach": "apps_rg",  # Outreach dispatch tools
     "contact_research": "apps_rg",  # Contact research executors
     "company_research": "apps_rg",  # Company research executors
+}
+
+# === STUTTERING PREFIX DETECTION ===
+# Detects malformed app prefixes where letters are split by underscores.
+# Root cause: healing passes that tokenize abbreviations letter-by-letter.
+# Used by FCA.validate_app_prefix_placement() to flag and auto-correct.
+STUTTERING_PREFIX_MAP: Final[Mapping[str, str]] = {
+    "r_g_": "rg_",      # r_g_sovereign_auditor → rg_sovereign_auditor
+    "l_i_c_": "lic_",   # l_i_c_scraper → lic_scraper
 }
 
 # Central SSOT — all agents should use get_correct_app_path() for precise suggestions
@@ -2196,7 +2114,6 @@ KNOWN_ARCHITECTURAL_SUFFIXES: Final[Sequence[str]] = [
     "_types",
     "_config",
     "_validator",
-    "_script",
     "_util",
     "_mixin",
     "_protocol",
@@ -2216,8 +2133,6 @@ FORBIDDEN_COMPOUND_PATTERNS: Final[Sequence[str]] = [
     r".*_validator_util\.py$",
     r".*_types_validator\.py$",
     r".*_config_util\.py$",
-    r".*_validator_script\.py$",
-    r".*_config_script\.py$",
 ]
 
 # === CANONICAL SUFFIX-TO-FOLDER MAPPING (LCD+ Routing SSOT) ===
@@ -2229,7 +2144,6 @@ SUFFIX_TO_FOLDER: Final[Mapping[str, str]] = {
     "_types.py": "types",
     "_protocol.py": "types",
     "_validator.py": "validators",
-    "_script.py": "scripts",
     "_util.py": "utils",
     "_mixin.py": "GLOBAL_MIXINS",
     "Protocol.py": "GLOBAL_INTERFACES",  # I*Protocol.py -> agentic_core/interfaces/
@@ -2240,7 +2154,7 @@ SUFFIX_TO_FOLDER: Final[Mapping[str, str]] = {
     "Orchestrator.py": "reasoning",
     "Monitor.py": "enforcement",
     "Strategy.py": "enforcement",
-    "Adapter.py": "enforcement",
+    # "Adapter.py": removed — adapters inherit subfolder from wrapped component (RCA_Adapter_Classification)
     "_guardrail.py": "enforcement",
     "_strategy.py": "enforcement",
 }
@@ -2288,7 +2202,7 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
     "MIXIN": "GLOBAL_MIXINS",       # Sentinel: routed to agentic_core/mixins/
     "SCRIPT": "scripts",
     "FACTORY": "enforcement",
-    "ADAPTER": "enforcement",
+    # "ADAPTER": removed — adapters inherit subfolder from wrapped component (RCA_Adapter_Classification)
     "STRATEGY": "enforcement",
     "EXCEPTION": "types",
     "ENGINE": "reasoning",
@@ -2379,7 +2293,6 @@ CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
     r"_validator\.py$": "VALIDATOR",
     r"_util\.py$": "UTILITY",
     r"_mixin\.py$": "MIXIN",
-    r"_script\.py$": "SCRIPT",
     r"_strategy\.py$": "STRATEGY",
     r"_adapter\.py$": "ADAPTER",
     r"_protocol\.py$": "PROTOCOL",
@@ -2398,7 +2311,6 @@ COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
     (r"_agent_config$",      "AGENT", "CONFIG",     "security_level_agent_config.py"),
     (r"_agent_validator$",   "AGENT", "VALIDATOR",   "routing_decision_agent_validator.py"),
     (r"_agent_util$",        "AGENT", "UTILITY",     "extract_pattern_agent_util.py"),
-    (r"_agent_script$",      "AGENT", "SCRIPT",      "agent_script.py"),
     (r"Agent_types$",        "AGENT", "TYPES",       "CodeDetectorAgent_types.py"),
     (r"Agent_config$",       "AGENT", "CONFIG",      "SomeAgent_config.py"),
     # ENGINE compounds
@@ -2417,15 +2329,12 @@ COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
     (r"_strategy_types$",    "STRATEGY", "TYPES",     "context_pruning_strategy_types.py"),
     (r"_strategy_config$",   "STRATEGY", "CONFIG",    "mcpservermode_strategy_config.py"),
     (r"_strategy_mixin$",    "STRATEGY", "MIXIN",     "healing_strategy_mixin.py"),
-    (r"_strategy_script$",   "STRATEGY", "SCRIPT",    "execution_strategy_script.py"),
     (r"_strategy_validator$", "STRATEGY", "VALIDATOR", "reasoningnode_strategy_validator.py"),
     # VALIDATOR compounds
     (r"_validator_types$",   "VALIDATOR", "TYPES",    "code_validator_types.py"),
     (r"_validator_util$",    "VALIDATOR", "UTILITY",   "check_sovereign_base_validator_util.py"),
-    (r"_validator_script$",  "VALIDATOR", "SCRIPT",    "coverage_validator_script.py"),
     # SCANNER compounds
     (r"_scanner_types$",     "SCANNER", "TYPES",      "credential_scanner_types.py"),
-    (r"_scanner_script$",    "SCANNER", "SCRIPT",     "complexity_scanner_script.py"),
     (r"_scanner_util$",      "SCANNER", "UTILITY",    "sovereign_scanner_util.py"),
     # PROTOCOL compounds
     (r"_protocol_types$",    "PROTOCOL", "TYPES",     "healer_protocol_types.py"),
@@ -2448,15 +2357,26 @@ COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
     # DETECTOR compounds
     (r"_detector_types$",    "DETECTOR", "TYPES",     "code_detector_types.py"),
     (r"_detector_config$",   "DETECTOR", "CONFIG",    "gravity_leak_detector_config.py"),
-    (r"_detector_script$",   "DETECTOR", "SCRIPT",    "drift_detector_script.py"),
     # ENFORCER compounds
     (r"_enforcer_types$",    "ENFORCER", "TYPES",     "code_enforcer_types.py"),
     (r"_enforcer_util$",     "ENFORCER", "UTILITY",   "root_hygiene_enforcer_util.py"),
     # CONFIG compounds
     (r"_config_types$",      "CONFIG", "TYPES",       "blueprint_config_types.py"),
-    (r"_config_script$",     "CONFIG", "SCRIPT",      "integrity_gate_executor_config_script.py"),
     (r"_config_util$",       "CONFIG", "UTILITY",     "sync_mcp_config_util.py"),
     (r"_config_detector$",   "CONFIG", "DETECTOR",    "magic_config_detector.py"),
+    # ADAPTER compounds
+    (r"_adapter_types$",     "ADAPTER", "TYPES",      "open_telemetry_tracing_adapter_types.py"),
+    (r"_adapter_config$",    "ADAPTER", "CONFIG",     "storage_adapter_config.py"),
+    (r"_adapter_util$",      "ADAPTER", "UTILITY",    "mcp_adapter_util.py"),
+    (r"Adapter_types$",      "ADAPTER", "TYPES",      "SomeAdapter_types.py"),
+    # MIXIN compounds (RCA: healing-pass suffix accumulation)
+    (r"_mixin_agent_mixin$", "MIXIN",  "AGENT",       "autonomy_mixin_agent_mixin.py"),
+    (r"_mixin_agent$",       "MIXIN",  "AGENT",       "some_mixin_agent.py"),
+    (r"_agent_mixin$",       "AGENT",  "MIXIN",       "feature_flagged_agent_mixin.py"),
+    (r"_mixin_types$",       "MIXIN",  "TYPES",       "healer_mixin_types.py"),
+    (r"_mixin_config$",      "MIXIN",  "CONFIG",      "autonomy_mixin_config.py"),
+    (r"_mixin_util$",        "MIXIN",  "UTILITY",     "healer_mixin_util.py"),
+    (r"_mixin_validator$",   "MIXIN",  "VALIDATOR",   "agent_mixin_validator.py"),
 ]
 
 # === FOLDER PURITY RULES (BIDIRECTIONAL ENFORCEMENT) ===
@@ -2464,14 +2384,14 @@ COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
 # Used by FileClassificationAgent._enforce_folder_purity() to EVICT misplaced files.
 # Key = folder name, Value = list of allowed filename patterns (suffix or regex).
 FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
-    "reasoning": [r".*Agent\.py$"],  # ONLY *Agent.py files allowed
+    "reasoning": [r".*Agent\.py$"],  # ONLY *Agent.py files allowed (snake_case services/monitors → enforcement/)
     "validators": [r".*_validator\.py$", r".*Validator.*\.py$"],
     "config": [r".*_config\.py$", r".*_config\.yaml$", r".*_config\.json$"],
     "types": [r".*_types\.py$", r".*_protocol\.py$", r"I[A-Z].*Protocol\.py$",
               r".*Error\.py$", r".*Exception\.py$"],  # Exception classes live in types/
     "utils": [r".*_util\.py$", r".*_mixin\.py$", r".*_helper\.py$",
               r".*_collector\.py$", r".*_monitor\.py$"],  # Service singletons route here
-    "scripts": [r".*_script\.py$"],
+    "scripts": [r"^[a-z][a-z0-9_]*\.py$", r".*_util\.py$"],  # snake_case .py files (no _script suffix needed — folder is the signal)
     "enforcement": [r".*_guardrail\.py$", r".*_enforcer\.py$",
                     r".*_gate\.py$", r".*_manager\.py$", r".*_shield\.py$",
                     r".*_firewall\.py$", r".*_sanitizer\.py$", r".*_governor\.py$",
@@ -2494,6 +2414,16 @@ NON_PYTHON_FOLDER_ROUTES: Final[Mapping[str, str]] = {
     ".html": "dashboards",                  # HTML → dashboards/
     ".js": "dashboards",                    # JS → dashboards/
     ".css": "dashboards",                   # CSS → dashboards/
+}
+
+# === DOMAIN-SPECIFIC PYTHON FILE ROUTING ===
+# Python files whose CONTENT is tightly bound to a specific domain should be
+# routed there instead of relying purely on suffix. The _util.py suffix sends
+# files to utils/, but dashboard-specific utils belong in dashboards/.
+# Used by FCA to flag misplaced domain-specific files.
+DOMAIN_CONTENT_SIGNALS: Final[Mapping[str, str]] = {
+    "dashboard": "L6_observability/dashboards",   # dashboard-specific utils/scripts
+    "playwright": "L6_observability/dashboards",   # E2E dashboard testing
 }
 
 # === SERVICE CLASS DETECTION PATTERNS ===
@@ -5770,3 +5700,104 @@ DOCS_SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = {
         "notes": "Documentation kept for historical reference",
     },
 }
+
+# ============================================================================
+# LAYER VALIDATION API (Phase 1 Hardening — 2026-02-07)
+# ============================================================================
+# Programmatic API consumed by FCA.validate_layer_alignment() and healing agents.
+# Enforces: layer roots, required subfolders, nested-LCD prevention, scripts purity,
+# subprocess allowlists, and "Purpose Over Mechanism" policy.
+
+LAYER_ROOTS: Final[frozenset[str]] = frozenset({
+    "L0_maintenance", "L1_cognition", "L2_execution",
+    "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
+})
+
+REQUIRED_LCD_SUBFOLDERS: Final[frozenset[str]] = frozenset({
+    "reasoning", "enforcement", "config", "types", "validators", "utils",
+})
+
+# Only layer roots may contain LCD subfolders. Leaf domains listed here
+# are forbidden from sprouting reasoning/enforcement/config/types/validators/utils.
+LEAF_DOMAINS_NO_LCD: Final[frozenset[str]] = frozenset({
+    "prompt_governance", "knowledge", "mixins", "runtime",
+    "interfaces", "base_agents", "config",
+})
+
+
+def is_layer_root(name: str) -> bool:
+    """Return True if *name* is a canonical L0–L6 layer root."""
+    return name in LAYER_ROOTS
+
+
+def is_allowed_subfolder(layer: str, subfolder: str) -> bool:
+    """Return True if *subfolder* is a required LCD subfolder under *layer*."""
+    if layer not in LAYER_ROOTS:
+        return False
+    return subfolder in REQUIRED_LCD_SUBFOLDERS
+
+
+def validate_no_nested_lcd(path_parts: Sequence[str]) -> dict[str, Any] | None:
+    """Detect leaf domains that illegally sprout LCD subtrees.
+
+    Args:
+        path_parts: tuple/list of path components (e.g. Path.parts).
+
+    Returns:
+        None if compliant, or a violation dict with:
+        - domain: the leaf domain that is sprouting
+        - illegal_subfolder: the LCD subfolder it created
+        - message: human-readable explanation
+    """
+    for i, part in enumerate(path_parts):
+        if part in LEAF_DOMAINS_NO_LCD:
+            # Check remaining parts for LCD subfolder names
+            for j in range(i + 1, len(path_parts)):
+                child = path_parts[j]
+                if child in REQUIRED_LCD_SUBFOLDERS:
+                    # Allow if the child is ALSO inside a layer root higher up
+                    has_layer_root_ancestor = any(
+                        path_parts[k] in LAYER_ROOTS for k in range(i)
+                    )
+                    if has_layer_root_ancestor:
+                        break  # e.g. L0_maintenance/scripts/prompt_governance — OK
+                    return {
+                        "domain": part,
+                        "illegal_subfolder": child,
+                        "message": (
+                            f"Leaf domain '{part}' must not sprout LCD subfolder "
+                            f"'{child}/'. Only L0–L6 layer roots may have LCD subtrees."
+                        ),
+                    }
+    return None
+
+
+# === L5 SUBPROCESS ALLOWLIST (Purpose Over Mechanism) ===
+# These L5 files are PERMITTED to import subprocess because their PRIMARY PURPOSE
+# is safety enforcement — subprocess is merely the mechanism.
+# Any L5 file importing subprocess NOT on this list is a TERRITORY_MISALIGNMENT.
+L5_SUBPROCESS_ALLOWLIST: Final[frozenset[str]] = frozenset({
+    "safe_subprocess_handler.py",
+    "subprocess_security_util.py",
+    "PreCommitSovereignAgent.py",
+    "ArchitectureGovernorAgent.py",
+    "AutonomyGuardianAgent.py",
+    "SovereignActionPlaneAgent.py",
+    "pre_deploy_check_util.py",
+})
+
+# === L6 HYBRID ALLOWLIST ===
+# L6 files permitted to use subprocess/playwright for dashboard E2E.
+L6_HYBRID_ALLOWLIST: Final[frozenset[str]] = frozenset({
+    "verify_dashboard_e2e_playwright_util.py",
+})
+
+# === SCRIPTS PURITY POLICY ===
+# scripts/ folders may contain ONLY:
+#   - snake_case .py files with __main__ guard or CLI entrypoint
+#   - _util.py helper scripts
+# FORBIDDEN in scripts/:
+SCRIPTS_FORBIDDEN_PATTERNS: Final[Sequence[str]] = [
+    r"^[A-Z]",         # PascalCase module filenames (classes belong elsewhere)
+    r"^test_",          # Test files belong in tests/
+]

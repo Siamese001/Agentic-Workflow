@@ -1,22 +1,53 @@
 """
-File: agentic_core/L5_safety/validators/FileClassificationAgent.py
-Path: agentic_core/L5_safety/validators/FileClassificationAgent.py
+File: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 Rationale:
-    Comprehensive file classification and naming enforcement agent.
-    Provides intelligent file categorization and naming enforcement
-    across all architectural layers with AST-based analysis.
+    Comprehensive file classification, naming enforcement, and layer
+    validation agent. Provides intelligent file categorization across
+    all architectural layers with AST-based analysis.
+
+    ENFORCEMENT POLICIES (2026-02-07 Hardening):
+    =============================================
+
+    1. PURPOSE OVER MECHANISM:
+       Classify by primary purpose (what it enforces/achieves), not mechanism.
+       - Safety wrapper around subprocess => L5 (allowed via L5_SUBPROCESS_ALLOWLIST)
+       - Running tools/external commands as a service => L2 (execution)
+       - Dashboard ownership => L6 (even if it runs Playwright/subprocess)
+
+    2. AGENT SUFFIX WINS SUBFOLDER:
+       Any file containing a concrete Agent class (class Name*Agent) MUST reside
+       in its layer's reasoning/ subfolder. If the file also contains types/config,
+       it must be SPLIT: types/config stay in types/ or config/, Agent moves to
+       reasoning/. Enforced by validate_layer_alignment().
+
+    3. SCRIPTS PURITY:
+       scripts/ may contain CLI entrypoints and one-off scripts ONLY.
+       Forbidden: PascalCase filenames, non-trivial class definitions, test_*.py.
+       Enforced by validate_layer_alignment() + SCRIPTS_FORBIDDEN_PATTERNS.
+
+    4. NESTED-LCD PREVENTION:
+       Only L0–L6 layer roots may contain LCD subfolders (reasoning/, enforcement/,
+       config/, types/, validators/, utils/). Leaf domains (prompt_governance,
+       knowledge, mixins, runtime, etc.) must NOT sprout their own LCD subtree.
+       Enforced by validate_no_nested_lcd() in structure_blueprint_config.
+
+    EXCEPTION MANAGEMENT:
+    - L5_SUBPROCESS_ALLOWLIST: enumerated L5 files permitted to use subprocess
+    - L6_HYBRID_ALLOWLIST: enumerated L6 files permitted to use subprocess/playwright
+    - To add an exception: add filename to the appropriate frozenset in
+      structure_blueprint_config.py with a justification comment.
 
     Integration Features:
     - Inherits from SovereignBaseAgent for full infrastructure support
     - Implements standard agent interface for execute_ssot.py orchestration
-    - Preserves all original file classification functionality
-    - Adds heal_repository() method for standard healing chain integration
+    - heal_repository() method for standard healing chain integration
 
-    Hardening Features (Architecture Hallucination Prevention):
-    - SCRIPT category for ops_scripts (snake_case enforcement)
-    - TYPES category for collections and private modules (immunity from renaming)
-    - Priority-based classification to prevent misidentification
-    - Enhanced file type detection with strict ordering
+    Key validation methods:
+    - validate_layer_alignment(): L5/L6 subprocess, Agent→reasoning, scripts purity, nested LCD
+    - validate_app_prefix_placement(): app-specific prefix routing (rg_*, lic_*)
+    - validate_territory_alignment(): import-based app domain detection
+    - suggest_manager_layer(): *Manager class routing via content signals (L4/L3/L2)
+    - _enforce_folder_purity(): bidirectional folder→suffix enforcement
 """
 
 import ast
@@ -290,8 +321,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if filename.endswith("Agent.py"):
                     return layer_root / "reasoning" / filename
                 # Scripts stay in scripts (if properly named)
-                if filename.endswith("_script.py"):
-                    return None  # Already correct
+                if "scripts" in path.parts:
+                    return None  # Already in scripts/ folder
 
         # === RECURSIVE KERNEL ROUTING (validates files at ANY depth) ===
         # [LCD+ P2] AST-based routing: classify_file() parses content to determine type.
@@ -711,7 +742,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             if "Mixin" in path.name or "mixin" in path.name.lower():
                 pass  # Let normal classification handle it below
             # Scripts, utilities, exceptions, and types in base_agents should NOT be forced to CLASS
-            elif path.name.endswith(("_script.py", "_util.py", "_exceptions.py", "_types.py")):
+            elif path.name.endswith(("_util.py", "_exceptions.py", "_types.py")):
                 pass  # Let normal classification handle it below
             else:
                 # Force CLASS for all other files in base_agents/
@@ -751,7 +782,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             folder_to_filetype = {
                 "types": "TYPES", "config": "CONFIG",
                 "validators": "VALIDATOR", "utils": "UTILITY", "scripts": "SCRIPT",
-                "enforcement": "STRATEGY",
+                "enforcement": "STRATEGY", "mixins": "MIXIN",
             }
             if parent_folder in folder_to_filetype:
                 return folder_to_filetype[parent_folder]
@@ -768,10 +799,12 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Detect test classes and test-related patterns
         test_indicators = self._detect_test_patterns(tree, path)
         if test_indicators["is_test"]:
-            # Check if already compliant test file
-            if path.name.startswith("test_") or path.name.endswith("_test.py"):
-                # Still return TEST for compliant files to maintain consistency
-                pass
+            # [HARDENING] Flag test files found outside tests/ directory
+            if "tests" not in path.parts:
+                self.logger.warning(
+                    f"[MISPLACED-TEST] {path.name} is a test file outside tests/ directory. "
+                    f"Current location: {path.parent}. Move to tests/ mirror structure."
+                )
             return "TEST"
 
         # CONSOLIDATED TEST IMMUNITY FOR GUARDRAILS
@@ -1104,7 +1137,6 @@ class FileClassificationAgent(*BASE_CLASSES):
             "_config",
             "_util",
             "_types",
-            "_script",
             "_mixin",
             "_base",
             "_validator",
@@ -1160,7 +1192,6 @@ class FileClassificationAgent(*BASE_CLASSES):
             "_types_agent",
             "_util_agent",
             "_validator_agent",
-            "_script_agent",
             "_base_agent",
         ]
         for pattern in agent_after_suffix_patterns:
@@ -1193,9 +1224,9 @@ class FileClassificationAgent(*BASE_CLASSES):
             Normalized filename with root cause violations corrected.
 
         Examples:
-            - "s_s_o_t_consolidation_analyzer_script.py" → "ssot_consolidation_analyzer_script.py"
+            - "s_s_o_t_consolidation_analyzer.py" → "ssot_consolidation_analyzer.py"
             - "setup___init___util.py" → "setup_init_util.py"
-            - "_cc_visitor_script.py" → "cc_visitor_script.py"
+            - "_cc_visitor.py" → "cc_visitor.py"
         """
         # Exempt __init__.py entirely — it's a Python convention
         if name == "__init__.py" or name == "__init__":
@@ -1258,6 +1289,364 @@ class FileClassificationAgent(*BASE_CLASSES):
                     }
                 )
         return violations
+
+    def validate_pascal_case_placement(self, path: Path) -> dict[str, Any] | None:
+        """
+        Validate that PascalCase .py files are only in folders that expect them.
+
+        PascalCase filenames (e.g., EnvelopeFactory.py) are reserved for Agents,
+        Adapters, and base classes. Finding them in engine/, types/, utils/, or
+        config/ folders indicates misclassification.
+
+        Returns None if compliant, or a violation dict.
+        """
+        PASCAL_ALLOWED_FOLDERS = frozenset({
+            "reasoning", "enforcement", "base_agents", "mixins",
+        })
+        if not path.name.endswith(".py") or path.name.startswith("__"):
+            return None
+        # Check if PascalCase: first char uppercase, no leading underscore, contains lowercase
+        stem = path.stem
+        if not (stem[0].isupper() and any(c.islower() for c in stem)):
+            return None
+        # PascalCase file detected — check if folder allows it
+        parent = path.parent.name
+        if parent in PASCAL_ALLOWED_FOLDERS:
+            return None
+        # Known PascalCase exceptions (Error classes in types/, etc.)
+        if stem.endswith(("Error", "Exception")):
+            return None
+        return {
+            "file": str(path),
+            "violation": "PASCAL_IN_NON_AGENT_FOLDER",
+            "folder": parent,
+            "message": (
+                f"PascalCase file '{path.name}' in '{parent}/' — "
+                f"PascalCase is reserved for agents/adapters in reasoning/enforcement/. "
+                f"Rename to snake_case or move to an agent-appropriate folder."
+            ),
+        }
+
+    def validate_app_prefix_placement(self, path: Path) -> dict[str, Any] | None:
+        """
+        Validate that files with app-specific prefixes (rg_, lic_) are inside
+        their corresponding apps_* directory, not in ops_scripts/ or agentic_core/.
+
+        Also detects stuttering prefixes like r_g_ (should be rg_).
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            APP_SPECIFIC_PREFIXES,
+            STUTTERING_PREFIX_MAP,
+        )
+
+        if not path.name.endswith(".py") or path.name.startswith("__"):
+            return None
+
+        stem = path.stem
+
+        # Stuttering detection: r_g_ should be rg_, l_i_c_ should be lic_
+        for stutter, correct in STUTTERING_PREFIX_MAP.items():
+            if stem.startswith(stutter):
+                return {
+                    "file": str(path),
+                    "violation": "STUTTERING_PREFIX",
+                    "current_prefix": stutter,
+                    "correct_prefix": correct,
+                    "message": (
+                        f"Stuttering prefix '{stutter}' in '{path.name}' — "
+                        f"should be '{correct}'. Rename to '{correct}{stem[len(stutter):]}.py'."
+                    ),
+                }
+
+        # App-prefix placement: rg_* files must be in apps_rg/
+        for prefix, target_app in APP_SPECIFIC_PREFIXES.items():
+            if stem.startswith(prefix):
+                if target_app not in path.parts:
+                    return {
+                        "file": str(path),
+                        "violation": "APP_PREFIX_OUTSIDE_APP",
+                        "prefix": prefix,
+                        "target_app": target_app,
+                        "message": (
+                            f"File '{path.name}' has app prefix '{prefix}' but is outside "
+                            f"'{target_app}/'. Move to '{target_app}/scripts/' or appropriate subfolder."
+                        ),
+                    }
+                break  # Matched a prefix, no need to check others
+
+        return None
+
+    def validate_territory_alignment(self, path: Path) -> dict[str, Any] | None:
+        """
+        Validate that files in ops_scripts/ (or other non-app territories) are not
+        functionally bound to a specific apps_* domain.
+
+        Uses the SAME import-based + AST content analysis rigor as agentic_core
+        classification. Detects:
+        - Direct `from apps_rg.*` or `from apps_lic.*` imports
+        - Path string references like `Path("apps_rg/...")`
+        - Domain keyword density (resume/cv/linkedin/campaign)
+
+        Returns None if compliant, or a violation dict.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            APP_LIC_STRING_TERMS,
+            APP_RG_STRING_TERMS,
+        )
+
+        if not path.name.endswith(".py") or path.name.startswith("__"):
+            return None
+
+        # Only validate files OUTSIDE apps_* directories
+        parts = path.parts
+        if any(p.startswith("apps_") for p in parts):
+            return None
+
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            return None
+
+        # === SIGNAL 1: Direct imports (strongest signal) ===
+        import_targets: dict[str, list[str]] = {}
+        for line in content.splitlines():
+            stripped = line.strip()
+            if stripped.startswith(("#", '"""', "'''")):
+                continue
+            if "from apps_rg" in stripped or "import apps_rg" in stripped:
+                import_targets.setdefault("apps_rg", []).append(stripped)
+            if "from apps_lic" in stripped or "import apps_lic" in stripped:
+                import_targets.setdefault("apps_lic", []).append(stripped)
+
+        # If file imports from EXACTLY ONE app → it belongs there
+        if len(import_targets) == 1:
+            target_app = next(iter(import_targets))
+            return {
+                "file": str(path),
+                "violation": "TERRITORY_MISALIGNMENT",
+                "target_app": target_app,
+                "signal": "direct_import",
+                "evidence": import_targets[target_app][:3],
+                "message": (
+                    f"File '{path.name}' imports from '{target_app}' but lives outside it. "
+                    f"Move to '{target_app}/scripts/' or appropriate subfolder."
+                ),
+            }
+
+        # === SIGNAL 2: Path string references (medium signal) ===
+        path_refs: dict[str, int] = {}
+        content_lower = content.lower()
+        for app in ("apps_rg", "apps_lic"):
+            count = content_lower.count(f"{app}/") + content_lower.count(f'"{app}')
+            if count > 0:
+                path_refs[app] = count
+
+        # If path refs target EXACTLY ONE app with 2+ references → it belongs there
+        if len(path_refs) == 1:
+            target_app, ref_count = next(iter(path_refs.items()))
+            if ref_count >= 2:
+                return {
+                    "file": str(path),
+                    "violation": "TERRITORY_MISALIGNMENT",
+                    "target_app": target_app,
+                    "signal": "path_references",
+                    "evidence": f"{ref_count} path references to {target_app}/",
+                    "message": (
+                        f"File '{path.name}' references '{target_app}/' {ref_count} times "
+                        f"but lives outside it. Move to '{target_app}/scripts/'."
+                    ),
+                }
+
+        # === SIGNAL 3: Domain keyword density (fuzzy signal) ===
+        rg_hits = sum(1 for term in APP_RG_STRING_TERMS if term in content_lower)
+        lic_hits = sum(1 for term in APP_LIC_STRING_TERMS if term in content_lower)
+
+        # Strong domain affinity: 3+ keyword hits for ONE app, 0 for the other
+        if rg_hits >= 3 and lic_hits == 0:
+            return {
+                "file": str(path),
+                "violation": "TERRITORY_MISALIGNMENT",
+                "target_app": "apps_rg",
+                "signal": "domain_keywords",
+                "evidence": f"{rg_hits} RG domain keywords, 0 LIC keywords",
+                "message": (
+                    f"File '{path.name}' has strong apps_rg domain affinity "
+                    f"({rg_hits} keywords). Move to 'apps_rg/scripts/'."
+                ),
+            }
+        if lic_hits >= 3 and rg_hits == 0:
+            return {
+                "file": str(path),
+                "violation": "TERRITORY_MISALIGNMENT",
+                "target_app": "apps_lic",
+                "signal": "domain_keywords",
+                "evidence": f"{lic_hits} LIC domain keywords, 0 RG keywords",
+                "message": (
+                    f"File '{path.name}' has strong apps_lic domain affinity "
+                    f"({lic_hits} keywords). Move to 'apps_lic/scripts/'."
+                ),
+            }
+
+        return None
+
+    def validate_layer_alignment(self, path: Path) -> dict[str, Any] | None:
+        """
+        Layer-level validation using import/content signals + subprocess allowlists.
+
+        Policies enforced:
+        - PURPOSE OVER MECHANISM: classify by what the file achieves, not how.
+        - L5 subprocess imports flagged UNLESS on L5_SUBPROCESS_ALLOWLIST.
+        - L6 subprocess/playwright flagged UNLESS on L6_HYBRID_ALLOWLIST.
+        - Agent classes outside reasoning/ flagged as AGENT_OUTSIDE_REASONING.
+        - PascalCase / test_* files in scripts/ flagged as SCRIPTS_PURITY_VIOLATION.
+        - Nested LCD subtrees under leaf domains flagged.
+
+        Returns None if compliant, or a violation dict.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+            L5_SUBPROCESS_ALLOWLIST,
+            L6_HYBRID_ALLOWLIST,
+            SCRIPTS_FORBIDDEN_PATTERNS,
+            validate_no_nested_lcd,
+        )
+
+        if not path.name.endswith(".py") or path.name.startswith("__"):
+            return None
+
+        parts = path.parts
+
+        # --- NESTED LCD PREVENTION ---
+        nested_violation = validate_no_nested_lcd(parts)
+        if nested_violation:
+            return {
+                "file": str(path),
+                "violation": "NESTED_LCD_SUBTREE",
+                **nested_violation,
+            }
+
+        # --- SCRIPTS PURITY GATE ---
+        if "scripts" in parts:
+            import re as _re
+            for pattern in SCRIPTS_FORBIDDEN_PATTERNS:
+                if _re.match(pattern, path.name):
+                    vtype = "PASCALCASE_IN_SCRIPTS" if pattern.startswith(r"^[A-Z]") else "TEST_IN_SCRIPTS"
+                    return {
+                        "file": str(path),
+                        "violation": vtype,
+                        "message": (
+                            f"'{path.name}' violates scripts/ purity. "
+                            f"PascalCase classes and test_* files are forbidden in scripts/."
+                        ),
+                    }
+
+        # --- L5 SUBPROCESS ALLOWLIST ---
+        if "L5_safety" in parts:
+            try:
+                content = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                content = ""
+            if "import subprocess" in content or "from subprocess" in content:
+                if path.name not in L5_SUBPROCESS_ALLOWLIST:
+                    return {
+                        "file": str(path),
+                        "violation": "L5_SUBPROCESS_NOT_ALLOWED",
+                        "message": (
+                            f"'{path.name}' imports subprocess in L5 but is NOT on the "
+                            f"L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add "
+                            f"to allowlist with justification."
+                        ),
+                    }
+
+        # --- L6 HYBRID ALLOWLIST ---
+        if "L6_observability" in parts:
+            try:
+                content = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                content = ""
+            if "import subprocess" in content or "from subprocess" in content:
+                if path.name not in L6_HYBRID_ALLOWLIST:
+                    return {
+                        "file": str(path),
+                        "violation": "L6_SUBPROCESS_NOT_ALLOWED",
+                        "message": (
+                            f"'{path.name}' imports subprocess in L6 but is NOT on the "
+                            f"L6_HYBRID_ALLOWLIST."
+                        ),
+                    }
+
+        # --- AGENT OUTSIDE REASONING ---
+        if path.name.endswith(".py") and "reasoning" not in parts:
+            try:
+                content = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                content = ""
+            # Quick heuristic: look for concrete Agent class definitions
+            import re as _re
+            agent_classes = _re.findall(r"^class\s+(\w+Agent)\s*[\(:]", content, _re.MULTILINE)
+            if agent_classes:
+                # Exclude files in base_agents/ (constitutional location)
+                if "base_agents" not in parts:
+                    # Determine the layer this file is in
+                    current_layer = None
+                    for p in parts:
+                        if p.startswith("L") and "_" in p:
+                            current_layer = p
+                            break
+                    if current_layer:
+                        return {
+                            "file": str(path),
+                            "violation": "AGENT_OUTSIDE_REASONING",
+                            "agent_classes": agent_classes,
+                            "current_folder": path.parent.name,
+                            "target_folder": "reasoning",
+                            "message": (
+                                f"'{path.name}' contains Agent class(es) {agent_classes} "
+                                f"but is in '{path.parent.name}/', not 'reasoning/'. "
+                                f"Move Agent class to '{current_layer}/reasoning/'."
+                            ),
+                        }
+
+        return None
+
+    def suggest_manager_layer(self, path: Path) -> str | None:
+        """
+        Phase 2.5 Manager routing: resolve *Manager classes to the correct layer
+        using import/content signals instead of defaulting to a single folder.
+
+        Rules:
+        - *Manager with cache/state/persist/store signals → L4_state
+        - *Manager with workflow/dag/pipeline/orchestrat signals → L3_orchestration
+        - *Manager with tool/api/subprocess/request signals → L2_execution
+        - Otherwise → None (use default classification)
+
+        Returns layer name or None if no strong signal.
+        """
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            return None
+
+        content_lower = content.lower()
+
+        l4_signals = ("cache", "state", "persist", "store", "redis", "memory", "ledger", "checkpoint")
+        l3_signals = ("workflow", "dag", "pipeline", "orchestrat", "coordinator", "schedule")
+        l2_signals = ("subprocess", "requests.get", "requests.post", "aiohttp", "tool_registry", "api_call")
+
+        l4_hits = sum(1 for s in l4_signals if s in content_lower)
+        l3_hits = sum(1 for s in l3_signals if s in content_lower)
+        l2_hits = sum(1 for s in l2_signals if s in content_lower)
+
+        max_hits = max(l4_hits, l3_hits, l2_hits)
+        if max_hits < 2:
+            return None  # No strong signal
+
+        if l4_hits == max_hits:
+            return "L4_state"
+        if l3_hits == max_hits:
+            return "L3_orchestration"
+        if l2_hits == max_hits:
+            return "L2_execution"
+        return None
 
     def validate_single_suffix(self, filename: str) -> dict[str, Any] | None:
         """
@@ -1436,11 +1825,16 @@ class FileClassificationAgent(*BASE_CLASSES):
                     correct_folder = folder
                     break
 
-        # For Python files in reasoning/ that aren't *Agent.py, use AST-based routing
+        # For Python files in reasoning/ that aren't *Agent.py, use AST-based routing.
+        # HARDENING: Catches snake_case files like "agent_monitor.py" that contain "agent"
+        # as a substring but aren't actual Agent classes (no PascalCase *Agent.py suffix).
         if correct_folder is None and folder_name == "reasoning" and filename.endswith(".py"):
             file_type = self.classify_file(path)
             from agentic_core.L5_safety.config.structure_blueprint_config import FILETYPE_TO_FOLDER
             correct_folder = FILETYPE_TO_FOLDER.get(file_type)
+            # SERVICE/singleton files route to enforcement/ even if they mention "agent"
+            if correct_folder is None and file_type == "SERVICE":
+                correct_folder = "enforcement"
 
         # Compute target path
         layer_root = None
@@ -3459,7 +3853,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         - CLASS: *Base.py for foundational base agents (e.g., L1CognitionBase.py)
         - STRATEGY: PascalCase with Strategy.py suffix
         - ADAPTER: PascalCase with Adapter.py suffix
-        - SCRIPT: snake_case with _script.py suffix
+        - SCRIPT: snake_case (no _script suffix — scripts/ folder is the signal)
         - UTILITY: snake_case with _util.py suffix
         - TYPES: snake_case with _types.py suffix
         - EXCEPTION: snake_case with _exceptions.py suffix
@@ -3557,12 +3951,15 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             return None
 
-        # SCRIPT: Force snake_case with _script.py suffix
+        # SCRIPT: Force snake_case (no _script suffix — folder is the signal)
         if file_type == "SCRIPT":
-            # ANTI-STUTTER: Sanitize first, then apply single correct suffix
+            # ANTI-STUTTER: Sanitize first, then apply snake_case
             core_name = self._sanitize_filename(path.stem)
             snake = self._to_smart_snake_case(core_name)
-            new_name = f"{snake}_script.py"
+            # Strip residual _script suffix if present (legacy cleanup)
+            if snake.endswith("_script"):
+                snake = snake[:-7]
+            new_name = f"{snake}.py"
             return new_name if new_name != path.name else None
 
         # UTILITY: Force snake_case with _util.py suffix

@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import logging
 import shutil
-import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -135,27 +134,29 @@ class ReportLocationAgent:
         return self._validator.generate_inventory()
 
     def is_git_tracked(self, file_path: Path) -> bool:
-        """Check if a file is tracked by git."""
+        """Check if a file is tracked by git via L5-safe subprocess delegation."""
         try:
-            result = subprocess.run(
+            from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+                safe_subprocess_run,
+            )
+            result = safe_subprocess_run(
                 ["git", "ls-files", "--error-unmatch", str(file_path)],
-                cwd=self.project_root,
-                capture_output=True,
-                text=True,
+                cwd=str(self.project_root),
             )
             return result.returncode == 0
         except Exception:
             return False
 
     def git_move(self, source: Path, destination: Path) -> bool:
-        """Move a file using git mv to preserve history."""
+        """Move a file using git mv to preserve history (L5-safe delegation)."""
         try:
             destination.parent.mkdir(parents=True, exist_ok=True)
-            result = subprocess.run(
+            from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+                safe_subprocess_run,
+            )
+            result = safe_subprocess_run(
                 ["git", "mv", str(source), str(destination)],
-                cwd=self.project_root,
-                capture_output=True,
-                text=True,
+                cwd=str(self.project_root),
             )
             return result.returncode == 0
         except Exception:

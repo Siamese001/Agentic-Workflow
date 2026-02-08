@@ -33,7 +33,7 @@ def _get_hierarchy_agent() -> Any:
 def _get_naming_agent() -> Any:
     """Get naming agent."""
     try:
-        from agentic_core.L5_safety.validators.naming_validator import NamingAgent
+        from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
         return NamingAgent
     except Exception:
