@@ -94,7 +94,7 @@ def analyze_file_structure(
 
     if structure_info["line_count"] > max_lines:
         structure_info["issues"].append(
-            f"File too large: {structure_info['line_count']} lines (limit: {max_lines})"
+            f"File too large: {structure_info['line_count']} lines (limit: {max_lines})",
         )
 
     try:
@@ -151,18 +151,22 @@ def suggest_file_split(
     content = file_path.read_text(encoding="utf-8")
 
     if "class " in content:
-        suggestions.append({
-            "strategy": "split_by_classes",
-            "description": "Split file into separate class files",
-            "priority": "high",
-        })
+        suggestions.append(
+            {
+                "strategy": "split_by_classes",
+                "description": "Split file into separate class files",
+                "priority": "high",
+            },
+        )
 
     if "def " in content:
-        suggestions.append({
-            "strategy": "split_by_functions",
-            "description": "Group related functions into modules",
-            "priority": "medium",
-        })
+        suggestions.append(
+            {
+                "strategy": "split_by_functions",
+                "description": "Group related functions into modules",
+                "priority": "medium",
+            },
+        )
 
     return suggestions
 

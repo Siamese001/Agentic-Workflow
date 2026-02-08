@@ -31,9 +31,7 @@ def _parse_class_ast(filepath: Path) -> dict:
                 elif isinstance(base, ast.Attribute):
                     bases.append(base.attr)
             methods = [
-                item.name
-                for item in node.body
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                item.name for item in node.body if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
             ]
             # Check for deprecation warning in __post_init__
             has_deprecation_warning = False
@@ -94,10 +92,13 @@ class TestCodeToolRunnerMixinExtraction:
             "Capability must be agent-agnostic (pure mixin) to avoid Diamond Problem"
         )
 
-    @pytest.mark.parametrize("filepath,agent_name", [
-        (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
-        (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
-    ])
+    @pytest.mark.parametrize(
+        "filepath,agent_name",
+        [
+            (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
+            (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
+        ],
+    )
     def test_agent_inherits_capability(self, filepath, agent_name):
         """Agent must list CodeToolRunnerCapability in its bases."""
         assert filepath.exists(), f"Missing: {filepath}"
@@ -107,10 +108,13 @@ class TestCodeToolRunnerMixinExtraction:
             f"{agent_name} must inherit from CodeToolRunnerCapability, got: {info['bases']}"
         )
 
-    @pytest.mark.parametrize("filepath,agent_name", [
-        (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
-        (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
-    ])
+    @pytest.mark.parametrize(
+        "filepath,agent_name",
+        [
+            (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
+            (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
+        ],
+    )
     def test_agent_preserves_sovereign_base(self, filepath, agent_name):
         """Agent must still have SovereignBaseAgent in its base chain."""
         info = _parse_class_ast(filepath)
@@ -118,10 +122,13 @@ class TestCodeToolRunnerMixinExtraction:
             f"{agent_name} must inherit SovereignBaseAgent, got: {info['bases']}"
         )
 
-    @pytest.mark.parametrize("filepath,agent_name", [
-        (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
-        (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
-    ])
+    @pytest.mark.parametrize(
+        "filepath,agent_name",
+        [
+            (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
+            (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
+        ],
+    )
     def test_capability_precedes_sovereign_base(self, filepath, agent_name):
         """CodeToolRunnerCapability must precede SovereignBaseAgent in MRO to avoid diamond."""
         info = _parse_class_ast(filepath)
@@ -134,10 +141,13 @@ class TestCodeToolRunnerMixinExtraction:
                 f"SovereignBaseAgent ({sov_idx}) in MRO"
             )
 
-    @pytest.mark.parametrize("filepath,agent_name", [
-        (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
-        (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
-    ])
+    @pytest.mark.parametrize(
+        "filepath,agent_name",
+        [
+            (CODE_FORMATTER_PATH, "CodeFormatterAgent"),
+            (UNUSED_CLEANUP_PATH, "UnusedCleanupAgent"),
+        ],
+    )
     def test_agent_has_execute(self, filepath, agent_name):
         """Agent must define execute method."""
         info = _parse_class_ast(filepath)

@@ -7,8 +7,6 @@ Enforces ROOT_ALLOWED_PATTERNS from structure_blueprint_config.py:
 
 from pathlib import Path
 
-import pytest
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 

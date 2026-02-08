@@ -16,6 +16,7 @@ Agents compose this via multiple inheritance alongside LICAgentBase.
 
 [CREATED 2026-02-08] Cluster 4 extraction per dedup critique §3.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -65,7 +66,7 @@ class HOPStageCapability:
             if value is None:
                 registry.add_trace("DATA_ERROR", {"msg": f"Missing {key}"})
                 raise RuntimeError(
-                    f"{agent_name} missing required upstream input: {key}"
+                    f"{agent_name} missing required upstream input: {key}",
                 )
             inputs[key] = value
         return inputs
@@ -88,7 +89,7 @@ class HOPStageCapability:
         """
         if not self.HOP_STAGE_NAME:
             raise ValueError(
-                f"{self.__class__.__name__} must set HOP_STAGE_NAME"
+                f"{self.__class__.__name__} must set HOP_STAGE_NAME",
             )
         buffer.write_once(self.HOP_STAGE_NAME, output_data)
         registry.add_trace(
@@ -120,5 +121,5 @@ class HOPStageCapability:
     ) -> None:
         """Execute stage-specific business logic. Must be overridden."""
         raise NotImplementedError(
-            f"{self.__class__.__name__} must implement _process()"
+            f"{self.__class__.__name__} must implement _process()",
         )

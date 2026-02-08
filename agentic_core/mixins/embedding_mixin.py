@@ -43,7 +43,7 @@ class EmbeddingMixin:
                 raise NotImplementedError(
                     "EmbeddingMixin: Embedding gateway is not available. "
                     "Install the required dependencies or configure "
-                    "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent."
+                    "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent.",
                 )
         return self._embedding_gateway
 

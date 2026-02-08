@@ -63,7 +63,12 @@ class MetaLearningMixin(BaseMetaLearner):
     def reflect_on_execution(self, task_id: str, status: str, **kwargs) -> None:
         MetaLearningEngine.reflect_on_execution(self._namespace, task_id, status, **kwargs)
 
-    def record_agent_interaction(self, callee_agent: str, success: bool, error_type: str | None = None) -> None:
+    def record_agent_interaction(
+        self,
+        callee_agent: str,
+        success: bool,
+        error_type: str | None = None,
+    ) -> None:
         MetaLearningEngine.record_agent_interaction(self._namespace, callee_agent, success, error_type)
 
     def inherit_rules_from(self, parent_entity: str) -> None:

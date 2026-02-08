@@ -18,8 +18,6 @@ from agentic_core.L5_safety.types.surgical_context_types import (
 )
 
 
-
-
 class TestASTCoordinate:
     """Tests for ASTCoordinate dataclass."""
 

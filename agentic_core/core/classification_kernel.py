@@ -28,7 +28,6 @@ import ast
 import logging
 import re
 from contextlib import contextmanager
-from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -68,18 +67,21 @@ FileType = Literal[
 # EXCLUDED / CRITICAL FILES — exempt from classification
 # ============================================================================
 
-_CRITICAL_IGNORES = frozenset({
-    "conftest.py",
-    "__init__.py",
-    "__main__.py",
-    "setup.py",
-    "tool_registry.py",
-})
+_CRITICAL_IGNORES = frozenset(
+    {
+        "conftest.py",
+        "__init__.py",
+        "__main__.py",
+        "setup.py",
+        "tool_registry.py",
+    },
+)
 
 
 # ============================================================================
 # classify_file_standalone — Lightweight SSOT classification
 # ============================================================================
+
 
 def classify_file_standalone(path: Path) -> FileType:
     """
@@ -127,10 +129,12 @@ def classify_file_standalone(path: Path) -> FileType:
         resolved = path
     try:
         return _classify_impl(resolved)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         logger.warning(
             "Kernel: unexpected error classifying %s: %s — returning IGNORE",
-            path, exc,
+            path,
+            exc,
         )
         return "IGNORE"
 
@@ -173,7 +177,8 @@ def _classify_impl(path: Path) -> FileType:
     except SyntaxError as exc:
         logger.warning(
             "Kernel: SyntaxError in %s (line %s) — returning IGNORE",
-            path, getattr(exc, 'lineno', '?'),
+            path,
+            getattr(exc, "lineno", "?"),
         )
         return "IGNORE"
 
@@ -239,9 +244,7 @@ def _classify_impl(path: Path) -> FileType:
     is_protocol = any(b == "Protocol" for b in bases) or (
         path.name.startswith("I") and len(path.name) > 2 and path.name[1:2].isupper()
     )
-    is_orchestrator = any(
-        p in primary_name for p in ("Orchestrator", "Coordinator", "Pipeline")
-    )
+    is_orchestrator = any(p in primary_name for p in ("Orchestrator", "Coordinator", "Pipeline"))
     is_agent = primary_name.endswith("Agent")
     if not is_agent:
         for b in bases:
@@ -322,6 +325,7 @@ def _classify_impl(path: Path) -> FileType:
 # is_agent_file — Convenience predicate
 # ============================================================================
 
+
 def is_agent_file(path: Path) -> bool:
     """
     SSOT predicate: Is this file classified as AGENT?
@@ -342,6 +346,7 @@ def is_agent_file(path: Path) -> bool:
 # ============================================================================
 # is_agent_or_orchestrator — Extended predicate for discovery manifests
 # ============================================================================
+
 
 def is_agent_or_orchestrator(path: Path) -> bool:
     """

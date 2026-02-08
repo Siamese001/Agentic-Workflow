@@ -12,7 +12,6 @@ Validates:
 from __future__ import annotations
 
 import ast
-import re
 from pathlib import Path
 
 import pytest
@@ -69,8 +68,7 @@ def _parse_class_info(filepath: Path) -> dict:
                             class_vars[name] = item.value.value
                         elif isinstance(item.value, ast.List):
                             class_vars[name] = [
-                                elt.value for elt in item.value.elts
-                                if isinstance(elt, ast.Constant)
+                                elt.value for elt in item.value.elts if isinstance(elt, ast.Constant)
                             ]
                 if isinstance(item, ast.FunctionDef):
                     methods.append(item.name)
@@ -141,8 +139,7 @@ class TestHOPStageNameUniqueness:
             name = info["class_vars"].get("HOP_STAGE_NAME", "")
             if name in seen:
                 pytest.fail(
-                    f"Duplicate HOP_STAGE_NAME={name!r}: "
-                    f"{seen[name]} and {info['class_name']}"
+                    f"Duplicate HOP_STAGE_NAME={name!r}: {seen[name]} and {info['class_name']}",
                 )
             seen[name] = info["class_name"]
 
@@ -155,9 +152,7 @@ class TestHOPProcessMethod:
         """Every HOP agent must implement _process()."""
         info = _parse_class_info(HOP_AGENTS_DIR / filename)
         assert info, f"Could not parse class from {filename}"
-        assert "_process" in info["methods"], (
-            f"{info['class_name']} missing _process() method"
-        )
+        assert "_process" in info["methods"], f"{info['class_name']} missing _process() method"
 
 
 class TestHOPImportPresent:
