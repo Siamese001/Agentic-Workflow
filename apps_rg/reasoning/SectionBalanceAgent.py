@@ -3,19 +3,20 @@ SectionBalanceAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+Refactored: 2026-02-08 (Cluster 2 — RGValidationCapability extraction)
 """
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import Any
 
+from apps_rg.utils.rg_validation_capability import RGValidationCapability
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 
 @dataclass
-class SectionBalanceAgent(RGAgentBase):
+class SectionBalanceAgent(RGValidationCapability, RGAgentBase):
     """
     Ensures proper section balance and prioritization.
 
@@ -24,6 +25,11 @@ class SectionBalanceAgent(RGAgentBase):
     - Important sections are present
     - Order matches job requirements
     """
+
+    VALIDATION_SIGNAL = "BALANCE_ISSUE"
+    VALIDATION_LOG_PREFIX = "Checking section balance..."
+    VALIDATION_PASS_MESSAGE = "Section balance is good"
+    VALIDATION_FAIL_PREFIX = "Balance issues"
 
     REQUIRED_SECTIONS = ["summary", "experience", "skills"]
     RECOMMENDED_SECTIONS = ["education", "projects", "certifications"]
@@ -41,7 +47,7 @@ class SectionBalanceAgent(RGAgentBase):
 
     async def execute(self) -> None:
         """
-        Execute section balance check.
+        Execute section balance check via RGValidationCapability harness.
 
         Validates resume for:
         - Required sections presence
@@ -51,12 +57,13 @@ class SectionBalanceAgent(RGAgentBase):
         Raises:
             BALANCE_ISSUE signal if sections are imbalanced
         """
-        self.log("Checking section balance...")
+        await self.run_validation()
 
+    async def collect_issues(self) -> list[str]:
+        """Collect section balance issues from the current resume."""
         resume = self.ctx.current_resume
         if not resume:
-            self.record_fail("No resume to check")
-            return
+            return ["No resume to check"]
 
         issues: list[str] = []
 
@@ -66,44 +73,20 @@ class SectionBalanceAgent(RGAgentBase):
                 issues.append(f"Missing required section: {section}")
 
         # Calculate total content length
-        total_length = sum(len(self._to_string(v)) for k, v in resume.items() if not k.startswith("_"))
+        total_length = sum(len(self.content_to_string(v)) for k, v in resume.items() if not k.startswith("_"))
 
         if total_length == 0:
-            self.record_fail("Resume has no content")
-            return
+            return ["Resume has no content"]
 
         # Check section ratios
         for section, max_ratio in self.MAX_SECTION_RATIOS.items():
             if section in resume:
-                section_length = len(self._to_string(resume[section]))
+                section_length = len(self.content_to_string(resume[section]))
                 ratio = section_length / total_length
                 if ratio > max_ratio:
                     issues.append(f"{section} is too long ({ratio:.0%} > {max_ratio:.0%})")
 
-        if issues:
-            self.record_fail(f"Balance issues: {len(issues)}", data=issues)
-            self.add_signal("BALANCE_ISSUE")
-        else:
-            self.record_pass("Section balance is good")
-            self.remove_signal("BALANCE_ISSUE")
-
-    def _to_string(self, content: Any) -> str:
-        """
-        Convert content to string for length calculation.
-
-        Args:
-            content: Content to convert (str, list, dict, or other)
-
-        Returns:
-            String representation of content
-        """
-        if isinstance(content, str):
-            return content
-        elif isinstance(content, list):
-            return " ".join(str(item) for item in content)
-        elif isinstance(content, dict):
-            return json.dumps(content)
-        return str(content)
+        return issues
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """Invoke healing chain via super()."""
@@ -111,18 +94,4 @@ class SectionBalanceAgent(RGAgentBase):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by SectionBalanceAgent."""
-        violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": (f"SectionBalanceAgent heal() not yet implemented for {violation_type}"),
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"SectionBalanceAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+        return self.make_heal_result(violation)

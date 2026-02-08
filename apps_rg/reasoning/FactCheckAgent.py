@@ -3,6 +3,7 @@ FactCheckAgent - Extracted for one-class-per-file pattern.
 
 Originally from: ContentQualityAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
+Refactored: 2026-02-08 (Cluster 2 — RGValidationCapability extraction)
 """
 
 from __future__ import annotations
@@ -10,11 +11,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from apps_rg.utils.rg_validation_capability import RGValidationCapability
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 
 @dataclass
-class FactCheckAgent(RGAgentBase):
+class FactCheckAgent(RGValidationCapability, RGAgentBase):
     """
     Verifies claims against user profile.
 
@@ -24,13 +26,18 @@ class FactCheckAgent(RGAgentBase):
     - Dates consistency
     """
 
+    VALIDATION_SIGNAL = "HALLUCINATION_DETECTED"
+    VALIDATION_LOG_PREFIX = "Fact-checking resume claims..."
+    VALIDATION_PASS_MESSAGE = "All claims verified"
+    VALIDATION_FAIL_PREFIX = "Fact-check issues"
+
     def __post_init__(self) -> None:
         """Initialize fact check agent."""
         super().__post_init__()
 
     async def execute(self) -> None:
         """
-        Execute fact-checking of resume claims against user profile.
+        Execute fact-checking via RGValidationCapability harness.
 
         Validates:
         - Skills against profile skills
@@ -40,8 +47,6 @@ class FactCheckAgent(RGAgentBase):
         Raises:
             HALLUCINATION_DETECTED signal if unverified claims found
         """
-        self.log("Fact-checking resume claims...")
-
         resume = self.ctx.current_resume
         profile = self.ctx.user_profile
 
@@ -51,10 +56,16 @@ class FactCheckAgent(RGAgentBase):
             return
 
         if not profile:
-            self.log("⚠️ No user profile available, skipping deep fact-check")
+            self.log("No user profile available, skipping deep fact-check")
             self.record_pass("Fact-check skipped (no profile)")
             return
 
+        await self.run_validation()
+
+    async def collect_issues(self) -> list[str]:
+        """Collect fact-check issues by comparing resume claims against profile."""
+        resume = self.ctx.current_resume
+        profile = self.ctx.user_profile
         issues: list[str] = []
 
         # Check skills against profile (case-insensitive)
@@ -87,12 +98,7 @@ class FactCheckAgent(RGAgentBase):
                     if unverified:
                         issues.append(f"Unverified companies: {list(unverified)[:3]}")
 
-        if issues:
-            self.record_fail(f"Fact-check issues: {len(issues)}", data=issues)
-            self.add_signal("HALLUCINATION_DETECTED")
-        else:
-            self.record_pass("All claims verified")
-            self.remove_signal("HALLUCINATION_DETECTED")
+        return issues
 
     def _extract_skills(self, resume: dict[str, Any]) -> set[str]:
         """
@@ -129,18 +135,4 @@ class FactCheckAgent(RGAgentBase):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by FactCheckAgent."""
-        violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": (f"FactCheckAgent heal() not yet implemented for {violation_type}"),
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"FactCheckAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+        return self.make_heal_result(violation)
