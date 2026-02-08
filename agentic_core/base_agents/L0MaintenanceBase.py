@@ -40,7 +40,7 @@ except ImportError:
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 
 @dataclass

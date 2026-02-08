@@ -28,7 +28,7 @@ except ImportError:
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.security import safe_execute
 
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

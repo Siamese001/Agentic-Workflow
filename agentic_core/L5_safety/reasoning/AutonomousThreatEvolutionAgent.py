@@ -29,7 +29,7 @@ from typing import Any
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 from agentic_core.base_agents.timeout_decorator import timeout
 
-from agentic_core.L5_safety.utils.decorators_util import standard_heal
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
