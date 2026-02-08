@@ -28,17 +28,11 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 Logger = logging.getLogger("sprawl_gate")
 
 # ---------------------------------------------------------------------------
-# SSOT Path Resolution
+# SSOT Path Resolution — hardened for bare-terminal execution.
+# Resolves repo root from script location (artifacts/dedup/ -> 2 parents up)
+# so the script never requires PYTHONPATH to be set.
 # ---------------------------------------------------------------------------
-try:
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
-        get_validated_project_root,
-    )
-
-    PROJECT_ROOT = get_validated_project_root()
-except ImportError:
-    PROJECT_ROOT = Path(__file__).resolve().parents[2]
-    Logger.warning("[FALLBACK] Could not import structure_blueprint_config — using fallback paths")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts" / "dedup" / "similarity"
 CODE_SIM_FILE = ARTIFACTS_DIR / "code_similarity.json"
