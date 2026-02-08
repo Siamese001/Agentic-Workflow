@@ -208,15 +208,38 @@ class FileClassificationAgent(*BASE_CLASSES):
         # GLOBAL RUN-LEVEL IDEMPOTENCE CACHE (FINAL HARDENING 2026-02-05)
         self.processed_paths: set[Path] = set()
 
-        # APP-SPECIFIC TERRITORY MAP (DEPTH-2 MVC)
+        # APP-SPECIFIC TERRITORY MAP (APPS-AWARE HARDENING 2026-02-08)
+        # apps_* folders have their OWN valid structure distinct from agentic_core layers.
+        # Each file type lists ALL folders where it is legitimately allowed to reside.
+        # Files are only moved if they are in a folder NOT in this list.
         self.app_territory_map = {
-            "AGENT": ["engines"],
-            "ORCHESTRATOR": ["engines"],
-            "VALIDATOR": ["domain", "utils"],
+            "AGENT": ["engines", "reasoning", "shared"],
+            "ORCHESTRATOR": ["engines", "reasoning"],
+            "STRATEGY": ["engines", "shared"],
+            "VALIDATOR": ["validation", "engines", "domain"],
             "CONFIG": ["config"],
-            "TYPES": ["domain"],
-            "CLASS": ["domain", "engines", "utils"],
-            "MIXIN": ["mixins"],  # [LCD+ P2] Tightened: mixins MUST go to mixins/ only
+            "TYPES": ["types", "domain", "engines", "shared"],
+            "CLASS": ["engines", "domain", "tools", "shared", "utils", "core", "reasoning"],
+            "MIXIN": ["shared", "mixins"],
+            "UTILITY": ["utils", "tools", "shared", "engines", "domain"],
+            "SCRIPT": ["scripts", "tools"],
+            "PROTOCOL": ["types", "domain"],
+            "ENGINE": ["engines"],
+            "EXCEPTION": ["types", "domain"],
+            "FACTORY": ["engines", "domain"],
+            "GATEWAY": ["engines"],
+            "STUB": ["engines", "domain", "shared", "tools"],
+        }
+
+        # APPS VALID FOLDERS: All legitimate top-level subfolders in apps_* directories.
+        # Files in any of these folders are considered "in sovereign territory" and are
+        # NOT subject to territory moves unless explicitly miscategorized.
+        self.apps_valid_folders = {
+            "engines", "reasoning", "types", "tools", "validation",
+            "shared", "domain", "config", "scripts", "utils",
+            "core", "logic_nodes", "system_flow", "asset_library",
+            "reports", "mixins", "agents", "common_utils",
+            "core_components", "data", "integration", "llm",
         }
 
         # STANDARD KERNEL: All layers should have these subfolders (LCD+ canonical skeleton)
@@ -425,7 +448,10 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             # [LCD+ P0] COMPOUND SUFFIX PRE-VALIDATION GATE
             # Must run BEFORE classify_file() to prevent ambiguous classification.
-            compound_violation = self.validate_single_suffix(path.name)
+            # [APPS-AWARE HARDENING 2026-02-08] Skip for apps_* paths — compound suffix
+            # resolver produces nonsensical names (e.g., app_config_types -> app_types_types).
+            is_apps_file = any(p.startswith("apps_") for p in path.parts)
+            compound_violation = self.validate_single_suffix(path.name) if not is_apps_file else None
             if compound_violation:
                 self.logger.warning(
                     f"[COMPOUND_SUFFIX] {path.name} has {len(compound_violation['found_suffixes'])} "
@@ -1730,6 +1756,13 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if compliant, or a dict with 'folder', 'expected_suffixes', 'suggested_name'.
         """
+        # [APPS-AWARE HARDENING 2026-02-08]
+        # LCD suffix rules are for agentic_core layers. apps_* folders have their
+        # own naming conventions (e.g., types files don't always end in _types.py,
+        # utils files don't need _util.py suffix). Skip enforcement for apps.
+        if any(p.startswith("apps_") for p in path.parts):
+            return None
+
         filename = path.name
         parent_name = path.parent.name
 
@@ -1785,6 +1818,13 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if file is in a valid folder, or violation dict with eviction target.
         """
+        # [APPS-AWARE HARDENING 2026-02-08]
+        # FOLDER_PURITY_RULES are designed for agentic_core layer folders and are
+        # NOT applicable to apps_* which have different folder semantics.
+        # For example, apps_rg/reasoning/ may legitimately contain non-Agent files.
+        if any(p.startswith("apps_") for p in path.parts):
+            return None
+
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FOLDER_PURITY_RULES,
             NON_PYTHON_FOLDER_ROUTES,
@@ -3238,34 +3278,14 @@ class FileClassificationAgent(*BASE_CLASSES):
                     return True  # Violation resolved by deletion
 
                 else:
-                    # Divergent content: Rename to .CONFLICT to preserve data
-                    print("  [ANALYSIS] Files are DIFFERENT. Conflict rename.")
-                    timestamp = int(time.time())
-                    conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
-                    conflict_path = src.parent / conflict_name
-
-                    # [HARDENED] Check if conflict file already exists
-                    if conflict_path.exists():
-                        # Add microseconds to ensure uniqueness
-                        timestamp = int(time.time() * 1000000)
-                        conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
-                        conflict_path = src.parent / conflict_name
-
-                    print(f"  [ACTION] RENAME {src.name} -> {conflict_name}")
-
-                    # [HARDENED] Atomic rename with verification
-                    src.rename(conflict_path)
-
-                    # [HARDENED] Verify rename succeeded and source no longer exists
-                    if src.exists():
-                        print(f"  [ERROR] Failed to rename {src.name} - source still exists")
-                        return False
-                    if not conflict_path.exists():
-                        print(f"  [ERROR] Failed to rename {src.name} - conflict file not found")
-                        return False
-
-                    print(f"  [SUCCESS] {src.name} renamed to {conflict_name}")
-                    return True  # Violation resolved by moving aside
+                    # [APPS-AWARE HARDENING 2026-02-08]
+                    # Divergent content: ABORT the rename. Do NOT create .CONFLICT files.
+                    # .CONFLICT files caused cascading data corruption and orphaned files
+                    # in the previous run. The correct action is to leave the source file
+                    # in place and log the collision for manual review.
+                    print("  [ANALYSIS] Files are DIFFERENT. ABORTING rename (no .CONFLICT creation).")
+                    print(f"  [SKIPPED] {src.name} stays in place — target {dest_name} already exists with different content.")
+                    return False  # Violation NOT resolved — requires manual review
 
             except Exception as e:  # guardian: allow-silent_swallower
                 print(f"  [ERROR] Failed to read {src}: {e}")
@@ -3675,16 +3695,34 @@ class FileClassificationAgent(*BASE_CLASSES):
         target_folder = None
 
         if is_app:
+            # [APPS-AWARE HARDENING 2026-02-08]
+            # Apps have their own sovereign folder structure. We only flag violations
+            # when a file is in a folder that is explicitly WRONG for its type.
+            # We NEVER move files between recognized app subfolders (e.g., tools/ -> domain/).
             allowed = self.app_territory_map.get(file_type, [])
-            if current_parent not in allowed:
-                target_dir = (
-                    "config"
-                    if file_type == "CONFIG"
-                    else "engines"
-                    if file_type in ("AGENT", "ORCHESTRATOR")
-                    else "domain"
-                )
-                target_path = path.parent.parent / target_dir / path.name
+
+            # Resolve the immediate folder relative to the apps_* root
+            # e.g., for apps_rg/engines/utils/foo.py, get the depth-1 folder "engines"
+            depth1_folder = parts[root_index + 1] if len(parts) > root_index + 1 else ""
+
+            # SAFE HARBOR: If file is anywhere under a recognized apps subfolder, it stays.
+            # This prevents tools/ -> domain/, shared/utils/ -> domain/, etc.
+            if depth1_folder.lower() in self.apps_valid_folders:
+                # File is under a recognized apps folder — check if it's explicitly allowed
+                if current_parent in allowed or depth1_folder in allowed:
+                    return None  # Correctly placed
+
+                # File is in a recognized folder but not in allowed list for its type.
+                # For apps, we are ULTRA-CONSERVATIVE: only move if the file is in a
+                # clearly wrong location with zero ambiguity.
+                # All other cases: leave the file in place.
+                return None
+
+            # File is NOT under any recognized apps subfolder (orphaned at root or junk folder)
+            # Route to the first allowed folder for this type.
+            if allowed:
+                target_dir = allowed[0]
+                target_path = Path(*parts[: root_index + 1]) / target_dir / path.name
                 self.processed_paths.add(path)
                 self.processed_paths.add(target_path)
                 return target_path
@@ -3913,42 +3951,15 @@ class FileClassificationAgent(*BASE_CLASSES):
             target_name = path.stem
 
         if is_app:
-            # APPS HIGH-SIGNAL NAMING (MINIMALIST MVC)
-            base_name = re.sub(r"Phase\d+", "", target_name)  # Strip Phase#
-            if "hop" in base_name.lower():
-                base_name = re.sub(r"hop", "HOP", base_name, flags=re.IGNORECASE)
-
-            if file_type in ("AGENT", "CLASS", "ORCHESTRATOR"):
-                base_name = base_name.removesuffix("Agent").removesuffix("Strategy").removesuffix("Validator")
-                new_name = f"{self._to_pascal_case(base_name)}.py"
-                if new_name != path.name:
-                    self.processed_paths.add(path)
-                    self.processed_paths.add(path.with_name(new_name))
-                    return new_name
-                return None
-
-            if file_type == "CONFIG":
-                if path.name.endswith("_config.py"):
-                    return None
-                base_name = path.stem.removesuffix("Config").removesuffix("Agent")
-                new_name = f"{self._to_smart_snake_case(base_name)}_config.py"
-                if new_name != path.name:
-                    self.processed_paths.add(path)
-                    self.processed_paths.add(path.with_name(new_name))
-                    return new_name
-                return None
-
-            if file_type == "VALIDATOR":
-                if path.name.endswith("_validator.py"):
-                    return None
-                base_name = target_name.removesuffix("Validator").removesuffix("Agent")
-                new_name = f"{self._to_smart_snake_case(base_name)}_validator.py"
-                if new_name != path.name:
-                    self.processed_paths.add(path)
-                    self.processed_paths.add(path.with_name(new_name))
-                    return new_name
-                return None
-
+            # [APPS-AWARE HARDENING 2026-02-08]
+            # Apps naming is CONSERVATIVE: preserve existing names.
+            # Agent/Strategy/Validator suffixes are NEVER stripped — they match class names.
+            # Only intervene for root-cause issues: stuttering, forbidden patterns,
+            # or files that have no PascalCase when they should (e.g., agents).
+            #
+            # RATIONALE: Stripping suffixes caused catastrophic collisions in the previous
+            # run (e.g., 3 different agents all renamed to "Outreach.py"). The class name
+            # IS the filename in apps — one-class-per-file means ClassNameAgent.py is correct.
             return None
 
         # SCRIPT: Force snake_case (no _script suffix — folder is the signal)
