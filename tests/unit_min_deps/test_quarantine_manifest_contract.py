@@ -6,6 +6,8 @@ Enforced invariants:
     2. The manifest has no stale entries (files listed but not on disk).
     3. Every entry has a valid category from the allowed enum.
     4. Every entry has non-empty primary_dep and re_enable fields.
+    5. Total quarantine count must not exceed the declared ceiling.
+    6. Per-category counts must not exceed their declared ceilings.
 """
 
 from __future__ import annotations
@@ -123,6 +125,49 @@ class TestManifestBidirectionalSync:
             f"Disk/manifest mismatch.\n"
             f"  On disk only: {sorted(on_disk - in_manifest)}\n"
             f"  In manifest only: {sorted(in_manifest - on_disk)}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 5-6. Non-increasing quarantine ceilings
+# ---------------------------------------------------------------------------
+
+
+class TestQuarantineCeiling:
+    """Quarantine count must not exceed declared ceilings (total + per-category)."""
+
+    def test_total_ceiling(self) -> None:
+        manifest = _load_manifest()
+        ceiling = manifest.get("ceiling", {})
+        total_ceiling = ceiling.get("total")
+        assert total_ceiling is not None, "Manifest missing ceiling.total. Add a ceiling section."
+        actual = len(manifest["entries"])
+        assert actual <= total_ceiling, (
+            f"Quarantine total ceiling breached: {actual} > {total_ceiling}.\n"
+            "To raise: update ceiling.total in QUARANTINE_MANIFEST.json + add rationale to commit message."
+        )
+
+    def test_per_category_ceiling(self) -> None:
+        manifest = _load_manifest()
+        ceiling = manifest.get("ceiling", {})
+        by_category = ceiling.get("by_category", {})
+        assert by_category, "Manifest missing ceiling.by_category. Add per-category ceilings."
+
+        from collections import Counter
+
+        actual_counts = Counter(e["category"] for e in manifest["entries"])
+        breaches: list[str] = []
+        for cat, count in sorted(actual_counts.items()):
+            cat_ceiling = by_category.get(cat)
+            if cat_ceiling is None:
+                breaches.append(f"  {cat}: no ceiling defined (count={count})")
+            elif count > cat_ceiling:
+                breaches.append(f"  {cat}: {count} > {cat_ceiling}")
+
+        assert not breaches, (
+            "Per-category quarantine ceiling breached:\n"
+            + "\n".join(breaches)
+            + "\nTo raise: update ceiling.by_category in QUARANTINE_MANIFEST.json + add rationale to commit message."
         )
 
 
