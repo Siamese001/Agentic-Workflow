@@ -113,33 +113,6 @@ def guardian_config() -> dict:
 
 
 # =============================================================================
-# HOOKS FOR TEST ISOLATION
-# =============================================================================
-
-
-def pytest_ignore_collect(collection_path, config):
-    """
-    Prevent collection of integration tests when optional deps are missing.
-
-    This prevents import-time errors when pydantic/redis/requests are not installed.
-    """
-    # Check if pydantic is available
-    try:
-        import pydantic  # noqa: F401
-
-        return None  # Don't ignore anything if pydantic is available
-    except ImportError:
-        pass
-
-    # If pydantic is missing, ignore integration tests to prevent collection errors
-    path_str = str(collection_path)
-    if "tests/integration" in path_str.replace("\\", "/"):
-        return True  # Ignore this path
-
-    return None  # Don't ignore
-
-
-# =============================================================================
 # HOOKS FOR GUARDIAN REPORTING
 # =============================================================================
 
@@ -152,7 +125,6 @@ def pytest_collection_modifyitems(config, items):
     1. When -m unit_min_deps is used, deselect integration_full_deps tests
     2. Track guardian test counts for reporting
     """
-    # Get the marker expression from config
     marker_expr = config.getoption("-m", default="")
 
     # Track guardian tests for reporting
@@ -160,12 +132,11 @@ def pytest_collection_modifyitems(config, items):
     if guardian_tests:
         config._guardian_test_count = len(guardian_tests)
 
-    # Isolation: when running unit_min_deps, skip integration tests entirely
+    # Isolation: when running unit_min_deps, deselect integration tests
     if "unit_min_deps" in marker_expr and "integration_full_deps" not in marker_expr:
         deselected = []
         selected = []
         for item in items:
-            # Check if item has integration_full_deps marker
             if item.get_closest_marker("integration_full_deps"):
                 deselected.append(item)
             else:
