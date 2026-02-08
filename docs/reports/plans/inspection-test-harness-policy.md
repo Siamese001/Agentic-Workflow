@@ -125,3 +125,25 @@ refactor but import paths were never updated.
 
 **Contract tests**: `test_decorator_shim_contract.py` (11 tests) verifies shim
 correctness and identity with canonical implementations.
+
+**Known architectural debt — layer inversion**:
+
+The current shim direction creates layer inversion: `base_agents/decorators.py`
+imports from `L5_safety/utils/decorators_util.py`, meaning the foundational
+`base_agents` package depends on a higher layer (L5).
+
+Per `SOVEREIGN_TERRITORIES`, decorators belong in `base_agents`:
+```
+"base_agents": {
+    "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
+```
+
+The implementation in `decorators_util.py` uses only stdlib (no L5-specific
+dependencies), so it can be moved without breaking layer constraints.
+
+**Remediation plan** (tracked, not blocking):
+1. Move canonical implementation from `L5_safety/utils/decorators_util.py` to
+   `base_agents/decorators.py`
+2. Convert `L5_safety/utils/decorators_util.py` to a backward-compat shim
+3. Update 53 direct importers of the L5 location to use `base_agents` path
+4. Add layer-constraint enforcement to pre-commit hooks
