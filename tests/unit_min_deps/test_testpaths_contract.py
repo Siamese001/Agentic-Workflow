@@ -20,7 +20,7 @@ pytestmark = pytest.mark.unit_min_deps
 ROOT = Path(__file__).resolve().parents[2]
 PYTEST_INI = ROOT / "pytest.ini"
 
-REQUIRED_TESTPATHS = {"tests/unit_min_deps", "tests/integration"}
+REQUIRED_TESTPATHS = {"tests/unit_min_deps", "tests/integration/agentic_core"}
 
 REQUIRED_NORECURSEDIRS = {"apps_rg", "apps_lic", "apps_shared", "ops_scripts", "_quarantine"}
 
