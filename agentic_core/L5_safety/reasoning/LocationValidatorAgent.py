@@ -238,6 +238,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         except SyntaxError:
             pass  # Unparseable Python is a different issue
+        # guardian: allow-silent-swallow
         except Exception:
             pass  # Non-blocking for other errors
 
@@ -253,11 +254,24 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         SSOT FIX: Allow variable depth for certain subfolders that legitimately
         have deeper structures (e.g., utils/core_extensions/, config/core/).
+
+        [2026-02-08] FLAT DIRECTORY ENFORCEMENT: Directories in FLAT_DIRECTORIES
+        must not contain any subdirectories. This check runs BEFORE depth checks
+        to catch violations like mixins/contracts/ that bypass depth validation.
         """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
             VARIABLE_DEPTH_SUBFOLDERS,
+            validate_flat_directory,
         )
+
+        # [2026-02-08] FLAT DIRECTORY CHECK — runs first, unconditionally
+        flat_violation = validate_flat_directory(parts)
+        if flat_violation:
+            return (
+                False,
+                f"FLAT VIOLATION: {flat_violation['message']}",
+            )
 
         expected_depth = SOVEREIGN_TERRITORIES.get(root_folder, {}).get("depth")
         actual_depth = len(parts) - 1
@@ -324,6 +338,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 if file_path.stat().st_size < 1_000_000:  # 1MB limit
                     try:
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    # guardian: allow-silent-swallow
                     except Exception:
                         pass  # Content check is optional
 
@@ -333,6 +348,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     False,
                     f"ARTIFACT ROUTING VIOLATION: {rejection_reason}",
                 )
+        # guardian: allow-silent-swallow
         except Exception:
             pass  # Non-blocking - routing check is supplementary
 
@@ -386,6 +402,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             if not result[0]:
                 return result
 
+        # guardian: allow-silent-swallow
         except Exception:
             pass  # AST parsing failures are non-blocking
 
@@ -530,6 +547,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                             f"belongs in '{correct_folder}/' not '{current_subfolder}/'. "
                             f"File: {rel_path}"
                         )
+        # guardian: allow-silent-swallow
         except Exception:
             pass  # Fall through to legacy scoring if FCA unavailable
 

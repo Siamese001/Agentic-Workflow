@@ -759,12 +759,11 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, TerritoryDefinition]] = {
                 "naming_convention": r"^[a-z][a-z0-9_]*_(util|types|exceptions|engine|config)\.py$",
             },
             "mixins": {
-                "purpose": "ALL shared mixins and behavioral contracts. Canonical home for *_mixin.py files.",
-                "notes": "36 mixins migrated from base_agents/. configuration_mixin.py migrated from config/core/.",
-                "subfolders": {
-                    "contracts": {"purpose": "Abstract interfaces and behavioral contracts."},
-                },
-                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract)\.py$",
+                "purpose": "ALL shared mixins and behavioral contracts. Canonical home for *_mixin.py and *_contract.py files.",
+                "notes": "36 mixins migrated from base_agents/. FLAT: no subfolders allowed (contracts/ dissolved 2026-02-08).",
+                "subfolders": {},
+                "flat": True,
+                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract|engine|storage|client_mixin)\.py$",
             },
             "utils": {
                 "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",
@@ -3139,6 +3138,7 @@ def is_path_allowed(rel_path: str | Path) -> bool:
     if "//" in original_path:
         return False
 
+    # guardian: allow-path-string
     normalized_path = os.path.normpath(original_path).replace("\\", "/")
 
     # Reject paths that normalize to parent directories or empty
@@ -5769,6 +5769,18 @@ REQUIRED_LCD_SUBFOLDERS: Final[frozenset[str]] = frozenset(
     },
 )
 
+# === FLAT DIRECTORIES (No Subfolders Allowed) ===
+# Directories marked "flat": True in SOVEREIGN_TERRITORIES.
+# Files MUST live directly in these directories — any subdirectory is a violation.
+# Derived from territories where "flat" is explicitly True.
+FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
+    {
+        "mixins",  # contracts/ dissolved 2026-02-08 — all files flat
+        "base_agents",  # Strict identity only — flat by constitution
+        "interfaces",  # Protocol contracts — flat
+    },
+)
+
 # Only layer roots may contain LCD subfolders. Leaf domains listed here
 # are forbidden from sprouting reasoning/enforcement/config/types/validators/utils.
 LEAF_DOMAINS_NO_LCD: Final[frozenset[str]] = frozenset(
@@ -5794,6 +5806,39 @@ def is_allowed_subfolder(layer: str, subfolder: str) -> bool:
     if layer not in LAYER_ROOTS:
         return False
     return subfolder in REQUIRED_LCD_SUBFOLDERS
+
+
+def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
+    """Detect files nested inside directories that must be flat (no subfolders).
+
+    Args:
+        path_parts: tuple/list of path components (e.g. Path.parts).
+
+    Returns:
+        None if compliant, or a violation dict with:
+        - domain: the flat directory that was violated
+        - illegal_child: the subdirectory found inside it
+        - message: human-readable explanation
+    """
+    for i, part in enumerate(path_parts):
+        if part in FLAT_DIRECTORIES:
+            # If there are 2+ parts after the flat directory before the filename,
+            # that means there's a subdirectory inside it.
+            remaining = path_parts[i + 1 :]
+            if len(remaining) > 1:
+                # remaining[-1] is the filename, remaining[:-1] are subdirs
+                illegal_child = remaining[0]
+                if illegal_child == "__pycache__":
+                    return None
+                return {
+                    "domain": part,
+                    "illegal_child": illegal_child,
+                    "message": (
+                        f"FLAT VIOLATION: '{part}/' must not contain subdirectory "
+                        f"'{illegal_child}/'. All files must live directly in '{part}/'."
+                    ),
+                }
+    return None
 
 
 def validate_no_nested_lcd(path_parts: Sequence[str]) -> dict[str, Any] | None:
