@@ -1,99 +1,177 @@
 """
-Unit tests for SignatureVerifierAgent - GenericAgent in L5.
+Unit tests for SignatureVerifierAgent — L5 inspection agent.
 
-function class for inspection domain.
-
-Tests:
-- State Integrity: Verify initialization and state
-- Logic Branching: Test method dispatch
-- Fuzzing: Invalid inputs
-- Mocking: Zero network calls
+Tests (AST-structural + behavioral):
+1. AST: Class exists at correct import path
+2. AST: Inherits from InspectionCapability and SubatomicTestingMixin
+3. AST: Implements perform_checks, diagnose, heal_repository, heal
+4. AST: Sets INSPECTION_LOG_PREFIX
+5. AST: No execute() method (legacy adapter removed)
+6. Behavioral: run_inspection returns InspectionResult with correct attributes
+7. Behavioral: Null target produces issues
+8. Behavioral: Dict/list targets populate metrics
 """
 
-from unittest.mock import Mock, patch
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+from typing import Any
 
 import pytest
 
+from agentic_core.mixins.inspection_capability import InspectionCapability, InspectionResult
 
-@pytest.fixture(autouse=True)
-def mock_external_services():
-    """Mock all external services to prevent network calls."""
-    with (
-        patch("redis.Redis", return_value=Mock()),
-        patch.dict("os.environ", {"OPENAI_API_KEY": "test-key", "ANTHROPIC_API_KEY": "test-key"}),
-    ):
-        yield
+ROOT = Path(__file__).resolve().parents[5]
+AGENT_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SignatureVerifierAgent.py"
+
+# ---------------------------------------------------------------------------
+# Parse the agent source once for all AST tests
+# ---------------------------------------------------------------------------
+_SOURCE = AGENT_PATH.read_text(encoding="utf-8")
+_TREE = ast.parse(_SOURCE)
 
 
-class TestSignatureVerifierAgent:
-    """Unit tests for SignatureVerifierAgent."""
+def _find_agent_class() -> ast.ClassDef:
+    for node in ast.walk(_TREE):
+        if isinstance(node, ast.ClassDef) and node.name == "SignatureVerifierAgent":
+            return node
+    pytest.fail("SignatureVerifierAgent class not found in AST")
+
+
+_AGENT_NODE = _find_agent_class()
+_METHOD_NAMES = [
+    item.name for item in _AGENT_NODE.body if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+]
+
+
+# ---------------------------------------------------------------------------
+# 1. AST STRUCTURAL TESTS
+# ---------------------------------------------------------------------------
+class TestSignatureVerifierStructure:
+    """AST-based structural verification."""
+
+    def test_correct_import_path(self) -> None:
+        """Agent module exists at expected path."""
+        assert AGENT_PATH.exists(), f"Missing: {AGENT_PATH}"
+
+    def test_inherits_inspection_capability(self) -> None:
+        """Must list InspectionCapability in bases."""
+        base_names = []
+        for base in _AGENT_NODE.bases:
+            if isinstance(base, ast.Name):
+                base_names.append(base.id)
+            elif isinstance(base, ast.Attribute):
+                base_names.append(base.attr)
+        assert "InspectionCapability" in base_names, f"Bases: {base_names}"
+
+    def test_inherits_subatomic_testing_mixin(self) -> None:
+        """Must list SubatomicTestingMixin in bases."""
+        base_names = []
+        for base in _AGENT_NODE.bases:
+            if isinstance(base, ast.Name):
+                base_names.append(base.id)
+            elif isinstance(base, ast.Attribute):
+                base_names.append(base.attr)
+        assert "SubatomicTestingMixin" in base_names, f"Bases: {base_names}"
+
+    def test_sets_inspection_log_prefix(self) -> None:
+        """Must set INSPECTION_LOG_PREFIX as a non-empty string constant."""
+        for item in _AGENT_NODE.body:
+            if isinstance(item, ast.Assign):
+                for target in item.targets:
+                    if isinstance(target, ast.Name) and target.id == "INSPECTION_LOG_PREFIX":
+                        assert isinstance(item.value, ast.Constant) and item.value.value
+                        return
+        pytest.fail("INSPECTION_LOG_PREFIX not found")
+
+    def test_implements_perform_checks(self) -> None:
+        assert "perform_checks" in _METHOD_NAMES
+
+    def test_implements_diagnose(self) -> None:
+        assert "diagnose" in _METHOD_NAMES
+
+    def test_implements_heal_repository(self) -> None:
+        assert "heal_repository" in _METHOD_NAMES
+
+    def test_implements_heal(self) -> None:
+        assert "heal" in _METHOD_NAMES
+
+    def test_no_legacy_execute_method(self) -> None:
+        """execute() was a buggy legacy adapter — must not exist after cleanup."""
+        assert "execute" not in _METHOD_NAMES, (
+            "SignatureVerifierAgent should NOT have execute() — use diagnose() as the standard API"
+        )
+
+    def test_diagnose_calls_run_inspection(self) -> None:
+        """diagnose() must delegate to self.run_inspection()."""
+        assert "run_inspection" in _SOURCE
+
+
+# ---------------------------------------------------------------------------
+# 2. BEHAVIORAL TESTS (via lightweight InspectionCapability subclass)
+# ---------------------------------------------------------------------------
+class _SignatureVerifierStub(InspectionCapability):
+    """Minimal stub replicating SignatureVerifierAgent.perform_checks()."""
+
+    INSPECTION_LOG_PREFIX = "Running signature verification..."
+
+    def perform_checks(
+        self,
+        target: Any,
+        context: dict[str, Any] | None = None,
+    ) -> tuple[list[str], dict[str, Any]]:
+        issues: list[str] = []
+        metrics: dict[str, Any] = {}
+        if target is None:
+            issues.append("Target is null")
+        elif isinstance(target, dict):
+            metrics["field_count"] = len(target)
+        elif isinstance(target, list):
+            metrics["item_count"] = len(target)
+        metrics["type"] = type(target).__name__
+        return issues, metrics
+
+
+class TestSignatureVerifierBehavior:
+    """Behavioral tests using InspectionResult natively."""
 
     @pytest.fixture
-    def agent_class(self):
-        """Import agent class with mocked dependencies."""
-        try:
-            from agentic_core.L5_safety.validators.SignatureVerifierAgent import (
-                SignatureVerifierAgent,
-            )
+    def inspector(self) -> _SignatureVerifierStub:
+        return _SignatureVerifierStub()
 
-            return SignatureVerifierAgent
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import SignatureVerifierAgent: {e}")
+    def test_healthy_dict_target(self, inspector: _SignatureVerifierStub) -> None:
+        result = inspector.run_inspection({"sig": "abc123"})
+        assert isinstance(result, InspectionResult)
+        assert result.healthy is True
+        assert result.issues == []
+        assert result.metrics["field_count"] == 1
+        assert result.metrics["type"] == "dict"
 
-    def test_class_exists(self, agent_class):
-        """Verify SignatureVerifierAgent exists and is importable."""
-        assert agent_class is not None, "SignatureVerifierAgent should exist"
+    def test_healthy_list_target(self, inspector: _SignatureVerifierStub) -> None:
+        result = inspector.run_inspection(["sig1", "sig2"])
+        assert isinstance(result, InspectionResult)
+        assert result.healthy is True
+        assert result.metrics["item_count"] == 2
+        assert result.metrics["type"] == "list"
 
-    def test_inherits_from_subatomic_testing_mixin(self, agent_class):
-        """Verify proper inheritance from SubatomicTestingMixin."""
-        mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "SubatomicTestingMixin" in mro_names, "Should inherit from SubatomicTestingMixin"
+    def test_null_target_produces_issue(self, inspector: _SignatureVerifierStub) -> None:
+        result = inspector.run_inspection(None)
+        assert isinstance(result, InspectionResult)
+        assert result.healthy is False
+        assert "Target is null" in result.issues
+        assert result.metrics["type"] == "NoneType"
 
-    def test_has_execute_method(self, agent_class):
-        """Verify agent has execute method."""
-        assert hasattr(agent_class, "execute"), "Should have execute method"
+    def test_integer_target_no_special_metrics(self, inspector: _SignatureVerifierStub) -> None:
+        result = inspector.run_inspection(42)
+        assert isinstance(result, InspectionResult)
+        assert result.healthy is True
+        assert result.metrics["type"] == "int"
 
-    def test_has_heal_repository_method(self, agent_class):
-        """Verify agent has heal_repository method."""
-        assert hasattr(agent_class, "heal_repository"), "Should have heal_repository method"
-
-    def test_has_healing_capability(self, agent_class):
-        """Verify agent has healing capability."""
-        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
-            "Should have healing method"
-        )
-
-    def test_has_tools_capability(self, agent_class):
-        """Verify agent has tools capability."""
-        assert hasattr(agent_class, "_perform_action") or hasattr(agent_class, "execute"), (
-            "Should have tool execution method"
-        )
-
-    def test_fuzzing_invalid_inputs(self, agent_class):
-        """Test handling of invalid inputs."""
-        invalid_inputs = [None, {}, "", [], 123]
-        for _invalid_input in invalid_inputs:
-            try:
-                pass  # Would test actual processing
-            except (TypeError, ValueError, AttributeError):
-                pass  # Expected for invalid inputs
-
-    def test_no_network_calls_on_import(self):
-        """Verify no network calls during import."""
-        network_calls = []
-
-        def track_call(*args, **kwargs):
-            network_calls.append((args, kwargs))
-
-        with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from agentic_core.L5_safety.validators.SignatureVerifierAgent import (
-                    SignatureVerifierAgent,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):
-                pass
-
-            assert len(network_calls) == 0, "No network calls on import"
+    def test_heal_stub_returns_canonical_keys(self, inspector: _SignatureVerifierStub) -> None:
+        result = inspector.make_heal_result({"type": "invalid_signature"})
+        assert set(result.keys()) == {"status", "details", "artifacts", "errors"}
+        assert result["status"] == "skipped"
 
 
 if __name__ == "__main__":

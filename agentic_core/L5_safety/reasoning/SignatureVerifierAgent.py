@@ -21,8 +21,8 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.inspection_capability import (
-    DiagnosticReport,
     InspectionCapability,
+    InspectionResult,
 )
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
@@ -64,24 +64,9 @@ class SignatureVerifierAgent(
 
         return issues, metrics
 
-    def execute(self, data: Any, **kwargs: Any) -> DiagnosticReport:
-        """Execute operation — adapter preserving pre-refactor entrypoint.
-
-        The original execute() returned an OperationResult which was buggy
-        (undefined OBJECT type, undefined result variable). This now returns
-        a DiagnosticReport which has the same .healthy/.issues/.metrics
-        contract as InspectionResult but as a concrete adapter type.
-        """
-        return self.diagnose(data, kwargs.get("context"))
-
-    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> DiagnosticReport:
-        """Run verification via InspectionCapability harness.
-
-        Returns DiagnosticReport (adapter) to preserve the pre-refactor
-        external contract.
-        """
-        result = self.run_inspection(target, context)
-        return result.to_diagnostic_report()
+    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
+        """Run verification via InspectionCapability harness."""
+        return self.run_inspection(target, context)
 
     @timeout(300)
     @standard_heal
@@ -126,6 +111,6 @@ class SignatureVerifierAgent(
 def execute_signature_verification(
     data: Any,
     config: dict[str, Any] | None = None,
-) -> DiagnosticReport:
+) -> InspectionResult:
     """Convenience function for signature verification."""
     return SignatureVerifierAgent(config).diagnose(data)

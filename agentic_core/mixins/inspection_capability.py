@@ -31,21 +31,8 @@ from typing import Any, ClassVar
 
 
 @dataclass
-class DiagnosticReport:
-    """Adapter type preserving the pre-refactor external contract.
-
-    Downstream callers that access ``.healthy``, ``.issues``, or
-    ``.metrics`` attributes continue to work unchanged.
-    """
-
-    healthy: bool = True
-    issues: list[str] = field(default_factory=list)
-    metrics: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
 class InspectionResult:
-    """Structured result from an inspection run (internal canonical type).
+    """Structured result from an inspection run.
 
     Attributes:
         healthy: Whether the inspected target passed all checks.
@@ -56,14 +43,6 @@ class InspectionResult:
     healthy: bool = True
     issues: list[str] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
-
-    def to_diagnostic_report(self) -> DiagnosticReport:
-        """Convert to DiagnosticReport for backward-compatible return."""
-        return DiagnosticReport(
-            healthy=self.healthy,
-            issues=list(self.issues),
-            metrics=dict(self.metrics),
-        )
 
 
 class InspectionCapability:
