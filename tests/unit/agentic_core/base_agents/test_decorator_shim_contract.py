@@ -125,8 +125,8 @@ class TestNoShimImportsEnforcement:
         "agentic_core.L0_maintenance.utils.timeout_decorator_util",
     ]
 
-    def test_no_imports_from_l5_decorators_shim(self) -> None:
-        """No agentic_core module may import from L5 decorators shim."""
+    def test_no_imports_from_shim_locations(self) -> None:
+        """No agentic_core module (except shims) may import from shim locations."""
         violations = self._find_forbidden_imports()
         assert not violations, (
             f"Found {len(violations)} forbidden imports from shim locations:\n"
@@ -157,6 +157,92 @@ class TestNoShimImportsEnforcement:
                             violations.append(
                                 f"{rel_path}:{node.lineno} imports from {node.module}",
                             )
+
+        return violations
+
+
+class TestBaseAgentsDecoratorImports:
+    """AST enforcement: base_agents/decorators.py and timeout_decorator.py must not import from shim locations."""
+
+    DECORATOR_FILES = {"decorators.py", "timeout_decorator.py"}
+    FORBIDDEN_SHIM_IMPORTS = [
+        "agentic_core.L5_safety.utils.decorators_util",
+        "agentic_core.L0_maintenance.utils.timeout_decorator_util",
+    ]
+
+    def test_base_agents_decorators_no_shim_imports(self) -> None:
+        """base_agents decorator modules must not import from their shim locations (no circular deps)."""
+        violations = []
+        base_agents = ROOT / "agentic_core" / "base_agents"
+
+        for py_file in base_agents.glob("*.py"):
+            if py_file.name not in self.DECORATOR_FILES:
+                continue
+
+            try:
+                source = py_file.read_text(encoding="utf-8")
+                tree = ast.parse(source)
+            except (SyntaxError, UnicodeDecodeError):
+                continue
+
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ImportFrom) and node.module:
+                    for forbidden in self.FORBIDDEN_SHIM_IMPORTS:
+                        if node.module == forbidden or node.module.startswith(forbidden + "."):
+                            violations.append(
+                                f"{py_file.name}:{node.lineno} imports from {node.module}",
+                            )
+
+        assert not violations, (
+            "base_agents decorator modules import from shim locations (layer inversion):\n"
+            + "\n".join(f"  {v}" for v in violations)
+        )
+
+
+class TestShimAllowlist:
+    """AST enforcement: shims must import ONLY from base_agents canonical locations."""
+
+    DECORATORS_SHIM = ROOT / "agentic_core/L5_safety/utils/decorators_util.py"
+    TIMEOUT_SHIM = ROOT / "agentic_core/L0_maintenance/utils/timeout_decorator_util.py"
+
+    def test_decorators_shim_imports_only_base_agents(self) -> None:
+        """decorators_util.py must import ONLY from base_agents.decorators."""
+        violations = self._check_shim_imports(
+            self.DECORATORS_SHIM,
+            allowed="agentic_core.base_agents.decorators",
+        )
+        assert not violations, "decorators_util.py imports from non-canonical locations:\n" + "\n".join(
+            f"  {v}" for v in violations
+        )
+
+    def test_timeout_shim_imports_only_base_agents(self) -> None:
+        """timeout_decorator_util.py must import ONLY from base_agents.timeout_decorator."""
+        violations = self._check_shim_imports(
+            self.TIMEOUT_SHIM,
+            allowed="agentic_core.base_agents.timeout_decorator",
+        )
+        assert not violations, (
+            "timeout_decorator_util.py imports from non-canonical locations:\n"
+            + "\n".join(f"  {v}" for v in violations)
+        )
+
+    def _check_shim_imports(self, shim_path: Path, allowed: str) -> list[str]:
+        """Check that shim imports ONLY from allowed module (plus __future__)."""
+        violations = []
+        try:
+            source = shim_path.read_text(encoding="utf-8")
+            tree = ast.parse(source)
+        except (SyntaxError, UnicodeDecodeError, FileNotFoundError) as e:
+            return [f"Cannot parse {shim_path.name}: {e}"]
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module:
+                if node.module == "__future__":
+                    continue
+                if node.module != allowed:
+                    violations.append(
+                        f"line {node.lineno}: imports from {node.module} (allowed: {allowed})",
+                    )
 
         return violations
 

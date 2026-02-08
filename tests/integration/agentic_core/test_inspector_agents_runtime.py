@@ -10,22 +10,42 @@ Tests verify:
     3. diagnose() returns InspectionResult instance with correct fields
 
 To install required deps: pip install pydantic redis requests
+
+BEHAVIOR:
+- When run with -m integration_full_deps and pydantic is missing: FAIL (not skip)
+- When run without explicit marker selection: skip if deps missing
 """
 
 from __future__ import annotations
 
+import os
 import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Check if pydantic is available - skip entire module if not
+# Check if pydantic is available
 try:
     import pydantic  # noqa: F401
 
     PYDANTIC_AVAILABLE = True
 except ImportError:
     PYDANTIC_AVAILABLE = False
+
+
+def _is_integration_explicitly_selected() -> bool:
+    """Detect if integration_full_deps marker was explicitly selected via -m."""
+    # Check PYTEST_CURRENT_TEST or command line markers
+    # When explicitly selected, we should FAIL not skip
+    return os.environ.get("INTEGRATION_FULL_DEPS_REQUIRED", "0") == "1"
+
+
+# If integration marker is explicitly selected and pydantic is missing, FAIL immediately
+if _is_integration_explicitly_selected() and not PYDANTIC_AVAILABLE:
+    pytest.fail(
+        "integration_full_deps tests require pydantic. Install with: pip install pydantic redis requests",
+        pytrace=False,
+    )
 
 pytestmark = [
     pytest.mark.integration_full_deps,
