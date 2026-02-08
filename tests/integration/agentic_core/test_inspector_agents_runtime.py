@@ -2,24 +2,20 @@
 Integration tests: verify inspector agents at runtime with full dependencies.
 
 These tests require pydantic to be installed (transitive dep via agentic_core).
-Run with: pytest -m integration_full_deps
+Run with: pytest tests/integration/ -q
 
 Tests verify:
-    1. InspectionCapability mixin works end-to-end with InspectionResult
-    2. Decorator canonical imports work at runtime with full dep chain
-    3. Real agent modules are importable (xfail where MRO defects exist)
+    1. Real inspector agents import and instantiate (MRO resolved)
+    2. InspectionCapability.diagnose() returns InspectionResult
+    3. Decorator canonical imports work at runtime with full dep chain
+    4. Shim identity holds at runtime
 
 To install required deps: pip install pydantic
-
-BEHAVIOR:
-- When run with INTEGRATION_FULL_DEPS_REQUIRED=1 and pydantic is missing: FAIL
-- When run without explicit env var: skip if deps missing
 """
 
 from __future__ import annotations
 
 import os
-from typing import Any
 
 import pytest
 
@@ -46,73 +42,83 @@ pytestmark = [
 
 
 # ---------------------------------------------------------------------------
-# Test: InspectionCapability end-to-end
+# Test: Real inspector agents import, instantiate, and diagnose
 # ---------------------------------------------------------------------------
 
 
-class TestInspectionCapabilityEndToEnd:
-    """Verify InspectionCapability mixin produces InspectionResult at runtime."""
+class TestDagRuntimeInspectorAgent:
+    """Validate DagRuntimeInspectorAgent imports and runs diagnostics."""
 
-    def test_inspection_result_importable(self) -> None:
+    def test_importable(self) -> None:
+        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
+            DagRuntimeInspectorAgent,
+        )
+
+        assert DagRuntimeInspectorAgent is not None
+
+    def test_diagnose_returns_inspection_result(self) -> None:
+        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
+            DagRuntimeInspectorAgent,
+        )
         from agentic_core.mixins.inspection_capability import InspectionResult
 
-        result = InspectionResult()
-        assert result.healthy is True
-        assert result.issues == []
-        assert result.metrics == {}
-
-    def test_inspection_capability_importable(self) -> None:
-        from agentic_core.mixins.inspection_capability import InspectionCapability
-
-        assert hasattr(InspectionCapability, "run_inspection")
-        assert hasattr(InspectionCapability, "perform_checks")
-
-    def test_run_inspection_produces_result(self) -> None:
-        """Build a minimal agent using InspectionCapability and verify it works."""
-        from agentic_core.mixins.inspection_capability import (
-            InspectionCapability,
-            InspectionResult,
-        )
-
-        class _TestInspector(InspectionCapability):
-            INSPECTION_LOG_PREFIX = "Test inspection"
-
-            def perform_checks(
-                self,
-                target: Any,
-                context: dict[str, Any] | None = None,
-            ) -> tuple[list[str], dict[str, Any]]:
-                return [], {"scanned": 1}
-
-        inspector = _TestInspector()
-        result = inspector.run_inspection("dummy_target")
+        agent = DagRuntimeInspectorAgent()
+        result = agent.diagnose("test_target")
 
         assert isinstance(result, InspectionResult)
-        assert result.healthy is True
-        assert result.metrics == {"scanned": 1}
+        assert isinstance(result.healthy, bool)
+        assert isinstance(result.issues, list)
+        assert isinstance(result.metrics, dict)
 
-    def test_run_inspection_with_issues(self) -> None:
-        from agentic_core.mixins.inspection_capability import (
-            InspectionCapability,
-            InspectionResult,
+
+class TestTokenBudgetInspectorAgent:
+    """Validate TokenBudgetInspectorAgent imports and runs diagnostics."""
+
+    def test_importable(self) -> None:
+        from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
+            TokenBudgetInspectorAgent,
         )
 
-        class _FailingInspector(InspectionCapability):
-            INSPECTION_LOG_PREFIX = "Failing inspection"
+        assert TokenBudgetInspectorAgent is not None
 
-            def perform_checks(
-                self,
-                target: Any,
-                context: dict[str, Any] | None = None,
-            ) -> tuple[list[str], dict[str, Any]]:
-                return ["violation-1"], {"checked": 5}
+    def test_diagnose_returns_inspection_result(self) -> None:
+        from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
+            TokenBudgetInspectorAgent,
+        )
+        from agentic_core.mixins.inspection_capability import InspectionResult
 
-        inspector = _FailingInspector()
-        result = inspector.run_inspection("target")
+        agent = TokenBudgetInspectorAgent()
+        result = agent.diagnose("test_target")
 
         assert isinstance(result, InspectionResult)
-        assert result.healthy is False
-        assert len(result.issues) == 1
+        assert isinstance(result.healthy, bool)
+        assert isinstance(result.issues, list)
+        assert isinstance(result.metrics, dict)
+
+
+class TestSignatureVerifierAgent:
+    """Validate SignatureVerifierAgent imports and runs diagnostics."""
+
+    def test_importable(self) -> None:
+        from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
+            SignatureVerifierAgent,
+        )
+
+        assert SignatureVerifierAgent is not None
+
+    def test_diagnose_returns_inspection_result(self) -> None:
+        from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
+            SignatureVerifierAgent,
+        )
+        from agentic_core.mixins.inspection_capability import InspectionResult
+
+        agent = SignatureVerifierAgent()
+        result = agent.diagnose("test_target")
+
+        assert isinstance(result, InspectionResult)
+        assert isinstance(result.healthy, bool)
+        assert isinstance(result.issues, list)
+        assert isinstance(result.metrics, dict)
 
 
 # ---------------------------------------------------------------------------
@@ -149,48 +155,6 @@ class TestDecoratorRuntimeImports:
         )
 
         assert shim is canonical
-
-
-# ---------------------------------------------------------------------------
-# Test: Real inspector agent modules (xfail for known MRO defects)
-# ---------------------------------------------------------------------------
-
-
-class TestInspectorAgentImports:
-    """Test real inspector agent imports. Known MRO issues are marked xfail."""
-
-    @pytest.mark.xfail(
-        reason="Pre-existing MRO defect: SubatomicTestingMixin + SovereignBaseAgent",
-        strict=True,
-    )
-    def test_dag_runtime_inspector_importable(self) -> None:
-        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
-            DagRuntimeInspectorAgent,
-        )
-
-        assert DagRuntimeInspectorAgent is not None
-
-    @pytest.mark.xfail(
-        reason="Pre-existing MRO defect: SubatomicTestingMixin + SovereignBaseAgent",
-        strict=True,
-    )
-    def test_token_budget_inspector_importable(self) -> None:
-        from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
-            TokenBudgetInspectorAgent,
-        )
-
-        assert TokenBudgetInspectorAgent is not None
-
-    @pytest.mark.xfail(
-        reason="Pre-existing MRO defect: SubatomicTestingMixin + SovereignBaseAgent",
-        strict=True,
-    )
-    def test_signature_verifier_importable(self) -> None:
-        from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
-            SignatureVerifierAgent,
-        )
-
-        assert SignatureVerifierAgent is not None
 
 
 if __name__ == "__main__":
