@@ -160,7 +160,7 @@ class TestCircularDependencyPrevention:
         if circular_risk:
             pytest.fail(
                 "Circular dependency risk: apps_shared files importing apps_lic:\n"
-                + "\n".join(f"  - {f}" for f in circular_risk)
+                + "\n".join(f"  - {f}" for f in circular_risk),
             )
 
     def test_gravity_compliance(self):

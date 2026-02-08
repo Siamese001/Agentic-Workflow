@@ -27,7 +27,7 @@ class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     balance_thresholds: dict[str, Any] = field(
-        default_factory=lambda: {"max_leads_per_message": 100, "min_leads_per_message": 1}
+        default_factory=lambda: {"max_leads_per_message": 100, "min_leads_per_message": 1},
     )
 
     def __post_init__(self) -> None:
@@ -77,9 +77,7 @@ class CampaignBalanceAgent(SubatomicTestingMixin, LICAgentBase):
             self.record_result(True, "Campaign balanced")
             print(f"   [{self.name}] ✅ Campaign balanced")
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

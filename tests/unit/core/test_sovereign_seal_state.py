@@ -43,7 +43,7 @@ class MockSovereignAgent:
         """Enforce Sovereign Seal (Runtime Immutability)."""
         if getattr(self, "_sealed", False):
             raise AttributeError(
-                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}"
+                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}",
             )
         super().__setattr__(name, value)
 

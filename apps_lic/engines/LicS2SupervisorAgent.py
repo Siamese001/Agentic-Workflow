@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Any, Optional
+
+from typing import Any
 
 """
 LicS2SupervisorAgent - Extracted for one-class-per-file pattern.
@@ -14,6 +15,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.decorators import standard_heal
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
@@ -130,7 +132,7 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
         self,
         mission: OutreachMission,
         profile_analysis: ProfileAnalysis,
-        refinement_context: Optional[List] = None,
+        refinement_context: List | None = None,
     ) -> Tuple[ResearchContext, ProfileAnalysis]:
         """
         v12.0: Orchestrate strategic alignment research.

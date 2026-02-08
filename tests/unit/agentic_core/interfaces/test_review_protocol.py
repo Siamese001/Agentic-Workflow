@@ -276,7 +276,7 @@ class TestHumanReviewProtocol:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
         queue.submit_for_review(
             ReviewRequest(
@@ -286,7 +286,7 @@ class TestHumanReviewProtocol:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
 
         pending = queue.get_pending_reviews(agent_name="Agent1")
@@ -314,7 +314,7 @@ class TestHumanReviewProtocol:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
         assert queue.get_queue_depth() == 1
 

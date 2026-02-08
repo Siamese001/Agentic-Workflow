@@ -7,9 +7,8 @@ the agentic_core layout for testing validation logic.
 
 from __future__ import annotations
 
-import os
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 
 class RepoBuilder:
@@ -74,9 +73,9 @@ def main():
 
 '''
         if with_main:
-            content += '''if __name__ == "__main__":
+            content += """if __name__ == "__main__":
     main()
-'''
+"""
         path = f"agentic_core/L0_maintenance/scripts/{name}"
         return self.create_file(path, content)
 
@@ -145,7 +144,16 @@ def build_minimal_repo(tmp_path: Path) -> RepoBuilder:
     builder.create_lcd_layer("L6_observability", extras=["dashboards", "config"])
 
     # Create global territories
-    for territory in ["base_agents", "runtime", "interfaces", "mixins", "knowledge", "prompt_governance", "config", "utils"]:
+    for territory in [
+        "base_agents",
+        "runtime",
+        "interfaces",
+        "mixins",
+        "knowledge",
+        "prompt_governance",
+        "config",
+        "utils",
+    ]:
         (tmp_path / "agentic_core" / territory).mkdir(parents=True, exist_ok=True)
         builder._touch_init(tmp_path / "agentic_core" / territory)
 
@@ -170,19 +178,20 @@ def build_anomaly_repo(tmp_path: Path) -> RepoBuilder:
     # E: PascalCase in L0/scripts
     builder.create_file(
         "agentic_core/L0_maintenance/scripts/AgentAuditResult.py",
-        'class AgentAuditResult:\n    pass\n'
+        "class AgentAuditResult:\n    pass\n",
     )
 
     # F: Test files in L0/scripts
     builder.create_file(
         "agentic_core/L0_maintenance/scripts/test_something.py",
-        'def test_example():\n    assert True\n'
+        "def test_example():\n    assert True\n",
     )
 
     # I: Missing L6/config (remove it)
     config_path = tmp_path / "agentic_core" / "L6_observability" / "config"
     if config_path.exists():
         import shutil
+
         shutil.rmtree(config_path)
 
     return builder

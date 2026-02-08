@@ -22,7 +22,7 @@ class ProfileAnalysisAgent(BaseModel):
     default_confidence: float
     manual_override_threshold: float
     cxo_precedence_tokens: list[str] = Field(
-        default_factory=lambda: ["ceo", "cto", "cfo", "chief", "president", "founder"]
+        default_factory=lambda: ["ceo", "cto", "cfo", "chief", "president", "founder"],
     )
 
 

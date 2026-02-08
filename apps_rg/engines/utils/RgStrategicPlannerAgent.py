@@ -84,9 +84,7 @@ class RgStrategicPlannerAgent(RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": (
-                    f"RgStrategicPlannerAgent heal() not yet implemented for {violation_type}"
-                ),
+                "details": (f"RgStrategicPlannerAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }

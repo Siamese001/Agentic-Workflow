@@ -24,15 +24,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
-from agentic_core.L5_safety.enforcement.registry_verification import (
-    AgentInfo,
-    RegistryVerifier,
-)
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     L4_APPROVED_FOLDERS,
     SOVEREIGN_TERRITORIES,
     VARIABLE_DEPTH_SUBFOLDERS,
+)
+from agentic_core.L5_safety.enforcement.registry_verification import (
+    AgentInfo,
+    RegistryVerifier,
 )
 
 # Base agent location requirement

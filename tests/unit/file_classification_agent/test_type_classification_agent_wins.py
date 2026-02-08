@@ -6,7 +6,6 @@ Validates:
 - Recommended move/split to reasoning/
 """
 
-import pytest
 import ast
 from pathlib import Path
 
@@ -37,8 +36,7 @@ def detect_agent_in_wrong_subfolder(file_path: Path) -> dict | None:
                 if node.name.endswith("Agent") and not node.name.startswith("I"):
                     # Check if Protocol
                     is_protocol = any(
-                        (isinstance(base, ast.Name) and base.id == "Protocol")
-                        for base in node.bases
+                        (isinstance(base, ast.Name) and base.id == "Protocol") for base in node.bases
                     )
                     if not is_protocol:
                         # Determine current subfolder
@@ -67,11 +65,11 @@ class TestAgentInTypesViolation:
         types_dir.mkdir(parents=True)
 
         agent_file = types_dir / "embedded_agent_types.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class EmbeddedAgent:
     def execute(self):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -84,7 +82,7 @@ class EmbeddedAgent:
         types_dir.mkdir(parents=True)
 
         agent_file = types_dir / "mixed_types.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 from dataclasses import dataclass
 
 @dataclass
@@ -94,7 +92,7 @@ class SomeType:
 class MixedAgent:
     def execute(self):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -110,11 +108,11 @@ class TestAgentInConfigViolation:
         config_dir.mkdir(parents=True)
 
         agent_file = config_dir / "dag_mutator_config.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class DAGMutatorAgent:
     def mutate(self, dag):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -130,11 +128,11 @@ class TestAgentInValidatorsViolation:
         validators_dir.mkdir(parents=True)
 
         agent_file = validators_dir / "naming_validator.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class NamingAgent:
     def validate_name(self, name):
         return True
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -150,11 +148,11 @@ class TestAgentInUtilsViolation:
         utils_dir.mkdir(parents=True)
 
         agent_file = utils_dir / "cache_invalidation_util.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class HealerAgent:
     def heal(self):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -170,11 +168,11 @@ class TestAgentInEnforcementViolation:
         enforcement_dir.mkdir(parents=True)
 
         agent_file = enforcement_dir / "hygiene_guardian.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class HygieneGuardianAgent:
     def guard(self):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is not None
@@ -190,11 +188,11 @@ class TestAgentInReasoningAllowed:
         reasoning_dir.mkdir(parents=True)
 
         agent_file = reasoning_dir / "GoodAgent.py"
-        agent_file.write_text('''
+        agent_file.write_text("""
 class GoodAgent:
     def execute(self):
         pass
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(agent_file)
         assert violation is None
@@ -209,13 +207,13 @@ class TestProtocolInterfaceAllowed:
         types_dir.mkdir(parents=True)
 
         protocol_file = types_dir / "orchestrator_types.py"
-        protocol_file.write_text('''
+        protocol_file.write_text("""
 from typing import Protocol
 
 class IOrchestratorAgent(Protocol):
     def execute(self) -> None:
         ...
-''')
+""")
 
         violation = detect_agent_in_wrong_subfolder(protocol_file)
         assert violation is None

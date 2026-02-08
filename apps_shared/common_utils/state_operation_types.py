@@ -6,10 +6,11 @@ Defines the fundamental types for state management with strict immutability.
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 

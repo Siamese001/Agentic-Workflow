@@ -110,7 +110,7 @@ class OrphanAgentDetector:
             "build",
             ".backup",
             "legacy_archive",
-        }
+        },
     )
 
     # Known agent patterns that should be kept
@@ -126,7 +126,7 @@ class OrphanAgentDetector:
             "L6ObservabilityBase",
             "RGAgentBase",
             "LICAgentBase",
-        }
+        },
     )
 
     def __init__(self, project_root: Path):
@@ -395,7 +395,7 @@ class OrphanAgentDetector:
                     "test_count": len(orphan.test_files),
                     "has_healing": orphan.has_healing,
                     "cyclomatic_complexity": orphan.cyclomatic_complexity,
-                }
+                },
             )
 
         return report

@@ -7,12 +7,11 @@ Validates:
 """
 
 import pytest
-from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
-    validate_no_nested_lcd,
     LEAF_DOMAINS_NO_LCD,
     REQUIRED_LCD_SUBFOLDERS,
+    validate_no_nested_lcd,
 )
 
 
@@ -27,15 +26,18 @@ class TestNestedLCDDetectionHook:
             result = validate_no_nested_lcd(path_parts)
             assert result is not None, f"Should detect {leaf_domain}/{lcd_subfolder}"
 
-    @pytest.mark.parametrize("layer", [
-        "L0_maintenance",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ])
+    @pytest.mark.parametrize(
+        "layer",
+        [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ],
+    )
     def test_lcd_under_layer_root_allowed(self, layer: str):
         """LCD subfolder under layer root should be allowed."""
         for lcd_subfolder in REQUIRED_LCD_SUBFOLDERS:
@@ -95,7 +97,7 @@ class TestNestedLCDEdgeCases:
         """Detection should be case-sensitive."""
         # "Reasoning" (capitalized) is not the same as "reasoning"
         path_parts = ["agentic_core", "prompt_governance", "Reasoning"]
-        result = validate_no_nested_lcd(path_parts)
+        validate_no_nested_lcd(path_parts)
         # Depends on implementation - may or may not detect
         # The key is it doesn't crash
 
@@ -107,13 +109,14 @@ class TestFCANestedLCDIntegration:
     def fca(self):
         """Create FCA instance."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_fca_can_access_nested_lcd_validator(self, fca):
         """FCA should be able to access nested LCD validation."""
         # FCA should have access to validate_no_nested_lcd
         # Either directly or through blueprint
-        assert hasattr(fca, 'classify_file') or True  # FCA exists
+        assert hasattr(fca, "classify_file") or True  # FCA exists
 
     def test_synthetic_nested_lcd_file(self, fca, tmp_path):
         """FCA should handle file in nested LCD location."""

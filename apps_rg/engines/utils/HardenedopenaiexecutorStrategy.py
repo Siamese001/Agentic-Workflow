@@ -14,9 +14,10 @@ import logging
 import os
 from dataclasses import dataclass
 
+from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
+
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
 from agentic_core.mixins.hardening_mixin import HardeningMixin
-from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -340,13 +341,15 @@ class HardenedOpenAIExecutor(HardeningMixin):
                     max_tokens=max_tokens,
                     system_prompt=system_prompt,
                     messages=messages,
-                )
+                ),
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_openai_executor(
-    model: str = "gpt-4o-2024-08-06", temperature: float = 0.7, **kwargs
+    model: str = "gpt-4o-2024-08-06",
+    temperature: float = 0.7,
+    **kwargs,
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
 

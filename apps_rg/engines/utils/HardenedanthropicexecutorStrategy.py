@@ -14,9 +14,10 @@ import logging
 import os
 from dataclasses import dataclass
 
+from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
+
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
 from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
-from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         if estimated_tokens > available_tokens:
             raise TokenLimitError(
                 f"Prompt estimated at {estimated_tokens} tokens exceeds available budget "
-                f"({available_tokens} tokens for {self.config.model})"
+                f"({available_tokens} tokens for {self.config.model})",
             )
 
     def _build_messages(
@@ -336,13 +337,15 @@ class HardenedAnthropicExecutor(HardeningMixin):
                     max_tokens=max_tokens,
                     system_prompt=system_prompt,
                     messages=messages,
-                )
+                ),
             )
 
 
 # Factory function for backward compatibility
 def create_hardened_anthropic_executor(
-    model: str = "claude-3-5-sonnet-20241022", temperature: float = 0.7, **kwargs
+    model: str = "claude-3-5-sonnet-20241022",
+    temperature: float = 0.7,
+    **kwargs,
 ) -> HardenedAnthropicExecutor:
     """Create a hardened Anthropic executor.
 

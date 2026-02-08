@@ -3,9 +3,10 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator
 from __future__ import annotations
 
+from agentic_core.base_agents.timeout_decorator import timeout
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
 

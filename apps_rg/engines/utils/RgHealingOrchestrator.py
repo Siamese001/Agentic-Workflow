@@ -113,7 +113,7 @@ class RgHealingOrchestrator(RGAgentBase):
             # Log cycle result
             print(
                 f"   ✅ Passed: {len(result.get('passed_agents', []))} | "
-                f"❌ Failed: {len(result.get('failed_agents', []))}"
+                f"❌ Failed: {len(result.get('failed_agents', []))}",
             )
             if result.get("rollback_triggered", False):
                 print("   ⏪ Rollback triggered")
@@ -358,7 +358,7 @@ class RgHealingOrchestrator(RGAgentBase):
                     strategy = getattr(best_pattern, "healing_strategy", None)
                     Logger.info(
                         f"[{self.__class__.__name__}] Using learned strategy "
-                        f"from pattern with {getattr(best_pattern, 'success_count', 0)} successes"
+                        f"from pattern with {getattr(best_pattern, 'success_count', 0)} successes",
                     )
 
             # Perform healing (with or without learned strategy)
@@ -450,7 +450,9 @@ class RgHealingOrchestrator(RGAgentBase):
                 "success_rate": results["fixed"] / results["total"],
             }
             self.cache_pattern_with_metadata(
-                "healing_cycle", f"cycle_{len(self.cycle_results)}", cycle_pattern
+                "healing_cycle",
+                f"cycle_{len(self.cycle_results)}",
+                cycle_pattern,
             )
             self.cycle_results.append(results)
 

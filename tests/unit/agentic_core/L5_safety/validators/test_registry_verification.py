@@ -267,7 +267,7 @@ class TestOrphanDetection:
             {
                 "class_name": "NonExistentAgent",
                 "path": "fake/path/NonExistentAgent.py",
-            }
+            },
         ]
 
         with patch.object(verifier, "load_registry", return_value=mock_registry):

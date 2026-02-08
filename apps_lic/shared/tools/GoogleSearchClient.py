@@ -40,8 +40,6 @@ class GoogleSearchClient:
             CircuitBreakerOpenError: If circuit breaker is OPEN
         """
         try:
-            return self.circuit_breaker.call(
-                self._execute_search_call, query, num_results=num_results
-            )
+            return self.circuit_breaker.call(self._execute_search_call, query, num_results=num_results)
         except Exception as e:
             raise Exception(f"Google Search API call failed: {e}")

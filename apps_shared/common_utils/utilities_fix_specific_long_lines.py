@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from typing import Any
+
 from apps_shared.common_utils.ConfigurationService import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)

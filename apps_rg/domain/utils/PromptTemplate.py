@@ -331,7 +331,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="L3 Orchestrator",
             purpose="Coordinates the 50-engine fleet",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "HOP.1.CLERK": KNodeDefinition(
@@ -339,7 +342,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Clerk Extraction",
             purpose="Structural data extraction",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "HOP.2.ENRICH": KNodeDefinition(
@@ -347,7 +353,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Data Enrichment",
             purpose="Verb canonicalization and enrichment",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SERVICE.INVOKER": KNodeDefinition(
@@ -355,7 +364,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Service Invoker",
             purpose="LLM service invocation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.WEIGHTS": KNodeDefinition(
@@ -363,7 +375,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Weight Adjustment",
             purpose="Dynamic section weighting",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.OPTIMIZER": KNodeDefinition(
@@ -371,7 +386,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Content Optimizer",
             purpose="Bullet ordering optimization",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.RANKER": KNodeDefinition(
@@ -379,7 +397,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Section Ranker",
             purpose="Section ordering by role type",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.TEMPLATE": KNodeDefinition(
@@ -387,7 +408,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Template Optimizer",
             purpose="Template selection",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.VOID": KNodeDefinition(
@@ -395,7 +419,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Void Compliance",
             purpose="Architecture enforcement",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.ATS": KNodeDefinition(
@@ -403,7 +430,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="ATS Compatibility",
             purpose="ATS parsing validation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.HALLUCINATION": KNodeDefinition(
@@ -411,7 +441,10 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             name="Hallucination Detector",
             purpose="Claim verification",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={}
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
     },

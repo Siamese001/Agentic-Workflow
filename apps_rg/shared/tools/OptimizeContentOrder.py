@@ -31,8 +31,6 @@ class OptimizeContentOrder:
         return RefinementResult(original=data, refined=refined, changes=changes)
 
 
-def refine(
-    data: str | dict, adjustments: dict | None = None, config: dict | None = None
-) -> RefinementResult:
+def refine(data: str | dict, adjustments: dict | None = None, config: dict | None = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return OptimizeContentOrder(config).refine(data, adjustments)

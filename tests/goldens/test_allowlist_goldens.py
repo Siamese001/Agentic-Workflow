@@ -5,24 +5,21 @@ These tests ensure allowlist changes are intentional and reviewed.
 If a test fails, update the golden in allowlist_goldens.py.
 """
 
-import pytest
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
-    SCRIPTS_FORBIDDEN_PATTERNS,
     LAYER_ROOTS,
-    REQUIRED_LCD_SUBFOLDERS,
     LEAF_DOMAINS_NO_LCD,
+    REQUIRED_LCD_SUBFOLDERS,
+    SCRIPTS_FORBIDDEN_PATTERNS,
 )
-
 from tests.goldens.allowlist_goldens import (
     L5_SUBPROCESS_ALLOWLIST_GOLDEN,
     L6_HYBRID_ALLOWLIST_GOLDEN,
-    SCRIPTS_FORBIDDEN_PATTERNS_GOLDEN,
     LAYER_ROOTS_GOLDEN,
-    REQUIRED_LCD_SUBFOLDERS_GOLDEN,
     LEAF_DOMAINS_NO_LCD_GOLDEN,
+    REQUIRED_LCD_SUBFOLDERS_GOLDEN,
+    SCRIPTS_FORBIDDEN_PATTERNS_GOLDEN,
 )
 
 
@@ -80,9 +77,7 @@ class TestLayerRootsGolden:
     def test_layer_roots_match_golden(self):
         """LAYER_ROOTS must match golden."""
         assert LAYER_ROOTS == LAYER_ROOTS_GOLDEN, (
-            f"LAYER_ROOTS changed!\n"
-            f"Actual: {LAYER_ROOTS}\n"
-            f"Golden: {LAYER_ROOTS_GOLDEN}"
+            f"LAYER_ROOTS changed!\nActual: {LAYER_ROOTS}\nGolden: {LAYER_ROOTS_GOLDEN}"
         )
 
 

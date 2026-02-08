@@ -89,14 +89,10 @@ class ProactiveAgent(RGAgentBase):
                 duration_ms=Task.estimated_duration_ms,
             )
 
-        self.record_result(
-            True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending"
-        )
+        self.record_result(True, f"Executed {len(auto_tasks)} tasks, {len(tasks) - len(auto_tasks)} pending")
         print(f"   [{self.name}] ✅ Proactive analysis complete")
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Invoke healing chain via super().
 

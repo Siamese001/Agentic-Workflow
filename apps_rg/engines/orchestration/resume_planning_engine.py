@@ -28,9 +28,7 @@ class ResumePlanningEngine(BaseRGEngine):
         # Compose with logic node instead of containing fat logic
         self.section_node = ResumeSectionNode(config=self.config.get("section_config", {}))
 
-    async def execute(
-        self, job_description: str, candidate_profile: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def execute(self, job_description: str, candidate_profile: dict[str, Any]) -> dict[str, Any]:
         """
         Create initial resume generation plan using delegated logic nodes.
         """

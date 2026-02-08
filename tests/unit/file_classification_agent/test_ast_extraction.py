@@ -7,9 +7,7 @@ Validates:
 - Handle SyntaxError without crash
 """
 
-import pytest
 import ast
-from pathlib import Path
 
 
 def extract_class_names(content: str) -> list[str]:
@@ -50,50 +48,50 @@ class TestClassSuffixDetection:
 
     def test_detect_agent_class(self):
         """Should detect Agent class."""
-        content = '''
+        content = """
 class MyAgent:
     def execute(self):
         pass
-'''
+"""
         assert has_agent_class(content)
 
     def test_detect_validator_class(self):
         """Should detect Validator class."""
-        content = '''
+        content = """
 class MyValidator:
     def validate(self, data):
         return True
-'''
+"""
         assert has_validator_class(content)
 
     def test_detect_manager_class(self):
         """Should detect Manager class."""
-        content = '''
+        content = """
 class CacheManager:
     def __init__(self):
         self.cache = {}
-'''
+"""
         assert has_manager_class(content)
 
     def test_detect_service_class(self):
         """Should detect Service class."""
-        content = '''
+        content = """
 class EmbeddingService:
     def embed(self, text):
         return []
-'''
+"""
         assert has_service_class(content)
 
     def test_ignore_protocol_interface(self):
         """Should ignore Protocol interfaces (IAgent)."""
-        content = '''
+        content = """
 from typing import Protocol
 
 class IAgent(Protocol):
     def execute(self) -> None:
         ...
-'''
-        classes = extract_class_names(content)
+"""
+        extract_class_names(content)
         # IAgent starts with I, so has_agent_class should return False
         assert not has_agent_class(content)
 
@@ -103,13 +101,13 @@ class TestIgnoreCommentsAndStrings:
 
     def test_ignore_class_in_comment(self):
         """Should ignore class names in comments."""
-        content = '''
+        content = """
 # class FakeAgent:
 #     pass
 
 def real_function():
     pass
-'''
+"""
         assert not has_agent_class(content)
 
     def test_ignore_class_in_docstring(self):
@@ -159,37 +157,37 @@ class TestSyntaxErrorHandling:
 
     def test_syntax_error_returns_empty(self):
         """Syntax error should return empty list, not crash."""
-        content = '''
+        content = """
 def broken(
     # Missing closing paren
-'''
+"""
         classes = extract_class_names(content)
         assert classes == []
 
     def test_incomplete_class_returns_empty(self):
         """Incomplete class should return empty list."""
-        content = '''
+        content = """
 class Incomplete
-'''
+"""
         classes = extract_class_names(content)
         assert classes == []
 
     def test_indentation_error_returns_empty(self):
         """Indentation error should return empty list."""
-        content = '''
+        content = """
 def function():
 pass  # Wrong indentation
-'''
+"""
         classes = extract_class_names(content)
         assert classes == []
 
     def test_valid_content_after_fix(self):
         """Valid content should work after fixing syntax."""
-        content = '''
+        content = """
 class ValidAgent:
     def execute(self):
         pass
-'''
+"""
         classes = extract_class_names(content)
         assert "ValidAgent" in classes
 
@@ -199,7 +197,7 @@ class TestMultipleClasses:
 
     def test_detect_multiple_classes(self):
         """Should detect all classes in a file."""
-        content = '''
+        content = """
 class FirstAgent:
     pass
 
@@ -208,7 +206,7 @@ class SecondValidator:
 
 class ThirdManager:
     pass
-'''
+"""
         classes = extract_class_names(content)
         assert len(classes) == 3
         assert "FirstAgent" in classes
@@ -217,7 +215,7 @@ class ThirdManager:
 
     def test_mixed_class_types(self):
         """Should correctly identify mixed class types."""
-        content = '''
+        content = """
 class MyAgent:
     pass
 
@@ -226,7 +224,7 @@ class MyValidator:
 
 class RegularClass:
     pass
-'''
+"""
         assert has_agent_class(content)
         assert has_validator_class(content)
         classes = extract_class_names(content)

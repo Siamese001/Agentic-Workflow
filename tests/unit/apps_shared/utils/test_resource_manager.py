@@ -9,7 +9,6 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from apps_shared.utils.resource_types import (
     ResourceConfig,
     ResourceKey,

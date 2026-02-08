@@ -41,7 +41,9 @@ class TestCDAIntegration(unittest.TestCase):
 
             # Test with CDA enabled
             engine_with_cda = EnhancedAutonomousDecisionEngine(
-                enable_llm=False, state_mgr=state_mgr, enable_cda=True
+                enable_llm=False,
+                state_mgr=state_mgr,
+                enable_cda=True,
             )
             self.assertIsNotNone(engine_with_cda)
             # CDA might not load if dependencies missing, but engine should still exist
@@ -53,11 +55,12 @@ class TestCDAIntegration(unittest.TestCase):
     def test_cognitive_disposition_analysis(self):
         """Test cognitive disposition analysis functionality"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
-                EnhancedAutonomousDecisionEngine,
-            )
             from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
                 DispositionDecision,  # noqa: F401
+            )
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+                EnhancedAutonomousDecisionEngine,
             )
 
             # Create mock decision engine
@@ -83,11 +86,12 @@ class TestCDAIntegration(unittest.TestCase):
     def test_cognitive_factor_calculation(self):
         """Test cognitive factor calculation from disposition decisions"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
-                EnhancedAutonomousDecisionEngine,
-            )
             from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
                 DispositionDecision,
+            )
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+                EnhancedAutonomousDecisionEngine,
             )
 
             engine = EnhancedAutonomousDecisionEngine(enable_cda=False)
@@ -118,11 +122,12 @@ class TestCDAIntegration(unittest.TestCase):
         try:
             import asyncio
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
-                EnhancedAutonomousDecisionEngine,
-            )
             from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
                 DispositionDecision,
+            )
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+                EnhancedAutonomousDecisionEngine,
             )
 
             # Mock the CDA instance
@@ -131,7 +136,10 @@ class TestCDAIntegration(unittest.TestCase):
 
             # Mock the async analysis response
             mock_disposition = DispositionDecision(
-                action="MOVE", target_path="/new/location", reason="Test reason", confidence=0.85
+                action="MOVE",
+                target_path="/new/location",
+                reason="Test reason",
+                confidence=0.85,
             )
             mock_cda.analyze_violation_async.return_value = mock_disposition
 
@@ -141,7 +149,9 @@ class TestCDAIntegration(unittest.TestCase):
             # Test async method
             async def test_async():
                 result = await engine.get_cognitive_disposition(
-                    Path("test_file.py"), "TEST_VIOLATION", {"test": "context"}
+                    Path("test_file.py"),
+                    "TEST_VIOLATION",
+                    {"test": "context"},
                 )
                 return result
 
@@ -179,18 +189,21 @@ class TestCDAIntegration(unittest.TestCase):
     def test_confidence_enhancement_with_cognitive_data(self):
         """Test that confidence calculation is enhanced with cognitive data"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
-                EnhancedAutonomousDecisionEngine,
-            )
             from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
                 DispositionDecision,
+            )
+
+            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+                EnhancedAutonomousDecisionEngine,
             )
 
             engine = EnhancedAutonomousDecisionEngine(enable_cda=False)
 
             # Test base confidence without cognitive data (with violations to trigger enhancement)
             base_confidence = engine.calculate_healing_confidence(
-                violations_count=5, violation_types=["TEST"], territory="test_territory"
+                violations_count=5,
+                violation_types=["TEST"],
+                territory="test_territory",
             )
 
             # Test enhanced confidence with cognitive data
@@ -225,7 +238,8 @@ class TestCDALiveIntegration(unittest.TestCase):
         self.project_root = Path.cwd()
 
     @unittest.skipUnless(
-        os.getenv("RUN_LIVE_TESTS"), "Live tests require RUN_LIVE_TESTS environment variable"
+        os.getenv("RUN_LIVE_TESTS"),
+        "Live tests require RUN_LIVE_TESTS environment variable",
     )
     def test_live_cda_integration(self):
         """Test live CDA integration (requires actual LLM access)"""
@@ -246,7 +260,9 @@ class TestCDALiveIntegration(unittest.TestCase):
 
             async def test_live():
                 result = await engine.get_cognitive_disposition(
-                    Path("test_file.py"), "MISSING_DIRECTORY", {"territory": "test"}
+                    Path("test_file.py"),
+                    "MISSING_DIRECTORY",
+                    {"territory": "test"},
                 )
                 return result
 

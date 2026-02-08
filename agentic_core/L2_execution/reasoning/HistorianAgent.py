@@ -3,9 +3,10 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
 
+from agentic_core.base_agents.timeout_decorator import timeout
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.utils.decorators_util import standard_heal
 
 """Brief description of functionality and purpose."""
@@ -42,7 +43,7 @@ def _lazy_load_git():
 
 
 try:
-    from watchdog.events import FileSystemEventhandler
+    from watchdog.events import FileSystemEventhandler  # noqa: F401
 
     WATCHDOG_AVAILABLE = True
 except ImportError:

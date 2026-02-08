@@ -10,13 +10,13 @@ import sys
 import threading
 import time
 import tracemalloc
-
-import psutil
 from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+
+import psutil
 
 logger = logging.getLogger(__name__)
 

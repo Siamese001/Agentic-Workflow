@@ -70,10 +70,7 @@ for agent in agents_without_tests:
 
         if modified:
             # Add import if not present
-            if (
-                "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin"
-                not in content
-            ):
+            if "from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin" not in content:
                 # Find best place to add import
                 if "from agentic_core" in content:
                     # Add after last agentic_core import

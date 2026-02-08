@@ -21,9 +21,7 @@ class ExperienceWeightingEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.EXPERIENCE_WEIGHTING")
 
-    async def execute(
-        self, experiences: list[dict[str, Any]], target_role: str
-    ) -> list[dict[str, Any]]:
+    async def execute(self, experiences: list[dict[str, Any]], target_role: str) -> list[dict[str, Any]]:
         """
         Calculate relevance weights for experience sections.
         """

@@ -70,7 +70,7 @@ class ArchitectureGovernanceValidator:
                                 if current_level < imported_level:
                                     violations.append(
                                         f"Gravity violation: {current_layer} (L{current_level}) "
-                                        f"importing from {imported_layer} (L{imported_level})"
+                                        f"importing from {imported_layer} (L{imported_level})",
                                     )
         except Exception as e:
             violations.append(f"Error parsing file: {e}")
@@ -101,7 +101,7 @@ class ArchitectureGovernanceValidator:
             if agent_classes and not file_path.stem.endswith("Agent"):
                 violations.append(
                     f"Naming violation: File contains agent classes {agent_classes} "
-                    f"but doesn't end with 'Agent.py'"
+                    f"but doesn't end with 'Agent.py'",
                 )
         except Exception:
             pass
@@ -185,7 +185,10 @@ class CognitionAgent:
         pass
 """
         temp_file = self._create_layer_file(
-            temp_agentic_core, "L1_cognition", "CognitionAgent.py", agent_code
+            temp_agentic_core,
+            "L1_cognition",
+            "CognitionAgent.py",
+            agent_code,
         )
 
         result = validator.validate_file(temp_file)

@@ -23,8 +23,8 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from agentic_core.discovery import AgentRegistry
-from agentic_core.L0_maintenance.scripts.compliance_gate_validator import check_compliance
 from agentic_core.L0_maintenance.enforcement.manifest_guardian_util import ManifestGuardian
+from agentic_core.L0_maintenance.scripts.compliance_gate_validator import check_compliance
 
 logger = logging.getLogger(__name__)
 

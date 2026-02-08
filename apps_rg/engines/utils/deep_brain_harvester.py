@@ -119,7 +119,7 @@ class DeepBrainHarvester:
                     "id": "flattening_pattern_agent_logic_2025_12_19",
                     "values": embedding,
                     "metadata": metadata,
-                }
+                },
             ],
             namespace=namespace,
         )
@@ -172,10 +172,7 @@ class DeepBrainHarvester:
             "## Example:",
             f"Source: {pattern['source_file']}",
             f"Method: {pattern['method_name']}",
-            (
-                f"Before: {pattern['before']['lines']} lines, "
-                f"{pattern['before']['nesting_depth']} levels"
-            ),
+            (f"Before: {pattern['before']['lines']} lines, {pattern['before']['nesting_depth']} levels"),
             f"After: {pattern['after']['lines']} lines, {pattern['after']['nesting_depth']} levels",
             "",
             "## Extracted Helpers:",
@@ -189,9 +186,7 @@ class DeepBrainHarvester:
         ]
         return "\n".join(text_parts)
 
-    def query_pattern(
-        self, query: str, namespace: str = "structural_patterns", top_k: int = 3
-    ) -> list[dict]:
+    def query_pattern(self, query: str, namespace: str = "structural_patterns", top_k: int = 3) -> list[dict]:
         """
         Query Pinecone for similar patterns.
 
@@ -206,21 +201,21 @@ class DeepBrainHarvester:
         Logger.info(f"🔍 Querying pattern: {query}")
         query_embedding: Any = self._generate_embedding(query)
         results: Any = self.index.query(
-            vector=query_embedding, top_k=top_k, namespace=namespace, include_metadata=True
+            vector=query_embedding,
+            top_k=top_k,
+            namespace=namespace,
+            include_metadata=True,
         )
         Logger.info(f"✅ Found {len(results.matches)} matches")
         return [
-            {"id": match.id, "score": match.score, "metadata": match.metadata}
-            for match in results.matches
+            {"id": match.id, "score": match.score, "metadata": match.metadata} for match in results.matches
         ]
 
 
 def main() -> Any:
     """Main entry point for Deep Brain Harvest."""
     parser: Any = argparse.ArgumentParser(description="Harvest patterns into Pinecone Deep Brain")
-    parser.add_argument(
-        "--pattern", choices=["flattening"], default="flattening", help="Pattern to harvest"
-    )
+    parser.add_argument("--pattern", choices=["flattening"], default="flattening", help="Pattern to harvest")
     parser.add_argument("--namespace", default="structural_patterns", help="Pinecone namespace")
     parser.add_argument("--index", default="canon-healing-patterns", help="Pinecone index name")
     parser.add_argument("--query", help="Query for existing patterns instead of upserting")

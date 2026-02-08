@@ -137,8 +137,8 @@ class PascalSovereigntyFixer:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     if node.name.endswith("Agent") or any(
-                        (isinstance(b, ast.Name) and "Agent" in b.id) or
-                        (isinstance(b, ast.Attribute) and "Agent" in b.attr)
+                        (isinstance(b, ast.Name) and "Agent" in b.id)
+                        or (isinstance(b, ast.Attribute) and "Agent" in b.attr)
                         for b in node.bases
                     ):
                         return "AGENT"
@@ -155,8 +155,7 @@ class PascalSovereigntyFixer:
         count = 0
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
 
-        regex_from = re.compile(r"(?P<prefix>from\s+\.*)"
-                                + re.escape(old_mod) + r"(?P<suffix>\s+import)")
+        regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         regex_import = re.compile(
             rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )

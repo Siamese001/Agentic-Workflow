@@ -8,9 +8,9 @@ import logging
 import statistics
 import threading
 import time
-from datetime import datetime
 from collections import defaultdict
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from typing import Any
 

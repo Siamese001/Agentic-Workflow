@@ -539,7 +539,7 @@ class TestObsoleteFunctionalityDetection:
             print(f"\n=== PHASE FILES REQUIRING CONSOLIDATION ({len(phase_groups)} groups) ===")
             print("These phase files should be consolidated into comprehensive test files:")
             print(
-                "PRINCIPLE: If tests have value, consolidate them - don't keep phase1, phase2, phase3 separate."
+                "PRINCIPLE: If tests have value, consolidate them - don't keep phase1, phase2, phase3 separate.",
             )
 
             for base_name, files_and_phases in sorted(phase_groups.items()):
@@ -583,7 +583,7 @@ class TestObsoleteFunctionalityDetection:
             pytest.fail(
                 f"Phase file consolidation required: {len(phase_groups)} groups with "
                 f"{len(phase_files_detected)} total phase files detected. "
-                f"Consolidate phase files into comprehensive test files."
+                f"Consolidate phase files into comprehensive test files.",
             )
 
         # This test is INFORMATIONAL for other findings but FAILS on phase files

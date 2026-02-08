@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from typing import Optional
 
 #!/usr/bin/env python3
 """
@@ -19,6 +18,7 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class GlobalComplianceAggregatorAgent(SubatomicTestingMixin, SovereignBaseAgent)
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
+        _call_path: set | None = None,
     ) -> dict[str, int]:
         """Utils/core_extensions - operational only."""
         if _call_path is None:

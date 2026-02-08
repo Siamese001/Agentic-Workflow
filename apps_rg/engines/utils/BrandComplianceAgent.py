@@ -36,7 +36,8 @@ class BrandValidatorStrategy(ValidatorStrategy):
         self.compliance_rules = config.get("compliance_rules", {})
         self.require_power_verbs = self.compliance_rules.get("require_power_verbs_in_experience", True)
         self.check_forbidden_all_sections = self.compliance_rules.get(
-            "check_forbidden_phrases_all_sections", True
+            "check_forbidden_phrases_all_sections",
+            True,
         )
         self.case_sensitive = self.compliance_rules.get("case_sensitive_checking", False)
 
@@ -135,7 +136,8 @@ class BrandComplianceAgent(RGAgentBase):
         self.compliance_rules = self._config.get("compliance_rules", {})
         self.require_power_verbs = self.compliance_rules.get("require_power_verbs_in_experience", True)
         self.check_forbidden_all_sections = self.compliance_rules.get(
-            "check_forbidden_phrases_all_sections", True
+            "check_forbidden_phrases_all_sections",
+            True,
         )
         self.case_sensitive = self.compliance_rules.get("case_sensitive_checking", False)
 

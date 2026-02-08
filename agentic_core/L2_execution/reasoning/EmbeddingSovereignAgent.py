@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     pass
 
 from agentic_core.base_agents.timeout_decorator import timeout
+
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L5_safety.utils.decorators_util import standard_heal
 
@@ -29,8 +30,8 @@ Logger = logging.getLogger(__name__)
 
 # Import mixins for functionality
 try:
-    from agentic_core.mixins.redis_cache_mixin import redis_cache_mixin
-    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
+    from agentic_core.mixins.redis_cache_mixin import redis_cache_mixin  # noqa: F401
+    from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 except ImportError:
     # Fallback stubs if mixins are not available
     class SubatomicTestingMixin:

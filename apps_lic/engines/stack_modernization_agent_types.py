@@ -180,9 +180,7 @@ class StackModernizationAgent:
 
         except Exception as e:
             logger.error(f"Error diagnosing stack: {str(e)}")
-            return LegacyDiagnostic(
-                detected_legacy_tech=[], implied_pain_points=[], modernization_score=0.0
-            )
+            return LegacyDiagnostic(detected_legacy_tech=[], implied_pain_points=[], modernization_score=0.0)
 
     def generate_thesis(self, diagnostic: LegacyDiagnostic) -> MigrationThesis:
         """Generate migration thesis based on diagnostic.
@@ -285,7 +283,9 @@ class StackModernizationAgent:
             return "Senior AI Engineer with modernization experience"
 
     def _create_thesis_from_playbook(
-        self, playbook: dict[str, str], diagnostic: LegacyDiagnostic
+        self,
+        playbook: dict[str, str],
+        diagnostic: LegacyDiagnostic,
     ) -> MigrationThesis:
         """Create thesis from transformation playbook.
 

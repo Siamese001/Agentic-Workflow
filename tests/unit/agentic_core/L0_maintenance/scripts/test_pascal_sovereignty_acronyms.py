@@ -130,7 +130,7 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         # Simulating the internal update_imports regex logic
         regex_from = re.compile(rf"(?P<prefix>from\s+){re.escape(old_mod)}(?P<suffix>\s+import)")
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
 
         updated = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
@@ -161,7 +161,9 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(
-            ftype, "IGNORE", "tool_registry.py must remain ignored to protect dynamic tool lookups"
+            ftype,
+            "IGNORE",
+            "tool_registry.py must remain ignored to protect dynamic tool lookups",
         )
 
     def test_execute_ssot_exclusion(self):
@@ -185,7 +187,9 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(
-            ftype, "IGNORE", "structure_blueprint.py must remain ignored per SSOT exclusion list"
+            ftype,
+            "IGNORE",
+            "structure_blueprint.py must remain ignored per SSOT exclusion list",
         )
 
 

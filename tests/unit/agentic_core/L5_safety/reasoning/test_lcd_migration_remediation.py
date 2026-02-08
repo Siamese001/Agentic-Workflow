@@ -12,17 +12,15 @@ Covers:
 
 from __future__ import annotations
 
-import ast
 import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def agent():
@@ -42,6 +40,7 @@ def agent():
 # ===========================================================================
 # Phase 1: Compound Suffix Pre-Validation
 # ===========================================================================
+
 
 class TestCompoundSuffixValidation:
     """Tests for validate_single_suffix() — Phase 1 (P0)."""
@@ -116,13 +115,15 @@ class TestCompoundSuffixValidation:
 # Phase 2: Content-Weighted Classification Scoring
 # ===========================================================================
 
+
 class TestContentScoring:
     """Tests for _compute_content_scores() and classify_file_with_confidence()."""
 
     def test_dataclass_file_scores_types(self, agent, tmp_path):
         """A file with multiple @dataclass definitions should score TYPES highest."""
         test_file = tmp_path / "user_profile_config.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             from dataclasses import dataclass
 
             @dataclass
@@ -138,7 +139,8 @@ class TestContentScoring:
             @dataclass
             class UserPreferences:
                 notifications: bool
-        """))
+        """),
+        )
 
         scores = agent._compute_content_scores(test_file)
         assert scores["TYPES"] > scores["CONFIG"]
@@ -147,7 +149,8 @@ class TestContentScoring:
     def test_constants_file_scores_config(self, agent, tmp_path):
         """A file with UPPER_CASE constants should score CONFIG highest."""
         test_file = tmp_path / "app_settings_config.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             MAX_RETRIES = 3
             TIMEOUT_SECONDS = 30
             DEFAULT_PORT = 8080
@@ -155,7 +158,8 @@ class TestContentScoring:
             DEBUG_MODE = False
             LOG_LEVEL = "INFO"
             CACHE_TTL = 3600
-        """))
+        """),
+        )
 
         scores = agent._compute_content_scores(test_file)
         assert scores["CONFIG"] > scores["TYPES"]
@@ -164,11 +168,13 @@ class TestContentScoring:
     def test_agent_file_scores_agent(self, agent, tmp_path):
         """A file with an Agent class should score AGENT highest."""
         test_file = tmp_path / "HealerAgent.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             class HealerAgent:
                 def heal(self):
                     pass
-        """))
+        """),
+        )
 
         scores = agent._compute_content_scores(test_file)
         assert scores["AGENT"] > scores["UTILITY"]
@@ -177,7 +183,8 @@ class TestContentScoring:
     def test_utility_file_scores_utility(self, agent, tmp_path):
         """A file with standalone functions should score UTILITY highest."""
         test_file = tmp_path / "string_formatter_util.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             def format_name(name: str) -> str:
                 return name.title()
 
@@ -186,7 +193,8 @@ class TestContentScoring:
 
             def slugify(text: str) -> str:
                 return text.lower().replace(" ", "-")
-        """))
+        """),
+        )
 
         scores = agent._compute_content_scores(test_file)
         assert scores["UTILITY"] > scores["CONFIG"]
@@ -195,7 +203,8 @@ class TestContentScoring:
     def test_validator_file_scores_validator(self, agent, tmp_path):
         """A file with validate_ functions should score VALIDATOR highest."""
         test_file = tmp_path / "input_validator.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             def validate_email(email: str) -> bool:
                 return "@" in email
 
@@ -204,7 +213,8 @@ class TestContentScoring:
 
             def verify_token(token: str) -> bool:
                 return len(token) == 32
-        """))
+        """),
+        )
 
         scores = agent._compute_content_scores(test_file)
         assert scores["VALIDATOR"] > scores["UTILITY"]
@@ -213,7 +223,8 @@ class TestContentScoring:
     def test_confidence_high_for_pure_types(self, agent, tmp_path):
         """A pure types file should have high confidence."""
         test_file = tmp_path / "model_types.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             from dataclasses import dataclass
             from enum import Enum
 
@@ -225,7 +236,8 @@ class TestContentScoring:
             class Point:
                 x: float
                 y: float
-        """))
+        """),
+        )
 
         result = agent.classify_file_with_confidence(test_file)
         assert result.file_type == "TYPES"
@@ -234,7 +246,8 @@ class TestContentScoring:
     def test_confidence_low_for_mixed_file(self, agent, tmp_path):
         """A file with mixed signals should have lower confidence."""
         test_file = tmp_path / "hybrid.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             from dataclasses import dataclass
 
             MAX_RETRIES = 3
@@ -251,7 +264,8 @@ class TestContentScoring:
 
             def validate_input(x):
                 return x > 0
-        """))
+        """),
+        )
 
         result = agent.classify_file_with_confidence(test_file)
         # Mixed signals — confidence should be moderate
@@ -271,13 +285,15 @@ class TestContentScoring:
 # Phase 2.4: Content-Score Tiebreaker in classify_file()
 # ===========================================================================
 
+
 class TestContentScoreTiebreaker:
     """Tests for CONFIG->TYPES override when content is overwhelmingly types."""
 
     def test_config_named_file_with_dataclasses_becomes_types(self, agent, tmp_path):
         """A file named *_config.py but containing only @dataclass should be classified as TYPES."""
         test_file = tmp_path / "code_detection_types_config.py"
-        test_file.write_text(textwrap.dedent("""\
+        test_file.write_text(
+            textwrap.dedent("""\
             from dataclasses import dataclass
 
             @dataclass
@@ -294,7 +310,8 @@ class TestContentScoreTiebreaker:
             class DetectorOptions:
                 verbose: bool
                 strict: bool
-        """))
+        """),
+        )
 
         ftype = agent.classify_file(test_file)
         assert ftype == "TYPES", f"Expected TYPES but got {ftype} for dataclass-only _config file"
@@ -303,6 +320,7 @@ class TestContentScoreTiebreaker:
 # ===========================================================================
 # Phase 3: Recursive Territory Enforcement
 # ===========================================================================
+
 
 class TestRecursiveTerritoryEnforcement:
     """Tests for enforce_kernel_structure() recursive validation."""
@@ -313,7 +331,9 @@ class TestRecursiveTerritoryEnforcement:
         enforcement = layer / "enforcement"
         enforcement.mkdir(parents=True)
         f = enforcement / "AdversarialRedTeamerAgent.py"
-        f.write_text("class SovereignBaseAgent: pass\nclass AdversarialRedTeamerAgent(SovereignBaseAgent):\n    def run(self): pass\n")
+        f.write_text(
+            "class SovereignBaseAgent: pass\nclass AdversarialRedTeamerAgent(SovereignBaseAgent):\n    def run(self): pass\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -326,7 +346,9 @@ class TestRecursiveTerritoryEnforcement:
         cfg = layer / "config"
         cfg.mkdir(parents=True)
         f = cfg / "safety_detection_types.py"
-        f.write_text("from typing import TypedDict\nclass SafetyDetectorTypes(TypedDict):\n    name: str\n    severity: int\n")
+        f.write_text(
+            "from typing import TypedDict\nclass SafetyDetectorTypes(TypedDict):\n    name: str\n    severity: int\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -339,7 +361,9 @@ class TestRecursiveTerritoryEnforcement:
         enforcement = layer / "enforcement"
         enforcement.mkdir(parents=True)
         f = enforcement / "gravity_visitor_util.py"
-        f.write_text("def compute_gravity(path):\n    return len(path.parts)\ndef visit_tree(root):\n    pass\n")
+        f.write_text(
+            "def compute_gravity(path):\n    return len(path.parts)\ndef visit_tree(root):\n    pass\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -351,7 +375,9 @@ class TestRecursiveTerritoryEnforcement:
         cfg = layer / "config"
         cfg.mkdir(parents=True)
         f = cfg / "safety_config.py"
-        f.write_text("MAX_RETRIES = 3\nTIMEOUT = 30\nLOG_LEVEL = 'INFO'\nENABLE = True\nclass SafetyConfig:\n    def load(self): pass\n")
+        f.write_text(
+            "MAX_RETRIES = 3\nTIMEOUT = 30\nLOG_LEVEL = 'INFO'\nENABLE = True\nclass SafetyConfig:\n    def load(self): pass\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is None
@@ -362,7 +388,9 @@ class TestRecursiveTerritoryEnforcement:
         validators = layer / "validators"
         validators.mkdir(parents=True)
         f = validators / "LocationAgent.py"
-        f.write_text("class SovereignBaseAgent: pass\nclass LocationAgent(SovereignBaseAgent):\n    def validate_location(self): pass\n")
+        f.write_text(
+            "class SovereignBaseAgent: pass\nclass LocationAgent(SovereignBaseAgent):\n    def validate_location(self): pass\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -374,7 +402,9 @@ class TestRecursiveTerritoryEnforcement:
         memory = layer / "memory"
         memory.mkdir(parents=True)
         f = memory / "CartographerAgent.py"
-        f.write_text("class SovereignBaseAgent: pass\nclass CartographerAgent(SovereignBaseAgent):\n    def map_territory(self): pass\n")
+        f.write_text(
+            "class SovereignBaseAgent: pass\nclass CartographerAgent(SovereignBaseAgent):\n    def map_territory(self): pass\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -388,7 +418,9 @@ class TestRecursiveTerritoryEnforcement:
         enforcement = layer / "enforcement"
         enforcement.mkdir(parents=True)
         f = enforcement / "heal_script.py"
-        f.write_text("import sys\ndef main():\n    print('healing')\nif __name__ == '__main__':\n    main()\n")
+        f.write_text(
+            "import sys\ndef main():\n    print('healing')\nif __name__ == '__main__':\n    main()\n",
+        )
 
         result = agent.enforce_kernel_structure(f, layer)
         assert result is not None
@@ -412,6 +444,7 @@ class TestRecursiveTerritoryEnforcement:
 # ===========================================================================
 # Phase 4: Global Mixin Routing
 # ===========================================================================
+
 
 class TestGlobalMixinRouting:
     """Tests for mixin routing to agentic_core/mixins/."""
@@ -447,6 +480,7 @@ class TestGlobalMixinRouting:
 # ===========================================================================
 # Phase 5: Folder-Suffix Consistency
 # ===========================================================================
+
 
 class TestFolderSuffixConsistency:
     """Tests for validate_folder_suffix_consistency()."""
@@ -528,6 +562,7 @@ class TestFolderSuffixConsistency:
 # Phase 6: Pre-commit Hook
 # ===========================================================================
 
+
 class TestPreCommitHook:
     """Tests for the check_compound_suffix.py hook logic."""
 
@@ -567,6 +602,7 @@ class TestPreCommitHook:
 # Blueprint Config Constants
 # ===========================================================================
 
+
 class TestBlueprintConfigConstants:
     """Tests that new constants in structure_blueprint_config.py are well-formed."""
 
@@ -582,20 +618,20 @@ class TestBlueprintConfigConstants:
     def test_suffix_to_folder_has_valid_folders(self):
         """All SUFFIX_TO_FOLDER values should be valid LCD folders or global sentinels."""
         from agentic_core.L5_safety.config.structure_blueprint_config import (
-            SUFFIX_TO_FOLDER,
             STANDARD_LAYER_STRUCTURE,
+            SUFFIX_TO_FOLDER,
         )
 
         valid_folders = set(STANDARD_LAYER_STRUCTURE) | {"GLOBAL_MIXINS", "GLOBAL_INTERFACES", "scripts"}
         for suffix, folder in SUFFIX_TO_FOLDER.items():
             assert folder in valid_folders, (
-                f"SUFFIX_TO_FOLDER['{suffix}'] = '{folder}' is not a valid LCD folder. "
-                f"Valid: {valid_folders}"
+                f"SUFFIX_TO_FOLDER['{suffix}'] = '{folder}' is not a valid LCD folder. Valid: {valid_folders}"
             )
 
     def test_forbidden_compound_patterns_are_valid_regex(self):
         """All FORBIDDEN_COMPOUND_PATTERNS should be valid regex."""
         import re
+
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FORBIDDEN_COMPOUND_PATTERNS,
         )
@@ -621,6 +657,7 @@ class TestBlueprintConfigConstants:
 # _get_correct_folder_for_type (AST-based routing)
 # ===========================================================================
 
+
 def _make_file(tmp_path, name, content):
     """Helper: create a temp Python file with given content."""
     f = tmp_path / name
@@ -633,7 +670,10 @@ class TestGetCorrectFolderForTypeAST:
 
     def test_config_class_routes_to_config(self, agent, tmp_path):
         """A file with config class and load/save methods routes to config/."""
-        f = _make_file(tmp_path, "safety_config.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "safety_config.py",
+            textwrap.dedent("""\
             import os
             DEFAULT_TIMEOUT = 30
             MAX_RETRIES = 3
@@ -647,54 +687,75 @@ class TestGetCorrectFolderForTypeAST:
                     pass
                 def save(self):
                     pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "config"
 
     def test_types_file_routes_to_types(self, agent, tmp_path):
         """A file with TypedDict/dataclass models routes to types/."""
-        f = _make_file(tmp_path, "model_types.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "model_types.py",
+            textwrap.dedent("""\
             from typing import TypedDict
             class ModelTypes(TypedDict):
                 name: str
                 value: int
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "types"
 
     def test_protocol_class_routes_to_types(self, agent, tmp_path):
         """A file with Protocol class routes to types/."""
-        f = _make_file(tmp_path, "validator_protocol.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "validator_protocol.py",
+            textwrap.dedent("""\
             from typing import Protocol
             class ValidatorProtocol(Protocol):
                 def validate(self) -> bool: ...
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "types"
 
     def test_utility_function_routes_to_utils(self, agent, tmp_path):
         """A file with only functions (no classes) routes to utils/."""
-        f = _make_file(tmp_path, "string_util.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "string_util.py",
+            textwrap.dedent("""\
             def strip_prefix(s: str, prefix: str) -> str:
                 return s[len(prefix):] if s.startswith(prefix) else s
             def clean_whitespace(s: str) -> str:
                 return ' '.join(s.split())
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "utils"
 
     def test_agent_class_routes_to_reasoning(self, agent, tmp_path):
         """A file with Agent class (inheriting SovereignBaseAgent) routes to reasoning/."""
-        f = _make_file(tmp_path, "HealerAgent.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "HealerAgent.py",
+            textwrap.dedent("""\
             class SovereignBaseAgent: pass
             class HealerAgent(SovereignBaseAgent):
                 def heal_repository(self): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "reasoning"
 
     def test_mixin_returns_none_handled_by_global_override(self, agent, tmp_path):
         """Mixin routing returns None (handled by global override in enforce_kernel_structure)."""
-        f = _make_file(tmp_path, "caching_mixin.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "caching_mixin.py",
+            textwrap.dedent("""\
             class CachingMixin:
                 def cache_get(self, key): pass
                 def cache_set(self, key, value): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) is None
 
     def test_init_file_returns_none(self, agent, tmp_path):
@@ -707,55 +768,79 @@ class TestGetCorrectFolderForTypeAST:
 
     def test_class_fallback_returns_none(self, agent, tmp_path):
         """A plain class with no architectural signals stays where it is (CLASS -> None)."""
-        f = _make_file(tmp_path, "random_file.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "random_file.py",
+            textwrap.dedent("""\
             class SomeHelper:
                 def do_thing(self): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) is None
 
     def test_agent_primary_wins_over_strategy_name(self, agent, tmp_path):
         """FooStrategyAgent: primary class is Agent -> reasoning (AST detects Agent inheritance)."""
-        f = _make_file(tmp_path, "FooStrategyAgent.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "FooStrategyAgent.py",
+            textwrap.dedent("""\
             class SovereignBaseAgent: pass
             class FooStrategyAgent(SovereignBaseAgent):
                 def execute(self): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "reasoning"
 
     def test_strategy_class_routes_to_enforcement(self, agent, tmp_path):
         """A file with Strategy class routes to enforcement/."""
-        f = _make_file(tmp_path, "HealingStrategy.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "HealingStrategy.py",
+            textwrap.dedent("""\
             class HealingStrategy:
                 def select_tier(self, violations): pass
                 def execute_healing(self): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "enforcement"
 
     def test_adapter_class_routes_to_enforcement(self, agent, tmp_path):
         """A file with Adapter class routes to enforcement/."""
-        f = _make_file(tmp_path, "SurgicalHealingAdapter.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "SurgicalHealingAdapter.py",
+            textwrap.dedent("""\
             class SurgicalHealingAdapter:
                 def adapt(self, source, target): pass
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "enforcement"
 
     def test_exception_class_routes_to_types(self, agent, tmp_path):
         """A file with Exception class routes to types/."""
-        f = _make_file(tmp_path, "BudgetExceededError.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "BudgetExceededError.py",
+            textwrap.dedent("""\
             class BudgetExceededError(Exception):
                 def __init__(self, message, spend=None):
                     super().__init__(message)
                     self.spend = spend
-        """))
+        """),
+        )
         assert agent._get_correct_folder_for_type(f, tmp_path) == "types"
 
     def test_validator_class_routes_to_validators(self, agent, tmp_path):
         """A file with Validator class routes to validators/."""
-        f = _make_file(tmp_path, "schema_validator.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "schema_validator.py",
+            textwrap.dedent("""\
             class SchemaValidator:
                 def validate(self, data): pass
                 def check_schema(self, schema): pass
-        """))
+        """),
+        )
         result = agent._get_correct_folder_for_type(f, tmp_path)
         assert result == "validators"
 
@@ -763,6 +848,7 @@ class TestGetCorrectFolderForTypeAST:
 # ===========================================================================
 # Folder Purity Enforcement (Bidirectional)
 # ===========================================================================
+
 
 class TestFolderPurityEnforcement:
     """Tests for _enforce_folder_purity() — evicting misplaced files."""
@@ -834,6 +920,7 @@ class TestFolderPurityEnforcement:
 # Cross-Domain Violation Detection
 # ===========================================================================
 
+
 class TestCrossDomainViolation:
     """Tests for _detect_cross_domain_violation()."""
 
@@ -874,13 +961,15 @@ class TestCrossDomainViolation:
 # Layer Affinity Scoring
 # ===========================================================================
 
+
 class TestLayerAffinity:
     """Tests for _compute_layer_affinity()."""
 
     def test_maintenance_agent_scores_l0(self, agent, tmp_path):
         """A file with cleanup/maintenance keywords should score highest for L0."""
         test_file = tmp_path / "SSOTFolderCleanupAgent.py"
-        test_file.write_text(textwrap.dedent('''\
+        test_file.write_text(
+            textwrap.dedent('''\
             """SSOT Folder Cleanup Agent - Automated SSOT Compliance Enforcement.
             Provides automated cleanup of non-SSOT-approved folders.
             Identifies files, reconciles locations, performs maintenance healing.
@@ -892,7 +981,8 @@ class TestLayerAffinity:
                     pass
                 def reconcile_folders(self):
                     pass
-        '''))
+        '''),
+        )
 
         scores = agent._compute_layer_affinity(test_file)
         assert scores["L0_maintenance"] > scores["L5_safety"]
@@ -901,7 +991,8 @@ class TestLayerAffinity:
     def test_safety_agent_scores_l5(self, agent, tmp_path):
         """A file with safety/guard/enforce keywords should score highest for L5."""
         test_file = tmp_path / "AdversarialRedTeamerAgent.py"
-        test_file.write_text(textwrap.dedent('''\
+        test_file.write_text(
+            textwrap.dedent('''\
             """Adversarial Red Team Agent for safety and threat analysis.
             Enforces guardrail compliance and adversarial protection.
             Validates sentinel behavior under threat conditions.
@@ -913,7 +1004,8 @@ class TestLayerAffinity:
                     pass
                 def detect_threat(self):
                     pass
-        '''))
+        '''),
+        )
 
         scores = agent._compute_layer_affinity(test_file)
         assert scores["L5_safety"] > scores["L0_maintenance"]
@@ -921,7 +1013,8 @@ class TestLayerAffinity:
     def test_monitor_scores_l6(self, agent, tmp_path):
         """A file with monitor/telemetry/report keywords should score highest for L6."""
         test_file = tmp_path / "SovereignHealthMonitor.py"
-        test_file.write_text(textwrap.dedent('''\
+        test_file.write_text(
+            textwrap.dedent('''\
             """Sovereign Health Monitor - Historical Health Persistence.
             Persists health metrics for monitoring and telemetry.
             Generates reports and dashboard data.
@@ -931,7 +1024,8 @@ class TestLayerAffinity:
                     pass
                 def log_metrics(self):
                     pass
-        '''))
+        '''),
+        )
 
         scores = agent._compute_layer_affinity(test_file)
         assert scores["L6_observability"] > scores["L5_safety"]
@@ -947,12 +1041,14 @@ class TestLayerAffinity:
     def test_scores_are_normalized(self, agent, tmp_path):
         """All scores should sum to approximately 1.0 (when there are hits)."""
         test_file = tmp_path / "mixed.py"
-        test_file.write_text(textwrap.dedent('''\
+        test_file.write_text(
+            textwrap.dedent('''\
             """Safety monitor with validation and reporting."""
             class SafetyMonitor:
                 def validate(self): pass
                 def report(self): pass
-        '''))
+        '''),
+        )
 
         scores = agent._compute_layer_affinity(test_file)
         total = sum(scores.values())
@@ -964,11 +1060,13 @@ class TestLayerAffinity:
 # New Config Constants Validation
 # ===========================================================================
 
+
 class TestNewConfigConstants:
     """Tests for FOLDER_PURITY_RULES, APP_DOMAIN_PREFIXES, LAYER_KEYWORD_AFFINITY."""
 
     def test_folder_purity_rules_has_reasoning(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import FOLDER_PURITY_RULES
+
         assert "reasoning" in FOLDER_PURITY_RULES
         # reasoning/ should only allow *Agent.py
         patterns = FOLDER_PURITY_RULES["reasoning"]
@@ -976,7 +1074,9 @@ class TestNewConfigConstants:
 
     def test_folder_purity_rules_patterns_are_valid_regex(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import FOLDER_PURITY_RULES
+
         for folder, patterns in FOLDER_PURITY_RULES.items():
             for pattern in patterns:
                 try:
@@ -986,45 +1086,62 @@ class TestNewConfigConstants:
 
     def test_app_domain_prefixes_not_empty(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import APP_DOMAIN_PREFIXES
+
         assert len(APP_DOMAIN_PREFIXES) > 0
         assert "Lic" in APP_DOMAIN_PREFIXES
 
     def test_layer_keyword_affinity_covers_all_layers(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_KEYWORD_AFFINITY
-        expected_layers = {"L0_maintenance", "L1_cognition", "L2_execution",
-                          "L3_orchestration", "L4_state", "L5_safety", "L6_observability"}
+
+        expected_layers = {
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        }
         assert set(LAYER_KEYWORD_AFFINITY.keys()) == expected_layers
 
     def test_suffix_to_folder_strategy_routes_to_enforcement(self):
         """Strategy.py should now route to enforcement/, not reasoning/."""
         from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+
         assert SUFFIX_TO_FOLDER["Strategy.py"] == "enforcement"
 
     def test_suffix_to_folder_adapter_routes_to_enforcement(self):
         """Adapter.py should now route to enforcement/, not reasoning/."""
         from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+
         assert SUFFIX_TO_FOLDER["Adapter.py"] == "enforcement"
 
     def test_suffix_to_folder_agent_still_routes_to_reasoning(self):
         """Agent.py should still route to reasoning/."""
         from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+
         assert SUFFIX_TO_FOLDER["Agent.py"] == "reasoning"
 
     def test_suffix_to_folder_protocol_routes_to_global_interfaces(self):
         """Protocol.py should route to GLOBAL_INTERFACES sentinel."""
         from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+
         assert SUFFIX_TO_FOLDER["Protocol.py"] == "GLOBAL_INTERFACES"
 
     def test_interface_filename_pattern_is_valid_regex(self):
         """INTERFACE_FILENAME_PATTERN should be a valid regex."""
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import INTERFACE_FILENAME_PATTERN
+
         re_mod.compile(INTERFACE_FILENAME_PATTERN)
 
     def test_interface_pattern_matches_i_protocols(self):
         """INTERFACE_FILENAME_PATTERN should match I*Protocol.py files."""
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import INTERFACE_FILENAME_PATTERN
+
         assert re_mod.match(INTERFACE_FILENAME_PATTERN, "IHealerProtocol.py")
         assert re_mod.match(INTERFACE_FILENAME_PATTERN, "IOrchestratorProtocol.py")
         assert re_mod.match(INTERFACE_FILENAME_PATTERN, "IValidatorProtocol.py")
@@ -1034,12 +1151,14 @@ class TestNewConfigConstants:
     def test_global_interfaces_folder_defined(self):
         """GLOBAL_INTERFACES_FOLDER should point to agentic_core/interfaces."""
         from agentic_core.L5_safety.config.structure_blueprint_config import GLOBAL_INTERFACES_FOLDER
+
         assert GLOBAL_INTERFACES_FOLDER == "agentic_core/interfaces"
 
 
 # ===========================================================================
 # Global Interface Routing (enforce_kernel_structure)
 # ===========================================================================
+
 
 class TestGlobalInterfaceRouting:
     """Tests for I*Protocol.py global routing to agentic_core/interfaces/."""
@@ -1074,12 +1193,16 @@ class TestGlobalInterfaceRouting:
 
     def test_get_correct_folder_returns_none_for_global_interfaces(self, agent, tmp_path):
         """_get_correct_folder_for_type should return None for I*Protocol.py (global sentinel)."""
-        f = _make_file(tmp_path, "IHealerProtocol.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "IHealerProtocol.py",
+            textwrap.dedent("""\
             from typing import Protocol, runtime_checkable
             @runtime_checkable
             class IHealerProtocol(Protocol):
                 def heal_repository(self, dry_run: bool = True) -> dict: ...
-        """))
+        """),
+        )
         result = agent._get_correct_folder_for_type(f, tmp_path)
         # PROTOCOL type but I*Protocol.py triggers GLOBAL_INTERFACES sentinel -> None
         # (handled by enforce_kernel_structure global override)
@@ -1087,11 +1210,15 @@ class TestGlobalInterfaceRouting:
 
     def test_get_correct_folder_still_routes_regular_protocol(self, agent, tmp_path):
         """_get_correct_folder_for_type should route a Protocol class to types/."""
-        f = _make_file(tmp_path, "validation_protocol.py", textwrap.dedent("""\
+        f = _make_file(
+            tmp_path,
+            "validation_protocol.py",
+            textwrap.dedent("""\
             from typing import Protocol
             class ValidationProtocol(Protocol):
                 def validate(self) -> bool: ...
-        """))
+        """),
+        )
         result = agent._get_correct_folder_for_type(f, tmp_path)
         assert result == "types"
 
@@ -1099,6 +1226,7 @@ class TestGlobalInterfaceRouting:
 # ===========================================================================
 # Ephemeral Script Detection
 # ===========================================================================
+
 
 class TestEphemeralScriptDetection:
     """Tests for _detect_ephemeral_scripts() — flagging phase/wave/sprint scripts."""
@@ -1165,21 +1293,27 @@ class TestEphemeralConfigConstants:
 
     def test_forbidden_patterns_not_empty(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+
         assert len(FORBIDDEN_EPHEMERAL_PATTERNS) >= 3
 
     def test_forbidden_patterns_are_valid_regex(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+
         for pattern in FORBIDDEN_EPHEMERAL_PATTERNS:
             re_mod.compile(pattern)
 
     def test_exemptions_not_empty(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+
         assert len(EPHEMERAL_PATTERN_EXEMPTIONS) >= 3
 
     def test_exemptions_are_valid_regex(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+
         for pattern in EPHEMERAL_PATTERN_EXEMPTIONS:
             re_mod.compile(pattern)
 
@@ -1187,6 +1321,7 @@ class TestEphemeralConfigConstants:
 # ===========================================================================
 # Cross-Layer Naming Violation Detection
 # ===========================================================================
+
 
 class TestCrossLayerNamingViolation:
     """Tests for _detect_cross_layer_naming_violation()."""
@@ -1242,23 +1377,31 @@ class TestLayerPrefixPatternConfig:
 
     def test_pattern_is_valid_regex(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+
         re_mod.compile(LAYER_PREFIX_PATTERN)
 
     def test_pattern_matches_l5_prefix(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+
         assert re_mod.search(LAYER_PREFIX_PATTERN, "l5_streamer.py")
         assert re_mod.search(LAYER_PREFIX_PATTERN, "L5_safety_util.py")
 
     def test_pattern_matches_mid_word(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+
         assert re_mod.search(LAYER_PREFIX_PATTERN, "my_l3_thing.py")
 
     def test_pattern_does_not_match_non_layer(self):
         import re as re_mod
+
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+
         # "healer" contains "l" but no layer pattern
         assert not re_mod.search(LAYER_PREFIX_PATTERN, "healer_agent.py")
 
@@ -1266,6 +1409,7 @@ class TestLayerPrefixPatternConfig:
 # ===========================================================================
 # Duplicate File Detection
 # ===========================================================================
+
 
 class TestDuplicateFileDetection:
     """Tests for _detect_duplicate_files()."""
@@ -1355,16 +1499,20 @@ class TestDuplicateDetectionConfig:
 
     def test_priority_not_empty(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+
         assert len(CANONICAL_LOCATION_PRIORITY) >= 10
 
     def test_runtime_is_highest_priority(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+
         assert CANONICAL_LOCATION_PRIORITY[0] == "runtime"
 
     def test_exempt_contains_init(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+
         assert "__init__.py" in DUPLICATE_DETECTION_EXEMPT
 
     def test_exempt_contains_conftest(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+
         assert "conftest.py" in DUPLICATE_DETECTION_EXEMPT

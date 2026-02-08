@@ -11,6 +11,8 @@ import os
 import re
 from pathlib import Path
 
+from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_PATTERNS,
@@ -19,7 +21,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
 )
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 Logger = logging.getLogger(__name__)
 
@@ -246,12 +247,10 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
                 # as they are standard for exposing package APIs (Facade Pattern)
                 if not is_init_file:
                     violations.append(
-                        f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths (allowed in __init__.py only)."
+                        f"RELATIVE IMPORT FORBIDDEN (Line {node.lineno}): Use absolute paths (allowed in __init__.py only).",
                     )
             if any(a.name == "*" for a in node.names):
-                violations.append(
-                    f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'import *' detected."
-                )
+                violations.append(f"STAR IMPORT FORBIDDEN (Line {node.lineno}): 'import *' detected.")
 
     # 2. Ordering Check (stdlib → third-party → local)
     categories = {"stdlib": [], "thirdparty": [], "local": []}
@@ -278,9 +277,7 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> list[str
     for cat in ["stdlib", "thirdparty", "local"]:
         if categories[cat] and prev_cat and categories[prev_cat]:
             if min(categories[cat]) < max(categories[prev_cat]):
-                violations.append(
-                    f"IMPORT ORDER VIOLATION: {cat.capitalize()} appears before {prev_cat}."
-                )
+                violations.append(f"IMPORT ORDER VIOLATION: {cat.capitalize()} appears before {prev_cat}.")
         if categories[cat]:
             prev_cat = cat
 
@@ -378,9 +375,7 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
 
         # SOVEREIGN PROTECTION: Key 0 (General) must remain at Project Root
         validator_markers = {"validator", "compliance", "canon"}
-        if root_folder.startswith("apps_") and any(
-            m in file_path.name.lower() for m in validator_markers
-        ):
+        if root_folder.startswith("apps_") and any(m in file_path.name.lower() for m in validator_markers):
             return (
                 False,
                 f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'.",
@@ -399,7 +394,8 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
 
 
 def enforce_void_compliance(
-    files: list[Path], project_root: Path
+    files: list[Path],
+    project_root: Path,
 ) -> tuple[list[Path], list[tuple[Path, str]]]:
     """
     Filter files to only those in allowed folders.
@@ -522,15 +518,13 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 (
                     root_path,
                     f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}",
-                )
+                ),
             )
 
         # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
         expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
-        actual_l1 = {
-            p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")
-        }
+        actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
 
         # Whitelist L6_meta for autonomous agents
         if "L6_meta" in actual_l1:
@@ -542,7 +536,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 (
                     root_path / bad,
                     f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}",
-                )
+                ),
             )
 
         # 3. Level 2 Validation + Min Depth Enforcement
@@ -558,9 +552,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 actual_l2_dirs = {
                     p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")
                 }
-                actual_l2_files = [
-                    p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"
-                ]
+                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
 
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
@@ -580,7 +572,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                         (
                             l1_path / bad,
                             f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}",
-                        )
+                        ),
                     )
         elif isinstance(layers, dict):
             # Legacy dict format support
@@ -593,9 +585,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                 actual_l2_dirs = {
                     p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")
                 }
-                actual_l2_files = [
-                    p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"
-                ]
+                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
 
                 # Whitelist autonomous agents to prevent drift violations
                 AUTONOMOUS_WHITELIST = {
@@ -615,7 +605,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
                         (
                             l1_path / bad,
                             f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}",
-                        )
+                        ),
                     )
 
     return violations
@@ -681,9 +671,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
     # Build regex only if there are downstream roots (defensive)
     if downstream_roots:
         forbidden_pattern = re.compile(
-            r"^(?:import|from)\s+("
-            + "|".join(map(re.escape, sorted(downstream_roots)))
-            + r")(?:\.\w|\s|$)",
+            r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(downstream_roots))) + r")(?:\.\w|\s|$)",
             re.MULTILINE,
         )
 
@@ -692,7 +680,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
             unique_matches = sorted(set(matches))
             violations.append(
                 f"GRAVITY VIOLATION (SSOT Enforced): Upstream sovereign root '{current_root}' imports from downstream root(s): {unique_matches}. "
-                "Rationale: Prevents core contamination. Move shared logic to apps_shared or sovereign runtime/utils."
+                "Rationale: Prevents core contamination. Move shared logic to apps_shared or sovereign runtime/utils.",
             )
 
     # [PHASE 2] Convention Enforcement

@@ -1,35 +1,28 @@
-# WINDSURF FORENSIC GAP ANALYSIS PROMPT (v5.0 – DIAMOND GRADE)
+# WINDSURF FORENSIC GAP ANALYSIS PROMPT (v5.1 – V15 PNG COMPLETE / DIAMOND GRADE)
 
-## **V10 TARGET STATE (v5.0 – SSOT-BOUND / SCHEMA-LOCKED / ZERO-LOSS / MATRIX-AUDIT / HIGH-SIGNAL)**
+## **V15 TARGET STATE (v5.1 – SSOT-BOUND / SCHEMA-LOCKED / ZERO-LOSS / MATRIX-AUDIT / HIGH-SIGNAL)**
 
 ---
 
 ## 0. AUTHORITATIVE BASIS & INVARIANTS (NON-NEGOTIABLE)
 
-This prompt is an **executable forensic audit contract**. Evaluation is strictly bounded to three authoritative sources.
+This prompt is an **executable forensic audit contract**. Evaluation is strictly bounded to four authoritative sources.
 
 | Source | Role | Evidence Requirement |
 |--------|------|----------------------|
-| Discovery JSON | Scope authority | Exact schema conformance + integrity_hash per agent |
-| structure_blueprint.py | Structural SSOT | SHA-256 match required before audit proceeds |
-| L0–L6 Architecture Principles | Behavioral invariants | P1–P6 gating checks only |
+| Discovery JSON | Scope authority | Exact schema conformance + `integrity_hash` per agent |
+| `structure_blueprint.py` | Structural SSOT | SHA-256 match required before audit proceeds |
+| L0–L6 Architecture Principles (P1–P6) | Gating invariants | P1–P6 checks applied wherever capability touches boundaries/authority/state |
+| Agentic Process V15 Diagrams (L0–L6) | Target capability SSOT | **Only** the V15 capabilities enumerated in §1–§19 are in-scope; no additional interpretation |
 
-**Zero external inference rule**: If not explicitly present in one of the three sources → does not exist.
+**Zero external inference rule**: If not explicitly present in one of the four sources → it does not exist.
 
 ### 0.2 High-Signal Rule (Anti-Bloat / Evidence-First)
 
-Evaluate **only** capabilities provable via direct evidence. Focus exclusively on gating invariants:
+Evaluate **only** capabilities enumerated in **§1–§19** (which are derived from the V15 diagrams and principles) and only where direct evidence exists.
 
-| Gating Invariant | Principle | Impact on Status |
-|--------------------|---------|------------------|
-| P1 Fail-Closed | Reject on missing schema/signature/health | FAIL if violated |
-| P2 Determinism | No wall-clock/race ambiguity | FAIL if non-deterministic |
-| P3 No Silent Mutation | No writes outside boundary | FAIL if implicit state change |
-| P4 Traceability | TraceID propagation | MISSING if absent |
-| P5 Tokenized Authority | Explicit approval tokens | FAIL if bypassed |
-| P6 Typed Boundaries | Schema-validated inter-agent messages | FAIL if untyped |
-
-All other narrative/flow components are out-of-scope.
+* Flow narration is out-of-scope **unless** it produces a **typed artifact**, **trace event**, **audit/metric event**, or **policy update event** that can be proven.
+* Focus on **gating failures** (P1–P6) and on **typed artifacts** that cross boundaries.
 
 ### 0.3 Evidence Standard (Strict)
 
@@ -40,7 +33,7 @@ All other narrative/flow components are out-of-scope.
 | FAIL | Evidence contradicts invariant OR illegal state present | Explicit contradiction reference |
 
 Evidence Location format (mandatory in all tables):
-`path/to/file.py::ClassName.method_name (lines 123-456)` OR `path/to/file.py (commit abc1234)`
+`path/to/file.py::ClassName.method_name (lines 123-456)` OR `path/to/file.py (commit abc1234)` 
 
 ### 0.4 Status Vocabulary (Fixed)
 
@@ -71,7 +64,7 @@ Before performing **any** evaluation, inference, or audit step, you **MUST**:
 
 2. **Execute Discovery:**
    ```bash
-   python C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\general_scripts\forensic_discovery_prep.py
+   python C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\general_scripts\\forensic_discovery_prep.py
    ```
 
 This script (verified) is the **sole authority** for defining the *Environment Under Test*.
@@ -147,7 +140,7 @@ A capability is compliant only with explicit evidence. Anything else is missing.
 
 # ARCHITECTURE DESIGN PRINCIPLES — AUDITABLE INVARIANTS (L0–L6)
 
-> These are binding system invariants distilled into audit checks; you must evaluate them where relevant to the v5.0 capability set. 
+> These are binding system invariants distilled into audit checks; you must evaluate them where relevant to the V15 capability set.
 
 ## P1. Fail-Closed Defaults (GLOBAL)
 
@@ -186,18 +179,18 @@ A capability is compliant only with explicit evidence. Anything else is missing.
 
 # OBJECTIVE
 
-Perform a **forensic, evidence-based Gap Analysis** against the **V10 Target State (v5.0)** using a **Discovery–Matrix Strategy**:
+Perform a **forensic, evidence-based Gap Analysis** against the **V15 Target State (v5.1)** using a **Discovery–Matrix Strategy**:
 
 1. **Global Framework Capabilities** audited once across the system.
-2. **Per-Agent Capabilities** audited independently for every ACTIVE agent.
+2. **Per-Agent Capabilities** audited for each ACTIVE agent, with **layer-specific addenda**.
 
 No capability may be evaluated outside its scope. Absence of proof = **MISSING**.
 
 ---
 
-# V10 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v5.0) (ZERO-LOSS)
+# V15 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v5.1) (ZERO-LOSS)
 
-> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING. 
+> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING.
 
 ---
 

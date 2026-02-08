@@ -30,7 +30,10 @@ class SovereignSemanticCache(SovereignBaseAgent):
     """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
 
     def __init__(
-        self, mission_id: str, engine=None, SovereignPineconeStoreAgent: PineconeSovereignAgent | None = None
+        self,
+        mission_id: str,
+        engine=None,
+        SovereignPineconeStoreAgent: PineconeSovereignAgent | None = None,
     ):
         super().__init__()
         self.mission_id = mission_id

@@ -21,9 +21,7 @@ class FitScoreCalibrator(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.FIT_SCORE")
 
-    async def execute(
-        self, candidate_data: dict[str, Any], jd_requirements: dict[str, Any]
-    ) -> float:
+    async def execute(self, candidate_data: dict[str, Any], jd_requirements: dict[str, Any]) -> float:
         """
         Calculate calibrated fit score.
         """

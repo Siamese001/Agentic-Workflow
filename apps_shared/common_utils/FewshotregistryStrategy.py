@@ -9,9 +9,10 @@ import json
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from pydantic import BaseModel, Field
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

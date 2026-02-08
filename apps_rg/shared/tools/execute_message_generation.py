@@ -25,13 +25,9 @@ class execute_message_generation:
         time.time()
         try:
             self._perform_action(action, params)
-            return ExecutionResult(
-                SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000
-            )
+            return ExecutionResult(SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
-                SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000
-            )
+            return ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000)
 
     def _perform_action(self, action: str, params: dict[str, object]) -> object:
         """Perform the action."""

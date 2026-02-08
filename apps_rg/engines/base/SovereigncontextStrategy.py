@@ -44,7 +44,8 @@ class SovereignContext:
         """Legacy adapter for record_result."""
         status = "SUCCESS" if passed else "FAILURE"
         self.trace.add_trace(
-            f"agent_{status.lower()}", {"agent": agent, "passed": passed, "details": details}
+            f"agent_{status.lower()}",
+            {"agent": agent, "passed": passed, "details": details},
         )
 
         # Writing result to buffer is safer

@@ -215,7 +215,7 @@ class TestSSOTAlignment:
                                 missing_paths.append(f"{territory_name}/{subfolder_name}")
                             else:
                                 print(
-                                    f"  [INFO] Optional subfolder '{territory_name}/{subfolder_name}' does not exist"
+                                    f"  [INFO] Optional subfolder '{territory_name}/{subfolder_name}' does not exist",
                                 )
 
         # Check agentic_core subfolders specifically
@@ -308,7 +308,7 @@ class TestSSOTAlignment:
                                         "type": "agent_naming",
                                         "classes": agent_classes,
                                         "issue": "File contains Agent class(es) but doesn't follow naming convention",
-                                    }
+                                    },
                                 )
 
                     # Rule 2: If file contains *Mixin class, filename should contain 'mixin'
@@ -320,7 +320,7 @@ class TestSSOTAlignment:
                                     "type": "mixin_naming",
                                     "classes": mixin_classes,
                                     "issue": "File contains Mixin class(es) but filename doesn't contain 'mixin'",
-                                }
+                                },
                             )
 
                     # Rule 3: Files ending in Agent.py should contain an Agent class
@@ -331,7 +331,7 @@ class TestSSOTAlignment:
                                 "type": "false_agent",
                                 "classes": classes,
                                 "issue": "File ends in 'Agent.py' but contains no Agent class",
-                            }
+                            },
                         )
 
         # Report results
@@ -511,7 +511,7 @@ class TestSSOTAlignment:
                             "file": str(rel_path),
                             "depth": depth,
                             "max_allowed": MAX_DEPTH,
-                        }
+                        },
                     )
 
         # Report results

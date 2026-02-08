@@ -22,11 +22,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
 )
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

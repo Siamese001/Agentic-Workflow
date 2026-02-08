@@ -146,17 +146,20 @@ class EnhancedResumeSectionNode(ResumeSectionNode):
         """
         # Phase A: Generate bullets
         bullet_output = self.two_phase_node.generate_unify_bullets_phase_a(
-            thematic_output, self._extract_role_data(candidate_profile)
+            thematic_output,
+            self._extract_role_data(candidate_profile),
         )
 
         # Phase B: Synthesize overview
         overview_output = self.two_phase_node.synthesize_unify_overview_phase_b(
-            bullet_output, thematic_output
+            bullet_output,
+            thematic_output,
         )
 
         # Enforce word count constraints
         final_overview, validation = self.word_enforcer.enforce_with_regeneration(
-            overview_output.overview, "K.5B_unify_overview"
+            overview_output.overview,
+            "K.5B_unify_overview",
         )
 
         return {
@@ -219,7 +222,9 @@ class EnhancedGapClosureEngine(GapClosureEngine):
         return output
 
     def _generate_thematic_competencies(
-        self, gap_skills: List[str], thematic_output: ThematicAnalysisOutput
+        self,
+        gap_skills: List[str],
+        thematic_output: ThematicAnalysisOutput,
     ) -> List[CompetencyItem]:
         """Generate competencies aligned with thematic analysis."""
         competencies = []
@@ -294,9 +299,7 @@ class EnhancedResumePlanningEngine(ResumePlanningEngine):
 
         self.word_enforcer = WordCountEnforcementEngine(self.config.get("word_count_config", {}))
 
-    async def execute(
-        self, job_description: str, candidate_profile: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def execute(self, job_description: str, candidate_profile: dict[str, Any]) -> dict[str, Any]:
         """
         Enhanced planning with thematic analysis and validation.
         """
@@ -468,7 +471,7 @@ class ComprehensiveValidationSuite:
         # Provenance validation
         if "experience_bullets" in resume_data:
             provenance_result = self.provenance_validator.validate_provenance(
-                resume_data["experience_bullets"]
+                resume_data["experience_bullets"],
             )
             validation_results["provenance"] = provenance_result
 
@@ -484,7 +487,7 @@ class ComprehensiveValidationSuite:
 # ============================================================================
 
 
-def example_enhanced_workflow():
+async def example_enhanced_workflow():
     """
     Example of enhanced workflow with historical patterns integrated.
     """
@@ -527,4 +530,6 @@ def example_enhanced_workflow():
 
 
 if __name__ == "__main__":
-    example_enhanced_workflow()
+    import asyncio
+
+    asyncio.run(example_enhanced_workflow())

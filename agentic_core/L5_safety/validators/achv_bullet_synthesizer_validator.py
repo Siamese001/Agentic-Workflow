@@ -2,8 +2,9 @@ from __future__ import annotations
 
 """Implementation for AchvBulletSynthesizer."""
 import logging
-from typing import Any
 import re
+from typing import Any
+
 from pydantic import ValidationError as ValidationResult
 
 Logger: Any = logging.getLogger(__name__)

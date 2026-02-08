@@ -9,11 +9,11 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.subatomic_testing_mixin import (
-    SubatomicTestingMixin,
-)
 from agentic_core.L4_state.memory.context_propagation_mixin import (
     ContextPropagationMixin,
+)
+from agentic_core.mixins.subatomic_testing_mixin import (
+    SubatomicTestingMixin,
 )
 
 

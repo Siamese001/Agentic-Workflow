@@ -3,11 +3,12 @@
 # Suggested keywords to add in docstring/code: engine, guardrail, memory, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
 
+import ast
+
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-import ast
 
 """
 TypeHintFixerAgent - Extracted for one-class-per-file pattern.

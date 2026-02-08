@@ -242,7 +242,7 @@ class LICStateManager:
             if data.get("schema_version") != self.SCHEMA_VERSION:
                 result.warnings.append(
                     f"schema version mismatch: expected {self.SCHEMA_VERSION}, "
-                    f"got {data.get('schema_version')}"
+                    f"got {data.get('schema_version')}",
                 )
 
         except json.JSONDecodeError as e:

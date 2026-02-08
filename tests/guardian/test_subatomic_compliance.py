@@ -250,7 +250,7 @@ class TestSubatomicCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} agents exceed mixin limit ({MAX_MIXINS}):\n"
-                + "\n".join(f"  - {v['agent']}: {v['mixin_count']} mixins" for v in violations[:10])
+                + "\n".join(f"  - {v['agent']}: {v['mixin_count']} mixins" for v in violations[:10]),
             )
 
     def test_method_limit(self, agent_analysis, report_builder):
@@ -313,7 +313,7 @@ class TestSubatomicCompliance:
                 + "\n".join(
                     f"  - {v['agent']}: {v['method_count']} methods ({', '.join(v['methods'][:3])}...)"
                     for v in violations[:10]
-                )
+                ),
             )
 
     def test_layer_zoning_alignment(self, agent_analysis, report_builder):
@@ -365,7 +365,7 @@ class TestSubatomicCompliance:
                 + "\n".join(
                     f"  - {v['agent']} ({v['file_layer']}): {len(v['conflicting_imports'])} conflicts"
                     for v in violations[:10]
-                )
+                ),
             )
 
     def test_subatomic_naming_convention(self, agent_analysis, report_builder):
@@ -400,7 +400,7 @@ class TestSubatomicCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} agents have compound names:\n"
-                + "\n".join(f"  - {v['agent']}" for v in violations)
+                + "\n".join(f"  - {v['agent']}" for v in violations),
             )
 
     def test_no_cross_layer_pollution(self, agent_analysis, report_builder):
@@ -451,7 +451,7 @@ class TestSubatomicCompliance:
                 f"BLOCKING: {len(violations)} cross-layer pollution violations:\n"
                 + "\n".join(
                     f"  - {v['file_layer']} -> {v['import_layer']}: {v['import']}" for v in violations[:10]
-                )
+                ),
             )
 
     def test_file_size_limit(self, report_builder):
@@ -479,7 +479,7 @@ class TestSubatomicCompliance:
                             "file": str(rel_path),
                             "loc": loc,
                             "limit": MAX_LOC,
-                        }
+                        },
                     )
 
                     report_builder.add_violation(
@@ -496,7 +496,7 @@ class TestSubatomicCompliance:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} monolith files exceed {MAX_LOC} LOC:\n"
-                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10])
+                + "\n".join(f"  - {v['file']}: {v['loc']} LOC" for v in violations[:10]),
             )
 
 
@@ -526,7 +526,7 @@ if __name__ == "__main__":
                         "file": str(file_path),
                         "line": agent["line_number"],
                         "message": f"Agent '{agent['name']}' violates single responsibility naming",
-                    }
+                    },
                 )
 
             # Check mixin limit (Power of Two)
@@ -538,7 +538,7 @@ if __name__ == "__main__":
                         "file": str(file_path),
                         "line": agent["line_number"],
                         "message": f"Agent '{agent['name']}' has {mixin_count} mixins (max: {MAX_MIXINS})",
-                    }
+                    },
                 )
 
             # Check method limit (Power of Two)
@@ -553,7 +553,7 @@ if __name__ == "__main__":
                         "file": str(file_path),
                         "line": agent["line_number"],
                         "message": f"Agent '{agent['name']}' has {len(primary_methods)} methods (max: {MAX_PUBLIC_METHODS})",
-                    }
+                    },
                 )
 
     if report["violations"]:

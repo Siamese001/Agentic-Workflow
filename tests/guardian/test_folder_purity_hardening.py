@@ -24,7 +24,6 @@ Run with: pytest tests/guardian/test_folder_purity_hardening.py -v
 
 import re
 import sys
-import tempfile
 import textwrap
 from pathlib import Path
 
@@ -37,15 +36,20 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     COMPOUND_SUFFIX_CONFLICTS,
     FOLDER_PURITY_RULES,
-    KNOWN_ARCHITECTURAL_SUFFIXES,
 )
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
 )
 
 EXCLUDED_DIRS = {
-    ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
-    "node_modules", "archives", ".sovereign_healing_backup",
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    "node_modules",
+    "archives",
+    ".sovereign_healing_backup",
 }
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
@@ -53,7 +57,9 @@ AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 @pytest.fixture(scope="module")
 def agent():
     return FileClassificationAgent(
-        project_root=PROJECT_ROOT, dry_run=True, validate_only=True,
+        project_root=PROJECT_ROOT,
+        dry_run=True,
+        validate_only=True,
     )
 
 
@@ -64,6 +70,7 @@ def _should_skip(path: Path) -> bool:
 # ============================================================================
 # 1. Compound Suffix Regression Scan (live codebase)
 # ============================================================================
+
 
 class TestCompoundSuffixRegression:
     """BLOCKING: No file in agentic_core/ may have a compound classification suffix."""
@@ -80,9 +87,7 @@ class TestCompoundSuffixRegression:
 
         if violations:
             detail = "\n".join(f"  - {n}: {t}" for n, t in violations[:20])
-            pytest.fail(
-                f"BLOCKING: {len(violations)} compound suffix violations:\n{detail}"
-            )
+            pytest.fail(f"BLOCKING: {len(violations)} compound suffix violations:\n{detail}")
 
     def test_compound_suffix_config_has_agent_types(self):
         """COMPOUND_SUFFIX_CONFLICTS must include _agent_types pattern."""
@@ -124,6 +129,7 @@ class TestCompoundSuffixRegression:
 # 2. Folder Purity: validators/ must have _validator suffix
 # ============================================================================
 
+
 class TestValidatorsFolderPurity:
     """BLOCKING: All .py files in validators/ folders must end with _validator.py."""
 
@@ -142,13 +148,14 @@ class TestValidatorsFolderPurity:
         if violations:
             detail = "\n".join(f"  - {v}" for v in violations[:20])
             pytest.fail(
-                f"BLOCKING: {len(violations)} files in validators/ without _validator suffix:\n{detail}"
+                f"BLOCKING: {len(violations)} files in validators/ without _validator suffix:\n{detail}",
             )
 
 
 # ============================================================================
 # 3. Folder Purity: utils/ must have _util suffix
 # ============================================================================
+
 
 class TestUtilsFolderPurity:
     """BLOCKING: All .py files in utils/ folders must end with _util.py."""
@@ -167,14 +174,13 @@ class TestUtilsFolderPurity:
 
         if violations:
             detail = "\n".join(f"  - {v}" for v in violations[:20])
-            pytest.fail(
-                f"BLOCKING: {len(violations)} files in utils/ without _util suffix:\n{detail}"
-            )
+            pytest.fail(f"BLOCKING: {len(violations)} files in utils/ without _util suffix:\n{detail}")
 
 
 # ============================================================================
 # 4. Folder Purity: types/ must have _types suffix (or Error/Exception/Protocol)
 # ============================================================================
+
 
 class TestTypesFolderPurity:
     """BLOCKING: All .py files in types/ must have _types suffix or be Error/Exception/Protocol."""
@@ -200,14 +206,13 @@ class TestTypesFolderPurity:
 
         if violations:
             detail = "\n".join(f"  - {v}" for v in violations[:20])
-            pytest.fail(
-                f"BLOCKING: {len(violations)} files in types/ without _types suffix:\n{detail}"
-            )
+            pytest.fail(f"BLOCKING: {len(violations)} files in types/ without _types suffix:\n{detail}")
 
 
 # ============================================================================
 # 5. Folder Purity: enforcement/ must have enforcement-pattern names
 # ============================================================================
+
 
 class TestEnforcementFolderPurity:
     """Files in enforcement/ must match enforcement naming patterns."""
@@ -229,14 +234,13 @@ class TestEnforcementFolderPurity:
 
         if violations:
             detail = "\n".join(f"  - {v}" for v in violations[:20])
-            pytest.fail(
-                f"{len(violations)} files in enforcement/ don't match purity patterns:\n{detail}"
-            )
+            pytest.fail(f"{len(violations)} files in enforcement/ don't match purity patterns:\n{detail}")
 
 
 # ============================================================================
 # 6. Dual-Tag Conflict Detection (unit tests)
 # ============================================================================
+
 
 class TestDualTagConflictDetection:
     """Unit tests for _detect_filename_tag_conflicts()."""
@@ -298,6 +302,7 @@ class TestDualTagConflictDetection:
 # 7. classify_file() Folder-Context Resolution
 # ============================================================================
 
+
 class TestClassifyFileFolderContext:
     """PRIORITY 2.3: When dual tags detected, folder context wins."""
 
@@ -306,10 +311,12 @@ class TestClassifyFileFolderContext:
         types_dir = tmp_path / "types"
         types_dir.mkdir()
         f = types_dir / "foo_agent_types.py"
-        f.write_text(textwrap.dedent("""\
+        f.write_text(
+            textwrap.dedent("""\
             class FooAgent:
                 def heal(self): pass
-        """))
+        """),
+        )
         result = agent.classify_file(f)
         assert result == "TYPES"
 
@@ -318,10 +325,12 @@ class TestClassifyFileFolderContext:
         reasoning_dir = tmp_path / "reasoning"
         reasoning_dir.mkdir()
         f = reasoning_dir / "foo_agent_types.py"
-        f.write_text(textwrap.dedent("""\
+        f.write_text(
+            textwrap.dedent("""\
             class FooAgent:
                 def heal(self): pass
-        """))
+        """),
+        )
         result = agent.classify_file(f)
         assert result == "AGENT"
 
@@ -330,10 +339,12 @@ class TestClassifyFileFolderContext:
         config_dir = tmp_path / "config"
         config_dir.mkdir()
         f = config_dir / "foo_strategy_config.py"
-        f.write_text(textwrap.dedent("""\
+        f.write_text(
+            textwrap.dedent("""\
             MAX_RETRIES = 3
             TIMEOUT = 30
-        """))
+        """),
+        )
         result = agent.classify_file(f)
         assert result == "CONFIG"
 
@@ -341,6 +352,7 @@ class TestClassifyFileFolderContext:
 # ============================================================================
 # 8. Adapter/Strategy Routing to enforcement/ Across Layers
 # ============================================================================
+
 
 class TestEnforcementRouting:
     """Adapter, Strategy, Factory files must be in enforcement/ folders."""
@@ -388,6 +400,7 @@ class TestEnforcementRouting:
 # 9. runtime/types Purity
 # ============================================================================
 
+
 class TestRuntimeTypesPurity:
     """runtime/types/ must only contain type definitions."""
 
@@ -411,9 +424,7 @@ class TestRuntimeTypesPurity:
                 violations.append(f.name)
 
         if violations:
-            pytest.fail(
-                f"runtime/types/ has non-type files: {violations}"
-            )
+            pytest.fail(f"runtime/types/ has non-type files: {violations}")
 
     def test_no_factories_in_runtime_types(self):
         """No *Factory.py files should be in runtime/types/."""
@@ -437,6 +448,7 @@ class TestRuntimeTypesPurity:
 # ============================================================================
 # 10. FOLDER_PURITY_RULES Config Completeness
 # ============================================================================
+
 
 class TestFolderPurityConfig:
     """Validate FOLDER_PURITY_RULES config is complete and correct."""

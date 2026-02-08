@@ -111,8 +111,7 @@ class VertexClient:
             # Safety settings
             if safety_settings:
                 safety_cfg = [
-                    SafetySetting(category=cat, threshold=thresh)
-                    for cat, thresh in safety_settings.items()
+                    SafetySetting(category=cat, threshold=thresh) for cat, thresh in safety_settings.items()
                 ]
             else:
                 safety_cfg = [
@@ -140,9 +139,10 @@ class VertexClient:
                 grounding_tool = Tool.from_google_search_retrieval(
                     vertex_grounding.GoogleSearchRetrieval(
                         dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                            mode="MODE_DYNAMIC", dynamic_threshold=0.7
-                        )
-                    )
+                            mode="MODE_DYNAMIC",
+                            dynamic_threshold=0.7,
+                        ),
+                    ),
                 )
                 tool_list.append(grounding_tool)
 
@@ -171,7 +171,7 @@ class VertexClient:
                 )
 
                 self._update_usage_stats(
-                    response.usage_metadata if hasattr(response, "usage_metadata") else None
+                    response.usage_metadata if hasattr(response, "usage_metadata") else None,
                 )
                 return response
 
@@ -201,9 +201,10 @@ class VertexClient:
         grounding_tool = Tool.from_google_search_retrieval(
             vertex_grounding.GoogleSearchRetrieval(
                 dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                    mode="MODE_DYNAMIC", dynamic_threshold=grounding_threshold
-                )
-            )
+                    mode="MODE_DYNAMIC",
+                    dynamic_threshold=grounding_threshold,
+                ),
+            ),
         )
 
         response = self.generate_content(prompt=prompt, tools=[grounding_tool], **kwargs)
@@ -240,7 +241,7 @@ class VertexClient:
                                         "uri": source.uri,
                                         "title": source.title,
                                         "snippet": source.snippet,
-                                    }
+                                    },
                                 )
 
                         grounding_metadata["grounding_supports"].append(grounding_support)
@@ -297,7 +298,7 @@ class VertexClient:
                             "category": rating.category.name,
                             "probability": rating.probability.name if rating.probability else None,
                             "blocked": rating.blocked if hasattr(rating, "blocked") else False,
-                        }
+                        },
                     )
 
         return {
@@ -311,7 +312,10 @@ class VertexClient:
         }
 
     def stream_response(
-        self, prompt: str, callback: callable = None, **kwargs: dict[str, object]
+        self,
+        prompt: str,
+        callback: callable = None,
+        **kwargs: dict[str, object],
     ) -> list[str]:
         """Stream response with optional callback.
 
@@ -454,12 +458,14 @@ if __name__ == "__main__":
 
         # Grounded response
         grounded = client.grounded_response(
-            "What are the latest developments in AI large language models?", grounding_threshold=0.7
+            "What are the latest developments in AI large language models?",
+            grounding_threshold=0.7,
         )
 
         # Safe response with custom safety
         safe = client.safe_response(
-            "Write a professional email template", safety_threshold=HarmBlockThreshold.BLOCK_NONE
+            "Write a professional email template",
+            safety_threshold=HarmBlockThreshold.BLOCK_NONE,
         )
 
         # Usage stats

@@ -13,10 +13,11 @@ import pytest
 
 # Test imports - these will need to be implemented
 try:
-    from apps_lic.engines.LicHealingOrchestrator import LicHealingOrchestrator
     from apps_lic.shared.core.lic_agent_base_agent_validator import LICAgentBase
     from apps_rg.engines.RgHealingOrchestrator import RgHealingOrchestrator
     from apps_rg.shared.core.RGAgentBaseAgent import RGAgentBase
+
+    from apps_lic.engines.LicHealingOrchestrator import LicHealingOrchestrator
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with full meta-learning: {e}", allow_module_level=True)
 
@@ -177,7 +178,9 @@ class TestFullIntegration:
             ]
 
             patterns = rg_orchestrator._meta_client.retrieve_healing_patterns(
-                rg_violation, domain="apps_rg", min_similarity=0.85
+                rg_violation,
+                domain="apps_rg",
+                min_similarity=0.85,
             )
 
             assert len(patterns) == 2, "Should find similar RG patterns"

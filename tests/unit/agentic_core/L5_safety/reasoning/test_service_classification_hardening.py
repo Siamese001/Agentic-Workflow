@@ -14,14 +14,13 @@ from __future__ import annotations
 import ast
 import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def agent():
@@ -49,6 +48,7 @@ def tmp_layer(tmp_path):
 # ===========================================================================
 # SERVICE Singleton Detection
 # ===========================================================================
+
 
 class TestServiceSingletonDetection:
     """Tests for _is_service_singleton() — detects monitors, collectors, trackers."""
@@ -149,6 +149,7 @@ class TestServiceSingletonDetection:
 # SERVICE Routing via FILETYPE_TO_FOLDER
 # ===========================================================================
 
+
 class TestServiceRouting:
     """Tests that SERVICE type routes to utils/ via FILETYPE_TO_FOLDER."""
 
@@ -157,6 +158,7 @@ class TestServiceRouting:
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FILETYPE_TO_FOLDER,
         )
+
         assert FILETYPE_TO_FOLDER.get("SERVICE") == "utils"
 
     def test_service_class_indicators_exist(self):
@@ -164,6 +166,7 @@ class TestServiceRouting:
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             SERVICE_CLASS_INDICATORS,
         )
+
         assert len(SERVICE_CLASS_INDICATORS) > 5
         assert "Collector" in SERVICE_CLASS_INDICATORS
         assert "Monitor" in SERVICE_CLASS_INDICATORS
@@ -173,6 +176,7 @@ class TestServiceRouting:
 # ===========================================================================
 # reasoning/ Folder Purity Enforcement
 # ===========================================================================
+
 
 class TestReasoningFolderPurity:
     """Tests that reasoning/ only allows *Agent.py files."""
@@ -217,6 +221,7 @@ class TestReasoningFolderPurity:
 # Non-Python File Routing
 # ===========================================================================
 
+
 class TestNonPythonFileRouting:
     """Tests for YAML/JSON/HTML routing via NON_PYTHON_FOLDER_ROUTES."""
 
@@ -240,6 +245,7 @@ class TestNonPythonFileRouting:
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             NON_PYTHON_FOLDER_ROUTES,
         )
+
         assert NON_PYTHON_FOLDER_ROUTES[".yaml"] == "config"
         assert NON_PYTHON_FOLDER_ROUTES[".html"] == "dashboards"
         assert NON_PYTHON_FOLDER_ROUTES["dashboard_ssot.yaml"] == "dashboards"
@@ -249,6 +255,7 @@ class TestNonPythonFileRouting:
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FOLDER_PURITY_RULES,
         )
+
         assert "dashboards" in FOLDER_PURITY_RULES
         patterns = FOLDER_PURITY_RULES["dashboards"]
         assert any(".html" in p for p in patterns)
@@ -259,6 +266,7 @@ class TestNonPythonFileRouting:
 # ===========================================================================
 # _is_true_agent Hardening
 # ===========================================================================
+
 
 class TestIsTrueAgentHardening:
     """Tests that _is_true_agent requires corroborating signals for method-based detection."""
@@ -328,6 +336,7 @@ class TestIsTrueAgentHardening:
 # Dual-Tag Resolver Hardening
 # ===========================================================================
 
+
 class TestDualTagResolverHardening:
     """Tests that dual-tag resolver doesn't blindly force reasoning/ -> AGENT."""
 
@@ -350,8 +359,7 @@ class TestDualTagResolverHardening:
         f.write_text(code)
         result = agent.classify_file(f)
         assert result == "SERVICE", (
-            f"Expected SERVICE but got {result}. "
-            f"Dual-tag resolver should NOT force reasoning/ -> AGENT."
+            f"Expected SERVICE but got {result}. Dual-tag resolver should NOT force reasoning/ -> AGENT."
         )
 
     def test_true_agent_in_reasoning_stays_agent(self, agent, tmp_layer):

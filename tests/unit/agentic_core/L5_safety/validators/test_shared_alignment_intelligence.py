@@ -10,10 +10,10 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AST_DOMAIN_HIT_THRESHOLD,
 )
+from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
 
 class TestSharedAlignmentIntelligence:
@@ -80,7 +80,9 @@ class DuplicateCodeDetector:
 
                 # Trigger the deep import validation logic
                 location_agent.deep_import_validation_and_heal(
-                    affected_paths=[generic_file], import_touched_paths=[], dry_run=False
+                    affected_paths=[generic_file],
+                    import_touched_paths=[],
+                    dry_run=False,
                 )
 
                 # Verify the logic would detect this as a global candidate

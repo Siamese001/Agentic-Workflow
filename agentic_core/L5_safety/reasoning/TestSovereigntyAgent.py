@@ -9,9 +9,9 @@ from __future__ import annotations
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from typing import Any
 
 """TestSovereigntyAgent — Ultra L5 Sovereign Testing Specialist (Jan 01, 2026)
 
@@ -28,10 +28,11 @@ from enum import Enum
 from pathlib import Path
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.security import safe_execute
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
-from agentic_core.utils.security import safe_execute
 
 
 class SovereignSeverity(Enum):

@@ -7,12 +7,13 @@ Follows the functional component pattern with proper logging.
 
 import json
 import logging
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 import yaml
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 

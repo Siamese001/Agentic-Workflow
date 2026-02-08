@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
@@ -15,7 +17,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
-from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
 
 
 # Lazy imports — gravity-safe (same/downstream L5)

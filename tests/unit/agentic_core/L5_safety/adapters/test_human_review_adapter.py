@@ -1,12 +1,12 @@
 """Tests for HumanReviewAdapter."""
 
+from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter
+from agentic_core.utils.feature_flags import FeatureFlagManager
 from agentic_core.utils.review_protocol import (
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter
-from agentic_core.utils.feature_flags import FeatureFlagManager
 
 
 class TestHumanReviewAdapter:
@@ -167,7 +167,7 @@ class TestHumanReviewAdapter:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
         adapter.submit_for_review(
             ReviewRequest(
@@ -177,7 +177,7 @@ class TestHumanReviewAdapter:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
 
         pending = adapter.get_pending_reviews(agent_name="Agent1")
@@ -198,7 +198,7 @@ class TestHumanReviewAdapter:
                     target_file=f"/test{i}.py",
                     description="test",
                     risk_level="high",
-                )
+                ),
             )
 
         pending = adapter.get_pending_reviews(limit=5)
@@ -217,7 +217,7 @@ class TestHumanReviewAdapter:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
 
         result = adapter.approve("REQ-001", "admin@example.com")
@@ -239,7 +239,7 @@ class TestHumanReviewAdapter:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
 
         assert adapter.get_queue_depth() == 1
@@ -268,7 +268,7 @@ class TestHumanReviewAdapter:
                 target_file="/test.py",
                 description="test",
                 risk_level="high",
-            )
+            ),
         )
 
         result = adapter.reject("REQ-001", "admin@example.com", "Too risky")

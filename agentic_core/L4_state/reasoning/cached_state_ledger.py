@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 import redis
-
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
 

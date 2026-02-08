@@ -27,7 +27,7 @@ class TestBootstrapAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L0_maintenance.scripts.bootstrap_agent_validator import (
+            from agentic_core.L0_maintenance.scripts.bootstrap_agent_validator import (  # noqa: F401
                 bootstrap_agent,
             )
 

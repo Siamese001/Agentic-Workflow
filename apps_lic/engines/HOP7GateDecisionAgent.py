@@ -10,10 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -29,7 +30,7 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     gate_thresholds: dict[str, Any] = field(
-        default_factory=lambda: {"max_factual_failures": 2, "max_creative_failures": 3}
+        default_factory=lambda: {"max_factual_failures": 2, "max_creative_failures": 3},
     )
 
     def __post_init__(self) -> None:
@@ -72,17 +73,13 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
             # Extract rules that failed
             failures = [r for r in report["validation_results"] if not r["passed"]]
             # Prioritize FACTUAL failures (S6->S2) over CREATIVE (S6->S5)
-            factual_violations = [
-                f for f in failures if f["rule_id"] in config.factual_failure_rules
-            ]
+            factual_violations = [f for f in failures if f["rule_id"] in config.factual_failure_rules]
 
             if factual_violations:
                 decision = "FAIL_FACTUAL"
                 action = "RETRY_HOP2"  # Back-hop to Research
                 reason = f"Factual gap detected: {factual_violations[0]['rule_id']}"
-                registry.add_trace(
-                    "FACTUAL_LOOP_TRIGGERED", {"rule": factual_violations[0]["rule_id"]}
-                )
+                registry.add_trace("FACTUAL_LOOP_TRIGGERED", {"rule": factual_violations[0]["rule_id"]})
             else:
                 decision = "FAIL_CREATIVE"
                 action = "RETRY_HOP5"  # Back-hop to Generation
@@ -90,7 +87,5 @@ class HOP7GateDecisionAgent(SubatomicTestingMixin, LICAgentBase):
                 registry.add_trace("CREATIVE_LOOP_TRIGGERED", {"rule": failures[0]["rule_id"]})
 
         # 3. Write Decision to Immutable Buffer
-        buffer.write_once(
-            "hop7_gate_decision", {"decision": decision, "action": action, "reason": reason}
-        )
+        buffer.write_once("hop7_gate_decision", {"decision": decision, "action": action, "reason": reason})
         registry.add_trace("DECISION_FINAL", {"status": decision, "action": action})

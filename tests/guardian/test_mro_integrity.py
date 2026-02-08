@@ -40,8 +40,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_maintenance.enforcement.core_integrity_util import CoreIntegrityVerifier
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from tests.guardian.guardian_report import (
     FixAction,
     GuardianReportBuilder,
@@ -266,7 +267,7 @@ def test_redundant_mixin_check():
             if base in parent_mro:
                 failures.append(
                     f"{cls.__module__}.{cls.__name__} redundantly re-inherits {base.__name__} "
-                    f"which is already present in parent MRO ({parent.__name__})."
+                    f"which is already present in parent MRO ({parent.__name__}).",
                 )
 
     assert not failures, "\n".join(failures)
@@ -291,7 +292,7 @@ def test_dataclass_initialization_fuzz(monkeypatch: pytest.MonkeyPatch):
         except Exception as e:
             failures.append(
                 f"Dataclass init failed for {cls.__module__}.{cls.__name__} with kwargs={kwargs}: "
-                f"{type(e).__name__}: {e}"
+                f"{type(e).__name__}: {e}",
             )
 
     # All dataclass init failures are now BLOCKING
@@ -386,19 +387,19 @@ def test_diamond_of_death_detection():
                     # Mixins are designed for multiple inheritance - warning only
                     diamond_warnings.append(
                         f"{cls.__module__}.{cls.__name__}: Diamond via Mixin '{ancestor.__name__}' "
-                        f"(appears in {count} inheritance paths)"
+                        f"(appears in {count} inheritance paths)",
                     )
                 elif ancestor is SovereignBaseAgent or "BaseAgent" in ancestor.__name__:
                     # Base agents in diamond is expected - warning only
                     diamond_warnings.append(
                         f"{cls.__module__}.{cls.__name__}: Diamond via BaseAgent '{ancestor.__name__}' "
-                        f"(appears in {count} inheritance paths)"
+                        f"(appears in {count} inheritance paths)",
                     )
                 else:
                     # Non-mixin, non-base diamond is an error
                     diamond_errors.append(
                         f"{cls.__module__}.{cls.__name__}: DIAMOND OF DEATH via '{ancestor.__name__}' "
-                        f"(appears in {count} inheritance paths) - MRO: {[c.__name__ for c in mro[:5]]}..."
+                        f"(appears in {count} inheritance paths) - MRO: {[c.__name__ for c in mro[:5]]}...",
                     )
 
     # All violations are BLOCKING - no warnings
@@ -415,7 +416,7 @@ def test_diamond_of_death_detection():
             )
         pytest.fail(
             f"BLOCKING: {len(all_violations)} diamond inheritance violations:\n"
-            + "\n".join(f"  - {v}" for v in all_violations[:10])
+            + "\n".join(f"  - {v}" for v in all_violations[:10]),
         )
 
 
@@ -455,7 +456,7 @@ def test_mixin_naming_convention_and_inheritance():
                 if "mixin" in class_name.lower() and not class_name.endswith("Mixin"):
                     failures.append(
                         f"Mixin naming violation in {path}: class '{class_name}' contains 'mixin' "
-                        "but does not end with 'Mixin'."
+                        "but does not end with 'Mixin'.",
                     )
 
     # Second check: any *Mixin class must not inherit SovereignBaseAgent directly.
@@ -468,7 +469,7 @@ def test_mixin_naming_convention_and_inheritance():
             if issubclass(cls, SovereignBaseAgent):
                 failures.append(
                     f"Mixin inheritance violation: {cls.__module__}.{cls.__name__} inherits "
-                    "SovereignBaseAgent directly (risk of circularity)."
+                    "SovereignBaseAgent directly (risk of circularity).",
                 )
 
     assert not failures, "\n".join(failures)
@@ -488,7 +489,7 @@ def test_abc_implementation_for_concrete_agents():
         if abstract_methods:
             failures.append(
                 f"Concrete agent {cls.__module__}.{cls.__name__} has unimplemented abstract methods: "
-                f"{sorted(abstract_methods)}"
+                f"{sorted(abstract_methods)}",
             )
 
     assert not failures, "\n".join(failures)
@@ -699,7 +700,7 @@ class TestDiamondDefense:
                 violations.append(
                     f"{cls.__module__}.{cls.__name__}: Class '{after_cls.__name__}' appears "
                     f"after SovereignBaseAgent in MRO (position {mro.index(after_cls)}). "
-                    f"MRO: {[c.__name__ for c in mro[:8]]}..."
+                    f"MRO: {[c.__name__ for c in mro[:8]]}...",
                 )
 
         # All MRO violations are BLOCKING
@@ -715,7 +716,7 @@ class TestDiamondDefense:
                 )
             pytest.fail(
                 f"BLOCKING: {len(violations)} MRO order violations:\n"
-                + "\n".join(f"  - {v}" for v in violations[:10])
+                + "\n".join(f"  - {v}" for v in violations[:10]),
             )
 
     def test_duplicate_mixin_injection(self):
@@ -813,7 +814,7 @@ class TestDiamondDefense:
                         violations.append(
                             f"{cls.__module__}.{cls.__name__}: Redundantly inherits "
                             f"'{base.__name__}' which is already in parent "
-                            f"'{parent.__name__}' MRO"
+                            f"'{parent.__name__}' MRO",
                         )
 
         # All duplicate mixin injections are BLOCKING
@@ -829,7 +830,7 @@ class TestDiamondDefense:
                 )
             pytest.fail(
                 f"BLOCKING: {len(violations)} duplicate mixin injections:\n"
-                + "\n".join(f"  - {v}" for v in violations[:10])
+                + "\n".join(f"  - {v}" for v in violations[:10]),
             )
 
     def test_dataclass_field_ordering(self):
@@ -896,7 +897,7 @@ class TestDiamondDefense:
                         # Non-default field after default field
                         field_ordering_issues.append(
                             f"{cls.__module__}.{cls.__name__}: Field '{f.name}' has no default "
-                            f"but appears after fields with defaults"
+                            f"but appears after fields with defaults",
                         )
 
         # Report results
@@ -911,7 +912,7 @@ class TestDiamondDefense:
             if len(field_ordering_issues) > KNOWN_FIELD_ISSUES:
                 raise AssertionError(
                     f"DATACLASS FIELD ORDERING VIOLATIONS ({len(field_ordering_issues)}):\n"
-                    + "\n".join(f"  [X] {i}" for i in field_ordering_issues[:10])
+                    + "\n".join(f"  [X] {i}" for i in field_ordering_issues[:10]),
                 )
 
         print(f"\n[OK] Dataclass field ordering verified for {checked_dataclasses} dataclasses")
@@ -954,7 +955,7 @@ class TestDiamondDefense:
             for base in cls.__bases__:
                 if base not in mro:
                     inconsistencies.append(
-                        f"{cls.__module__}.{cls.__name__}: Base '{base.__name__}' not in MRO"
+                        f"{cls.__module__}.{cls.__name__}: Base '{base.__name__}' not in MRO",
                     )
 
         assert not inconsistencies, f"MRO INCONSISTENCIES DETECTED ({len(inconsistencies)}):\n" + "\n".join(

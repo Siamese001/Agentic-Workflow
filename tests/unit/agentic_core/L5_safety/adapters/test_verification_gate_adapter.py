@@ -3,14 +3,14 @@
 import os
 import tempfile
 
-from agentic_core.utils.verification_types import (
-    VerificationRequest,
-    VerificationResult,
-)
 from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
     VerificationGateAdapter,
 )
 from agentic_core.utils.feature_flags import FeatureFlagManager
+from agentic_core.utils.verification_types import (
+    VerificationRequest,
+    VerificationResult,
+)
 
 
 class TestVerificationGateAdapter:

@@ -10,8 +10,8 @@ Validates:
 import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
-    SOVEREIGN_TERRITORIES,
     CORE_SUBFOLDER_MAP,
+    SOVEREIGN_TERRITORIES,
 )
 
 
@@ -27,14 +27,17 @@ class TestSovereignTerritories:
         """agentic_core must be a sovereign territory."""
         assert "agentic_core" in SOVEREIGN_TERRITORIES
 
-    @pytest.mark.parametrize("territory", [
-        "agentic_core",
-        "apps_rg",
-        "apps_lic",
-        "apps_shared",
-        "ops_scripts",
-        "tests",
-    ])
+    @pytest.mark.parametrize(
+        "territory",
+        [
+            "agentic_core",
+            "apps_rg",
+            "apps_lic",
+            "apps_shared",
+            "ops_scripts",
+            "tests",
+        ],
+    )
     def test_expected_territories_exist(self, territory: str):
         """Expected territories must be defined."""
         assert territory in SOVEREIGN_TERRITORIES, f"Missing territory: {territory}"
@@ -48,16 +51,19 @@ class TestSovereignTerritories:
 class TestGlobalTerritorySubfolders:
     """Tests for global territory subfolders."""
 
-    @pytest.mark.parametrize("global_territory", [
-        "base_agents",
-        "runtime",
-        "interfaces",
-        "mixins",
-        "knowledge",
-        "prompt_governance",
-        "config",
-        "utils",
-    ])
+    @pytest.mark.parametrize(
+        "global_territory",
+        [
+            "base_agents",
+            "runtime",
+            "interfaces",
+            "mixins",
+            "knowledge",
+            "prompt_governance",
+            "config",
+            "utils",
+        ],
+    )
     def test_global_territories_in_core_subfolder_map(self, global_territory: str):
         """Global territories must be in CORE_SUBFOLDER_MAP."""
         assert global_territory in CORE_SUBFOLDER_MAP, f"Missing global territory: {global_territory}"
@@ -75,7 +81,17 @@ class TestUnknownTerritoryDetection:
     def test_known_territories_complete(self):
         """All CORE_SUBFOLDER_MAP keys should be valid territories or layer subfolders."""
         valid_prefixes = {"L0", "L1", "L2", "L3", "L4", "L5", "L6"}
-        known_globals = {"base_agents", "runtime", "interfaces", "mixins", "knowledge", "prompt_governance", "config", "utils", "semantic_memory"}
+        known_globals = {
+            "base_agents",
+            "runtime",
+            "interfaces",
+            "mixins",
+            "knowledge",
+            "prompt_governance",
+            "config",
+            "utils",
+            "semantic_memory",
+        }
 
         for key in CORE_SUBFOLDER_MAP:
             is_layer = any(key.startswith(p) for p in valid_prefixes)
@@ -88,6 +104,7 @@ class TestUnknownTerritoryDetection:
             if key.startswith("L"):
                 # Extract layer number
                 import re
+
                 match = re.match(r"L(\d+)", key)
                 if match:
                     layer_num = int(match.group(1))

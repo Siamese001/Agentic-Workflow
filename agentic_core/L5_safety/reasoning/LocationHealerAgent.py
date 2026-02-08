@@ -30,20 +30,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+from agentic_core.L0_maintenance.utils.timeout_decorator_util import timeout
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     LocationHealingStrategy,
-)
-from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
-from agentic_core.L5_safety.utils.location_utils_util import (
-    compute_module_path,
-)
-from agentic_core.L5_safety.utils.location_constants_util import (
-    ARCHIVE_SUBFOLDERS,
-    DEFAULT_APP_HEALING_TARGET,
-    DEFAULT_ARCHIVE_SUBFOLDER,
-    HEALING_STRATEGY_MAP,
 )
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
@@ -52,7 +42,17 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     ROOT_PROTECTED_FILES,
     get_validated_project_root,
 )
-from agentic_core.L0_maintenance.utils.timeout_decorator_util import timeout
+from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.utils.location_constants_util import (
+    ARCHIVE_SUBFOLDERS,
+    DEFAULT_APP_HEALING_TARGET,
+    DEFAULT_ARCHIVE_SUBFOLDER,
+    HEALING_STRATEGY_MAP,
+)
+from agentic_core.L5_safety.utils.location_utils_util import (
+    compute_module_path,
+)
+from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
 
 Logger = logging.getLogger(__name__)
 
@@ -242,7 +242,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         details = []
 
         Logger.info(
-            f"LocationHealerAgent healing {total_violations} violations (auto_approve={auto_approve})"
+            f"LocationHealerAgent healing {total_violations} violations (auto_approve={auto_approve})",
         )
 
         violation_list = []
@@ -271,7 +271,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             "status": "healed",
                             "action": result.get("action_taken", "Unknown action"),
                             "file": str(result.get("file_path", "Unknown file")),
-                        }
+                        },
                     )
                 else:
                     details.append(
@@ -280,7 +280,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             "status": "failed" if result.get("error") else "skipped",
                             "error": result.get("error"),
                             "file": str(result.get("file_path", "Unknown file")),
-                        }
+                        },
                     )
 
             execution_time = int((time.time() - start_time) * 1000)
@@ -400,7 +400,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     if cleanup_results and cleanup_results[0].get("applied"):
                         counts["healed"] += 1
                         print(
-                            f"  [+] HEALED: {file_path.name} - {cleanup_results[0].get('action_taken', 'fixed')}"
+                            f"  [+] HEALED: {file_path.name} - {cleanup_results[0].get('action_taken', 'fixed')}",
                         )
                     elif cleanup_results and cleanup_results[0].get("error"):
                         counts["errors"] += 1
@@ -414,7 +414,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             print(
                 f"\n[LOCATION HEAL SUMMARY] "
                 f"Healed: {counts['healed']} | Blocked: {counts['blocked']} | "
-                f"Skipped: {counts['skipped']} | Errors: {counts['errors']}"
+                f"Skipped: {counts['skipped']} | Errors: {counts['errors']}",
             )
 
             return counts
@@ -2455,7 +2455,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                         )
                         if secondary_path.exists():
                             resolve_result = self.naming_agent.resolve_duplicate_filename(
-                                secondary_path, dry_run=False
+                                secondary_path,
+                                dry_run=False,
                             )
                             duplicate_actions.append(
                                 {
@@ -2463,7 +2464,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                     "primary_kept": str(sorted_paths[0]),
                                     "secondary_resolved": str(secondary),
                                     "resolution": resolve_result,
-                                }
+                                },
                             )
                             if resolve_result.get("applied") and resolve_result.get("new_path"):
                                 affected_paths.append(self.project_root / resolve_result["new_path"])
@@ -2482,13 +2483,17 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         # === DEEP CYCLES ===
         naming_deep = self.deep_naming_validation_and_heal(
-            affected_paths, import_touched_paths, dry_run=dry_run
+            affected_paths,
+            import_touched_paths,
+            dry_run=dry_run,
         )
         batch_report["naming_deep_cycle"] = naming_deep
         batch_report["batch_message"] += f" | Naming deep: {naming_deep['naming_deep_status']}"
 
         import_deep = self.deep_import_validation_and_heal(
-            affected_paths, import_touched_paths, dry_run=dry_run
+            affected_paths,
+            import_touched_paths,
+            dry_run=dry_run,
         )
         batch_report["import_deep_cycle"] = import_deep
         batch_report["batch_message"] += f" | Imports deep: {import_deep['import_final_status']}"

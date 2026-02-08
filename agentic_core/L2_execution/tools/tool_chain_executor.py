@@ -3,8 +3,8 @@ from __future__ import annotations
 """Implementation for ToolsUseATool."""
 import logging
 import sys
-from typing import Any
 import time
+from typing import Any
 
 
 class ToolsUseATool:

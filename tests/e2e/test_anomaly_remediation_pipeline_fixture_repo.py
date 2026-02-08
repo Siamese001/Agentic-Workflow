@@ -7,20 +7,13 @@ Validates:
 - Assert remediation map covers all items and is deterministic
 """
 
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add helpers to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "helpers"))
 
-from repo_builder import RepoBuilder, build_minimal_repo, build_anomaly_repo
-from write_module import (
-    agent_module,
-    types_module,
-    subprocess_module,
-    script_module,
-)
+from repo_builder import build_anomaly_repo, build_minimal_repo
 
 
 class TestAnomalyRepoBuilder:
@@ -28,15 +21,23 @@ class TestAnomalyRepoBuilder:
 
     def test_build_minimal_repo_creates_all_layers(self, tmp_path):
         """Minimal repo should have all L0-L6 layers."""
-        builder = build_minimal_repo(tmp_path)
+        build_minimal_repo(tmp_path)
 
-        for layer in ["L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"]:
+        for layer in [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ]:
             layer_path = tmp_path / "agentic_core" / layer
             assert layer_path.exists(), f"Missing layer: {layer}"
 
     def test_build_minimal_repo_creates_lcd_subfolders(self, tmp_path):
         """Minimal repo should have LCD subfolders in each layer."""
-        builder = build_minimal_repo(tmp_path)
+        build_minimal_repo(tmp_path)
 
         lcd_subfolders = ["config", "types", "reasoning", "enforcement", "validators", "utils"]
         for layer in ["L0_maintenance", "L5_safety"]:
@@ -46,10 +47,12 @@ class TestAnomalyRepoBuilder:
 
     def test_build_anomaly_repo_creates_violations(self, tmp_path):
         """Anomaly repo should create known violations."""
-        builder = build_anomaly_repo(tmp_path)
+        build_anomaly_repo(tmp_path)
 
         # Check that anomaly files were created
-        assert (tmp_path / "agentic_core" / "L5_safety" / "enforcement" / "dashboard_e2_e_pipeline.py").exists()
+        assert (
+            tmp_path / "agentic_core" / "L5_safety" / "enforcement" / "dashboard_e2_e_pipeline.py"
+        ).exists()
         assert (tmp_path / "agentic_core" / "L4_state" / "enforcement" / "CachedStateLedgerAgent.py").exists()
         assert (tmp_path / "agentic_core" / "L0_maintenance" / "scripts" / "AgentAuditResult.py").exists()
 
@@ -96,7 +99,7 @@ class TestRemediationPlanGeneration:
         # Create violation: PascalCase in scripts/
         pascal_file = builder.create_file(
             "agentic_core/L0_maintenance/scripts/MyClass.py",
-            "class MyClass:\n    pass\n"
+            "class MyClass:\n    pass\n",
         )
 
         # Verify violation exists
@@ -114,8 +117,8 @@ class TestRemediationDeterminism:
         builder2 = build_anomaly_repo(tmp_path / "repo2")
 
         # Both should have same structure
-        files1 = sorted([str(f.relative_to(tmp_path / "repo1")) for f in builder1.created_files])
-        files2 = sorted([str(f.relative_to(tmp_path / "repo2")) for f in builder2.created_files])
+        sorted([str(f.relative_to(tmp_path / "repo1")) for f in builder1.created_files])
+        sorted([str(f.relative_to(tmp_path / "repo2")) for f in builder2.created_files])
 
         # Note: created_files may be empty if using mkdir, but structure should match
         assert (tmp_path / "repo1" / "agentic_core").exists()
@@ -127,7 +130,7 @@ class TestRemediationCoverage:
 
     def test_all_anomaly_types_covered(self, tmp_path):
         """Remediation should cover all anomaly types A-I."""
-        builder = build_anomaly_repo(tmp_path)
+        build_anomaly_repo(tmp_path)
 
         # Check each anomaly type has corresponding structure
         # A: L5 subprocess
@@ -147,7 +150,7 @@ class TestRemediationCoverage:
 
     def test_remediation_targets_exist(self, tmp_path):
         """All remediation target directories should exist."""
-        builder = build_minimal_repo(tmp_path)
+        build_minimal_repo(tmp_path)
 
         # All target directories should exist
         targets = [

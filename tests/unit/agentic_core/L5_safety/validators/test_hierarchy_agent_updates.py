@@ -54,7 +54,7 @@ class TestHierarchyAgentUpdates:
                 "violations_found": 1,
                 "forbidden_folders": ["coverage_html"],  # Only bad stuff
                 "archived_files_at_root": [],
-            }
+            },
         )
 
         mock_agent.heal_root_violations(dry_run=True)

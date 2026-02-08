@@ -51,10 +51,11 @@ class TestImportHarmonization:
         """
         TC-003: Direct check that SovereignIndex is actually using the SSOT exclusion list.
         """
+        from agentic_core.utils.sovereign_index import SovereignIndex
+
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             GLOBAL_EXCLUDED_DIRS,
         )
-        from agentic_core.utils.sovereign_index import SovereignIndex
 
         # Reset instance to ensure fresh state
         SovereignIndex.reset_instance()

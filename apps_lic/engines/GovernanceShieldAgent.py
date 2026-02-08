@@ -23,7 +23,7 @@ class GovernanceShieldAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     risk_thresholds: dict[str, float] = field(
-        default_factory=lambda: {"max_confidence_score": 0.95, "min_safety_level": 0.8}
+        default_factory=lambda: {"max_confidence_score": 0.95, "min_safety_level": 0.8},
     )
 
     def __post_init__(self) -> None:
@@ -109,9 +109,7 @@ class GovernanceShieldAgent(SubatomicTestingMixin, LICAgentBase):
 
             # Check for zero tolerance violations
             if "zero hallucinations" in sanitized.lower():
-                logger.warning(
-                    "CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier"
-                )
+                logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier")
                 sanitized = self._critical_fix_zero_hallucinations(sanitized)
 
             # Apply pattern replacements
@@ -219,9 +217,7 @@ class GovernanceShieldAgent(SubatomicTestingMixin, LICAgentBase):
                 data_types = ["User Data", "Analytics Data"]
 
             # Boost sensitivity if JD mentions compliance
-            if any(
-                term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]
-            ):
+            if any(term in jd_lower for term in ["compliance", "regulatory", "audit", "sox", "hipaa"]):
                 if sensitivity == IndustrySensitivity.MEDIUM:
                     sensitivity = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
@@ -265,9 +261,7 @@ class GovernanceShieldAgent(SubatomicTestingMixin, LICAgentBase):
             flags=re.IGNORECASE,
         )
 
-        content = re.sub(
-            r"hallucination[- ]free", "hallucination-mitigated", content, flags=re.IGNORECASE
-        )
+        content = re.sub(r"hallucination[- ]free", "hallucination-mitigated", content, flags=re.IGNORECASE)
 
         return content
 

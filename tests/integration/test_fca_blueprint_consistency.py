@@ -7,12 +7,10 @@ Validates:
 """
 
 import pytest
-from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     LAYER_ROOTS,
-    is_layer_root,
     is_allowed_subfolder,
 )
 
@@ -68,6 +66,7 @@ class TestFCAClassificationAlignment:
     def fca(self):
         """Create FCA instance."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_agent_classification_targets_reasoning(self, fca, tmp_path):

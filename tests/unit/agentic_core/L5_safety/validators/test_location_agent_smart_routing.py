@@ -23,16 +23,16 @@ class TestLocationAgentSmartRouting:
         """Create a dummy project root for testing."""
         # Mock the project root validation to avoid marker requirements
         with patch(
-            "agentic_core.L5_safety.validators.structure_blueprint.get_validated_project_root"
+            "agentic_core.L5_safety.validators.structure_blueprint.get_validated_project_root",
         ) as mock_validate:
             mock_validate.return_value = tmp_path
             with patch.object(LocationAgent, "_validate_project_root"):
                 # Mock core integrity verification to avoid sovereign lock
                 with patch(
-                    "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+                    "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
                 ):
                     with patch(
-                        "agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__post_init__"
+                        "agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__post_init__",
                     ):
                         return LocationAgent(project_root=tmp_path)
 

@@ -131,7 +131,7 @@ class TestAcronymProtection:
                                     "file": str(test_file),
                                     "acronym": acronym,
                                     "issue": f"Broken acronym: {broken_pattern}",
-                                }
+                                },
                             )
 
         if violations:
@@ -180,7 +180,7 @@ class TestSuffixHygiene:
                                 "file": str(py_file),
                                 "pattern": description,
                                 "filename": py_file.stem,
-                            }
+                            },
                         )
 
                 # Also check class names inside files
@@ -196,7 +196,7 @@ class TestSuffixHygiene:
                                             "file": str(py_file),
                                             "pattern": description,
                                             "class": node.name,
-                                        }
+                                        },
                                     )
                 except (SyntaxError, UnicodeDecodeError):
                     continue
@@ -257,7 +257,7 @@ class TestTestNamingConventions:
                         {
                             "file": str(test_file),
                             "issue": "Contains uppercase (should be snake_case)",
-                        }
+                        },
                     )
 
         if violations:

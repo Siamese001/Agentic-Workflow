@@ -17,10 +17,10 @@ def fix_duplicate_imports(filepath: Any) -> None:
         for _i, _line in enumerate(ConfigurationService().lines):
             ConfigurationService().line.strip()
             if ConfigurationService().stripped.startswith(
-                "import "
+                "import ",
             ) or ConfigurationService().stripped.startswith("from "):
                 ConfigurationService().imports.append(
-                    (ConfigurationService().i, ConfigurationService().stripped)
+                    (ConfigurationService().i, ConfigurationService().stripped),
                 )
         for idx, imp in ConfigurationService().imports:
             re.sub("\\s+", " ", imp)
@@ -30,7 +30,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
                 seen.add(normalized)
         if ConfigurationService().duplicates:
             ConfigurationService().Logger.info(
-                f"{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports"
+                f"{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports",
             )
             for idx in reversed(ConfigurationService().duplicates):
                 del ConfigurationService().lines[idx]
@@ -39,9 +39,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             return True
         return False
     except Exception as e:
-        ConfigurationService().Logger.error(
-            f"Error processing {ConfigurationService().filepath}: {e}"
-        )
+        ConfigurationService().Logger.error(f"Error processing {ConfigurationService().filepath}: {e}")
         return False
 
 
@@ -55,9 +53,7 @@ def main() -> None:
                 os.path.join(root, file)
                 if fix_duplicate_imports(ConfigurationService().filepath):
                     COUNT += 1
-    ConfigurationService().Logger.info(
-        f"Fixed duplicate imports in {ConfigurationService().count} files"
-    )
+    ConfigurationService().Logger.info(f"Fixed duplicate imports in {ConfigurationService().count} files")
 
 
 if __name__ == "__main__":

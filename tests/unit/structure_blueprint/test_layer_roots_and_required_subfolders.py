@@ -10,11 +10,11 @@ Validates:
 import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
+    CORE_SUBFOLDER_MAP,
     LAYER_ROOTS,
     REQUIRED_LCD_SUBFOLDERS,
-    CORE_SUBFOLDER_MAP,
-    is_layer_root,
     is_allowed_subfolder,
+    is_layer_root,
     verify_derived_registries,
 )
 
@@ -24,34 +24,48 @@ class TestLayerRoots:
 
     def test_layer_roots_contains_all_layers(self):
         """All L0-L6 layers must be in LAYER_ROOTS."""
-        expected = {"L0_maintenance", "L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"}
+        expected = {
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        }
         assert expected == LAYER_ROOTS
 
     def test_layer_roots_is_frozenset(self):
         """LAYER_ROOTS must be immutable."""
         assert isinstance(LAYER_ROOTS, frozenset)
 
-    @pytest.mark.parametrize("layer", [
-        "L0_maintenance",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ])
+    @pytest.mark.parametrize(
+        "layer",
+        [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ],
+    )
     def test_is_layer_root_returns_true_for_valid_layers(self, layer: str):
         """is_layer_root() returns True for valid layer names."""
         assert is_layer_root(layer) is True
 
-    @pytest.mark.parametrize("invalid", [
-        "L7_future",
-        "base_agents",
-        "runtime",
-        "prompt_governance",
-        "utils",
-        "",
-    ])
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "L7_future",
+            "base_agents",
+            "runtime",
+            "prompt_governance",
+            "utils",
+            "",
+        ],
+    )
     def test_is_layer_root_returns_false_for_invalid(self, invalid: str):
         """is_layer_root() returns False for non-layer names."""
         assert is_layer_root(invalid) is False
@@ -65,29 +79,37 @@ class TestRequiredLCDSubfolders:
         expected = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
         assert expected == REQUIRED_LCD_SUBFOLDERS
 
-    @pytest.mark.parametrize("layer", [
-        "L0_maintenance",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ])
+    @pytest.mark.parametrize(
+        "layer",
+        [
+            "L0_maintenance",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ],
+    )
     def test_all_layers_have_lcd_subfolders(self, layer: str):
         """Each layer in CORE_SUBFOLDER_MAP has all required LCD subfolders."""
         subfolders = set(CORE_SUBFOLDER_MAP.get(layer, []))
-        assert REQUIRED_LCD_SUBFOLDERS.issubset(subfolders), f"{layer} missing: {REQUIRED_LCD_SUBFOLDERS - subfolders}"
+        assert REQUIRED_LCD_SUBFOLDERS.issubset(subfolders), (
+            f"{layer} missing: {REQUIRED_LCD_SUBFOLDERS - subfolders}"
+        )
 
-    @pytest.mark.parametrize("layer,subfolder", [
-        ("L5_safety", "reasoning"),
-        ("L5_safety", "enforcement"),
-        ("L5_safety", "config"),
-        ("L0_maintenance", "scripts"),
-        ("L2_execution", "tools"),
-        ("L4_state", "memory"),
-        ("L6_observability", "dashboards"),
-    ])
+    @pytest.mark.parametrize(
+        "layer,subfolder",
+        [
+            ("L5_safety", "reasoning"),
+            ("L5_safety", "enforcement"),
+            ("L5_safety", "config"),
+            ("L0_maintenance", "scripts"),
+            ("L2_execution", "tools"),
+            ("L4_state", "memory"),
+            ("L6_observability", "dashboards"),
+        ],
+    )
     def test_is_allowed_subfolder_valid(self, layer: str, subfolder: str):
         """is_allowed_subfolder() returns True for valid layer+subfolder combinations."""
         # Note: is_allowed_subfolder checks REQUIRED_LCD_SUBFOLDERS only
@@ -124,5 +146,6 @@ class TestDerivedRegistriesInvariant:
     def test_all_layers_in_subfolder_metadata(self):
         """All layers in CORE_SUBFOLDER_MAP should have SUBFOLDER_METADATA entries."""
         from agentic_core.L5_safety.config.structure_blueprint_config import SUBFOLDER_METADATA
+
         for layer in LAYER_ROOTS:
             assert layer in SUBFOLDER_METADATA, f"{layer} missing from SUBFOLDER_METADATA"

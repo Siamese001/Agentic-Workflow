@@ -103,7 +103,7 @@ class TestStructureValidationResult:
                 agent_path="test",
                 violation_type="test",
                 message="test",
-            )
+            ),
         )
         assert result.is_fully_compliant is False
 

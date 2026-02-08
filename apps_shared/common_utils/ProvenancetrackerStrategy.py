@@ -8,13 +8,13 @@ import asyncio
 import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
-from typing import Callable
 
 logger = logging.getLogger(__name__)
 

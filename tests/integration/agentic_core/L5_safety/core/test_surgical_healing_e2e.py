@@ -10,12 +10,12 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from agentic_core.L5_safety.validators.surgical_healing_adapter import (
+    SurgicalHealingAdapter,
+)
 
 from agentic_core.L5_safety.types.surgical_context_types import (
     SurgicalContextBuilder,
-)
-from agentic_core.L5_safety.validators.surgical_healing_adapter import (
-    SurgicalHealingAdapter,
 )
 
 
@@ -92,7 +92,7 @@ class MyClass:
                     "severity": "warning",
                     "message": "Test message",
                     "fix_type": "insert",
-                }
+                },
             ]
 
             tree = ast.parse(temp_path.read_text())

@@ -23,6 +23,7 @@ Non-responsibilities:
 import re
 from dataclasses import dataclass
 from typing import Any
+
 from pydantic import ValidationError as ValidationResult
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

@@ -319,7 +319,7 @@ class TestCompositeGuardrailIntegration:
         """Test batch processing of guardrail violations."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(
-                "class MyAgent:\n    def method1(self):\n        pass\n    def method2(self):\n        pass\n"
+                "class MyAgent:\n    def method1(self):\n        pass\n    def method2(self):\n        pass\n",
             )
             temp_path = Path(f.name)
 

@@ -24,10 +24,11 @@ class TestCompleteHealingWorkflow:
 
     def test_gravity_violation_heal_cycle(self):
         """Test complete gravity violation healing cycle."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -115,10 +116,11 @@ class TestCompleteHealingWorkflow:
 
     def test_multi_domain_healing_workflow(self):
         """Test healing workflow across multiple domains."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -232,10 +234,11 @@ class TestSystemIntegration:
 
     def test_client_guardrails_integration(self):
         """Test MetaLearningClient and Guardrails work together."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -295,16 +298,17 @@ class TestSystemIntegration:
 
     def test_all_components_healthy(self):
         """Test all components initialize and operate correctly."""
-        from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
         from agentic_core.L1_cognition.reasoning.cache_strategy_manager_types import (
             get_cache_strategy_manager,
-        )
-        from agentic_core.L1_cognition.reasoning.guardrails import (
-            get_guardrails,
         )
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             get_meta_learning_client,
         )
+
+        from agentic_core.L1_cognition.reasoning.guardrails import (
+            get_guardrails,
+        )
+        from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 
         # All singletons accessible
         client = get_meta_learning_client()
@@ -553,5 +557,5 @@ if __name__ == "__main__":
             "-v",
             "--tb=short",
             "-x",
-        ]
+        ],
     )

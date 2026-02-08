@@ -15,10 +15,11 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.shared_runtime import log_event
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.memory import ValidationContext
 from agentic_core.L5_safety.utils.decorators_util import standard_heal
-from agentic_core.runtime.shared_runtime import log_event
 
 logger = logging.getLogger(__name__)
 

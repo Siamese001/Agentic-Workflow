@@ -18,7 +18,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import mixins with fallbacks
 try:
-    from agentic_core.L1_cognition.reasoning.meta_learning_mixin import meta_learning_mixin
+    from agentic_core.L1_cognition.reasoning.meta_learning_mixin import meta_learning_mixin  # noqa: F401
 except ImportError:
 
     class MetaLearningMixin:
@@ -28,7 +28,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L5_safety.validators.healing_mixin import healer_mixin
+    from agentic_core.L5_safety.validators.healing_mixin import healer_mixin  # noqa: F401
 except ImportError:
 
     class HealerMixin:

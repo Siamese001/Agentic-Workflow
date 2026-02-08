@@ -50,10 +50,10 @@ class RetryConfig:
             TimeoutError,
             asyncio.TimeoutError,
             RetryableError,
-        ]
+        ],
     )
     non_retryable_exceptions: list[type[Exception]] = field(
-        default_factory=lambda: [ValueError, TypeError, KeyError, AttributeError, NonRetryableError]
+        default_factory=lambda: [ValueError, TypeError, KeyError, AttributeError, NonRetryableError],
     )
 
     def should_retry(self, exception: Exception, attempt: int) -> bool:
@@ -111,9 +111,7 @@ class DelayCalculator:
     """Calculates delay between retry attempts."""
 
     @staticmethod
-    def calculate_delay(
-        config: RetryConfig, attempt: int, base_delay: float | None = None
-    ) -> float:
+    def calculate_delay(config: RetryConfig, attempt: int, base_delay: float | None = None) -> float:
         """Calculate delay for next attempt.
 
         Args:
@@ -252,9 +250,7 @@ class RetryPolicy:
                     break
 
                 # Wait before retry
-                logger.warning(
-                    f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}"
-                )
+                logger.warning(f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}")
 
                 if delay > 0:
                     await asyncio.sleep(delay)
@@ -467,16 +463,28 @@ def retry_with_policy(policy_name: str):
 # Predefined configurations
 RETRY_CONFIGS = {
     "aggressive": RetryConfig(
-        max_attempts=5, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=0.5, max_delay=30.0
+        max_attempts=5,
+        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        base_delay=0.5,
+        max_delay=30.0,
     ),
     "conservative": RetryConfig(
-        max_attempts=3, strategy=RetryStrategy.LINEAR_BACKOFF, base_delay=2.0, max_delay=60.0
+        max_attempts=3,
+        strategy=RetryStrategy.LINEAR_BACKOFF,
+        base_delay=2.0,
+        max_delay=60.0,
     ),
     "fast": RetryConfig(
-        max_attempts=3, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=0.1, max_delay=5.0
+        max_attempts=3,
+        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        base_delay=0.1,
+        max_delay=5.0,
     ),
     "slow": RetryConfig(
-        max_attempts=5, strategy=RetryStrategy.EXPONENTIAL_BACKOFF, base_delay=5.0, max_delay=300.0
+        max_attempts=5,
+        strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+        base_delay=5.0,
+        max_delay=300.0,
     ),
 }
 

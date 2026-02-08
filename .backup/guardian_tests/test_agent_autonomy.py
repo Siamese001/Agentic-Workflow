@@ -67,14 +67,10 @@ def _test_agent_file_autonomy(agent_file_path: str) -> None:
         violations = []
         for class_name in agent_classes:
             class_node = next(
-                node
-                for node in ast.walk(tree)
-                if isinstance(node, ast.ClassDef) and node.name == class_name
+                node for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name == class_name
             )
 
-            method_names = {
-                node.name for node in ast.walk(class_node) if isinstance(node, ast.FunctionDef)
-            }
+            method_names = {node.name for node in ast.walk(class_node) if isinstance(node, ast.FunctionDef)}
 
             missing_methods = [method for method in REQUIRED_METHODS if method not in method_names]
 

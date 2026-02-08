@@ -41,9 +41,8 @@ def test_knowledge_base_node_configs():
 
 def test_base_engine_structure():
     """Test BaseRGEngine structure."""
-    from pydantic import BaseModel
-
     from apps_rg.engines.base.base_resume_agent import BaseRGEngine
+    from pydantic import BaseModel
 
     class TestInput(BaseModel):
         data: str
@@ -80,11 +79,11 @@ def test_clerk_engine_structure():
                     "role": "Engineer",
                     "duration": "2020-2023",
                     "bullets": ["Built X"],
-                }
+                },
             ],
             "skills": ["Python"],
             "education": {"degree": "BS CS"},
-        }
+        },
     )
 
     output = engine.execute(input_data)
@@ -109,8 +108,8 @@ def test_enrichment_engine_structure():
                 role="Engineer",
                 duration="2020-2023",
                 bullets=["Led team", "Built system", "Led team"],  # Duplicate
-            )
-        ]
+            ),
+        ],
     )
 
     input_data = EnrichmentInput(clerk_output=clerk_output)
@@ -154,9 +153,8 @@ def test_orchestrator_structure():
 
 def test_pydantic_validation():
     """Test that Pydantic models enforce validation."""
-    from pydantic import ValidationError
-
     from apps_rg.engines.hops.hop1_clerk_engine import ClerkInput
+    from pydantic import ValidationError
 
     # Valid input
     valid = ClerkInput(master_resume={})

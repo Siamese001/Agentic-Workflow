@@ -12,9 +12,10 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 """Brief description of functionality and purpose."""
 
 import datetime
+from typing import Any
 
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
-from typing import Any
+
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

@@ -20,13 +20,14 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+from agentic_core.prompt_governance.renderer import DashboardRenderer
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
-from agentic_core.prompt_governance.renderer import DashboardRenderer
 
 log = logging.getLogger(__name__)
 

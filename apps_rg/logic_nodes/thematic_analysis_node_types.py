@@ -62,9 +62,7 @@ class ThematicAnalysisNode:
         """
         return self.analyze_thematic_resonance(job_description, company_name)
 
-    def analyze_thematic_resonance(
-        self, job_description: str, company_name: str
-    ) -> ThematicAnalysisOutput:
+    def analyze_thematic_resonance(self, job_description: str, company_name: str) -> ThematicAnalysisOutput:
         """
         Perform comprehensive thematic analysis.
         In a full implementation, this would use Agentic RAG.

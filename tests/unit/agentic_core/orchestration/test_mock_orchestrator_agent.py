@@ -70,7 +70,7 @@ def test_meta_learning_agent_1_1():
 
     print(
         f"Test Case 1.1 PASSED: 'cot' weight increased "
-        f"from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}"
+        f"from {initial_cot_weight:.3f} to {updated_cot_weight:.3f}",
     )
     return True
 

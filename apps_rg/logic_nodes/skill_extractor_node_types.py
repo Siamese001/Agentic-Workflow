@@ -268,9 +268,7 @@ class SkillExtractorNode:
         self.exact_match_threshold = 0.9
         self.partial_match_threshold = 0.7
 
-    def __call__(
-        self, job_description: str, candidate_profile: dict[str, Any] = None
-    ) -> SkillAnalysisOutput:
+    def __call__(self, job_description: str, candidate_profile: dict[str, Any] = None) -> SkillAnalysisOutput:
         """
         Executes skill analysis using functor pattern.
 
@@ -286,9 +284,7 @@ class SkillExtractorNode:
 
         return self.analyze_skills(job_description, candidate_profile or {})
 
-    def analyze_skills(
-        self, job_description: str, candidate_profile: dict[str, Any]
-    ) -> SkillAnalysisOutput:
+    def analyze_skills(self, job_description: str, candidate_profile: dict[str, Any]) -> SkillAnalysisOutput:
         """Analyze skills from job description and candidate profile.
 
         Args:
@@ -303,20 +299,18 @@ class SkillExtractorNode:
         # Extract skills from job description
         jd_skills = self._extract_skills_from_text(job_description)
         logger.info(
-            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description"
+            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description",
         )
 
         # Extract skills from candidate profile
         candidate_skills = self._extract_skills_from_profile(candidate_profile)
         logger.info(
-            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile"
+            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile",
         )
 
         # Perform skill gap analysis
         gap_result = self._analyze_skill_gaps(jd_skills, candidate_skills)
-        logger.info(
-            f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})"
-        )
+        logger.info(f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})")
 
         # Perform skill matching
         match_result = self._match_skills(jd_skills, candidate_skills)
@@ -383,9 +377,7 @@ class SkillExtractorNode:
                     tool_skills.append(tool.title())
 
         # Calculate confidence score based on extraction patterns
-        total_skills = (
-            len(technical_skills) + len(soft_skills) + len(domain_skills) + len(tool_skills)
-        )
+        total_skills = len(technical_skills) + len(soft_skills) + len(domain_skills) + len(tool_skills)
         confidence_score = min(0.95, 0.5 + (total_skills * 0.02))
 
         return SkillExtractionResult(
@@ -432,7 +424,9 @@ class SkillExtractorNode:
         return self._extract_skills_from_text(profile_text)
 
     def _analyze_skill_gaps(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+        self,
+        jd_skills: SkillExtractionResult,
+        candidate_skills: SkillExtractionResult,
     ) -> SkillGapResult:
         """Analyze skill gaps between job requirements and candidate profile.
 
@@ -448,14 +442,14 @@ class SkillExtractorNode:
             jd_skills.technical_skills
             + jd_skills.soft_skills
             + jd_skills.domain_skills
-            + jd_skills.tool_skills
+            + jd_skills.tool_skills,
         )
 
         candidate_all_skills = set(
             candidate_skills.technical_skills
             + candidate_skills.soft_skills
             + candidate_skills.domain_skills
-            + candidate_skills.tool_skills
+            + candidate_skills.tool_skills,
         )
 
         # Find missing skills
@@ -485,7 +479,9 @@ class SkillExtractorNode:
         )
 
     def _match_skills(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+        self,
+        jd_skills: SkillExtractionResult,
+        candidate_skills: SkillExtractionResult,
     ) -> SkillMatchResult:
         """Perform detailed skill matching between JD and candidate.
 
@@ -526,15 +522,11 @@ class SkillExtractorNode:
             + jd_skills.tool_skills
         )
         [skill.lower() for skill in all_jd_skills]
-        unmatched_skills = [
-            skill for skill in all_jd_skills if skill.lower() not in all_matched_skills
-        ]
+        unmatched_skills = [skill for skill in all_jd_skills if skill.lower() not in all_matched_skills]
 
         # Calculate match percentage
         total_jd_skills = len(all_jd_skills)
-        match_percentage = (
-            (len(all_matched_skills) / total_jd_skills) if total_jd_skills > 0 else 0.0
-        )
+        match_percentage = (len(all_matched_skills) / total_jd_skills) if total_jd_skills > 0 else 0.0
 
         return SkillMatchResult(
             matched_skills=[skill.title() for skill in all_matched_skills],
@@ -550,7 +542,9 @@ class SkillExtractorNode:
         )
 
     def _generate_recommendations(
-        self, gap_result: SkillGapResult, match_result: SkillMatchResult
+        self,
+        gap_result: SkillGapResult,
+        match_result: SkillMatchResult,
     ) -> list[str]:
         """Generate recommendations based on skill analysis.
 
@@ -565,12 +559,8 @@ class SkillExtractorNode:
 
         # Gap-based recommendations
         if gap_result.gap_severity in ["HIGH", "CRITICAL"]:
-            recommendations.append(
-                f"Critical skill gaps identified ({gap_result.gap_severity} severity)"
-            )
-            recommendations.append(
-                f"Focus on acquiring: {', '.join(gap_result.missing_skills[:5])}"
-            )
+            recommendations.append(f"Critical skill gaps identified ({gap_result.gap_severity} severity)")
+            recommendations.append(f"Focus on acquiring: {', '.join(gap_result.missing_skills[:5])}")
 
         # Match-based recommendations
         if match_result.match_percentage < 0.5:
@@ -580,20 +570,14 @@ class SkillExtractorNode:
 
         # Category-specific recommendations
         if not match_result.skill_categories["technical"]["matched"]:
-            recommendations.append(
-                "Add technical skills section to highlight relevant technologies"
-            )
+            recommendations.append("Add technical skills section to highlight relevant technologies")
 
         if not match_result.skill_categories["soft"]["matched"]:
-            recommendations.append(
-                "Include soft skills that demonstrate leadership and collaboration"
-            )
+            recommendations.append("Include soft skills that demonstrate leadership and collaboration")
 
         # General recommendations
         if len(gap_result.missing_skills) > 10:
-            recommendations.append(
-                "Consider targeting roles that better align with current skillset"
-            )
+            recommendations.append("Consider targeting roles that better align with current skillset")
 
         return recommendations
 
@@ -631,7 +615,7 @@ class SkillExtractorNode:
             extraction_result.technical_skills
             + extraction_result.soft_skills
             + extraction_result.domain_skills
-            + extraction_result.tool_skills
+            + extraction_result.tool_skills,
         )
         expected_skills_set = {skill.lower() for skill in expected_skills}
 
@@ -649,9 +633,7 @@ class SkillExtractorNode:
             if (true_positives + false_negatives) > 0
             else 0.0
         )
-        f1_score = (
-            2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
-        )
+        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
         return {
             "precision": precision,

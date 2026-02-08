@@ -8,10 +8,9 @@ the Resume Engine cites the most current and verified truth.
 import logging
 import re
 from datetime import datetime
-from pydantic import BaseModel, Field
 from typing import Any
-from pydantic import confloat
-from pydantic import validator
+
+from pydantic import BaseModel, Field, confloat, validator
 
 logger = logging.getLogger(__name__)
 

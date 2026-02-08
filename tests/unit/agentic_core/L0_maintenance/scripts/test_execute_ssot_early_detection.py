@@ -140,7 +140,7 @@ class TestPhase1EarlyDetectionIntegration:
                             "subtype": vtype,
                             "count": count,
                             "territory": "test_territory",
-                        }
+                        },
                     )
 
         # Verify violations extracted
@@ -167,7 +167,7 @@ class TestPhase1EarlyDetectionIntegration:
                             "subtype": vtype,
                             "count": count,
                             "territory": "test_territory",
-                        }
+                        },
                     )
 
         assert len(classification_violations) == 0
@@ -216,7 +216,8 @@ class TestPhase1EarlyDetectionPosition:
         # Find the return statement in execute_phase1_discovery_impl
         early_detection_pos = content.find("PHASE 1 ENHANCEMENT")
         return_pos = content.find(
-            "return drift_report, violations, location_scan_result", early_detection_pos
+            "return drift_report, violations, location_scan_result",
+            early_detection_pos,
         )
 
         # Early detection should come before the return

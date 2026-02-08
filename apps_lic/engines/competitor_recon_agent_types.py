@@ -125,7 +125,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Claude 3 with improved reasoning",
                     source_url="https://anthropic.com",
                     date="3 months ago",
-                )
+                ),
             ],
             "Google": [
                 CompetitorMove(
@@ -133,7 +133,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Gemini Pro with multimodal capabilities",
                     source_url="https://deepmind.google",
                     date="2 months ago",
-                )
+                ),
             ],
             "Meta": [
                 CompetitorMove(
@@ -141,7 +141,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Llama 3 open source model",
                     source_url="https://ai.meta.com",
                     date="1 month ago",
-                )
+                ),
             ],
             "Microsoft": [
                 CompetitorMove(
@@ -149,7 +149,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Copilot Studio for custom AI agents",
                     source_url="https://microsoft.com/ai",
                     date="3 months ago",
-                )
+                ),
             ],
         }
 
@@ -157,7 +157,8 @@ class MockIntelProvider(IntelProvider):
         """Get mock competitors for target company."""
         industry_lower = industry.lower()
         return self.mock_competitors.get(
-            industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"]
+            industry_lower,
+            ["Market Leader A", "Market Leader B", "Market Leader C"],
         )[:3]
 
     def get_recent_moves(self, competitor: str, months: int = 6) -> list[CompetitorMove]:
@@ -191,7 +192,10 @@ class CompetitorReconAgent:
         logger.info("Initialized CompetitorReconAgent")
 
     def generate_fomo_hook(
-        self, target_company: str, industry: str, candidate_skills: list[str]
+        self,
+        target_company: str,
+        industry: str,
+        candidate_skills: list[str],
     ) -> StrategicHook | None:
         """Generate FOMO hook based on competitive intelligence.
 
@@ -236,9 +240,7 @@ class CompetitorReconAgent:
             logger.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
-    def get_strategic_ps(
-        self, target_company: str, industry: str, candidate_skills: list[str]
-    ) -> str | None:
+    def get_strategic_ps(self, target_company: str, industry: str, candidate_skills: list[str]) -> str | None:
         """Get strategic P.S. line for emails.
 
         Args:
@@ -310,9 +312,7 @@ class CompetitorReconAgent:
             logger.error(f"Error gathering intel on {competitor}: {str(e)}")
             return []
 
-    def _find_skill_matches(
-        self, moves: list[CompetitorMove], skills: list[str]
-    ) -> list[dict[str, Any]]:
+    def _find_skill_matches(self, moves: list[CompetitorMove], skills: list[str]) -> list[dict[str, Any]]:
         """Find matches between candidate skills and competitor moves.
 
         Args:
@@ -334,7 +334,7 @@ class CompetitorReconAgent:
                     # Check direct skill match
                     if skill_lower in move_text:
                         matches.append(
-                            {"move": move, "skill": skill, "relevance": 0.9, "match_type": "direct"}
+                            {"move": move, "skill": skill, "relevance": 0.9, "match_type": "direct"},
                         )
                         continue
 
@@ -349,7 +349,7 @@ class CompetitorReconAgent:
                                         "skill": skill,
                                         "relevance": 0.7,
                                         "match_type": "feature",
-                                    }
+                                    },
                                 )
                                 break
 
@@ -384,16 +384,17 @@ class CompetitorReconAgent:
 
             gap = f"{target_company} lacks {move.recent_launch} that {move.competitor_name} has"
 
-            return StrategicHook(
-                hook_text=hook_text, relevance_score=match["relevance"], competitive_gap=gap
-            )
+            return StrategicHook(hook_text=hook_text, relevance_score=match["relevance"], competitive_gap=gap)
 
         except Exception as e:
             logger.error(f"Error creating targeted hook: {str(e)}")
             raise
 
     def _create_speed_hook(
-        self, move: CompetitorMove, target_company: str, skills: list[str]
+        self,
+        move: CompetitorMove,
+        target_company: str,
+        skills: list[str],
     ) -> StrategicHook:
         """Create speed-focused hook when no direct feature match.
 
@@ -438,9 +439,7 @@ def create_competitor_recon_agent(
 
 
 # Convenience function for quick hook generation
-def generate_competitive_hook(
-    target_company: str, industry: str, candidate_skills: list[str]
-) -> str | None:
+def generate_competitive_hook(target_company: str, industry: str, candidate_skills: list[str]) -> str | None:
     """Quickly generate a competitive hook.
 
     Args:

@@ -66,9 +66,7 @@ class SectionBalanceAgent(RGAgentBase):
                 issues.append(f"Missing required section: {section}")
 
         # Calculate total content length
-        total_length = sum(
-            len(self._to_string(v)) for k, v in resume.items() if not k.startswith("_")
-        )
+        total_length = sum(len(self._to_string(v)) for k, v in resume.items() if not k.startswith("_"))
 
         if total_length == 0:
             self.record_fail("Resume has no content")
@@ -107,9 +105,7 @@ class SectionBalanceAgent(RGAgentBase):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """Invoke healing chain via super()."""
         return super().heal_repository()
 

@@ -38,7 +38,7 @@ class DataEnricher:
                             SEVERITY=ValidationSeverity.MEDIUM,
                             MESSAGE=f"Forbidden verb(s): {', '.join(forbidden)}",
                             DETAILS={"bullet_text": bullet_text[:100]},
-                        )
+                        ),
                     )
                 all_bullets.append(bullet)
         duplicates: Any = self.duplicate_detector.find_duplicates(all_bullets)
@@ -50,7 +50,7 @@ class DataEnricher:
                     SEVERITY=ValidationSeverity.MEDIUM,
                     MESSAGE=f"Found {len(duplicates)} potential duplicate bullets",
                     DETAILS={"duplicates": duplicates[:5]},
-                )
+                ),
             )
         else:
             validation_results.append(
@@ -59,6 +59,6 @@ class DataEnricher:
                     PASSED=True,
                     SEVERITY=ValidationSeverity.INFO,
                     MESSAGE="No duplicate bullets detected",
-                )
+                ),
             )
         return ({**extracted_data, "experience_sections": experience_sections}, validation_results)

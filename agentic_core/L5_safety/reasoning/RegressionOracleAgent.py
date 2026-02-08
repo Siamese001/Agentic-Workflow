@@ -5,9 +5,9 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
+from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from pathlib import Path
 
 """
 RegressionOracleAgent - Extracted for one-class-per-file pattern.
@@ -21,6 +21,7 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 

@@ -36,14 +36,15 @@ class TestEndToEndHealingCycle:
     """Test complete healing cycles across multiple agents."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_full_healing_cycle_with_caching(self, mock_integrity):
         """Test complete healing cycle: detect -> cache check -> heal -> store."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Setup
         client = MetaLearningClient()
@@ -92,17 +93,18 @@ class TestEndToEndHealingCycle:
         client.reset_healing_depth(agent.__class__.__name__, signature)
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_multi_agent_healing_coordination(self, mock_integrity):
         """Test multiple agents coordinating healing through shared cache."""
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )
+
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         # Setup shared client
         client = MetaLearningClient()
@@ -199,14 +201,15 @@ class TestPerformanceIntegration:
     """Test performance across the full system."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_healing_performance_at_scale(self, mock_integrity):
         """Test healing performance with many violations."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         client = MetaLearningClient()
         client._redis_client = None
@@ -336,21 +339,22 @@ class TestFullSystemIntegration:
     """Test the full meta-learning system integration."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
-            GravityLeakRepairAgent,
-        )
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-            CodeHealerAgent,
-        )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.validators.hygiene_guardian_agent import (
             HygieneGuardianAgent,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+            CodeHealerAgent,
+        )
+        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
+            GravityLeakRepairAgent,
+        )
+        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         agents = [
             SovereignBaseAgent(project_root=Path.cwd()),
@@ -395,14 +399,15 @@ class TestFullSystemIntegration:
         client.clear_local_cache()
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity"
+        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_system_stability_under_load(self, mock_integrity):
         """Test system remains stable under sustained load."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
         )
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         client = MetaLearningClient()
         client._redis_client = None
@@ -438,12 +443,13 @@ class TestRollbackProcedures:
 
     def test_singleton_reset_works(self):
         """Test singleton reset for rollback."""
-        from agentic_core.mixins.meta_learning_client_mixin import (
-            MetaLearningClientMixin,
-        )
         from agentic_core.L1_cognition.reasoning.meta_learning_client_types import (
             MetaLearningClient,
             get_meta_learning_client,
+        )
+
+        from agentic_core.mixins.meta_learning_client_mixin import (
+            MetaLearningClientMixin,
         )
 
         # Get initial instance

@@ -12,10 +12,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -32,7 +33,7 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     grounding_rules: dict[str, str] = field(
-        default_factory=lambda: {"strict_mode": "enabled", "default_region": "us-east-1"}
+        default_factory=lambda: {"strict_mode": "enabled", "default_region": "us-east-1"},
     )
 
     def __post_init__(self) -> None:
@@ -126,15 +127,11 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
                             extracted = []
                             for item in items:
                                 if isinstance(item, dict):
-                                    extracted.append(
-                                        item.get("name", item.get("client", str(item)))
-                                    )
+                                    extracted.append(item.get("name", item.get("client", str(item))))
                                 else:
                                     extracted.append(item)
                             mapping[target].extend(extracted)
-                            reg.add_trace(
-                                "ENTITY_EXTRACTED", {"category": target, "count": len(extracted)}
-                            )
+                            reg.add_trace("ENTITY_EXTRACTED", {"category": target, "count": len(extracted)})
                         break
 
     def _map_metrics(self, achievements: list[Any]) -> dict[str, list[str]]:
@@ -154,18 +151,16 @@ class HOP3SenderGroundingAgent(SubatomicTestingMixin, LICAgentBase):
 
         return metric_map
 
-    def _extract_data_legacy(
-        self, data: dict[str, Any], filename: str, grounding: dict[str, Any]
-    ) -> None:
+    def _extract_data_legacy(self, data: dict[str, Any], filename: str, grounding: dict[str, Any]) -> None:
         """Legacy extraction method - kept for backward compatibility."""
         # Heuristic 1: Sender Knowledge Base Structure
         if "whitelisted_team_members" in data:
             grounding.setdefault("team_members", []).extend(
-                [m["name"] for m in data["whitelisted_team_members"] if "name" in m]
+                [m["name"] for m in data["whitelisted_team_members"] if "name" in m],
             )
         if "whitelisted_products" in data:
             grounding.setdefault("products", []).extend(
-                [p["name"] for p in data["whitelisted_products"] if "name" in p]
+                [p["name"] for p in data["whitelisted_products"] if "name" in p],
             )
 
     def heal_repository(self) -> None:

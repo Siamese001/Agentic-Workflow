@@ -185,7 +185,7 @@ class ContentQualityAgent(RGAgentBase):
             if skill_analysis.extraction_result.confidence_score < 0.6:
                 issues.append(
                     f"Low skill extraction confidence "
-                    f"({skill_analysis.extraction_result.confidence_score:.2f})"
+                    f"({skill_analysis.extraction_result.confidence_score:.2f})",
                 )
 
         except Exception as e:
@@ -243,9 +243,7 @@ class ContentQualityAgent(RGAgentBase):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any
-    ) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

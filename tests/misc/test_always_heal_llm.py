@@ -63,7 +63,7 @@ class AlwaysHealTestAgent:
                 "type": "UNKNOWN",  # This gets low confidence (0.5)
                 "message": "File in unknown location - needs LLM arbitration",
                 "severity": "medium",
-            }
+            },
         ]
 
         plan = {

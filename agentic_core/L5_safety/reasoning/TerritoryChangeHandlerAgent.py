@@ -15,7 +15,7 @@ from typing import Any
 
 # Required for File System Watching
 try:
-    from watchdog.events import FileSystemEventhandler
+    from watchdog.events import FileSystemEventhandler  # noqa: F401
     from watchdog.observers import Observer
 except ImportError:
     Observer = object

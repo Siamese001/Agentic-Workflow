@@ -26,23 +26,23 @@ def main():
     moves = result.get("moves", [])
     renames = result.get("renames", [])
 
-    print(f"\n=== LCD+ Dry-Run Results ===")
+    print("\n=== LCD+ Dry-Run Results ===")
     print(f"Violations found: {len(violations)}")
     print(f"Moves proposed:   {len(moves)}")
     print(f"Renames proposed: {len(renames)}")
 
     if moves:
-        print(f"\n--- Proposed Moves ---")
+        print("\n--- Proposed Moves ---")
         for m in moves[:50]:
             print(f"  {m}")
 
     if renames:
-        print(f"\n--- Proposed Renames ---")
+        print("\n--- Proposed Renames ---")
         for r in renames[:50]:
             print(f"  {r}")
 
     if violations:
-        print(f"\n--- Violations ---")
+        print("\n--- Violations ---")
         for v in violations[:50]:
             print(f"  {v}")
 

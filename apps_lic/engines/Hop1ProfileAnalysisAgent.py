@@ -10,11 +10,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from apps_lic.shared.core.trace_registry_types import TraceRegistry
+
 from apps_lic.domain.config import load_agent_specs
 from apps_lic.logic_nodes.k1_router_types import K1Router
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.shared.core.LICAgentBase import LICAgentBase
-from apps_lic.shared.core.trace_registry_types import TraceRegistry
 
 
 @dataclass
@@ -38,7 +39,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
         """
         if getattr(self, "_sealed", False):
             raise AttributeError(
-                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}"
+                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}",
             )
         super().__setattr__(name, value)
 
@@ -65,17 +66,13 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
 
         # Critical Analysis: Verify State Injection
         if not getattr(self, "config", None):
-            raise RuntimeError(
-                f"CRITICAL: {self.__class__.__name__} failed to inherit Sovereign Config."
-            )
+            raise RuntimeError(f"CRITICAL: {self.__class__.__name__} failed to inherit Sovereign Config.")
 
         # Load domain-specific agent specs
         self.agent_specs = load_agent_specs()
 
         # Integration of the new Logic Node
-        self.router = K1Router(
-            config=self.config.__dict__ if hasattr(self, "config") and self.config else {}
-        )
+        self.router = K1Router(config=self.config.__dict__ if hasattr(self, "config") and self.config else {})
 
         # Engage Sovereign Seal
         object.__setattr__(self, "_sealed", True)
@@ -177,7 +174,8 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
             if self.toggles.use_cot and self.llm:
                 try:
                     llm_response = self._execute_reasoning(
-                        title, {"archetype": archetype, "confidence": confidence}
+                        title,
+                        {"archetype": archetype, "confidence": confidence},
                     )
                     if llm_response["confidence"] > confidence:
                         registry.add_trace(
@@ -260,8 +258,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase):
                         "confidence": indicators.confidence,
                         "reasoning": f"Title '{title}' contains indicator '{keyword}'",
                         "key_indicators": [keyword],
-                        "needs_manual_override": indicators.confidence
-                        < config.manual_override_threshold,
+                        "needs_manual_override": indicators.confidence < config.manual_override_threshold,
                     }
 
         return best_match

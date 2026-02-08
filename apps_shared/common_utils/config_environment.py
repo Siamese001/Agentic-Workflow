@@ -6,8 +6,8 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 import logging
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from typing import Any
 

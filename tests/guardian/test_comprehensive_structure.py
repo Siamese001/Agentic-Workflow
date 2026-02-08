@@ -190,7 +190,7 @@ class TestComprehensiveSSOTStructure:
                             "file": str(file_path.relative_to(PROJECT_ROOT)),
                             "pattern": pattern,
                             "description": description,
-                        }
+                        },
                     )
 
         # Report results

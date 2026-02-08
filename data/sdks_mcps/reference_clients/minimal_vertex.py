@@ -24,7 +24,8 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     model_client = GenerativeModel(model)
 
     response = model_client.generate_content(
-        prompt, generation_config={"temperature": 0.7, "max_output_tokens": 1000}
+        prompt,
+        generation_config={"temperature": 0.7, "max_output_tokens": 1000},
     )
 
     return response.text
@@ -51,9 +52,10 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     grounding_tool = Tool.from_google_search_retrieval(
         vertex_grounding.GoogleSearchRetrieval(
             dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
-                mode="MODE_DYNAMIC", dynamic_threshold=threshold
-            )
-        )
+                mode="MODE_DYNAMIC",
+                dynamic_threshold=threshold,
+            ),
+        ),
     )
 
     response = model_client.generate_content(
@@ -131,7 +133,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
                     {
                         "category": rating.category.name,
                         "probability": rating.probability.name if rating.probability else None,
-                    }
+                    },
                 )
 
     return {"content": response.text, "safety_ratings": safety_ratings}

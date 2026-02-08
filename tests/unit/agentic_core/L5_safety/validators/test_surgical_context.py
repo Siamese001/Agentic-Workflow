@@ -181,7 +181,7 @@ class TestSurgicalContextBuilder:
                     "severity": "warning",
                     "message": "Missing docstring",
                     "fix_type": "insert",
-                }
+                },
             ]
 
             tree = ast.parse(temp_path.read_text())

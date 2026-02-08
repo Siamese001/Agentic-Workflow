@@ -101,9 +101,7 @@ class RgTemplateOptimizerAgent(RGAgentBase):
         try:
             return {
                 "status": "skipped",
-                "details": (
-                    f"RgTemplateOptimizerAgent heal() not yet implemented for {violation_type}"
-                ),
+                "details": (f"RgTemplateOptimizerAgent heal() not yet implemented for {violation_type}"),
                 "artifacts": [],
                 "errors": [],
             }

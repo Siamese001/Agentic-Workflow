@@ -33,7 +33,8 @@ class OrchestrationTopology(BaseModel):
 
     version: str = "2.5.0"
     phases: dict[str, list[str]] = Field(
-        ..., description="Map of Phase Name -> List of Agent Names in execution order"
+        ...,
+        description="Map of Phase Name -> List of Agent Names in execution order",
     )
     agents: dict[str, AgentSpec] = Field(..., description="Registry of all agents")
 
@@ -57,7 +58,7 @@ class ClerkExtractionConfig(BaseModel):
     """Settings for HOP1 Clerk Extraction Agent."""
 
     metrics_patterns: list[str] = Field(
-        default_factory=lambda: [r"\$\d+\.?\d*[MBK]\+?", r"\d+\.?\d*%", r"\d{1,3}(?:,\d{3})+"]
+        default_factory=lambda: [r"\$\d+\.?\d*[MBK]\+?", r"\d+\.?\d*%", r"\d{1,3}(?:,\d{3})+"],
     )
     min_bullets_per_section: int = Field(default=3)
     max_bullets_per_section: int = Field(default=8)
@@ -73,7 +74,7 @@ class EnrichmentConfig(BaseModel):
             "helped with",
             "assisted with",
             "worked on",
-        ]
+        ],
     )
     duplicate_threshold: float = Field(default=0.85, ge=0.0, le=1.0)
     power_verbs: list[str] = Field(
@@ -88,7 +89,7 @@ class EnrichmentConfig(BaseModel):
             "optimized",
             "pioneered",
             "spearheaded",
-        ]
+        ],
     )
 
 
@@ -96,10 +97,10 @@ class GenerationConfig(BaseModel):
     """Settings for HOP3 Generation Agent."""
 
     base_temperatures: dict[str, float] = Field(
-        default_factory=lambda: {"summary": 0.7, "experience": 0.5, "skills": 0.3}
+        default_factory=lambda: {"summary": 0.7, "experience": 0.5, "skills": 0.3},
     )
     max_section_words: dict[str, int] = Field(
-        default_factory=lambda: {"summary": 100, "experience_bullet": 30, "skills": 50}
+        default_factory=lambda: {"summary": 100, "experience_bullet": 30, "skills": 50},
     )
     n_candidates: int = Field(default=3)
 
@@ -109,7 +110,7 @@ class ValidationConfig(BaseModel):
 
     severity_threshold: str = Field(default="WARNING")
     rule_categories: list[str] = Field(
-        default_factory=lambda: ["grammar", "formatting", "content_quality", "ats_compatibility"]
+        default_factory=lambda: ["grammar", "formatting", "content_quality", "ats_compatibility"],
     )
     min_quality_score: float = Field(default=0.7, ge=0.0, le=1.0)
 
@@ -118,7 +119,7 @@ class GateConfig(BaseModel):
     """Settings for HOP5 Gate Decision Agent."""
 
     factual_failure_rules: list[str] = Field(
-        default_factory=lambda: ["hallucination_detected", "source_mismatch", "date_inconsistency"]
+        default_factory=lambda: ["hallucination_detected", "source_mismatch", "date_inconsistency"],
     )
     max_factual_loops: int = Field(default=3)
     max_creative_retries: int = Field(default=5)
@@ -129,7 +130,7 @@ class RefinementConfig(BaseModel):
     """Settings for HOP6 Refinement Agent."""
 
     optimization_targets: list[str] = Field(
-        default_factory=lambda: ["keyword_density", "action_verb_strength", "quantification_rate"]
+        default_factory=lambda: ["keyword_density", "action_verb_strength", "quantification_rate"],
     )
     max_iterations: int = Field(default=3)
 
@@ -143,7 +144,7 @@ class QAReportConfig(BaseModel):
             "quality_metrics",
             "validation_results",
             "recommendations",
-        ]
+        ],
     )
     output_directory: str = Field(default="logs/rg_reports")
     scoring_weights: dict[str, float] = Field(
@@ -152,7 +153,7 @@ class QAReportConfig(BaseModel):
             "ats_compatibility": 0.25,
             "keyword_match": 0.25,
             "formatting": 0.2,
-        }
+        },
     )
 
 

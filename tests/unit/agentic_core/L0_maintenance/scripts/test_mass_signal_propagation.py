@@ -33,14 +33,15 @@ def test_case_1_long_chain_propagation():
     print("=" * 70)
 
     try:
-        from agentic_core.base_agents.L1CognitionBase import (
-            L1CognitionBase,
-        )
         from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
             L2ExecutionBase,
         )
         from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
             L3OrchestrationBase,
+        )
+
+        from agentic_core.base_agents.L1CognitionBase import (
+            L1CognitionBase,
         )
 
         # Step 1: Create Orchestrator
@@ -72,7 +73,9 @@ def test_case_1_long_chain_propagation():
         print("\n✓ Step 3: Testing Execution → Cognition → Sovereign chain")
         executor = L2ExecutionBase(ctx=None)
         exec_result = executor.heal_repository(
-            dry_run=True, global_audit_id="2026-X1", layer_test="Execution"
+            dry_run=True,
+            global_audit_id="2026-X1",
+            layer_test="Execution",
         )
         print(f"  Execution result: {exec_result}")
 
@@ -80,7 +83,9 @@ def test_case_1_long_chain_propagation():
         print("\n✓ Step 4: Testing Cognition → Sovereign chain")
         cognition = L1CognitionBase()
         cog_result = cognition.heal_repository(
-            dry_run=True, global_audit_id="2026-X1", layer_test="Cognition"
+            dry_run=True,
+            global_audit_id="2026-X1",
+            layer_test="Cognition",
         )
         print(f"  Cognition result: {cog_result}")
 
@@ -140,7 +145,9 @@ def test_case_2_multi_agent_cycle_persistence():
         # Step 4: Simulate cycle
         call_path.add("L2ExecutionBase")
         result_orch = orchestrator.heal_repository(
-            dry_run=True, _call_path=call_path, cycle_test="return_call"
+            dry_run=True,
+            _call_path=call_path,
+            cycle_test="return_call",
         )
 
         if result_orch.get("cycle_detected"):
@@ -196,7 +203,9 @@ def test_case_3_gatekeeper_automation_sweep():
         test_target = Path("/tmp/target_file.py")
 
         approval = hierarchy_agent._prompt_user_for_move_approval(
-            test_source, test_target, "Gatekeeper automation sweep test"
+            test_source,
+            test_target,
+            "Gatekeeper automation sweep test",
         )
 
         if not approval:
@@ -215,7 +224,9 @@ def test_case_3_gatekeeper_automation_sweep():
         safety_agent = L5SafetyBase()
 
         orch_result = orchestrator.heal_repository(
-            dry_run=True, auto_approve=True, sweep_test="Orchestration"
+            dry_run=True,
+            auto_approve=True,
+            sweep_test="Orchestration",
         )
         print(f"  Orchestration result: {orch_result}")
 

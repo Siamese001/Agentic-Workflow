@@ -7,8 +7,9 @@ import json
 import logging
 import sys
 from datetime import datetime
-from typing import Any
 from pathlib import Path
+from typing import Any
+
 from apps_shared.common_utils.ConfigurationService import ConfigurationService
 
 Logger: Any = logging.getLogger(__name__)

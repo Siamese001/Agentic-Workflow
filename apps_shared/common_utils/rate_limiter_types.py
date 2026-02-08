@@ -9,10 +9,10 @@ import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from typing import Callable
 
 logger = logging.getLogger(__name__)
 

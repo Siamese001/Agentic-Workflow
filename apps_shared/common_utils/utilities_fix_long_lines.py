@@ -7,6 +7,7 @@ Automatically fix lines longer than 100 characters.
 import logging
 import re
 from typing import Any
+
 from apps_shared.common_utils.ConfigurationService import ConfigurationService
 
 # SSOT Import: Use centralized file discovery

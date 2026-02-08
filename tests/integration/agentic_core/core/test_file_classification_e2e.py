@@ -129,7 +129,7 @@ class TestE2EFileClassificationAgent:
         """Test protocols are properly classified."""
         test_file = temp_project / "MyProtocol.py"
         test_file.write_text(
-            "from typing import Protocol\n\nclass MyProtocol(Protocol):\n    def method(self) -> None: ...\n"
+            "from typing import Protocol\n\nclass MyProtocol(Protocol):\n    def method(self) -> None: ...\n",
         )
 
         file_type = agent.classify_file(test_file)
@@ -500,7 +500,7 @@ class TestPrimaryClassCentricE2E:
             "class ProcessingAgent:\n"
             "    def run(self): pass\n\n"
             "if __name__ == '__main__':\n"
-            "    agent = ProcessingAgent()\n"
+            "    agent = ProcessingAgent()\n",
         )
 
         file_type = agent.classify_file(test_file)

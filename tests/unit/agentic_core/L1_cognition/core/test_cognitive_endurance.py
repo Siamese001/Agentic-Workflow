@@ -11,12 +11,12 @@ COGNITIVE HARDENING (Feb 2026):
 """
 
 import pytest
+from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
 
 from agentic_core.mixins.golden_context_mixin import (
     GOLDEN_CONTEXT_SUMMARY,
     GoldenContextMixin,
 )
-from agentic_core.L4_state.utils.telemetry_sanitizer import sanitize_tool_output
 
 
 class TestTelemetrySanitizer:

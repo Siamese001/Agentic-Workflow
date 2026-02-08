@@ -370,7 +370,7 @@ class TestPhase2NamingViolationHealing:
                 / "agentic_core"
                 / "L5_safety"
                 / "validators"
-                / "BadValidator.py"
+                / "BadValidator.py",
             ),
             "message": "Class 'BadValidator' must end with 'Agent' suffix",
             "severity": "error",
@@ -430,7 +430,7 @@ class BadOrchestrator:
         violation = {
             "type": "GRAVITY",
             "file": str(
-                mock_project_with_gravity_violation / "agentic_core" / "L3_orchestration" / "bad_import.py"
+                mock_project_with_gravity_violation / "agentic_core" / "L3_orchestration" / "bad_import.py",
             ),
             "message": "Layer violation: L3 cannot import from L5",
             "severity": "error",
@@ -790,10 +790,10 @@ class TestPhase4DeduplicationAudit:
 
         # Same agent name in two locations
         (tmp_path / "agentic_core" / "L5_safety" / "validators" / "DuplicateAgent.py").write_text(
-            "class DuplicateAgent: pass"
+            "class DuplicateAgent: pass",
         )
         (tmp_path / "agentic_core" / "L5_safety" / "unified" / "DuplicateAgent.py").write_text(
-            "class DuplicateAgent: pass"
+            "class DuplicateAgent: pass",
         )
 
         agent = ArchitectureGovernorAgent(project_root=tmp_path)
@@ -824,6 +824,7 @@ class TestPhase4CentralizedASTEngine:
             StructuralValidatorAgent,
             StructureConfig,
         )
+
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
         )

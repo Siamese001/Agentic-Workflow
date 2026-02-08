@@ -1,6 +1,8 @@
 from __future__ import annotations
+
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, Optional
+from typing import Any
 
 """
 DAGManager - Extracted for one-class-per-file pattern.
@@ -16,8 +18,8 @@ Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 # This boosts alignment detection — review and integrate appropriately
 
 
-from agentic_core.base_agents.decorators import standard_heal
 import networkx as nx
+from agentic_core.base_agents.decorators import standard_heal
 
 
 class DAGManager(
@@ -36,7 +38,7 @@ class DAGManager(
     _cache_prefix: str = "dag_manager"
     _namespace: str = "l3_dags"
 
-    def __init__(self, config: Optional[DAGConfig] = None) -> None:
+    def __init__(self, config: DAGConfig | None = None) -> None:
         """Initialize the DAG Manager.
 
         Args:
@@ -71,7 +73,7 @@ class DAGManager(
         self.function_registry[name] = function
         Logger.debug(f"Registered function: {name}")
 
-    def add_node(self, hop: SubatomicHop, predecessors: Optional[List[str]] = None) -> None:
+    def add_node(self, hop: SubatomicHop, predecessors: List[str] | None = None) -> None:
         """Add a node to the DAG.
 
         Args:
@@ -161,7 +163,7 @@ class DAGManager(
             requester_hop_id=requester_hop_id,
         )
 
-    def get_next_node(self) -> Optional[SubatomicHop]:
+    def get_next_node(self) -> SubatomicHop | None:
         """Get the next node to execute.
 
         Returns:
@@ -262,7 +264,7 @@ class DAGManager(
         execute: bool = False,
         depth: int = 0,
         max_depth: int = 3,
-        _call_path: Optional[set] = None,
+        _call_path: set | None = None,
     ) -> Dict[str, int]:
         """L3 orchestration agent - operational only."""
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

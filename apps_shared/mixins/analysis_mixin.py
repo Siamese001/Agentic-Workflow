@@ -223,7 +223,7 @@ class AnalysisMixin:
         if not metrics:
             return 0.0
 
-        weights = weights or {key: 1.0 for key in metrics.keys()}
+        weights = weights or dict.fromkeys(metrics.keys(), 1.0)
         total_weight = sum(weights.values())
 
         if total_weight == 0:

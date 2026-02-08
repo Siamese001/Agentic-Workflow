@@ -19,15 +19,6 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L3_orchestration.types import (
-    AgentResult,
-    ExecutionContext,
-    ExecutionPhase,
-)
-from agentic_core.L3_orchestration.types.context_pruning_types import (
-    AdaptiveDepthManager,
-    ContextPruningStrategy,
-)
 from agentic_core.L3_orchestration.reasoning.forward_rolling_config_types import (
     ExecutionMode,
     ForwardRollingConfig,
@@ -40,6 +31,15 @@ from agentic_core.L3_orchestration.reasoning.recursion_monitor_types import (
 from agentic_core.L3_orchestration.reasoning.recursive_orchestration_types import (
     RecursiveOrchestrator,
     SuccessorSpec,
+)
+from agentic_core.L3_orchestration.types import (
+    AgentResult,
+    ExecutionContext,
+    ExecutionPhase,
+)
+from agentic_core.L3_orchestration.types.context_pruning_types import (
+    AdaptiveDepthManager,
+    ContextPruningStrategy,
 )
 
 Logger = logging.getLogger(__name__)

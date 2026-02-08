@@ -8,12 +8,13 @@ Validates:
 - SCRIPTS_FORBIDDEN_PATTERNS enforced
 """
 
-import pytest
 import re
 
+import pytest
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
-    SCRIPTS_FORBIDDEN_PATTERNS,
     CORE_SUBFOLDER_MAP,
+    SCRIPTS_FORBIDDEN_PATTERNS,
 )
 
 
@@ -42,13 +43,16 @@ class TestScriptsForbiddenPatterns:
             matched = any(p.match(name) for p in patterns)
             assert matched, f"test_ filename '{name}' should be forbidden"
 
-    @pytest.mark.parametrize("valid_script", [
-        "run_healing.py",
-        "colors.py",
-        "full_agent_discovery.py",
-        "check_syntax_util.py",
-        "__init__.py",
-    ])
+    @pytest.mark.parametrize(
+        "valid_script",
+        [
+            "run_healing.py",
+            "colors.py",
+            "full_agent_discovery.py",
+            "check_syntax_util.py",
+            "__init__.py",
+        ],
+    )
     def test_valid_scripts_not_matched(self, valid_script: str):
         """Valid script names should not be matched by forbidden patterns."""
         patterns = [re.compile(p) for p in SCRIPTS_FORBIDDEN_PATTERNS]
@@ -77,30 +81,36 @@ class TestScriptsLocationPolicy:
 class TestScriptsPurityValidation:
     """Tests for scripts purity validation logic."""
 
-    @pytest.mark.parametrize("forbidden_name", [
-        "AgentAuditResult.py",
-        "BatchEmbeddingService.py",
-        "GitKrakenHealingStrategy.py",
-        "InMemoryVectorCache.py",
-        "SovereignHealingEngine.py",
-        "SovereignReport.py",
-        "StrategistBioWriter.py",
-        "VectorHealingStrategy.py",
-    ])
+    @pytest.mark.parametrize(
+        "forbidden_name",
+        [
+            "AgentAuditResult.py",
+            "BatchEmbeddingService.py",
+            "GitKrakenHealingStrategy.py",
+            "InMemoryVectorCache.py",
+            "SovereignHealingEngine.py",
+            "SovereignReport.py",
+            "StrategistBioWriter.py",
+            "VectorHealingStrategy.py",
+        ],
+    )
     def test_pascalcase_class_modules_forbidden(self, forbidden_name: str):
         """PascalCase class module names are forbidden in scripts/."""
         patterns = [re.compile(p) for p in SCRIPTS_FORBIDDEN_PATTERNS]
         matched = any(p.match(forbidden_name) for p in patterns)
         assert matched, f"'{forbidden_name}' should be forbidden in scripts/"
 
-    @pytest.mark.parametrize("forbidden_name", [
-        "test_boundary_stress_test.py",
-        "test_lifecycle_audit.py",
-        "test_runtime_verify_installation.py",
-        "test_verify_meta_learning_integration.py",
-        "test_verify_self_healing.py",
-        "test_generator.py",
-    ])
+    @pytest.mark.parametrize(
+        "forbidden_name",
+        [
+            "test_boundary_stress_test.py",
+            "test_lifecycle_audit.py",
+            "test_runtime_verify_installation.py",
+            "test_verify_meta_learning_integration.py",
+            "test_verify_self_healing.py",
+            "test_generator.py",
+        ],
+    )
     def test_test_files_forbidden(self, forbidden_name: str):
         """test_*.py files are forbidden in scripts/."""
         patterns = [re.compile(p) for p in SCRIPTS_FORBIDDEN_PATTERNS]

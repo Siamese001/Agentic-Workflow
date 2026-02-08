@@ -388,7 +388,7 @@ class TestHealingStrategy:
                     "type": "pattern_match",
                     "pattern": r"violation",
                     "severity": "high",
-                }
+                },
             },
             "auto_fix": False,
             "dry_run_default": True,

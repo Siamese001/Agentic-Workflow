@@ -46,6 +46,7 @@ class TestCanonKeyRemoval:
             # Registry has been removed - this test now validates removal
             # Verify the registry is gone by checking it's not in the module
             import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+
             from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
@@ -151,7 +152,7 @@ class TestCanonKeyRemoval:
                             for target in item.targets:
                                 if isinstance(target, ast.Name) and target.id == "VERIFICATION_REGISTRY":
                                     raise AssertionError(
-                                        "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY"
+                                        "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY",
                                     )
 
             # Verify class is essentially empty (just pass or docstring)

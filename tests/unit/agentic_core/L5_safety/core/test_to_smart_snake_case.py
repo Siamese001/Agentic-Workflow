@@ -4,7 +4,6 @@ Tests follow MECE principle: Mutually Exclusive, Collectively Exhaustive
 coverage of _to_smart_snake_case helper method behavior.
 """
 
-import pytest
 import sys
 from pathlib import Path
 

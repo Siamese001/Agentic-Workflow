@@ -32,7 +32,9 @@ class SovereignPolicyRegistry:
 
     # 2. Resource Laws
     MAX_TOKENS_PER_TURN = SovereignPolicy(
-        id="GOV-002", description="Single LLM turn must not exceed 32k tokens.", severity=PolicySeverity.HIGH
+        id="GOV-002",
+        description="Single LLM turn must not exceed 32k tokens.",
+        severity=PolicySeverity.HIGH,
     )
 
     # 3. Security Laws

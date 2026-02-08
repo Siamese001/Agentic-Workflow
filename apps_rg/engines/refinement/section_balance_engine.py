@@ -61,9 +61,7 @@ class SectionBalanceEngine(BaseRGEngine):
         }
 
         if issues:
-            self.record_fail(
-                "Section balance issues detected", data=result, signal="BALANCE_VIOLATION"
-            )
+            self.record_fail("Section balance issues detected", data=result, signal="BALANCE_VIOLATION")
         else:
             self.record_pass("Section balance validated")
 

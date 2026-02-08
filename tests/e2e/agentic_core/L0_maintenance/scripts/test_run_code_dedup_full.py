@@ -178,7 +178,7 @@ def run_comprehensive_tests():
 
     print(
         f"\nValidation Pass Rate: {passed_validations}/{total_validations} "
-        f"({passed_validations / total_validations * 100:.1f}%)"
+        f"({passed_validations / total_validations * 100:.1f}%)",
     )
 
     if passed_validations == total_validations:

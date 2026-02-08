@@ -37,7 +37,7 @@ class TestQueryTerminalHardening(unittest.TestCase):
             side_effect=transient_failure,
         ):
             with patch(
-                "agentic_core.L2_execution.reasoning.query_runtime.time.sleep"
+                "agentic_core.L2_execution.reasoning.query_runtime.time.sleep",
             ):  # Fast forward retries
                 result = run_hardened_query("SELECT retry_test")
                 self.assertEqual(result, [{"id": 1}])

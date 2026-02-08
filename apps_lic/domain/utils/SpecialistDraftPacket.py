@@ -6,13 +6,9 @@ class SpecialistDraftPacket(BaseModel):
 
     specialist: str = Field(..., description="Name of the drafting specialist")
     focus_area: str = Field(..., description="Primary responsibility of the specialist")
-    sections: dict[str, Any] = Field(
-        default_factory=dict, description="Section-level draft contributions"
-    )
+    sections: dict[str, Any] = Field(default_factory=dict, description="Section-level draft contributions")
     notes: list[str] = Field(default_factory=list, description="Observations or hand-off notes")
-    dependencies: list[str] = Field(
-        default_factory=list, description="Dependencies or follow-up actions"
-    )
+    dependencies: list[str] = Field(default_factory=list, description="Dependencies or follow-up actions")
 
 
 class EvidenceClarificationRecord(BaseModel):

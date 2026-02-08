@@ -59,9 +59,7 @@ class TestAdvancedRoutingHardening:
     def test_validation_context_routing_accuracy(self):
         """100% PASS: Ensures ValidationContext classes route to L4_state/memory."""
         # Signature: base_classes includes 'ValidationContext'
-        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"][
-            "agentic_core/L4_state/memory"
-        ]
+        signals = SOVEREIGN_TERRITORIES["agentic_core"]["ast_signals"]["agentic_core/L4_state/memory"]
 
         assert "ValidationContext" in signals["base_classes"]
         assert ".*Context.*" in signals["class_patterns"]

@@ -50,7 +50,8 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "ssot: marks tests that validate Single Source of Truth compliance")
     config.addinivalue_line("markers", "mro: marks tests that validate Method Resolution Order integrity")
     config.addinivalue_line(
-        "markers", "import_safety: marks tests that validate import safety and dependencies"
+        "markers",
+        "import_safety: marks tests that validate import safety and dependencies",
     )
 
 

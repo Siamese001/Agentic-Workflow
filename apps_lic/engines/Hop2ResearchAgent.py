@@ -12,12 +12,13 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Any
 
+from apps_lic.shared.core.trace_registry_types import TraceRegistry
+
 from apps_lic.domain.config import load_agent_specs
 from apps_lic.shared.core.ImmutableStagingBuffer import ImmutableStagingBuffer
 
 # LIC Sovereign Architecture Imports
 from apps_lic.shared.core.LICAgentBase import LICAgentBase
-from apps_lic.shared.core.trace_registry_types import TraceRegistry
 
 # Domain Imports
 try:
@@ -52,7 +53,7 @@ class HOP2ResearchAgent(LICAgentBase):
         """
         if getattr(self, "_sealed", False):
             raise AttributeError(
-                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}"
+                f"Sovereign Seal Active: Cannot modify '{name}' on {self.__class__.__name__}",
             )
         super().__setattr__(name, value)
 
@@ -80,14 +81,12 @@ class HOP2ResearchAgent(LICAgentBase):
         # RCA FIX: Handle 'research_agent' vs 'research' naming mismatch in Sovereign Blueprint.
         # Critical Analysis: We use defensive getattr to prevent the 'AttributeError' loop which crashes the engine.
         agent_specs = load_agent_specs()
-        agent_config = getattr(agent_specs, "research_agent", None) or getattr(
-            agent_specs, "research", None
-        )
+        agent_config = getattr(agent_specs, "research_agent", None) or getattr(agent_specs, "research", None)
 
         if agent_config is None:
             raise AttributeError(
                 f"Sovereign Blueprint Fault: '{self.__class__.__name__}' config key missing. "
-                "Expected 'research_agent' or 'research'."
+                "Expected 'research_agent' or 'research'.",
             )
 
         # Set attributes BEFORE sealing
@@ -140,7 +139,7 @@ class HOP2ResearchAgent(LICAgentBase):
                     "summary": item["text"],
                     "source": item["source"],
                     "confidence": item.get("confidence", 0.7),
-                }
+                },
             )
 
         # 5. Strategic Brief Generation (Specialist Hook)
@@ -171,7 +170,7 @@ class HOP2ResearchAgent(LICAgentBase):
                 [
                     f"{company_id} 2025 strategic priorities",
                     f"{company_id} quarterly earnings signals",
-                ]
+                ],
             )
 
         if not wants:
@@ -201,7 +200,9 @@ class HOP2ResearchAgent(LICAgentBase):
                 try:
                     # Query vector store for each want
                     query_results = self.memory_store.query_by_company(
-                        company_name=want.split()[-1] if want else "", query_text=want, n_results=3
+                        company_name=want.split()[-1] if want else "",
+                        query_text=want,
+                        n_results=3,
                     )
                     for r in query_results:
                         results.append(
@@ -209,7 +210,7 @@ class HOP2ResearchAgent(LICAgentBase):
                                 "text": r.get("text", "")[:200],
                                 "source": r.get("metadata", {}).get("source_url", "vector_store"),
                                 "confidence": r.get("metadata", {}).get("source_weight", 0.7),
-                            }
+                            },
                         )
                 except Exception:
                     pass
@@ -222,7 +223,7 @@ class HOP2ResearchAgent(LICAgentBase):
                         "text": f"Research result for: {want}",
                         "source": "internal_knowledge_base",
                         "confidence": 0.7,
-                    }
+                    },
                 )
 
         return results
@@ -248,9 +249,7 @@ class HOP2ResearchAgent(LICAgentBase):
             asyncio.set_event_loop(loop)
         return loop.run_until_complete(coro)
 
-    async def _query_vector_store(
-        self, company: str, recipient: str, archetype: str
-    ) -> dict[str, Any]:
+    async def _query_vector_store(self, company: str, recipient: str, archetype: str) -> dict[str, Any]:
         """Query vector store for pre-computed intelligence."""
         # Safety check for memory store availability
         if not self.memory_store:
@@ -275,9 +274,7 @@ class HOP2ResearchAgent(LICAgentBase):
             n_results=10,
         )
 
-        strategic_briefs = self.memory_store.get_strategic_briefs(
-            company_name=company, max_age_days=90
-        )
+        strategic_briefs = self.memory_store.get_strategic_briefs(company_name=company, max_age_days=90)
 
         recipient_insights = [r["text"][:200] for r in exec_results[:5]]
         company_context = [r["text"][:200] for r in company_results[:5]]
@@ -285,9 +282,7 @@ class HOP2ResearchAgent(LICAgentBase):
 
         all_results = company_results + exec_results + strategic_briefs
         signal_score = self._calculate_signal_score(all_results)
-        cache_confidence = self._calculate_cache_confidence(
-            company_results, exec_results, strategic_briefs
-        )
+        cache_confidence = self._calculate_cache_confidence(company_results, exec_results, strategic_briefs)
 
         return {
             "recipient_insights": recipient_insights,
@@ -326,9 +321,7 @@ class HOP2ResearchAgent(LICAgentBase):
         is_sufficient = len(gaps) == 0
         return is_sufficient, gaps
 
-    async def _run_fallback_rag(
-        self, company: str, recipient: str, gaps: list[str]
-    ) -> dict[str, Any]:
+    async def _run_fallback_rag(self, company: str, recipient: str, gaps: list[str]) -> dict[str, Any]:
         """Run fallback RAG only for identified gaps."""
         fallback_results = []
 
@@ -372,7 +365,10 @@ class HOP2ResearchAgent(LICAgentBase):
         return sum(scores) / len(scores) if scores else 0.0
 
     def _calculate_cache_confidence(
-        self, company_results: list, exec_results: list, strategic_briefs: list
+        self,
+        company_results: list,
+        exec_results: list,
+        strategic_briefs: list,
     ) -> float:
         """Calculate confidence in cached data."""
         has_strategic = 1.0 if strategic_briefs else 0.0
@@ -394,7 +390,7 @@ class HOP2ResearchAgent(LICAgentBase):
                         "age_days": 0,
                         "source_weight": 1.0,
                     },
-                }
+                },
             )
         return formatted
 

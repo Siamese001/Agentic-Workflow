@@ -145,7 +145,7 @@ class TestCanonKeyRemoval:
                             for target in item.targets:
                                 if isinstance(target, ast.Name) and target.id == "VERIFICATION_REGISTRY":
                                     raise AssertionError(
-                                        "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY"
+                                        "CRITICAL: CanonBaseAgent still contains VERIFICATION_REGISTRY",
                                     )
 
             self.passed += 1

@@ -33,8 +33,6 @@ class query_past_campaigns:
         return []
 
 
-def retrieve(
-    query: str, config: dict | None = None, **kwargs: dict[str, object]
-) -> RetrievalResult:
+def retrieve(query: str, config: dict | None = None, **kwargs: dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return query_past_campaigns(config).retrieve(query, **kwargs)

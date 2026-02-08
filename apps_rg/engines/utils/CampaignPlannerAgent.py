@@ -39,9 +39,7 @@ class CampaignPlannerAgent(RGAgentBase):
         # Channel configuration
         channel_config = self._config.get("channel_configuration", {})
         if not self.active_channels:
-            self.active_channels = channel_config.get(
-                "default_active_channels", ["email", "social"]
-            )
+            self.active_channels = channel_config.get("default_active_channels", ["email", "social"])
 
         # Strategy parameters
         self.strategy_params = self._config.get("strategy_parameters", {})

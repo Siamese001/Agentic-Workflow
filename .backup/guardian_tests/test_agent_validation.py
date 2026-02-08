@@ -32,9 +32,7 @@ def check_agent_structure(file_path: Path) -> dict[str, Any]:
 
         # Find agent classes (classes ending with "Agent")
         agent_classes = [
-            node
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
+            node for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
         ]
 
         if not agent_classes:

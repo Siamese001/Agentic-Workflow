@@ -8,8 +8,6 @@ Validates:
 """
 
 import pytest
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 
 class TestManagerRoutingSignals:
@@ -19,6 +17,7 @@ class TestManagerRoutingSignals:
     def mock_fca(self):
         """Create a mock FCA for testing suggest_manager_layer."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_manager_with_cache_signals_routes_to_l4(self, mock_fca, tmp_path):
@@ -122,6 +121,7 @@ class TestManagerRoutingEdgeCases:
     def mock_fca(self):
         """Create a mock FCA for testing."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_nonexistent_file_returns_none(self, mock_fca, tmp_path):

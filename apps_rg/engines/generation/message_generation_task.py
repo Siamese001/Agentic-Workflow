@@ -21,18 +21,14 @@ class MessageGenerationTask(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="GENERATION.MESSAGE")
 
-    async def execute(
-        self, recipient_context: dict[str, Any], message_type: str = "outreach"
-    ) -> str:
+    async def execute(self, recipient_context: dict[str, Any], message_type: str = "outreach") -> str:
         """
         Generate personalized outreach message.
         """
         self._mcp_audit("message_generation_start", {"type": message_type})
 
         # Get prompt from knowledge base
-        prompt = (
-            f"Generate a {message_type} message for {recipient_context.get('name', 'recipient')}"
-        )
+        prompt = f"Generate a {message_type} message for {recipient_context.get('name', 'recipient')}"
 
         message = await self.call_llm(prompt)
 

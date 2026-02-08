@@ -104,9 +104,7 @@ class ThematicAnalysisNode:
         """
         return self.analyze_thematic_resonance(job_description, company_name)
 
-    def analyze_thematic_resonance(
-        self, job_description: str, company_name: str
-    ) -> ThematicAnalysisOutput:
+    def analyze_thematic_resonance(self, job_description: str, company_name: str) -> ThematicAnalysisOutput:
         """
         Perform comprehensive thematic analysis.
 
@@ -144,7 +142,7 @@ class ThematicAnalysisNode:
         )
 
         logger.info(
-            f"Thematic analysis complete: {primary_theme} with {len(secondary_themes)} secondary themes"
+            f"Thematic analysis complete: {primary_theme} with {len(secondary_themes)} secondary themes",
         )
         return output
 
@@ -181,9 +179,7 @@ class ThematicAnalysisNode:
 
         return concepts
 
-    def _analyze_linkedin_authenticity(
-        self, job_description: str, company_name: str
-    ) -> AuthenticityPatterns:
+    def _analyze_linkedin_authenticity(self, job_description: str, company_name: str) -> AuthenticityPatterns:
         """Analyze LinkedIn profiles for authentic language patterns."""
         # Mock implementation - would use LinkedIn API in production
         return AuthenticityPatterns(
@@ -202,7 +198,9 @@ class ThematicAnalysisNode:
         )
 
     def _gather_competitive_intelligence(
-        self, job_description: str, company_name: str
+        self,
+        job_description: str,
+        company_name: str,
     ) -> CompetitiveIntelligence:
         """Gather competitive intelligence from peer job descriptions."""
         # Mock implementation - would analyze peer JDs in production
@@ -212,9 +210,7 @@ class ThematicAnalysisNode:
             differentiator_keywords=["machine learning", "scalability", "innovation"],
         )
 
-    def _classify_company_industry(
-        self, company_name: str, job_description: str
-    ) -> tuple[str, str]:
+    def _classify_company_industry(self, company_name: str, job_description: str) -> tuple[str, str]:
         """Classify company industry using GICS classification."""
         # Simplified classification
         if any(tech in company_name.lower() for tech in ["google", "microsoft", "apple", "amazon"]):
@@ -275,7 +271,9 @@ class TwoPhaseGenerationNode:
         }
 
     def generate_unify_bullets_phase_a(
-        self, thematic_output: ThematicAnalysisOutput, role_extraction: dict[str, Any]
+        self,
+        thematic_output: ThematicAnalysisOutput,
+        role_extraction: dict[str, Any],
     ) -> BulletGenerationOutput:
         """
         Phase A: Generate Unify Consulting bullets (7 bullets with 3V-3T-1S provenance)
@@ -316,7 +314,9 @@ class TwoPhaseGenerationNode:
         return output
 
     def synthesize_unify_overview_phase_b(
-        self, bullet_output: BulletGenerationOutput, thematic_output: ThematicAnalysisOutput
+        self,
+        bullet_output: BulletGenerationOutput,
+        thematic_output: ThematicAnalysisOutput,
     ) -> OverviewSynthesisOutput:
         """
         Phase B: Synthesize Unify Consulting overview from generated bullets
@@ -377,9 +377,7 @@ class TwoPhaseGenerationNode:
 
         return bullets
 
-    def _validate_provenance(
-        self, bullets: list[str], requirements: dict[str, int]
-    ) -> dict[str, int]:
+    def _validate_provenance(self, bullets: list[str], requirements: dict[str, int]) -> dict[str, int]:
         """Validate that bullets meet provenance requirements."""
         # Mock implementation - would analyze actual content in production
         return {"3V": 3, "3T": 3, "1S": 1}
@@ -389,7 +387,11 @@ class TwoPhaseGenerationNode:
         return 0.85  # Mock score
 
     def _synthesize_overview(
-        self, bullets: list[str], themes: list[str], differentiators: list[str], target_words: int
+        self,
+        bullets: list[str],
+        themes: list[str],
+        differentiators: list[str],
+        target_words: int,
     ) -> str:
         """Synthesize overview from bullets without repeating achievements."""
         # Mock implementation - would use LLM in production
@@ -494,7 +496,10 @@ class WordCountEnforcementEngine:
         )
 
     def enforce_with_regeneration(
-        self, content: str, content_type: str, max_attempts: int = 3
+        self,
+        content: str,
+        content_type: str,
+        max_attempts: int = 3,
     ) -> tuple[str, ValidationResult]:
         """
         Enforce word count constraints with regeneration.
@@ -510,11 +515,11 @@ class WordCountEnforcementEngine:
                 logger.info(f"Content validated on attempt {attempt + 1}")
                 return current_content, last_validation
 
-            logger.warning(
-                f"Attempt {attempt + 1}: {last_validation.violation_type} - regenerating"
-            )
+            logger.warning(f"Attempt {attempt + 1}: {last_validation.violation_type} - regenerating")
             current_content = self.regeneration_engine.regenerate(
-                current_content, last_validation.violation_type, last_validation
+                current_content,
+                last_validation.violation_type,
+                last_validation,
             )
             last_validation = self.validate_content(current_content, content_type)
 
@@ -532,9 +537,7 @@ class RegenerationEngine:
     that expand or condense content while preserving key information.
     """
 
-    def regenerate(
-        self, content: str, violation_type: str, validation_result: ValidationResult
-    ) -> str:
+    def regenerate(self, content: str, violation_type: str, validation_result: ValidationResult) -> str:
         """
         Regenerate content based on violation type.
 
@@ -553,9 +556,7 @@ class RegenerationEngine:
         else:
             return content
 
-    def _expand_with_relevant_detail(
-        self, content: str, validation_result: ValidationResult
-    ) -> str:
+    def _expand_with_relevant_detail(self, content: str, validation_result: ValidationResult) -> str:
         """Expand content by adding relevant details."""
         validation_result.min_required - validation_result.word_count
 
@@ -576,9 +577,7 @@ class RegenerationEngine:
 
         return expanded
 
-    def _smart_condense_preserve_specifics(
-        self, content: str, validation_result: ValidationResult
-    ) -> str:
+    def _smart_condense_preserve_specifics(self, content: str, validation_result: ValidationResult) -> str:
         """Condense content while preserving specifics."""
         validation_result.word_count - validation_result.max_allowed
 
@@ -657,15 +656,16 @@ class ValidationGate:
     def _create_signature(self, validation_result: dict[str, Any]) -> str:
         """Create HMAC-SHA256 signature."""
         message = json.dumps(validation_result, sort_keys=True)
-        signature = hmac.new(
-            self.signature_key.encode(), message.encode(), hashlib.sha256
-        ).hexdigest()
+        signature = hmac.new(self.signature_key.encode(), message.encode(), hashlib.sha256).hexdigest()
 
         self.signatures[self.gate_id] = signature
         return signature
 
     def _log_execution(
-        self, execution_data: dict[str, Any], validation_result: dict[str, Any], signature: str
+        self,
+        execution_data: dict[str, Any],
+        validation_result: dict[str, Any],
+        signature: str,
     ) -> None:
         """Log execution for audit trail."""
         log_entry = {
@@ -691,9 +691,7 @@ def example_two_phase_generation():
     word_enforcer = WordCountEnforcementEngine()
 
     # Input data
-    job_description = (
-        "Senior Software Engineer at Google Cloud leading ML infrastructure initiatives"
-    )
+    job_description = "Senior Software Engineer at Google Cloud leading ML infrastructure initiatives"
     company_name = "Google"
 
     # Step 1: Thematic analysis (K.0)
@@ -707,14 +705,13 @@ def example_two_phase_generation():
     print(f"Generated {len(bullet_output.bullets)} bullets")
 
     # Step 2B: Synthesize overview (K.5B)
-    overview_output = two_phase_node.synthesize_unify_overview_phase_b(
-        bullet_output, thematic_output
-    )
+    overview_output = two_phase_node.synthesize_unify_overview_phase_b(bullet_output, thematic_output)
     print(f"Overview: {overview_output.overview}")
 
     # Step 3: Enforce word count
     final_overview, validation = word_enforcer.enforce_with_regeneration(
-        overview_output.overview, "K.5B_unify_overview"
+        overview_output.overview,
+        "K.5B_unify_overview",
     )
     print(f"Final overview ({validation.word_count} words): {final_overview}")
 

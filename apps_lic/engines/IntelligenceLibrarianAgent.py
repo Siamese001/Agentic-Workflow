@@ -25,9 +25,7 @@ class IntelligenceLibrarianAgent(SubatomicTestingMixin, LICAgentBase):
         super().__post_init__()
         # Additional initialization logic for vector DB connections could go here
 
-    def query_intelligence(
-        self, query: str, filters: dict[str, Any] | None = None
-    ) -> list[dict[str, Any]]:
+    def query_intelligence(self, query: str, filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """
         Retrieve intelligence artifacts.
         """

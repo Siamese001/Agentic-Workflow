@@ -2,8 +2,8 @@
 """Bloat analysis script for approved folders."""
 
 import ast
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent

@@ -7,9 +7,11 @@ validation hooks, and protection against partial state corruption.
 import copy
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
+
 import networkx as nx
 
 logger = logging.getLogger(__name__)

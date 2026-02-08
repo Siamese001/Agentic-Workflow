@@ -84,7 +84,7 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         LOGGER.info(
             f"OutreachValidationExecutorAgent initialized: "
             f"{len(forbidden_verbs)} forbidden verbs, "
-            f"{len(forbidden_filler_phrases)} forbidden phrases"
+            f"{len(forbidden_filler_phrases)} forbidden phrases",
         )
 
     def _execute_check(
@@ -433,7 +433,7 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         """
         # Extract signature block (last 4 lines before fence end)
         lines = content.split(
-            "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.enforcement.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.mixins.healer_mixin import HealerMixin\n"
+            "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.enforcement.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.mixins.healer_mixin import HealerMixin\n",
         )
 
         # Find signature (look for "Regards,")

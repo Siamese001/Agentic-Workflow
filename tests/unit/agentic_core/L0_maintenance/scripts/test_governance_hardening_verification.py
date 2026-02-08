@@ -53,8 +53,9 @@ def test_1_signal_saturation_sweep():
     try:
         from dataclasses import dataclass
 
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from agentic_core.L5_safety.validators.context import ValidationContext
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create a concrete test agent
         @dataclass
@@ -278,7 +279,11 @@ def test_3_depth_constraint_cycle():
         # Simulate a cycle by pre-populating _call_path
         cycle_path = {"CycleTestAgent"}  # Agent already in path
         cycle_result = cycle_agent.heal_repository(
-            dry_run=True, execute=False, depth=0, max_depth=3, _call_path=cycle_path
+            dry_run=True,
+            execute=False,
+            depth=0,
+            max_depth=3,
+            _call_path=cycle_path,
         )
 
         if cycle_result.get("cycle_detected"):
@@ -778,7 +783,7 @@ def test_8_mro_shadowing_compliance():
 
         if shadowing_classes:
             result["details"].append(
-                f"❌ Classes shadowing heal_repository without **kwargs: {shadowing_classes}"
+                f"❌ Classes shadowing heal_repository without **kwargs: {shadowing_classes}",
             )
             result["status"] = "FAIL"
             return result

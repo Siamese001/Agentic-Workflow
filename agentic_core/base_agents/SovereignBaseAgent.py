@@ -30,26 +30,26 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
-from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
-from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
-
-# [PHASE 9] Global Architecture Injection
-from agentic_core.mixins.configuration_mixin import ConfigMixin
-
-# [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
-from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
-from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
-from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
-from agentic_core.mixins.healing_mixin import HealingStrategyMixin
-from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.L0_maintenance.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
+from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
+
+# [PHASE 9] Global Architecture Injection
+from agentic_core.mixins.configuration_mixin import ConfigMixin
+from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+
+# [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
+from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
+from agentic_core.mixins.healing_mixin import HealingStrategyMixin
+from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
+from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
+from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
+from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
 from agentic_core.runtime.exceptions.sovereign_errors import SovereignError
 

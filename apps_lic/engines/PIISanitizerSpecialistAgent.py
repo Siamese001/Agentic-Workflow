@@ -7,12 +7,12 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
+from apps_lic.shared.core.trace_registry import TraceRegistry
 from pydantic import BaseModel, Field
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
 from apps_lic.shared.core.LICAgentBase import LICAgentBase
-from apps_lic.shared.core.trace_registry import TraceRegistry
 
 
 def track_metrics(name):
@@ -34,7 +34,7 @@ class PII_SanitizerSpecialistAgent(LICAgentBase):
             "EMAIL": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
             "PHONE": re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b"),
             "NAME": re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b"),
-        }
+        },
     )
 
     def __post_init__(self) -> None:
@@ -78,9 +78,7 @@ class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     # Sovereign Configuration
     name: str = "BiasDetectorSpecialist"
     sensitivity_level: float = 0.85
-    prohibited_terms: list[str] = field(
-        default_factory=lambda: ["guaranteed", "unlimited", "risk-free"]
-    )
+    prohibited_terms: list[str] = field(default_factory=lambda: ["guaranteed", "unlimited", "risk-free"])
 
     def __post_init__(self) -> None:
         """Initialize Sovereign Capabilities."""
@@ -139,7 +137,7 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     # Sovereign Configuration
     detection_threshold: float = 0.8
     attack_patterns: list[str] = field(
-        default_factory=lambda: ["ignore previous instructions", "system prompt", "jailbreak"]
+        default_factory=lambda: ["ignore previous instructions", "system prompt", "jailbreak"],
     )
 
     def __post_init__(self) -> None:
@@ -195,7 +193,7 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
         if validated_output.injection_detected:
             self.log_warning(
                 f"PROMPT INJECTION DETECTED (Confidence: "
-                f"{validated_output.confidence}): {validated_output.reason}"
+                f"{validated_output.confidence}): {validated_output.reason}",
             )
 
         return validated_output.model_dump()
@@ -262,7 +260,7 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
         )
         if error:
             self.log_error(
-                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
+                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft).",
             )
             return ConstitutionalReviewResult(
                 review_passed=True,

@@ -68,9 +68,7 @@ def validate_mission_input(input_data: dict[str, Any]) -> bool:
 
     # Validate recipient_profile
     recipient_required = ["name", "title", "company"]
-    recipient_missing = [
-        key for key in recipient_required if key not in input_data["recipient_profile"]
-    ]
+    recipient_missing = [key for key in recipient_required if key not in input_data["recipient_profile"]]
     if recipient_missing:
         print(f"FATAL: recipient_profile missing required fields: {', '.join(recipient_missing)}")
         return False
@@ -123,11 +121,11 @@ def print_mission_summary(mission: OutreachMission):
     print(f"{'=' * 80}\n")
     print(f"Mission ID:   {mission.mission_id}")
     print(
-        f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}"
+        f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}",
     )
     print(f"Company:      {mission.sender_profile.get('company', 'N/A')}")
     print(
-        f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}"
+        f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}",
     )
     print(f"Company:      {mission.recipient_profile.get('company', 'N/A')}")
     print(f"Status:       {mission.connection_status}")

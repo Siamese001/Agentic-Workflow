@@ -9,8 +9,6 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState
-from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
 from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
@@ -18,6 +16,9 @@ from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_shared.common_utils.multi_provider_clients import Provider
+
+from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
+from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState
 
 # [Diff End]
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
@@ -98,7 +99,7 @@ class HardenedRouter:
 
         if tier_name not in self.configs:
             raise ValueError(
-                f"Unknown routing tier: {tier_name}. Available tiers: {list(self.configs.keys())}"
+                f"Unknown routing tier: {tier_name}. Available tiers: {list(self.configs.keys())}",
             )
 
         return self.configs[tier_name]
@@ -214,7 +215,7 @@ class HardenedRouter:
                 logger.warning(f"Primary provider {primary.value} failed: {e}. Attempting fallback...")
         else:
             logger.warning(
-                f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback..."
+                f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback...",
             )
             self._log_routing_event(
                 tier_name,
@@ -229,7 +230,7 @@ class HardenedRouter:
                 try:
                     logger.info(
                         f"Routing to fallback provider: {fallback.value} "
-                        f"(primary {primary.value} unavailable)"
+                        f"(primary {primary.value} unavailable)",
                     )
                     self._log_routing_event(
                         tier_name,

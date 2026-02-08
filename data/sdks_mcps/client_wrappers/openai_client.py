@@ -86,9 +86,7 @@ class OpenAIClient:
             params = {
                 "model": model or self.config.default_model,
                 "messages": messages,
-                "temperature": temperature
-                if temperature is not None
-                else self.config.default_temperature,
+                "temperature": temperature if temperature is not None else self.config.default_temperature,
                 "max_tokens": max_tokens or self.config.default_max_tokens,
                 **kwargs,
             }
@@ -138,7 +136,10 @@ class OpenAIClient:
         }
 
         response = self.chat_completion(
-            messages=messages, response_format=response_format, model=model, **kwargs
+            messages=messages,
+            response_format=response_format,
+            model=model,
+            **kwargs,
         )
 
         # Parse and validate structured response
@@ -166,7 +167,10 @@ class OpenAIClient:
             return {"success": False, "error": f"Validation failed: {e}", "raw_content": content}
 
     def stream_completion(
-        self, messages: list[dict[str, str]], callback: callable = None, **kwargs: dict[str, object]
+        self,
+        messages: list[dict[str, str]],
+        callback: callable = None,
+        **kwargs: dict[str, object],
     ) -> list[str]:
         """Stream chat completion with optional callback.
 
@@ -192,7 +196,9 @@ class OpenAIClient:
         return chunks
 
     def batch_completion(
-        self, batch_requests: list[dict[str, object]], concurrent_limit: int = 5
+        self,
+        batch_requests: list[dict[str, object]],
+        concurrent_limit: int = 5,
     ) -> list[dict[str, object]]:
         """Execute multiple completions with controlled concurrency.
 
@@ -233,7 +239,9 @@ class OpenAIClient:
             self.usage_stats["total_cost"] += cost
 
     def _validate_schema(
-        self, data: object, schema: dict[str, object]
+        self,
+        data: object,
+        schema: dict[str, object],
     ):  # Changed Any to object for consistency
         """Basic schema validation for structured output."""
         schema_type = schema.get("type")
@@ -285,7 +293,9 @@ class OpenAIClient:
 
 # builder function for easy instantiation
 def create_openai_client(
-    api_key: str | None = None, model: str = "gpt-4o-2024-08-06", **kwargs: dict[str, object]
+    api_key: str | None = None,
+    model: str = "gpt-4o-2024-08-06",
+    **kwargs: dict[str, object],
 ) -> OpenAIClient:
     """Create configured OpenAI client.
 

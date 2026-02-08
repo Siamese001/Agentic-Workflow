@@ -141,7 +141,7 @@ def extract_functions(filepath):
                         "name": node.name,
                         "code": func_code,
                         "hash": hashlib.md5(func_code.encode()).hexdigest(),
-                    }
+                    },
                 )
 
         return functions
@@ -176,9 +176,7 @@ def merge_validator_logic(silos, exclude_dirs, merge_to):
             if func["name"] not in ["validate", "check", "verify", "is_valid"]:
                 continue  # Focus on validation functions
 
-            function_map[func["name"]].append(
-                {"hash": func["hash"], "code": func["code"], "file": filepath}
-            )
+            function_map[func["name"]].append({"hash": func["hash"], "code": func["code"], "file": filepath})
 
     # Create merged file
     merged_content = '''#!/usr/bin/env python3
@@ -289,7 +287,12 @@ def is_excluded(path: str) -> bool:
 
 
 def purge_everything(
-    aggressive=False, organize=False, merge_logic=False, merge_to=None, silos=None, exclude=None
+    aggressive=False,
+    organize=False,
+    merge_logic=False,
+    merge_to=None,
+    silos=None,
+    exclude=None,
 ):
     """
     Brief description of functionality and purpose.
@@ -346,17 +349,11 @@ def purge_everything(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean duplicates and organize code structure")
     parser.add_argument("--aggressive", action="store_true", help="Perform aggressive cleanup")
-    parser.add_argument(
-        "--organize", action="store_true", help="Organize files into engine directories"
-    )
-    parser.add_argument(
-        "--merge-logic", action="store_true", help="Merge duplicate validator logic"
-    )
+    parser.add_argument("--organize", action="store_true", help="Organize files into engine directories")
+    parser.add_argument("--merge-logic", action="store_true", help="Merge duplicate validator logic")
     parser.add_argument("--merge-to", type=str, help="Target file for merged validator logic")
     parser.add_argument("--silos", type=str, help="Comma-separated list of silos to process")
-    parser.add_argument(
-        "--exclude", type=str, help="Comma-separated list of directories to exclude"
-    )
+    parser.add_argument("--exclude", type=str, help="Comma-separated list of directories to exclude")
 
     args = parser.parse_args()
 

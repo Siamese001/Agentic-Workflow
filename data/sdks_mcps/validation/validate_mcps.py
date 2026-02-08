@@ -88,9 +88,7 @@ def validate_mcp_catalogs() -> dict[str, object]:
                         # Check if referenced file exists
                         ref_path = Path(schema_ref["file"])
                         if not ref_path.exists():
-                            catalog_errors.append(
-                                f"Referenced file not found: {schema_ref['file']}"
-                            )
+                            catalog_errors.append(f"Referenced file not found: {schema_ref['file']}")
 
             if "tool_specifications" in catalog:
                 for tool_name, tool_ref in catalog["tool_specifications"].items():

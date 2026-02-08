@@ -8,7 +8,6 @@ Validates:
 """
 
 import pytest
-from pathlib import Path
 
 
 class TestSyntaxErrorHandling:
@@ -18,6 +17,7 @@ class TestSyntaxErrorHandling:
     def fca(self):
         """Create FCA instance for testing."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
         return FileClassificationAgent()
 
     def test_syntax_error_does_not_crash(self, fca, tmp_path):
@@ -73,7 +73,7 @@ pass  # Wrong indentation
         test_file.write_bytes(b'"""Module."""\n\xff\xfe\x00\x01')
 
         try:
-            result = fca.classify_file(test_file)
+            fca.classify_file(test_file)
             # Should not crash
             assert True
         except UnicodeDecodeError:
@@ -89,9 +89,9 @@ pass  # Wrong indentation
 
     def test_only_comments(self, fca, tmp_path):
         """FCA should handle files with only comments."""
-        content = '''# Just a comment
+        content = """# Just a comment
 # Another comment
-'''
+"""
         test_file = tmp_path / "comments.py"
         test_file.write_text(content)
 

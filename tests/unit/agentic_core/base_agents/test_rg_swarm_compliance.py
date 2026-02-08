@@ -83,7 +83,7 @@ class TestRGSwarmCompliance:
             if not issubclass(cls, RGAgentBase):
                 failures.append(
                     f"❌ {cls_name} does not inherit from RGAgentBase! "
-                    f"MRO: {[c.__name__ for c in cls.__mro__]}"
+                    f"MRO: {[c.__name__ for c in cls.__mro__]}",
                 )
 
         if failures:
@@ -154,7 +154,7 @@ class TestRGSwarmCompliance:
 
                     if "field(default_factory" not in line:
                         violations.append(
-                            f"❌ {f.name}: Mutable default detected: {description}\n   Line: {line.strip()}"
+                            f"❌ {f.name}: Mutable default detected: {description}\n   Line: {line.strip()}",
                         )
 
         if violations:
@@ -177,7 +177,7 @@ class TestRGSwarmCompliance:
                 if hasattr(agent, "_initialized"):
                     if not agent._initialized:
                         failures.append(
-                            f"❌ {cls_name} failed security boot! _initialized={agent._initialized}"
+                            f"❌ {cls_name} failed security boot! _initialized={agent._initialized}",
                         )
                 else:
                     # RGAgentBase inherits from SovereignBaseAgent which should have _initialized

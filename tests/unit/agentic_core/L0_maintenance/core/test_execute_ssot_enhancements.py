@@ -50,7 +50,8 @@ class TestSafetyMechanisms:
 
         # 2. Recursive call (Same Agent) - BLOCK
         proceed, msg = engine.should_proceed_with_healing(
-            ConfidenceScore(1.0, "Perfect"), agent_name="Agent_A"
+            ConfidenceScore(1.0, "Perfect"),
+            agent_name="Agent_A",
         )
         assert proceed is False, "Recursive call must be blocked"
         assert "cycle detected" in msg.lower(), "Error message must indicate cycle"
@@ -154,7 +155,8 @@ class TestSemanticIntelligence:
 
         # Partial match
         score = engine._calculate_semantic_similarity(
-            "user_auth_controller", ["user_controller", "auth_service"]
+            "user_auth_controller",
+            ["user_controller", "auth_service"],
         )
         assert score > 0.0, "Should detect similarity"
 
@@ -206,7 +208,9 @@ class TestConfidenceScoring:
 
         engine = AutonomousDecisionEngine(enable_llm=False)
         confidence = engine.calculate_healing_confidence(
-            violations_count=0, violation_types=[], territory="prompt_governance"
+            violations_count=0,
+            violation_types=[],
+            territory="prompt_governance",
         )
 
         assert confidence.value == 1.0, "Zero violations should have perfect confidence"
@@ -220,12 +224,16 @@ class TestConfidenceScoring:
 
         # Trusted territory
         trusted_conf = engine.calculate_healing_confidence(
-            violations_count=10, violation_types=["NAMING"], territory="prompt_governance"
+            violations_count=10,
+            violation_types=["NAMING"],
+            territory="prompt_governance",
         )
 
         # Critical territory
         critical_conf = engine.calculate_healing_confidence(
-            violations_count=10, violation_types=["NAMING"], territory="L5_safety"
+            violations_count=10,
+            violation_types=["NAMING"],
+            territory="L5_safety",
         )
 
         assert trusted_conf.value > critical_conf.value, (
@@ -247,7 +255,9 @@ class TestConfidenceScoring:
 
         # Unknown types
         unknown_conf = engine.calculate_healing_confidence(
-            violations_count=5, violation_types=["UNKNOWN_XYZ", "MYSTERY_ABC"], territory="scripts"
+            violations_count=5,
+            violation_types=["UNKNOWN_XYZ", "MYSTERY_ABC"],
+            territory="scripts",
         )
 
         assert known_conf.value > unknown_conf.value, "Known violation types should have higher confidence"

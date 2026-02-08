@@ -38,8 +38,9 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
     from apps_lic.shared.orchestrators import AppWorkflowOrchestratorAgent
+
+    from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
 
 # STUBS: Legacy mixins (use LICAgentBase instead)
@@ -415,11 +416,7 @@ class OutreachHealingCycle:
         if OutreachSignalRouterAgent.has_critical_signal(self.ctx.signals):
             return True
 
-        if (
-            self.cycle_number > 1
-            and self.ctx.has_signal("TEST_FAILURE")
-            and self.ctx.campaign_backups
-        ):
+        if self.cycle_number > 1 and self.ctx.has_signal("TEST_FAILURE") and self.ctx.campaign_backups:
             return True
 
         return False

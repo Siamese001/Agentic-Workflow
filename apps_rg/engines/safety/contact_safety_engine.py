@@ -44,9 +44,7 @@ class ContactSafetyEngine(BaseRGEngine):
         result = {"safe": len(issues) == 0, "issues": issues, "sanitized_data": sanitized_data}
 
         if issues:
-            self.record_fail(
-                f"PII safety violations: {len(issues)}", data=result, signal="PII_VIOLATION"
-            )
+            self.record_fail(f"PII safety violations: {len(issues)}", data=result, signal="PII_VIOLATION")
         else:
             self.record_pass("Contact data validated")
 

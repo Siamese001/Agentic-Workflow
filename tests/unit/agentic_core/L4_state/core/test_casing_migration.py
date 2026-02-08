@@ -27,7 +27,7 @@ class TestCasingMigration:
             consumer = root / "main.py"
             consumer.write_text(
                 "from agentic_core.L2_execution.reasoning import tool\n"
-                "from agentic_core.L4_state.memory import context"
+                "from agentic_core.L4_state.memory import context",
             )
 
             yield root

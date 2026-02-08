@@ -466,7 +466,7 @@ class BadAgent:
                 TypeErasureDetector(check_agent_classes_only=False),
                 PathFragilityDetector(),
                 GlobalMutationDetector(),
-            ]
+            ],
         )
 
         results = composite.scan_file(file_path)
@@ -497,7 +497,7 @@ def bad_function():
         composite = CompositeDetector(
             [
                 PathFragilityDetector(),
-            ]
+            ],
         )
 
         results = composite.scan_directory(
@@ -529,7 +529,7 @@ class TestAntiPatternIntegration:
                 PathFragilityDetector(),
                 MagicConfigDetector(),
                 GlobalMutationDetector(),
-            ]
+            ],
         )
 
         # Scan the anti_patterns directory itself (should be clean)
@@ -560,7 +560,11 @@ def bad_function():
 """
         # Create a test file (should be whitelisted by default)
         with tempfile.NamedTemporaryFile(
-            mode="w", prefix="test_", suffix=".py", delete=False, encoding="utf-8"
+            mode="w",
+            prefix="test_",
+            suffix=".py",
+            delete=False,
+            encoding="utf-8",
         ) as f:
             f.write(code)
             file_path = Path(f.name)

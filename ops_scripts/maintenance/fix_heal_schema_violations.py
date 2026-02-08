@@ -12,9 +12,9 @@ USAGE:
 
 import argparse
 import re
+from pathlib import Path
 
 import yaml
-from pathlib import Path
 
 
 def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:

@@ -10,10 +10,11 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.shared.core.immutable_buffer import ImmutableStagingBuffer
-from apps_lic.shared.core.LICAgentBase import LICAgentBase
 from apps_lic.shared.core.trace_registry import TraceRegistry
+
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.shared.core.LICAgentBase import LICAgentBase
 
 
 @dataclass
@@ -34,7 +35,7 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
 
     # Sovereign Configuration
     generation_params: dict[str, Any] = field(
-        default_factory=lambda: {"temperature": 0.7, "n_candidates": 3, "max_tokens": 500}
+        default_factory=lambda: {"temperature": 0.7, "n_candidates": 3, "max_tokens": 500},
     )
 
     def __post_init__(self) -> None:
@@ -95,7 +96,11 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
 
             # K.7: Final Message Assembly (Immutable Signature + Fencing)
             assembly_data = self._assemble_k7_final_message(
-                body_data["text"], bullet_data["bullets"], cta_data["text"], hop1, registry
+                body_data["text"],
+                bullet_data["bullets"],
+                cta_data["text"],
+                hop1,
+                registry,
             )
 
             candidates.append(
@@ -109,7 +114,7 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
                     "provenance_labels": bullet_data["labels"],
                     "transition_phrase": body_data["transition_phrase"],
                     "score": 0.0,
-                }
+                },
             )
 
         # 4. Score & Select (Fan-in)
@@ -212,7 +217,10 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
         elif self.llm:
             # Fallback to LLM generation if no signals
             prompt = self._construct_prompt(
-                hop1, hop2, {}, {"route": "INMAIL", "constraints": {"char_limit": 500}}
+                hop1,
+                hop2,
+                {},
+                {"route": "INMAIL", "constraints": {"char_limit": 500}},
             )
             response = self._run_async(self.llm.generate(prompt, temperature=0.5))
             body_parts.append(f"\n{response.strip()}")
@@ -220,9 +228,7 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
             body_parts.append("\nYour strategic initiatives align well with our capabilities.")
 
         body_text = "\n".join(body_parts)
-        registry.add_trace(
-            "K3_BODY_GENERATED", {"archetype": archetype, "transition_used": transition[:50]}
-        )
+        registry.add_trace("K3_BODY_GENERATED", {"archetype": archetype, "transition_used": transition[:50]})
 
         return {"text": body_text, "transition_phrase": transition}
 
@@ -342,7 +348,12 @@ class HOP5GenerationAgent(SubatomicTestingMixin, LICAgentBase):
         return {"text": cta}
 
     def _assemble_k7_final_message(
-        self, body: str, bullets: list, cta: str, hop1: dict, registry: TraceRegistry
+        self,
+        body: str,
+        bullets: list,
+        cta: str,
+        hop1: dict,
+        registry: TraceRegistry,
     ) -> dict:
         """
         K.7: Final Message Assembly with Immutable Signature and Fencing.

@@ -56,7 +56,9 @@ class ImportTimeoutError(Exception):
 
 
 def _import_with_timeout(
-    module_name: str, file_path, timeout_seconds: float = 3.0
+    module_name: str,
+    file_path,
+    timeout_seconds: float = 3.0,
 ) -> tuple[bool, str | None]:
     """
     Import a module with a timeout using threading.
@@ -185,7 +187,7 @@ class TestImportSafety:
                         "file": str(rel_path),
                         "line": e.lineno or 1,
                         "error": str(e.msg),
-                    }
+                    },
                 )
                 report_builder.add_violation(
                     code=ViolationCode.IMPORT_SYNTAX_ERROR,
@@ -200,7 +202,7 @@ class TestImportSafety:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} syntax errors detected:\n"
-                + "\n".join(f"  - {v['file']}:{v['line']}: {v['error']}" for v in violations[:10])
+                + "\n".join(f"  - {v['file']}:{v['line']}: {v['error']}" for v in violations[:10]),
             )
 
     def test_circular_dependency_scanner(self, report_builder):
@@ -277,11 +279,11 @@ class TestImportSafety:
         if circular_deps:
             pytest.fail(
                 f"BLOCKING: {len(circular_deps)} circular dependencies detected:\n"
-                + "\n".join(f"  - {Path(a).name} <-> {Path(b).name}" for a, b in circular_deps[:10])
+                + "\n".join(f"  - {Path(a).name} <-> {Path(b).name}" for a, b in circular_deps[:10]),
             )
 
     @pytest.mark.skip(
-        reason="Test logic has false positives - needs refactoring to properly detect zombie imports"
+        reason="Test logic has false positives - needs refactoring to properly detect zombie imports",
     )
     def test_zombie_reference_check(self):
         """
@@ -340,7 +342,7 @@ class TestImportSafety:
                                         "line": line_num,
                                         "import": import_path,
                                         "full_line": line.strip(),
-                                    }
+                                    },
                                 )
 
             except Exception:
@@ -363,7 +365,7 @@ class TestImportSafety:
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#ghost-imports")
 
         print(
-            f"[OK] Zombie import check complete ({len(python_files)} files, {len(zombie_imports)} known debt)"
+            f"[OK] Zombie import check complete ({len(python_files)} files, {len(zombie_imports)} known debt)",
         )
 
     def test_ssot_dependency_flow(self, report_builder):
@@ -393,7 +395,7 @@ class TestImportSafety:
                                     "file": str(file_path.relative_to(PROJECT_ROOT)),
                                     "line": node.lineno,
                                     "violation": f"from {node.module} import ...",
-                                }
+                                },
                             )
                     elif isinstance(node, ast.Import):
                         for alias in node.names:
@@ -404,7 +406,7 @@ class TestImportSafety:
                                         "file": str(file_path.relative_to(PROJECT_ROOT)),
                                         "line": node.lineno,
                                         "violation": f"import {alias.name}",
-                                    }
+                                    },
                                 )
             except SyntaxError:
                 continue
@@ -427,7 +429,7 @@ class TestImportSafety:
                                     "file": str(file_path.relative_to(PROJECT_ROOT)),
                                     "line": node.lineno,
                                     "violation": f"from {node.module} import ...",
-                                }
+                                },
                             )
             except SyntaxError:
                 continue
@@ -449,7 +451,7 @@ class TestImportSafety:
                                     "file": str(file_path.relative_to(PROJECT_ROOT)),
                                     "line": node.lineno,
                                     "violation": f"from {node.module} import ...",
-                                }
+                                },
                             )
             except SyntaxError:
                 continue
@@ -469,7 +471,7 @@ class TestImportSafety:
         if violations:
             pytest.fail(
                 f"BLOCKING: {len(violations)} SSOT dependency violations:\n"
-                + "\n".join(f"  - {v['file']}:{v['line']}: {v['violation']}" for v in violations[:10])
+                + "\n".join(f"  - {v['file']}:{v['line']}: {v['violation']}" for v in violations[:10]),
             )
 
 
@@ -562,7 +564,7 @@ class TestNuclearImportSweep:
                             "file": str(file_path.relative_to(PROJECT_ROOT)),
                             "module": module_name,
                             "error": "find_spec returned None - Ghost Import detected",
-                        }
+                        },
                     )
                     continue
             except ModuleNotFoundError as e:
@@ -571,7 +573,7 @@ class TestNuclearImportSweep:
                         "file": str(file_path.relative_to(PROJECT_ROOT)),
                         "module": module_name,
                         "error": str(e),
-                    }
+                    },
                 )
                 continue
             except ImportError as e:
@@ -580,7 +582,7 @@ class TestNuclearImportSweep:
                         "file": str(file_path.relative_to(PROJECT_ROOT)),
                         "module": module_name,
                         "error": str(e),
-                    }
+                    },
                 )
                 continue
             except Exception:
@@ -599,7 +601,7 @@ class TestNuclearImportSweep:
                             "file": str(file_path.relative_to(PROJECT_ROOT)),
                             "module": module_name,
                             "error": error,
-                        }
+                        },
                     )
                 elif "ImportError" in error:
                     import_errors.append(
@@ -607,7 +609,7 @@ class TestNuclearImportSweep:
                             "file": str(file_path.relative_to(PROJECT_ROOT)),
                             "module": module_name,
                             "error": error,
-                        }
+                        },
                     )
 
         # Report results
@@ -793,7 +795,7 @@ class TestNuclearImportSweep:
                             "file": str(file_path.relative_to(PROJECT_ROOT)),
                             "line": line_no,
                             "violation": forbidden_import,
-                        }
+                        },
                     )
 
         # Report results
@@ -922,7 +924,7 @@ class TestNuclearImportSweep:
                                         "line": line_no,
                                         "import": import_target,
                                         "type": "import",
-                                    }
+                                    },
                                 )
                         except (ModuleNotFoundError, ImportError, ValueError):
                             ghost_imports.append(
@@ -931,7 +933,7 @@ class TestNuclearImportSweep:
                                     "line": line_no,
                                     "import": import_target,
                                     "type": "import",
-                                }
+                                },
                             )
 
                 elif isinstance(node, ast.ImportFrom):
@@ -953,7 +955,7 @@ class TestNuclearImportSweep:
                                         "line": line_no,
                                         "import": import_target,
                                         "type": "from",
-                                    }
+                                    },
                                 )
                         except (ModuleNotFoundError, ImportError, ValueError):
                             ghost_imports.append(
@@ -962,7 +964,7 @@ class TestNuclearImportSweep:
                                     "line": line_no,
                                     "import": import_target,
                                     "type": "from",
-                                }
+                                },
                             )
 
         # Report results
@@ -1143,7 +1145,7 @@ class TestGravityCompliance:
                                         "line": node.lineno,
                                         "violation": f"import {alias.name}",
                                         "type": "direct_import",
-                                    }
+                                    },
                                 )
 
                     # Check from imports
@@ -1157,7 +1159,7 @@ class TestGravityCompliance:
                                     "line": node.lineno,
                                     "violation": f"from {node.module} import ...",
                                     "type": "from_import",
-                                }
+                                },
                             )
 
             except SyntaxError:
@@ -1241,7 +1243,7 @@ class TestGravityCompliance:
                                             "line": node.lineno,
                                             "violation": f"{source_layer}(L{source_level}) -> {target_layer}(L{target_level})",
                                             "import": import_module,
-                                        }
+                                        },
                                     )
 
             except SyntaxError:
@@ -1411,7 +1413,7 @@ class TestGravityCompliance:
                                     "file": rel_path,
                                     "line": line_num,
                                     "content": stripped[:100],
-                                }
+                                },
                             )
 
                     # Check relative imports in deep packages
@@ -1424,7 +1426,7 @@ class TestGravityCompliance:
                                     "file": rel_path,
                                     "line": line_num,
                                     "content": stripped[:100],
-                                }
+                                },
                             )
 
                     # Check import alias conventions
@@ -1445,7 +1447,7 @@ class TestGravityCompliance:
                                     "file": rel_path,
                                     "line": line_num,
                                     "content": stripped[:100],
-                                }
+                                },
                             )
 
             except (UnicodeDecodeError, PermissionError):

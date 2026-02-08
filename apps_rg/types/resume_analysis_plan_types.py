@@ -73,9 +73,7 @@ class RGPlanner:
     across the 8-node sequential processing pipeline.
     """
 
-    def __init__(
-        self, config: dict[str, object] | None = None, telemetry_bus: Any | None = None
-    ) -> None:
+    def __init__(self, config: dict[str, object] | None = None, telemetry_bus: Any | None = None) -> None:
         """Initialize resume generation planner."""
         self.config = config or {}
         self.telemetry_bus = telemetry_bus
@@ -131,7 +129,9 @@ class RGPlanner:
 
         # 3. Determine processing strategy
         processing_strategy = self._determine_processing_strategy(
-            job_analysis, resume_analysis, processing_options
+            job_analysis,
+            resume_analysis,
+            processing_options,
         )
 
         # 4. Create analysis plan
@@ -240,7 +240,9 @@ class RGPlanner:
         }
 
     def _create_analysis_plan(
-        self, job_analysis: dict[str, object], strategy: dict[str, object]
+        self,
+        job_analysis: dict[str, object],
+        strategy: dict[str, object],
     ) -> ResumeAnalysisPlan:
         """Create detailed resume analysis plan."""
         return ResumeAnalysisPlan(
@@ -260,7 +262,9 @@ class RGPlanner:
         )
 
     def _configure_section_processing(
-        self, resume_analysis: dict[str, object], strategy: dict[str, object]
+        self,
+        resume_analysis: dict[str, object],
+        strategy: dict[str, object],
     ) -> list[ResumeSectionConfig]:
         """Configure processing for each resume section."""
         section_configs = []

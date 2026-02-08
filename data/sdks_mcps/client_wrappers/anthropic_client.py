@@ -153,9 +153,7 @@ class AnthropicClient:
             Message object with cache metadata
         """
         # Apply strategic caching
-        processed_system = (
-            self._apply_caching_to_system(system) if cache_system and system else system
-        )
+        processed_system = self._apply_caching_to_system(system) if cache_system and system else system
         processed_messages = self._apply_caching_to_messages(messages, cache_templates)
 
         return self.message(messages=processed_messages, system=processed_system, **kwargs)
@@ -221,7 +219,7 @@ class AnthropicClient:
                         "id": content_block.id,
                         "name": content_block.name,
                         "input": content_block.input,
-                    }
+                    },
                 )
 
         return {
@@ -238,7 +236,9 @@ class AnthropicClient:
         }
 
     def batch_message(
-        self, batch_requests: list[dict[str, object]], concurrent_limit: int = 10
+        self,
+        batch_requests: list[dict[str, object]],
+        concurrent_limit: int = 10,
     ) -> list[dict[str, object]]:
         """Execute multiple messages with controlled concurrency.
 
@@ -289,7 +289,9 @@ class AnthropicClient:
         return processed_system
 
     def _apply_caching_to_messages(
-        self, messages: list[dict[str, object]], cache_indices: list[int] = None
+        self,
+        messages: list[dict[str, object]],
+        cache_indices: list[int] = None,
     ) -> list[dict[str, object]]:
         """Apply cache control to specific message indices."""
         if not self.cache_control:
@@ -338,9 +340,7 @@ class AnthropicClient:
             cache_write_cost = (cache_creation * 0.00375) / 1000
             cache_read_cost = (cache_read * 0.0003) / 1000
 
-            self.usage_stats["total_cost"] += (
-                input_cost + output_cost + cache_write_cost + cache_read_cost
-            )
+            self.usage_stats["total_cost"] += input_cost + output_cost + cache_write_cost + cache_read_cost
 
     def _handle_error(self, error: Exception) -> Exception:
         """Enhance error messages with context."""
@@ -401,9 +401,7 @@ def create_anthropic_client(
     Returns:
         Configured Anthropic client
     """
-    config = AnthropicConfig(
-        api_key=api_key, default_model=model, enable_caching=enable_caching, **kwargs
-    )
+    config = AnthropicConfig(api_key=api_key, default_model=model, enable_caching=enable_caching, **kwargs)
     return AnthropicClient(config)
 
 
@@ -417,7 +415,7 @@ if __name__ == "__main__":
         {
             "role": "user",
             "content": [{"type": "text", "text": "Explain quantum computing in 100 words."}],
-        }
+        },
     ]
 
     try:

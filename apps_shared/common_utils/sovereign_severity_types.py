@@ -6,9 +6,10 @@ No inline BaseModel definitions allowed outside schemas/.
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from pydantic import BaseModel, Field
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -2422,7 +2423,6 @@ CORE_CONTRACTS_REGISTRY.update(
 # Migrated with Builder pattern for fluent, immutable construction
 
 import logging
-from pydantic import validator
 
 logger = logging.getLogger(__name__)
 

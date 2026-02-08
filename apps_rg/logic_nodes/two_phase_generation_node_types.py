@@ -41,7 +41,9 @@ class TwoPhaseGenerationNode:
         self.word_enforcer = WordCountEnforcementEngine(config)
 
     def generate_bullets_phase_a(
-        self, thematic_output: ThematicAnalysisOutput, role_data: dict[str, Any]
+        self,
+        thematic_output: ThematicAnalysisOutput,
+        role_data: dict[str, Any],
     ) -> BulletGenerationOutput:
         """
         Phase A: Generate provenance-backed bullets based on themes.
@@ -82,7 +84,8 @@ class TwoPhaseGenerationNode:
         # Active Enforcement & Signing (Phase 3 Integration)
         # Returns dict with {content, signature, payload}
         enforcement_result = self.word_enforcer.enforce_with_regeneration(
-            overview_text, content_type=target_section
+            overview_text,
+            content_type=target_section,
         )
 
         return OverviewSynthesisOutput(

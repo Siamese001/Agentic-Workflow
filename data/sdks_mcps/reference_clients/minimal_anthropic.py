@@ -43,9 +43,7 @@ def cached_message(prompt: str, system_prompt: str = None) -> str:
     # Build system prompt with caching
     system_content = []
     if system_prompt:
-        system_content.append(
-            {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}
-        )
+        system_content.append({"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}})
 
     response = client.messages.create(
         model="claude-3-5-sonnet-20241022",
@@ -84,7 +82,7 @@ def tool_use_message(prompt: str, tools: list) -> dict:
             content += content_block.text
         elif content_block.type == "tool_use":
             tool_calls.append(
-                {"id": content_block.id, "name": content_block.name, "input": content_block.input}
+                {"id": content_block.id, "name": content_block.name, "input": content_block.input},
             )
 
     return {"content": content, "tool_calls": tool_calls}
@@ -95,9 +93,7 @@ if __name__ == "__main__":
     # print(simple_message("Hello, Claude!")) # Example call
 
     # Test cached message
-    cached_message(
-        "Summarize quantum computing", system_prompt="You are an expert physics educator."
-    )
+    cached_message("Summarize quantum computing", system_prompt="You are an expert physics educator.")
 
     # Test tool use
     tools = [
@@ -105,6 +101,6 @@ if __name__ == "__main__":
             "name": "get_weather",
             "description": "Get weather information",
             "input_schema": {"type": "object", "properties": {"location": {"type": "string"}}},
-        }
+        },
     ]
     # print(tool_use_message("What's the weather like in San Francisco?", tools)) # Example call

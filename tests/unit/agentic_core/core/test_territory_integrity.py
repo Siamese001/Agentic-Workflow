@@ -102,7 +102,9 @@ class TestTerritoryIntegrity(unittest.TestCase):
         report = agent.scan_root_violations("prompt_governance")
 
         self.assertEqual(
-            len(report["territory_root_files"]), 0, "Should detect no violations in clean territory"
+            len(report["territory_root_files"]),
+            0,
+            "Should detect no violations in clean territory",
         )
         self.assertEqual(report["violations_found"], 0, "Should report 0 violations found")
 
@@ -204,10 +206,14 @@ class TestTerritoryIntegrity(unittest.TestCase):
 
         # Each should only detect violations in their own territory
         self.assertEqual(
-            len(report_pg["territory_root_files"]), 3, "prompt_governance should have 3 violations"
+            len(report_pg["territory_root_files"]),
+            3,
+            "prompt_governance should have 3 violations",
         )
         self.assertEqual(
-            len(report_other["territory_root_files"]), 1, "other_territory should have 1 violation"
+            len(report_other["territory_root_files"]),
+            1,
+            "other_territory should have 1 violation",
         )
 
         # Verify territory names are correct

@@ -57,7 +57,7 @@ class HighConfidenceTestAgent:
                 "type": "NAMING",  # This gets high confidence (0.9)
                 "message": "File naming violation in invalid location",
                 "severity": "medium",
-            }
+            },
         ]
 
         plan = {

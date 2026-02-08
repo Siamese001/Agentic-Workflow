@@ -71,7 +71,10 @@ class TestClass:
 
             # Create violation and coordinate separately
             coordinate = ASTCoordinate(
-                line=unused_import_line, column=0, node_id="unused_import", node_type="Import"
+                line=unused_import_line,
+                column=0,
+                node_id="unused_import",
+                node_type="Import",
             )
 
             violation = ViolationConstraint(

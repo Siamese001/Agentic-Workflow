@@ -8,10 +8,10 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # ARCHIVED: CodeDeduplicationAgent import removed
-from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import CodeDeduplicationAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import CodeDeduplicationAgent
 
 
 def test_fuzzy_matching():

@@ -264,7 +264,10 @@ class TestClass:
 
                 # Create SurgicalContext for CST healing
                 coordinate = ASTCoordinate(
-                    line=lineno, column=0, node_id=f"import_{name}", node_type="Import"
+                    line=lineno,
+                    column=0,
+                    node_id=f"import_{name}",
+                    node_type="Import",
                 )
 
                 violation = ViolationConstraint(

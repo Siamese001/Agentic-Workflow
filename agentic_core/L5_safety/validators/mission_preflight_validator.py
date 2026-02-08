@@ -8,10 +8,10 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
 
 
 class MissionPreflight:

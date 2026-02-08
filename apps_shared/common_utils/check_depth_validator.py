@@ -3,8 +3,8 @@ Check depth violations using SSOT.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 
 def check_depth(root_dir: Path) -> None:
