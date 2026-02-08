@@ -7,7 +7,7 @@ Covers:
 - Phase 3: Recursive territory enforcement
 - Phase 4: Global mixin routing
 - Phase 5: Folder-suffix consistency
-- Phase 6: Pre-commit hook (check_compound_suffix_script.py)
+- Phase 6: Pre-commit hook (check_compound_suffix.py)
 """
 
 from __future__ import annotations
@@ -529,11 +529,11 @@ class TestFolderSuffixConsistency:
 # ===========================================================================
 
 class TestPreCommitHook:
-    """Tests for the check_compound_suffix_script.py hook logic."""
+    """Tests for the check_compound_suffix.py hook logic."""
 
     def test_hook_detects_compound(self):
         """Hook function should detect compound suffixes."""
-        from ops_scripts.hooks.check_compound_suffix_script import check_compound_suffix
+        from ops_scripts.hooks.check_compound_suffix import check_compound_suffix
 
         result = check_compound_suffix("model_types_config.py")
         assert result is not None
@@ -542,7 +542,7 @@ class TestPreCommitHook:
 
     def test_hook_passes_single_suffix(self):
         """Hook function should pass single-suffix files."""
-        from ops_scripts.hooks.check_compound_suffix_script import check_compound_suffix
+        from ops_scripts.hooks.check_compound_suffix import check_compound_suffix
 
         assert check_compound_suffix("model_config.py") is None
         assert check_compound_suffix("user_types.py") is None
@@ -550,14 +550,14 @@ class TestPreCommitHook:
 
     def test_hook_passes_exempt_files(self):
         """Hook function should pass exempt files."""
-        from ops_scripts.hooks.check_compound_suffix_script import check_compound_suffix
+        from ops_scripts.hooks.check_compound_suffix import check_compound_suffix
 
         assert check_compound_suffix("__init__.py") is None
         assert check_compound_suffix("conftest.py") is None
 
     def test_hook_passes_non_python(self):
         """Hook function should pass non-Python files."""
-        from ops_scripts.hooks.check_compound_suffix_script import check_compound_suffix
+        from ops_scripts.hooks.check_compound_suffix import check_compound_suffix
 
         assert check_compound_suffix("config.yaml") is None
         assert check_compound_suffix("README.md") is None

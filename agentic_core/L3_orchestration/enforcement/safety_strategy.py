@@ -82,7 +82,7 @@ class SafetyStrategy:
         try:
             # Dynamic import based on agent name
             if agent_name == "CodeValidatorAgent":
-                from agentic_core.L5_safety.reasoning.code_validation_types import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
                     CodeValidatorAgent,
                 )
 
@@ -94,7 +94,7 @@ class SafetyStrategy:
 
                 return HygieneGuardianAgent(project_root=self.project_root)
             elif agent_name == "NamingAgent":
-                from agentic_core.L5_safety.validators.naming_validator import NamingAgent
+                from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
                 return NamingAgent(project_root=self.project_root)
             elif agent_name == "LocationAgent":
@@ -102,7 +102,7 @@ class SafetyStrategy:
 
                 return LocationAgent(project_root=self.project_root)
             elif agent_name == "StructureEnforcerAgent":
-                from agentic_core.L5_safety.reasoning.structure_enforcement_types import (
+                from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (
                     StructureEnforcerAgent,
                 )
 

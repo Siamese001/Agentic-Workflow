@@ -1,6 +1,6 @@
 import pytest
 
-from agentic_core.L5_safety.enforcement.hygiene_guardian import HygieneGuardianAgent
+from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import HygieneGuardianAgent
 
 # MANDATORY: 100% test pass language included.
 

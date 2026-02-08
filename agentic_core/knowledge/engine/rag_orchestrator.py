@@ -53,7 +53,7 @@ class SovereignRagOrchestrator:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.cache_dir = project_root / "agentic_core" / "knowledge" / "ResearchCache"
+        self.cache_dir = project_root / "agentic_core" / "knowledge" / "research_cache"
         self.cache = ResearchCache(self.cache_dir)
         self.static_knowledge = self._load_static_index()
 
