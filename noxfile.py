@@ -2,13 +2,13 @@
 Nox sessions for test isolation and integration testing.
 
 Sessions:
-    unit_min_deps:          Run unit tests that require only stdlib + pytest.
-    integration_full_deps:  Install pydantic, then run integration tests.
-    decorators:             Run decorator/timeout AST enforcement + contract tests.
+    unit_min_deps:   Run tests/unit_min_deps/ — stdlib + pytest only, no optional deps.
+    integration:     Install pydantic, run tests/integration/ with real agent validation.
+    decorators:      Run decorator/timeout AST enforcement + contract tests.
 
 Usage:
     nox -s unit_min_deps
-    nox -s integration_full_deps
+    nox -s integration
     nox -s decorators
 """
 
@@ -21,21 +21,20 @@ nox.options.reuse_existing_virtualenvs = True
 
 @nox.session(python=False)
 def unit_min_deps(session: nox.Session) -> None:
-    """Run unit_min_deps tests — no optional deps required."""
-    session.run("python", "-m", "pytest", "-m", "unit_min_deps", "-q")
+    """Run tests/unit_min_deps/ — no optional deps required."""
+    session.run("python", "-m", "pytest", "tests/unit_min_deps/", "-q")
 
 
 @nox.session
-def integration_full_deps(session: nox.Session) -> None:
-    """Install optional deps and run integration tests."""
+def integration(session: nox.Session) -> None:
+    """Install optional deps and run tests/integration/."""
     session.install("pytest")
     session.install("pydantic")
     session.run(
         "python",
         "-m",
         "pytest",
-        "-m",
-        "integration_full_deps",
+        "tests/integration/",
         "-q",
         env={"INTEGRATION_FULL_DEPS_REQUIRED": "1"},
     )
@@ -48,7 +47,7 @@ def decorators(session: nox.Session) -> None:
         "python",
         "-m",
         "pytest",
-        "tests/unit/agentic_core/structure/test_decorator_timeout_layer_constraints.py",
-        "tests/unit/agentic_core/base_agents/test_decorator_shim_contract.py",
+        "tests/unit_min_deps/test_decorator_timeout_layer_constraints.py",
+        "tests/unit_min_deps/test_decorator_shim_contract.py",
         "-v",
     )

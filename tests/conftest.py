@@ -119,31 +119,11 @@ def guardian_config() -> dict:
 
 def pytest_collection_modifyitems(config, items):
     """
-    Modify test collection for marker-based isolation and guardian reporting.
-
-    Key behaviors:
-    1. When -m unit_min_deps is used, deselect integration_full_deps tests
-    2. Track guardian test counts for reporting
+    Track guardian test counts for reporting.
     """
-    marker_expr = config.getoption("-m", default="")
-
-    # Track guardian tests for reporting
     guardian_tests = [item for item in items if "guardian" in item.nodeid]
     if guardian_tests:
         config._guardian_test_count = len(guardian_tests)
-
-    # Isolation: when running unit_min_deps, deselect integration tests
-    if "unit_min_deps" in marker_expr and "integration_full_deps" not in marker_expr:
-        deselected = []
-        selected = []
-        for item in items:
-            if item.get_closest_marker("integration_full_deps"):
-                deselected.append(item)
-            else:
-                selected.append(item)
-        if deselected:
-            config.hook.pytest_deselected(items=deselected)
-            items[:] = selected
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
