@@ -1,0 +1,605 @@
+{
+  "phase_a": {
+    "merge_shims": [
+      {
+        "file": "agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py",
+        "old_class": "DagRuntimeInspectorAgent",
+        "canonical": "InspectorExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L5_safety.reasoning.InspectorExecutor.InspectorExecutor"
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/SignatureVerifierAgent.py",
+        "old_class": "SignatureVerifierAgent",
+        "canonical": "InspectorExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L5_safety.reasoning.InspectorExecutor.InspectorExecutor"
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/TokenBudgetInspectorAgent.py",
+        "old_class": "TokenBudgetInspectorAgent",
+        "canonical": "InspectorExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L5_safety.reasoning.InspectorExecutor.InspectorExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/CoordinateObservabilityOperationsAgent.py",
+        "old_class": "CoordinateObservabilityOperationsAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/DeadlockDetectorAgent.py",
+        "old_class": "DeadlockDetectorAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/DebateSynthesisAgent.py",
+        "old_class": "DebateSynthesisAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/RuntimeTelemetryAgent.py",
+        "old_class": "RuntimeTelemetryAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/StrategicObservationAgent.py",
+        "old_class": "StrategicObservationAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "agentic_core/L6_observability/reasoning/TrackObservabilityCostAgent.py",
+        "old_class": "TrackObservabilityCostAgent",
+        "canonical": "ObservabilityProbeExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor.ObservabilityProbeExecutor"
+      },
+      {
+        "file": "apps_lic/engines/CampaignBalanceAgent.py",
+        "old_class": "CampaignBalanceAgent",
+        "canonical": "LICValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.LICValidationExecutor.LICValidationExecutor"
+      },
+      {
+        "file": "apps_lic/engines/DeliverabilityAgent.py",
+        "old_class": "DeliverabilityAgent",
+        "canonical": "LICValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.LICValidationExecutor.LICValidationExecutor"
+      },
+      {
+        "file": "apps_lic/engines/Hop1ProfileAnalysisAgent.py",
+        "old_class": "HOP1ProfileAnalysisAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/Hop2ResearchAgent.py",
+        "old_class": "HOP2ResearchAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/HOP3SenderGroundingAgent.py",
+        "old_class": "HOP3SenderGroundingAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/Hop4RoutingAgent.py",
+        "old_class": "HOP4RoutingAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/HOP5GenerationAgent.py",
+        "old_class": "HOP5GenerationAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/Hop6ValidationAgent.py",
+        "old_class": "HOP6ValidationAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/HOP7GateDecisionAgent.py",
+        "old_class": "HOP7GateDecisionAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/HOP8QAReportAgent.py",
+        "old_class": "HOP8QAReportAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_lic/engines/HOP9IntegrationAgent.py",
+        "old_class": "HOP9IntegrationAgent",
+        "canonical": "HOPPipelineExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_lic.engines.HOPPipelineExecutor.HOPPipelineExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/ATSCompatibilityAgent.py",
+        "old_class": "ATSCompatibilityAgent",
+        "canonical": "RGValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGValidationExecutor.RGValidationExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/BrandComplianceAgent.py",
+        "old_class": "BrandComplianceAgent",
+        "canonical": "RGValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGValidationExecutor.RGValidationExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/ContentStrategyAgent.py",
+        "old_class": "ContentStrategyAgent",
+        "canonical": "RGStrategyExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGStrategyExecutor.RGStrategyExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/FactCheckAgent.py",
+        "old_class": "FactCheckAgent",
+        "canonical": "RGValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGValidationExecutor.RGValidationExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/RgStrategicPlannerAgent.py",
+        "old_class": "RgStrategicPlannerAgent",
+        "canonical": "RGStrategyExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGStrategyExecutor.RGStrategyExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/RgTemplateOptimizerAgent.py",
+        "old_class": "RgTemplateOptimizerAgent",
+        "canonical": "RGStrategyExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGStrategyExecutor.RGStrategyExecutor"
+      },
+      {
+        "file": "apps_rg/reasoning/SectionBalanceAgent.py",
+        "old_class": "SectionBalanceAgent",
+        "canonical": "RGValidationExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGValidationExecutor.RGValidationExecutor"
+      },
+      {
+        "file": "agentic_core/L2_execution/reasoning/RgStrategicPlannerAgent.py",
+        "old_class": "RgStrategicPlannerAgent",
+        "canonical": "RGStrategyExecutor",
+        "loc": 6,
+        "status": "PASS",
+        "import_target": "apps_rg.engines.RGStrategyExecutor.RGStrategyExecutor"
+      }
+    ],
+    "retire_shims": [
+      {
+        "file": "agentic_core/L1_cognition/reasoning/StrategistAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L2_execution/reasoning/UiValidationAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/DependencyDiplomatAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/GlobalComplianceAggregatorAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/OmniContextAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/SemanticMapperAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L5_safety/reasoning/SemanticTerritoryMapperAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "apps_lic/engines/IntelligenceLibrarianAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "apps_lic/engines/LeadQualityAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "apps_lic/engines/MessageDiversityValidator.py",
+        "status": "PASS",
+        "loc": 81,
+        "residual_classes": [
+          "HealerMixin",
+          "MessageDiversityValidator"
+        ]
+      },
+      {
+        "file": "apps_lic/engines/MessageArchitectAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "apps_lic/engines/LicReflectionAgent.py",
+        "status": "PASS",
+        "loc": 66,
+        "residual_classes": [
+          "LicReflectionAgent"
+        ]
+      },
+      {
+        "file": "apps_lic/engines/LicTemplateOptimizerAgent.py",
+        "status": "PASS",
+        "loc": 63,
+        "residual_classes": [
+          "LicTemplateOptimizerAgent"
+        ]
+      },
+      {
+        "file": "apps_lic/engines/MessageComplianceAgent.py",
+        "status": "PASS",
+        "loc": 86,
+        "residual_classes": [
+          "MessageComplianceAgent"
+        ]
+      },
+      {
+        "file": "apps_lic/engines/OutreachLearningAgent.py",
+        "status": "PASS",
+        "loc": 321,
+        "residual_classes": [
+          "OutreachEngineContext",
+          "HealerMixin",
+          "OutreachConfidenceLevel",
+          "OutreachLearningExample",
+          "OutreachInstruction",
+          "OutreachLearningLoop",
+          "OutreachConfidenceScorer",
+          "OutreachMemoryPersistence",
+          "OutreachLearningAgent"
+        ]
+      },
+      {
+        "file": "apps_lic/engines/OutreachProactiveAgent.py",
+        "status": "PASS",
+        "loc": 102,
+        "residual_classes": [
+          "OutreachEngineContext",
+          "OutreachProactiveAgent"
+        ]
+      },
+      {
+        "file": "apps_rg/reasoning/CampaignPlannerAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/L4_state/reasoning/CartographerAgent.py",
+        "status": "PASS",
+        "loc": 7,
+        "residual_classes": []
+      },
+      {
+        "file": "agentic_core/runtime/utils/discovery_util.py",
+        "status": "PASS",
+        "loc": 161,
+        "residual_classes": [
+          "AgentRegistry",
+          "Mock"
+        ]
+      }
+    ],
+    "failures": []
+  },
+  "phase_b": {
+    "InspectorExecutor": {
+      "executor": "InspectorExecutor",
+      "path": "agentic_core/L5_safety/reasoning/InspectorExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "dag_runtime",
+        "signature",
+        "token_budget"
+      ]
+    },
+    "RGValidationExecutor": {
+      "executor": "RGValidationExecutor",
+      "path": "apps_rg/engines/RGValidationExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "ats_compatibility",
+        "brand_compliance",
+        "fact_check",
+        "section_balance"
+      ]
+    },
+    "LICValidationExecutor": {
+      "executor": "LICValidationExecutor",
+      "path": "apps_lic/engines/LICValidationExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "campaign_balance",
+        "deliverability"
+      ]
+    },
+    "ObservabilityProbeExecutor": {
+      "executor": "ObservabilityProbeExecutor",
+      "path": "agentic_core/L6_observability/reasoning/ObservabilityProbeExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "cost_tracker",
+        "coordinator",
+        "strategic",
+        "deadlock",
+        "debate",
+        "runtime_telemetry"
+      ]
+    },
+    "RGStrategyExecutor": {
+      "executor": "RGStrategyExecutor",
+      "path": "apps_rg/engines/RGStrategyExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "content",
+        "strategic_planner",
+        "template_optimizer"
+      ]
+    },
+    "HOPPipelineExecutor": {
+      "executor": "HOPPipelineExecutor",
+      "path": "apps_lic/engines/HOPPipelineExecutor.py",
+      "status": "PASS",
+      "dispatch_keys": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ]
+    }
+  },
+  "phase_c": {
+    "hop_registry": {
+      "status": "PASS",
+      "registered": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "missing": []
+    },
+    "observability": {
+      "status": "PASS",
+      "probes_found": [
+        "coordinator",
+        "cost_tracker",
+        "deadlock",
+        "debate",
+        "runtime_telemetry",
+        "strategic"
+      ]
+    },
+    "rg_validation": {
+      "status": "PASS",
+      "rules_found": [
+        "ats_compatibility",
+        "brand_compliance",
+        "fact_check",
+        "section_balance"
+      ]
+    },
+    "lic_validation": {
+      "status": "PASS",
+      "rules_found": [
+        "campaign_balance",
+        "deliverability"
+      ]
+    }
+  },
+  "phase_d": {
+    "total_measured": 148,
+    "over_25": {},
+    "over_20": {
+      "SubAtomicRegistryAgent": 23,
+      "LocationHealerAgent": 22
+    },
+    "top_10": [
+      [
+        "SubAtomicRegistryAgent",
+        23
+      ],
+      [
+        "LocationHealerAgent",
+        22
+      ],
+      [
+        "FileClassificationAgent",
+        19
+      ],
+      [
+        "HierarchyAgent",
+        18
+      ],
+      [
+        "LocationValidatorAgent",
+        16
+      ],
+      [
+        "ArchitectureGovernorAgent",
+        15
+      ],
+      [
+        "FilesystemSSOTReconcilerAgent",
+        9
+      ],
+      [
+        "GovernanceAgent",
+        9
+      ],
+      [
+        "L5SafetyExerciserAgent",
+        9
+      ],
+      [
+        "HOPPipelineExecutor",
+        9
+      ]
+    ],
+    "executor_blast": {
+      "InspectorExecutor": 3,
+      "RGValidationExecutor": 4,
+      "LICValidationExecutor": 2,
+      "ObservabilityProbeExecutor": 6,
+      "RGStrategyExecutor": 3,
+      "HOPPipelineExecutor": 9
+    },
+    "status": "PASS"
+  },
+  "phase_e": {
+    "before": {
+      "L0": 6,
+      "L1": 12,
+      "L2": 11,
+      "L3": 14,
+      "L5": 84,
+      "L6": 14,
+      "apps_lic": 27,
+      "apps_rg": 12,
+      "apps_shared": 1,
+      "unknown": 9
+    },
+    "after": {
+      "L0": 6,
+      "L1": 11,
+      "L2": 9,
+      "L3": 13,
+      "L4": 6,
+      "L5": 77,
+      "L6": 8,
+      "apps_lic": 13,
+      "apps_rg": 4,
+      "apps_shared": 1,
+      "knowledge": 1
+    },
+    "l5_retention": "77/84",
+    "zero_layers": [],
+    "cross_layer_issues": [
+      "agentic_core/L2_execution/reasoning/RgStrategicPlannerAgent.py (agentic_core) \u2192 apps_rg.engines.RGStrategyExecutor (apps_rg)"
+    ],
+    "status": "PASS"
+  },
+  "phase_g": {
+    "true_classdefs_removed": 12,
+    "shimmed_aliases": 28,
+    "loc_before": 50703,
+    "loc_after": 46364,
+    "loc_reduction": 4339,
+    "node_before": 190,
+    "node_after": 149,
+    "node_reduction": 41,
+    "avg_bp_before": 0.263,
+    "avg_bp_after": 0.255,
+    "bp_shift": -0.007
+  },
+  "failures": [],
+  "warnings": [
+    "apps_lic/engines/MessageDiversityValidator.py has residual ClassDefs: ['HealerMixin', 'MessageDiversityValidator'] (partial retirement)",
+    "apps_lic/engines/LicReflectionAgent.py has residual ClassDefs: ['LicReflectionAgent'] (partial retirement)",
+    "apps_lic/engines/LicTemplateOptimizerAgent.py has residual ClassDefs: ['LicTemplateOptimizerAgent'] (partial retirement)",
+    "apps_lic/engines/MessageComplianceAgent.py has residual ClassDefs: ['MessageComplianceAgent'] (partial retirement)",
+    "apps_lic/engines/OutreachLearningAgent.py has residual ClassDefs: ['OutreachEngineContext', 'HealerMixin', 'OutreachConfidenceLevel', 'OutreachLearningExample', 'OutreachInstruction', 'OutreachLearningLoop', 'OutreachConfidenceScorer', 'OutreachMemoryPersistence', 'OutreachLearningAgent'] (partial retirement)",
+    "apps_lic/engines/OutreachProactiveAgent.py has residual ClassDefs: ['OutreachEngineContext', 'OutreachProactiveAgent'] (partial retirement)",
+    "agentic_core/runtime/utils/discovery_util.py has residual ClassDefs: ['AgentRegistry', 'Mock'] (partial retirement)",
+    "Cross-layer shim: agentic_core/L2_execution/reasoning/RgStrategicPlannerAgent.py (agentic_core) \u2192 apps_rg.engines.RGStrategyExecutor (apps_rg)"
+  ],
+  "failure_count": 0,
+  "warning_count": 8
+}

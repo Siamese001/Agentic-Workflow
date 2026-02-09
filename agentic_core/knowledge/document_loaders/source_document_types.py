@@ -3,7 +3,7 @@
 
 from pydantic import Field
 
-from agentic_core.config.base_entity_config import BaseEntity
+from agentic_core.config.core.base_entity_config import BaseEntity
 
 
 class SourceDocument(BaseEntity):

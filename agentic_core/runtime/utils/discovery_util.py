@@ -8,9 +8,7 @@ cataloging agents across the entire ecosystem.
 
 import ast
 import logging
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from agentic_core.core.classification_kernel import is_agent_file
 from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -18,26 +16,7 @@ from agentic_core.utils.ssot_discovery_validator import get_python_files
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class DiscoveredAgent:
-    """
-    Represents a discovered agent in the ecosystem.
-
-    Attributes:
-        name: The name of the agent class
-        layer: The architectural layer the agent belongs to
-        instance: An instance of the agent (if available)
-        class_ref: The class reference for the agent
-        file_path: Path to the file containing the agent
-        module_path: Python module path for imports
-    """
-
-    name: str
-    layer: str
-    instance: Any
-    class_ref: type
-    file_path: Path | None = None
-    module_path: str | None = None
+# RETIRED: DiscoveredAgent removed from active agent pool (2026-02-08)
 
 
 class AgentRegistry:

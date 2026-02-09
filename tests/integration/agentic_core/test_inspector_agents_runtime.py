@@ -6,7 +6,7 @@ Run with: pytest tests/integration/ -q
 
 Tests verify:
     1. Real inspector agents import and instantiate (MRO resolved)
-    2. InspectionCapability.diagnose() returns InspectionResult
+    2. InspectionCapability.run_inspection() returns InspectionResult
     3. Decorator canonical imports work at runtime with full dep chain
     4. Shim identity holds at runtime
 
@@ -42,7 +42,7 @@ pytestmark = [
 
 
 # ---------------------------------------------------------------------------
-# Test: Real inspector agents import, instantiate, and diagnose
+# Test: Real inspector agents import, instantiate, and run_inspection
 # ---------------------------------------------------------------------------
 
 
@@ -60,10 +60,10 @@ class TestDagRuntimeInspectorAgent:
         from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
-        from agentic_core.mixins.inspection_capability import InspectionResult
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = DagRuntimeInspectorAgent()
-        result = agent.diagnose("test_target")
+        result = agent.run_inspection("test_target")
 
         assert isinstance(result, InspectionResult)
         assert isinstance(result.healthy, bool)
@@ -81,14 +81,14 @@ class TestTokenBudgetInspectorAgent:
 
         assert TokenBudgetInspectorAgent is not None
 
-    def test_diagnose_returns_inspection_result(self) -> None:
+    def test_run_inspection_returns_inspection_result(self) -> None:
         from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
             TokenBudgetInspectorAgent,
         )
-        from agentic_core.mixins.inspection_capability import InspectionResult
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = TokenBudgetInspectorAgent()
-        result = agent.diagnose("test_target")
+        result = agent.run_inspection("test_target")
 
         assert isinstance(result, InspectionResult)
         assert isinstance(result.healthy, bool)
@@ -106,14 +106,14 @@ class TestSignatureVerifierAgent:
 
         assert SignatureVerifierAgent is not None
 
-    def test_diagnose_returns_inspection_result(self) -> None:
+    def test_run_inspection_returns_inspection_result(self) -> None:
         from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
             SignatureVerifierAgent,
         )
-        from agentic_core.mixins.inspection_capability import InspectionResult
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = SignatureVerifierAgent()
-        result = agent.diagnose("test_target")
+        result = agent.run_inspection("test_target")
 
         assert isinstance(result, InspectionResult)
         assert isinstance(result.healthy, bool)

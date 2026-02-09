@@ -42,6 +42,19 @@ _discovery_cache: dict[str, Any] = {}
 _cache_timestamp: float = 0.0
 
 
+def resolve_canonical_class(agent_entry: dict[str, Any]) -> str:
+    """Return the authoritative class name for an agent entry.
+
+    Identity rule: ``verification_status.class`` (AST-verified) is canonical.
+    ``class_name`` is non-authoritative / legacy display only.
+    """
+    vs = agent_entry.get("verification_status") or {}
+    ast_class = vs.get("class", "") or ""
+    if ast_class:
+        return ast_class
+    return agent_entry.get("class_name", "") or ""
+
+
 def load_agent_discovery(
     project_root: Path | None = None,
     force_reload: bool = False,
@@ -191,6 +204,9 @@ def get_agent_by_name(project_root: Path | None = None, name: str = None) -> dic
     for agent in agents:
         if agent.get("name", "") == name:
             return agent
+        # Prefer AST-verified class identity
+        if resolve_canonical_class(agent) == name:
+            return agent
         if agent.get("class_name", "") == name:
             return agent
 
@@ -213,7 +229,11 @@ def get_agent_names(project_root: Path | None = None) -> set[str]:
     for agent in agents:
         if "name" in agent:
             names.add(agent["name"])
-        if "class_name" in agent:
+        # Prefer AST-verified canonical class
+        canonical = resolve_canonical_class(agent)
+        if canonical:
+            names.add(canonical)
+        elif "class_name" in agent:
             names.add(agent["class_name"])
 
     return names
@@ -367,4 +387,5 @@ __all__ = [
     "get_data_files",
     "get_all_files",
     "invalidate_cache",
+    "resolve_canonical_class",
 ]

@@ -44,6 +44,9 @@ jobs:
               '--update-phantom-baseline',
               '--repair-phantom-baseline',
               '--acknowledge-import-change',
+              '--update-blueprint-hash',
+              '--acknowledge-debt',
+              '--acknowledge-optional-growth',
           ]
           with open('.github/workflows/ssot_verify.yml') as f:
               lines = f.read().splitlines()
@@ -74,3 +77,33 @@ jobs:
 
       - name: Run SSOT verifier
         run: python -m agentic_core.L5_safety.config.structure_blueprint._verify
+
+      - name: Validate enforcement report — no zero counters, no new debt
+        run: |
+          python3 -c "
+          import json, sys
+          report = json.load(open('docs/reports/verification/enforcement_report.json'))
+          errors = []
+          for check in report['checks']:
+              name = check['name']
+              stats = check['stats']
+              has_nonzero = any(isinstance(v, (int, float)) and v > 0 for v in stats.values())
+              if not has_nonzero:
+                  errors.append(f'{name}: all-zero stats (silent non-execution)')
+              if not check['passed']:
+                  errors.append(f'{name}: FAILED')
+          if errors:
+              for e in errors:
+                  print(f'FAIL: {e}')
+              sys.exit(1)
+          # Validate warning budget: unbudgeted warnings must be zero
+          summary = report['summary']
+          unbudgeted = summary.get('warnings_unbudgeted', 0)
+          if unbudgeted > 0:
+              errors.append(f'Unbudgeted warnings: {unbudgeted} (must be 0)')
+          print(f'PASS: {summary[\"total_checks\"]} checks, all passed with non-zero counters')
+          print(f'  errors={summary.get(\"errors\",\"?\")}, budgeted_warnings={summary.get(\"warnings_budgeted\",\"?\")}, unbudgeted_warnings={unbudgeted}')
+          "
+
+      - name: Run enforcement counter regression tests
+        run: python -m pytest tests/unit/structure_blueprint/test_enforcement_counters.py -xvv --tb=short

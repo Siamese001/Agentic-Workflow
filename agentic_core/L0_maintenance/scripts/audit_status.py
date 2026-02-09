@@ -89,7 +89,7 @@ def validate_config_ssot(target_path: str) -> tuple[float, list[str]]:
     if not env_path.exists():
         return 0.0, ["CRITICAL: Neural Link Offline - .env Missing"]
 
-    from agentic_core.config.env_loader import get_env
+    from agentic_core.config.core.env_loader import get_env
 
     env = get_env(Path(target_path))
     required = ["GEMINI_API_KEY", "GEMINI_MODEL"]

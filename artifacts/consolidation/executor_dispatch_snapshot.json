@@ -1,0 +1,36 @@
+{
+  "_version": "1.0.0",
+  "_description": "Canonical dispatch key snapshot for all 6 executors. Changes require DISPATCH_SNAPSHOT_BUMP:<reason> commit tag.",
+  "executors": {
+    "RGValidationExecutor": {
+      "module": "apps_rg.engines.RGValidationExecutor",
+      "dispatch_field": "rule_set",
+      "keys": ["ats_compatibility", "brand_compliance", "fact_check", "generic", "section_balance"]
+    },
+    "RGStrategyExecutor": {
+      "module": "apps_rg.engines.RGStrategyExecutor",
+      "dispatch_field": "strategy_type",
+      "keys": ["content", "generic", "strategic_planner", "template_optimizer"]
+    },
+    "LICValidationExecutor": {
+      "module": "apps_lic.engines.LICValidationExecutor",
+      "dispatch_field": "rule_set",
+      "keys": ["campaign_balance", "deliverability", "generic"]
+    },
+    "HOPPipelineExecutor": {
+      "module": "apps_lic.engines.HOPPipelineExecutor",
+      "dispatch_field": "stage_id",
+      "keys": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    },
+    "ObservabilityProbeExecutor": {
+      "module": "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
+      "dispatch_field": "probe_type",
+      "keys": ["coordinator", "cost_tracker", "deadlock", "debate", "generic", "runtime_telemetry", "strategic"]
+    },
+    "InspectorExecutor": {
+      "module": "agentic_core.L5_safety.reasoning.InspectorExecutor",
+      "dispatch_field": "inspector_type",
+      "keys": ["dag_runtime", "generic", "signature", "token_budget"]
+    }
+  }
+}

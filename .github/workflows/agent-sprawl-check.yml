@@ -34,6 +34,113 @@ jobs:
         run: |
           python artifacts/dedup/run_dedup_analysis.py
 
+      # ── Phase 1: SSOT enforcement (must pass before dependent gates) ──
+      - name: Enforce Manifest SSOT Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/manifest_ssot_check.py
+
+      - name: Enforce Active Set SSOT Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/active_set_ssot_check.py
+
+      - name: Validate Target Manifest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python artifacts/consolidation/validate_target_manifest.py
+
+      # ── Phase 2: Discovery / active-set gates ──
+      - name: Enforce Shim Contract Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/shim_contract_check.py
+
+      - name: Enforce Agent Count Cap
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/agent_count_cap.py
+
+      - name: Discovery Registry Consistency Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/discovery_registry_consistency_check.py
+
+      # ── Phase 3: Remaining gates ──
+      - name: Enforce MRO Diamond Contract
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          python ops_scripts/ci/mro_contract_check.py
+
+      - name: Enforce Init Contract
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/init_contract_check.py
+
+      - name: Enforce Skip/Quarantine Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/skip_quarantine_check.py
+
+      - name: Enforce Centrality Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/centrality_gate.py
+
+      # ── Phase 4: Test suites ──
+      - name: Executor Smoke Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_executor_smoke.py -xvv
+
+      - name: Discovery Canonical Identity Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/unit/core/test_discovery_canonical_identity.py -xvv
+
+      - name: Discovery Registry Consistency Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/unit/core/test_discovery_registry_consistency.py -xvv
+
+      - name: Executor Dispatch Snapshot Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_executor_dispatch_snapshot.py -xvv
+
+      - name: Executor Dispatch Runtime Equivalence Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_executor_dispatch_runtime_equivalence.py -xvv
+
+      - name: Active Set Fingerprint Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_active_set_fingerprint.py -xvv
+
+      - name: Active Set SSOT Check Unit Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_active_set_ssot_check.py -xvv
+
       - name: Enforce Sprawl Gate
         env:
           PYTHONPATH: ${{ github.workspace }}

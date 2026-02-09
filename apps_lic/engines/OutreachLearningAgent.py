@@ -25,12 +25,8 @@ import json
 from datetime import datetime
 from enum import Enum
 
-
 # STUB: OutreachAgent base class (deprecated)
-class OutreachAgent:
-    """Legacy base class - use LICAgentBase instead."""
-
-    pass
+# RETIRED: OutreachAgent removed from active agent pool (2026-02-08)
 
 
 class HealerMixin:

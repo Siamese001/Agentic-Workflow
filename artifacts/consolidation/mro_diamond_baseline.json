@@ -1,0 +1,1032 @@
+{
+  "version": "1.0.0",
+  "total": 92,
+  "entries": [
+    {
+      "file": "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py",
+      "line": 149,
+      "class": "BenchmarkingAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L0_maintenance/reasoning/DocstringComplianceAgent.py",
+      "line": 24,
+      "class": "DocstringComplianceAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L0_maintenance/scripts/integrity_gate_executor.py",
+      "line": 300,
+      "class": "IntegrityGateExecutorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
+      "line": 60,
+      "class": "ASTValidatorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/AutonomousPromptEvolutionAgent.py",
+      "line": 34,
+      "class": "AutonomousPromptEvolutionAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/BudgetAgent.py",
+      "line": 26,
+      "class": "BudgetAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/LLMPromptGovernorAgent.py",
+      "line": 40,
+      "class": "LLMPromptGovernorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",
+      "line": 38,
+      "class": "MetaLearningAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/SherlockAgent.py",
+      "line": 41,
+      "class": "SherlockAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/SovereignCognitivePlaneAgent.py",
+      "line": 32,
+      "class": "AgentInfo",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/SovereignCognitivePlaneAgent.py",
+      "line": 94,
+      "class": "SovereignCognitivePlaneAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py",
+      "line": 40,
+      "class": "StrategicRecommendationAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L1_cognition/reasoning/SupremeCourtAgent.py",
+      "line": 21,
+      "class": "SupremeCourt",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
+      "line": 51,
+      "class": "EmbeddingSovereignAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/HistorianAgent.py",
+      "line": 54,
+      "class": "HistorianAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/PeerIntelligenceAuditorAgent.py",
+      "line": 104,
+      "class": "PeerIntelligenceAuditorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
+      "line": 26,
+      "class": "SovereignMCPGateway",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/SovereignPineconeMcpClientAgent.py",
+      "line": 22,
+      "class": "SovereignPineconeMcpClientAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/StructuredEngineAgent.py",
+      "line": 26,
+      "class": "StructuredEngineAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/sub_atomic_registry.py",
+      "line": 302,
+      "class": "SubAtomicRegistryAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
+      "line": 83,
+      "class": "ToolsmithAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L2_execution/reasoning/validation_orchestrator.py",
+      "line": 32,
+      "class": "ValidationOrchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/agent_gym_engine.py",
+      "line": 42,
+      "class": "AgentGym",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/context_curator_engine.py",
+      "line": 17,
+      "class": "ContextCurator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/coverage_engine.py",
+      "line": 45,
+      "class": "CoverageAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py",
+      "line": 211,
+      "class": "DAGMutatorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/dag_engine.py",
+      "line": 121,
+      "class": "DagEngineAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/decomposition_orchestrator.py",
+      "line": 54,
+      "class": "DecompositionOrchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/fission_manager.py",
+      "line": 34,
+      "class": "FissionManagerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+      "line": 25,
+      "class": "NervousSystemAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/orchestration_handshake.py",
+      "line": 29,
+      "class": "OrchestrationHandshakeAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py",
+      "line": 149,
+      "class": "Orchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/recursive_orchestrator.py",
+      "line": 84,
+      "class": "RecursiveOrchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/sovereign_mcp_router.py",
+      "line": 24,
+      "class": "SovereignMcpRouter",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/sovereign_rag_orchestrator.py",
+      "line": 44,
+      "class": "SovereignRagOrchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/sovereign_redis_orchestrator.py",
+      "line": 35,
+      "class": "SovereignRedisOrchestrator",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/state_management_engine.py",
+      "line": 100,
+      "class": "StateManagementAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+      "line": 20,
+      "class": "SubAtomicAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L4_state/reasoning/cached_state_ledger.py",
+      "line": 21,
+      "class": "CachedStateLedgerAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L4_state/reasoning/checkpoint_manager.py",
+      "line": 109,
+      "class": "CheckpointManagerAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L4_state/reasoning/gravity_state_store.py",
+      "line": 61,
+      "class": "GravityStateAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/enforcement/verification_gate.py",
+      "line": 23,
+      "class": "VerificationGate",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
+      "line": 68,
+      "class": "AdversarialRedTeamerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py",
+      "line": 38,
+      "class": "AutonomousThreatEvolutionAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py",
+      "line": 35,
+      "class": "AutonomyGuardianAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+      "line": 133,
+      "class": "CodeHealerAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/CompositeGuardrailAgent.py",
+      "line": 297,
+      "class": "CompositeGuardrailAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py",
+      "line": 44,
+      "class": "CredentialScannerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/DocumentationAgent.py",
+      "line": 25,
+      "class": "DocumentationAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py",
+      "line": 40,
+      "class": "DynamicSealAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
+      "line": 107,
+      "class": "GenerativeGuardAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/GitSafetyHandlerAgent.py",
+      "line": 37,
+      "class": "GitSafetyHandlerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+      "line": 326,
+      "class": "GovernanceAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/HierarchyAgent.py",
+      "line": 57,
+      "class": "HierarchyAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
+      "line": 57,
+      "class": "HygieneGuardianAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py",
+      "line": 38,
+      "class": "InterfaceBoundaryAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/MCPGuardianAgent.py",
+      "line": 35,
+      "class": "MCPGuardianAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/NamingAgent.py",
+      "line": 53,
+      "class": "NamingAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+      "line": 34,
+      "class": "PolicyNeuralAutoImmuneAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
+      "line": 59,
+      "class": "PreCommitSovereignAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py",
+      "line": 82,
+      "class": "PredictiveCostAuditorAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/RagHealthCheckAgent.py",
+      "line": 35,
+      "class": "RagHealthCheckAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
+      "line": 49,
+      "class": "RedTeamAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
+      "line": 29,
+      "class": "RegressionOracleAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+      "line": 174,
+      "class": "SafetyInspectorAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
+      "line": 142,
+      "class": "SelfUpdatingSafetyEngineAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py",
+      "line": 31,
+      "class": "SprawlInspectorAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py",
+      "line": 37,
+      "class": "StructuralEngineerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py",
+      "line": 85,
+      "class": "StructuralValidatorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py",
+      "line": 83,
+      "class": "StructureHealerAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py",
+      "line": 40,
+      "class": "TerritoryChangeHandlerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/TestCoverageGuardianAgent.py",
+      "line": 41,
+      "class": "TestCoverageGuardianAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py",
+      "line": 36,
+      "class": "TestGeneratorAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py",
+      "line": 26,
+      "class": "TypeHintFixerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py",
+      "line": 23,
+      "class": "TypeMechanicAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/AutonomicMonitorAgent.py",
+      "line": 34,
+      "class": "AutonomicMonitorAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/MetricsAgent.py",
+      "line": 46,
+      "class": "MetricsAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/PerformanceAnalystAgent.py",
+      "line": 42,
+      "class": "PerformanceAnalystAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/SovereignObservabilityAgent.py",
+      "line": 20,
+      "class": "SovereignObservabilityAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/TelemetryAgent.py",
+      "line": 51,
+      "class": "TelemetryAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "agentic_core/L6_observability/reasoning/TracingAgent.py",
+      "line": 122,
+      "class": "TracingAgent",
+      "redundant_mixins": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/LicReflectionAgent.py",
+      "line": 19,
+      "class": "LicReflectionAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/LicTemplateOptimizerAgent.py",
+      "line": 19,
+      "class": "LicTemplateOptimizerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/MessageComplianceAgent.py",
+      "line": 19,
+      "class": "MessageComplianceAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/MessageDiversityValidator.py",
+      "line": 25,
+      "class": "MessageDiversityValidator",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/OutreachLearningAgent.py",
+      "line": 311,
+      "class": "OutreachLearningAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/OutreachProactiveAgent.py",
+      "line": 29,
+      "class": "OutreachProactiveAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/OutreachSignalRouterAgent.py",
+      "line": 99,
+      "class": "OutreachSignalRouterAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/PIISanitizerSpecialistAgent.py",
+      "line": 75,
+      "class": "BiasDetectorSpecialist",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "LICAgentBase"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/PIISanitizerSpecialistAgent.py",
+      "line": 134,
+      "class": "PromptInjectionDetectorSpecialist",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "LICAgentBase"
+      ]
+    },
+    {
+      "file": "apps_lic/engines/PIISanitizerSpecialistAgent.py",
+      "line": 218,
+      "class": "ConstitutionalReviewerAgent",
+      "redundant_mixins": [
+        "SubatomicTestingMixin"
+      ],
+      "carriers": [
+        "LICAgentBase"
+      ]
+    },
+    {
+      "file": "apps_shared/utils/AppBase.py",
+      "line": 51,
+      "class": "AppBase",
+      "redundant_mixins": [
+        "AtomicExecutionMixin"
+      ],
+      "carriers": [
+        "SovereignBaseAgent"
+      ]
+    }
+  ]
+}

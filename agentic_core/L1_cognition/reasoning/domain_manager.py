@@ -16,7 +16,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L1_cognition.reasoning.types.domain_types import (
+from agentic_core.L1_cognition.types.domain_types import (
     DomainContext,
     SharingPolicy,
 )

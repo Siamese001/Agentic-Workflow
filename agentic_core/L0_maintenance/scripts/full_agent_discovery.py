@@ -366,6 +366,19 @@ def perform_deep_integrity_scan(
             "selection_reason": report.selection_reason,
             "parse_error": report.parse_error,
         }
+        # Emit canonical identity fields at top level.
+        # canonical_class: AST-verified class name (authoritative; class_name is legacy display only).
+        # canonical_file: repo-relative path, forward-slash normalized (§20).
+        # canonical_agent_id: unique identifier (class_name if it differs from canonical_class).
+        if report.class_name:
+            agent_entry["canonical_class"] = report.class_name
+        canon_path = rel_path.replace("\\", "/")
+        if canon_path.startswith("./"):
+            canon_path = canon_path[2:]
+        agent_entry["canonical_file"] = canon_path
+        agent_entry["canonical_agent_id"] = (
+            report.class_name if report.class_name else agent_entry.get("class_name", "")
+        )
 
         if report.is_valid:
             stats["verified"] += 1

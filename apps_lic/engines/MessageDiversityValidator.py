@@ -12,10 +12,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 # STUBS: Legacy mixins (use LICAgentBase instead)
-class MCPHardenedMixin:
-    """Legacy mixin - use LICAgentBase instead."""
-
-    pass
+# RETIRED: MCPHardenedMixin removed from active agent pool (2026-02-08)
 
 
 class HealerMixin:

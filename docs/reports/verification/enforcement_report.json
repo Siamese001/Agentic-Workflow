@@ -1,0 +1,193 @@
+{
+  "timestamp": "2026-02-09T03:49:28.207492+00:00",
+  "verifier_version": "4.5.0",
+  "overall_passed": true,
+  "checks": [
+    {
+      "name": "territory_diff",
+      "passed": true,
+      "violations": [
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/agents",
+          "severity": "warning",
+          "detail": "Optional subfolder 'agents' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/common_utils",
+          "severity": "warning",
+          "detail": "Optional subfolder 'common_utils' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/core_components",
+          "severity": "warning",
+          "detail": "Optional subfolder 'core_components' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/integration",
+          "severity": "warning",
+          "detail": "Optional subfolder 'integration' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/llm",
+          "severity": "warning",
+          "detail": "Optional subfolder 'llm' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/mixins",
+          "severity": "warning",
+          "detail": "Optional subfolder 'mixins' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "apps_shared/tools",
+          "severity": "warning",
+          "detail": "Optional subfolder 'tools' is declared in blueprint but missing on disk for 'apps_shared'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "tests/unit/utils",
+          "severity": "warning",
+          "detail": "Optional subfolder 'utils' is declared in blueprint but missing on disk for 'tests/unit'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "tests/e2e/snapshots",
+          "severity": "warning",
+          "detail": "Optional subfolder 'snapshots' is declared in blueprint but missing on disk for 'tests/e2e'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "tests/fixtures/data",
+          "severity": "warning",
+          "detail": "Optional subfolder 'data' is declared in blueprint but missing on disk for 'tests/fixtures'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "tests/fixtures/factories",
+          "severity": "warning",
+          "detail": "Optional subfolder 'factories' is declared in blueprint but missing on disk for 'tests/fixtures'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "tests/fixtures/mocks",
+          "severity": "warning",
+          "detail": "Optional subfolder 'mocks' is declared in blueprint but missing on disk for 'tests/fixtures'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "data/archives",
+          "severity": "warning",
+          "detail": "Optional subfolder 'archives' is declared in blueprint but missing on disk for 'data'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "data/cache",
+          "severity": "warning",
+          "detail": "Optional subfolder 'cache' is declared in blueprint but missing on disk for 'data'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "docs/reports/coverage",
+          "severity": "warning",
+          "detail": "Optional subfolder 'coverage' is declared in blueprint but missing on disk for 'docs/reports'"
+        },
+        {
+          "type": "missing_optional_subfolder",
+          "path": "docs/reports/telemetry",
+          "severity": "warning",
+          "detail": "Optional subfolder 'telemetry' is declared in blueprint but missing on disk for 'docs/reports'"
+        }
+      ],
+      "stats": {
+        "territories_checked": 27,
+        "undeclared_count": 0,
+        "missing_required_count": 0,
+        "missing_optional_count": 16,
+        "missing_optional_ceiling": 20
+      }
+    },
+    {
+      "name": "leaf_node",
+      "passed": true,
+      "violations": [],
+      "stats": {
+        "territories_checked": 3,
+        "root_py_files_found": 0
+      }
+    },
+    {
+      "name": "volatile_rules",
+      "passed": true,
+      "violations": [],
+      "stats": {
+        "volatile_territories": 4,
+        "inbound_violations": 0
+      }
+    },
+    {
+      "name": "mixin_ast",
+      "passed": true,
+      "violations": [],
+      "stats": {
+        "files_checked": 50,
+        "naming_violations": 0,
+        "flat_violations": 0,
+        "ast_violations": 0
+      }
+    },
+    {
+      "name": "blueprint_hash",
+      "passed": true,
+      "violations": [],
+      "stats": {
+        "files_hashed": 20,
+        "hash_match": true,
+        "updated": false
+      }
+    },
+    {
+      "name": "cross_layer",
+      "passed": true,
+      "violations": [
+        {
+          "type": "config_execution_violation",
+          "path": "agentic_core/config/core/gateway_config.py",
+          "severity": "warning",
+          "detail": "config/ file 'agentic_core/config/core/gateway_config.py' imports 'agentic_core.L2_execution.enforcement.SovereignLLMGateway' (line 70) \u2014 config/ must not import execution layers [KNOWN DEBT: lazy import inside try/except]"
+        },
+        {
+          "type": "config_execution_violation",
+          "path": "agentic_core/config/core/gateway_config.py",
+          "severity": "warning",
+          "detail": "config/ file 'agentic_core/config/core/gateway_config.py' imports 'agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent' (line 85) \u2014 config/ must not import execution layers [KNOWN DEBT: lazy import inside try/except]"
+        }
+      ],
+      "stats": {
+        "total_edges": 3344,
+        "internal_edges": 2905,
+        "cross_layer_edges_analyzed": 14,
+        "core_stdlib_violations": 0,
+        "utils_mixin_violations": 0,
+        "config_execution_violations": 2,
+        "known_debt_items": 2,
+        "debt_ceiling": 2,
+        "warning_count": 2
+      }
+    }
+  ],
+  "summary": {
+    "total_checks": 6,
+    "passed": 6,
+    "failed": 0,
+    "total_violations": 18,
+    "errors": 0,
+    "warnings_budgeted": 18,
+    "warnings_unbudgeted": 0
+  }
+}

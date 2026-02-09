@@ -1,0 +1,55 @@
+"""
+TokenBudgetInspectorAgent - Diagnostics for token budget consumption.
+
+Refactored: 2026-02-08 (Cluster 1B — InspectionCapability extraction)
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.mixins.inspection_capability_mixin import (
+    InspectionCapability,
+    InspectionResult,
+)
+
+Logger: Any = logging.getLogger(__name__)
+
+
+class TokenBudgetInspectorAgent(
+    InspectionCapability,
+    SovereignBaseAgent,
+):
+    """Diagnostics inspector for token budget consumption."""
+
+    INSPECTION_LOG_PREFIX = "Running token budget diagnostics..."
+
+    def __init__(self, inspector_config: dict[str, Any] | None = None) -> None:
+        """Initialize the inspector."""
+        super().__init__()
+        self._inspector_config = inspector_config or {}
+        Logger.info("Initialized %s", self.__class__.__name__)
+
+    # perform_checks() inherited from InspectionCapability (default structural checks).
+    # Override here when domain-specific token budget logic is added.
+
+    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
+        """Run diagnostics via InspectionCapability harness."""
+        return self.run_inspection(target, context)
+
+    @standard_heal
+    def heal_repository(self, **kwargs: Any) -> dict[str, Any]:
+        """Invoke healing chain via super()."""
+        return super().heal_repository(**kwargs)
+
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal violations detected by TokenBudgetInspectorAgent."""
+        return self.make_heal_result(violation)
+
+
+def diagnose(target: Any, config: dict[str, Any] | None = None) -> InspectionResult:
+    """Convenience function for diagnostics."""
+    return TokenBudgetInspectorAgent(config).diagnose(target)

@@ -1,0 +1,3310 @@
+{
+  "total_agents": 190,
+  "archetype_counts": {
+    "ReasoningAgent": 107,
+    "WrapperProxyAgent": 22,
+    "PolicyGateAgent": 22,
+    "ObservabilityAgent": 12,
+    "StageAgent": 11,
+    "ValidationAgent": 6,
+    "OrchestratorAgent": 5,
+    "InspectionAgent": 3,
+    "ToolRunnerAgent": 2
+  },
+  "forced_consolidation_targets": [
+    {
+      "archetype": "ObservabilityAgent",
+      "count": 12,
+      "dominant_base_sig": "AtomicExecutionMixin+SovereignBaseAgent+SubatomicTestingMixin",
+      "sig_ratio": 0.5,
+      "forced": true
+    },
+    {
+      "archetype": "StageAgent",
+      "count": 11,
+      "dominant_base_sig": "HOPStageCapability+LICAgentBase+SubatomicTestingMixin",
+      "sig_ratio": 0.64,
+      "forced": true
+    },
+    {
+      "archetype": "ValidationAgent",
+      "count": 6,
+      "dominant_base_sig": "RGAgentBase+RGValidationCapability",
+      "sig_ratio": 0.67,
+      "forced": true
+    },
+    {
+      "archetype": "OrchestratorAgent",
+      "count": 5,
+      "dominant_base_sig": "SovereignBaseAgent",
+      "sig_ratio": 0.6,
+      "forced": true
+    }
+  ],
+  "archetypes": {
+    "ReasoningAgent": [
+      {
+        "class_name": "BenchmarkingAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L0",
+        "domain_logic_loc": 242,
+        "total_loc": 370,
+        "boilerplate_ratio": 0.1,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py"
+      },
+      {
+        "class_name": "FilesystemSSOTReconcilerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L0",
+        "domain_logic_loc": 1086,
+        "total_loc": 1067,
+        "boilerplate_ratio": 0.073,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "AutonomyMixin",
+          "SelfDiagnosisMixin",
+          "L0MaintenanceBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "AutonomyMixin",
+          "SelfDiagnosisMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py"
+      },
+      {
+        "class_name": "GospelSyncAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L0",
+        "domain_logic_loc": 65,
+        "total_loc": 135,
+        "boilerplate_ratio": 0.422,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "L0MaintenanceBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L0_maintenance/reasoning/GospelSyncAgent.py"
+      },
+      {
+        "class_name": "SSOTFolderCleanupAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L0",
+        "domain_logic_loc": 519,
+        "total_loc": 488,
+        "boilerplate_ratio": 0.176,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py"
+      },
+      {
+        "class_name": "ASTValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 212,
+        "total_loc": 394,
+        "boilerplate_ratio": 0.355,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "ASTValidatorBase",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py"
+      },
+      {
+        "class_name": "AutonomousPromptEvolutionAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 183,
+        "total_loc": 239,
+        "boilerplate_ratio": 0.297,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/AutonomousPromptEvolutionAgent.py"
+      },
+      {
+        "class_name": "BudgetAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 15,
+        "total_loc": 94,
+        "boilerplate_ratio": 0.681,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/BudgetAgent.py"
+      },
+      {
+        "class_name": "ContextCuratorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 213,
+        "total_loc": 385,
+        "boilerplate_ratio": 0.187,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/ContextCuratorAgent.py"
+      },
+      {
+        "class_name": "LLMPromptGovernorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 166,
+        "total_loc": 265,
+        "boilerplate_ratio": 0.377,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/LLMPromptGovernorAgent.py"
+      },
+      {
+        "class_name": "MetaLearningAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 121,
+        "total_loc": 197,
+        "boilerplate_ratio": 0.396,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py"
+      },
+      {
+        "class_name": "RgReflectionAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 258,
+        "total_loc": 340,
+        "boilerplate_ratio": 0.279,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/RgReflectionAgent.py"
+      },
+      {
+        "class_name": "SherlockAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 82,
+        "total_loc": 133,
+        "boilerplate_ratio": 0.353,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/SherlockAgent.py"
+      },
+      {
+        "class_name": "SovereignCognitivePlaneAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 29,
+        "total_loc": 167,
+        "boilerplate_ratio": 0.443,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/SovereignCognitivePlaneAgent.py"
+      },
+      {
+        "class_name": "StrategicRecommendationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 372,
+        "total_loc": 390,
+        "boilerplate_ratio": 0.151,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py"
+      },
+      {
+        "class_name": "SupremeCourt",
+        "archetype": "ReasoningAgent",
+        "layer": "L1",
+        "domain_logic_loc": 94,
+        "total_loc": 114,
+        "boilerplate_ratio": 0.149,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L1_cognition/reasoning/SupremeCourtAgent.py"
+      },
+      {
+        "class_name": "EmbeddingSovereignAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 148,
+        "total_loc": 285,
+        "boilerplate_ratio": 0.396,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "RedisCacheMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "RedisCacheMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py"
+      },
+      {
+        "class_name": "GitAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 275,
+        "total_loc": 414,
+        "boilerplate_ratio": 0.254,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/GitAgent.py"
+      },
+      {
+        "class_name": "HistorianAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 18,
+        "total_loc": 160,
+        "boilerplate_ratio": 0.588,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L2_execution/reasoning/HistorianAgent.py"
+      },
+      {
+        "class_name": "PeerIntelligenceAuditorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 191,
+        "total_loc": 350,
+        "boilerplate_ratio": 0.266,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/PeerIntelligenceAuditorAgent.py"
+      },
+      {
+        "class_name": "RgStrategicPlannerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 83,
+        "total_loc": 134,
+        "boilerplate_ratio": 0.433,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L2_execution/reasoning/RgStrategicPlannerAgent.py"
+      },
+      {
+        "class_name": "SovereignPineconeMcpClientAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 196,
+        "total_loc": 224,
+        "boilerplate_ratio": 0.049,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/SovereignPineconeMcpClientAgent.py"
+      },
+      {
+        "class_name": "StructuredEngineAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 20,
+        "total_loc": 37,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/StructuredEngineAgent.py"
+      },
+      {
+        "class_name": "SubAtomicRegistryAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 116,
+        "total_loc": 391,
+        "boilerplate_ratio": 0.176,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L2_execution/reasoning/sub_atomic_registry.py"
+      },
+      {
+        "class_name": "ToolsmithAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L2",
+        "domain_logic_loc": 309,
+        "total_loc": 472,
+        "boilerplate_ratio": 0.222,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/ToolsmithAgent.py"
+      },
+      {
+        "class_name": "AgentFactory",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 79,
+        "total_loc": 155,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/AgentFactory.py"
+      },
+      {
+        "class_name": "AgentGym",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 273,
+        "total_loc": 339,
+        "boilerplate_ratio": 0.086,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/agent_gym_engine.py"
+      },
+      {
+        "class_name": "ContextCurator",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 209,
+        "total_loc": 249,
+        "boilerplate_ratio": 0.076,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/context_curator_engine.py"
+      },
+      {
+        "class_name": "CoverageAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 116,
+        "total_loc": 261,
+        "boilerplate_ratio": 0.559,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/coverage_engine.py"
+      },
+      {
+        "class_name": "DAGMutatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 262,
+        "total_loc": 412,
+        "boilerplate_ratio": 0.233,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py"
+      },
+      {
+        "class_name": "NervousSystemAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 570,
+        "total_loc": 662,
+        "boilerplate_ratio": 0.319,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py"
+      },
+      {
+        "class_name": "OmniContext",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 57,
+        "total_loc": 52,
+        "boilerplate_ratio": 0.077,
+        "all_bases": [
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L3_orchestration/reasoning/omni_context_engine.py"
+      },
+      {
+        "class_name": "SovereignMcpRouter",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 238,
+        "total_loc": 269,
+        "boilerplate_ratio": 0.019,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/sovereign_mcp_router.py"
+      },
+      {
+        "class_name": "SubatomicHopAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 266,
+        "total_loc": 365,
+        "boilerplate_ratio": 0.219,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+      },
+      {
+        "class_name": "UnifiedAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L3",
+        "domain_logic_loc": 51,
+        "total_loc": 694,
+        "boilerplate_ratio": 0.037,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py"
+      },
+      {
+        "class_name": "AdversarialProbeAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 146,
+        "total_loc": 196,
+        "boilerplate_ratio": 0.173,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py"
+      },
+      {
+        "class_name": "AdversarialRedTeamerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 386,
+        "total_loc": 497,
+        "boilerplate_ratio": 0.105,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py"
+      },
+      {
+        "class_name": "ArchitectureGovernorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 1255,
+        "total_loc": 1218,
+        "boilerplate_ratio": 0.185,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py"
+      },
+      {
+        "class_name": "AutonomousThreatEvolutionAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 79,
+        "total_loc": 149,
+        "boilerplate_ratio": 0.369,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "run",
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py"
+      },
+      {
+        "class_name": "BoundaryTestingAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 161,
+        "total_loc": 219,
+        "boilerplate_ratio": 0.16,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py"
+      },
+      {
+        "class_name": "ChaosEngineeringAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 139,
+        "total_loc": 192,
+        "boilerplate_ratio": 0.172,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py"
+      },
+      {
+        "class_name": "CodeDeduplicationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 642,
+        "total_loc": 814,
+        "boilerplate_ratio": 0.276,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+      },
+      {
+        "class_name": "CodeDetectorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 120,
+        "total_loc": 226,
+        "boilerplate_ratio": 0.265,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py"
+      },
+      {
+        "class_name": "CodeEnforcerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 261,
+        "total_loc": 415,
+        "boilerplate_ratio": 0.243,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py"
+      },
+      {
+        "class_name": "CodeHealerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 439,
+        "total_loc": 611,
+        "boilerplate_ratio": 0.167,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "CircuitBreakerMixin",
+          "SurgicalCSTHealerMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "CircuitBreakerMixin",
+          "SurgicalCSTHealerMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"
+      },
+      {
+        "class_name": "CodeValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 294,
+        "total_loc": 447,
+        "boilerplate_ratio": 0.228,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py"
+      },
+      {
+        "class_name": "CognitiveDispositionAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 79,
+        "total_loc": 207,
+        "boilerplate_ratio": 0.614,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py"
+      },
+      {
+        "class_name": "ComplexityAnalyzerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 101,
+        "total_loc": 211,
+        "boilerplate_ratio": 0.218,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py"
+      },
+      {
+        "class_name": "ConstitutionalReviewerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 69,
+        "total_loc": 126,
+        "boilerplate_ratio": 0.349,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "L5SafetyBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py"
+      },
+      {
+        "class_name": "CostGovernorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 22,
+        "total_loc": 114,
+        "boilerplate_ratio": 0.596,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py"
+      },
+      {
+        "class_name": "CredentialScannerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 167,
+        "total_loc": 389,
+        "boilerplate_ratio": 0.352,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py"
+      },
+      {
+        "class_name": "DDDAlignmentAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 131,
+        "total_loc": 429,
+        "boilerplate_ratio": 0.266,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py"
+      },
+      {
+        "class_name": "DependencyPruningAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 89,
+        "total_loc": 178,
+        "boilerplate_ratio": 0.427,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py"
+      },
+      {
+        "class_name": "DocumentationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 58,
+        "total_loc": 113,
+        "boilerplate_ratio": 0.398,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py"
+      },
+      {
+        "class_name": "DuplicateCodeDetectorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 280,
+        "total_loc": 361,
+        "boilerplate_ratio": 0.183,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "HealerMixin",
+          "MCPHardenedMixin"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "HealerMixin",
+          "MCPHardenedMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+      },
+      {
+        "class_name": "FileClassificationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 3842,
+        "total_loc": 3100,
+        "boilerplate_ratio": 0.077,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+      },
+      {
+        "class_name": "GitHygieneAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 119,
+        "total_loc": 248,
+        "boilerplate_ratio": 0.577,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py"
+      },
+      {
+        "class_name": "GovernanceAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 551,
+        "total_loc": 988,
+        "boilerplate_ratio": 0.206,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py"
+      },
+      {
+        "class_name": "GravityLeakRepairAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 186,
+        "total_loc": 345,
+        "boilerplate_ratio": 0.53,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"
+      },
+      {
+        "class_name": "HealValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 202,
+        "total_loc": 291,
+        "boilerplate_ratio": 0.186,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/HealValidatorAgent.py"
+      },
+      {
+        "class_name": "HierarchyAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 1339,
+        "total_loc": 1314,
+        "boilerplate_ratio": 0.173,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/HierarchyAgent.py"
+      },
+      {
+        "class_name": "InterfaceBoundaryAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 56,
+        "total_loc": 131,
+        "boilerplate_ratio": 0.412,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py"
+      },
+      {
+        "class_name": "LocationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 24,
+        "total_loc": 53,
+        "boilerplate_ratio": 0.132,
+        "all_bases": [
+          "LocationHealerAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/LocationAgent.py"
+      },
+      {
+        "class_name": "LocationHealerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 2184,
+        "total_loc": 2064,
+        "boilerplate_ratio": 0.089,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"
+      },
+      {
+        "class_name": "LocationValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 721,
+        "total_loc": 614,
+        "boilerplate_ratio": 0.037,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/LocationValidatorAgent.py"
+      },
+      {
+        "class_name": "NamingAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 28,
+        "total_loc": 106,
+        "boilerplate_ratio": 0.368,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/NamingAgent.py"
+      },
+      {
+        "class_name": "PIISanitizerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 54,
+        "total_loc": 128,
+        "boilerplate_ratio": 0.344,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/PIISanitizerAgent.py"
+      },
+      {
+        "class_name": "PineconeSovereignAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 444,
+        "total_loc": 504,
+        "boilerplate_ratio": 0.272,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/PineconeSovereignAgent.py"
+      },
+      {
+        "class_name": "PreCommitSovereignAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 217,
+        "total_loc": 322,
+        "boilerplate_ratio": 0.242,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "L0MaintenanceBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py"
+      },
+      {
+        "class_name": "PredictiveCostAuditorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 248,
+        "total_loc": 400,
+        "boilerplate_ratio": 0.223,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py"
+      },
+      {
+        "class_name": "PromptRegistryAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 215,
+        "total_loc": 311,
+        "boilerplate_ratio": 0.116,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/PromptRegistryAgent.py"
+      },
+      {
+        "class_name": "RagHealthCheckAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 129,
+        "total_loc": 181,
+        "boilerplate_ratio": 0.282,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/RagHealthCheckAgent.py"
+      },
+      {
+        "class_name": "RedSentinelAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 182,
+        "total_loc": 315,
+        "boilerplate_ratio": 0.232,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py"
+      },
+      {
+        "class_name": "RedTeamAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 124,
+        "total_loc": 294,
+        "boilerplate_ratio": 0.456,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/RedTeamAgent.py"
+      },
+      {
+        "class_name": "RegressionOracleAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 218,
+        "total_loc": 323,
+        "boilerplate_ratio": 0.334,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py"
+      },
+      {
+        "class_name": "ReportLocationAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 148,
+        "total_loc": 246,
+        "boilerplate_ratio": 0.268,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py"
+      },
+      {
+        "class_name": "ResourceManagerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 177,
+        "total_loc": 291,
+        "boilerplate_ratio": 0.148,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py"
+      },
+      {
+        "class_name": "RootHygieneAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 173,
+        "total_loc": 280,
+        "boilerplate_ratio": 0.332,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/RootHygieneAgent.py"
+      },
+      {
+        "class_name": "SecurityManagerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 205,
+        "total_loc": 328,
+        "boilerplate_ratio": 0.192,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py"
+      },
+      {
+        "class_name": "SovereignActionPlaneAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 212,
+        "total_loc": 427,
+        "boilerplate_ratio": 0.162,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "IActionPlane"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+      },
+      {
+        "class_name": "SprawlInspectorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 54,
+        "total_loc": 138,
+        "boilerplate_ratio": 0.406,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py"
+      },
+      {
+        "class_name": "StructuralEngineerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 190,
+        "total_loc": 243,
+        "boilerplate_ratio": 0.119,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "SubatomicTestingMixin",
+          "HealerMixin"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "HealerMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py"
+      },
+      {
+        "class_name": "StructuralValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 155,
+        "total_loc": 258,
+        "boilerplate_ratio": 0.217,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py"
+      },
+      {
+        "class_name": "StructureEnforcerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 272,
+        "total_loc": 414,
+        "boilerplate_ratio": 0.191,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py"
+      },
+      {
+        "class_name": "StructureHealerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 284,
+        "total_loc": 399,
+        "boilerplate_ratio": 0.238,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py"
+      },
+      {
+        "class_name": "SystemArchitectAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 334,
+        "total_loc": 364,
+        "boilerplate_ratio": 0.107,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py"
+      },
+      {
+        "class_name": "TestGeneratorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 249,
+        "total_loc": 247,
+        "boilerplate_ratio": 0.061,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py"
+      },
+      {
+        "class_name": "ToxicDependencyAuditor",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 99,
+        "total_loc": 144,
+        "boilerplate_ratio": 0.299,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py"
+      },
+      {
+        "class_name": "TypeHintFixerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 36,
+        "total_loc": 56,
+        "boilerplate_ratio": 0.161,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "NodeTransformer"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py"
+      },
+      {
+        "class_name": "TypeMechanicAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "L5",
+        "domain_logic_loc": 144,
+        "total_loc": 174,
+        "boilerplate_ratio": 0.109,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py"
+      },
+      {
+        "class_name": "OutreachSignalRouterAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 56,
+        "total_loc": 358,
+        "boilerplate_ratio": 0.056,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/OutreachSignalRouterAgent.py"
+      },
+      {
+        "class_name": "OutreachValidationExecutorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 357,
+        "total_loc": 402,
+        "boilerplate_ratio": 0.256,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/OutreachValidationExecutorAgent.py"
+      },
+      {
+        "class_name": "PII_SanitizerSpecialistAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 20,
+        "total_loc": 205,
+        "boilerplate_ratio": 0.015,
+        "all_bases": [
+          "LICAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "apps_lic/engines/PIISanitizerSpecialistAgent.py"
+      },
+      {
+        "class_name": "ValidatorAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 26,
+        "total_loc": 38,
+        "boilerplate_ratio": 0.079,
+        "all_bases": [
+          "LICAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/ValidatorAgent.py"
+      },
+      {
+        "class_name": "ContentQualityAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 173,
+        "total_loc": 305,
+        "boilerplate_ratio": 0.115,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/ContentQualityAgent.py"
+      },
+      {
+        "class_name": "ProactiveAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 56,
+        "total_loc": 87,
+        "boilerplate_ratio": 0.345,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/ProactiveAgent.py"
+      },
+      {
+        "class_name": "RgReflectionAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 158,
+        "total_loc": 189,
+        "boilerplate_ratio": 0.127,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/RgReflectionAgent.py"
+      },
+      {
+        "class_name": "RgStrategicPlannerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 44,
+        "total_loc": 73,
+        "boilerplate_ratio": 0.315,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/RgStrategicPlannerAgent.py"
+      },
+      {
+        "class_name": "RgTemplateOptimizerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 54,
+        "total_loc": 93,
+        "boilerplate_ratio": 0.247,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/RgTemplateOptimizerAgent.py"
+      },
+      {
+        "class_name": "AppBase",
+        "archetype": "ReasoningAgent",
+        "layer": "apps_shared",
+        "domain_logic_loc": 55,
+        "total_loc": 96,
+        "boilerplate_ratio": 0.115,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "MetaLearningMixin",
+          "SovereignBaseAgent",
+          "HealerMixin"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "MetaLearningMixin",
+          "HealerMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "apps_shared/utils/AppBase.py"
+      },
+      {
+        "class_name": "CachedStateLedgerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 118,
+        "total_loc": 159,
+        "boilerplate_ratio": 0.314,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L4_state/reasoning/cached_state_ledger.py"
+      },
+      {
+        "class_name": "CartographerAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 29,
+        "total_loc": 75,
+        "boilerplate_ratio": 0.613,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L4_state/reasoning/CartographerAgent.py"
+      },
+      {
+        "class_name": "MemoryArchitectAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 484,
+        "total_loc": 774,
+        "boilerplate_ratio": 0.125,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "SubAtomicAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L4_state/reasoning/MemoryArchitectAgent.py"
+      },
+      {
+        "class_name": "RedisSovereignAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 117,
+        "total_loc": 174,
+        "boilerplate_ratio": 0.339,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L4_state/reasoning/RedisSovereignAgent.py"
+      },
+      {
+        "class_name": "SovereignPineconeStoreAgent",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 175,
+        "total_loc": 260,
+        "boilerplate_ratio": 0.246,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L4_state/reasoning/SovereignPineconeStoreAgent.py"
+      },
+      {
+        "class_name": "SovereignRAGManager",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 93,
+        "total_loc": 117,
+        "boilerplate_ratio": 0.282,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/knowledge/reasoning/SovereignRAGManagerAgent.py"
+      },
+      {
+        "class_name": "SovereignReasoningMemory",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 38,
+        "total_loc": 63,
+        "boilerplate_ratio": 0.143,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L4_state/memory/sovereign_reasoning_memory_ledger.py"
+      },
+      {
+        "class_name": "SovereignSemanticCache",
+        "archetype": "ReasoningAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 73,
+        "total_loc": 119,
+        "boilerplate_ratio": 0.193,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L4_state/memory/sovereign_semantic_cache.py"
+      }
+    ],
+    "WrapperProxyAgent": [
+      {
+        "class_name": "BootstrapAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L0",
+        "domain_logic_loc": 9,
+        "total_loc": 100,
+        "boilerplate_ratio": 0.91,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "L0MaintenanceBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L0_maintenance/reasoning/BootstrapAgent.py"
+      },
+      {
+        "class_name": "StrategistAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L1",
+        "domain_logic_loc": 7,
+        "total_loc": 64,
+        "boilerplate_ratio": 0.672,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L1_cognition/reasoning/StrategistAgent.py"
+      },
+      {
+        "class_name": "UiValidationAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L2",
+        "domain_logic_loc": 10,
+        "total_loc": 132,
+        "boilerplate_ratio": 0.97,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L2_execution/reasoning/UiValidationAgent.py"
+      },
+      {
+        "class_name": "SubAtomicAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L3",
+        "domain_logic_loc": 0,
+        "total_loc": 118,
+        "boilerplate_ratio": 0.322,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py"
+      },
+      {
+        "class_name": "DependencyDiplomatAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 0,
+        "total_loc": 44,
+        "boilerplate_ratio": 0.886,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/DependencyDiplomatAgent.py"
+      },
+      {
+        "class_name": "NeuralAutoImmuneAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 0,
+        "total_loc": 48,
+        "boilerplate_ratio": 0.792,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/neural_autoimmune_agent.py"
+      },
+      {
+        "class_name": "OmniContextAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 4,
+        "total_loc": 56,
+        "boilerplate_ratio": 0.679,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/OmniContextAgent.py"
+      },
+      {
+        "class_name": "PolicyNeuralAutoImmuneAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 5,
+        "total_loc": 89,
+        "boilerplate_ratio": 0.73,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "NeuralAutoImmuneAgent",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py"
+      },
+      {
+        "class_name": "SemanticMapperAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 6,
+        "total_loc": 55,
+        "boilerplate_ratio": 0.691,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/SemanticMapperAgent.py"
+      },
+      {
+        "class_name": "SemanticTerritoryMapperAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 2,
+        "total_loc": 41,
+        "boilerplate_ratio": 0.854,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/SemanticTerritoryMapperAgent.py"
+      },
+      {
+        "class_name": "TerritoryChangeHandlerAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "L5",
+        "domain_logic_loc": 14,
+        "total_loc": 123,
+        "boilerplate_ratio": 0.114,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "FileSystemEventHandler"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py"
+      },
+      {
+        "class_name": "IntelligenceLibrarianAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 6,
+        "total_loc": 23,
+        "boilerplate_ratio": 0.087,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/IntelligenceLibrarianAgent.py"
+      },
+      {
+        "class_name": "MCPHardenedMixin",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 81,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/MessageDiversityValidator.py"
+      },
+      {
+        "class_name": "MessageArchitectAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 8,
+        "total_loc": 28,
+        "boilerplate_ratio": 0.071,
+        "all_bases": [
+          "LICAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/MessageArchitectAgent.py"
+      },
+      {
+        "class_name": "OutreachAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 64,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/LicReflectionAgent.py"
+      },
+      {
+        "class_name": "OutreachAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 61,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/LicTemplateOptimizerAgent.py"
+      },
+      {
+        "class_name": "OutreachAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 84,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/MessageComplianceAgent.py"
+      },
+      {
+        "class_name": "OutreachAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 307,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/OutreachLearningAgent.py"
+      },
+      {
+        "class_name": "OutreachAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 0,
+        "total_loc": 99,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/OutreachProactiveAgent.py"
+      },
+      {
+        "class_name": "CampaignPlannerAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 11,
+        "total_loc": 38,
+        "boilerplate_ratio": 0.526,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_rg/reasoning/CampaignPlannerAgent.py"
+      },
+      {
+        "class_name": "ContentStrategyAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 10,
+        "total_loc": 36,
+        "boilerplate_ratio": 0.194,
+        "all_bases": [
+          "RGAgentBase"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_rg/reasoning/ContentStrategyAgent.py"
+      },
+      {
+        "class_name": "DiscoveredAgent",
+        "archetype": "WrapperProxyAgent",
+        "layer": "unknown",
+        "domain_logic_loc": 0,
+        "total_loc": 166,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/runtime/utils/discovery_util.py"
+      }
+    ],
+    "PolicyGateAgent": [
+      {
+        "class_name": "DocstringComplianceAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L0",
+        "domain_logic_loc": 69,
+        "total_loc": 147,
+        "boilerplate_ratio": 0.381,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L0_maintenance/reasoning/DocstringComplianceAgent.py"
+      },
+      {
+        "class_name": "SovereignMCPGateway",
+        "archetype": "PolicyGateAgent",
+        "layer": "L2",
+        "domain_logic_loc": 84,
+        "total_loc": 119,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py"
+      },
+      {
+        "class_name": "SemanticGatekeeperAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L3",
+        "domain_logic_loc": 74,
+        "total_loc": 176,
+        "boilerplate_ratio": 0.398,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py"
+      },
+      {
+        "class_name": "AutonomyGuardianAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 131,
+        "total_loc": 420,
+        "boilerplate_ratio": 0.836,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "run"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py"
+      },
+      {
+        "class_name": "CachedSafetyShield",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 7,
+        "total_loc": 20,
+        "boilerplate_ratio": 0.3,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CachedSafetyShieldAgent.py"
+      },
+      {
+        "class_name": "CompositeGuardrailAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 80,
+        "total_loc": 351,
+        "boilerplate_ratio": 0.16,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/CompositeGuardrailAgent.py"
+      },
+      {
+        "class_name": "ConfigurationSecurityGuardrail",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 128,
+        "total_loc": 147,
+        "boilerplate_ratio": 0.054,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/ConfigurationSecurityGuardrailAgent.py"
+      },
+      {
+        "class_name": "DynamicSealAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 214,
+        "total_loc": 264,
+        "boilerplate_ratio": 0.22,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py"
+      },
+      {
+        "class_name": "GenerativeGuardAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 64,
+        "total_loc": 212,
+        "boilerplate_ratio": 0.288,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "SubatomicTestingMixin",
+          "HealerMixin",
+          "CanonBaseAgentInterface",
+          "MCPHardenedMixin"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "HealerMixin",
+          "MCPHardenedMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py"
+      },
+      {
+        "class_name": "GitSafetyHandlerAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 134,
+        "total_loc": 215,
+        "boilerplate_ratio": 0.242,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/GitSafetyHandlerAgent.py"
+      },
+      {
+        "class_name": "GlobalComplianceAggregatorAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 8,
+        "total_loc": 82,
+        "boilerplate_ratio": 0.78,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/GlobalComplianceAggregatorAgent.py"
+      },
+      {
+        "class_name": "HygieneGuardianAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 364,
+        "total_loc": 451,
+        "boilerplate_ratio": 0.259,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py"
+      },
+      {
+        "class_name": "InputValidationGuardrail",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 127,
+        "total_loc": 192,
+        "boilerplate_ratio": 0.307,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/enforcement/input_validation_guardrail.py"
+      },
+      {
+        "class_name": "L5SafetyExerciserAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 89,
+        "total_loc": 202,
+        "boilerplate_ratio": 0.272,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py"
+      },
+      {
+        "class_name": "MCPGuardianAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 185,
+        "total_loc": 261,
+        "boilerplate_ratio": 0.264,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/MCPGuardianAgent.py"
+      },
+      {
+        "class_name": "SafetyDetectorAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 111,
+        "total_loc": 243,
+        "boilerplate_ratio": 0.169,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py"
+      },
+      {
+        "class_name": "SafetyExecutorAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 230,
+        "total_loc": 320,
+        "boilerplate_ratio": 0.156,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py"
+      },
+      {
+        "class_name": "SafetyInspectorAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 117,
+        "total_loc": 420,
+        "boilerplate_ratio": 0.46,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py"
+      },
+      {
+        "class_name": "SelfUpdatingSafetyEngineAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 270,
+        "total_loc": 447,
+        "boilerplate_ratio": 0.128,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py"
+      },
+      {
+        "class_name": "TestCoverageGuardianAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 369,
+        "total_loc": 599,
+        "boilerplate_ratio": 0.518,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/TestCoverageGuardianAgent.py"
+      },
+      {
+        "class_name": "VerificationGate",
+        "archetype": "PolicyGateAgent",
+        "layer": "L5",
+        "domain_logic_loc": 229,
+        "total_loc": 224,
+        "boilerplate_ratio": 0.04,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "HallucinationDetectionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "HallucinationDetectionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/enforcement/verification_gate.py"
+      },
+      {
+        "class_name": "GovernanceShieldAgent",
+        "archetype": "PolicyGateAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 224,
+        "total_loc": 267,
+        "boilerplate_ratio": 0.255,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/GovernanceShieldAgent.py"
+      }
+    ],
+    "ObservabilityAgent": [
+      {
+        "class_name": "AutonomicMonitorAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 152,
+        "total_loc": 233,
+        "boilerplate_ratio": 0.215,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/AutonomicMonitorAgent.py"
+      },
+      {
+        "class_name": "DeadlockDetectorAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 31,
+        "total_loc": 137,
+        "boilerplate_ratio": 0.168,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/DeadlockDetectorAgent.py"
+      },
+      {
+        "class_name": "DebateSynthesisAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 75,
+        "total_loc": 118,
+        "boilerplate_ratio": 0.347,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/DebateSynthesisAgent.py"
+      },
+      {
+        "class_name": "MetricsAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 183,
+        "total_loc": 259,
+        "boilerplate_ratio": 0.317,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/MetricsAgent.py"
+      },
+      {
+        "class_name": "MetricsWitnessAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 121,
+        "total_loc": 195,
+        "boilerplate_ratio": 0.333,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "L0MaintenanceBaseAgent",
+          "AutonomyMixin",
+          "AdaptiveExecutionMixin",
+          "SelfDiagnosisMixin"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "AutonomyMixin",
+          "AdaptiveExecutionMixin",
+          "SelfDiagnosisMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/MetricsWitnessAgent.py"
+      },
+      {
+        "class_name": "PerformanceAnalystAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 161,
+        "total_loc": 198,
+        "boilerplate_ratio": 0.146,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/PerformanceAnalystAgent.py"
+      },
+      {
+        "class_name": "ReportingAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 125,
+        "total_loc": 221,
+        "boilerplate_ratio": 0.348,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/ReportingAgent.py"
+      },
+      {
+        "class_name": "RuntimeTelemetryAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 54,
+        "total_loc": 115,
+        "boilerplate_ratio": 0.322,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/RuntimeTelemetryAgent.py"
+      },
+      {
+        "class_name": "SovereignObservabilityAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 162,
+        "total_loc": 203,
+        "boilerplate_ratio": 0.217,
+        "all_bases": [
+          "SovereignBaseAgent",
+          "SubatomicTestingMixin",
+          "MCPHardenedMixin",
+          "RedisCacheMixin",
+          "event_emission_mixin",
+          "ContextPropagationMixin"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin",
+          "MCPHardenedMixin",
+          "RedisCacheMixin",
+          "ContextPropagationMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/SovereignObservabilityAgent.py"
+      },
+      {
+        "class_name": "StrategicObservationAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 44,
+        "total_loc": 68,
+        "boilerplate_ratio": 0.294,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/StrategicObservationAgent.py"
+      },
+      {
+        "class_name": "TelemetryAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 153,
+        "total_loc": 235,
+        "boilerplate_ratio": 0.272,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/TelemetryAgent.py"
+      },
+      {
+        "class_name": "TracingAgent",
+        "archetype": "ObservabilityAgent",
+        "layer": "L6",
+        "domain_logic_loc": 261,
+        "total_loc": 375,
+        "boilerplate_ratio": 0.171,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L6_observability/reasoning/TracingAgent.py"
+      }
+    ],
+    "StageAgent": [
+      {
+        "class_name": "TrackObservabilityCostAgent",
+        "archetype": "StageAgent",
+        "layer": "L6",
+        "domain_logic_loc": 11,
+        "total_loc": 89,
+        "boilerplate_ratio": 0.573,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute",
+          "_process"
+        ],
+        "file_path": "agentic_core/L6_observability/reasoning/TrackObservabilityCostAgent.py"
+      },
+      {
+        "class_name": "HOP1ProfileAnalysisAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 217,
+        "total_loc": 214,
+        "boilerplate_ratio": 0.126,
+        "all_bases": [
+          "HOPStageCapability",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/Hop1ProfileAnalysisAgent.py"
+      },
+      {
+        "class_name": "HOP2ResearchAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 300,
+        "total_loc": 317,
+        "boilerplate_ratio": 0.139,
+        "all_bases": [
+          "HOPStageCapability",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/Hop2ResearchAgent.py"
+      },
+      {
+        "class_name": "HOP3SenderGroundingAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 121,
+        "total_loc": 142,
+        "boilerplate_ratio": 0.099,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/HOP3SenderGroundingAgent.py"
+      },
+      {
+        "class_name": "HOP4RoutingAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 98,
+        "total_loc": 108,
+        "boilerplate_ratio": 0.028,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/Hop4RoutingAgent.py"
+      },
+      {
+        "class_name": "HOP5GenerationAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 353,
+        "total_loc": 312,
+        "boilerplate_ratio": 0.01,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/HOP5GenerationAgent.py"
+      },
+      {
+        "class_name": "HOP6ValidationAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 111,
+        "total_loc": 116,
+        "boilerplate_ratio": 0.026,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/Hop6ValidationAgent.py"
+      },
+      {
+        "class_name": "HOP7GateDecisionAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 51,
+        "total_loc": 70,
+        "boilerplate_ratio": 0.043,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/HOP7GateDecisionAgent.py"
+      },
+      {
+        "class_name": "HOP8QAReportAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 109,
+        "total_loc": 117,
+        "boilerplate_ratio": 0.026,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/HOP8QAReportAgent.py"
+      },
+      {
+        "class_name": "HOP9IntegrationAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 70,
+        "total_loc": 85,
+        "boilerplate_ratio": 0.035,
+        "all_bases": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "HOPStageCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/HOP9IntegrationAgent.py"
+      },
+      {
+        "class_name": "LeadQualityAgent",
+        "archetype": "StageAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 40,
+        "total_loc": 71,
+        "boilerplate_ratio": 0.282,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "_process"
+        ],
+        "file_path": "apps_lic/engines/LeadQualityAgent.py"
+      }
+    ],
+    "ValidationAgent": [
+      {
+        "class_name": "CampaignBalanceAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 37,
+        "total_loc": 84,
+        "boilerplate_ratio": 0.393,
+        "all_bases": [
+          "LICEngineValidationCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "LICEngineValidationCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute",
+          "_validate"
+        ],
+        "file_path": "apps_lic/engines/CampaignBalanceAgent.py"
+      },
+      {
+        "class_name": "DeliverabilityAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 34,
+        "total_loc": 65,
+        "boilerplate_ratio": 0.354,
+        "all_bases": [
+          "LICEngineValidationCapability",
+          "SubatomicTestingMixin",
+          "LICAgentBase"
+        ],
+        "capability_mixins": [
+          "LICEngineValidationCapability",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute",
+          "_validate"
+        ],
+        "file_path": "apps_lic/engines/DeliverabilityAgent.py"
+      },
+      {
+        "class_name": "ATSCompatibilityAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 72,
+        "total_loc": 102,
+        "boilerplate_ratio": 0.186,
+        "all_bases": [
+          "RGValidationCapability",
+          "RGAgentBase"
+        ],
+        "capability_mixins": [
+          "RGValidationCapability"
+        ],
+        "entrypoints": [
+          "execute",
+          "collect_issues"
+        ],
+        "file_path": "apps_rg/reasoning/ATSCompatibilityAgent.py"
+      },
+      {
+        "class_name": "BrandComplianceAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 43,
+        "total_loc": 81,
+        "boilerplate_ratio": 0.272,
+        "all_bases": [
+          "RGValidationCapability",
+          "RGAgentBase"
+        ],
+        "capability_mixins": [
+          "RGValidationCapability"
+        ],
+        "entrypoints": [
+          "execute",
+          "collect_issues"
+        ],
+        "file_path": "apps_rg/reasoning/BrandComplianceAgent.py"
+      },
+      {
+        "class_name": "FactCheckAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 90,
+        "total_loc": 105,
+        "boilerplate_ratio": 0.086,
+        "all_bases": [
+          "RGValidationCapability",
+          "RGAgentBase"
+        ],
+        "capability_mixins": [
+          "RGValidationCapability"
+        ],
+        "entrypoints": [
+          "execute",
+          "collect_issues"
+        ],
+        "file_path": "apps_rg/reasoning/FactCheckAgent.py"
+      },
+      {
+        "class_name": "SectionBalanceAgent",
+        "archetype": "ValidationAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 41,
+        "total_loc": 71,
+        "boilerplate_ratio": 0.127,
+        "all_bases": [
+          "RGValidationCapability",
+          "RGAgentBase"
+        ],
+        "capability_mixins": [
+          "RGValidationCapability"
+        ],
+        "entrypoints": [
+          "execute",
+          "collect_issues"
+        ],
+        "file_path": "apps_rg/reasoning/SectionBalanceAgent.py"
+      }
+    ],
+    "OrchestratorAgent": [
+      {
+        "class_name": "OrchestrationHandshakeAgent",
+        "archetype": "OrchestratorAgent",
+        "layer": "L3",
+        "domain_logic_loc": 86,
+        "total_loc": 142,
+        "boilerplate_ratio": 0.289,
+        "all_bases": [
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent",
+          "CoreOrchestrationAgent"
+        ],
+        "capability_mixins": [
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/orchestration_handshake.py"
+      },
+      {
+        "class_name": "CoordinateObservabilityOperationsAgent",
+        "archetype": "OrchestratorAgent",
+        "layer": "L6",
+        "domain_logic_loc": 45,
+        "total_loc": 142,
+        "boilerplate_ratio": 0.366,
+        "all_bases": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "AtomicExecutionMixin",
+          "SubatomicTestingMixin"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L6_observability/reasoning/CoordinateObservabilityOperationsAgent.py"
+      },
+      {
+        "class_name": "DispatchOutreachToolsAgent",
+        "archetype": "OrchestratorAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 52,
+        "total_loc": 95,
+        "boilerplate_ratio": 0.232,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_lic/engines/DispatchOutreachToolsAgent.py"
+      },
+      {
+        "class_name": "LicS2SupervisorAgent",
+        "archetype": "OrchestratorAgent",
+        "layer": "apps_lic",
+        "domain_logic_loc": 238,
+        "total_loc": 326,
+        "boilerplate_ratio": 0.414,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [],
+        "file_path": "apps_lic/engines/LicS2SupervisorAgent.py"
+      },
+      {
+        "class_name": "DispatchResumeToolsAgent",
+        "archetype": "OrchestratorAgent",
+        "layer": "apps_rg",
+        "domain_logic_loc": 90,
+        "total_loc": 143,
+        "boilerplate_ratio": 0.161,
+        "all_bases": [
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "apps_rg/reasoning/DispatchResumeToolsAgent.py"
+      }
+    ],
+    "InspectionAgent": [
+      {
+        "class_name": "DagRuntimeInspectorAgent",
+        "archetype": "InspectionAgent",
+        "layer": "L3",
+        "domain_logic_loc": 3,
+        "total_loc": 37,
+        "boilerplate_ratio": 0.27,
+        "all_bases": [
+          "InspectionCapability",
+          "AtomicExecutionMixin",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "InspectionCapability",
+          "AtomicExecutionMixin"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py"
+      },
+      {
+        "class_name": "SignatureVerifierAgent",
+        "archetype": "InspectionAgent",
+        "layer": "L5",
+        "domain_logic_loc": 3,
+        "total_loc": 75,
+        "boilerplate_ratio": 0.52,
+        "all_bases": [
+          "InspectionCapability",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "InspectionCapability"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/SignatureVerifierAgent.py"
+      },
+      {
+        "class_name": "TokenBudgetInspectorAgent",
+        "archetype": "InspectionAgent",
+        "layer": "L5",
+        "domain_logic_loc": 3,
+        "total_loc": 38,
+        "boilerplate_ratio": 0.289,
+        "all_bases": [
+          "InspectionCapability",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "InspectionCapability"
+        ],
+        "entrypoints": [],
+        "file_path": "agentic_core/L5_safety/reasoning/TokenBudgetInspectorAgent.py"
+      }
+    ],
+    "ToolRunnerAgent": [
+      {
+        "class_name": "CodeFormatterAgent",
+        "archetype": "ToolRunnerAgent",
+        "layer": "L5",
+        "domain_logic_loc": 52,
+        "total_loc": 66,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [
+          "CodeToolRunnerCapability",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "CodeToolRunnerCapability"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py"
+      },
+      {
+        "class_name": "UnusedCleanupAgent",
+        "archetype": "ToolRunnerAgent",
+        "layer": "L5",
+        "domain_logic_loc": 39,
+        "total_loc": 54,
+        "boilerplate_ratio": 0.0,
+        "all_bases": [
+          "CodeToolRunnerCapability",
+          "SovereignBaseAgent"
+        ],
+        "capability_mixins": [
+          "CodeToolRunnerCapability"
+        ],
+        "entrypoints": [
+          "execute"
+        ],
+        "file_path": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py"
+      }
+    ]
+  }
+}

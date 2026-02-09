@@ -1,0 +1,22 @@
+{
+  "_comment": "Known cross-layer debt baseline. Growth forbidden without --acknowledge-debt flag.",
+  "_version": "1.0.0",
+  "_updated": "2026-02-09",
+  "ceiling": 2,
+  "entries": [
+    {
+      "source": "agentic_core/config/core/gateway_config.py",
+      "target": "agentic_core.L2_execution.enforcement.SovereignLLMGateway",
+      "rationale": "Lazy import inside try/except for LLM gateway singleton; runtime-deferred, not static dependency",
+      "owner": "infrastructure",
+      "added": "2026-02-09"
+    },
+    {
+      "source": "agentic_core/config/core/gateway_config.py",
+      "target": "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent",
+      "rationale": "Lazy import inside try/except for embedding gateway singleton; runtime-deferred, not static dependency",
+      "owner": "infrastructure",
+      "added": "2026-02-09"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Consolidation Target Manifest",
+  "description": "Schema for agent consolidation targeting — keyed by AST-verified class identity.",
+  "type": "object",
+  "required": ["schema_version", "entries"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^3\\.0\\.\\d+$"
+    },
+    "description": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "retirement_categories": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["file_path", "target_class", "action", "selection_reason", "verifier"],
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "description": "Repo-relative path, forward-slash normalized.",
+          "pattern": "^[a-zA-Z0-9_].*\\.py$"
+        },
+        "target_class": {
+          "type": "string",
+          "description": "AST-verified class name (authoritative identity).",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": ["retire", "merge_to_executor", "alias_only", "partial_retire"]
+        },
+        "selection_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verifier": {
+          "type": "string",
+          "description": "How to assert this entry's completion (AST check, import test, etc.).",
+          "minLength": 1
+        },
+        "canonical_executor": {
+          "type": "string",
+          "description": "For merge_to_executor actions: the target executor class."
+        },
+        "canonical_module": {
+          "type": "string",
+          "description": "For merge_to_executor actions: the target executor module path."
+        },
+        "annotation": {
+          "type": "string",
+          "description": "Optional notes for partial retirements or misclassifications."
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": { "action": { "const": "merge_to_executor" } }
+      },
+      "then": {
+        "required": ["canonical_executor", "canonical_module"]
+      }
+    }
+  }
+}

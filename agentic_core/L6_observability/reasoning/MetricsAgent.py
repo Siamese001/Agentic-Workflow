@@ -127,7 +127,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
         Enforces Key 17 state sync compliance.
         """
         try:
-            from agentic_core.config.env_loader import get_redis_connection
+            from agentic_core.config.core.env_loader import get_redis_connection
 
             # Reuse established connection logic from SSOT
             r = get_redis_connection()

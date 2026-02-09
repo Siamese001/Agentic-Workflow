@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "threshold": 15,
+  "known_above_threshold": {
+    "agentic_core.base_agents.SovereignBaseAgent": 164,
+    "agentic_core.L5_safety.config.structure_blueprint_config": 140,
+    "agentic_core.base_agents.decorators": 94,
+    "agentic_core.base_agents.timeout_decorator": 65,
+    "agentic_core.mixins.subatomic_testing_mixin": 41,
+    "agentic_core.mixins.atomic_execution_mixin": 28
+  }
+}

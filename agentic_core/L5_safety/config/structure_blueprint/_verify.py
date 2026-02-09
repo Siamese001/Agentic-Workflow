@@ -31,7 +31,7 @@ ALLOWED_MODULES: frozenset[str] = frozenset(
         "functools",
         "itertools",
         "dataclasses",
-    }
+    },
 )
 
 # ── Scan scope contract ──
@@ -55,7 +55,7 @@ SCAN_EXCLUDES: frozenset[str] = frozenset(
         "build",
         ".pytest_cache",
         "node_modules",
-    }
+    },
 )
 
 
@@ -614,10 +614,10 @@ def main() -> int:
                 for f, n in current_only:
                     print(f"    + {f}:{n}")
             print(
-                "  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports."
+                "  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports.",
             )
             print(
-                "  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates."
+                "  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates.",
             )
             if not current_only and update_flag:
                 # Only baseline_only: phantoms reduced — safe to update
@@ -912,6 +912,113 @@ def main() -> int:
     if baseline_count is not None:
         print(f"  Invariant: current_count == baseline_count: {current_count == baseline_count}")
     print(f"  Generated: {os.path.relpath(debt_path, root)}")
+
+    # === 10. ENFORCEMENT MODULES ===
+    print("\n10. ENFORCEMENT MODULES")
+    print("-" * 40)
+    from pathlib import Path as _Path
+
+    from agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph import (
+        ImportGraph,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint.enforcement.types import (
+        emit_report_json,
+        make_report,
+    )
+
+    enforcement_root = _Path(root)
+    print("  Building import graph...")
+    import_graph = ImportGraph(enforcement_root, SCAN_ROOTS)
+    print(
+        f"  Import graph: {import_graph.files_parsed} files parsed, {len(import_graph.parse_errors)} errors"
+    )
+    if import_graph.parse_errors:
+        for pe in import_graph.parse_errors[:5]:
+            print(f"    {pe}")
+        if len(import_graph.parse_errors) > 5:
+            print(f"    ... and {len(import_graph.parse_errors) - 5} more")
+
+    # Collect enforcement results from all wired modules
+    from agentic_core.L5_safety.config.structure_blueprint.enforcement import (
+        blueprint_hash,
+        cross_layer,
+        leaf_node,
+        mixin_ast,
+        territory_diff,
+        volatile_rules,
+    )
+
+    enforcement_results = []
+
+    # Layer 1+7: Territory diff — bidirectional subfolder drift detection (ALL territories)
+    from collections.abc import Mapping as _Mapping
+
+    td_result = territory_diff.check(enforcement_root, c_st)
+    enforcement_results.append(td_result)
+    td_stats = td_result["stats"]
+    print(
+        f"  territory_diff: {len(td_result['violations'])} violation(s)  [{td_stats['territories_checked']} territories checked]"
+    )
+
+    # Layer 2: Leaf node — root .py prohibition (ALL territories)
+    ln_result = leaf_node.check(enforcement_root, c_st)
+    enforcement_results.append(ln_result)
+    ln_stats = ln_result["stats"]
+    print(
+        f"  leaf_node: {len(ln_result['violations'])} violation(s)  [{ln_stats['territories_checked']} dirs with allow_root_py=False]"
+    )
+
+    # Layer 3: Volatile rules — import isolation for volatile territories
+    vr_result = volatile_rules.check(enforcement_root, c_st, import_graph)
+    enforcement_results.append(vr_result)
+    print(f"  volatile_rules: {len(vr_result['violations'])} violation(s)")
+
+    # Layer 4: Mixin AST — flat + naming + class structure enforcement
+    ac_config = c_st.get("agentic_core", {})
+    ac_subfolders = ac_config.get("subfolders", {}) if isinstance(ac_config, _Mapping) else {}
+    ma_result = mixin_ast.check(enforcement_root / "agentic_core", ac_subfolders)
+    enforcement_results.append(ma_result)
+    print(f"  mixin_ast: {len(ma_result['violations'])} violation(s)")
+
+    # Layer 5: Blueprint hash — SHA-256 integrity (warning-only if hash file missing)
+    blueprint_dir = _Path(__file__).resolve().parent
+    bh_result = blueprint_hash.check(blueprint_dir)
+    enforcement_results.append(bh_result)
+    print(f"  blueprint_hash: {len(bh_result['violations'])} violation(s)")
+
+    # Layer 6: Cross-layer import law — stdlib-only core, utils purity, config independence
+    cl_result = cross_layer.check(enforcement_root, c_st, import_graph)
+    enforcement_results.append(cl_result)
+    print(f"  cross_layer: {len(cl_result['violations'])} violation(s)")
+    cl_stats = cl_result["stats"]
+    print(
+        f"    edges: {cl_stats.get('total_edges', 0)} total, {cl_stats.get('internal_edges', 0)} internal, {cl_stats.get('cross_layer_edges_analyzed', 0)} cross-layer analyzed"
+    )
+
+    if enforcement_results:
+        report = make_report(enforcement_results)
+        report_json = emit_report_json(report)
+
+        # Emit artifact
+        verification_dir = os.path.join(root, "docs", "reports", "verification")
+        os.makedirs(verification_dir, exist_ok=True)
+        report_path = os.path.join(verification_dir, "enforcement_report.json")
+        with open(report_path, "w", encoding="utf-8") as rf:
+            json.dump(report_json, rf, indent=2, sort_keys=False)
+        print(f"  Artifact: {os.path.relpath(report_path, root)}")
+
+        passed = report["summary"]["passed"]
+        failed = report["summary"]["failed"]
+        total_v = report["summary"]["total_violations"]
+        print(f"  Checks: {passed} passed, {failed} failed, {total_v} violations")
+        if not report["overall_passed"]:
+            failures += 1
+            print("  RESULT: FAIL")
+        else:
+            print("  RESULT: PASS")
+    else:
+        print("  No enforcement modules wired yet (Phase 0 stub)")
+        print("  RESULT: SKIP")
 
     # === Summary ===
     print("\n" + "=" * 70)

@@ -12,10 +12,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 # STUB: OutreachAgent base class (deprecated)
-class OutreachAgent:
-    """Legacy base class - use LICAgentBase instead."""
-
-    pass
+# RETIRED: OutreachAgent removed from active agent pool (2026-02-08)
 
 
 @dataclass

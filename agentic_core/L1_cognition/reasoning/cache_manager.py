@@ -18,7 +18,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L1_cognition.reasoning.types.cache_types import (
+from agentic_core.L1_cognition.types.cache_types import (
     MAX_SIMILARITY_THRESHOLD,
     MAX_TTL_SECONDS,
     MIN_SIMILARITY_THRESHOLD,
