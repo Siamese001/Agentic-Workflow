@@ -183,7 +183,7 @@ class TestAggregateArtifactContract:
 
     def test_aggregate_artifact_uses_correct_pattern(self, clean_repo: Path):
         """Aggregate artifact filename must match AGGREGATE pattern."""
-        artifact_dir = clean_repo / "docs" / "reports" / "guardian_artifacts"
+        artifact_dir = clean_repo / "docs" / "reports" / "verification" / "guardian"
         artifact_dir.mkdir(parents=True)
 
         result = run_all_guardians(
@@ -204,7 +204,7 @@ class TestAggregateArtifactContract:
 
     def test_aggregate_without_correlation_uses_fallback(self, clean_repo: Path):
         """Aggregate without correlation_id uses fallback pattern."""
-        artifact_dir = clean_repo / "docs" / "reports" / "guardian_artifacts"
+        artifact_dir = clean_repo / "docs" / "reports" / "verification" / "guardian"
         artifact_dir.mkdir(parents=True)
 
         result = run_all_guardians(
@@ -221,30 +221,34 @@ class TestAggregateArtifactContract:
 
 
 class TestArtifactIndex:
-    """Aggregate must include an index mapping guardian_id → {status, artifacts[]}."""
+    """Aggregate must include index as a first-class field (not in metrics)."""
 
-    def test_index_present_in_metrics(self, clean_repo: Path):
-        """Aggregate metrics must contain an 'index' key."""
+    def test_index_is_first_class_field(self, clean_repo: Path):
+        """Index must be a top-level field on GuardianResult, not in metrics."""
         result = run_all_guardians(repo_root=clean_repo)
-        assert "index" in result.metrics, "Aggregate metrics must contain 'index'"
+        assert hasattr(result, "index"), "GuardianResult must have 'index' field"
+        assert isinstance(result.index, dict)
+        assert "index" not in result.metrics, "Index must NOT live in metrics"
+
+    def test_index_in_serialized_output(self, clean_repo: Path):
+        """Serialized aggregate must include 'index' at top level."""
+        result = run_all_guardians(repo_root=clean_repo)
+        d = result.to_dict()
+        assert "index" in d, "Serialized aggregate must include 'index'"
+        assert "index" not in d.get("metrics", {}), "Index must NOT be in metrics"
 
     def test_index_covers_all_enabled_guardians(self, clean_repo: Path):
         """Index must have an entry for every enabled guardian."""
         result = run_all_guardians(repo_root=clean_repo)
-        index = result.metrics["index"]
-
         enabled_ids = {spec.guardian_id for spec in ALL_GUARDIANS if spec.enabled_by_default}
-
-        assert set(index.keys()) == enabled_ids, (
-            f"Index keys {set(index.keys())} != enabled guardians {enabled_ids}"
+        assert set(result.index.keys()) == enabled_ids, (
+            f"Index keys {set(result.index.keys())} != enabled guardians {enabled_ids}"
         )
 
     def test_index_entries_have_required_fields(self, clean_repo: Path):
         """Each index entry must have 'status' and 'artifacts' fields."""
         result = run_all_guardians(repo_root=clean_repo)
-        index = result.metrics["index"]
-
-        for gid, entry in index.items():
+        for gid, entry in result.index.items():
             assert "status" in entry, f"Index[{gid}] missing 'status'"
             assert "artifacts" in entry, f"Index[{gid}] missing 'artifacts'"
             assert isinstance(entry["artifacts"], list), f"Index[{gid}].artifacts must be a list"
@@ -252,28 +256,31 @@ class TestArtifactIndex:
     def test_index_status_matches_check_status(self, clean_repo: Path):
         """Index status for each guardian must match the check evidence."""
         result = run_all_guardians(repo_root=clean_repo)
-        index = result.metrics["index"]
-
         for check in result.checks:
             if check.check_id.startswith("guardian_"):
                 gid = check.check_id.replace("guardian_", "")
-                if gid in index:
-                    assert index[gid]["status"] == check.evidence.get("status"), (
+                if gid in result.index:
+                    assert result.index[gid]["status"] == check.evidence.get("status"), (
                         f"Index[{gid}].status != check evidence status"
                     )
 
     def test_index_artifact_paths_are_posix(self, clean_repo: Path):
         """All artifact paths in index must be POSIX (no backslashes)."""
-        artifact_dir = clean_repo / "docs" / "reports" / "guardian_artifacts"
+        artifact_dir = clean_repo / "docs" / "reports" / "verification" / "guardian"
         artifact_dir.mkdir(parents=True)
-
         result = run_all_guardians(
             repo_root=clean_repo,
             write_artifacts_dir=str(artifact_dir.relative_to(clean_repo)),
         )
-        index = result.metrics["index"]
-
-        for gid, entry in index.items():
+        for gid, entry in result.index.items():
             for path in entry["artifacts"]:
                 assert "\\" not in path, f"Index[{gid}] has non-POSIX path: {path}"
                 assert not path.startswith("/"), f"Index[{gid}] has absolute path: {path}"
+
+    def test_index_schema_validates(self, clean_repo: Path):
+        """Aggregate with index must pass JSON schema validation."""
+        from agentic_core.L0_maintenance.types.guardian_contract import validate_against_json_schema
+
+        result = run_all_guardians(repo_root=clean_repo)
+        errors = validate_against_json_schema(result.to_dict())
+        assert errors == [], f"Schema validation errors: {errors}"

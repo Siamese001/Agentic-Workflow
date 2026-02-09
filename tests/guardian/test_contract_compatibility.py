@@ -61,7 +61,7 @@ class TestSchemaSnapshot:
         "metrics",
         "remediation_hints",
     }
-    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id"}
+    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id", "index"}
 
     def test_snapshot_has_all_required_keys(self):
         assert self.EXPECTED_REQUIRED_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
@@ -171,8 +171,8 @@ class TestVersionBump:
 
     def test_snapshot_key_count_is_locked(self):
         """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 10, (
-            f"Schema key count changed from 10 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
+        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 11, (
+            f"Schema key count changed from 11 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
             f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
         )
 
@@ -241,9 +241,9 @@ class TestEnumValueLocking:
         assert ARTIFACT_TYPE_VALUES == {"diff", "json", "log", "snapshot"}
 
     def test_enum_matches_frozen_values(self):
-        assert set(s.value for s in GuardianStatus) == GUARDIAN_STATUS_VALUES
-        assert set(s.value for s in CheckStatus) == CHECK_STATUS_VALUES
-        assert set(t.value for t in ArtifactType) == ARTIFACT_TYPE_VALUES
+        assert {s.value for s in GuardianStatus} == GUARDIAN_STATUS_VALUES
+        assert {s.value for s in CheckStatus} == CHECK_STATUS_VALUES
+        assert {t.value for t in ArtifactType} == ARTIFACT_TYPE_VALUES
 
 
 # ---------------------------------------------------------------------------
@@ -453,3 +453,56 @@ class TestSchemaBoundsConstantsLocked:
         from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
         assert MAX_EVIDENCE_DEPTH == 3
+
+
+class TestEvidenceDepthEnforcement:
+    """Evidence nesting depth must be enforced by the validator."""
+
+    def _make_result_with_evidence(self, evidence: dict) -> dict:
+        d = GuardianResult(guardian_id="depth_test").to_dict()
+        d["checks"] = [
+            {"check_id": "c1", "status": "PASS", "details": "ok", "evidence": evidence},
+        ]
+        return d
+
+    def test_evidence_at_max_depth_passes(self):
+        """Evidence nested exactly at MAX_EVIDENCE_DEPTH should pass."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build nested dict at exactly MAX_EVIDENCE_DEPTH levels
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH - 1):
+            evidence = {f"level_{i}": evidence}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert depth_errors == [], f"Evidence at max depth should pass: {depth_errors}"
+
+    def test_evidence_exceeding_max_depth_fails(self):
+        """Evidence nested beyond MAX_EVIDENCE_DEPTH must be rejected."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build nested dict at MAX_EVIDENCE_DEPTH + 1 levels
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH):
+            evidence = {f"level_{i}": evidence}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert len(depth_errors) > 0, f"Evidence at depth {MAX_EVIDENCE_DEPTH + 1} must fail validation"
+
+    def test_evidence_depth_via_array_nesting_fails(self):
+        """Arrays in evidence also count towards depth."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build mixed dict/list nesting beyond MAX_EVIDENCE_DEPTH
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH):
+            evidence = {f"level_{i}": [evidence]}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert len(depth_errors) > 0, "Array-nested evidence beyond max depth must fail validation"

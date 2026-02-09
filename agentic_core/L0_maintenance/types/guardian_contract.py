@@ -71,6 +71,7 @@ CONTRACT_SCHEMA_SNAPSHOT: dict[str, str] = {
     "remediation_hints": "list[str]",
     "timestamp": "str|None",
     "correlation_id": "str|None",
+    "index": "dict",
 }
 
 # Frozen check-level keys
@@ -154,6 +155,21 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
         "remediation_hints": {"type": "array", "items": {"type": "string"}},
         "timestamp": {"type": ["string", "null"]},
         "correlation_id": {"type": ["string", "null"]},
+        "index": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": ["status", "artifacts"],
+                "additionalProperties": False,
+                "properties": {
+                    "status": {"type": "string", "enum": ["PASS", "FAIL", "ERROR"]},
+                    "artifacts": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                },
+            },
+        },
     },
 }
 
@@ -163,7 +179,7 @@ CHECK_STATUS_VALUES: frozenset[str] = frozenset({"PASS", "FAIL", "SKIP"})
 ARTIFACT_TYPE_VALUES: frozenset[str] = frozenset({"diff", "json", "log", "snapshot"})
 
 # L6 ingestion contract constants
-GUARDIAN_ARTIFACT_DIR: str = "docs/reports/guardian_artifacts"
+GUARDIAN_ARTIFACT_DIR: str = "docs/reports/verification/guardian"
 
 # Artifact filename patterns (Phase 4: Individual vs Aggregate)
 # Individual: per-guardian results
@@ -239,8 +255,65 @@ IGNORE_PATTERNS: frozenset[str] = frozenset(
         "node_modules",
         ".venv",
         "venv",
-    }
+    },
 )
+
+
+class ScanBudgetExceeded:
+    """
+    Sentinel returned by scan functions when a budget cap is breached.
+
+    Carries which cap was exceeded, the limit value, and remediation hints
+    so callers can emit a schema-locked FAIL (not ERROR/exception).
+
+    Lives in SSOT types so all scanning guardians share the same pattern.
+    """
+
+    def __init__(self, cap_name: str, limit: int, scanned: int) -> None:
+        self.cap_name = cap_name
+        self.limit = limit
+        self.scanned = scanned
+
+    @property
+    def details(self) -> str:
+        return (
+            f"Scan exceeded {self.cap_name} ({self.limit}). "
+            f"Scanned {self.scanned} items before hitting the cap."
+        )
+
+    @property
+    def remediation_hints(self) -> list[str]:
+        return [
+            "Tighten IGNORE_PATTERNS to exclude noisy directories",
+            "Run in scoped mode with a smaller allowed_roots set",
+            f"If justified, raise {self.cap_name} in guardian_contract.py with a code review",
+        ]
+
+
+def guard_scan_budget(
+    file_count: int,
+    cap_name: str = "MAX_FILES_PER_SCAN",
+    limit: int | None = None,
+) -> ScanBudgetExceeded | None:
+    """
+    Check whether a running file count exceeds a scan budget cap.
+
+    Returns ScanBudgetExceeded sentinel if cap is breached, None otherwise.
+    All scanning guardians MUST use this helper instead of raising RuntimeError.
+
+    Args:
+        file_count: Current count of files scanned.
+        cap_name: Name of the cap constant (for diagnostics).
+        limit: Override limit; defaults to MAX_FILES_PER_SCAN.
+
+    Returns:
+        ScanBudgetExceeded if breached, None if within budget.
+    """
+    if limit is None:
+        limit = MAX_FILES_PER_SCAN
+    if file_count > limit:
+        return ScanBudgetExceeded(cap_name=cap_name, limit=limit, scanned=file_count)
+    return None
 
 
 def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
@@ -251,7 +324,7 @@ def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     expected_keys = set(CONTRACT_SCHEMA_SNAPSHOT.keys())
     actual_keys = set(result_dict.keys())
-    missing = expected_keys - actual_keys - {"timestamp", "correlation_id"}  # optional
+    missing = expected_keys - actual_keys - {"timestamp", "correlation_id", "index"}  # optional
     extra = actual_keys - expected_keys
     if missing:
         errors.append(f"Missing required keys: {sorted(missing)}")
@@ -386,6 +459,25 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
 
     _validate_object(result_dict, schema, "$")
 
+    # Evidence depth guard
+    def _check_depth(obj: Any, current_depth: int, path: str) -> None:
+        if current_depth > MAX_EVIDENCE_DEPTH:
+            errors.append(
+                f"{path}: nesting depth {current_depth} exceeds MAX_EVIDENCE_DEPTH ({MAX_EVIDENCE_DEPTH})",
+            )
+            return
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                _check_depth(v, current_depth + 1, f"{path}.{k}")
+        elif isinstance(obj, list):
+            for i, v in enumerate(obj):
+                _check_depth(v, current_depth + 1, f"{path}[{i}]")
+
+    for i, check in enumerate(result_dict.get("checks", [])):
+        evidence = check.get("evidence", {})
+        if isinstance(evidence, dict):
+            _check_depth(evidence, 0, f"$.checks[{i}].evidence")
+
     # Payload size guard
     try:
         payload = json.dumps(result_dict, default=str)
@@ -519,6 +611,7 @@ class GuardianResult:
     artifacts: list[GuardianArtifact] = field(default_factory=list)
     metrics: dict[str, int | float] = field(default_factory=dict)
     remediation_hints: list[str] = field(default_factory=list)
+    index: dict[str, Any] = field(default_factory=dict)
 
     # -- Mutation helpers ---------------------------------------------------
 
@@ -576,6 +669,8 @@ class GuardianResult:
             d["timestamp"] = self.timestamp
         if self.correlation_id is not None:
             d["correlation_id"] = self.correlation_id
+        if self.index:
+            d["index"] = self.index
         return d
 
     def to_json(self, indent: int = 2) -> str:
@@ -662,4 +757,5 @@ def load_guardian_result(path: Path | str) -> GuardianResult:
         artifacts=artifacts,
         metrics=data.get("metrics", {}),
         remediation_hints=data.get("remediation_hints", []),
+        index=data.get("index", {}),
     )

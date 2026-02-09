@@ -104,7 +104,7 @@ pytest tests/guardian/test_guardian_aggregation.py              → 15 passed (f
 
 ```
 python -m agentic_core.L0_maintenance.scripts.run_all_guardians \
-       --write-artifacts docs/reports/guardian_artifacts \
+       --write-artifacts docs/reports/verification/guardian \
        --strict --format text --correlation-id test-hardening-final
 
 Guardian Aggregator | Status: FAIL

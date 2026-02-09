@@ -8,7 +8,7 @@ Produces a combined_guardian_result.json with:
 
 CLI:
     python -m agentic_core.L0_maintenance.scripts.run_all_guardians \\
-        --write-artifacts docs/reports/guardian_artifacts \\
+        --write-artifacts docs/reports/verification/guardian \\
         --strict
 """
 
@@ -154,7 +154,7 @@ def run_all_guardians(
                 "artifacts": [normalize_repo_path(a.path) for a in result.artifacts],
             }
 
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-silent_swallower
             combined.add_check(
                 check_id=f"guardian_{gid}",
                 status=CheckStatus.FAIL,
@@ -184,8 +184,8 @@ def run_all_guardians(
         "guardians_error": total_error,
         "total_checks": total_checks,
         "per_guardian": per_guardian_results,
-        "index": guardian_index,
     }
+    combined.index = guardian_index
 
     if combined.status == GuardianStatus.PASS.value:
         combined.summary = f"All {guardian_count} guardians passed ({total_checks} checks)"

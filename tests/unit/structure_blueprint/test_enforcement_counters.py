@@ -165,7 +165,7 @@ class TestEnforcementReportArtifact:
 class TestExpiredDebtEnforcement:
     """Expiry enforcement must fail when a debt item has expired."""
 
-    def test_expired_debt_fails(self, monkeypatch, tmp_path: Path) -> None:
+    def test_expired_debt_fails(self) -> None:
         expired_baseline = {
             "ceiling": 3,
             "entries": [
@@ -180,20 +180,29 @@ class TestExpiredDebtEnforcement:
                 },
             ],
         }
-        expired_entries = expired_baseline["entries"]
-        expired_debt_set = frozenset((e["source"], e["target"]) for e in expired_entries)
-
-        monkeypatch.setattr(cross_layer, "_DEBT_ENTRIES", expired_entries)
-        monkeypatch.setattr(cross_layer, "KNOWN_CROSS_LAYER_DEBT", expired_debt_set)
-        monkeypatch.setattr(cross_layer, "_DEBT_CEILING", 3)
 
         ig = ImportGraph(REPO_ROOT, SOVEREIGN_TERRITORIES)
-        result = cross_layer.check(REPO_ROOT, SOVEREIGN_TERRITORIES, ig)
+        result = cross_layer.check(
+            REPO_ROOT,
+            SOVEREIGN_TERRITORIES,
+            ig,
+            debt_baseline=expired_baseline,
+        )
 
         assert result["stats"]["expired_debt_items"] == 1, (
             f"Expected 1 expired debt item, got {result['stats']['expired_debt_items']}"
         )
         assert result["passed"] is False, "cross_layer.check() should FAIL when a debt item has expired"
+
+
+class TestOutputDirDriftGuard:
+    """Prevent reappearance of legacy guardian output directory."""
+
+    def test_legacy_guardian_artifacts_dir_must_not_exist(self) -> None:
+        legacy_dir = REPO_ROOT / "docs" / "reports" / "guardian_artifacts"
+        assert not legacy_dir.exists(), (
+            f"{legacy_dir} must not exist — guardian outputs belong under docs/reports/verification/guardian/"
+        )
 
 
 class TestMappingProxyRegression:

@@ -983,7 +983,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "misc": {"purpose": "Miscellaneous reports"},
                     "plans": {"purpose": "Planning documents and evidence packs"},
                     "verification": {"purpose": "Enforcement verification artifacts"},
-                    "guardian_artifacts": {"purpose": "Guardian hardening artifacts and outputs"},
                 },
             },
             "architecture": {"purpose": "Architecture decision records and diagrams"},

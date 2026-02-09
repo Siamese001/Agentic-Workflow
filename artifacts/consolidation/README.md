@@ -8,6 +8,8 @@ They are consumed by CI gates in `ops_scripts/ci/` and `.github/workflows/agent-
 | File | Gate Script | Purpose |
 | ---- | ----------- | ------- |
 | `mro_diamond_baseline.json` | `ops_scripts/ci/mro_contract_check.py` | MRO diamond ceiling (ratcheting) |
+| `mro_diamond_baseline.json` | `ops_scripts/ci/mro_new_diamond_check.py` | Entry-level new-diamond prevention |
+| `active_set_snapshot.json` | `ops_scripts/ci/active_set_snapshot_check.py` | Active set drift detection |
 | `centrality_baseline.json` | `ops_scripts/ci/centrality_gate.py` | Known-above-threshold gravity nodes |
 | `executor_dispatch_snapshot.json` | `tests/core/test_executor_dispatch_snapshot.py` | Canonical dispatch keys per executor |
 | `target_manifest_v3.json` | `artifacts/consolidation/validate_target_manifest.py` | Consolidation targeting manifest |
@@ -23,6 +25,39 @@ They are consumed by CI gates in `ops_scripts/ci/` and `.github/workflows/agent-
 3. Optionally commit with tag `MRO_BASELINE_LOWERED:<old>-><new>` for clarity.
 
 **Policy**: Improvements are never blocked. Increases require `MRO_BASELINE_BUMP:<reason>`.
+
+#### Auto-Lower (Local Only)
+
+To auto-lower the baseline after removing diamonds:
+
+```bash
+AUTO_LOWER_MRO_BASELINE=1 python ops_scripts/ci/mro_contract_check.py
+```
+
+This rewrites the JSON with the reduced count and removes resolved entries.
+
+**IMPORTANT**: `AUTO_LOWER_MRO_BASELINE=1` is **forbidden in CI**.
+If `CI=true` or `GITHUB_ACTIONS=true`, the gate will HARD FAIL.
+Baseline changes must be committed as intentional, reviewable diffs.
+
+#### New Diamond Prevention
+
+`mro_new_diamond_check.py` prevents reintroduction at the entry level.
+Even if the total count stays within the ceiling, any diamond not already
+in the baseline JSON will cause a HARD FAIL.
+
+To add a new diamond intentionally:
+1. Add the entry to `mro_diamond_baseline.json`.
+2. Commit with tag `MRO_BASELINE_BUMP:<reason>`.
+
+### Active Set Snapshot
+
+**When**: A PR changes the active agent set (add/remove/rename agents).
+
+1. Run `python ops_scripts/ci/active_set_snapshot_check.py` — it will FAIL with drift details.
+2. Commit with tag `ACTIVE_SET_SNAPSHOT_BUMP:<reason>` — the gate auto-updates the snapshot.
+
+**Policy**: Silent drift is a merge blocker.
 
 ### Centrality Baseline
 
@@ -63,6 +98,7 @@ They are consumed by CI gates in `ops_scripts/ci/` and `.github/workflows/agent-
 | `CENTRALITY_BASELINE_BUMP:<reason>` | Centrality baseline changes |
 | `DISPATCH_SNAPSHOT_BUMP:<reason>` | Dispatch snapshot changes |
 | `QUARANTINE_CEILING_BUMP:<reason>` | Skip/quarantine ceiling increases |
+| `ACTIVE_SET_SNAPSHOT_BUMP:<reason>` | Active set fingerprint changed |
 | `AGENT_COUNT_BUMP:<reason>` | Active agent count exceeds cap (149, discovery-aligned) |
 
 ## Reviewing Baseline Changes

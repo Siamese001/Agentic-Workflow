@@ -22,12 +22,13 @@ from pathlib import Path
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
     IGNORE_PATTERNS,
-    MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
     ArtifactType,
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    ScanBudgetExceeded,
+    guard_scan_budget,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -44,35 +45,6 @@ ARTIFACT_EXTENSIONS = frozenset({".pyc", ".pyo", ".tmp", ".bak", ".swp"})
 # ---------------------------------------------------------------------------
 # Scan functions (pure, deterministic, no side-effects)
 # ---------------------------------------------------------------------------
-
-
-class ScanBudgetExceeded:
-    """
-    Sentinel returned by scan functions when a budget cap is breached.
-
-    Carries which cap was exceeded, the limit value, and remediation hints
-    so callers can emit a schema-locked FAIL (not ERROR/exception).
-    """
-
-    def __init__(self, cap_name: str, limit: int, scanned: int) -> None:
-        self.cap_name = cap_name
-        self.limit = limit
-        self.scanned = scanned
-
-    @property
-    def details(self) -> str:
-        return (
-            f"Scan exceeded {self.cap_name} ({self.limit}). "
-            f"Scanned {self.scanned} items before hitting the cap."
-        )
-
-    @property
-    def remediation_hints(self) -> list[str]:
-        return [
-            "Tighten IGNORE_PATTERNS to exclude noisy directories",
-            "Run in scoped mode with a smaller allowed_roots set",
-            f"If justified, raise {self.cap_name} in guardian_contract.py with a code review",
-        ]
 
 
 def scan_temp_artifacts(
@@ -96,14 +68,11 @@ def scan_temp_artifacts(
             if not item.is_file():
                 continue
 
-            # Enforce scan bounds (Phase 5 → Phase 3b: FAIL not ERROR)
+            # Enforce scan bounds via shared SSOT helper
             file_count += 1
-            if file_count > MAX_FILES_PER_SCAN:
-                return ScanBudgetExceeded(
-                    cap_name="MAX_FILES_PER_SCAN",
-                    limit=MAX_FILES_PER_SCAN,
-                    scanned=file_count,
-                )
+            breach = guard_scan_budget(file_count)
+            if breach is not None:
+                return breach
 
             # Check depth
             depth = len(item.relative_to(repo_root).parts)
@@ -232,7 +201,7 @@ def run_hygiene_guardian(
                 details="No temporary artifacts found",
             )
             result.metrics["temp_artifact_count"] = 0
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="temp_artifacts",
             status=CheckStatus.FAIL,
@@ -257,7 +226,7 @@ def run_hygiene_guardian(
                 details="No empty folders found",
             )
         result.metrics["empty_folder_count"] = len(empty)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="empty_folders",
             status=CheckStatus.FAIL,
@@ -282,7 +251,7 @@ def run_hygiene_guardian(
                 details="No __init__.py-only folders found",
             )
         result.metrics["init_only_folder_count"] = len(init_only)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="init_only_folders",
             status=CheckStatus.FAIL,

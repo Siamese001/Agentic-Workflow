@@ -32,7 +32,7 @@ def main() -> int:
 
     # Import helper to get current active set
     if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
+        sys.path.insert(0, str(project_root))  # guardian: allow-global_mutation
 
     from ops_scripts.ci.active_set_helper import get_active_set
 
@@ -54,37 +54,46 @@ def main() -> int:
             f"WARN: fingerprint changed ({snapshot['count']} → {result.count}) "
             f"but ACTIVE_SET_SNAPSHOT_BUMP tag present",
         )
-        # Auto-update snapshot
+        # Auto-update snapshot via atomic write helper
+        from ops_scripts.ci.baseline_io import write_json_atomic
+
         new_snapshot = {
             "count": result.count,
             "fingerprint": result.fingerprint,
             "first_10": list(result.agent_ids[:10]),
             "last_10": list(result.agent_ids[-10:]),
         }
-        snapshot_file.write_text(
-            json.dumps(new_snapshot, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        write_json_atomic(snapshot_file, new_snapshot)
         print(f"  AUTO-UPDATED snapshot: {snapshot['count']} → {result.count}")
         return 0
 
-    # Drift without acknowledgement
+    # Drift without acknowledgement — detailed output
     print(
         "FAIL: active set fingerprint changed without ACTIVE_SET_SNAPSHOT_BUMP tag",
     )
     print(f"  old_count={snapshot['count']}  new_count={result.count}")
+    print(f"  old_fingerprint={snapshot['fingerprint']}")
+    print(f"  new_fingerprint={result.fingerprint}")
 
-    # Show what changed
-    old_ids = set(snapshot.get("first_10", []) + snapshot.get("last_10", []))
+    old_first = snapshot.get("first_10", [])
+    old_last = snapshot.get("last_10", [])
     new_first = list(result.agent_ids[:10])
     new_last = list(result.agent_ids[-10:])
+
+    print(f"  old_first_10={old_first}")
+    print(f"  new_first_10={new_first}")
+    print(f"  old_last_10={old_last}")
+    print(f"  new_last_10={new_last}")
+
+    # Deterministic diff excerpt
+    old_ids = set(old_first + old_last)
     new_ids = set(new_first + new_last)
-    added = new_ids - old_ids
-    removed = old_ids - new_ids
+    added = sorted(new_ids - old_ids)
+    removed = sorted(old_ids - new_ids)
     if added:
-        print(f"  possibly_added: {sorted(added)}")
+        print(f"  added: {added}")
     if removed:
-        print(f"  possibly_removed: {sorted(removed)}")
+        print(f"  removed: {removed}")
 
     return 1
 
