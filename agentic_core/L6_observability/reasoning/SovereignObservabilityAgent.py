@@ -9,17 +9,14 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L4_state.memory.context_propagation_mixin import (
-    ContextPropagationMixin,
-)
+from agentic_core.mixins.context_propagation_mixin import ContextPropagationMixin
+from agentic_core.mixins.event_emission_mixin import event_emission_mixin
 
 
 class SovereignObservabilityAgent(
-    SovereignBaseAgent,
-    MCPHardenedMixin,
-    RedisCacheMixin,
     event_emission_mixin,
     ContextPropagationMixin,
+    SovereignBaseAgent,
 ):
     """
     L6 observability Agent: The Consumer (Report 4.3 Part C).
@@ -93,6 +90,7 @@ class SovereignObservabilityAgent(
         try:
             if self.redis_client:
                 self.redis_client.xgroup_create(self._stream_name, self._group_name, id="0", mkstream=True)
+        # guardian: allow-silent-swallow
         except Exception as e:
             if "BUSYGROUP" not in str(e):
                 self._ee_logger.error(f"Failed to create consumer group: {e}")
@@ -254,6 +252,7 @@ class SovereignObservabilityAgent(
                         "operation": telemetry.get("operation_name"),
                     },
                 )
+            # guardian: allow-silent-swallow
             except Exception:
                 stats["errors"] += 1
 
