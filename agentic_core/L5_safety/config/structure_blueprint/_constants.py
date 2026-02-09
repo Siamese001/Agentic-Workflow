@@ -711,7 +711,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "config": {"purpose": "Shared configuration loaders and environment setup"},
             "data": {"purpose": "Shared data files (resume templates, knowledge bases)"},
             "reasoning": {
-                "purpose": "Cross-app reasoning agents (adaptive retrieval, circuit breaker, etc.)"
+                "purpose": "Cross-app reasoning agents (adaptive retrieval, circuit breaker, etc.)",
             },
             "scripts": {"purpose": "Shared CLI scripts and batch utilities"},
             "types": {"purpose": "Shared type definitions and data models"},

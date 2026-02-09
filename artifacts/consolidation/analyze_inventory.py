@@ -20,7 +20,7 @@ def main():
     for a in agents:
         if a.get("boilerplate_ratio", 0) > 0.7:
             print(
-                f"  {a['class_name']:45s} ratio={a['boilerplate_ratio']} total={a['total_loc']} domain={a['domain_logic_loc']} layer={a['layer']}"
+                f"  {a['class_name']:45s} ratio={a['boilerplate_ratio']} total={a['total_loc']} domain={a['domain_logic_loc']} layer={a['layer']}",
             )
 
     print()
@@ -30,7 +30,7 @@ def main():
     for a in agents:
         if a.get("domain_logic_loc", 999) < 5:
             print(
-                f"  {a['class_name']:45s} domain={a['domain_logic_loc']} total={a['total_loc']} bases={a.get('all_bases', [])} layer={a['layer']}"
+                f"  {a['class_name']:45s} domain={a['domain_logic_loc']} total={a['total_loc']} bases={a.get('all_bases', [])} layer={a['layer']}",
             )
 
     print()
@@ -80,7 +80,7 @@ def main():
             print(f"\n  [{key}] ({len(group)} agents)")
             for a in group:
                 print(
-                    f"    {a['class_name']:42s} domain={a['domain_logic_loc']:3d} total={a['total_loc']:3d} bp={a['boilerplate_ratio']:.2f} layer={a['layer']} methods={a.get('domain_methods', [])}"
+                    f"    {a['class_name']:42s} domain={a['domain_logic_loc']:3d} total={a['total_loc']:3d} bp={a['boilerplate_ratio']:.2f} layer={a['layer']} methods={a.get('domain_methods', [])}",
                 )
 
     # Find agents with ZERO entrypoints
@@ -91,7 +91,7 @@ def main():
     for a in agents:
         if not a.get("entrypoints"):
             print(
-                f"  {a['class_name']:45s} domain={a['domain_logic_loc']} total={a['total_loc']} layer={a['layer']} methods={a.get('domain_methods', [])}"
+                f"  {a['class_name']:45s} domain={a['domain_logic_loc']} total={a['total_loc']} layer={a['layer']} methods={a.get('domain_methods', [])}",
             )
 
     # Summary counts

@@ -93,7 +93,7 @@ def scan_diamonds(project_root: Path) -> list[dict]:
                             "class": node.name,
                             "redundant_mixins": sorted(dupes),
                             "carriers": sorted(bases & CARRIER_BASES),
-                        }
+                        },
                     )
     return results
 

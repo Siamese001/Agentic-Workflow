@@ -31,7 +31,7 @@ BOILERPLATE_METHODS = frozenset(
         "to_dict",
         "from_dict",
         "validate",
-    }
+    },
 )
 
 CAPABILITY_SUFFIXES = ("Capability", "Mixin", "Protocol")

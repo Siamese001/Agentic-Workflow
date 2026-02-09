@@ -92,7 +92,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
         ],
         key=lambda s: s.guardian_id,
-    )
+    ),
 )
 
 

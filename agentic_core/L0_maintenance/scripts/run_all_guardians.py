@@ -144,7 +144,7 @@ def run_all_guardians(
                     "status": result.status,
                     "checks": len(result.checks),
                     "elapsed_ms": round(elapsed_ms, 1),
-                }
+                },
             )
 
         except Exception as exc:
@@ -160,7 +160,7 @@ def run_all_guardians(
                     "guardian_id": gid,
                     "status": "ERROR",
                     "error": str(exc),
-                }
+                },
             )
 
     # Finalize

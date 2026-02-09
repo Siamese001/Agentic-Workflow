@@ -126,7 +126,7 @@ def main():
                         "dominant_base_sig": most_common_sig[0],
                         "sig_ratio": round(sig_ratio, 2),
                         "forced": True,
-                    }
+                    },
                 )
 
     result = {
@@ -163,7 +163,7 @@ def main():
         lines.append("|-------|-------|-----------|----------|-------|")
         for m in sorted(members, key=lambda x: x["domain_logic_loc"]):
             lines.append(
-                f"| {m['class_name']} | {m['layer']} | {m['domain_logic_loc']} | {m['boilerplate_ratio']:.2f} | {'+'.join(m['all_bases'])} |"
+                f"| {m['class_name']} | {m['layer']} | {m['domain_logic_loc']} | {m['boilerplate_ratio']:.2f} | {'+'.join(m['all_bases'])} |",
             )
         lines.append("")
 
@@ -178,7 +178,7 @@ def main():
         lines.append("|-------|-------|-----------|----------|")
         for m in sorted(members, key=lambda x: x["domain_logic_loc"]):
             lines.append(
-                f"| {m['class_name']} | {m['layer']} | {m['domain_logic_loc']} | {m['boilerplate_ratio']:.2f} |"
+                f"| {m['class_name']} | {m['layer']} | {m['domain_logic_loc']} | {m['boilerplate_ratio']:.2f} |",
             )
         lines.append("")
 
