@@ -31,14 +31,13 @@ except ImportError:
 
 
 # NAMING CANON ETERNAL — renamed inline for sovereign discovery — Phase 5 — 2025-12-30
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from agentic_core.base_agents.decorators import standard_heal
 
 
 @dataclass
-class SherlockAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
     Analyzes cross-file dependencies and fixes interaction bugs.

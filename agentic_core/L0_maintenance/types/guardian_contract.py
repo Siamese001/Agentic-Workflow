@@ -113,7 +113,10 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
                     "check_id": {"type": "string", "minLength": 1},
                     "status": {"type": "string", "enum": ["PASS", "FAIL", "SKIP"]},
                     "details": {"type": "string"},
-                    "evidence": {"type": "object"},
+                    "evidence": {
+                        "type": "object",
+                        "maxProperties": 30,
+                    },
                 },
             },
         },
@@ -125,12 +128,29 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
                 "additionalProperties": False,
                 "properties": {
                     "type": {"type": "string", "enum": ["diff", "json", "log", "snapshot"]},
-                    "path": {"type": "string"},
+                    "path": {
+                        "type": "string",
+                        "pattern": "^[^\\\\]+$",  # No backslashes (POSIX only)
+                        "not": {"pattern": "^/"},  # No leading slash (repo-relative)
+                    },
                     "description": {"type": "string"},
                 },
             },
         },
-        "metrics": {"type": "object"},
+        "metrics": {
+            "type": "object",
+            "maxProperties": 50,
+            "additionalProperties": {
+                "anyOf": [
+                    {"type": "integer"},
+                    {"type": "number"},
+                    {"type": "string", "maxLength": 500},
+                    {"type": "boolean"},
+                    {"type": "array"},
+                    {"type": "object"},
+                ],
+            },
+        },
         "remediation_hints": {"type": "array", "items": {"type": "string"}},
         "timestamp": {"type": ["string", "null"]},
         "correlation_id": {"type": ["string", "null"]},
@@ -195,10 +215,32 @@ def get_artifact_filename(
         return INDIVIDUAL_ARTIFACT_PATTERN_NO_CORR.format(guardian_id=guardian_id)
 
 
-# Performance ceilings
+# Payload size bounds (Phase 2b: schema bounds enforcement)
+MAX_METRICS_PROPERTIES: int = 50
+MAX_EVIDENCE_PROPERTIES: int = 30
+MAX_EVIDENCE_DEPTH: int = 3  # Nesting depth for evidence values
+MAX_PAYLOAD_BYTES: int = 512 * 1024  # 512 KB total serialized payload
+MAX_STRING_VALUE_LENGTH: int = 500  # Max length for string values in metrics
+
+# Performance ceilings (Phase 5: Algorithmic caps enforced in-code)
 MAX_GUARDIAN_RUNTIME_MS: int = 30_000
 MAX_ARTIFACT_SIZE_KB: int = 512
 MAX_SCAN_DEPTH: int = 10
+
+# Scan bounds (enforced by guardians, not just tests)
+MAX_FILES_PER_SCAN: int = 10_000  # Hard limit on file count per guardian scan
+MAX_FOLDER_DEPTH: int = 10  # Maximum folder depth to traverse
+IGNORE_PATTERNS: frozenset[str] = frozenset(
+    {
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".nox",
+        "node_modules",
+        ".venv",
+        "venv",
+    }
+)
 
 
 def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
@@ -275,6 +317,20 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
         if value not in enum_values:
             errors.append(f"{path}: value '{value}' not in enum {enum_values}")
 
+    def _validate_pattern(value: str, pattern: str, path: str) -> None:
+        """Validate string against regex pattern."""
+        import re
+
+        if not re.search(pattern, value):
+            errors.append(f"{path}: value '{value}' does not match pattern '{pattern}'")
+
+    def _validate_not_pattern(value: str, pattern: str, path: str) -> None:
+        """Validate string does NOT match regex pattern."""
+        import re
+
+        if re.search(pattern, value):
+            errors.append(f"{path}: value '{value}' must not match pattern '{pattern}'")
+
     def _validate_object(obj: dict, obj_schema: dict, path: str) -> None:
         props = obj_schema.get("properties", {})
         required = set(obj_schema.get("required", []))
@@ -284,6 +340,13 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
         for req in required:
             if req not in obj:
                 errors.append(f"{path}: missing required field '{req}'")
+
+        # Check maxProperties
+        max_props = obj_schema.get("maxProperties")
+        if max_props is not None and len(obj) > max_props:
+            errors.append(
+                f"{path}: object has {len(obj)} properties, exceeds maxProperties ({max_props})",
+            )
 
         # Check for extra fields if additionalProperties=False
         if additional is False:
@@ -300,6 +363,17 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
                     _validate_type(val, prop_schema["type"], field_path)
                 if "enum" in prop_schema and val is not None:
                     _validate_enum(val, prop_schema["enum"], field_path)
+                # Pattern validation for strings
+                if "pattern" in prop_schema and isinstance(val, str):
+                    _validate_pattern(val, prop_schema["pattern"], field_path)
+                # Not pattern validation for strings
+                if "not" in prop_schema and isinstance(val, str):
+                    not_schema = prop_schema["not"]
+                    if "pattern" in not_schema:
+                        _validate_not_pattern(val, not_schema["pattern"], field_path)
+                # Recurse into nested objects (for maxProperties, etc.)
+                if prop_schema.get("type") == "object" and isinstance(val, dict):
+                    _validate_object(val, prop_schema, field_path)
                 if prop_schema.get("type") == "array" and isinstance(val, list):
                     item_schema = prop_schema.get("items", {})
                     for i, item in enumerate(val):
@@ -311,6 +385,18 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
                             _validate_enum(item, item_schema["enum"], f"{field_path}[{i}]")
 
     _validate_object(result_dict, schema, "$")
+
+    # Payload size guard
+    try:
+        payload = json.dumps(result_dict, default=str)
+        if len(payload.encode("utf-8")) > MAX_PAYLOAD_BYTES:
+            errors.append(
+                f"$: serialized payload size ({len(payload.encode('utf-8'))} bytes) "
+                f"exceeds MAX_PAYLOAD_BYTES ({MAX_PAYLOAD_BYTES})",
+            )
+    except (TypeError, ValueError):
+        errors.append("$: payload is not JSON-serializable")
+
     return errors
 
 

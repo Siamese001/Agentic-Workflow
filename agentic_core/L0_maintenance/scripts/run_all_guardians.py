@@ -86,6 +86,7 @@ def run_all_guardians(
     )
 
     per_guardian_results: list[dict[str, Any]] = []
+    guardian_index: dict[str, dict[str, Any]] = {}  # Phase 4: artifact index
     total_checks = 0
     total_failed = 0
     total_error = 0
@@ -147,6 +148,12 @@ def run_all_guardians(
                 },
             )
 
+            # Phase 4: build artifact index for L6 ingestion
+            guardian_index[gid] = {
+                "status": result.status,
+                "artifacts": [normalize_repo_path(a.path) for a in result.artifacts],
+            }
+
         except Exception as exc:
             combined.add_check(
                 check_id=f"guardian_{gid}",
@@ -162,6 +169,10 @@ def run_all_guardians(
                     "error": str(exc),
                 },
             )
+            guardian_index[gid] = {
+                "status": "ERROR",
+                "artifacts": [],
+            }
 
     # Finalize
     guardian_count = len(guardian_specs)
@@ -173,6 +184,7 @@ def run_all_guardians(
         "guardians_error": total_error,
         "total_checks": total_checks,
         "per_guardian": per_guardian_results,
+        "index": guardian_index,
     }
 
     if combined.status == GuardianStatus.PASS.value:

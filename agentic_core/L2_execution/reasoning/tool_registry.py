@@ -13,7 +13,12 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError as _err:
+    raise ImportError(
+        "numpy is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 Logger: Any = logging.getLogger(__name__)
 

@@ -13,12 +13,11 @@ import os
 from agentic_core.runtime.types.consensus import ConsensusVerdict, ModelOpinion
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
 
-class SupremeCourt(AtomicExecutionMixin, SovereignBaseAgent):
+class SupremeCourt(SovereignBaseAgent):
     """
     Multi-model consensus system for critical decision making.
     """

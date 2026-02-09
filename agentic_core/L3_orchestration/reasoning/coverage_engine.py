@@ -9,7 +9,12 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError as _err:
+    raise ImportError(
+        "numpy is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
 
 from agentic_core.base_agents.decorators import standard_heal

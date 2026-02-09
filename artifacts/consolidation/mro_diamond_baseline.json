@@ -1,18 +1,7 @@
 {
   "version": "1.0.0",
-  "total": 92,
+  "total": 82,
   "entries": [
-    {
-      "file": "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py",
-      "line": 149,
-      "class": "BenchmarkingAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
     {
       "file": "agentic_core/L0_maintenance/reasoning/DocstringComplianceAgent.py",
       "line": 24,
@@ -37,111 +26,12 @@
       ]
     },
     {
-      "file": "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
-      "line": 60,
-      "class": "ASTValidatorAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
       "file": "agentic_core/L1_cognition/reasoning/AutonomousPromptEvolutionAgent.py",
       "line": 34,
       "class": "AutonomousPromptEvolutionAgent",
       "redundant_mixins": [
         "AtomicExecutionMixin",
         "SubatomicTestingMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/BudgetAgent.py",
-      "line": 26,
-      "class": "BudgetAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/LLMPromptGovernorAgent.py",
-      "line": 40,
-      "class": "LLMPromptGovernorAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",
-      "line": 38,
-      "class": "MetaLearningAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/SherlockAgent.py",
-      "line": 41,
-      "class": "SherlockAgent",
-      "redundant_mixins": [
-        "SubatomicTestingMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/SovereignCognitivePlaneAgent.py",
-      "line": 32,
-      "class": "AgentInfo",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/SovereignCognitivePlaneAgent.py",
-      "line": 94,
-      "class": "SovereignCognitivePlaneAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py",
-      "line": 40,
-      "class": "StrategicRecommendationAgent",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
-      ],
-      "carriers": [
-        "SovereignBaseAgent"
-      ]
-    },
-    {
-      "file": "agentic_core/L1_cognition/reasoning/SupremeCourtAgent.py",
-      "line": 21,
-      "class": "SupremeCourt",
-      "redundant_mixins": [
-        "AtomicExecutionMixin"
       ],
       "carriers": [
         "SovereignBaseAgent"

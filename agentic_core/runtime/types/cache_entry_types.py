@@ -13,7 +13,12 @@ import logging
 import time
 from typing import Any
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError as _err:
+    raise ImportError(
+        "numpy is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding

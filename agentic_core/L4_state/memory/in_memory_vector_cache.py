@@ -8,7 +8,12 @@ Optimized for 8GB hot cache allocation within 32GB WSL2 environment.
 import logging
 from typing import Any
 
-import chromadb
+try:
+    import chromadb
+except ImportError as _err:
+    raise ImportError(
+        "chromadb is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -29,15 +34,11 @@ class InMemoryVectorCache:
         """
         self.collection_name = collection_name
         self.max_memory_gb = max_memory_gb
-        try:
-            self.client = chromadb.Client()
-            self.collection = self.client.get_or_create_collection(name=collection_name)
-            Logger.info(
-                f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB",
-            )
-        except Exception as e:
-            Logger.error(f"Failed to initialize InMemoryVectorCache: {e}")
-            raise
+        self.client = chromadb.Client()
+        self.collection = self.client.get_or_create_collection(name=collection_name)
+        Logger.info(
+            f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB",
+        )
 
     async def add_documents(
         self,

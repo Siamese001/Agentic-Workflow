@@ -1,5 +1,38 @@
 # Dependency Remediation Analysis — Packaging Policy
 
+## Baseline Gates (Acceptance Criteria)
+
+All gates MUST PASS after remediation:
+
+### Gate A: Import Gate (core-only env)
+```bash
+pip install -e .
+python -c "import agentic_core; import apps_shared"
+```
+**Expected:** Exit code 0, no ImportError
+
+### Gate B: Core Verifier (core-only env)
+```bash
+python docs/reports/plans/dependency_verify_imports.py
+```
+**Expected:** Exit code 0, 0 BLOCKING failures (13 core OK, 6 moved to infra EXPECTED_MISSING)
+
+### Gate C: Dev Verifier (dev env)
+```bash
+pip install -e '.[dev]'
+python docs/reports/plans/dependency_verify_imports.py --require-dev
+```
+**Expected:** Exit code 0, 0 BLOCKING failures (13 core + 1 dev OK)
+
+### Gate D: Full Verifier (infra env)
+```bash
+pip install -e '.[infra]'
+python docs/reports/plans/dependency_verify_imports.py --all
+```
+**Expected:** Exit code 0 OR documented expected failures for truly optional packages
+
+---
+
 ## STEP 1 — Default Runtime Entrypoint Analysis
 
 ### Entrypoint Discovery

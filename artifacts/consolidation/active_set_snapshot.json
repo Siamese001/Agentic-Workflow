@@ -1,0 +1,28 @@
+{
+  "count": 149,
+  "fingerprint": "a3d39ecce65c6dbb0abe6f164b6323fc471dff01bb0c7d049fa100ba2f6b62c3",
+  "first_10": [
+    "ASTValidatorAgent",
+    "AdversarialProbeAgent",
+    "AdversarialRedTeamerAgent",
+    "AgentFactory",
+    "AgentGym",
+    "AppBase",
+    "ArchitectureGovernorAgent",
+    "AutonomicMonitorAgent",
+    "AutonomousPromptEvolutionAgent",
+    "AutonomousThreatEvolutionAgent"
+  ],
+  "last_10": [
+    "TestGeneratorAgent",
+    "ToolsmithAgent",
+    "ToxicDependencyAuditor",
+    "TracingAgent",
+    "TypeHintFixerAgent",
+    "TypeMechanicAgent",
+    "UnifiedAgent",
+    "UnusedCleanupAgent",
+    "ValidatorAgent",
+    "VerificationGate"
+  ]
+}

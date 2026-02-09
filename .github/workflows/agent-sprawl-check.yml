@@ -47,6 +47,12 @@ jobs:
         run: |
           python ops_scripts/ci/active_set_ssot_check.py
 
+      - name: Active Set SSOT Check Unit Tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/core/test_active_set_ssot_check.py -xvv
+
       - name: Validate Target Manifest
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -71,6 +77,13 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python ops_scripts/ci/discovery_registry_consistency_check.py
+
+      - name: Active Set Snapshot Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          python ops_scripts/ci/active_set_snapshot_check.py
 
       # ── Phase 3: Remaining gates ──
       - name: Enforce MRO Diamond Contract
@@ -97,6 +110,18 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python ops_scripts/ci/centrality_gate.py
+
+      - name: Governance Coverage Audit
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/governance_coverage_check.py
+
+      - name: CI Self-Consistency Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/gate_consistency_check.py
 
       # ── Phase 4: Test suites ──
       - name: Executor Smoke Tests
@@ -134,12 +159,6 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python -m pytest tests/core/test_active_set_fingerprint.py -xvv
-
-      - name: Active Set SSOT Check Unit Tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          python -m pytest tests/core/test_active_set_ssot_check.py -xvv
 
       - name: Enforce Sprawl Gate
         env:

@@ -8,7 +8,12 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-import duckdb
+try:
+    import duckdb
+except ImportError as _err:
+    raise ImportError(
+        "duckdb is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 Logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 

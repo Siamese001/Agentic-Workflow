@@ -30,8 +30,12 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.venv_gate/
 venv/
 env/
+
+# Build artifacts
+*.egg-info/
 
 # IDE and OS noise
 .vscode/

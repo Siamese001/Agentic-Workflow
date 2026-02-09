@@ -57,7 +57,7 @@ class ASTValidatorBase(ast.NodeVisitor):
 
 
 @dataclass
-class ASTValidatorAgent(AtomicExecutionMixin, ASTValidatorBase, SovereignBaseAgent):
+class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
     """
     Unified AST validator replacing 5 micro-agents.
 

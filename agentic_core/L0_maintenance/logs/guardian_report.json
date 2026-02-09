@@ -1,22 +1,24 @@
 {
-  "status": "PASS",
-  "timestamp": "2026-02-09T03:35:12.314523+00:00",
+  "status": "BLOCKING",
+  "timestamp": "2026-02-09T04:20:54.172207+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 146,
-    "passed_tests": 146,
-    "failed_tests": 0,
+    "total_tests": 238,
+    "passed_tests": 237,
+    "failed_tests": 1,
     "skipped_tests": 0,
-    "exit_status": 0,
+    "exit_status": 1,
     "failed_by_category": {
       "mro_integrity": [],
       "import_safety": [],
       "ssot_alignment": [],
       "subatomic": [],
       "forensic": [],
-      "other": []
+      "other": [
+        "tests/guardian/test_behavioral_coverage_ratchet.py::TestCheckIdCoverage::test_all_check_ids_referenced_in_tests[contract_integrity]"
+      ]
     }
   }
 }
