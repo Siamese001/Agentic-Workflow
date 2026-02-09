@@ -17,7 +17,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_maintenance.scripts.run_guardian_hygiene import (
-    ScanBudgetExceeded,
     run_hygiene_guardian,
     scan_temp_artifacts,
 )
@@ -27,6 +26,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     MAX_FOLDER_DEPTH,
     CheckStatus,
     GuardianStatus,
+    ScanBudgetExceeded,
 )
 
 pytestmark = pytest.mark.guardian

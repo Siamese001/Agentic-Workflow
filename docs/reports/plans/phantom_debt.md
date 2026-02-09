@@ -26,7 +26,7 @@ Phantom count: 29
 | `agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py` | `SOVEREIGN_REGISTRY` | `from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY` (line 47) | replace import or define symbol |
 | `agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py` | `SCRIPTS_DIR` | `from agentic_core.L5_safety.config.structure_blueprint_config import SCRIPTS_DIR` (line 41) | replace import or define symbol |
 | `agentic_core/L5_safety/reasoning/GovernanceAgent.py` | `SOVEREIGN_REGISTRY` | `from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY` (line 364) | replace import or define symbol |
-| `agentic_core/L5_safety/reasoning/PineconeSovereignAgent.py` | `TERRITORY_EXAMPLES` | `from agentic_core.L5_safety.config.structure_blueprint_config import TERRITORY_EXAMPLES` (line 343) | replace import or define symbol |
+| `agentic_core/L5_safety/reasoning/PineconeSovereignAgent.py` | `TERRITORY_EXAMPLES` | `from agentic_core.L5_safety.config.structure_blueprint_config import TERRITORY_EXAMPLES` (line 348) | replace import or define symbol |
 | `agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py` | `SCRIPTS_DIR` | `from agentic_core.L5_safety.config.structure_blueprint_config import SCRIPTS_DIR` (line 25) | replace import or define symbol |
 | `agentic_core/runtime/utils/sovereign_scan_util.py` | `SOVEREIGN_REGISTRY` | `from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY` (line 79) | replace import or define symbol |
 | `apps_rg/config/void_compliance_config.py` | `SOVEREIGN_REGISTRY` | `from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY` (line 16) | replace import or define symbol |

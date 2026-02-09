@@ -195,11 +195,11 @@ class TestSchemaCompliance:
 
 class TestArtifactWriting:
     def test_writes_combined_artifact(self, clean_repo: Path):
-        result = run_all_guardians(
+        run_all_guardians(
             repo_root=clean_repo,
-            write_artifacts_dir="docs/reports/guardian_artifacts",
+            write_artifacts_dir="docs/reports/verification/guardian",
         )
-        out = clean_repo / "docs" / "reports" / "guardian_artifacts" / "combined_guardian_result.json"
+        out = clean_repo / "docs" / "reports" / "verification" / "guardian" / "combined_guardian_result.json"
         assert out.exists()
         data = json.loads(out.read_text(encoding="utf-8"))
         assert data["guardian_id"] == "combined"

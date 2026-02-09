@@ -164,17 +164,27 @@ def main() -> int:
         print(f"  old_ceiling={ceiling}  new_count={count}  delta=-{improvement}")
 
         # Auto-lower baseline when env var is set (never auto-bump upward)
+        # GUARD: auto-lower is forbidden in CI — baseline changes must be intentional
+        if os.environ.get("AUTO_LOWER_MRO_BASELINE") == "1" and (
+            os.environ.get("CI") == "true" or os.environ.get("GITHUB_ACTIONS") == "true"
+        ):
+            print(
+                "FAIL: AUTO_LOWER_MRO_BASELINE=1 is forbidden in CI. "
+                "Lower the baseline locally and commit the updated JSON.",
+                file=sys.stderr,
+            )
+            return 1
+
         if os.environ.get("AUTO_LOWER_MRO_BASELINE") == "1":
+            from ops_scripts.ci.baseline_io import write_json_atomic
+
             current_keys = {d["file"] + ":" + d["class"] for d in diamonds}
             new_entries = [
                 e for e in baseline.get("entries", []) if e["file"] + ":" + e["class"] in current_keys
             ]
             baseline["total"] = count
             baseline["entries"] = new_entries
-            baseline_file.write_text(
-                json.dumps(baseline, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            write_json_atomic(baseline_file, baseline)
             print(f"  AUTO-LOWERED baseline from {ceiling} → {count}")
         else:
             print(

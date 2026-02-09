@@ -37,9 +37,11 @@ _GOVERNANCE_EXCLUDES = frozenset(
         "active_set_helper.py",
         "active_set_ssot_check.py",
         "active_set_snapshot_check.py",
+        "baseline_io.py",
         "gate_consistency_check.py",
         "governance_coverage_check.py",
-    }
+        "mro_new_diamond_check.py",
+    },
 )
 
 # Substrings that indicate a script uses active-set semantics

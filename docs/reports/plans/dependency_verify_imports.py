@@ -3,9 +3,10 @@ Reproducible import verification script (v4).
 Generated: 2026-02-09T03:42:13.423459+00:00
 
 Verification contract:
-  default:       require core only.
-  --require-dev: require core + dev.
-  --all:         require every bucket.
+  default:         require core only.
+  --require-dev:   require core + dev.
+  --require-infra: require core + infra (declared optional deps).
+  --all:           require core + dev + infra (declared optional deps).
 
 Output is keyed by dist package with per-import breakdown.
 """
@@ -17,20 +18,14 @@ PACKAGES = {
     "core": [
         ("PyYAML", ["yaml"]),
         ("aiofiles", ["aiofiles"]),
-        ("chromadb", ["chromadb"]),
-        ("duckdb", ["duckdb"]),
         ("jinja2", ["jinja2"]),
         ("libcst", ["libcst"]),
         ("networkx", ["networkx"]),
-        ("numpy", ["numpy"]),
         ("pinecone", ["pinecone"]),
         ("psutil", ["psutil"]),
         ("pydantic", ["pydantic"]),
-        ("pydantic-settings", ["pydantic_settings"]),
         ("python-dotenv", ["dotenv"]),
-        ("rank-bm25", ["rank_bm25"]),
         ("redis", ["redis"]),
-        ("scikit-learn", ["sklearn"]),
         ("tenacity", ["tenacity"]),
         ("tqdm", ["tqdm"]),
         ("watchdog", ["watchdog"]),
@@ -39,31 +34,40 @@ PACKAGES = {
         ("pytest", ["pytest"]),
     ],
     "infra": [
+        ("numpy", ["numpy"]),
+        ("chromadb", ["chromadb"]),
+        ("duckdb", ["duckdb"]),
+        ("rank-bm25", ["rank_bm25"]),
+        ("scikit-learn", ["sklearn"]),
+        ("pydantic-settings", ["pydantic_settings"]),
+        ("beautifulsoup4", ["bs4"]),
+        ("dash", ["dash"]),
+        ("fastapi", ["fastapi"]),
+        ("livereload", ["livereload"]),
+        ("pandas", ["pandas"]),
+        ("playwright", ["playwright"]),
+        ("plotly", ["plotly"]),
+        ("waitress", ["waitress"]),
+        ("rich", ["rich"]),
+    ],
+    "external": [
         ("FlagEmbedding", ["FlagEmbedding"]),
         ("GitPython", ["git"]),
         ("PyPDF2", ["PyPDF2"]),
         ("anthropic", ["anthropic"]),
         ("bandit", ["bandit"]),
-        ("beautifulsoup4", ["bs4"]),
         ("boto3", ["boto3"]),
-        ("dash", ["dash"]),
-        ("fastapi", ["fastapi"]),
         ("google-genai", ["google.genai"]),
         ("google-generativeai", ["google.generativeai"]),
-        ("livereload", ["livereload"]),
         ("neo4j", ["neo4j"]),
         ("openai", ["openai"]),
         ("opentelemetry-api", ["opentelemetry"]),
-        ("pandas", ["pandas"]),
         ("pdf2image", ["pdf2image"]),
         ("pdfplumber", ["pdfplumber"]),
-        ("playwright", ["playwright"]),
-        ("plotly", ["plotly"]),
         ("pypdf", ["pypdf"]),
         ("pytesseract", ["pytesseract"]),
         ("pytz", ["pytz"]),
         ("requests", ["requests"]),
-        ("rich", ["rich"]),
         ("sentence-transformers", ["sentence_transformers"]),
         ("tabulate", ["tabulate"]),
         ("tiktoken", ["tiktoken"]),
@@ -71,7 +75,6 @@ PACKAGES = {
         ("tree-sitter", ["tree_sitter"]),
         ("tree-sitter-python", ["tree_sitter_python"]),
         ("uvicorn", ["uvicorn"]),
-        ("waitress", ["waitress"]),
         ("websockets", ["websockets"]),
     ],
     "sdks": [
@@ -84,13 +87,16 @@ PACKAGES = {
 
 def main():
     require_dev = "--require-dev" in sys.argv
+    require_infra = "--require-infra" in sys.argv
     require_all = "--all" in sys.argv
 
     required_buckets = {"core"}
     if require_dev:
         required_buckets.add("dev")
+    if require_infra:
+        required_buckets.add("infra")
     if require_all:
-        required_buckets = set(PACKAGES.keys())
+        required_buckets.update({"core", "dev", "infra"})
 
     bucket_ok = {}
     bucket_fail = {}

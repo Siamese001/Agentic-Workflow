@@ -8,7 +8,7 @@ Date: 2026-02-08
 All guardian result artifacts MUST be written to:
 
 ```
-docs/reports/guardian_artifacts/
+docs/reports/verification/guardian/
 ```
 
 This is the SSOT constant `GUARDIAN_ARTIFACT_DIR` in `guardian_contract.py`.

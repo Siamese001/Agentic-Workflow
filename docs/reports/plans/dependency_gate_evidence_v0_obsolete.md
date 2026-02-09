@@ -1,4 +1,11 @@
-# Dependency Gate Evidence — Clean Venv Run
+# OBSOLETE — Superseded by dependency_gate_evidence_vFinal.md
+
+This file contains intermediate gate results from an earlier run and is no longer authoritative.
+Canonical evidence: `docs/reports/plans/dependency_gate_evidence_vFinal.md`
+
+---
+
+# Dependency Gate Evidence — Clean Venv Run (OBSOLETE)
 
 ## Gate Results Summary
 

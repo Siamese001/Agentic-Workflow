@@ -65,7 +65,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_types(self):
         """No Agent classes should exist in types/ folders."""
-        base = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core")
+        base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
             pytest.skip("agentic_core not found")
 
@@ -93,7 +93,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_config(self):
         """No Agent classes should exist in config/ folders."""
-        base = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core")
+        base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
             pytest.skip("agentic_core not found")
 
@@ -120,7 +120,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_validators(self):
         """No Agent classes should exist in validators/ folders."""
-        base = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core")
+        base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
             pytest.skip("agentic_core not found")
 

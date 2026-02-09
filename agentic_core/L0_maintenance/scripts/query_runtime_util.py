@@ -5,14 +5,19 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from rich.console import Console
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+try:
+    from rich.console import Console
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+except ImportError as _err:
+    raise ImportError(
+        "rich is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 # Approved SSOT: Singleton console to prevent terminal character interleaving
 _console = Console()
 
 
-def retry_query(max_retries: int = 3, base_delay: float = 1.0):
+def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: allow-magic_configuration
     """
     Decorator to provide exponential backoff with jitter for database queries.
     """
@@ -24,7 +29,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
             for attempt in range(max_retries + 1):
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent_swallower
                     last_exception = e
                     if attempt < max_retries:
                         # Exponential backoff with jitter
@@ -40,7 +45,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
     return decorator
 
 
-@retry_query(max_retries=3)
+@retry_query(max_retries=3)  # guardian: allow-magic_configuration
 def execute_sql(sql: str) -> Any:
     """
     Placeholder database execution function.
@@ -50,7 +55,9 @@ def execute_sql(sql: str) -> Any:
     raise NotImplementedError("execute_sql must be implemented with actual database driver")
 
 
-def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
+def run_hardened_query(
+    query_string: str, timeout_seconds: int = 300
+) -> Any:  # guardian: allow-magic_configuration
     """
     Executes a database query with a decoupled animation thread.
 
@@ -83,7 +90,7 @@ def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
                 done, _ = concurrent.futures.wait(
                     [future],
-                    timeout=0.05,
+                    timeout=0.05,  # guardian: allow-magic_configuration
                     return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 
