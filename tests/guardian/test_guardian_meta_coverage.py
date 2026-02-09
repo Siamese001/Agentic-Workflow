@@ -88,7 +88,7 @@ class TestGuardianMetaCoverage:
                 mod = importlib.import_module(spec.entrypoint_module)
                 if not hasattr(mod, spec.entrypoint_fn):
                     errors.append(
-                        f"{spec.guardian_id}: {spec.entrypoint_fn} not found in {spec.entrypoint_module}"
+                        f"{spec.guardian_id}: {spec.entrypoint_fn} not found in {spec.entrypoint_module}",
                     )
             except ImportError as exc:
                 errors.append(f"{spec.guardian_id}: ImportError {exc}")

@@ -47,7 +47,8 @@ class TestRGValidationExecutorDispatch:
         assert self.EXECUTOR_PATH.exists()
 
     @pytest.mark.parametrize(
-        "rule", ["ats_compatibility", "brand_compliance", "fact_check", "section_balance"]
+        "rule",
+        ["ats_compatibility", "brand_compliance", "fact_check", "section_balance"],
     )
     def test_rule_registered(self, rule: str) -> None:
         source = self.EXECUTOR_PATH.read_text(encoding="utf-8")
@@ -91,7 +92,8 @@ class TestObservabilityProbeExecutorDispatch:
         assert self.EXECUTOR_PATH.exists()
 
     @pytest.mark.parametrize(
-        "probe", ["cost_tracker", "coordinator", "strategic", "deadlock", "debate", "runtime_telemetry"]
+        "probe",
+        ["cost_tracker", "coordinator", "strategic", "deadlock", "debate", "runtime_telemetry"],
     )
     def test_probe_key_present(self, probe: str) -> None:
         source = self.EXECUTOR_PATH.read_text(encoding="utf-8")

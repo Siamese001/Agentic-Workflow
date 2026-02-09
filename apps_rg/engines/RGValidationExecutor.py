@@ -31,11 +31,11 @@ def _ats_collect_issues(self, resume_data: dict, job_data: dict | None = None) -
     issues = []
     if not resume_data.get("skills"):
         issues.append(
-            {"type": "ats_missing_skills", "severity": "high", "message": "No skills section found"}
+            {"type": "ats_missing_skills", "severity": "high", "message": "No skills section found"},
         )
     if not resume_data.get("experience"):
         issues.append(
-            {"type": "ats_missing_experience", "severity": "high", "message": "No experience section"}
+            {"type": "ats_missing_experience", "severity": "high", "message": "No experience section"},
         )
     keywords = resume_data.get("keywords", [])
     if job_data:
@@ -44,7 +44,7 @@ def _ats_collect_issues(self, resume_data: dict, job_data: dict | None = None) -
         missing = required - found
         for kw in missing:
             issues.append(
-                {"type": "ats_missing_keyword", "severity": "medium", "message": f"Missing keyword: {kw}"}
+                {"type": "ats_missing_keyword", "severity": "medium", "message": f"Missing keyword: {kw}"},
             )
     return issues
 
@@ -56,7 +56,7 @@ def _brand_collect_issues(self, resume_data: dict, job_data: dict | None = None)
     tone = resume_data.get("tone", "")
     if tone and tone.lower() not in ("professional", "confident", "balanced"):
         issues.append(
-            {"type": "brand_tone_mismatch", "severity": "medium", "message": f"Tone '{tone}' not aligned"}
+            {"type": "brand_tone_mismatch", "severity": "medium", "message": f"Tone '{tone}' not aligned"},
         )
     if resume_data.get("contains_superlatives", False):
         issues.append({"type": "brand_superlatives", "severity": "low", "message": "Contains superlatives"})
@@ -75,7 +75,7 @@ def _fact_collect_issues(self, resume_data: dict, job_data: dict | None = None) 
                     "type": "fact_unsourced_claim",
                     "severity": "high",
                     "message": f"Unsourced: {claim.get('text', '')}",
-                }
+                },
             )
         if claim.get("value") and not claim.get("context"):
             issues.append(
@@ -83,14 +83,14 @@ def _fact_collect_issues(self, resume_data: dict, job_data: dict | None = None) 
                     "type": "fact_no_context",
                     "severity": "medium",
                     "message": f"No context for metric: {claim.get('text', '')}",
-                }
+                },
             )
     dates = resume_data.get("dates", [])
     for i in range(len(dates) - 1):
         if dates[i].get("end") and dates[i + 1].get("start"):
             if dates[i]["end"] > dates[i + 1]["start"]:
                 issues.append(
-                    {"type": "fact_date_overlap", "severity": "high", "message": "Overlapping date ranges"}
+                    {"type": "fact_date_overlap", "severity": "high", "message": "Overlapping date ranges"},
                 )
     return issues
 
@@ -109,7 +109,7 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
                     "type": "section_oversized",
                     "severity": "medium",
                     "message": f"Section '{name}' is {ratio:.0%} of total",
-                }
+                },
             )
         if ratio < 0.05 and name not in ("objective", "summary"):
             issues.append(
@@ -117,7 +117,7 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
                     "type": "section_undersized",
                     "severity": "low",
                     "message": f"Section '{name}' is only {ratio:.0%} of total",
-                }
+                },
             )
     return issues
 
@@ -151,6 +151,6 @@ class RGValidationExecutor(RGAgentBase):
                     "type": "unknown_rule_set",
                     "severity": "high",
                     "message": f"No handler for rule_set={self.rule_set}",
-                }
+                },
             ]
         return handler(self, resume_data, job_data)

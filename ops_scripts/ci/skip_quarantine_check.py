@@ -165,7 +165,7 @@ def main() -> int:
     print(f"  skip: count={total_skips}  ceiling={SKIP_CEILING}  delta={total_skips - SKIP_CEILING}")
     print(
         f"  quarantine: count={manifest_total}  ceiling={QUARANTINE_CEILING}  "
-        f"delta={manifest_total - QUARANTINE_CEILING}"
+        f"delta={manifest_total - QUARANTINE_CEILING}",
     )
     print(f"  documented_files={len(documented)}  quarantined_files={len(quarantined)}")
     print(f"  files_with_skips={len(files_with_skips)}")

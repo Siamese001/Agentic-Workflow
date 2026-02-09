@@ -101,7 +101,7 @@ def check_shim(rel_path: str) -> None:
     non_future = [m for m in imports_from if m not in ("__future__", "typing")]
     if len(non_future) > 1:
         fail(
-            f"{rel_path}: imports from {len(non_future)} non-future modules: {non_future} (expected exactly 1)"
+            f"{rel_path}: imports from {len(non_future)} non-future modules: {non_future} (expected exactly 1)",
         )
 
 

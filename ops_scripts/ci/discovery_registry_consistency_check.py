@@ -115,7 +115,7 @@ def main() -> int:
         f"  checked={stats.get('checked', 0)}  "
         f"file_missing={stats.get('file_missing', 0)}  "
         f"class_missing={stats.get('class_missing', 0)}  "
-        f"shim_ref={stats.get('shim_ref', 0)}"
+        f"shim_ref={stats.get('shim_ref', 0)}",
     )
 
     if violations:

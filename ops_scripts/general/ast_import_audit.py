@@ -72,7 +72,7 @@ EXCLUDED_DIRS = frozenset(
         ".mypy_cache",
         ".tox",
         "node_modules",
-    }
+    },
 )
 
 FIRST_PARTY_PACKAGES = frozenset(
@@ -87,7 +87,7 @@ FIRST_PARTY_PACKAGES = frozenset(
         "artifacts",
         "archives",
         "Agentic_Workflow",
-    }
+    },
 )
 
 PHANTOM_INTERNAL_MODULES = frozenset(
@@ -110,7 +110,7 @@ PHANTOM_INTERNAL_MODULES = frozenset(
         "agent_validation",
         "execute_ssot",
         "repo_builder",
-    }
+    },
 )
 
 # Namespace packages: for these, extract 2 levels from dotted import path
@@ -219,7 +219,7 @@ DEV_TOOL_DISTS = frozenset(
         "mypy",
         "nox",
         "pre-commit",
-    }
+    },
 )
 
 BUCKET_VERSIONS: dict[str, str] = {
@@ -512,7 +512,7 @@ def run_scan(roots: list[str], tag: str, exclude_subdirs: list[str] | None = Non
             "excluded_hard_files": [],
             "deferred_files": [],
             "conditional_files": [],
-        }
+        },
     )
     for rel, info in file_data.items():
         for name in info["hard"]:
@@ -630,7 +630,7 @@ def merge_inventories(out_dir: Path) -> dict:
             "runtime_conditional_files": [],
             "dev_hard_files": [],
             "sdks_files": [],
-        }
+        },
     )
 
     for tag, inv in scans.items():
@@ -730,7 +730,7 @@ def generate_markdown_report(merged: dict) -> str:
         f"**Buckets**: core={bc.get('core', 0)}, "
         f"dev={bc.get('dev', 0)}, "
         f"infra={bc.get('infra', 0)}, "
-        f"sdks={bc.get('sdks', 0)}"
+        f"sdks={bc.get('sdks', 0)}",
     )
     L.append(f"**Phantom/stale internal**: {meta['total_phantom_internal']}")
     L.append("")
@@ -741,7 +741,7 @@ def generate_markdown_report(merged: dict) -> str:
     L.append("2. Packages appearing ONLY in the `sdks` tagged scan → `sdks`")
     L.append(
         "3. Packages with ≥1 top-level hard import in the `runtime` "
-        "tagged scan (after `--exclude-subdir` filtering) → `core`"
+        "tagged scan (after `--exclude-subdir` filtering) → `core`",
     )
     L.append("4. Everything else → `infra`")
     L.append("")
@@ -749,7 +749,7 @@ def generate_markdown_report(merged: dict) -> str:
     L.append("")
     L.append(
         "The following directories are **not shipped** as part of the "
-        "runtime package and are excluded from core classification:"
+        "runtime package and are excluded from core classification:",
     )
     L.append("")
     L.append("- `tests/` — test suite (dev-only)")
@@ -757,16 +757,16 @@ def generate_markdown_report(merged: dict) -> str:
     L.append("- `data/` — sample data and SDK wrappers (not shipped)")
     L.append(
         "- `*/scripts/` subdirs within runtime roots — utility/maintenance "
-        "scripts (invoked manually, not imported at runtime)"
+        "scripts (invoked manually, not imported at runtime)",
     )
     L.append(
-        "- `*/dashboards/` subdirs within runtime roots — observability dashboards (deployed separately)"
+        "- `*/dashboards/` subdirs within runtime roots — observability dashboards (deployed separately)",
     )
     L.append("")
     L.append(
         "This contract MUST be enforced via packaging (`[project.packages]` "
         "or `find:` directives in setup) and CI. If any excluded path "
-        "becomes shipped, re-run the runtime scan without that exclusion."
+        "becomes shipped, re-run the runtime scan without that exclusion.",
     )
     L.append("")
 
@@ -876,7 +876,7 @@ def generate_verification_script(merged: dict) -> str:
             {
                 "dist": info["dist_package"],
                 "imports": info["verify_imports"],
-            }
+            },
         )
 
     L: list[str] = []
@@ -951,7 +951,7 @@ def generate_verification_script(merged: dict) -> str:
     L.append(
         "            rows.append("
         "f'  [{bucket:5s}] [{req_s}] "
-        "dist={dist:30s} {tag:18s} imports: {imp_detail}')"
+        "dist={dist:30s} {tag:18s} imports: {imp_detail}')",
     )
     L.append("")
     L.append("    for row in rows:")
@@ -960,7 +960,7 @@ def generate_verification_script(merged: dict) -> str:
     L.append("    print()")
     L.append("    print('Bucket Summary:')")
     L.append(
-        '    hdr = f\'{"bucket":8s} {"required?":10s} {"OK":>4s} {"FAIL":>5s} {"SKIP":>5s} {"verdict":>8s}\''
+        '    hdr = f\'{"bucket":8s} {"required?":10s} {"OK":>4s} {"FAIL":>5s} {"SKIP":>5s} {"verdict":>8s}\'',
     )
     L.append("    print(f'  {hdr}')")
     L.append("    blocking = 0")
@@ -981,7 +981,7 @@ def generate_verification_script(merged: dict) -> str:
     L.append("    print()")
     L.append(
         "    print(f'Total: {total_ok}/{total} dist packages OK, "
-        "{total_fail} BLOCKING, {total_skip} EXPECTED_MISSING')"
+        "{total_fail} BLOCKING, {total_skip} EXPECTED_MISSING')",
     )
     L.append("    if blocking > 0:")
     L.append("        print(f'RESULT: FAIL ({blocking} blocking failures)')")
@@ -1010,7 +1010,9 @@ def main() -> None:
         help="Subdirectory names to exclude from 'hard' classification",
     )
     parser.add_argument(
-        "--merge", action="store_true", help="Merge all tagged scan inventories and produce final artifacts"
+        "--merge",
+        action="store_true",
+        help="Merge all tagged scan inventories and produce final artifacts",
     )
     args = parser.parse_args()
 
@@ -1048,7 +1050,7 @@ def main() -> None:
             f"  Buckets:          core={bc.get('core', 0)} "
             f"dev={bc.get('dev', 0)} "
             f"infra={bc.get('infra', 0)} "
-            f"sdks={bc.get('sdks', 0)}"
+            f"sdks={bc.get('sdks', 0)}",
         )
         print(f"  Phantom internal: {meta['total_phantom_internal']}")
         print()

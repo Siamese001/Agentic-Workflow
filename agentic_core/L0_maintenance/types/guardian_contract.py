@@ -219,13 +219,13 @@ def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
         check_keys = set(check.keys())
         if check_keys != CHECK_SCHEMA_KEYS:
             errors.append(
-                f"Check keys mismatch: expected {sorted(CHECK_SCHEMA_KEYS)}, got {sorted(check_keys)}"
+                f"Check keys mismatch: expected {sorted(CHECK_SCHEMA_KEYS)}, got {sorted(check_keys)}",
             )
     for artifact in result_dict.get("artifacts", []):
         artifact_keys = set(artifact.keys())
         if artifact_keys != ARTIFACT_SCHEMA_KEYS:
             errors.append(
-                f"Artifact keys mismatch: expected {sorted(ARTIFACT_SCHEMA_KEYS)}, got {sorted(artifact_keys)}"
+                f"Artifact keys mismatch: expected {sorted(ARTIFACT_SCHEMA_KEYS)}, got {sorted(artifact_keys)}",
             )
     return errors
 

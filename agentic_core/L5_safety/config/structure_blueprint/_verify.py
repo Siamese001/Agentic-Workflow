@@ -930,7 +930,7 @@ def main() -> int:
     print("  Building import graph...")
     import_graph = ImportGraph(enforcement_root, SCAN_ROOTS)
     print(
-        f"  Import graph: {import_graph.files_parsed} files parsed, {len(import_graph.parse_errors)} errors"
+        f"  Import graph: {import_graph.files_parsed} files parsed, {len(import_graph.parse_errors)} errors",
     )
     if import_graph.parse_errors:
         for pe in import_graph.parse_errors[:5]:
@@ -957,7 +957,7 @@ def main() -> int:
     enforcement_results.append(td_result)
     td_stats = td_result["stats"]
     print(
-        f"  territory_diff: {len(td_result['violations'])} violation(s)  [{td_stats['territories_checked']} territories checked]"
+        f"  territory_diff: {len(td_result['violations'])} violation(s)  [{td_stats['territories_checked']} territories checked]",
     )
 
     # Layer 2: Leaf node — root .py prohibition (ALL territories)
@@ -965,7 +965,7 @@ def main() -> int:
     enforcement_results.append(ln_result)
     ln_stats = ln_result["stats"]
     print(
-        f"  leaf_node: {len(ln_result['violations'])} violation(s)  [{ln_stats['territories_checked']} dirs with allow_root_py=False]"
+        f"  leaf_node: {len(ln_result['violations'])} violation(s)  [{ln_stats['territories_checked']} dirs with allow_root_py=False]",
     )
 
     # Layer 3: Volatile rules — import isolation for volatile territories
@@ -992,7 +992,7 @@ def main() -> int:
     print(f"  cross_layer: {len(cl_result['violations'])} violation(s)")
     cl_stats = cl_result["stats"]
     print(
-        f"    edges: {cl_stats.get('total_edges', 0)} total, {cl_stats.get('internal_edges', 0)} internal, {cl_stats.get('cross_layer_edges_analyzed', 0)} cross-layer analyzed"
+        f"    edges: {cl_stats.get('total_edges', 0)} total, {cl_stats.get('internal_edges', 0)} internal, {cl_stats.get('cross_layer_edges_analyzed', 0)} cross-layer analyzed",
     )
 
     if enforcement_results:

@@ -66,7 +66,7 @@ BUDGETED_WARNING_TYPES: frozenset[str] = frozenset(
         # is config_execution_violation (for gateway_config.py lazy imports).
         # All other cross-layer violations are errors by default.
         "config_execution_violation",
-    }
+    },
 )
 
 
