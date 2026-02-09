@@ -16,11 +16,26 @@ Contract version is an integer that increments on breaking changes.
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path, PurePosixPath
 from typing import Any
+
+# ---------------------------------------------------------------------------
+# V15 Enforcement Infrastructure
+# ---------------------------------------------------------------------------
+
+
+class V15EnforcementError(RuntimeError):
+    """Raised when a V15 invariant is violated in enforced mode."""
+
+
+def is_v15_enforced() -> bool:
+    """Return True when V15_ENFORCEMENT is enabled via env var."""
+    return os.environ.get("V15_ENFORCEMENT", "").lower() in ("1", "true", "yes")
+
 
 # ---------------------------------------------------------------------------
 # Enums
@@ -56,7 +71,7 @@ class ArtifactType(str, Enum):
 # Contract version
 # ---------------------------------------------------------------------------
 
-CONTRACT_VERSION: int = 1
+CONTRACT_VERSION: int = 2
 
 # Frozen schema shape: top-level keys → expected types.
 # Any change to this set is a BREAKING change requiring CONTRACT_VERSION bump.
@@ -73,6 +88,10 @@ CONTRACT_SCHEMA_SNAPSHOT: dict[str, str] = {
     "correlation_id": "str|None",
     "index": "dict",
     "artifact_class": "str",
+    # V15 P5 signing fields (CONTRACT_VERSION >= 2)
+    "v15_trace_id": "str|None",
+    "v15_signature": "str|None",
+    "v15_commit_hash": "str|None",
 }
 
 # Frozen check-level keys
@@ -631,6 +650,10 @@ class GuardianResult:
     remediation_hints: list[str] = field(default_factory=list)
     index: dict[str, Any] = field(default_factory=dict)
     artifact_class: str = ArtifactClass.INDIVIDUAL.value
+    # V15 P5 signing fields (CONTRACT_VERSION >= 2)
+    v15_trace_id: str | None = None
+    v15_signature: str | None = None
+    v15_commit_hash: str | None = None
 
     # -- Mutation helpers ---------------------------------------------------
 
@@ -673,6 +696,35 @@ class GuardianResult:
 
     # -- Serialization ------------------------------------------------------
 
+    def sign(self, enclave: Any, key_id: str, commit_hash: str) -> Any:
+        """Sign this result via a SignatureEnclave; returns SignedGuardianArtifact.
+
+        Fail-closed: raises V15EnforcementError if signing fails.
+        """
+        from agentic_core.L0_maintenance.types.v15_p5_types import (
+            SignedGuardianArtifact,
+        )
+
+        if not self.v15_trace_id:
+            raise V15EnforcementError(
+                "GuardianResult.sign(): v15_trace_id must be set before signing",
+            )
+        canonical_bytes = json.dumps(
+            self.to_dict(),
+            sort_keys=True,
+        ).encode("utf-8")
+        signature = enclave.sign(canonical_bytes, key_id)
+        self.v15_signature = signature
+        self.v15_commit_hash = commit_hash
+        return SignedGuardianArtifact(
+            trace_id=self.v15_trace_id,
+            signature=signature,
+            prestaged_perms=(),
+            environment_metadata={},
+            commit_hash=commit_hash,
+            pass_fail=self.status == GuardianStatus.PASS.value,
+        )
+
     def to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
             "guardian_id": self.guardian_id,
@@ -692,9 +744,26 @@ class GuardianResult:
             d["index"] = self.index
         if self.artifact_class:
             d["artifact_class"] = self.artifact_class
+        # V15 signing fields
+        d["v15_trace_id"] = self.v15_trace_id
+        d["v15_signature"] = self.v15_signature
+        d["v15_commit_hash"] = self.v15_commit_hash
         return d
 
+    def ensure_v15_signed(self) -> None:
+        """INV-2: Fail-closed guard — raises if V15 is enforced and result is unsigned.
+
+        Guardian runners MUST call this (or sign()) before emitting results
+        when V15_ENFORCEMENT is enabled.
+        """
+        if is_v15_enforced() and not self.v15_signature:
+            raise V15EnforcementError(
+                f"GuardianResult '{self.guardian_id}' is unsigned but "
+                "V15_ENFORCEMENT is enabled. Call sign() before emission.",
+            )
+
     def to_json(self, indent: int = 2) -> str:
+        self.ensure_v15_signed()
         return json.dumps(self.to_dict(), indent=indent, sort_keys=False)
 
     # -- Validation ---------------------------------------------------------
@@ -780,4 +849,7 @@ def load_guardian_result(path: Path | str) -> GuardianResult:
         remediation_hints=data.get("remediation_hints", []),
         index=data.get("index", {}),
         artifact_class=data.get("artifact_class", ArtifactClass.INDIVIDUAL.value),
+        v15_trace_id=data.get("v15_trace_id"),
+        v15_signature=data.get("v15_signature"),
+        v15_commit_hash=data.get("v15_commit_hash"),
     )

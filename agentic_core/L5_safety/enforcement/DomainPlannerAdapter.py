@@ -15,43 +15,51 @@ References:
 
 import asyncio
 import logging
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.AdapterBase import (
-    AdapterContext,
-    AdapterResult,
-    HealingAdapter,
-)
+from agentic_core.L5_safety.enforcement.circuit_breaker import get_breaker
 
 logger = logging.getLogger(__name__)
 
 
-class DomainPlannerAdapter(HealingAdapter):
+# ---------------------------------------------------------------------------
+# Inlined types (V15 P0.2: AdapterBase dependency eliminated)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class AdapterContext:
+    """Context passed through adapter chain."""
+
+    request_id: str
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    risk_level: str = "medium"
+    bypass_validation: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class AdapterResult:
+    """Standardized result from adapter operations."""
+
+    success: bool
+    data: Any = None
+    error: str | None = None
+    skipped: bool = False
+    skip_reason: str | None = None
+    audit_trail: dict[str, Any] = field(default_factory=dict)
+
+
+class DomainPlannerAdapter:
     """
-    V10-Compliant Adapter for DomainPlannerAgent.
+    V10-Compliant wrapper for DomainPlannerAgent.
 
-    Wraps the DomainPlannerAgent to provide:
-    - Circuit breaker protection (non-blocking timeout)
-    - Input validation for job_context and plan requirements
-    - External touch validation (API keys, payload structure)
-    - Audit trail for all operations
-
-    Usage:
-        from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
-            DomainPlannerAgent,
-            StrategyPlan,
-        )
-
-        legacy_agent = DomainPlannerAgent()
-        adapter = DomainPlannerAdapter(legacy_agent)
-
-        result = adapter.execute(
-            context=AdapterContext(request_id="plan_001"),
-            plan=strategy_plan,
-            job_context={"job_title": "Engineer", "company": "Acme"},
-            workflow_id="wf_123",
-        )
+    V15 P0.2: Refactored to eliminate AdapterBase/HealingAdapter dependency.
+    Circuit breaker and validation logic inlined.
     """
 
     def __init__(
@@ -59,18 +67,10 @@ class DomainPlannerAdapter(HealingAdapter):
         legacy_agent: Any,
         project_root: Path | None = None,
     ):
-        """
-        Initialize the DomainPlannerAdapter.
-
-        Args:
-            legacy_agent: Instance of DomainPlannerAgent to wrap
-            project_root: Optional project root for healing operations
-        """
-        super().__init__(
-            legacy_agent=legacy_agent,
-            service_name="domain_planner",
-            project_root=project_root,
-        )
+        self._legacy_agent = legacy_agent
+        self._service_name = "domain_planner"
+        self._project_root = project_root or Path.cwd()
+        self._circuit_breaker = get_breaker(f"adapter_{self._service_name}")
         self._required_job_context_keys = {"job_title", "company"}
         self._required_plan_attributes = {"focus_areas", "key_achievements_to_highlight"}
 
@@ -261,44 +261,57 @@ class DomainPlannerAdapter(HealingAdapter):
             workflow_id=workflow_id,
         )
 
+    def execute(
+        self,
+        context: AdapterContext | None = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> AdapterResult:
+        """Execute with circuit breaker + input/output validation."""
+        if context is None:
+            context = AdapterContext(request_id=str(uuid.uuid4()))
+
+        if not self._circuit_breaker.allow_request():
+            return AdapterResult(
+                success=False,
+                skipped=True,
+                skip_reason="circuit_breaker_open",
+                error="Circuit breaker is OPEN",
+            )
+
+        if not self._validate_input(context, *args, **kwargs):
+            return AdapterResult(
+                success=False,
+                skipped=True,
+                skip_reason="input_validation_failed",
+                error="Input validation failed",
+            )
+
+        try:
+            raw_result = self._execute_legacy(context, *args, **kwargs)
+            self._circuit_breaker.record_success()
+        except Exception as e:
+            self._circuit_breaker.record_failure(e)
+            return AdapterResult(success=False, error=str(e))
+
+        if not self._validate_output(raw_result, context):
+            return AdapterResult(
+                success=False,
+                data=raw_result,
+                error="Output validation failed",
+            )
+
+        return AdapterResult(success=True, data=raw_result)
+
     def heal(
         self,
         violation: dict[str, Any],
         context: AdapterContext | None = None,
     ) -> AdapterResult:
-        """
-        Execute healing through the adapter with V10 compliance.
-
-        Args:
-            violation: Violation dictionary
-            context: Optional adapter context
-
-        Returns:
-            AdapterResult with healing outcome
-        """
-        import uuid
-
+        """Execute healing with V10 compliance."""
         if context is None:
             context = AdapterContext(request_id=str(uuid.uuid4()))
 
-        # Verify healing target exists before execution
-        file_path = violation.get("file") or violation.get("file_path")
-        if file_path:
-            from pathlib import Path
-
-            if not self.verify_healing_target(
-                Path(file_path),
-                "modify_function",
-                violation.get("target_node", "unknown"),
-            ):
-                return AdapterResult(
-                    success=False,
-                    skipped=True,
-                    skip_reason="healing_target_not_found",
-                    error="Verification gate rejected: target does not exist",
-                )
-
-        # Delegate to legacy heal method
         try:
             if not self._circuit_breaker.allow_request():
                 return AdapterResult(
@@ -318,10 +331,7 @@ class DomainPlannerAdapter(HealingAdapter):
             )
         except Exception as e:
             self._circuit_breaker.record_failure(e)
-            return AdapterResult(
-                success=False,
-                error=str(e),
-            )
+            return AdapterResult(success=False, error=str(e))
 
 
 __all__ = ["DomainPlannerAdapter"]

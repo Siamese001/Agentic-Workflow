@@ -109,8 +109,12 @@ class TestP1F02RoutingPaths:
         actual = {member.name for member in RoutePath}
         assert self.REQUIRED_PATHS == actual
 
-    def test_contextual_router_has_six_decisions(self):
-        """AST-based verification (§6) — avoids runtime import chain."""
+    def test_contextual_router_aliases_route_path(self):
+        """AST-based verification (§6) — RouteDecision must be alias for RoutePath.
+
+        P0.3 converged RouteDecision into RoutePath; the router now uses
+        ``RouteDecision = RoutePath`` instead of a separate enum class.
+        """
         import ast
         import pathlib
 
@@ -118,21 +122,20 @@ class TestP1F02RoutingPaths:
             "agentic_core/runtime/config/contextual_router_config.py"
         )
         tree = ast.parse(src.read_text(encoding="utf-8"), filename=str(src))
-        enum_names: set[str] = set()
+        found_alias = False
         for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef) and node.name == "RouteDecision":
-                for item in node.body:
-                    if isinstance(item, ast.Assign):
-                        for target in item.targets:
-                            if isinstance(target, ast.Name):
-                                enum_names.add(target.id)
-        assert "POLICY_CHALLENGE_LOOP" in enum_names, (
-            f"POLICY_CHALLENGE_LOOP missing from RouteDecision: {enum_names}"
-        )
-        assert "ROUTE_RECOVERY" in enum_names, f"ROUTE_RECOVERY missing from RouteDecision: {enum_names}"
-        assert len(enum_names) >= 6, (
-            f"RouteDecision has {len(enum_names)} members, expected >=6: {enum_names}"
-        )
+            if (
+                isinstance(node, ast.Assign)
+                and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id == "RouteDecision"
+                and isinstance(node.value, ast.Name)
+                and node.value.id == "RoutePath"
+            ):
+                found_alias = True
+                break
+        assert found_alias, "RouteDecision must be aliased to RoutePath (P0.3 convergence)"
+        # RoutePath itself is verified in test_exactly_five_paths / test_all_required_paths_present
 
 
 # =========================================================================

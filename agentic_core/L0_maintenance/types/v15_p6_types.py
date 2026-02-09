@@ -223,6 +223,92 @@ class MetaInvariantReport:
             )
 
 
+# =============================================================================
+# §12.2 — SideEffectRegistry (tracks touched resources per heal wave)
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class SideEffectRegistry:
+    """§12.2 — Immutable registry of side effects produced during a heal wave.
+
+    Tracks all resources touched (read/written) and APIs called,
+    enabling deterministic replay and audit.
+    """
+
+    trace_id: str
+    wave_id: str
+    paths_read: tuple[str, ...]
+    paths_written: tuple[str, ...]
+    apis_called: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("SideEffectRegistry: trace_id must be non-empty")
+        if not self.wave_id:
+            raise ValueError("SideEffectRegistry: wave_id must be non-empty")
+        if not isinstance(self.paths_read, tuple):
+            raise TypeError("SideEffectRegistry: paths_read must be a tuple")
+        if not isinstance(self.paths_written, tuple):
+            raise TypeError("SideEffectRegistry: paths_written must be a tuple")
+        if not isinstance(self.apis_called, tuple):
+            raise TypeError("SideEffectRegistry: apis_called must be a tuple")
+
+
+# =============================================================================
+# §8.4 / P0.5 — V15 Discovery Schema (pinned contract)
+# =============================================================================
+
+V15_DISCOVERY_SCHEMA_VERSION: str = "1.0.0"
+
+
+@dataclass(frozen=True)
+class V15DiscoverySchema:
+    """§8.4 — Pinned discovery schema for the V15 Environment Under Test.
+
+    ALL fields are required. Missing field = HARD FAIL in guardian tests.
+    MRO scanners MUST consume ONLY this schema (no live reflection fallback).
+    """
+
+    identity: str
+    layer: str
+    status: str
+    file_path: str
+    class_name: str
+    mro_chain: tuple[str, ...]
+    mixins: tuple[str, ...]
+    detected_methods: tuple[str, ...]
+    integrity_hash: str
+    mro_signature: str
+
+    def __post_init__(self) -> None:
+        if not self.identity:
+            raise ValueError("V15DiscoverySchema: identity must be non-empty")
+        if not self.layer:
+            raise ValueError("V15DiscoverySchema: layer must be non-empty")
+        if not self.status:
+            raise ValueError("V15DiscoverySchema: status must be non-empty")
+        if not self.file_path:
+            raise ValueError("V15DiscoverySchema: file_path must be non-empty")
+        if not self.class_name:
+            raise ValueError("V15DiscoverySchema: class_name must be non-empty")
+        if not isinstance(self.mro_chain, tuple):
+            raise TypeError("V15DiscoverySchema: mro_chain must be a tuple")
+        if not isinstance(self.mixins, tuple):
+            raise TypeError("V15DiscoverySchema: mixins must be a tuple")
+        if not isinstance(self.detected_methods, tuple):
+            raise TypeError("V15DiscoverySchema: detected_methods must be a tuple")
+        if not self.integrity_hash:
+            raise ValueError("V15DiscoverySchema: integrity_hash must be non-empty")
+        if not self.mro_signature:
+            raise ValueError("V15DiscoverySchema: mro_signature must be non-empty")
+
+
+V15_DISCOVERY_REQUIRED_FIELDS: frozenset[str] = frozenset(
+    f.name for f in __import__("dataclasses").fields(V15DiscoverySchema)
+)
+
+
 __all__ = [
     "BoundarySchemaDescriptor",
     "ContextRetrievalRequest",
@@ -232,4 +318,8 @@ __all__ = [
     "MetaInvariantReport",
     "SSOTBinding",
     "SchemaValidationStatus",
+    "SideEffectRegistry",
+    "V15DiscoverySchema",
+    "V15_DISCOVERY_REQUIRED_FIELDS",
+    "V15_DISCOVERY_SCHEMA_VERSION",
 ]

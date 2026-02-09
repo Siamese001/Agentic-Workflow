@@ -9,10 +9,13 @@ import os
 from typing import Any
 
 
-class LocalDiskAdapter:
+class LocalDiskAdapter:  # v15-exception: storage-provider-not-behavioral-adapter
     """
     L4 State: The Sovereign File System.
     Strictly controls I/O within the mission-approved data silos.
+
+    V15 Note: This is a storage provider pattern, NOT the behavioral adapter
+    pattern prohibited by V15 §8.1. Explicitly excepted per P0.2.
     """
 
     def __init__(self, config: dict[str, Any]):
