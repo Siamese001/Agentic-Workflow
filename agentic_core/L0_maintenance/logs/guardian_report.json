@@ -1,12 +1,12 @@
 {
   "status": "PASS",
-  "timestamp": "2026-02-09T05:32:50.297826+00:00",
+  "timestamp": "2026-02-09T18:12:33.293191+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 15,
-    "passed_tests": 15,
+    "total_tests": 28,
+    "passed_tests": 28,
     "failed_tests": 0,
     "skipped_tests": 0,
     "exit_status": 0,
