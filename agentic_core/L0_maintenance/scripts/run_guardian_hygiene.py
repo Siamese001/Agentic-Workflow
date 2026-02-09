@@ -21,6 +21,9 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    IGNORE_PATTERNS,
+    MAX_FILES_PER_SCAN,
+    MAX_FOLDER_DEPTH,
     ArtifactType,
     CheckStatus,
     GuardianResult,
@@ -43,9 +46,48 @@ ARTIFACT_EXTENSIONS = frozenset({".pyc", ".pyo", ".tmp", ".bak", ".swp"})
 # ---------------------------------------------------------------------------
 
 
-def scan_temp_artifacts(repo_root: Path, allowed_roots: frozenset[str]) -> list[str]:
-    """Return repo-relative POSIX paths of temporary artifacts."""
+class ScanBudgetExceeded:
+    """
+    Sentinel returned by scan functions when a budget cap is breached.
+
+    Carries which cap was exceeded, the limit value, and remediation hints
+    so callers can emit a schema-locked FAIL (not ERROR/exception).
+    """
+
+    def __init__(self, cap_name: str, limit: int, scanned: int) -> None:
+        self.cap_name = cap_name
+        self.limit = limit
+        self.scanned = scanned
+
+    @property
+    def details(self) -> str:
+        return (
+            f"Scan exceeded {self.cap_name} ({self.limit}). "
+            f"Scanned {self.scanned} items before hitting the cap."
+        )
+
+    @property
+    def remediation_hints(self) -> list[str]:
+        return [
+            "Tighten IGNORE_PATTERNS to exclude noisy directories",
+            "Run in scoped mode with a smaller allowed_roots set",
+            f"If justified, raise {self.cap_name} in guardian_contract.py with a code review",
+        ]
+
+
+def scan_temp_artifacts(
+    repo_root: Path,
+    allowed_roots: frozenset[str],
+) -> list[str] | ScanBudgetExceeded:
+    """
+    Return repo-relative POSIX paths of temporary artifacts.
+
+    Enforces MAX_FILES_PER_SCAN and MAX_FOLDER_DEPTH caps.
+    Returns ScanBudgetExceeded sentinel on cap breach instead of raising.
+    """
     hits: list[str] = []
+    file_count = 0
+
     for root_name in sorted(allowed_roots):
         root_path = repo_root / root_name
         if not root_path.exists():
@@ -53,8 +95,25 @@ def scan_temp_artifacts(repo_root: Path, allowed_roots: frozenset[str]) -> list[
         for item in root_path.rglob("*"):
             if not item.is_file():
                 continue
-            if ".git" in item.parts:
+
+            # Enforce scan bounds (Phase 5 → Phase 3b: FAIL not ERROR)
+            file_count += 1
+            if file_count > MAX_FILES_PER_SCAN:
+                return ScanBudgetExceeded(
+                    cap_name="MAX_FILES_PER_SCAN",
+                    limit=MAX_FILES_PER_SCAN,
+                    scanned=file_count,
+                )
+
+            # Check depth
+            depth = len(item.relative_to(repo_root).parts)
+            if depth > MAX_FOLDER_DEPTH:
+                continue  # Skip files beyond depth limit
+
+            # Skip ignored patterns
+            if any(pattern in item.parts for pattern in IGNORE_PATTERNS):
                 continue
+
             if item.suffix in ARTIFACT_EXTENSIONS:
                 hits.append(normalize_repo_path(item.relative_to(repo_root)))
     return sorted(hits)
@@ -144,21 +203,35 @@ def run_hygiene_guardian(
 
     # --- Check 1: Temporary artifacts ---
     try:
-        artifacts = scan_temp_artifacts(repo_root, allowed_roots)
-        if artifacts:
+        scan_result = scan_temp_artifacts(repo_root, allowed_roots)
+        if isinstance(scan_result, ScanBudgetExceeded):
+            result.add_check(
+                check_id="scan_budget_exceeded",
+                status=CheckStatus.FAIL,
+                details=scan_result.details,
+                evidence={
+                    "cap_name": scan_result.cap_name,
+                    "limit": scan_result.limit,
+                    "scanned": scan_result.scanned,
+                },
+            )
+            result.remediation_hints.extend(scan_result.remediation_hints)
+            result.metrics["temp_artifact_count"] = -1  # Unknown due to cap
+        elif scan_result:
             result.add_check(
                 check_id="temp_artifacts",
                 status=CheckStatus.FAIL,
-                details=f"Found {len(artifacts)} temporary artifact(s)",
-                evidence={"paths": artifacts},
+                details=f"Found {len(scan_result)} temporary artifact(s)",
+                evidence={"paths": scan_result},
             )
+            result.metrics["temp_artifact_count"] = len(scan_result)
         else:
             result.add_check(
                 check_id="temp_artifacts",
                 status=CheckStatus.PASS,
                 details="No temporary artifacts found",
             )
-        result.metrics["temp_artifact_count"] = len(artifacts)
+            result.metrics["temp_artifact_count"] = 0
     except Exception as exc:
         result.add_check(
             check_id="temp_artifacts",
@@ -229,11 +302,15 @@ def run_hygiene_guardian(
         result.summary = f"Hygiene: {passed_checks}/{total_checks} checks passed"
     else:
         result.summary = f"Hygiene: {failed_checks}/{total_checks} checks failed"
-        result.remediation_hints = [
+        # Extend (not overwrite) to preserve budget cap hints
+        default_hints = [
             "Remove temporary artifacts (.pyc/.pyo/.tmp/.bak/.swp)",
             "Remove or populate empty folders",
             "Add meaningful content to __init__.py-only folders or remove them",
         ]
+        for hint in default_hints:
+            if hint not in result.remediation_hints:
+                result.remediation_hints.append(hint)
 
     # --- Write artifact ---
     if write_artifacts_dir:

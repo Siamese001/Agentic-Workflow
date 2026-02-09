@@ -24,7 +24,12 @@ import os
 from pathlib import Path
 from typing import Any
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError as _err:
+    raise ImportError(
+        "numpy is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 from agentic_core.config.agent_defaults import AgentDefaults
 from agentic_core.L4_state.memory.redis_sovereign_agent import (
     RedisSovereignAgent,

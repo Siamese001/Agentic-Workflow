@@ -14,7 +14,13 @@ import signal
 import sys
 from pathlib import Path
 
-from livereload import Server
+try:
+    from livereload import Server
+except ImportError as _err:
+    raise ImportError(
+        "livereload is required for this module. "
+        "Install with: pip install -e '.[infra]'"
+    ) from _err
 
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.config.structure_blueprint_config import DASHBOARD_DIR

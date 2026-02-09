@@ -7,7 +7,13 @@ import json
 import re
 
 import requests
-from bs4 import BeautifulSoup
+
+try:
+    from bs4 import BeautifulSoup
+except ImportError as _err:
+    raise ImportError(
+        "beautifulsoup4 is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 
 def inspect_dashboard():

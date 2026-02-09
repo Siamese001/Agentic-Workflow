@@ -13,6 +13,7 @@ Emits graph depth metrics for audit-grade reporting.
 from __future__ import annotations
 
 import json as _json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -44,22 +45,23 @@ CONFIG_FORBIDDEN_IMPORTS = (
 _BASELINE_PATH = Path(__file__).resolve().parent / "known_debt_baseline.json"
 
 
-def _load_known_debt_baseline() -> tuple[frozenset[tuple[str, str]], int]:
+def _load_known_debt_baseline() -> tuple[frozenset[tuple[str, str]], int, list[dict[str, Any]]]:
     """Load known-debt entries and ceiling from the baseline file.
 
-    Returns (frozenset of (source, target) pairs, ceiling int).
+    Returns (frozenset of (source, target) pairs, ceiling int, full entries list).
     """
     if not _BASELINE_PATH.is_file():
-        return frozenset(), 0
+        return frozenset(), 0, []
     data = _json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
     ceiling = int(data.get("ceiling", 0))
     entries: set[tuple[str, str]] = set()
-    for entry in data.get("entries", []):
+    full_entries = data.get("entries", [])
+    for entry in full_entries:
         entries.add((entry["source"], entry["target"]))
-    return frozenset(entries), ceiling
+    return frozenset(entries), ceiling, full_entries
 
 
-KNOWN_CROSS_LAYER_DEBT, _DEBT_CEILING = _load_known_debt_baseline()
+KNOWN_CROSS_LAYER_DEBT, _DEBT_CEILING, _DEBT_ENTRIES = _load_known_debt_baseline()
 
 
 def check(
@@ -80,6 +82,7 @@ def check(
 
     stats["known_debt_items"] = len(KNOWN_CROSS_LAYER_DEBT)
     stats["debt_ceiling"] = _DEBT_CEILING
+    stats["expired_debt_items"] = 0
 
     # Count total and internal edges
     for source_rel in import_graph.all_files():
@@ -96,6 +99,9 @@ def check(
 
     # Rule 3: config/ must not import execution layers
     _check_config_independence(root, import_graph, violations, stats)
+
+    # Rule 4: Check for expired debt items
+    _check_debt_expiry(violations, stats)
 
     # Ceiling enforcement: warning count must not exceed baseline ceiling
     warning_count = sum(1 for v in violations if v["severity"] == "warning")
@@ -210,3 +216,62 @@ def _check_config_independence(
                             ),
                         ),
                     )
+
+
+def _check_debt_expiry(
+    violations: list[Violation],
+    stats: dict[str, int],
+) -> None:
+    """Check if any known debt items have expired and emit errors for them.
+
+    Parses 'expires' field (format: YYYY-QN) and compares to current date.
+    Expired debt items become hard errors.
+    """
+    current_date = datetime.now()
+
+    for entry in _DEBT_ENTRIES:
+        expires_str = entry.get("expires", "")
+        if not expires_str:
+            # No expiry set — skip (legacy entries)
+            continue
+
+        # Parse expires field (format: "2026-Q2")
+        try:
+            year_str, quarter_str = expires_str.split("-Q")
+            year = int(year_str)
+            quarter = int(quarter_str)
+
+            # Convert quarter to end-of-quarter month
+            quarter_end_month = quarter * 3
+
+            # Check if current date is past the end of the quarter
+            if current_date.year > year or (
+                current_date.year == year and current_date.month > quarter_end_month
+            ):
+                stats["expired_debt_items"] += 1
+                violations.append(
+                    Violation(
+                        type="expired_debt_item",
+                        path=entry["source"],
+                        severity="error",
+                        detail=(
+                            f"Debt item expired {expires_str}: "
+                            f"{entry['source']} → {entry['target']}. "
+                            f"Burn-down plan: {entry.get('burn_down_plan', 'N/A')}. "
+                            f"Remove from known_debt_baseline.json or refactor immediately."
+                        ),
+                    ),
+                )
+        except (ValueError, KeyError) as e:
+            # Malformed expires field — emit warning
+            violations.append(
+                Violation(
+                    type="malformed_expiry",
+                    path=entry.get("source", "unknown"),
+                    severity="warning",
+                    detail=(
+                        f"Malformed 'expires' field in known_debt_baseline.json: "
+                        f"'{expires_str}' (expected format: YYYY-QN). Error: {e}"
+                    ),
+                ),
+            )

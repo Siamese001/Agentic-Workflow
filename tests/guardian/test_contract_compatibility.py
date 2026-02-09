@@ -274,3 +274,182 @@ class TestSyntheticBreakingChange:
         d["version"] = "1"  # String instead of int
         errors = validate_against_json_schema(d)
         assert any("integer" in e or "version" in e for e in errors)
+
+
+# ---------------------------------------------------------------------------
+# 9. Path validation (Phase 2 hardening)
+# ---------------------------------------------------------------------------
+
+
+class TestPathValidation:
+    """Artifact paths must be repo-relative POSIX (no backslashes, no leading slash)."""
+
+    def test_backslash_path_fails_validation(self):
+        """Artifact path with backslash fails schema validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "foo\\bar.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert any("pattern" in e or "path" in e for e in errors), "Backslash should fail"
+
+    def test_absolute_path_fails_validation(self):
+        """Artifact path with leading slash fails schema validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "/foo/bar.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert any("pattern" in e or "path" in e for e in errors), "Leading slash should fail"
+
+    def test_valid_posix_path_passes(self):
+        """Valid repo-relative POSIX path passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "docs/reports/foo.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid POSIX path should pass: {errors}"
+
+
+# ---------------------------------------------------------------------------
+# 10. Schema policy enforcement (Phase 2 hardening)
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaPolicyEnforcement:
+    """Schema changes that break policy must fail validation."""
+
+    def test_required_to_optional_breaks_policy(self):
+        """Removing a required field is a breaking change."""
+        # This test documents the policy: if a field is required,
+        # removing it from a result should fail validation.
+        d = GuardianResult(guardian_id="test").to_dict()
+        del d["checks"]  # Required field
+        errors = validate_against_json_schema(d)
+        assert any("checks" in e for e in errors), "Missing required field should fail"
+
+    def test_additional_properties_false_enforced(self):
+        """additionalProperties: false prevents schema widening."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["new_field"] = "not allowed"
+        errors = validate_against_json_schema(d)
+        assert any("new_field" in e or "additional" in e.lower() for e in errors)
+
+    def test_check_additional_properties_false_enforced(self):
+        """Check objects must not allow additional properties."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {},
+                "extra_field": "not allowed",
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+
+    def test_artifact_additional_properties_false_enforced(self):
+        """Artifact objects must not allow additional properties."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [
+            {
+                "type": "json",
+                "path": "foo.json",
+                "description": "desc",
+                "extra_field": "not allowed",
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+
+
+# ---------------------------------------------------------------------------
+# 11. Schema bounds enforcement (Phase 2b: metrics/evidence constraints)
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaBoundsEnforcement:
+    """Metrics and evidence must respect size and property count bounds."""
+
+    def test_metrics_within_bounds_passes(self):
+        """Metrics dict with reasonable size passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {"count": 5, "elapsed_ms": 12.3, "label": "ok"}
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid metrics should pass: {errors}"
+
+    def test_metrics_exceeding_max_properties_fails(self):
+        """Metrics dict with >50 properties fails validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {f"key_{i}": i for i in range(55)}
+        errors = validate_against_json_schema(d)
+        assert any("maxProperties" in e or "50" in e for e in errors), (
+            f"Exceeding maxProperties should fail: {errors}"
+        )
+
+    def test_evidence_within_bounds_passes(self):
+        """Evidence dict with reasonable size passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {"paths": ["a.py", "b.py"], "count": 2},
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid evidence should pass: {errors}"
+
+    def test_evidence_exceeding_max_properties_fails(self):
+        """Evidence dict with >30 properties fails validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {f"key_{i}": i for i in range(35)},
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("maxProperties" in e or "30" in e for e in errors), (
+            f"Exceeding evidence maxProperties should fail: {errors}"
+        )
+
+    def test_payload_size_within_bounds_passes(self):
+        """Serialized payload within MAX_PAYLOAD_BYTES passes."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        errors = validate_against_json_schema(d)
+        assert not any("payload" in e.lower() for e in errors)
+
+    def test_payload_size_exceeding_limit_fails(self):
+        """Serialized payload exceeding MAX_PAYLOAD_BYTES fails."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        # Create a large payload that exceeds 512KB
+        d["metrics"] = {"big_data": "x" * (600 * 1024)}
+        errors = validate_against_json_schema(d)
+        assert any("MAX_PAYLOAD_BYTES" in e or "payload" in e.lower() for e in errors), (
+            f"Oversized payload should fail: {errors}"
+        )
+
+
+class TestSchemaBoundsConstantsLocked:
+    """Schema bounds constants must be immutable and have expected values."""
+
+    def test_max_metrics_properties_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_METRICS_PROPERTIES
+
+        assert MAX_METRICS_PROPERTIES == 50
+
+    def test_max_evidence_properties_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_PROPERTIES
+
+        assert MAX_EVIDENCE_PROPERTIES == 30
+
+    def test_max_payload_bytes_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_PAYLOAD_BYTES
+
+        assert MAX_PAYLOAD_BYTES == 512 * 1024
+
+    def test_max_evidence_depth_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        assert MAX_EVIDENCE_DEPTH == 3

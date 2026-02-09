@@ -11,8 +11,8 @@ can only be used locally by developers, never in automated pipelines.
 | Baseline | Purpose | Ceiling | Current |
 |----------|---------|---------|---------|
 | `missing_optional_baseline.json` | Track declared-but-not-yet-created subfolders | 20 | 16 |
-| `known_debt_baseline.json` | Track allowed cross-layer import violations | 2 | 2 |
-| `blueprint_hash.json` | Lock blueprint file contents against tampering | N/A | 20 files |
+| `known_debt_baseline.json` | Track allowed cross-layer import violations | 3 | 2 |
+| `blueprint_integrity.sha256` | Lock blueprint file contents against tampering | N/A | 20 files |
 
 ---
 
@@ -55,15 +55,19 @@ with fallback stub, runtime-only dependency).
 #    - rationale (why can't this be refactored now?)
 #    - owner (who will burn it down?)
 #    - added date
+#    - expires (quarter when debt must be resolved, e.g., "2026-Q2")
+#    - burn_down_plan (specific refactor strategy)
 
-# 2. Add entry to known_debt_baseline.json
-# 3. Increase ceiling if needed (add headroom)
+# 2. Add entry to known_debt_baseline.json with all required fields
+# 3. Increase ceiling if needed (current ceiling=3, current=2, headroom=1)
+#    - New ceiling must provide headroom for operational safety
+#    - Every entry MUST have expires + burn_down_plan fields
 
 # 4. Re-run verify to confirm PASS with new warning count
 python -m agentic_core.L5_safety.config.structure_blueprint._verify
 
 # 5. Commit with clear debt acknowledgment
-git commit -m "debt(cross-layer): add gateway_config.py lazy import, ceiling=3"
+git commit -m "debt(cross-layer): add X lazy import, ceiling=N, expires=YYYY-QN"
 ```
 
 ### `--update-blueprint-hash`
@@ -86,7 +90,7 @@ print('Hash updated:', r['stats'])
 python -m agentic_core.L5_safety.config.structure_blueprint._verify
 
 # 4. Commit hash file with your changes
-git add agentic_core/L5_safety/config/structure_blueprint/enforcement/blueprint_hash.json
+git add agentic_core/L5_safety/config/structure_blueprint/blueprint_integrity.sha256
 ```
 
 ---
@@ -127,6 +131,7 @@ Ceilings should be set **above** current counts to allow operational flexibility
 
 - **Minimum headroom**: 2-4 items
 - **Example**: current=16, ceiling=20 (headroom=4)
+- Headroom must remain ≥1 unless a burn-down PR is open.
 
 Operating at 100% ceiling utilization is **brittle** — any legitimate addition requires
 a maintenance action before CI will pass.
@@ -138,7 +143,7 @@ a maintenance action before CI will pass.
 ### Known Debt: gateway_config.py Lazy Imports (2 items)
 
 **Current state**: `gateway_config.py` uses lazy imports from `L2_execution` to avoid
-circular dependencies. This is tracked as known debt with ceiling=2.
+circular dependencies. This is tracked as known debt with ceiling=3 (headroom=1).
 
 **Target refactor**: Define abstract protocols in `agentic_core/config/protocols/` that
 `L2_execution` implementations satisfy. Config layer imports protocols, not implementations.
@@ -155,9 +160,9 @@ After any maintenance action, verify these artifacts are updated correctly:
 | Artifact | Location |
 |----------|----------|
 | Enforcement report | `docs/reports/verification/enforcement_report.json` |
-| Blueprint hash | `enforcement/blueprint_hash.json` |
-| Optional baseline | `enforcement/missing_optional_baseline.json` |
-| Debt baseline | `enforcement/known_debt_baseline.json` |
+| Blueprint hash | `agentic_core/L5_safety/config/structure_blueprint/blueprint_integrity.sha256` |
+| Optional baseline | `agentic_core/L5_safety/config/structure_blueprint/enforcement/missing_optional_baseline.json` |
+| Debt baseline | `agentic_core/L5_safety/config/structure_blueprint/enforcement/known_debt_baseline.json` |
 
 ---
 

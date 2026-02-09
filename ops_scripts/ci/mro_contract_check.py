@@ -162,10 +162,26 @@ def main() -> int:
             f"PASS: {count} MRO diamonds < ceiling {ceiling} (improved by {improvement})",
         )
         print(f"  old_ceiling={ceiling}  new_count={count}  delta=-{improvement}")
-        print(
-            f"  Update baseline: edit {BASELINE_PATH} "
-            f'set "total": {count} and remove {improvement} resolved entries',
-        )
+
+        # Auto-lower baseline when env var is set (never auto-bump upward)
+        if os.environ.get("AUTO_LOWER_MRO_BASELINE") == "1":
+            current_keys = {d["file"] + ":" + d["class"] for d in diamonds}
+            new_entries = [
+                e for e in baseline.get("entries", []) if e["file"] + ":" + e["class"] in current_keys
+            ]
+            baseline["total"] = count
+            baseline["entries"] = new_entries
+            baseline_file.write_text(
+                json.dumps(baseline, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            print(f"  AUTO-LOWERED baseline from {ceiling} → {count}")
+        else:
+            print(
+                f"  Update baseline: edit {BASELINE_PATH} "
+                f'set "total": {count} and remove {improvement} resolved entries',
+            )
+
         if tag_present:
             print("  (MRO_BASELINE_LOWERED tag detected)")
         return 0

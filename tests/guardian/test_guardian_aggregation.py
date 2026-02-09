@@ -25,7 +25,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_maintenance.scripts.run_all_guardians import (
-    GUARDIAN_REGISTRY,
     run_all_guardians,
 )
 from agentic_core.L0_maintenance.types.guardian_contract import (
@@ -34,6 +33,11 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     check_schema_compatibility,
     validate_no_absolute_paths,
 )
+from agentic_core.L0_maintenance.types.guardian_registry import (
+    get_guardian_specs,
+)
+
+_ENABLED_GUARDIANS = get_guardian_specs(enabled_only=True)
 
 pytestmark = pytest.mark.guardian
 
@@ -82,8 +86,8 @@ class TestCleanAggregation:
 
     def test_guardian_count_matches_registry(self, clean_repo: Path):
         result = run_all_guardians(repo_root=clean_repo)
-        assert result.metrics["guardian_count"] == len(GUARDIAN_REGISTRY)
-        assert len(result.checks) == len(GUARDIAN_REGISTRY)
+        assert result.metrics["guardian_count"] == len(_ENABLED_GUARDIANS)
+        assert len(result.checks) == len(_ENABLED_GUARDIANS)
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +149,7 @@ class TestMetrics:
     def test_per_guardian_metrics_present(self, clean_repo: Path):
         result = run_all_guardians(repo_root=clean_repo)
         assert "per_guardian" in result.metrics
-        assert len(result.metrics["per_guardian"]) == len(GUARDIAN_REGISTRY)
+        assert len(result.metrics["per_guardian"]) == len(_ENABLED_GUARDIANS)
 
     def test_each_entry_has_guardian_id(self, clean_repo: Path):
         result = run_all_guardians(repo_root=clean_repo)

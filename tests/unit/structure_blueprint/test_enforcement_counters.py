@@ -162,6 +162,40 @@ class TestEnforcementReportArtifact:
             )
 
 
+class TestExpiredDebtEnforcement:
+    """Expiry enforcement must fail when a debt item has expired."""
+
+    def test_expired_debt_fails(self, monkeypatch, tmp_path: Path) -> None:
+        expired_baseline = {
+            "ceiling": 3,
+            "entries": [
+                {
+                    "source": "agentic_core/config/core/gateway_config.py",
+                    "target": "agentic_core.L2_execution.enforcement.SovereignLLMGateway",
+                    "rationale": "test expired debt",
+                    "owner": "test",
+                    "added": "2000-01-01",
+                    "expires": "2000-Q1",
+                    "burn_down_plan": "test burn-down",
+                },
+            ],
+        }
+        expired_entries = expired_baseline["entries"]
+        expired_debt_set = frozenset((e["source"], e["target"]) for e in expired_entries)
+
+        monkeypatch.setattr(cross_layer, "_DEBT_ENTRIES", expired_entries)
+        monkeypatch.setattr(cross_layer, "KNOWN_CROSS_LAYER_DEBT", expired_debt_set)
+        monkeypatch.setattr(cross_layer, "_DEBT_CEILING", 3)
+
+        ig = ImportGraph(REPO_ROOT, SOVEREIGN_TERRITORIES)
+        result = cross_layer.check(REPO_ROOT, SOVEREIGN_TERRITORIES, ig)
+
+        assert result["stats"]["expired_debt_items"] == 1, (
+            f"Expected 1 expired debt item, got {result['stats']['expired_debt_items']}"
+        )
+        assert result["passed"] is False, "cross_layer.check() should FAIL when a debt item has expired"
+
+
 class TestMappingProxyRegression:
     """Direct regression test for the MappingProxyType bug."""
 

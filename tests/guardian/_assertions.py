@@ -47,6 +47,7 @@ def assert_check(
     *,
     status: str | None = None,
     details_contains: str | None = None,
+    evidence_predicate: callable | None = None,
 ) -> None:
     """
     Assert that a check_id exists in the result and optionally matches criteria.
@@ -56,17 +57,17 @@ def assert_check(
         check_id: The check_id to find.
         status: If provided, assert the check has this status (PASS/FAIL/SKIP).
         details_contains: If provided, assert details contain this substring.
+        evidence_predicate: If provided, callable that takes evidence dict and returns bool.
 
     Raises:
         AssertionError: If the check is not found or criteria not met.
-    """
-    # Register for coverage tracking
-    scenario = None
-    if status in ("PASS", "FAIL"):
-        scenario = status
-    _register_assertion(result.guardian_id, check_id, scenario)
 
-    # Find the check
+    Note:
+        Coverage is only recorded if status is asserted AND at least one semantic
+        property is verified (details_contains or evidence_predicate).
+        This prevents "empty assertions" from satisfying the coverage ratchet.
+    """
+    # Find the check first
     matching = [c for c in result.checks if c.check_id == check_id]
     assert matching, (
         f"check_id '{check_id}' not found in guardian '{result.guardian_id}'. "
@@ -75,15 +76,31 @@ def assert_check(
 
     check = matching[0]
 
+    # Validate status
     if status is not None:
         assert check.status == status, (
             f"check_id '{check_id}' status: expected '{status}', got '{check.status}'"
         )
 
+    # Validate semantic properties
+    semantic_verified = False
     if details_contains is not None:
         assert details_contains in check.details, (
             f"check_id '{check_id}' details: expected to contain '{details_contains}', got '{check.details}'"
         )
+        semantic_verified = True
+
+    if evidence_predicate is not None:
+        assert evidence_predicate(check.evidence), (
+            f"check_id '{check_id}' evidence predicate failed for {check.evidence}"
+        )
+        semantic_verified = True
+
+    # Register for coverage tracking ONLY if quality assertion
+    # (status + at least one semantic property)
+    if status is not None and semantic_verified:
+        scenario = status if status in ("PASS", "FAIL") else None
+        _register_assertion(result.guardian_id, check_id, scenario)
 
 
 def assert_guardian_status(result: GuardianResult, expected: str) -> None:

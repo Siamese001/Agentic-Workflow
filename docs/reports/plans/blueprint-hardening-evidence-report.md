@@ -1,6 +1,6 @@
 # Blueprint Hardening — Auditable Evidence Report
 
-**Generated**: 2026-02-09T03:30 EST (v5 — budget headroom, tightened policy, maintenance workflow)
+**Generated**: 2026-02-09T04:12 EST (v5.2 — ceiling standardization, expiry enforcement, artifact reconciliation)
 **Verifier command**: `python -m agentic_core.L5_safety.config.structure_blueprint._verify`
 **Test command**: `python -m pytest -xvv --tb=short -q`
 
@@ -114,9 +114,12 @@ Section 10 added to `main()`:
 
 ### 2d. New files (untracked — `enforcement/` sub-package)
 
+**Enforcement modules (6 checks + shared infrastructure):**
+
 ```
 agentic_core/L5_safety/config/structure_blueprint/enforcement/__init__.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/blueprint_hash.py
+agentic_core/L5_safety/config/structure_blueprint/enforcement/cross_layer.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/import_graph.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/leaf_node.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/mixin_ast.py
@@ -124,6 +127,22 @@ agentic_core/L5_safety/config/structure_blueprint/enforcement/territory_diff.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/types.py
 agentic_core/L5_safety/config/structure_blueprint/enforcement/volatile_rules.py
 ```
+
+**Baseline governance files:**
+
+```
+agentic_core/L5_safety/config/structure_blueprint/enforcement/known_debt_baseline.json
+agentic_core/L5_safety/config/structure_blueprint/enforcement/missing_optional_baseline.json
+```
+
+### 2e. Canonical Artifacts and Filenames
+
+| Artifact | Canonical Path | Purpose |
+|----------|----------------|----------|
+| Enforcement report JSON | `docs/reports/verification/enforcement_report.json` | Machine-readable enforcement results |
+| Blueprint hash artifact | `agentic_core/L5_safety/config/structure_blueprint/blueprint_integrity.sha256` | SHA-256 hash lock over blueprint .py files |
+| Optional baseline | `agentic_core/L5_safety/config/structure_blueprint/enforcement/missing_optional_baseline.json` | Ceiling + entries for missing optional subfolders |
+| Known debt baseline | `agentic_core/L5_safety/config/structure_blueprint/enforcement/known_debt_baseline.json` | Ceiling + entries for allowed cross-layer violations |
 
 ---
 
@@ -213,25 +232,27 @@ from agentic_core.mixins.(meta_learning_engine|
 | 7. Stdlib Allowlist | PASS — hash f81230272baab458 locked |
 | 8. Compat Name Consumer Report | 18 names tracked (9 ACTIVE, 9 UNUSED) |
 | 9. Phantom Debt Register | 29 current = 29 baseline, invariants hold |
-| 10. Enforcement Modules | PASS — 6 checks, 0 failed, 18 budgeted warnings (16 opt + 2 debt), 0 unbudgeted |
+| 10. Enforcement Modules | PASS — 6 checks, 0 failed, 18 budgeted warnings (16 opt + 2 debt), 0 unbudgeted, debt headroom=1 |
 
 ### 4b. Section 10 detail (v5 — headroom governance)
 
 ```text
-Import graph: 2745 files parsed, 0 errors
+Import graph: 2751 files parsed, 0 errors
   territory_diff: 16 violation(s)  [27 territories checked, 0 undeclared, 16 missing optional, ceiling=20]
   leaf_node: 0 violation(s)        [3 dirs with allow_root_py=False]
   volatile_rules: 0 violation(s)   [4 volatile territories scanned]
   mixin_ast: 0 violation(s)        [50 .py files checked]
   blueprint_hash: 0 violation(s)   [20 files hashed, hash matches]
-  cross_layer: 2 violation(s)      [3344 edges, 2905 internal, 14 cross-layer analyzed]
-    2 known-debt warnings (ceiling=2): gateway_config.py lazy imports from L2_execution
+  cross_layer: 2 violation(s)      [3356 edges, 2917 internal, 14 cross-layer analyzed]
+    2 known-debt warnings (ceiling=3): gateway_config.py lazy imports from L2_execution
   Checks: 6 passed, 0 failed
   Warnings: 18 budgeted (16 opt + 2 debt), 0 unbudgeted, 0 errors
-  Headroom: optional 16/20 (4), debt 2/2 (0)
+  Headroom: optional 16/20 (4), debt 2/3 (1)
 ```
 
-### 4c. `docs/reports/verification/enforcement_report.json` (v5)
+### 4c. `docs/reports/verification/enforcement_report.json` (v5.2)
+
+`verifier_version` refers to the enforcement engine version embedded in `_verify.py`, not a package release.
 
 ```json
 {
@@ -252,11 +273,12 @@ Import graph: 2745 files parsed, 0 errors
     {"name": "blueprint_hash", "passed": true,
      "stats": {"files_hashed": 20, "hash_match": true}},
     {"name": "cross_layer", "passed": true,
-     "stats": {"total_edges": 3344, "internal_edges": 2905,
+     "stats": {"total_edges": 3356, "internal_edges": 2917,
                "cross_layer_edges_analyzed": 14,
                "core_stdlib_violations": 0, "utils_mixin_violations": 0,
                "config_execution_violations": 2,
-               "known_debt_items": 2, "debt_ceiling": 2, "warning_count": 2}}
+               "known_debt_items": 2, "debt_ceiling": 3,
+               "expired_debt_items": 0, "warning_count": 2}}
   ],
   "summary": {"total_checks": 6, "passed": 6, "failed": 0,
               "total_violations": 18, "errors": 0,
@@ -362,7 +384,7 @@ SCAN_ROOTS = ("agentic_core", "apps_lic", "apps_rg", "apps_shared", "artifacts",
 ### 7c. Stats from this run
 
 ```
-Files parsed: 2711
+Files parsed: 2751 (latest run; earlier runs reported 2711-2745 as scan roots evolved)
 Parse errors: 0
 ```
 
@@ -382,7 +404,7 @@ These numbers are emitted every run in `_verify.py` stdout and will be captured 
 | Enforcement errors | 0 | PASS |
 | Warnings (budgeted) | 18 (16 optional + 2 debt) | BELOW CEILING |
 | Optional ceiling | 16/20 (headroom=4) | HEADROOM |
-| Debt ceiling | 2/2 (headroom=0) | AT CEILING |
+| Debt ceiling | 2/3 (headroom=1) | HEADROOM |
 | Warnings (unbudgeted) | 0 | CLEAN |
 | Import cycles | 0 | PASS |
 | Policy violations | 0 | PASS |
@@ -390,7 +412,7 @@ These numbers are emitted every run in `_verify.py` stdout and will be captured 
 | Undeclared subfolders | 0 | CLEAN |
 | Territories checked (leaf_node) | 3 | NON-ZERO |
 | Mixin files checked (mixin_ast) | 50 | NON-ZERO |
-| ImportGraph edges | 3344 total, 2905 internal | NON-ZERO |
+| ImportGraph edges | 3356 total, 2917 internal | NON-ZERO |
 | Cross-layer edges analyzed | 14 | NON-ZERO |
 | Regression tests | 15 passed | LOCKED |
 | Schema policy violations | 0 | CLEAN |
@@ -442,25 +464,27 @@ Changed to `isinstance(ac_config, Mapping)` (from `collections.abc`).
 
 ### Known debt allowlist
 
-2 items loaded from `known_debt_baseline.json` (ceiling=2):
+2 items loaded from `known_debt_baseline.json` (ceiling=3, current=2, headroom=1):
 
 - `gateway_config.py` → `L2_execution.enforcement.SovereignLLMGateway` (lazy, try/except)
 - `gateway_config.py` → `L2_execution.reasoning.EmbeddingSovereignAgent` (lazy, try/except)
 
 These are downgraded from error to warning severity. Any NEW cross-layer violation will
 fail CI as an error. Warning count is capped by the ceiling in `known_debt_baseline.json`;
-exceeding the ceiling emits a `debt_ceiling_breach` error.
+exceeding the ceiling emits a `debt_ceiling_breach` error. Expiry is enforced by
+`expired_debt_item` (severity=error) when `expires < current quarter`.
 
 ### Graph metrics emitted
 
-- **total_edges**: 3320 (all import edges in SCAN_ROOTS)
-- **internal_edges**: 2881 (edges targeting `agentic_core.*`)
+- **total_edges**: 3356 (all import edges in SCAN_ROOTS; earlier runs reported 3320-3344 as scan roots evolved)
+- **internal_edges**: 2917 (edges targeting `agentic_core.*`)
 - **cross_layer_edges_analyzed**: 14 (edges from core/, utils/, config/ checked against rules)
 - **core_stdlib_violations**: 0
 - **utils_mixin_violations**: 0
 - **config_execution_violations**: 2 (known debt, severity=warning)
-- **debt_ceiling**: 2 (from `known_debt_baseline.json`)
-- **warning_count**: 2 (at ceiling — no room for growth)
+- **debt_ceiling**: 3 (from `known_debt_baseline.json`)
+- **expired_debt_items**: 0
+- **warning_count**: 2 (headroom=1)
 
 ---
 
@@ -657,15 +681,92 @@ scheduled burn-down targets.
 ### 13d. Scheduled Burn-Down: Known Debt
 
 **Current**: 2 items in `gateway_config.py` (lazy imports from L2_execution)
-**Ceiling**: 2 (no headroom)
-**Target refactor**: Define abstract protocols in `agentic_core/config/protocols/`
-**Owner**: Architecture team
-**Target date**: Q2 2026
+**Ceiling**: 3 (headroom=1)
+**Expiry**: 2026-Q2 (all entries)
+**Target refactor**: Define abstract protocols in `agentic_core/config/protocols/` to break direct L2 dependency
+**Owner**: Infrastructure team
+**Burn-down plan**: Documented in `known_debt_baseline.json` with expires + burn_down_plan fields
 
 ### 13e. Updated Baseline Files
 
 | File | v4 | v5 | Change |
 |------|----|----|--------|
 | `missing_optional_baseline.json` | ceiling=48, entries=many | ceiling=20, entries=16 | Removed 32 never-intended |
-| `known_debt_baseline.json` | ceiling=2 | ceiling=2 | Unchanged (burn-down scheduled) |
+| `known_debt_baseline.json` | ceiling=2 | ceiling=3 | Increased for headroom, added expires + burn_down_plan fields |
 | `types.py` BUDGETED_WARNING_TYPES | 4 types | 2 types | Removed core/utils violations |
+
+---
+
+## 14. v5.2 Corrections (Artifact Reconciliation)
+
+### 14a. Maintenance Workflow Baseline Table (verbatim from `docs/policies/blueprint_maintenance_workflow.md`)
+
+```
+| Baseline | Purpose | Ceiling | Current |
+|----------|---------|---------|---------||
+| missing_optional_baseline.json | Track declared-but-not-yet-created subfolders | 20 | 16 |
+| known_debt_baseline.json | Track allowed cross-layer import violations | 3 | 2 |
+| blueprint_integrity.sha256 | Lock blueprint file contents against tampering | N/A | 20 files |
+```
+
+### 14b. Maintenance Workflow Artifact Table (verbatim from section 6)
+
+```
+| Artifact | Location |
+|----------|----------|
+| Enforcement report | docs/reports/verification/enforcement_report.json |
+| Blueprint hash | agentic_core/L5_safety/config/structure_blueprint/blueprint_integrity.sha256 |
+| Optional baseline | agentic_core/L5_safety/config/structure_blueprint/enforcement/missing_optional_baseline.json |
+| Debt baseline | agentic_core/L5_safety/config/structure_blueprint/enforcement/known_debt_baseline.json |
+```
+
+### 14c. Cross-Layer Enforcement Report Excerpt (verbatim from `enforcement_report.json`)
+
+```json
+{
+  "name": "cross_layer",
+  "passed": true,
+  "stats": {
+    "total_edges": 3356,
+    "internal_edges": 2917,
+    "cross_layer_edges_analyzed": 14,
+    "core_stdlib_violations": 0,
+    "utils_mixin_violations": 0,
+    "config_execution_violations": 2,
+    "known_debt_items": 2,
+    "debt_ceiling": 3,
+    "expired_debt_items": 0,
+    "warning_count": 2
+  }
+}
+```
+
+### 14d. Expiry Enforcement Proof (simulated expired entry: 2025-Q4)
+
+With first debt entry set to `"expires": "2025-Q4"`, `_verify.py` produces:
+
+- **Exit code**: 1 (FAIL)
+- **cross_layer violations**: 3 (2 warnings + 1 error)
+- **Expired debt error**:
+
+```json
+{
+  "type": "expired_debt_item",
+  "path": "agentic_core/config/core/gateway_config.py",
+  "severity": "error",
+  "detail": "Debt item expired 2025-Q4: agentic_core/config/core/gateway_config.py \u2192 agentic_core.L2_execution.enforcement.SovereignLLMGateway. Burn-down plan: Define abstract protocols in agentic_core/config/protocols/ to break direct L2 dependency. Remove from known_debt_baseline.json or refactor immediately."
+}
+```
+
+- **Stats with expired entry**: `"expired_debt_items": 1`
+
+After reverting to `"expires": "2026-Q2"`, `_verify.py` returns exit code 0 (PASS).
+
+### 14e. Changes in v5.2
+
+| File | Change |
+|------|--------|
+| `cross_layer.py` | Added `_check_debt_expiry()`: parses `expires` field, emits `expired_debt_item` error if past current date |
+| `blueprint_maintenance_workflow.md` | Section 5: ceiling=2 → ceiling=3. Section 6: `enforcement/blueprint_hash.json` → canonical `blueprint_integrity.sha256` path |
+| `enforcement_report.json` | Regenerated: `debt_ceiling=3`, `expired_debt_items=0` |
+| Evidence report | Updated to v5.2 with verbatim excerpts and expiry enforcement proof |

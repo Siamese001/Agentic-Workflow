@@ -6,7 +6,13 @@ from functools import lru_cache
 from typing import Literal
 
 from pydantic import Field, SecretStr
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except ImportError as _err:
+    raise ImportError(
+        "pydantic-settings is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 
 class Settings(BaseSettings):
