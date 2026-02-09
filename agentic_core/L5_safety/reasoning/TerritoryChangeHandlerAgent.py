@@ -37,7 +37,7 @@ AGENTIC_CORE_DIR = os.environ.get("AGENTIC_CORE_DIR", ".")
 
 
 @dataclass
-class TerritoryChangeHandlerAgent(SubatomicTestingMixin, SovereignBaseAgent, FileSystemEventHandler):
+class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
     """
     L5 Safety Agent: Watches for territory changes with debouncing.
     Informs the AutonomousRagDaemon when re-indexing is required.

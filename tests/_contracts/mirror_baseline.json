@@ -1,0 +1,9 @@
+{
+  "baseline_total": 0,
+  "baseline_missing": 0,
+  "baseline_mislocated": 0,
+  "baseline_waived": 93,
+  "baseline_present": 1490,
+  "timestamp": "2026-02-09T06:59:00Z",
+  "description": "Baseline after P1 compliance - all missing tests generated"
+}

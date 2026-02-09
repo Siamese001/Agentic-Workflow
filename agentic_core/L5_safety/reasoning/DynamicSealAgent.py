@@ -37,7 +37,7 @@ class SealResult:
     error: str | None = None
 
 
-class DynamicSealAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class DynamicSealAgent(SovereignBaseAgent):
     """
     Sovereign Agent responsible for surgical refactoring of upward dependencies.
 

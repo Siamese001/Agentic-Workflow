@@ -27,14 +27,15 @@ import os
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
 @dataclass
-class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin):
+class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
     """
     Structural Engineer validates code structure and organization.
 

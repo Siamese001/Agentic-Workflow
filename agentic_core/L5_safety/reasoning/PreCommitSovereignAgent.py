@@ -56,7 +56,7 @@ class ViolationReport:
     target_layer: str
 
 
-class PreCommitSovereignAgent(SubatomicTestingMixin, SovereignBaseAgent, L0MaintenanceBase):
+class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBase):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.

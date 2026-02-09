@@ -12,7 +12,7 @@ from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
 
 
 @dataclass
-class BootstrapAgent(SubatomicTestingMixin, L0MaintenanceBase):
+class BootstrapAgent(L0MaintenanceBase):
     """
     Autonomous boot integrity agent - Phase 21.1 Normalized.
     Inherits from L0MaintenanceBaseAgent which inherits from SovereignBaseAgent.

@@ -171,7 +171,7 @@ class ConstitutionalOverseer:
 
 
 @dataclass
-class SafetyInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SafetyInspectorAgent(SovereignBaseAgent):
     """
     L5 Safety Inspector with Socratic Judge for false positive mitigation.
 

@@ -13,7 +13,6 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class FissionResult:
 (AtomicExecutionMixin,)
 
 
-class FissionManagerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class FissionManagerAgent(SovereignBaseAgent):
     """L3 Orchestration Layer: Atomic Fission via Gateway."""
 
     def __init__(self, line_limit: int = 800, deletion_guardrail: int = 110, max_rounds: int = 3) -> None:

@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 
-from agentic_core.utils.ssot_discovery_validator import get_python_files
-
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_maintenance.utils.ssot_discovery_util import get_python_files
 
 """
 L6 Sovereign Code Graph & Governance Infrastructure
@@ -323,7 +322,7 @@ class DependencyGraph:
 
 
 # NAMING CANON COMPLIANCE — renamed to GovernanceAgent for discovery and sovereignty — 2025-12-30
-class GovernanceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class GovernanceAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Enforces architectural governance laws and constraints.
 
