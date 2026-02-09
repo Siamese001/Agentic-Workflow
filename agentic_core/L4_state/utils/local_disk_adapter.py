@@ -5,7 +5,7 @@ import logging
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
-import os
+from pathlib import Path
 from typing import Any
 
 
@@ -20,14 +20,13 @@ class LocalDiskAdapter:  # v15-exception: storage-provider-not-behavioral-adapte
 
     def __init__(self, config: dict[str, Any]):
         self.config = config
-        self.root = config.get("storage_path", "./data/storage")
-        if not os.path.exists(self.root):
-            os.makedirs(self.root)
+        self.root = Path(config.get("storage_path", "./data/storage"))
+        self.root.mkdir(parents=True, exist_ok=True)
 
     async def write_blob(self, key: str, data: bytes, METADATA: dict = None) -> Any:
         """Writes data to the sovereign storage area."""
-        safe_path: Any = os.path.join(self.root, key.lstrip("/"))
-        os.makedirs(os.path.dirname(safe_path), exist_ok=True)
+        safe_path = self.root / key.lstrip("/")
+        safe_path.parent.mkdir(parents=True, exist_ok=True)
         with open(safe_path, "wb") as f:
             f.write(data)
         logging.info(f"DiskAdapter: Persisted {len(data)} bytes to {key}")
