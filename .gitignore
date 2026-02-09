@@ -68,6 +68,9 @@ coverage_html/
 guardian_report.txt
 .test_artifacts/
 
+# Ephemeral governance scope snapshots (COMMIT_SCOPE_SNAPSHOTS=false by default)
+docs/reports/plans/_artifacts/
+
 # Agent discovery artifacts (auto-generated)
 agent_discovery_full.manifest.json
 .backup/guardian_tests/

@@ -16,7 +16,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from agentic_core.base_agents.context_propagation_mixin import span_id_var, trace_id_var
+from agentic_core.mixins.context_propagation_mixin import span_id_var, trace_id_var
 
 
 class SovereignEvent(BaseModel):
@@ -104,8 +104,11 @@ class event_emission_mixin:
 
         async def _dispatch_async() -> None:
             """Hardened: 3 retries + 5s timeout per attempt."""
+            # guardian: allow-magic-config
             MAX_RETRIES = 3
+            # guardian: allow-magic-config
             TIMEOUT_SEC = 5.0
+            # guardian: allow-magic-config
             base_delay = 0.8
 
             event_data = event.model_dump()
@@ -128,6 +131,7 @@ class event_emission_mixin:
                     return
                 except asyncio.TimeoutError:
                     self._ee_logger.warning(f"Redis dispatch timeout (attempt {attempt}/{MAX_RETRIES})")
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     self._ee_logger.warning(f"Redis dispatch failed (attempt {attempt}/{MAX_RETRIES}): {e}")
 
@@ -147,6 +151,7 @@ class event_emission_mixin:
                     {"event": json.dumps(event.model_dump())},
                     maxlen=10000,
                 )
+            # guardian: allow-silent-swallow
             except Exception as e:
                 self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 

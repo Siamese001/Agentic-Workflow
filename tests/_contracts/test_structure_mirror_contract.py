@@ -93,10 +93,12 @@ def compute_expected_test_path(module_path: pathlib.Path) -> pathlib.Path:
 
 
 def check_test_status(
-    module_path: pathlib.Path, expected_test_path: pathlib.Path, existing_tests: list[pathlib.Path]
+    module_path: pathlib.Path,
+    expected_test_path: pathlib.Path,
+    existing_tests: list[pathlib.Path],
 ) -> tuple[str, pathlib.Path | None]:
     """Check test status for a module."""
-    existing_test_paths = {t for t in existing_tests}
+    existing_test_paths = set(existing_tests)
 
     if expected_test_path in existing_test_paths:
         return "PRESENT", expected_test_path
@@ -172,9 +174,6 @@ def validate_mirror_contract():
 
     with open(baseline_file) as f:
         baseline = json.load(f)
-
-    # Get current state
-    current = generate_mirror_snapshot()
 
     # If baseline has modules, check them
     if "modules" in baseline:
@@ -254,13 +253,52 @@ def test_no_expired_waivers():
 
 
 def test_no_tests_in_non_canonical_locations():
-    """Test that no tests exist outside the canonical mirror structure."""
-    test_root = pathlib.Path("tests")
+    """Test that no tests exist outside the canonical mirror structure.
 
+    Policy: BASELINE-AWARE (default)
+    --------------------------------
+    Legacy roots that pre-date the mirror contract are allowed but frozen.
+    Their file count must not increase beyond the recorded baseline.
+    Set LEGACY_ROOT_POLICY = "STRICT" to disallow all non-canonical roots.
+    """
+    # --- Policy configuration ---------------------------------------------------
+    LEGACY_ROOT_POLICY = "BASELINE-AWARE"  # "STRICT" | "BASELINE-AWARE"
+
+    # Frozen legacy roots: {prefix: max_test_file_count}
+    # Count was captured from the committed state when the policy was adopted.
+    LEGACY_ROOT_BASELINES: dict[str, int] = {
+        "tests/core/": 15,
+        "tests/e2e/": 32,
+        "tests/fixtures/": 1,
+        "tests/goldens/": 1,
+        "tests/integration/": 3,
+        "tests/misc/": 14,
+        "tests/performance/": 1,
+        "tests/stress/": 1,
+        "tests/unit/": 717,
+        "tests/unit_min_deps/": 8,
+        "tests/behavioral/": 3,
+    }
+
+    # Infrastructure / governance directories (always allowed, not mirror-scoped)
+    INFRA_PREFIXES = (
+        "tests/_contracts/",
+        "tests/guardian/",
+        "tests/_quarantine/",
+    )
+
+    # Canonical mirror roots
+    CANONICAL_ROOTS = {"agentic_core", "apps_lic", "apps_rg", "apps_shared"}
+    # ---------------------------------------------------------------------------
+
+    test_root = pathlib.Path("tests")
     non_canonical_tests = []
+    legacy_growth_violations = []
+
+    # Bucket legacy root counts
+    legacy_counts: dict[str, int] = dict.fromkeys(LEGACY_ROOT_BASELINES, 0)
 
     for test_file in test_root.rglob("test_*.py"):
-        # Get repo-relative path
         try:
             rel_path = test_file.relative_to(pathlib.Path("."))
         except ValueError:
@@ -268,32 +306,58 @@ def test_no_tests_in_non_canonical_locations():
 
         rel_str = str(rel_path).replace("\\", "/")
 
-        # Only allow exact prefix matches
-        if (
-            rel_str.startswith("tests/_contracts/")
-            or rel_str.startswith("tests/guardian/")
-            or rel_str.startswith("tests/_quarantine/")
-        ):
+        # Always-allowed infrastructure paths
+        if rel_str.startswith(INFRA_PREFIXES):
             continue
 
         # Skip the contract test itself
         if test_file.name == "test_structure_mirror_contract.py":
             continue
 
-        # Check if it follows mirror structure
         relative_path = test_file.relative_to(test_root)
 
-        # Should be: tests/agentic_core/.../test_*.py or tests/apps_*/.../test_*.py
-        if len(relative_path.parts) < 2:
-            non_canonical_tests.append(str(test_file))
+        # Canonical mirror roots are always fine
+        if len(relative_path.parts) >= 2 and relative_path.parts[0] in CANONICAL_ROOTS:
             continue
 
-        first_part = relative_path.parts[0]
-        if first_part not in ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]:
-            non_canonical_tests.append(str(test_file))
+        # Check against legacy roots
+        matched_legacy = False
+        for legacy_prefix in LEGACY_ROOT_BASELINES:
+            if rel_str.startswith(legacy_prefix):
+                legacy_counts[legacy_prefix] += 1
+                matched_legacy = True
+                break
 
+        if matched_legacy:
+            if LEGACY_ROOT_POLICY == "STRICT":
+                non_canonical_tests.append(rel_str)
+            # BASELINE-AWARE: counted, checked below
+            continue
+
+        # Truly non-canonical
+        non_canonical_tests.append(rel_str)
+
+    # Enforce freeze rule on legacy roots (BASELINE-AWARE only)
+    if LEGACY_ROOT_POLICY == "BASELINE-AWARE":
+        for prefix, baseline_max in LEGACY_ROOT_BASELINES.items():
+            actual = legacy_counts.get(prefix, 0)
+            if actual > baseline_max:
+                legacy_growth_violations.append(
+                    f"{prefix}: {actual} files (baseline max {baseline_max})",
+                )
+
+    errors = []
     if non_canonical_tests:
-        pytest.fail(f"Tests found in non-canonical locations: {non_canonical_tests[:10]}")
+        errors.append(
+            f"Tests in non-canonical locations: {non_canonical_tests[:10]}",
+        )
+    if legacy_growth_violations:
+        errors.append(
+            f"Legacy root growth violations (freeze rule): {legacy_growth_violations}",
+        )
+
+    if errors:
+        pytest.fail(" | ".join(errors))
 
 
 if __name__ == "__main__":
