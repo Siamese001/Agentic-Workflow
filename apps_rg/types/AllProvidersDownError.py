@@ -11,12 +11,12 @@ from typing import Any
 
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
 from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState
-from apps_rg.engines.AgentExecutor import AgentMessage, AgentResponse
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
 # [Diff Start: Updated Imports for Relocation]
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
+from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 from apps_shared.utils.Provider import Provider
 
 # [Diff End]

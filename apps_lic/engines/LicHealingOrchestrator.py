@@ -15,14 +15,13 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class LicHealingOrchestrator(SubatomicTestingMixin, LICAgentBase):
+class LicHealingOrchestrator(LICAgentBase):
     """
     Sovereign LIC Healing Orchestrator.
     Coordinates domain-specific recovery actions for the LIC ecosystem.

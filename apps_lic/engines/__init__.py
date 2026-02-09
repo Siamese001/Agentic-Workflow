@@ -1,75 +1,15 @@
-"""SSOT Agents Package generated during migration."""
+"""apps_lic/engines/__init__.py — Sovereign Engine Registry.
 
-from .CulturalDecoderAgent import CulturalDecoderAgent
-from .DeliverabilityAgent import DeliverabilityAgent
-from .DispatchOutreachToolsAgent import DispatchOutreachToolsAgent
-from .GovernanceShieldAgent import GovernanceShieldAgent
-from .Hop1ProfileAnalysisAgent import Hop1ProfileAnalysisAgent
-from .Hop2ResearchAgent import Hop2ResearchAgent
-from .HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
-from .Hop4RoutingAgent import HOP4RoutingAgent
-from .HOP5GenerationAgent import HOP5GenerationAgent
-from .Hop6ValidationAgent import HOP6ValidationAgent
-from .HOP7GateDecisionAgent import HOP7GateDecisionAgent
-from .HOP8QAReportAgent import HOP8QAReportAgent
-from .HOP9IntegrationAgent import HOP9IntegrationAgent
-from .IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
-from .LeadQualityAgent import LeadQualityAgent
-from .LicCodeInterpreter import LicCodeInterpreter
-from .LicHealingOrchestrator import LicHealingOrchestrator
-from .LicReflectionAgent import LicReflectionAgent
-from .LicS2SupervisorAgent import LicS2SupervisorAgent
-from .LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
-from .LogReaderAgent import LogReaderAgent
-from .MessageArchitectAgent import MessageArchitectAgent
-from .MessageComplianceAgent import MessageComplianceAgent
-from .MessageDiversityValidator import MessageDiversityValidator
-from .OutreachCapabilityMonitorAgent import OutreachCapabilityMonitorAgent
-from .OutreachLearningAgent import OutreachLearningAgent
-from .OutreachProactiveAgent import OutreachProactiveAgent
-from .OutreachSignalRouterAgent import OutreachSignalRouterAgent
-from .OutreachTestPilotAgent import OutreachTestPilotAgent
-from .OutreachValidationExecutorAgent import OutreachValidationExecutorAgent
-from .PersonaPlannerValidator import PersonaPlanner
-from .PIISanitizerSpecialistAgent import PII_SanitizerSpecialistAgent
-from .QAConductorAgent import QAConductorAgent
-from .TwoPhaseDeduplicationAgent import TwoPhaseDeduplicationAgent
-from .ValidatorAgent import ValidatorAgent
+Only canonical executors are eagerly imported. All other agents remain
+importable directly from their modules, e.g.:
+    from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent
+    from apps_lic.engines.OutreachSignalRouterAgent import OutreachSignalRouterAgent
+"""
+
+from .HOPPipelineExecutor import HOPPipelineExecutor
+from .LICValidationExecutor import LICValidationExecutor
 
 __all__ = [
-    "DispatchOutreachToolsAgent",
-    "ValidatorAgent",
-    "CulturalDecoderAgent",
-    "DeliverabilityAgent",
-    "GovernanceShieldAgent",
-    "HOP3SenderGroundingAgent",
-    "HOP5GenerationAgent",
-    "HOP7GateDecisionAgent",
-    "HOP8QAReportAgent",
-    "HOP9IntegrationAgent",
-    "Hop1ProfileAnalysisAgent",
-    "Hop2ResearchAgent",
-    "HOP4RoutingAgent",
-    "HOP6ValidationAgent",
-    "IntelligenceLibrarianAgent",
-    "MessageArchitectAgent",
-    "LeadQualityAgent",
-    "LicCodeInterpreter",
-    "LicHealingOrchestrator",
-    "LicReflectionAgent",
-    "LicS2SupervisorAgent",
-    "LicTemplateOptimizerAgent",
-    "LogReaderAgent",
-    "MessageComplianceAgent",
-    "MessageDiversityValidator",
-    "OutreachCapabilityMonitorAgent",
-    "OutreachLearningAgent",
-    "OutreachProactiveAgent",
-    "OutreachSignalRouterAgent",
-    "OutreachTestPilotAgent",
-    "OutreachValidationExecutorAgent",
-    "PII_SanitizerSpecialistAgent",
-    "PersonaPlanner",
-    "QAConductorAgent",
-    "TwoPhaseDeduplicationAgent",
+    "HOPPipelineExecutor",
+    "LICValidationExecutor",
 ]

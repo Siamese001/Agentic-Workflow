@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L1_cognition.reasoning.types.client_types import (
+from agentic_core.L1_cognition.types.client_types import (
     CACHE_KEY_PREFIX,
     DEFAULT_SIMILARITY_THRESHOLD,
     DEFAULT_TTL_SECONDS,

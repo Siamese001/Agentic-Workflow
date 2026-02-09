@@ -1,52 +1,9 @@
+"""CONSOLIDATED: DagRuntimeInspectorAgent → InspectorExecutor (2026-02-08).
+
+This file is a backward-compatibility shim.
+Import the canonical executor directly for new code.
 """
-DagRuntimeInspectorAgent - Runtime diagnostics for DAG execution graphs.
 
-Refactored: 2026-02-08 (Cluster 1B — InspectionCapability extraction)
-"""
+from agentic_core.L5_safety.reasoning.InspectorExecutor import InspectorExecutor as DagRuntimeInspectorAgent
 
-from typing import Any
-
-from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.inspection_capability import (
-    InspectionCapability,
-    InspectionResult,
-)
-
-
-class DagRuntimeInspectorAgent(
-    InspectionCapability,
-    AtomicExecutionMixin,
-    SovereignBaseAgent,
-):
-    """Runtime diagnostics inspector for DAG execution graphs."""
-
-    INSPECTION_LOG_PREFIX = "Running DAG runtime diagnostics..."
-
-    def __init__(self, inspector_config: dict[str, Any] | None = None):
-        """Initialize the inspector."""
-        super().__init__()
-        self._inspector_config = inspector_config or {}
-
-    # perform_checks() inherited from InspectionCapability (default structural checks).
-    # Override here when domain-specific DAG runtime logic is added.
-
-    def diagnose(self, target: Any, context: dict[str, Any] | None = None) -> InspectionResult:
-        """Run diagnostics via InspectionCapability harness."""
-        return self.run_inspection(target, context)
-
-    @standard_heal
-    def heal_repository(self, **kwargs: Any) -> dict[str, Any]:
-        """Invoke healing chain via super()."""
-        return super().heal_repository(**kwargs)
-
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """Heal violations detected by DagRuntimeInspectorAgent."""
-        return self.make_heal_result(violation)
-
-
-def diagnose(target: Any, config: dict[str, Any] | None = None) -> InspectionResult:
-    """Convenience function for diagnostics."""
-    inspector = DagRuntimeInspectorAgent(config)
-    return inspector.diagnose(target)
+__all__ = ["DagRuntimeInspectorAgent"]

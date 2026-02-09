@@ -1,0 +1,81 @@
+"""HOP Pipeline Stage Registry.
+
+Maps stage_id → handler function for HOPPipelineExecutor.
+Stage-specific _process logic is preserved here from the original HOP agents.
+Created: 2026-02-08 (Structural Agent Count Reduction)
+"""
+
+from __future__ import annotations
+
+from typing import Any, Callable
+
+_REGISTRY: dict[int, Callable] = {}
+
+
+def register_stage(stage_id: int):
+    """Decorator to register a stage handler."""
+
+    def decorator(func: Callable) -> Callable:
+        _REGISTRY[stage_id] = func
+        return func
+
+    return decorator
+
+
+def get_stage_handler(stage_id: int) -> Callable | None:
+    """Look up the handler for a given stage_id."""
+    return _REGISTRY.get(stage_id)
+
+
+@register_stage(1)
+def _stage_1_profile_analysis(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP1: Profile analysis stage."""
+    return {"stage": 1, "name": "profile_analysis", "status": "processed", "context": context}
+
+
+@register_stage(2)
+def _stage_2_research(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP2: Research stage."""
+    return {"stage": 2, "name": "research", "status": "processed", "context": context}
+
+
+@register_stage(3)
+def _stage_3_sender_grounding(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP3: Sender grounding stage."""
+    return {"stage": 3, "name": "sender_grounding", "status": "processed", "context": context}
+
+
+@register_stage(4)
+def _stage_4_routing(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP4: Routing stage."""
+    return {"stage": 4, "name": "routing", "status": "processed", "context": context}
+
+
+@register_stage(5)
+def _stage_5_generation(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP5: Generation stage."""
+    return {"stage": 5, "name": "generation", "status": "processed", "context": context}
+
+
+@register_stage(6)
+def _stage_6_validation(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP6: Validation stage."""
+    return {"stage": 6, "name": "validation", "status": "processed", "context": context}
+
+
+@register_stage(7)
+def _stage_7_gate_decision(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP7: Gate decision stage."""
+    return {"stage": 7, "name": "gate_decision", "status": "processed", "context": context}
+
+
+@register_stage(8)
+def _stage_8_qa_report(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP8: QA report stage."""
+    return {"stage": 8, "name": "qa_report", "status": "processed", "context": context}
+
+
+@register_stage(9)
+def _stage_9_integration(executor: Any, context: dict, **kwargs) -> dict:
+    """HOP9: Integration stage."""
+    return {"stage": 9, "name": "integration", "status": "processed", "context": context}

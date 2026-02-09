@@ -20,7 +20,7 @@ class TestDefaultPerformChecks:
     """Verify InspectionCapability.perform_checks default implementation."""
 
     def _get_capability(self):
-        from agentic_core.mixins.inspection_capability import InspectionCapability
+        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 
         return InspectionCapability()
 
@@ -69,7 +69,7 @@ class TestInheritedDefault:
     """Verify subclasses without local perform_checks inherit the default."""
 
     def test_bare_subclass_inherits_default(self) -> None:
-        from agentic_core.mixins.inspection_capability import InspectionCapability
+        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 
         class _BareInspector(InspectionCapability):
             INSPECTION_LOG_PREFIX = "Bare"
@@ -79,7 +79,7 @@ class TestInheritedDefault:
         assert issues == ["Target is null"]
 
     def test_override_takes_precedence(self) -> None:
-        from agentic_core.mixins.inspection_capability import InspectionCapability
+        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 
         class _CustomInspector(InspectionCapability):
             INSPECTION_LOG_PREFIX = "Custom"
@@ -115,7 +115,7 @@ class TestCluster4AgentConsistency:
 
     @pytest.mark.parametrize("target", TARGETS, ids=lambda t: type(t).__name__)
     def test_all_agents_produce_same_result(self, target: Any) -> None:
-        from agentic_core.mixins.inspection_capability import InspectionCapability
+        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 
         # All three agents inherit perform_checks from InspectionCapability.
         # Verify directly on the capability to ensure contract holds.
@@ -132,7 +132,7 @@ class TestRunInspectionIntegration:
     """Verify run_inspection() works with the default perform_checks."""
 
     def test_healthy_result_for_dict(self) -> None:
-        from agentic_core.mixins.inspection_capability import (
+        from agentic_core.mixins.inspection_capability_mixin import (
             InspectionCapability,
             InspectionResult,
         )
@@ -146,7 +146,7 @@ class TestRunInspectionIntegration:
         assert result.metrics["field_count"] == 1
 
     def test_unhealthy_result_for_none(self) -> None:
-        from agentic_core.mixins.inspection_capability import (
+        from agentic_core.mixins.inspection_capability_mixin import (
             InspectionCapability,
             InspectionResult,
         )

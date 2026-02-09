@@ -11,14 +11,13 @@ import logging
 import re
 from dataclasses import dataclass, field
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class GovernanceShieldAgent(SubatomicTestingMixin, LICAgentBase):
+class GovernanceShieldAgent(LICAgentBase):
     """Sovereign Governance Shield - Audits and upgrades content for risk maturity."""
 
     # Sovereign Configuration

@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L1_cognition.reasoning.types.observability_types import (
+from agentic_core.L1_cognition.types.observability_types import (
     HealthStatus,
     MetricPoint,
 )

@@ -1,0 +1,57 @@
+name: Guardian Tests
+
+on:
+  push:
+    paths:
+      - 'agentic_core/L0_maintenance/**'
+      - 'agentic_core/L5_safety/**'
+      - 'tests/guardian/**'
+  pull_request:
+    paths:
+      - 'agentic_core/L0_maintenance/**'
+      - 'agentic_core/L5_safety/**'
+      - 'tests/guardian/**'
+
+jobs:
+  guardian-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest
+
+      - name: Run Guardian tests (all phases)
+        run: |
+          pytest tests/guardian/test_guardian_contract.py \
+                 tests/guardian/test_contract_compatibility.py \
+                 tests/guardian/test_guardian_hygiene.py \
+                 tests/guardian/test_guardian_manifest.py \
+                 tests/guardian/test_guardian_aggregation.py \
+                 tests/guardian/test_behavioral_coverage_ratchet.py \
+                 tests/guardian/test_l6_signal_contract.py \
+                 tests/guardian/test_guardian_runtime_budget.py \
+                 tests/guardian/test_guardian_self_integrity.py \
+                 tests/guardian/test_guardian_meta_coverage.py \
+                 -v --tb=short -m guardian
+
+      - name: Run aggregated guardian (--strict)
+        run: |
+          python -m agentic_core.L0_maintenance.scripts.run_all_guardians \
+                 --write-artifacts docs/reports/guardian_artifacts \
+                 --strict --format text
+
+      - name: Upload guardian artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-results
+          path: |
+            agentic_core/L0_maintenance/logs/guardian_report.json
+            docs/reports/guardian_artifacts/

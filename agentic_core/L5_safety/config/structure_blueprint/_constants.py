@@ -120,6 +120,10 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
                     "general_scripts": {"purpose": "General maintenance scripts"},
                 },
             },
+            "logs": {
+                "purpose": "Guardian and audit log outputs (JSON reports).",
+                "allowed_extensions": [".json", ".log"],
+            },
         },
     },
     "L1_cognition": {
@@ -454,6 +458,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
             "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",
         },
+        "core": {
+            "purpose": "Zero-dependency foundation modules. MUST use ONLY Python stdlib.",
+            "notes": "Classification kernel and other foundational utilities. Safe to import from any layer.",
+            "subfolders": {},
+            "flat": True,
+            "naming_convention": r"^[a-z][a-z0-9_]*_(kernel|foundation|primitives)?\.py$",
+        },
     }
 
     # Add L0-L6 layers
@@ -475,7 +486,14 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "purpose": "Static configuration, feature flags, and default constants.",
                 "subfolders": {
                     "core": {"purpose": "Core configuration files, settings, constants, and registries."},
+                    "agent_configs": {
+                        "purpose": "Agent specification YAML files.",
+                        "type": "spec_data",
+                        "allowed_extensions": [".yaml", ".yml"],
+                        "no_python": True,
+                    },
                 },
+                "allow_root_py": False,
                 "allowed_extensions": [".py", ".json"],
                 "naming_convention": r"^[a-z][a-z0-9_]*_(config|defaults|settings|flags|loader)\.py$",
                 "forbidden_patterns": [
@@ -490,12 +508,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "meta_prompts": ["orchestration", "reasoning", "personas"],
                     "templates": ["instructional", "specialized", "fragments"],
                     "scripts": ["audit", "migration", "maintenance"],
-                    "version_registry": ["manifests", "locks", "lineage"],
                 },
+                "strict_subfolder_enforcement": True,
+                "required_subfolders": ["meta_prompts", "templates", "scripts", "security"],
+                "optional_subfolders": ["core", "domain", "optimization", "registry", "utils"],
                 "forbidden_patterns": ["L3_", "l3_"],
                 "required_dirs": [
                     "agentic_core/prompt_governance/meta_prompts",
-                    "agentic_core/prompt_governance/version_registry",
                 ],
             },
             "runtime": {
@@ -506,6 +525,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "exceptions": {"purpose": "Exception hierarchies for runtime errors."},
                     "utils": {"purpose": "Shared runtime utilities and discovery logic."},
                     "config": {"purpose": "Runtime configuration and environment settings."},
+                    "enforcement": {"purpose": "Runtime enforcement hooks and guards."},
                 },
                 "naming_convention": r"^[a-z][a-z0-9_]*_(util|types|exceptions|engine|config)\.py$",
             },
@@ -514,23 +534,25 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "notes": "36 mixins migrated from base_agents/. FLAT: no subfolders allowed (contracts/ dissolved 2026-02-08).",
                 "subfolders": {},
                 "flat": True,
-                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract|engine|storage|client_mixin)\.py$",
+                "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract|client_mixin)\.py$",
             },
             "utils": {
                 "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",
                 "forbidden_patterns": ["test_", "utilities_"],
                 "notes": "Scripts go to L0_maintenance/scripts. Tests go to tests/.",
             },
-            "semantic_memory": {"purpose": "Vector storage and semantic retrieval systems"},
+            # semantic_memory removed — never materialized, use knowledge/ instead
             "knowledge": {
                 "purpose": "Knowledge management and RAG systems.",
                 "notes": "Domain root must NOT contain logic files. Only sub-directories (Leaf Node Rule).",
+                "allow_root_py": False,
                 "subfolders": {
                     "document_loaders": {"purpose": "Document ingestion and loader implementations."},
                     "research_cache": {"purpose": "Cached research results and retrieval data."},
                     "static_index": {"purpose": "Static knowledge indices and pre-built lookups."},
                     "engine": {"purpose": "RAG orchestration and retrieval logic."},
                     "healing": {"purpose": "Knowledge-domain healing strategies (wiki, docs)."},
+                    "reasoning": {"purpose": "Knowledge-domain reasoning agents."},
                 },
                 "naming_convention": r"^[a-z][a-z0-9_]*_(loader|cache|index|orchestrator|engine|healer)\.py$",
             },
@@ -640,30 +662,16 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "types": {"purpose": "Type definitions and data models", "subfolders": []},
         "reasoning": {"purpose": "Agent classes and business logic", "subfolders": []},
         "engines": {
-            "purpose": "Processing engines and pipelines",
-            "subfolders": [
-                "base",
-                "generation",
-                "hops",
-                "orchestration",
-                "quality",
-                "refinement",
-                "retrieval",
-                "safety",
-                "utils",
-            ],
+            "purpose": "Processing engines and pipelines (flat .py files, no nested subdirs)",
+            "subfolders": [],
         },
         "utils": {"purpose": "Utility functions", "subfolders": []},
         "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
-        "domain": {"purpose": "Domain models and entities", "subfolders": ["config", "utils"]},
-        "shared": {
-            "purpose": "Shared components within the app",
-            "subfolders": ["core", "reasoning", "tools", "utils"],
-        },
-        "system_flow": {"purpose": "Workflow and pipeline definitions", "subfolders": []},
-        "asset_library": {"purpose": "Templates, wording, and static assets", "subfolders": []},
-        "validation": {"purpose": "Validation rules and checkers", "subfolders": []},
-        "logic_nodes": {"purpose": "Logic node implementations", "subfolders": []},
+        # NOTE: domain, shared, system_flow, asset_library, validation, logic_nodes
+        # were removed as never-materialized speculative structure. If needed in
+        # future, add back with explicit required/optional classification.
+        "tools": {"purpose": "Tool implementations and wrappers", "subfolders": []},
+        "validators": {"purpose": "Input/output validators", "subfolders": []},
     }
 
     territories["apps_rg"] = {
@@ -674,7 +682,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
 
     apps_lic_subfolders = apps_lcd_subfolders.copy()
-    apps_lic_subfolders["reports"] = {"purpose": "Report generation and output", "subfolders": []}
+    # reports removed — never materialized on disk, add back when needed
     apps_lic_subfolders["tools"] = {"purpose": "Tool implementations", "subfolders": []}
 
     territories["apps_lic"] = {
@@ -689,19 +697,34 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     territories["apps_shared"] = {
         "depth": 2,
         "purpose": "Global utilities and shared logic accessible by all apps and core.",
-        "subfolders": [
+        "required_subfolders": ["config", "data", "reasoning", "scripts", "types", "utils", "validators"],
+        "optional_subfolders": [
             "agents",
-            "config",
             "core_components",
-            "data",
             "tools",
-            "utils",
             "common_utils",
             "mixins",
-            "scripts",
             "integration",
             "llm",
         ],
+        "subfolders": {
+            "config": {"purpose": "Shared configuration loaders and environment setup"},
+            "data": {"purpose": "Shared data files (resume templates, knowledge bases)"},
+            "reasoning": {
+                "purpose": "Cross-app reasoning agents (adaptive retrieval, circuit breaker, etc.)"
+            },
+            "scripts": {"purpose": "Shared CLI scripts and batch utilities"},
+            "types": {"purpose": "Shared type definitions and data models"},
+            "utils": {"purpose": "Shared utility functions (formatting, parsing, etc.)"},
+            "validators": {"purpose": "Shared input/output validation logic"},
+            "agents": {"purpose": "Shared base agent implementations (optional, migrate to core)"},
+            "core_components": {"purpose": "Shared base nodes, engines, flows (optional)"},
+            "tools": {"purpose": "Shared tool implementations and wrappers (optional)"},
+            "common_utils": {"purpose": "Legacy common utilities (optional, consolidate into utils/)"},
+            "mixins": {"purpose": "Shared capability mixins (optional)"},
+            "integration": {"purpose": "Integration adapters for external services (optional)"},
+            "llm": {"purpose": "LLM interaction utilities (optional)"},
+        },
         "forbidden_imports": ["apps_rg", "apps_lic"],
         "ast_signals": {
             "apps_shared/utils": {
@@ -721,6 +744,12 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 3,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
+            "_quarantine": {"purpose": "Quarantined tests pending triage or fix"},
+            "core": {"purpose": "Core framework-level tests"},
+            "goldens": {"purpose": "Golden test data for snapshot comparisons"},
+            "helpers": {"purpose": "Shared test helper modules"},
+            "misc": {"purpose": "Miscellaneous test utilities"},
+            "unit_min_deps": {"purpose": "Minimal-dependency unit tests (no heavy imports)"},
             "unit": {
                 "purpose": "Isolated logic tests mirroring source structure",
                 "mirror_source": True,
@@ -796,6 +825,18 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "apps_rg": {"purpose": "Unit tests for apps_rg modules", "subfolders": {}},
                     "apps_shared": {"purpose": "Unit tests for apps_shared modules", "subfolders": {}},
                     "utils": {"purpose": "Utility tests", "subfolders": []},
+                    "L5_safety": {"purpose": "Unit tests for L5_safety enforcement", "subfolders": {}},
+                    "anomaly_tests": {"purpose": "Anomaly detection and remediation tests", "subfolders": {}},
+                    "consolidation": {"purpose": "Consolidation logic tests", "subfolders": {}},
+                    "core": {"purpose": "Core module tests", "subfolders": {}},
+                    "dedup": {"purpose": "Deduplication logic tests", "subfolders": {}},
+                    "docs": {"purpose": "Documentation generation tests", "subfolders": {}},
+                    "file_classification_agent": {
+                        "purpose": "File classification agent tests",
+                        "subfolders": {},
+                    },
+                    "scripts": {"purpose": "Script tests", "subfolders": {}},
+                    "structure_blueprint": {"purpose": "Structure blueprint tests", "subfolders": {}},
                 },
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
@@ -807,7 +848,16 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             },
             "e2e": {
                 "purpose": "Full system user-flow simulations",
-                "subfolders": ["scenarios", "flows", "snapshots"],
+                "subfolders": [
+                    "scenarios",
+                    "flows",
+                    "snapshots",
+                    "agentic_core",
+                    "apps_lic",
+                    "apps_rg",
+                    "misc",
+                    "ops_scripts",
+                ],
             },
             "guardian": {
                 "purpose": "Architectural compliance validation (Red Shield validation gate)",
@@ -832,7 +882,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     territories["ops_scripts"] = {
         "depth": 2,
         "purpose": "Standalone utility scripts (formerly root scripts/).",
-        "subfolders": [
+        "required_subfolders": [
             "ci",
             "maintenance",
             "security",
@@ -842,21 +892,35 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "simulations",
             "general",
         ],
+        "subfolders": {
+            "ci": {"purpose": "CI validation and agent-check scripts"},
+            "maintenance": {"purpose": "Maintenance and cleanup utilities"},
+            "security": {"purpose": "Security scanning and audit scripts"},
+            "setup": {"purpose": "Environment setup and initialization"},
+            "governance": {"purpose": "Layer separation and test structure governance"},
+            "hooks": {"purpose": "Pre-commit and validation hooks"},
+            "simulations": {"purpose": "Dry-run and simulation runners"},
+            "general": {"purpose": "General-purpose analysis and discovery scripts"},
+        },
     }
 
     territories["archives"] = {
         "depth": 3,
         "purpose": "Canonical repository for deprecated agents and transaction artifacts. Allows flexible recursive subfolders.",
-        "subfolders": {},
+        "subfolders": {
+            "deprecated": {"purpose": "Deprecated agent files pending removal or reference"},
+            "gatekeeper": {"purpose": "Gatekeeper transaction artifacts and audit trails"},
+        },
         "volatile": False,
+        "no_cross_layer_imports": True,
+        "allowed_extensions": [".py", ".json", ".md"],
+        "allow_root_py": True,
     }
 
     territories["data"] = {
         "depth": 2,
         "purpose": "Data storage and processing artifacts.",
-        "subfolders": [
-            "archives",
-            "cache",
+        "required_subfolders": [
             "external",
             "freeze_reports",
             "golden",
@@ -873,6 +937,27 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "snapshots",
             "tasks",
         ],
+        "optional_subfolders": ["archives", "cache"],
+        "subfolders": {
+            "external": {"purpose": "External reference data (OpenAI best practices, playbooks)"},
+            "freeze_reports": {"purpose": "Frozen governance and config state reports"},
+            "golden": {"purpose": "Golden test datasets (JSONL ground truth)"},
+            "golden_state": {"purpose": "Golden state snapshots and datasets"},
+            "logs": {"purpose": "Runtime and guardian log outputs"},
+            "manifests": {"purpose": "Agent and module manifest files"},
+            "output": {"purpose": "Generated output artifacts"},
+            "processed": {"purpose": "Processed intermediate data"},
+            "prompt_governance": {"purpose": "Prompt governance rules and audit trails"},
+            "prompt_libraries": {"purpose": "Reusable prompt template libraries"},
+            "prompts": {"purpose": "Active prompt templates"},
+            "raw": {"purpose": "Raw unprocessed input data"},
+            "sdks_mcps": {"purpose": "SDK and MCP integration data"},
+            "snapshots": {"purpose": "Data state snapshots for rollback"},
+            "tasks": {"purpose": "Task definitions and queue data"},
+            "archives": {"purpose": "Archived data batches (optional, created on demand)"},
+            "cache": {"purpose": "Ephemeral computation cache (optional, gitignored)"},
+        },
+        "no_cross_layer_imports": True,
     }
 
     territories["docs"] = {
@@ -891,19 +976,34 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "security": {"purpose": "Security assessments, vulnerability scans, and safety reports"},
                     "audit": {"purpose": "Structural audits, drift analysis, and compliance reports"},
                     "missions": {"purpose": "High-level mission execution traces and runtime logs"},
+                    ".migration": {"purpose": "Migration tracking artifacts"},
+                    "MCP": {"purpose": "MCP server integration reports"},
+                    "apps_lic": {"purpose": "apps_lic domain-specific reports"},
+                    "apps_rg": {"purpose": "apps_rg domain-specific reports"},
+                    "misc": {"purpose": "Miscellaneous reports"},
+                    "plans": {"purpose": "Planning documents and evidence packs"},
+                    "verification": {"purpose": "Enforcement verification artifacts"},
                 },
             },
-            "architecture": {},
-            "plans": {},
-            "technical": {},
+            "architecture": {"purpose": "Architecture decision records and diagrams"},
+            "contracts": {"purpose": "Interface contracts and API agreements"},
+            "plans": {"purpose": "Implementation plans and roadmaps"},
+            "technical": {"purpose": "Technical reference documentation"},
+            "policies": {"purpose": "Governance policies and SSOT enforcement policy documents"},
+            "project": {"purpose": "Project-level documentation and status"},
+            "testing": {"purpose": "Test strategy and methodology documentation"},
         },
     }
 
     territories[".github"] = {
         "depth": 2,
         "purpose": "GitHub Actions workflows and repository configuration.",
-        "subfolders": [],
+        "subfolders": {
+            "workflows": {"purpose": "CI/CD workflow definitions (.yml)"},
+        },
         "volatile": True,
+        "allow_root_py": False,
+        "allowed_extensions": [".yml", ".yaml", ".md"],
     }
     territories[".gravity_state"] = {
         "depth": 2,
@@ -913,14 +1013,27 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
     territories[".backup"] = {
         "depth": 2,
-        "purpose": "Backup and recovery artifacts.",
-        "subfolders": [],
+        "purpose": "Backup and recovery artifacts. Staging-only; no production imports allowed.",
+        "subfolders": {
+            "guardian_tests": {"purpose": "Backed-up guardian test files"},
+            "phase1": {"purpose": "Phase 1 migration backups"},
+            "phase2": {"purpose": "Phase 2 migration backups"},
+        },
         "volatile": True,
+        "no_cross_layer_imports": True,
+        "allow_root_py": True,
     }
-    territories["config"] = {
+    territories["artifacts"] = {
         "depth": 2,
-        "purpose": "Root-level configuration files and agent configs.",
-        "subfolders": ["agent_configs"],
+        "purpose": "Build artifacts, dedup reports, and transient analysis outputs.",
+        "subfolders": ["consolidation", "dedup"],
+        "volatile": True,
+        "enforcement_level": "relaxed",
+        "exclude_from_depth_rules": True,
+        "exclude_from_naming_rules": True,
+        "exclude_from_layer_validation": True,
+        "no_cross_layer_imports": True,
+        "allowed_extensions": [".py", ".json", ".md"],
     }
 
     return territories
