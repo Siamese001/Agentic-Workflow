@@ -150,6 +150,9 @@ def main() -> int:
         print(f"FAIL: {len(errors)} issue(s):")
         for e in errors:
             print(f"  - {e}")
+        print(f"  Fix: edit {BASELINE_PATH} (set total={count}, add entries) and commit with tag:")
+        print("    MRO_BASELINE_BUMP:<reason>")
+        print("  Verify: PYTHONPATH=. python ops_scripts/ci/mro_contract_check.py")
         return 1
 
     # Rule 3: count < ceiling → debt was reduced. Always PASS.

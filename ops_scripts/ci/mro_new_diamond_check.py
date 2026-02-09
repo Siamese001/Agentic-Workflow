@@ -36,7 +36,8 @@ def main() -> int:
     project_root = Path(__file__).resolve().parents[2]
 
     if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))  # guardian: allow-global_mutation
+        # guardian: allow-global-mutation
+        sys.path.insert(0, str(project_root))
 
     from ops_scripts.ci.mro_contract_check import scan_diamonds
 
@@ -86,8 +87,10 @@ def main() -> int:
             f"  - {d['file']}:{d['line']} class {d['class']} "
             f"redundant={d['redundant_mixins']} carriers={d['carriers']}",
         )
-    print("  To override: add MRO_BASELINE_BUMP:<reason> to commit message")
-    print("  AND update the baseline JSON with the new entries.")
+    print("  To fix:")
+    print(f"    1. Edit {BASELINE_PATH} — add new entries + set total={len(current_keys)}")
+    print("    2. Commit with tag: MRO_BASELINE_BUMP:<reason>")
+    print("    3. Verify: PYTHONPATH=. python ops_scripts/ci/mro_new_diamond_check.py")
     return 1
 
 

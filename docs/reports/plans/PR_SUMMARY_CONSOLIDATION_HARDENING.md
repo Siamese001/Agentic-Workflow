@@ -26,12 +26,13 @@
 
 | Baseline | Commit Tag | File to Update | Command |
 |----------|-----------|----------------|---------|
-| MRO ceiling (increase) | `MRO_BASELINE_BUMP:<reason>` | `artifacts/consolidation/mro_diamond_baseline.json` | `python ops_scripts/ci/mro_contract_check.py` |
-| MRO ceiling (decrease) | `MRO_BASELINE_LOWERED:<old>-><new>` | Same | `AUTO_LOWER_MRO_BASELINE=1 python ops_scripts/ci/mro_contract_check.py` (local only) |
-| Active set snapshot | `ACTIVE_SET_SNAPSHOT_BUMP:<reason>` | `artifacts/consolidation/active_set_snapshot.json` | `python ops_scripts/ci/active_set_snapshot_check.py` |
-| Agent count cap | `AGENT_COUNT_BUMP:<reason>` | `ops_scripts/ci/agent_count_cap.py` (cap constant) | `python ops_scripts/ci/agent_count_cap.py` |
-| Centrality baseline | `CENTRALITY_BASELINE_BUMP:<reason>` | `artifacts/consolidation/centrality_baseline.json` | `python ops_scripts/ci/centrality_gate.py` |
-| Skip/Quarantine ceiling | `QUARANTINE_CEILING_BUMP:<reason>` | `tests/_quarantine/QUARANTINE_MANIFEST.json` | `python ops_scripts/ci/skip_quarantine_check.py` |
+| MRO ceiling (increase) | `MRO_BASELINE_BUMP:<reason>` | `artifacts/consolidation/mro_diamond_baseline.json` | `PYTHONPATH=. python ops_scripts/ci/mro_contract_check.py` |
+| MRO ceiling (decrease) | `MRO_BASELINE_LOWERED:<old>-><new>` | Same | `PYTHONPATH=. AUTO_LOWER_MRO_BASELINE=1 python ops_scripts/ci/mro_contract_check.py` (local only) |
+| New diamond entry | `MRO_BASELINE_BUMP:<reason>` | Same (add entry + increment total) | `PYTHONPATH=. python ops_scripts/ci/mro_new_diamond_check.py` |
+| Active set snapshot | `ACTIVE_SET_SNAPSHOT_BUMP:<reason>` | `artifacts/consolidation/active_set_snapshot.json` | `PYTHONPATH=. COMMIT_MESSAGE="ACTIVE_SET_SNAPSHOT_BUMP:<reason>" python ops_scripts/ci/active_set_snapshot_check.py` |
+| Agent count cap | `AGENT_COUNT_BUMP:<reason>` | `ops_scripts/ci/agent_count_cap.py` (cap constant) | `PYTHONPATH=. python ops_scripts/ci/agent_count_cap.py` |
+| Centrality baseline | `CENTRALITY_BASELINE_BUMP:<reason>` | `artifacts/consolidation/centrality_baseline.json` | `PYTHONPATH=. python ops_scripts/ci/centrality_gate.py` |
+| Skip/Quarantine ceiling | `QUARANTINE_CEILING_BUMP:<reason>` | `tests/_quarantine/QUARANTINE_MANIFEST.json` | `PYTHONPATH=. python ops_scripts/ci/skip_quarantine_check.py` |
 
 ## CI Safety
 

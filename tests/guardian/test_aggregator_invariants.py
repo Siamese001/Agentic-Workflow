@@ -23,6 +23,7 @@ from agentic_core.L0_maintenance.scripts.run_all_guardians import (
     run_all_guardians,
 )
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    AGGREGATE_GUARDIAN_ID,
     GuardianStatus,
 )
 from agentic_core.L0_maintenance.types.guardian_registry import (
@@ -284,3 +285,39 @@ class TestArtifactIndex:
         result = run_all_guardians(repo_root=clean_repo)
         errors = validate_against_json_schema(result.to_dict())
         assert errors == [], f"Schema validation errors: {errors}"
+
+
+class TestDisabledGuardianExclusion:
+    """Disabled guardians must be excluded from aggregate index and checks."""
+
+    def test_index_excludes_disabled_guardians(self, clean_repo: Path):
+        """Disabled guardians must NOT appear in combined.index."""
+        result = run_all_guardians(repo_root=clean_repo)
+        disabled_ids = {spec.guardian_id for spec in ALL_GUARDIANS if not spec.enabled_by_default}
+        for gid in disabled_ids:
+            assert gid not in result.index, f"Disabled guardian '{gid}' must NOT appear in aggregate index"
+
+    def test_index_keys_are_strict_subset_of_enabled(self, clean_repo: Path):
+        """Index keys must be exactly the enabled guardian set — no extras."""
+        result = run_all_guardians(repo_root=clean_repo)
+        enabled_ids = {spec.guardian_id for spec in ALL_GUARDIANS if spec.enabled_by_default}
+        extra = set(result.index.keys()) - enabled_ids
+        assert extra == set(), f"Index contains non-enabled guardian IDs: {extra}"
+
+    def test_aggregate_uses_ssot_guardian_id(self, clean_repo: Path):
+        """Aggregate result must use AGGREGATE_GUARDIAN_ID from SSOT."""
+        result = run_all_guardians(repo_root=clean_repo)
+        assert result.guardian_id == AGGREGATE_GUARDIAN_ID, (
+            f"Aggregate guardian_id '{result.guardian_id}' != SSOT '{AGGREGATE_GUARDIAN_ID}'"
+        )
+
+    def test_disabled_guardians_not_in_checks(self, clean_repo: Path):
+        """Disabled guardians must not have check entries in the aggregate."""
+        result = run_all_guardians(repo_root=clean_repo)
+        disabled_ids = {spec.guardian_id for spec in ALL_GUARDIANS if not spec.enabled_by_default}
+        check_guardian_ids = set()
+        for check in result.checks:
+            if check.check_id.startswith("guardian_"):
+                check_guardian_ids.add(check.check_id.replace("guardian_", ""))
+        for gid in disabled_ids:
+            assert gid not in check_guardian_ids, f"Disabled guardian '{gid}' has a check entry in aggregate"

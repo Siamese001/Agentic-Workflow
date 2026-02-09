@@ -43,8 +43,8 @@ from tests.guardian.guardian_report import (
 # ---------------------------------------------------------------------------
 # Collection exclusions — files with broken imports unrelated to guardian
 # contract.  Managed here (not in CI workflow) so the workflow stays clean.
-# TODO: fix test_comprehensive_structure.py (missing scripts.validate_structure)
-# TODO: fix test_mro_integrity.py (missing core_integrity_util module)
+# TODO(#GUARD-01 owner=@guardian-team review_by=2026-06-01): fix test_comprehensive_structure.py (missing scripts.validate_structure)
+# TODO(#GUARD-02 owner=@guardian-team review_by=2026-06-01): fix test_mro_integrity.py (missing core_integrity_util module)
 # ---------------------------------------------------------------------------
 collect_ignore_glob = [
     "test_comprehensive_structure.py",

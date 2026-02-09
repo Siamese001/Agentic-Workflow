@@ -72,10 +72,10 @@ The verifier (`docs/reports/plans/dependency_verify_imports.py`) classifies pack
 
 **Bucket definitions:**
 
-- **core (13):** Packages in `[project.dependencies]`. Always required. Failure = exit 1.
+- **core (15):** Packages in `[project.dependencies]`. Always required. Failure = exit 1.
 - **dev (6):** Packages in `[project.optional-dependencies].dev`. Required only when `--require-dev` or `--all`.
 - **infra (15):** Packages in `[project.optional-dependencies].infra`. Required only when `--require-infra` or `--all`. Every infra package has a guardrail (`try/except ImportError` with actionable `pip install -e '.[infra]'` message) at every hard-import site.
-- **external (25):** Third-party SDKs used via conditional imports (`try/except` already in source). Not declared in `pyproject.toml`. Never blocking regardless of CLI flags — informational only.
+- **external (24):** Third-party SDKs used via conditional imports (`try/except` already in source). Not declared in `pyproject.toml`. Never blocking regardless of CLI flags — informational only.
 - **sdks (3):** Cloud/API SDKs. Same treatment as external — informational only.
 
 **Why this split is correct:**
@@ -94,13 +94,13 @@ The previous verifier lumped declared infra deps and undeclared external SDKs in
 
 Full raw output with exact commands is in `docs/reports/plans/dependency_gate_evidence_vFinal.md`.
 
-**Environment:** Python 3.12.10, pip 25.0.1, clean `.venv_final`
+**Environment:** Python 3.12.10, pip 26.0.1, clean `.venv_verify`
 
 | Gate | Command | Result |
 |---|---|---|
-| A | `python -m venv .venv_final` | PASS (Python 3.12.10, pip 25.0.1) |
+| A | `python -m venv .venv_verify` | PASS (Python 3.12.10, pip 26.0.1) |
 | B | `pip install -e .` | PASS (46 packages — lean core) |
 | C | `python -c "import agentic_core; import apps_shared"` | PASS |
-| D | `python dependency_verify_imports.py` | PASS (13/13 core, 0 BLOCKING) |
+| D | `python dependency_verify_imports.py` | PASS (15/15 core, 0 BLOCKING) |
 | E | `pip install -e ".[dev]"` + `pytest -xvv test_dependency_verifier_exit_code.py` | PASS (3/3) |
-| F | `pip install -e ".[infra]"` + `python dependency_verify_imports.py --all` | PASS (29/29 declared, 0 BLOCKING) |
+| F | `pip install -e ".[infra]"` + `python dependency_verify_imports.py --all` | PASS (31/31 declared, 0 BLOCKING) |

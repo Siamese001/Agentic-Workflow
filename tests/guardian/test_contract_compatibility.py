@@ -61,7 +61,7 @@ class TestSchemaSnapshot:
         "metrics",
         "remediation_hints",
     }
-    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id", "index"}
+    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id", "index", "artifact_class"}
 
     def test_snapshot_has_all_required_keys(self):
         assert self.EXPECTED_REQUIRED_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
@@ -171,8 +171,8 @@ class TestVersionBump:
 
     def test_snapshot_key_count_is_locked(self):
         """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 11, (
-            f"Schema key count changed from 11 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
+        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 12, (
+            f"Schema key count changed from 12 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
             f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
         )
 
@@ -506,3 +506,75 @@ class TestEvidenceDepthEnforcement:
         errors = validate_against_json_schema(d)
         depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
         assert len(depth_errors) > 0, "Array-nested evidence beyond max depth must fail validation"
+
+    def test_deeply_nested_metrics_does_not_trigger_evidence_depth(self):
+        """Depth guard applies only to evidence, not metrics."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {"a": {"b": {"c": {"d": {"e": "deep"}}}}}
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert depth_errors == [], f"Metrics depth should not trigger evidence depth guard: {depth_errors}"
+
+
+class TestAggregateOnlyIndexEnforcement:
+    """The 'index' field is aggregate-only — forbidden on non-aggregate results."""
+
+    def test_individual_result_with_index_fails(self):
+        """Individual (artifact_class=individual) emitting index must fail."""
+        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+
+        d = GuardianResult(guardian_id="hygiene").to_dict()
+        assert d.get("artifact_class") == ArtifactClass.INDIVIDUAL.value
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert len(index_errors) > 0, "Individual result with index must fail validation"
+        assert ArtifactClass.AGGREGATE.value in index_errors[0]
+
+    def test_aggregate_result_with_index_passes(self):
+        """Aggregate (artifact_class=aggregate) may have index."""
+        from agentic_core.L0_maintenance.types.guardian_contract import (
+            AGGREGATE_GUARDIAN_ID,
+            ArtifactClass,
+        )
+
+        d = GuardianResult(
+            guardian_id=AGGREGATE_GUARDIAN_ID,
+            artifact_class=ArtifactClass.AGGREGATE.value,
+        ).to_dict()
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert index_errors == [], f"Aggregate result with index should pass: {index_errors}"
+
+    def test_non_aggregate_artifact_class_with_index_fails(self):
+        """Even with aggregate guardian_id, if artifact_class != aggregate, index rejected."""
+        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+
+        d = GuardianResult(guardian_id=AGGREGATE_GUARDIAN_ID).to_dict()
+        d["artifact_class"] = "individual"
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert len(index_errors) > 0, "Non-aggregate artifact_class with index must fail"
+
+    def test_individual_result_without_index_passes(self):
+        """Individual result without index is valid (index is optional)."""
+        d = GuardianResult(guardian_id="hygiene").to_dict()
+        assert "index" not in d  # to_dict omits empty index
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e or "index" in e.lower()]
+        assert index_errors == [], f"Individual without index should pass: {index_errors}"
+
+    def test_aggregate_guardian_id_constant_is_locked(self):
+        """AGGREGATE_GUARDIAN_ID must match the hardcoded aggregator value."""
+        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+
+        assert AGGREGATE_GUARDIAN_ID == "combined"
+
+    def test_default_artifact_class_is_individual(self):
+        """GuardianResult defaults to artifact_class=individual."""
+        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+
+        r = GuardianResult(guardian_id="test")
+        assert r.artifact_class == ArtifactClass.INDIVIDUAL.value
