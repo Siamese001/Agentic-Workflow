@@ -1,0 +1,167 @@
+"""
+V15 P3 Typed Artifacts — Governance & Human Escalation.
+
+Typed artifacts required by Prompt v5.0 Enhanced for P3 (Governance)
+invariants. All artifacts are frozen dataclasses with strict field
+validation enforced at construction time.
+
+Artifact version: 1.0.0
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+
+# =============================================================================
+# §3.4 — EvidencePack (Human Escalation)
+# =============================================================================
+# Required fields per spec:
+#   trace_id, action_trace (L0), policy_evals (L5), risk_score,
+#   budget_breach_data, boundary_snapshot_hash
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class EvidencePack:
+    """§3.4 — Structured evidence for human escalation.
+
+    Generated when a routing decision reaches HUMAN_REVIEW.
+    Contains the full action trace, policy evaluations, risk score,
+    budget breach data, and an immutable boundary snapshot hash.
+    """
+
+    trace_id: str
+    action_trace: tuple[str, ...]
+    policy_evals: tuple[str, ...]
+    risk_score: float
+    budget_breach_data: dict[str, object]
+    boundary_snapshot_hash: str
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("EvidencePack: trace_id must be non-empty")
+        if not isinstance(self.action_trace, tuple):
+            raise TypeError("EvidencePack: action_trace must be a tuple")
+        if not isinstance(self.policy_evals, tuple):
+            raise TypeError("EvidencePack: policy_evals must be a tuple")
+        if not (0.0 <= self.risk_score <= 1.0):
+            raise ValueError(
+                f"EvidencePack: risk_score must be in [0.0, 1.0], got {self.risk_score}",
+            )
+        if not self.boundary_snapshot_hash:
+            raise ValueError("EvidencePack: boundary_snapshot_hash must be non-empty")
+
+
+# =============================================================================
+# §3.7 — PolicyExceptionArtifact (Policy Challenge Protocol)
+# =============================================================================
+# Required fields per spec:
+#   trace_id, nonce, exception_scope, semantic_clock_tick, issuer_signature
+# =============================================================================
+
+
+class ExceptionScope(Enum):
+    """Valid scopes for a policy exception."""
+
+    SINGLE_AGENT = "single_agent"
+    HEALING_WAVE = "healing_wave"
+    FULL_PIPELINE = "full_pipeline"
+
+
+@dataclass(frozen=True)
+class PolicyExceptionArtifact:
+    """§3.7 — Policy exception issued by a human to override a Block decision.
+
+    Valid only for the current semantic clock tick. The nonce ensures
+    single-use and prevents replay attacks.
+    """
+
+    trace_id: str
+    nonce: str
+    exception_scope: ExceptionScope
+    semantic_clock_tick: int
+    issuer_signature: str
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("PolicyExceptionArtifact: trace_id must be non-empty")
+        if not self.nonce:
+            raise ValueError("PolicyExceptionArtifact: nonce must be non-empty")
+        if not isinstance(self.exception_scope, ExceptionScope):
+            raise TypeError(
+                f"PolicyExceptionArtifact: exception_scope must be ExceptionScope, "
+                f"got {type(self.exception_scope).__name__}",
+            )
+        if self.semantic_clock_tick < 0:
+            raise ValueError(
+                f"PolicyExceptionArtifact: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
+            )
+        if not self.issuer_signature:
+            raise ValueError(
+                "PolicyExceptionArtifact: issuer_signature must be non-empty",
+            )
+
+
+# =============================================================================
+# §3.5 — PolicyUpdateProposal (Bidirectional Feedback)
+# =============================================================================
+# Required fields per spec:
+#   trace_id, override_id, proposed_policy_diff, originating_agent,
+#   semantic_clock_tick
+# =============================================================================
+
+
+class ProposalStatus(Enum):
+    """Status of a policy update proposal."""
+
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
+
+@dataclass(frozen=True)
+class PolicyUpdateProposal:
+    """§3.5 — Bidirectional feedback from human override back to policy layer.
+
+    Emitted when a human override occurs, proposing a policy diff
+    that the Policy Update Mechanism (L0/L5) should evaluate.
+    """
+
+    trace_id: str
+    override_id: str
+    proposed_policy_diff: str
+    originating_agent: str
+    semantic_clock_tick: int
+    status: ProposalStatus = ProposalStatus.PENDING
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("PolicyUpdateProposal: trace_id must be non-empty")
+        if not self.override_id:
+            raise ValueError("PolicyUpdateProposal: override_id must be non-empty")
+        if not self.proposed_policy_diff:
+            raise ValueError(
+                "PolicyUpdateProposal: proposed_policy_diff must be non-empty",
+            )
+        if not self.originating_agent:
+            raise ValueError(
+                "PolicyUpdateProposal: originating_agent must be non-empty",
+            )
+        if self.semantic_clock_tick < 0:
+            raise ValueError(
+                f"PolicyUpdateProposal: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
+            )
+        if not isinstance(self.status, ProposalStatus):
+            raise TypeError(
+                f"PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}",
+            )
+
+
+__all__ = [
+    "EvidencePack",
+    "ExceptionScope",
+    "PolicyExceptionArtifact",
+    "PolicyUpdateProposal",
+    "ProposalStatus",
+]
