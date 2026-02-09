@@ -164,6 +164,11 @@ AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
 RUNTIME_STATE_JSON: str = "runtime_state.json"
 
+# Forensic discovery script integrity — canonical SHA-256 of the corrected script.
+# Verified by the audit precondition step before any analysis begins.
+FORENSIC_DISCOVERY_SCRIPT: str = "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py"
+FORENSIC_DISCOVERY_INTEGRITY_HASH: str = "b08c3cdbabf064c9be69aa0b063d8573bf97392a30d8fff531a5fc9a2b1d2d31"
+
 OPS_SCRIPTS_DIR: str = "ops_scripts"
 TESTS_DIR: str = "tests"
 
