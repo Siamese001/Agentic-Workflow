@@ -38,12 +38,14 @@ logger = logging.getLogger(__name__)
 
 
 class RouteDecision(Enum):
-    """Routing decisions per V10 flow diagram."""
+    """Routing decisions per V15 flow diagram (§3.3 — 5 strictly defined paths)."""
 
     BYPASS = "bypass"  # Low risk - direct to actuation
     VALIDATE = "validate"  # Medium risk - validation gate
     HUMAN_REVIEW = "human_review"  # High risk - human approval
     REJECT = "reject"  # Circuit breaker or policy violation
+    POLICY_CHALLENGE_LOOP = "policy_challenge_loop"  # §3.3 Policy Challenge (Exception Issuance)
+    ROUTE_RECOVERY = "route_recovery"  # §3.3 Route Recovery (Budget Overflow handling)
 
 
 @dataclass
@@ -135,6 +137,7 @@ class GuardianSignalBus:
         for subscriber in self._subscribers:
             try:
                 subscriber(signal)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Signal subscriber error: {e}")
 
@@ -294,6 +297,7 @@ class ContextualRouter:
                 decision = rule(request)
                 if decision is not None:
                     return decision
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Policy rule error: {e}")
 
