@@ -72,6 +72,7 @@ CONTRACT_SCHEMA_SNAPSHOT: dict[str, str] = {
     "timestamp": "str|None",
     "correlation_id": "str|None",
     "index": "dict",
+    "artifact_class": "str",
 }
 
 # Frozen check-level keys
@@ -170,6 +171,10 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
                 },
             },
         },
+        "artifact_class": {
+            "type": "string",
+            "enum": ["individual", "aggregate"],
+        },
     },
 }
 
@@ -177,6 +182,9 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
 GUARDIAN_STATUS_VALUES: frozenset[str] = frozenset({"PASS", "FAIL", "ERROR"})
 CHECK_STATUS_VALUES: frozenset[str] = frozenset({"PASS", "FAIL", "SKIP"})
 ARTIFACT_TYPE_VALUES: frozenset[str] = frozenset({"diff", "json", "log", "snapshot"})
+
+# Aggregate guardian identity (used by run_all_guardians aggregator)
+AGGREGATE_GUARDIAN_ID: str = "combined"
 
 # L6 ingestion contract constants
 GUARDIAN_ARTIFACT_DIR: str = "docs/reports/verification/guardian"
@@ -478,6 +486,16 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
         if isinstance(evidence, dict):
             _check_depth(evidence, 0, f"$.checks[{i}].evidence")
 
+    # Aggregate-only field guard: index is forbidden on non-aggregate results
+    artifact_class = result_dict.get("artifact_class", ArtifactClass.INDIVIDUAL.value)
+    has_index = "index" in result_dict and result_dict["index"]
+    if has_index and artifact_class != ArtifactClass.AGGREGATE.value:
+        errors.append(
+            f"$.index: 'index' field is aggregate-only "
+            f"(requires artifact_class='{ArtifactClass.AGGREGATE.value}', "
+            f"got '{artifact_class}')",
+        )
+
     # Payload size guard
     try:
         payload = json.dumps(result_dict, default=str)
@@ -612,6 +630,7 @@ class GuardianResult:
     metrics: dict[str, int | float] = field(default_factory=dict)
     remediation_hints: list[str] = field(default_factory=list)
     index: dict[str, Any] = field(default_factory=dict)
+    artifact_class: str = ArtifactClass.INDIVIDUAL.value
 
     # -- Mutation helpers ---------------------------------------------------
 
@@ -671,6 +690,8 @@ class GuardianResult:
             d["correlation_id"] = self.correlation_id
         if self.index:
             d["index"] = self.index
+        if self.artifact_class:
+            d["artifact_class"] = self.artifact_class
         return d
 
     def to_json(self, indent: int = 2) -> str:
@@ -758,4 +779,5 @@ def load_guardian_result(path: Path | str) -> GuardianResult:
         metrics=data.get("metrics", {}),
         remediation_hints=data.get("remediation_hints", []),
         index=data.get("index", {}),
+        artifact_class=data.get("artifact_class", ArtifactClass.INDIVIDUAL.value),
     )

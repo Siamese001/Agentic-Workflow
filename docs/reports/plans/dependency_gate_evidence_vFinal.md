@@ -3,20 +3,32 @@
 Authoritative evidence run for the lean-core dependency remediation.
 Supersedes: `dependency_gate_evidence_v0_obsolete.md`
 
-**Environment:** Windows, Python 3.12.10, pip 25.0.1, clean `.venv_final`
-**Date:** 2026-02-09
+**Environment:** Windows, Python 3.12.10, pip 26.0.1, clean `.venv_verify`
+**Date:** 2026-02-09 (final reconciliation run)
+
+## Reconciliation Note
+
+The previous evidence run (`.venv_final`) had a **core count mismatch**:
+
+- `pyproject.toml` declared **15** core deps (including `google-genai`, `cryptography`)
+- Verifier `PACKAGES["core"]` listed only **13** (missing both)
+- `google-genai` was duplicated in the `external` bucket
+
+**Fix applied**: Added `cryptography` and `google-genai` to verifier core bucket,
+removed `google-genai` from external bucket. All counts now agree:
+pyproject.toml=15, verifier core=15, docs=15.
 
 ---
 
 ## Gate A: Create Clean Venv + Version Check
 
-```
-> python -m venv .venv_final
-> .venv_final\Scripts\python.exe -V
+```text
+> python -m venv .venv_verify
+> .venv_verify\Scripts\python.exe -V
 Python 3.12.10
 
-> .venv_final\Scripts\python.exe -m pip -V
-pip 25.0.1 from C:\Git\Agentic-Workflow\.venv_final\Lib\site-packages\pip (python 3.12)
+> .venv_verify\Scripts\python.exe -m pip -V
+pip 26.0.1 from C:\Git\Agentic-Workflow\.venv_verify\Lib\site-packages\pip (python 3.12)
 ```
 
 Exit code: 0
@@ -25,8 +37,8 @@ Exit code: 0
 
 ## Gate B: `pip install -e .` (lean core — no infra deps)
 
-```
-> .venv_final\Scripts\python.exe -m pip install -e .
+```text
+> .venv_verify\Scripts\python.exe -m pip install -e .
 
 Obtaining file:///C:/Git/Agentic-Workflow
   Installing build dependencies ... done
@@ -72,8 +84,8 @@ Exit code: 0
 
 ## Gate C: Baseline Import Test
 
-```
-> .venv_final\Scripts\python.exe -c "import agentic_core; import apps_shared; print('Gate C PASS')"
+```text
+> .venv_verify\Scripts\python.exe -c "import agentic_core; import apps_shared; print('Gate C PASS')"
 Gate C PASS
 ```
 
@@ -83,11 +95,13 @@ Exit code: 0
 
 ## Gate D: Core Verifier (default — core only required)
 
-```
-> .venv_final\Scripts\python.exe docs/reports/plans/dependency_verify_imports.py
+```text
+> .venv_verify\Scripts\python.exe docs/reports/plans/dependency_verify_imports.py
 
   [core ] [REQ] dist=PyYAML                         OK                 imports: yaml=OK
   [core ] [REQ] dist=aiofiles                       OK                 imports: aiofiles=OK
+  [core ] [REQ] dist=cryptography                   OK                 imports: cryptography=OK
+  [core ] [REQ] dist=google-genai                   OK                 imports: google.genai=OK
   [core ] [REQ] dist=jinja2                         OK                 imports: jinja2=OK
   [core ] [REQ] dist=libcst                         OK                 imports: libcst=OK
   [core ] [REQ] dist=networkx                       OK                 imports: networkx=OK
@@ -99,60 +113,59 @@ Exit code: 0
   [core ] [REQ] dist=tenacity                       OK                 imports: tenacity=OK
   [core ] [REQ] dist=tqdm                           OK                 imports: tqdm=OK
   [core ] [REQ] dist=watchdog                       OK                 imports: watchdog=OK
-  [dev  ] [OPT] dist=pytest                         EXPECTED_MISSING   imports: pytest=MISSING: No module named 'pytest'
-  [infra] [OPT] dist=numpy                          EXPECTED_MISSING   imports: numpy=MISSING: No module named 'numpy'
-  [infra] [OPT] dist=chromadb                       EXPECTED_MISSING   imports: chromadb=MISSING: No module named 'chromadb'
-  [infra] [OPT] dist=duckdb                         EXPECTED_MISSING   imports: duckdb=MISSING: No module named 'duckdb'
-  [infra] [OPT] dist=rank-bm25                      EXPECTED_MISSING   imports: rank_bm25=MISSING: No module named 'rank_bm25'
-  [infra] [OPT] dist=scikit-learn                   EXPECTED_MISSING   imports: sklearn=MISSING: No module named 'sklearn'
-  [infra] [OPT] dist=pydantic-settings              EXPECTED_MISSING   imports: pydantic_settings=MISSING: No module named 'pydantic_settings'
-  [infra] [OPT] dist=beautifulsoup4                 EXPECTED_MISSING   imports: bs4=MISSING: No module named 'bs4'
-  [infra] [OPT] dist=dash                           EXPECTED_MISSING   imports: dash=MISSING: No module named 'dash'
-  [infra] [OPT] dist=fastapi                        EXPECTED_MISSING   imports: fastapi=MISSING: No module named 'fastapi'
-  [infra] [OPT] dist=livereload                     EXPECTED_MISSING   imports: livereload=MISSING: No module named 'livereload'
-  [infra] [OPT] dist=pandas                         EXPECTED_MISSING   imports: pandas=MISSING: No module named 'pandas'
-  [infra] [OPT] dist=playwright                     EXPECTED_MISSING   imports: playwright=MISSING: No module named 'playwright'
-  [infra] [OPT] dist=plotly                         EXPECTED_MISSING   imports: plotly=MISSING: No module named 'plotly'
-  [infra] [OPT] dist=waitress                       EXPECTED_MISSING   imports: waitress=MISSING: No module named 'waitress'
-  [infra] [OPT] dist=rich                           EXPECTED_MISSING   imports: rich=MISSING: No module named 'rich'
-  [external] [OPT] dist=FlagEmbedding               EXPECTED_MISSING   imports: FlagEmbedding=MISSING: No module named 'FlagEmbedding'
-  [external] [OPT] dist=GitPython                   EXPECTED_MISSING   imports: git=MISSING: No module named 'git'
-  [external] [OPT] dist=PyPDF2                      EXPECTED_MISSING   imports: PyPDF2=MISSING: No module named 'PyPDF2'
-  [external] [OPT] dist=anthropic                   EXPECTED_MISSING   imports: anthropic=MISSING: No module named 'anthropic'
-  [external] [OPT] dist=bandit                      EXPECTED_MISSING   imports: bandit=MISSING: No module named 'bandit'
-  [external] [OPT] dist=boto3                       EXPECTED_MISSING   imports: boto3=MISSING: No module named 'boto3'
-  [external] [OPT] dist=google-genai                OK                 imports: google.genai=OK
+  [dev  ] [OPT] dist=pytest                         EXPECTED_MISSING   imports: pytest=MISSING
+  [infra] [OPT] dist=numpy                          EXPECTED_MISSING   imports: numpy=MISSING
+  [infra] [OPT] dist=chromadb                       EXPECTED_MISSING   imports: chromadb=MISSING
+  [infra] [OPT] dist=duckdb                         EXPECTED_MISSING   imports: duckdb=MISSING
+  [infra] [OPT] dist=rank-bm25                      EXPECTED_MISSING   imports: rank_bm25=MISSING
+  [infra] [OPT] dist=scikit-learn                   EXPECTED_MISSING   imports: sklearn=MISSING
+  [infra] [OPT] dist=pydantic-settings              EXPECTED_MISSING   imports: pydantic_settings=MISSING
+  [infra] [OPT] dist=beautifulsoup4                 EXPECTED_MISSING   imports: bs4=MISSING
+  [infra] [OPT] dist=dash                           EXPECTED_MISSING   imports: dash=MISSING
+  [infra] [OPT] dist=fastapi                        EXPECTED_MISSING   imports: fastapi=MISSING
+  [infra] [OPT] dist=livereload                     EXPECTED_MISSING   imports: livereload=MISSING
+  [infra] [OPT] dist=pandas                         EXPECTED_MISSING   imports: pandas=MISSING
+  [infra] [OPT] dist=playwright                     EXPECTED_MISSING   imports: playwright=MISSING
+  [infra] [OPT] dist=plotly                         EXPECTED_MISSING   imports: plotly=MISSING
+  [infra] [OPT] dist=waitress                       EXPECTED_MISSING   imports: waitress=MISSING
+  [infra] [OPT] dist=rich                           EXPECTED_MISSING   imports: rich=MISSING
+  [external] [OPT] dist=FlagEmbedding               EXPECTED_MISSING   imports: FlagEmbedding=MISSING
+  [external] [OPT] dist=GitPython                   EXPECTED_MISSING   imports: git=MISSING
+  [external] [OPT] dist=PyPDF2                      EXPECTED_MISSING   imports: PyPDF2=MISSING
+  [external] [OPT] dist=anthropic                   EXPECTED_MISSING   imports: anthropic=MISSING
+  [external] [OPT] dist=bandit                      EXPECTED_MISSING   imports: bandit=MISSING
+  [external] [OPT] dist=boto3                       EXPECTED_MISSING   imports: boto3=MISSING
   [external] [OPT] dist=google-generativeai         EXPECTED_MISSING   imports: google.generativeai=MISSING
-  [external] [OPT] dist=neo4j                       EXPECTED_MISSING   imports: neo4j=MISSING: No module named 'neo4j'
-  [external] [OPT] dist=openai                      EXPECTED_MISSING   imports: openai=MISSING: No module named 'openai'
-  [external] [OPT] dist=opentelemetry-api           EXPECTED_MISSING   imports: opentelemetry=MISSING: No module named 'opentelemetry'
-  [external] [OPT] dist=pdf2image                   EXPECTED_MISSING   imports: pdf2image=MISSING: No module named 'pdf2image'
-  [external] [OPT] dist=pdfplumber                  EXPECTED_MISSING   imports: pdfplumber=MISSING: No module named 'pdfplumber'
-  [external] [OPT] dist=pypdf                       EXPECTED_MISSING   imports: pypdf=MISSING: No module named 'pypdf'
-  [external] [OPT] dist=pytesseract                 EXPECTED_MISSING   imports: pytesseract=MISSING: No module named 'pytesseract'
-  [external] [OPT] dist=pytz                        EXPECTED_MISSING   imports: pytz=MISSING: No module named 'pytz'
+  [external] [OPT] dist=neo4j                       EXPECTED_MISSING   imports: neo4j=MISSING
+  [external] [OPT] dist=openai                      EXPECTED_MISSING   imports: openai=MISSING
+  [external] [OPT] dist=opentelemetry-api           EXPECTED_MISSING   imports: opentelemetry=MISSING
+  [external] [OPT] dist=pdf2image                   EXPECTED_MISSING   imports: pdf2image=MISSING
+  [external] [OPT] dist=pdfplumber                  EXPECTED_MISSING   imports: pdfplumber=MISSING
+  [external] [OPT] dist=pypdf                       EXPECTED_MISSING   imports: pypdf=MISSING
+  [external] [OPT] dist=pytesseract                 EXPECTED_MISSING   imports: pytesseract=MISSING
+  [external] [OPT] dist=pytz                        EXPECTED_MISSING   imports: pytz=MISSING
   [external] [OPT] dist=requests                    OK                 imports: requests=OK
   [external] [OPT] dist=sentence-transformers       EXPECTED_MISSING   imports: sentence_transformers=MISSING
-  [external] [OPT] dist=tabulate                    EXPECTED_MISSING   imports: tabulate=MISSING: No module named 'tabulate'
-  [external] [OPT] dist=tiktoken                    EXPECTED_MISSING   imports: tiktoken=MISSING: No module named 'tiktoken'
-  [external] [OPT] dist=torch                       EXPECTED_MISSING   imports: torch=MISSING: No module named 'torch'
-  [external] [OPT] dist=tree-sitter                 EXPECTED_MISSING   imports: tree_sitter=MISSING: No module named 'tree_sitter'
+  [external] [OPT] dist=tabulate                    EXPECTED_MISSING   imports: tabulate=MISSING
+  [external] [OPT] dist=tiktoken                    EXPECTED_MISSING   imports: tiktoken=MISSING
+  [external] [OPT] dist=torch                       EXPECTED_MISSING   imports: torch=MISSING
+  [external] [OPT] dist=tree-sitter                 EXPECTED_MISSING   imports: tree_sitter=MISSING
   [external] [OPT] dist=tree-sitter-python          EXPECTED_MISSING   imports: tree_sitter_python=MISSING
-  [external] [OPT] dist=uvicorn                     EXPECTED_MISSING   imports: uvicorn=MISSING: No module named 'uvicorn'
+  [external] [OPT] dist=uvicorn                     EXPECTED_MISSING   imports: uvicorn=MISSING
   [external] [OPT] dist=websockets                  OK                 imports: websockets=OK
-  [sdks ] [OPT] dist=backoff                        EXPECTED_MISSING   imports: backoff=MISSING: No module named 'backoff'
-  [sdks ] [OPT] dist=google-cloud-aiplatform        EXPECTED_MISSING   imports: vertexai=MISSING: No module named 'vertexai'
-  [sdks ] [OPT] dist=jsonschema                     EXPECTED_MISSING   imports: jsonschema=MISSING: No module named 'jsonschema'
+  [sdks ] [OPT] dist=backoff                        EXPECTED_MISSING   imports: backoff=MISSING
+  [sdks ] [OPT] dist=google-cloud-aiplatform        EXPECTED_MISSING   imports: vertexai=MISSING
+  [sdks ] [OPT] dist=jsonschema                     EXPECTED_MISSING   imports: jsonschema=MISSING
 
 Bucket Summary:
   bucket   required?    OK  FAIL  SKIP  verdict
-  core     yes          13     0     0     PASS
+  core     yes          15     0     0     PASS
   dev      no            0     0     1     PASS
   infra    no            0     0    15     PASS
-  external no            3     0    22     PASS
+  external no            2     0    22     PASS
   sdks     no            0     0     3     PASS
 
-Total: 16/57 dist packages OK, 0 BLOCKING, 41 EXPECTED_MISSING
+Total: 17/58 dist packages OK, 0 BLOCKING, 41 EXPECTED_MISSING
 RESULT: PASS (all required imports OK)
 ```
 
@@ -162,20 +175,21 @@ Exit code: 0
 
 ## Gate E: `pip install -e ".[dev]"` + Regression Test
 
-```
-> .venv_final\Scripts\python.exe -m pip install -e ".[dev]"
+```text
+> .venv_verify\Scripts\python.exe -m pip install -e ".[dev]"
 
 Successfully installed agentic-workflow-1.0.0 black-26.1.0 click-8.3.1
   coverage-7.13.3 iniconfig-2.3.0 librt-0.7.8 mypy-1.19.1
   mypy-extensions-1.1.0 pathspec-1.0.4 platformdirs-4.5.1
   pluggy-1.6.0 pygments-2.19.2 pytest-9.0.2 pytest-asyncio-1.3.0
   pytest-cov-7.0.0 pytokens-0.4.1 ruff-0.15.0
+(17 packages installed)
 ```
 
 Exit code: 0
 
-```
-> .venv_final\Scripts\python.exe -m pytest tests/core/test_dependency_verifier_exit_code.py -xvv --no-header --override-ini="addopts="
+```text
+> .venv_verify\Scripts\python.exe -m pytest tests/core/test_dependency_verifier_exit_code.py -xvv --no-header --override-ini="addopts="
 
 collected 3 items
 
@@ -183,7 +197,7 @@ tests/core/test_dependency_verifier_exit_code.py::TestDependencyVerifierExitCode
 tests/core/test_dependency_verifier_exit_code.py::TestDependencyVerifierExitCode::test_exit_1_on_blocking_failures PASSED          [ 66%]
 tests/core/test_dependency_verifier_exit_code.py::TestDependencyVerifierExitCode::test_exit_0_on_pass_when_all_core_installed PASSED [100%]
 
-3 passed in 2.12s
+3 passed in 2.24s
 ```
 
 Exit code: 0
@@ -192,8 +206,8 @@ Exit code: 0
 
 ## Gate F: `pip install -e ".[infra]"` + Verifier `--all`
 
-```
-> .venv_final\Scripts\python.exe -m pip install -e ".[infra]"
+```text
+> .venv_verify\Scripts\python.exe -m pip install -e ".[infra]"
 
 Successfully installed Flask-3.1.2 Werkzeug-3.1.5 agentic-workflow-1.0.0
   annotated-doc-0.0.4 attrs-25.4.0 backoff-2.2.1 bcrypt-5.0.0
@@ -219,15 +233,18 @@ Successfully installed Flask-3.1.2 Werkzeug-3.1.5 agentic-workflow-1.0.0
   threadpoolctl-3.6.0 tokenizers-0.22.2 tornado-6.5.4 typer-0.21.1
   typer-slim-0.21.1 tzdata-2025.3 uvicorn-0.40.0 waitress-3.0.2
   watchfiles-1.1.1 websocket-client-1.9.0 zipp-3.23.0
+(82 packages installed)
 ```
 
 Exit code: 0
 
-```
-> .venv_final\Scripts\python.exe docs/reports/plans/dependency_verify_imports.py --all
+```text
+> .venv_verify\Scripts\python.exe docs/reports/plans/dependency_verify_imports.py --all
 
   [core ] [REQ] dist=PyYAML                         OK                 imports: yaml=OK
   [core ] [REQ] dist=aiofiles                       OK                 imports: aiofiles=OK
+  [core ] [REQ] dist=cryptography                   OK                 imports: cryptography=OK
+  [core ] [REQ] dist=google-genai                   OK                 imports: google.genai=OK
   [core ] [REQ] dist=jinja2                         OK                 imports: jinja2=OK
   [core ] [REQ] dist=libcst                         OK                 imports: libcst=OK
   [core ] [REQ] dist=networkx                       OK                 imports: networkx=OK
@@ -261,7 +278,6 @@ Exit code: 0
   [external] [OPT] dist=anthropic                   EXPECTED_MISSING   imports: anthropic=MISSING
   [external] [OPT] dist=bandit                      EXPECTED_MISSING   imports: bandit=MISSING
   [external] [OPT] dist=boto3                       EXPECTED_MISSING   imports: boto3=MISSING
-  [external] [OPT] dist=google-genai                OK                 imports: google.genai=OK
   [external] [OPT] dist=google-generativeai         EXPECTED_MISSING   imports: google.generativeai=MISSING
   [external] [OPT] dist=neo4j                       EXPECTED_MISSING   imports: neo4j=MISSING
   [external] [OPT] dist=openai                      EXPECTED_MISSING   imports: openai=MISSING
@@ -286,13 +302,13 @@ Exit code: 0
 
 Bucket Summary:
   bucket   required?    OK  FAIL  SKIP  verdict
-  core     yes          13     0     0     PASS
+  core     yes          15     0     0     PASS
   dev      yes           1     0     0     PASS
   infra    yes          15     0     0     PASS
-  external no            5     0    20     PASS
+  external no            4     0    20     PASS
   sdks     no            2     0     1     PASS
 
-Total: 36/57 dist packages OK, 0 BLOCKING, 21 EXPECTED_MISSING
+Total: 37/58 dist packages OK, 0 BLOCKING, 21 EXPECTED_MISSING
 RESULT: PASS (all required imports OK)
 ```
 
@@ -300,7 +316,54 @@ Exit code: 0
 
 ---
 
+## Phase 3: Baseline Import Test (lean core, no infra)
+
+```text
+> .venv_lean\Scripts\python.exe -m pytest tests/core/test_baseline_import_no_guardrail_fire.py -xvv --no-header --override-ini="addopts="
+
+collected 4 items
+
+tests/core/test_baseline_import_no_guardrail_fire.py::TestBaselineImportSurface::test_import_agentic_core PASSED   [ 25%]
+tests/core/test_baseline_import_no_guardrail_fire.py::TestBaselineImportSurface::test_import_apps_shared PASSED    [ 50%]
+tests/core/test_baseline_import_no_guardrail_fire.py::TestBaselineImportSurface::test_import_apps_lic PASSED       [ 75%]
+tests/core/test_baseline_import_no_guardrail_fire.py::TestBaselineImportSurface::test_import_apps_rg PASSED        [100%]
+
+4 passed in 0.02s
+```
+
+Exit code: 0
+Environment: `.venv_lean` — core+dev only, zero infra packages installed.
+Proves: No guardrail `ImportError` fires when importing top-level packages without infra deps.
+
+---
+
 ## Unified Diffs
+
+### 0. Reconciliation: dependency_verify_imports.py (core count fix 13→15)
+
+```diff
+diff --git a/docs/reports/plans/dependency_verify_imports.py b/docs/reports/plans/dependency_verify_imports.py
+index 96099a475..4d95c1107 100644
+--- a/docs/reports/plans/dependency_verify_imports.py
++++ b/docs/reports/plans/dependency_verify_imports.py
+@@ -18,6 +18,8 @@ PACKAGES = {
+     "core": [
+         ("PyYAML", ["yaml"]),
+         ("aiofiles", ["aiofiles"]),
++        ("cryptography", ["cryptography"]),
++        ("google-genai", ["google.genai"]),
+         ("jinja2", ["jinja2"]),
+         ("libcst", ["libcst"]),
+         ("networkx", ["networkx"]),
+@@ -57,7 +59,6 @@ PACKAGES = {
+         ("anthropic", ["anthropic"]),
+         ("bandit", ["bandit"]),
+         ("boto3", ["boto3"]),
+-        ("google-genai", ["google.genai"]),
+         ("google-generativeai", ["google.generativeai"]),
+         ("neo4j", ["neo4j"]),
+         ("openai", ["openai"]),
+```
 
 ### 1. pyproject.toml
 

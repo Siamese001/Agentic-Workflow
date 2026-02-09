@@ -32,7 +32,8 @@ def main() -> int:
 
     # Import helper to get current active set
     if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))  # guardian: allow-global_mutation
+        # guardian: allow-global-mutation
+        sys.path.insert(0, str(project_root))
 
     from ops_scripts.ci.active_set_helper import get_active_set
 
@@ -94,6 +95,11 @@ def main() -> int:
         print(f"  added: {added}")
     if removed:
         print(f"  removed: {removed}")
+
+    print("  Fix: add ACTIVE_SET_SNAPSHOT_BUMP:<reason> to commit message and run:")
+    print(
+        "    PYTHONPATH=. COMMIT_MESSAGE='ACTIVE_SET_SNAPSHOT_BUMP:<reason>' python ops_scripts/ci/active_set_snapshot_check.py",
+    )
 
     return 1
 

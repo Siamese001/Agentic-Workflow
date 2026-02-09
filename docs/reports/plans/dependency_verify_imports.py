@@ -18,6 +18,8 @@ PACKAGES = {
     "core": [
         ("PyYAML", ["yaml"]),
         ("aiofiles", ["aiofiles"]),
+        ("cryptography", ["cryptography"]),
+        ("google-genai", ["google.genai"]),
         ("jinja2", ["jinja2"]),
         ("libcst", ["libcst"]),
         ("networkx", ["networkx"]),
@@ -57,7 +59,6 @@ PACKAGES = {
         ("anthropic", ["anthropic"]),
         ("bandit", ["bandit"]),
         ("boto3", ["boto3"]),
-        ("google-genai", ["google.genai"]),
         ("google-generativeai", ["google.generativeai"]),
         ("neo4j", ["neo4j"]),
         ("openai", ["openai"]),

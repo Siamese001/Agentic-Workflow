@@ -22,7 +22,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    AGGREGATE_GUARDIAN_ID,
     CONTRACT_VERSION,
+    ArtifactClass,
     ArtifactType,
     CheckStatus,
     GuardianResult,
@@ -64,9 +66,14 @@ def run_all_guardians(
     write_artifacts_dir: str | None = None,
     timestamp: str | None = None,
     correlation_id: str | None = None,
+    include_disabled: bool = False,
 ) -> GuardianResult:
     """
     Execute all registered guardians in deterministic order and aggregate.
+
+    Args:
+        include_disabled: If True, run ALL guardians (including disabled_by_default).
+                          Default False = enabled-only.
 
     Returns a combined GuardianResult with:
     - guardian_id = "combined"
@@ -79,10 +86,11 @@ def run_all_guardians(
         repo_root = get_validated_project_root()
 
     combined = GuardianResult(
-        guardian_id="combined",
+        guardian_id=AGGREGATE_GUARDIAN_ID,
         version=CONTRACT_VERSION,
         timestamp=timestamp,
         correlation_id=correlation_id,
+        artifact_class=ArtifactClass.AGGREGATE.value,
     )
 
     per_guardian_results: list[dict[str, Any]] = []
@@ -92,7 +100,7 @@ def run_all_guardians(
     total_error = 0
 
     # Get guardians from SSOT registry (already sorted by guardian_id)
-    guardian_specs = get_guardian_specs(enabled_only=True)
+    guardian_specs = get_guardian_specs(enabled_only=not include_disabled)
 
     for spec in guardian_specs:
         gid = spec.guardian_id
@@ -154,7 +162,8 @@ def run_all_guardians(
                 "artifacts": [normalize_repo_path(a.path) for a in result.artifacts],
             }
 
-        except Exception as exc:  # guardian: allow-silent_swallower
+        # guardian: allow-silent-swallow
+        except Exception as exc:
             combined.add_check(
                 check_id=f"guardian_{gid}",
                 status=CheckStatus.FAIL,
@@ -227,6 +236,12 @@ def main() -> int:
         default="json",
     )
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument(
+        "--include-disabled",
+        action="store_true",
+        default=False,
+        help="Include disabled-by-default guardians in aggregation",
+    )
     parser.add_argument("--timestamp", default=None)
     parser.add_argument("--correlation-id", default=None)
     args = parser.parse_args()
@@ -235,6 +250,7 @@ def main() -> int:
         write_artifacts_dir=args.write_artifacts,
         timestamp=args.timestamp,
         correlation_id=args.correlation_id,
+        include_disabled=args.include_disabled,
     )
 
     if args.format == "json":

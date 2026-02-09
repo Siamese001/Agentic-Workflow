@@ -30,6 +30,62 @@ agentic_core/base_agents/
 
 ---
 
+---
+
+## 1.1 Deterministic Controller Contract
+Windsurf MUST behave as a deterministic refactor + policy-enforcement controller.
+
+HARD RULES:
+- NEVER narrate the filesystem or summarize files.
+- NEVER reinterpret instructions or "improve" scope unless explicitly authorized.
+- If any step is ambiguous, resolve using repo SSOT + the rule hierarchy below (no follow-up questions).
+- NEVER claim completion unless ALL declared invariants pass.
+
+Rule hierarchy (highest → lowest):
+1) Constitutional Locks in this file
+2) `structure_blueprint.py` structural SSOT
+3) `agent_discovery_full.json` active-agent scope
+4) Explicit user instruction in the current turn
+
+If any higher-tier rule conflicts with a lower-tier rule → IGNORE the lower-tier rule and FAIL with a precise violation.
+
+---
+
+## 1.2 Phase Execution Obedience
+When the user issues `RUN_PHASE <number> <target_root>`:
+
+1) Execute exactly:
+   `!python phaseXX/phaseXX.py --target-root <root> --verbose` 
+2) Immediately validate produced artifacts + all phase invariants.
+3) If any invariant fails → STOP, explain root cause, auto-fix, and re-run the SAME phase.
+4) Do NOT advance phases until the current phase is green.
+
+---
+
+## 1.3 Output Contract (No Truncation / No Placeholders)
+If the user requests:
+- "full untruncated overwrite" → output the ENTIRE file content.
+- "ultra diff" / "file diff" → output a complete unified diff with no omissions.
+- "one fenced block" → output exactly one fenced code block and nothing else inside/outside the block.
+
+STRICTLY FORBIDDEN:
+- `...` 
+- "diff continues"
+- partial section delivery
+- eliding sections due to length
+
+Violation → HARD FAIL.
+
+---
+
+## 1.4 Rename/Move Closure Rule
+Any move/rename MUST update ALL repo-wide imports/usages and MUST be validated by:
+- discovery run
+- structure verification
+- tests per §12
+
+Missing any step → HARD FAIL.
+
 # ================================================================
 # SSOT & STRUCTURAL GOVERNANCE
 # ================================================================
@@ -247,12 +303,23 @@ No mocked imports unless explicitly instructed.
 
 ---
 
+---
+
+## 14.1 Single-Source Override (No Blending)
+If the user states "delete prior version from memory" or provides a replacement artifact:
+- Treat the provided artifact as the sole source of truth for that item.
+- Do NOT merge with earlier versions unless explicitly instructed.
+- If conflicts exist, prefer the newest user-provided artifact.
+
 ## 15. Ultra Diff Protocol
 - No truncation.
-- No `...`.
+- No placeholders (`...`, "diff continues", "omitted").
+- If requested: "full untruncated overwrite" → output the entire file.
+- If requested: "ultra diff"/"file diff" → output a complete unified diff.
 - Preserve AST structural integrity.
 - Group logically related edits atomically.
 - Keep repo runnable after each generation step.
+- No commentary unless explicitly requested.
 
 ---
 
@@ -271,6 +338,15 @@ Every run must output:
 If artifact missing → run is FAILED.
 
 ---
+
+---
+
+## 16.1 Semantic Caching / Unassigned Files Must Be Explicit
+If semantic caching or classification is required:
+- Verify the cache artifact exists and is referenced by path in output.
+- Every scanned file must be either (a) assigned to a canonical folder/layer or (b) emitted as an explicit "unassigned" row with rationale.
+
+Silent unassigned files → HARD FAIL.
 
 ## 17. Acceptance Harness
 Maintain single `verify` runner that:
@@ -293,6 +369,23 @@ Re-run verify at start and end.
 - Every fix must become invariant + guard.
 
 ---
+
+---
+
+## 18.1 No Infinite Regeneration Loops
+If a generator repeatedly rewrites the same file without semantic delta:
+- Compute a stable content hash before/after.
+- If no change → SKIP rewrite and record "no-op" in logs.
+- Detect and break cycles (A→B→A) by enforcing topological order and idempotence.
+
+Repeated no-op rewrites in a single run → HARD FAIL.
+
+---
+
+## 18.2 Large-Repo Efficiency Guard
+- Prefer targeted AST patches over whole-file rewrites.
+- Do NOT rewrite unrelated files.
+- If a change would touch more than the declared budget (see §18) → STOP and output counts + plan.
 
 ## 19. Non-Growing Debt Pattern
 For legacy violations enforce ceiling:
