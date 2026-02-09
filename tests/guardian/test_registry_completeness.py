@@ -28,7 +28,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.types.guardian_registry import ALL_GUARDIANS
+from agentic_core.L0_maintenance.types.guardian_registry import (
+    ALL_GUARDIANS,
+    GuardianTier,
+    get_guardian_specs,
+)
 
 pytestmark = pytest.mark.guardian
 
@@ -272,3 +276,33 @@ class TestFilesystemDiagnostic:
                 f"Discovered: {sorted(discovered.keys())}",
                 stacklevel=1,
             )
+
+
+# ===================================================================
+# TIER FILTERING — get_guardian_specs(tier=...) returns correct subset
+# ===================================================================
+
+
+class TestTierFiltering:
+    """get_guardian_specs must correctly filter by GuardianTier."""
+
+    def test_fast_tier_returns_only_fast(self):
+        """All specs returned for FAST tier must have tier == 'fast'."""
+        fast_specs = get_guardian_specs(tier=GuardianTier.FAST)
+        assert all(s.tier == GuardianTier.FAST.value for s in fast_specs), (
+            f"Non-FAST specs returned: {[s.guardian_id for s in fast_specs if s.tier != GuardianTier.FAST.value]}"
+        )
+
+    def test_slow_tier_returns_only_slow(self):
+        """All specs returned for SLOW tier must have tier == 'slow'."""
+        slow_specs = get_guardian_specs(tier=GuardianTier.SLOW)
+        assert all(s.tier == GuardianTier.SLOW.value for s in slow_specs), (
+            f"Non-SLOW specs returned: {[s.guardian_id for s in slow_specs if s.tier != GuardianTier.SLOW.value]}"
+        )
+
+    def test_tier_filter_is_exhaustive(self):
+        """FAST + SLOW must cover all registered guardians."""
+        fast = {s.guardian_id for s in get_guardian_specs(tier=GuardianTier.FAST)}
+        slow = {s.guardian_id for s in get_guardian_specs(tier=GuardianTier.SLOW)}
+        all_ids = {s.guardian_id for s in ALL_GUARDIANS}
+        assert fast | slow == all_ids, f"Tier filter gap: {all_ids - fast - slow} not in FAST or SLOW"

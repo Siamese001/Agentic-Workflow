@@ -154,6 +154,15 @@ class TestCompatibilityGate:
         errors = check_schema_compatibility(r.to_dict())
         assert errors == []
 
+    def test_extra_artifact_key_detected(self):
+        """Artifact with unexpected key triggers artifact-keys mismatch branch."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [
+            {"type": "json", "path": "foo.json", "description": "desc", "extra": "x"},
+        ]
+        errors = check_schema_compatibility(d)
+        assert any("Artifact keys mismatch" in e for e in errors)
+
 
 # ---------------------------------------------------------------------------
 # 5. Version bump migration test

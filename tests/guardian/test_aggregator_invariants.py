@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -24,6 +25,8 @@ from agentic_core.L0_maintenance.scripts.run_all_guardians import (
 )
 from agentic_core.L0_maintenance.types.guardian_contract import (
     AGGREGATE_GUARDIAN_ID,
+    CONTRACT_VERSION,
+    GuardianResult,
     GuardianStatus,
 )
 from agentic_core.L0_maintenance.types.guardian_registry import (
@@ -108,14 +111,37 @@ class TestCorrelationIdPropagation:
 class TestRollupPrecedence:
     """Global rollup precedence: ERROR > FAIL > PASS."""
 
-    def test_error_overrides_all(self, clean_repo: Path):
-        """If any guardian errors, aggregate status is ERROR."""
-        # This test documents the invariant; actual ERROR injection
-        # would require mocking or a synthetic guardian
-        result = run_all_guardians(repo_root=clean_repo)
+    def test_error_overrides_pass_in_rollup(self, clean_repo: Path):
+        """Injecting ERROR into any sub-guardian forces aggregate to ERROR."""
+        call_count = 0
 
-        # Verify precedence logic exists
-        # (Cannot easily inject ERROR without modifying guardians)
+        def _synthetic(spec, repo_root, artifact_dir, timestamp, correlation_id):
+            nonlocal call_count
+            call_count += 1
+            # First guardian PASS, remaining ERROR — proves ERROR overrides PASS
+            status = GuardianStatus.PASS.value if call_count == 1 else GuardianStatus.ERROR.value
+            r = GuardianResult(
+                guardian_id=spec.guardian_id,
+                version=CONTRACT_VERSION,
+                status=status,
+                summary=f"synthetic {status}",
+                correlation_id=correlation_id,
+            )
+            return r
+
+        with patch(
+            "agentic_core.L0_maintenance.scripts.run_all_guardians._run_single_guardian",
+            side_effect=_synthetic,
+        ):
+            result = run_all_guardians(repo_root=clean_repo)
+
+        assert result.status == GuardianStatus.ERROR.value, (
+            f"ERROR must override PASS in rollup, got {result.status}"
+        )
+
+    def test_aggregate_status_is_valid_enum_member(self, clean_repo: Path):
+        """Aggregate status must be a member of GuardianStatus enum."""
+        result = run_all_guardians(repo_root=clean_repo)
         assert result.status in {
             GuardianStatus.PASS.value,
             GuardianStatus.FAIL.value,
