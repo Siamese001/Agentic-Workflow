@@ -290,6 +290,7 @@ class DomainPlannerAdapter:
         try:
             raw_result = self._execute_legacy(context, *args, **kwargs)
             self._circuit_breaker.record_success()
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._circuit_breaker.record_failure(e)
             return AdapterResult(success=False, error=str(e))
@@ -329,6 +330,7 @@ class DomainPlannerAdapter:
                 data=result,
                 error=result.get("errors", [None])[0] if result.get("errors") else None,
             )
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._circuit_breaker.record_failure(e)
             return AdapterResult(success=False, error=str(e))
