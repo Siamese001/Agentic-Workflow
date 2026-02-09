@@ -251,6 +251,17 @@ No capability may be evaluated outside its scope. Absence of proof = **MISSING**
 
 All named artifacts referenced in this prompt **must** be defined as `TypedDict` or `Pydantic` models in the codebase to be COMPLIANT. A free-form log or unstructured dict is **not** a valid artifact.
 
+#### PNG-Complete Typed Artifacts (Flow-Bound)
+
+| Artifact Name | Required Fields | Flow Binding | Defined In (§) |
+|---|---|---|---|
+| `AGGREGATE` (`aggregate.json`) | `trace_id`, `impact_scope`, `rollback_vector`, `risk_delta`, `pre_heal_assessment` | Conditional (L2 pre-heal) | §2.8 |
+| `RESULT` (`result.json`) | `trace_id`, `execution_outcome`, `final_state_hash`, `artifact_class` | Terminal (post-heal/approved) | §10.4 |
+| `INCIDENT` (`incident.json`) | `trace_id`, `incident_id`, `correlation_hash`, `severity_enum`, `telemetry_events` | Incident (L6) | §5.5, §15.6 |
+| `HEALING_PLAN` (`healing_plan.json`) | `trace_id`, `rollback_strategy`, `safety_checks`, `approval_vector` | Conditional (L2) | §2.8 |
+
+#### Existing Artifacts (Enhanced)
+
 | Artifact Name | Required Fields | Defined In (§) |
 |---|---|---|
 | `EvidencePack` | `trace_id`, `action_trace` (L0), `policy_evals` (L5), `risk_score`, `budget_breach_data`, `boundary_snapshot_hash` | §3.4 |
@@ -264,11 +275,20 @@ All named artifacts referenced in this prompt **must** be defined as `TypedDict`
 | `PolicyExceptionArtifact` | `trace_id`, `nonce`, `exception_scope`, `semantic_clock_tick`, `issuer_signature` | §3.7 |
 | `SignedModify` | `trace_id`, `human_reviewer_id`, `resolution` (APPROVE/REJECT/MODIFY), `modified_manifest`, `signature` | §2.7.1 |
 
+**! Audit rule:** Emitting an artifact on the wrong flow = **FAIL (P6)**.
+
 **Audit rule:** If an artifact name appears in the codebase but lacks the required fields above, status = **FAIL** (not MISSING).
+
+**! Flow enforcement:** AGGREGATE may only be emitted on conditional flows; RESULT only on terminal flows; INCIDENT only on incident flows.
 
 ---
 
 ## 2. Symmetric Validator–Healer Pipe (**PER-AGENT**)
+
+~ **2.1–2.5** clarified to match PNG strict ordering:
+
+* Validator emits **AGGREGATE only**, never RESULT.
+* RESULT emission is **exclusive to post-heal success**.
 
 2.1 Validator parses the full file into an AST and emits **only** the violating node as a `SurgicalManifest`.
 
@@ -290,6 +310,11 @@ All named artifacts referenced in this prompt **must** be defined as `TypedDict`
 8. AST-native transformation
 9. Post-transform `node_id` existence check
 10. Commit
+
+- **2.8 Aggregate→Heal Boundary Rule:**
+  AGGREGATE must include `impact_scope`, `rollback_vector`, `risk_delta`.
+
+! Explicit prohibition: L0/L5/L6 **cannot** write RESULT or HEALING_PLAN.
 
 2.6 ≥2 hash mismatches in a single healing wave **force human escalation**.
 
@@ -339,6 +364,13 @@ The Slot Handler enforces "Capability Depletion" tracking.
 Humans may issue a `PolicyExceptionArtifact` (bound to `trace_id` + `nonce`) to override a "Block" decision.
 This exception is valid **only** for the current "Semantic Clock" tick.
 
+* **3.8 Context Retrieval Request Artifact**
+
+  * Typed request from L0 to L4 (advisory-only, read-only).
+  * Must include `trace_id`, `query_hash`, `semantic_clock_tick`.
+
+! Added invariant: **No direct writes from L0** (PNG callout).
+
 **Architecture gates to apply:** P1, P2, P4, P5, P6.
 
 ---
@@ -365,7 +397,18 @@ This exception is valid **only** for the current "Semantic Clock" tick.
 
 5.3 Correlated signals collapse into a single incident using **Root Scope Pinning** strategies.
 
-5.4 **Active Response:** L6 Response Handler MUST be capable of emitting a direct `SelfHealingTrigger` to the L2 Pipe.
+~ **5.4 Active Response** expanded:
+
+* L6 may emit:
+
+  * `INCIDENT` → metrics/audit
+  * `SelfHealingTrigger` → L2
+* Deduplication precedes **both** paths.
+
+- **5.5 Signal Correlation & Deduplication Artifact**
+
+  * Deterministic correlation hash
+  * Required before INCIDENT emission.
 
 **Architecture gates to apply:** P2, P4, P6 (determinism, traceability, typed boundaries).
 **Prohibition:** do not expand into “flow” narration; treat as pure evidence checks.
@@ -403,6 +446,17 @@ Cognitive Engine must generate a `Plan_Provenance` artifact linking the generate
 6.8 **Memory Hypostates:**
 Every state commit must generate an `Extended Trace Hypostate` (Memory Snapshot) linked to the Semantic Clock.
 
+* **6.9 Knowledge Graph Advisory Constraint**
+
+  * Knowledge Graph is **advisory only**.
+  * Control authority explicitly forbidden.
+
+* **6.10 Episodic ↔ Semantic Linking**
+
+  * Episodic memory must record outcome links used in reasoning.
+
+! Clarified that **context retrieval does not mutate memory** (PNG dashed line).
+
 **Architecture gates to apply:** P2, P3, P4, P6 (determinism, planner purity, traceability, typed boundaries).
 
 ---
@@ -415,7 +469,16 @@ Every state commit must generate an `Extended Trace Hypostate` (Memory Snapshot)
 
 7.2.1 All validation results must be encapsulated in a signed `GuardianArtifact` (trace_id, signature, prestaged_perms).
 
-7.3 **Guardrail Guard:** Must enforce distinct "Risk Guard" (Token/Cost) and "Policy Guard" (Static Safety) checks.
+~ **7.3 Guardrail Guard** aligned to PNG:
+
+* Budget Guard (tokens)
+* Payload Integrity (Plast)
+* Safety Markers
+* Boundary Tokens (fast-fail)
+
+- **7.7 Aggregate Gate Rule**
+
+  * Guardian validates AGGREGATE before L2 heal admission.
 
 7.4 Guardian execution emits a **signed artifact** containing:
 
@@ -476,11 +539,20 @@ Every state commit must generate an `Extended Trace Hypostate` (Memory Snapshot)
 
 10.3 Post-rollback state hash must exactly match the pre-wave snapshot.
 
+* **10.4 Result Emission Exclusivity**
+
+  * RESULT may only be emitted by L2 after successful heal or approved execution.
+
 **Architecture gates to apply:** P1, P2, P3, P4 (fail-closed, determinism, no partial writes, traceability).
 
 ---
 
 ## 11. Budget & Resource Guards
+
+~ **11.1 TokenCap Enforcement**
+
+* Explicitly pre-route and pre-LLM.
+* Mirrors PNG "Budget Guard" placement.
 
 11.1 **TokenCap Enforcement:**
 Budget guard executes **before** any LLM call and emits a `TokenCap Artifact`.
@@ -498,6 +570,10 @@ A `Perms Artifact` (trace_id, policy_hash, budget) must be passed to the agent.
 12.1 All inter-agent messages are schema-validated at boundaries.
 
 12.2 A side-effect registry tracks **all touched resources**.
+
+* **12.3 Read-Only Boundary Enforcement**
+
+  * L0, L4, L6 are physically incapable of state mutation.
 
 **Architecture gates to apply:** P1, P3, P6 (fail-closed, no implicit writes, typed boundaries).
 
@@ -525,6 +601,10 @@ A `Perms Artifact` (trace_id, policy_hash, budget) must be passed to the agent.
 
 ## 15. Tiered Hierarchical Monitoring & Incident Response (L6)
 
+~ **15.1 Tier III** clarified per PNG:
+
+* "Evacuation Alert Engage" = freeze + exfiltration path.
+
 15.1 **Tiered Vigilance Strategy:**
 * **Tier I:** Budget/Token Drains (Dashboard Signature).
 * **Tier II:** Anomalous Presence (Exclusive Dynamic Probes).
@@ -539,6 +619,10 @@ High-velocity signals (≥`TRACE_BUFFER_VELOCITY_THRESHOLD` events per Semantic 
 15.4 **Capability Depletion:** The system must track the "Depletion Rate" of tool slots.
 
 15.5 **Trace Emission:** All anomalies must emit a `Typed Trace ID` matching the strict regex `^CC3AL1-[0-9A-F]{8}$` (uppercase hex, exactly 8 characters). Any ID not matching this pattern = **FAIL**.
+
+- **15.6 Metrics & Audit Emission**
+
+  * All INCIDENT and RESULT artifacts must emit telemetry events.
 
 **Architecture gates to apply:** P4, P6 (traceability, typed boundaries).
 
@@ -674,3 +758,17 @@ If a capability is not **explicit, deterministic, and provable** in the discover
 
 ```
 ```
+
+---
+
+## ✅ Net Effect (PNG Parity)
+
+* All **layers (L0–L6)** mapped 1:1 to prompt capabilities.
+* All **arrows in the PNG** now correspond to:
+
+  * a typed artifact, or
+  * an explicit prohibition.
+* RESULT / AGGREGATE / INCIDENT / HEALING_PLAN flows are **non-ambiguous and enforceable**.
+* Advisory vs control boundaries are **explicitly fail-closed**.
+
+No inferred behavior remains unstated; absence of any of the above in code now deterministically evaluates to **MISSING or FAIL** under v5.0.
