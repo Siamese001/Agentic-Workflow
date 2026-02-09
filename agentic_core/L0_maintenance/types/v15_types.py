@@ -268,6 +268,78 @@ class PolicyConfigSnapshot:
 
 
 # =============================================================================
+# §1.7 — HealingPlan Typed Artifact
+# Required fields: trace_id, plan_id, manifests, semantic_clock_tick,
+#                  policy_liaison_node
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class HealingPlan:
+    """§1.7 — Typed HealingPlan artifact with all required fields.
+
+    Represents a structured healing plan that L2 agents produce
+    and L0/L5/L6 cannot write.
+    """
+
+    trace_id: str
+    plan_id: str
+    manifests: tuple[str, ...]
+    semantic_clock_tick: int
+    policy_liaison_node: str
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("HealingPlan: trace_id must be non-empty")
+        if not self.plan_id:
+            raise ValueError("HealingPlan: plan_id must be non-empty")
+        if not isinstance(self.manifests, tuple):
+            raise TypeError("HealingPlan: manifests must be a tuple")
+        if self.semantic_clock_tick < 0:
+            raise ValueError(
+                f"HealingPlan: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
+            )
+        if not self.policy_liaison_node:
+            raise ValueError("HealingPlan: policy_liaison_node must be non-empty")
+
+
+# =============================================================================
+# §2.5 — StaleWriteIncident Typed Artifact
+# Required fields: trace_id, target_path, expected_hash, actual_hash,
+#                  semantic_clock_tick
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class StaleWriteIncident:
+    """§2.5 — Typed StaleWriteIncident for hash-mismatch detection.
+
+    Emitted when a healer attempts to write to a file whose hash
+    has changed since the boundary snapshot was taken.
+    """
+
+    trace_id: str
+    target_path: str
+    expected_hash: str
+    actual_hash: str
+    semantic_clock_tick: int
+
+    def __post_init__(self) -> None:
+        if not self.trace_id:
+            raise ValueError("StaleWriteIncident: trace_id must be non-empty")
+        if not self.target_path:
+            raise ValueError("StaleWriteIncident: target_path must be non-empty")
+        if not self.expected_hash:
+            raise ValueError("StaleWriteIncident: expected_hash must be non-empty")
+        if not self.actual_hash:
+            raise ValueError("StaleWriteIncident: actual_hash must be non-empty")
+        if self.semantic_clock_tick < 0:
+            raise ValueError(
+                f"StaleWriteIncident: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
+            )
+
+
+# =============================================================================
 # §2.5 — Pipe Order (strict 1..10)
 # =============================================================================
 
@@ -294,6 +366,7 @@ __all__ = [
     "CapabilityDepletionTracker",
     "EvacuationProtocol",
     "HEALER_PIPE_ORDER",
+    "HealingPlan",
     "IncidentArtifact",
     "PermsArtifact",
     "PolicyConfigSnapshot",
@@ -304,6 +377,7 @@ __all__ = [
     "RoutingRationale",
     "SelfHealingTrigger",
     "SeverityEnum",
+    "StaleWriteIncident",
     "TokenCapArtifact",
     "TokenControlArtifact",
     "TokenGateResult",

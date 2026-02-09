@@ -21,10 +21,10 @@ import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
 from pathlib import Path
 from typing import Any, Optional, Protocol
 
+from agentic_core.L0_maintenance.types.v15_types import RoutePath
 from agentic_core.L5_safety.enforcement.circuit_breaker import get_breaker
 from agentic_core.L5_safety.enforcement.context_session import (
     ContextSession,
@@ -37,15 +37,9 @@ from agentic_core.L5_safety.enforcement.context_session import (
 logger = logging.getLogger(__name__)
 
 
-class RouteDecision(Enum):
-    """Routing decisions per V15 flow diagram (§3.3 — 5 strictly defined paths)."""
-
-    BYPASS = "bypass"  # Low risk - direct to actuation
-    VALIDATE = "validate"  # Medium risk - validation gate
-    HUMAN_REVIEW = "human_review"  # High risk - human approval
-    REJECT = "reject"  # Circuit breaker or policy violation
-    POLICY_CHALLENGE_LOOP = "policy_challenge_loop"  # §3.3 Policy Challenge (Exception Issuance)
-    ROUTE_RECOVERY = "route_recovery"  # §3.3 Route Recovery (Budget Overflow handling)
+# V15 P0.3: RouteDecision is now an alias for the canonical V15 RoutePath.
+# All 5 strictly defined paths come from v15_types.RoutePath.
+RouteDecision = RoutePath
 
 
 @dataclass
@@ -70,7 +64,7 @@ class RoutingRequest:
 class RoutingResult:
     """Result of routing decision."""
 
-    decision: RouteDecision
+    decision: RoutePath
     risk_level: RiskLevel
     reason: str
     request: RoutingRequest
@@ -208,7 +202,7 @@ class ContextualRouter:
     ):
         self._session_manager = session_manager or get_session_manager()
         self._guardian_bus = guardian_bus or get_guardian_signal_bus()
-        self._policy_rules: list[Callable[[RoutingRequest], RouteDecision | None]] = []
+        self._policy_rules: list[Callable[[RoutingRequest], RoutePath | None]] = []
         self._metrics = {
             "total_requests": 0,
             "bypassed": 0,
@@ -227,23 +221,23 @@ class ContextualRouter:
         """Register default V10 policy rules."""
 
         # Rule 1: Base agent modifications always require human review
-        def base_agent_rule(req: RoutingRequest) -> RouteDecision | None:
+        def base_agent_rule(req: RoutingRequest) -> RoutePath | None:
             if req.is_base_agent:
-                return RouteDecision.HUMAN_REVIEW
+                return RoutePath.HUMAN_ESCALATION
             return None
 
         # Rule 2: External touch requires validation
-        def external_touch_rule(req: RoutingRequest) -> RouteDecision | None:
+        def external_touch_rule(req: RoutingRequest) -> RoutePath | None:
             if req.has_external_touch:
-                return RouteDecision.VALIDATE
+                return RoutePath.STANDARD_VALIDATION
             return None
 
         # Rule 3: High complexity requires validation
-        def complexity_rule(req: RoutingRequest) -> RouteDecision | None:
+        def complexity_rule(req: RoutingRequest) -> RoutePath | None:
             if req.cyclomatic_complexity > 50:
-                return RouteDecision.HUMAN_REVIEW
+                return RoutePath.HUMAN_ESCALATION
             if req.cyclomatic_complexity > 20:
-                return RouteDecision.VALIDATE
+                return RoutePath.STANDARD_VALIDATION
             return None
 
         self._policy_rules.extend(
@@ -267,7 +261,7 @@ class ContextualRouter:
 
     def add_policy_rule(
         self,
-        rule: Callable[[RoutingRequest], RouteDecision | None],
+        rule: Callable[[RoutingRequest], RoutePath | None],
     ) -> None:
         """
         Add a custom policy rule.
@@ -279,18 +273,18 @@ class ContextualRouter:
         """
         self._policy_rules.append(rule)
 
-    def _check_circuit_breaker(self, agent_name: str) -> RouteDecision | None:
+    def _check_circuit_breaker(self, agent_name: str) -> RoutePath | None:
         """Check if circuit breaker allows request."""
         if not agent_name:
             return None
 
         breaker = get_breaker(f"agent_{agent_name}")
         if not breaker.allow_request():
-            return RouteDecision.REJECT
+            return RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW
 
         return None
 
-    def _evaluate_policies(self, request: RoutingRequest) -> RouteDecision | None:
+    def _evaluate_policies(self, request: RoutingRequest) -> RoutePath | None:
         """Evaluate policy rules against request."""
         for rule in self._policy_rules:
             try:
@@ -348,10 +342,10 @@ class ContextualRouter:
 
         # 1. Check circuit breaker
         cb_decision = self._check_circuit_breaker(request.agent_name)
-        if cb_decision == RouteDecision.REJECT:
+        if cb_decision == RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW:
             self._metrics["rejected"] += 1
             return RoutingResult(
-                decision=RouteDecision.REJECT,
+                decision=RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW,
                 risk_level=RiskLevel.HIGH,
                 reason="Circuit breaker is OPEN for this agent",
                 request=request,
@@ -364,7 +358,7 @@ class ContextualRouter:
         if any("critical" in s.lower() for s in guardian_signals):
             self._metrics["human_review"] += 1
             return RoutingResult(
-                decision=RouteDecision.HUMAN_REVIEW,
+                decision=RoutePath.HUMAN_ESCALATION,
                 risk_level=RiskLevel.HIGH,
                 reason=f"Critical guardian signals: {guardian_signals}",
                 request=request,
@@ -386,10 +380,10 @@ class ContextualRouter:
         policy_decision = self._evaluate_policies(request)
 
         # 5. Determine final routing
-        if policy_decision == RouteDecision.HUMAN_REVIEW:
+        if policy_decision == RoutePath.HUMAN_ESCALATION:
             self._metrics["human_review"] += 1
             return RoutingResult(
-                decision=RouteDecision.HUMAN_REVIEW,
+                decision=RoutePath.HUMAN_ESCALATION,
                 risk_level=RiskLevel.HIGH,
                 reason="Policy requires human review",
                 request=request,
@@ -398,10 +392,10 @@ class ContextualRouter:
                 guardian_signals=guardian_signals,
             )
 
-        if policy_decision == RouteDecision.VALIDATE:
+        if policy_decision == RoutePath.STANDARD_VALIDATION:
             self._metrics["validated"] += 1
             return RoutingResult(
-                decision=RouteDecision.VALIDATE,
+                decision=RoutePath.STANDARD_VALIDATION,
                 risk_level=risk_level,
                 reason="Policy requires validation",
                 request=request,
@@ -413,7 +407,7 @@ class ContextualRouter:
         if risk_level == RiskLevel.LOW and not guardian_signals:
             self._metrics["bypassed"] += 1
             return RoutingResult(
-                decision=RouteDecision.BYPASS,
+                decision=RoutePath.LOW_RISK_BYPASS,
                 risk_level=RiskLevel.LOW,
                 reason="Low risk - validation bypassed",
                 request=request,
@@ -424,7 +418,7 @@ class ContextualRouter:
         # Default: standard validation
         self._metrics["validated"] += 1
         return RoutingResult(
-            decision=RouteDecision.VALIDATE,
+            decision=RoutePath.STANDARD_VALIDATION,
             risk_level=risk_level,
             reason="Standard validation path",
             request=request,
@@ -456,7 +450,8 @@ def get_router() -> ContextualRouter:
 __all__ = [
     "ContextualRouter",
     "GuardianSignalBus",
-    "RouteDecision",
+    "RouteDecision",  # V15: alias for RoutePath (backward compat)
+    "RoutePath",
     "RoutingRequest",
     "RoutingResult",
     "get_guardian_signal_bus",
