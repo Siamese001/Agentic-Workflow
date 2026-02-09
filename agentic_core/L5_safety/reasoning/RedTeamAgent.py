@@ -23,7 +23,6 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 # Template content loading for registry
 TEMPLATE_ROOT = Path(__file__).parents[3] / "templates"
@@ -46,7 +45,7 @@ jailbreak_content = jailbreak_path.read_text(encoding="utf-8") if jailbreak_path
     territory="templates",
     content=jailbreak_content,
 )
-class RedTeamAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class RedTeamAgent(SovereignBaseAgent):
     """
     Sovereign red-teaming agent for guardrail penetration testing.
 

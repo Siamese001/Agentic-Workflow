@@ -106,7 +106,6 @@ EXCLUDED_DIRS = [
 @dataclass
 class GenerativeGuardAgent(
     SovereignBaseAgent,
-    SubatomicTestingMixin,
     HealerMixin,
     CanonBaseAgentInterface,
     MCPHardenedMixin,

@@ -76,7 +76,11 @@ except ImportError:
         pass
 
 
+from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase as L0MaintenanceBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.autonomy_mixin import AutonomyMixin
+from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import (

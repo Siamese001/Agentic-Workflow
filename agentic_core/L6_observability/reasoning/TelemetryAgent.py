@@ -42,13 +42,12 @@ from typing import Any
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class TelemetryAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     Autonomous telemetry emission agent.
     Collects and emits structured events for sovereign observability.

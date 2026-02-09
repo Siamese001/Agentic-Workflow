@@ -32,7 +32,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 @dataclass
-class MCPGuardianAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class MCPGuardianAgent(SovereignBaseAgent):
     """
     L5 Safety Guardian for MCP integration compliance.
 

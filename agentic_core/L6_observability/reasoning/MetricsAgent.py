@@ -35,15 +35,16 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
-from typing import Any, List, Tuple
+from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import List, Tuple, timeout
+from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.
@@ -234,7 +235,7 @@ class MetricsAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAge
 
         return yaml_str
 
-    def record_compliance_scan(self, violations: List[Tuple[Path, str]]) -> None:
+    def record_compliance_scan(self, violations: list[tuple[Path, str]]) -> None:
         """
         Record results of a compliance scan.
         Called by ComplianceOrchestratorAgent.

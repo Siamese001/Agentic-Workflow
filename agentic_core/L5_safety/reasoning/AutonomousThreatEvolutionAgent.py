@@ -30,12 +30,11 @@ from agentic_core.base_agents.decorators import standard_heal
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
 @dataclass
-class AutonomousThreatEvolutionAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
     """L5: Self-healing security agent"""
 
     def __init__(self, SafetyEngine: Any | None = None) -> None:

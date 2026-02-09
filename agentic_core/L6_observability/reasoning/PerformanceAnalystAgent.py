@@ -29,7 +29,6 @@ AgentPerformanceMetrics = None
 CritiqueReport = None
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # [SOVEREIGN FACTORY]
@@ -39,7 +38,7 @@ def get_performance_analyst(project_root: Path) -> "PerformanceAnalystAgent":
 
 
 @dataclass
-class PerformanceAnalystAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class PerformanceAnalystAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
 

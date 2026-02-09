@@ -22,11 +22,9 @@ from typing import Any
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-
 
 @dataclass
-class RegressionOracleAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class RegressionOracleAgent(SovereignBaseAgent):
     """
     The Regression Oracle - Automated Test Synthesizer
 

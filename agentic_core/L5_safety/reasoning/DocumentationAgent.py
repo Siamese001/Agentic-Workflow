@@ -18,11 +18,10 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class DocumentationAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class DocumentationAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
 

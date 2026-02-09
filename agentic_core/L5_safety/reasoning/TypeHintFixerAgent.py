@@ -19,11 +19,10 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class TypeHintFixerAgent(SubatomicTestingMixin, SovereignBaseAgent, ast.NodeTransformer):
+class TypeHintFixerAgent(SovereignBaseAgent, ast.NodeTransformer):
     """
     AST transformer that adds Missing type hints to public symbols.
     """

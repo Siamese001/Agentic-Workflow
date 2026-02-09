@@ -20,15 +20,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 @dataclass
-class SprawlInspectorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class SprawlInspectorAgent(SovereignBaseAgent):
     """
     Sprawl Inspector - Pre-Flight Architectural Survey.
 

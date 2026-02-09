@@ -21,7 +21,6 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout
-
 from agentic_core.L3_orchestration.types.rag_provider_types import (
     IRagProvider,
     RagDocument,
@@ -41,7 +40,7 @@ def get_sovereign_rag_orchestrator() -> SovereignRagOrchestrator:
 
 
 @dataclass
-class SovereignRagOrchestrator(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent, IRagProvider):
+class SovereignRagOrchestrator(AtomicExecutionMixin, SovereignBaseAgent, IRagProvider):
     """
     Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System.
 

@@ -37,7 +37,6 @@ except ImportError:
     IntegrityGateExecutorAgent = None  # type: ignore[misc,assignment]
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 class PeerIntelligenceResult:
@@ -101,7 +100,7 @@ class ValidationResult:
 
 
 @dataclass
-class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class PeerIntelligenceAuditorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     """
     K.2.5 - Multi-Hop RAG Analysis Agent
 
