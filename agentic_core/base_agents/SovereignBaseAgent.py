@@ -33,6 +33,9 @@ from typing import Any
 from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
     V15ExecutionGateway,
 )
+from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+    generate_trace_id,
+)
 from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
@@ -118,6 +121,9 @@ class SovereignBaseAgent(
             "BOOT",
             {"status": "initialized", "mode": "hardened", "integrity_verified": True},
         )
+
+        # V15: Conditionally instantiate gateway singleton (per-agent scope)
+        self._v15_gateway = V15ExecutionGateway() if is_v15_enforced() else None
 
         self._initialized = True
 
@@ -251,10 +257,13 @@ class SovereignBaseAgent(
 
     def _v15_enhanced_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """V15-enforced healing through V15ExecutionGateway."""
-        import uuid
+        import hashlib as _hl
 
-        # Generate trace ID for this healing operation
-        trace_id = kwargs.get("trace_id", str(uuid.uuid4()))
+        # §15.5 — Generate V15-compliant trace ID: CC3AL1-{8 uppercase hex}
+        # Derive deterministic 8-char hex suffix from violation + agent class name
+        _seed = f"{self.__class__.__name__}:{violation.get('id', 'unknown')}:{id(violation)}"
+        _hex8 = _hl.sha256(_seed.encode()).hexdigest()[:8].upper()
+        trace_id = kwargs.get("trace_id", generate_trace_id(_hex8))
 
         # Convert violation to SurgicalManifest (Phase 1 simplified version)
         import hashlib
@@ -276,28 +285,74 @@ class SovereignBaseAgent(
             provenance_chain=(trace_id,),
         )
 
-        # Create V15ExecutionGateway
-        gateway = V15ExecutionGateway()
+        # Use per-agent gateway singleton (set in __post_init__)
+        gateway = self._v15_gateway
+        if gateway is None:
+            raise RuntimeError(
+                "V15ExecutionGateway is None but V15_ENFORCEMENT is active. "
+                "Agent was likely instantiated before enforcement was enabled.",
+            )
 
         def heal_fn(manifest: SurgicalManifest) -> dict[str, Any]:
             """Actual healing function passed to gateway."""
             # Use meta-learning enhanced heal if available
             if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
-                return self.ml_enhanced_heal(manifest.payload, self._do_heal, **kwargs)
+                return self.ml_enhanced_heal(violation, self._do_heal, **kwargs)
 
             # Default healing implementation
             return {
                 "status": "completed",
                 "reason": "v15_enforced_healing",
                 "handler": self.__class__.__name__,
-                "violation_id": manifest.payload.get("id", "unknown"),
-                "trace_id": manifest.trace_id,
+                "violation_id": violation.get("id", "unknown"),
+                "trace_id": trace_id,
             }
 
         def state_hash_fn() -> tuple[str, str, str]:
-            """Return current state hashes."""
-            # Simplified state hash for Phase 1
-            return ("fs_hash", "git_hash", "mem_hash")
+            """Return current state hashes for rollback verification.
+
+            §10.2 — Three-tuple: (filesystem_hash, git_state_hash, agent_memory_hash).
+            - filesystem_hash: SHA-256 of sorted mtimes+sizes of .py files under
+              project_root/agentic_core (first 200 entries, deterministic order).
+            - git_state_hash: SHA-256 of .git/HEAD content (tracks branch/commit).
+            - agent_memory_hash: SHA-256 of agent class name + _initialized flag
+              (stable identity; changes only on hot-reload).
+            """
+            import os as _os
+
+            # fs_hash: aggregate mtime+size of .py files under agentic_core/
+            _core_dir = self.project_root / "agentic_core"
+            _fs_parts: list[str] = []
+            if _core_dir.is_dir():
+                for _root, _dirs, _files in _os.walk(str(_core_dir)):
+                    _dirs.sort()
+                    for _f in sorted(_files):
+                        if _f.endswith(".py"):
+                            _fp = _os.path.join(_root, _f)
+                            try:
+                                _st = _os.stat(_fp)
+                                _fs_parts.append(f"{_fp}:{_st.st_mtime_ns}:{_st.st_size}")
+                            except OSError:
+                                pass
+                            if len(_fs_parts) >= 200:
+                                break
+                    if len(_fs_parts) >= 200:
+                        break
+            _fs_hash = _hl.sha256("\n".join(_fs_parts).encode()).hexdigest()
+
+            # git_hash: SHA-256 of .git/HEAD content
+            _git_head = self.project_root / ".git" / "HEAD"
+            try:
+                _git_bytes = _git_head.read_bytes()
+            except OSError:
+                _git_bytes = b"no-git"
+            _git_hash = _hl.sha256(_git_bytes).hexdigest()
+
+            # mem_hash: stable agent identity hash
+            _mem_seed = f"{self.__class__.__name__}:{self._initialized}"
+            _mem_hash = _hl.sha256(_mem_seed.encode()).hexdigest()
+
+            return (_fs_hash, _git_hash, _mem_hash)
 
         # Execute through gateway
         result = gateway.execute(

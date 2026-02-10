@@ -33,7 +33,27 @@ class V15EnforcementError(RuntimeError):
 
 
 def is_v15_enforced() -> bool:
-    """Return True when V15_ENFORCEMENT is enabled via env var."""
+    """Return True when V15_ENFORCEMENT is enabled in any mode (log, soft, hard).
+
+    Accepts: "1", "true", "yes", "log", "soft" (case-insensitive).
+    LOG_ONLY and SOFT_FAIL modes enter the V15 path but do not block;
+    use ``is_v15_hard_fail()`` to decide whether to raise/block.
+    """
+    return os.environ.get("V15_ENFORCEMENT", "").lower() in (
+        "1",
+        "true",
+        "yes",
+        "log",
+        "soft",
+    )
+
+
+def is_v15_hard_fail() -> bool:
+    """Return True only when V15_ENFORCEMENT demands hard blocking on violation.
+
+    Hard-fail values: "1", "true", "yes" (case-insensitive).
+    "log" and "soft" return False — violations are logged, not blocked.
+    """
     return os.environ.get("V15_ENFORCEMENT", "").lower() in ("1", "true", "yes")
 
 
