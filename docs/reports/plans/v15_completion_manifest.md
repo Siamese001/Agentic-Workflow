@@ -77,16 +77,40 @@
 - **All gates**: P0 PASS, P1 PASS, P2 PASS
 - **This manifest**: `docs/reports/plans/v15_completion_manifest.md`
 
+### Phase 6 — Aggressive High-Signal Refinement
+
+- **Objective**: Eliminate manual classification, unify guard codepaths, decompose entrypoints, harden CI.
+- **Wave 6.1A — Inventory Precision Hardening**:
+  - Upgraded `v15_d_inventory_collect_full.py` to schema 5.0.0
+  - Added 8 AST heuristic layers: dunder/test exclusion, private helpers, heal pathway, tool methods, read-only accessors, ops_scripts CLI exclusion, infrastructure directories, agent-class transitive, file-level transitive, dataclass methods, side-effect analysis
+  - Result: **UNWIRED = 0** with fully machine-deterministic classification (no manual step)
+  - 1196 files scanned → 25 WIRED, 6725 FALSE_POSITIVE, 955 OUT_OF_SCOPE, 0 UNWIRED
+- **Wave 6.1B — Runtime Guard Unification**:
+  - Added `v15_runtime_boundary()` canonical helper to `v15_runtime_guard.py`
+  - Exported in `__all__` — single import for any file, no lazy-import duplication needed
+  - Identical semantics to `v15_runtime_guard`, fail-closed safe
+- **Wave 6.2 — execute_ssot Decomposition**:
+  - Created `execute_ssot_entrypoint.py` — minimal V15-native entrypoint
+  - Legacy pipeline gated behind explicit `--legacy` flag
+  - `execute_ssot.py` preserved as frozen legacy module (no behavior change)
+- **Wave 6.3 — CI & Pre-commit Stability**:
+  - Verified pinned versions: pre-commit-hooks `v5.0.0`, ruff `v0.14.13`
+  - Added guardian tests for version pinning assertions
+- **Wave 6.4 — Regression Tripwires**:
+  - 12 guardian tests in `tests/guardian/test_v15_p6_refinement.py`
+  - Covers: pre-commit idempotency, inventory auto-classification, runtime boundary export, entrypoint decomposition, all V15 gates (P0/P1/P2)
+- **Gate result**: P0 PASS, P1 PASS, P2 PASS — all 42 V15 guardian tests PASS (30 existing + 12 new)
+
 ---
 
 ## Final Assertions
 
 - **UNWIRED = 0** across all 28 P2 inventory entrypoints
-- **UNWIRED = 0** repo-wide (1196 files, 253 in-scope unguarded all classified as false positives)
+- **UNWIRED = 0** repo-wide (1196 files, machine-deterministic classification, no manual step)
 - **P0 gate**: PASS (evidence_fail_count = 0)
 - **P1 gate**: PASS (D_RUNTIME_WIRED = 100%, critical_d_set_passed = True)
 - **P2 gate**: PASS (24 WIRED, 4 ALREADY_ENFORCED, 0 UNWIRED)
-- **V15 guardian tests**: 30/30 PASS
+- **V15 guardian tests**: 42/42 PASS (30 existing + 12 Phase 6 tripwires)
 - **Pre-commit**: All hooks PASS
 
 ---
@@ -130,7 +154,8 @@
 | execute_ssot V15 Contract | 11 | `tests/guardian/test_execute_ssot_v15_contract.py` |
 | P2 Wave 2.2 Bypass | 10 | `tests/guardian/test_v15_p2_wave2_2_bypass.py` |
 | P2 Wave 2.2 Gate Tooling | 9 | `tests/guardian/test_v15_p2_wave2_2_gate_tooling.py` |
-| **Total** | **389** | |
+| P6 Refinement Tripwires | 12 | `tests/guardian/test_v15_p6_refinement.py` |
+| **Total** | **401** | |
 
 ## CI Gate Scripts
 

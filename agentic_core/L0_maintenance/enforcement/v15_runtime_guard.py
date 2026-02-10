@@ -180,7 +180,22 @@ def assert_v15_guarded(entry_point_id: str) -> None:
         )
 
 
+def v15_runtime_boundary(entry_point_id: str) -> Callable[[F], F]:
+    """Canonical unified guard — safe for bootstrap and normal contexts.
+
+    Identical semantics to ``v15_runtime_guard`` but fail-closed safe:
+    when ``V15_ENFORCEMENT=1`` and the guard infrastructure cannot initialise,
+    the import error propagates (hard failure).  When enforcement is off,
+    the decorator is a zero-cost identity wrapper.
+
+    Use this instead of duplicating ``_optional_v15_runtime_guard()`` in
+    every bootstrap file.
+    """
+    return v15_runtime_guard(entry_point_id)
+
+
 __all__ = [
     "assert_v15_guarded",
+    "v15_runtime_boundary",
     "v15_runtime_guard",
 ]
