@@ -21,8 +21,8 @@
 ## 4. Guardian Report
 
 - **Status**: PASS
-- **Total tests**: 15
-- **Passed**: 15
+- **Total tests**: 78
+- **Passed**: 78
 - **Failed**: 0
 - **Skipped**: 0
 

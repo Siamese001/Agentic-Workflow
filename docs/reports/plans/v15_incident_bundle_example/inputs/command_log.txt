@@ -1,0 +1,7 @@
+<!-- V15_INCIDENT_PLACEHOLDER -->
+# Command Log
+
+Record commands executed during incident response:
+
+1. <command and output>
+2. <command and output>
