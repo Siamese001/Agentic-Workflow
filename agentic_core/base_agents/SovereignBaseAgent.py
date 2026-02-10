@@ -26,10 +26,18 @@ MRO HARDENING:
 """
 
 import logging
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+    V15ExecutionGateway,
+)
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_maintenance.types.v15_p2_types import (
+    SurgicalManifest,
+)
 from agentic_core.L0_maintenance.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
@@ -209,7 +217,7 @@ class SovereignBaseAgent(
 
     def heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """
-        Enhanced healing interface with meta-learning integration.
+        Enhanced healing interface with meta-learning integration and V15 enforcement.
 
         Args:
             violation: Dictionary detailing the detected violation.
@@ -218,6 +226,10 @@ class SovereignBaseAgent(
         Returns:
             Dict containing status and metadata with meta-learning enhancement.
         """
+        # Phase 1: Route through V15ExecutionGateway when V15 enforcement is enabled
+        if is_v15_enforced():
+            return self._v15_enhanced_heal(violation, **kwargs)
+        
         # Use meta-learning enhanced heal if available
         if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
             return self.ml_enhanced_heal(violation, self._do_heal, **kwargs)
@@ -229,6 +241,84 @@ class SovereignBaseAgent(
             "handler": self.__class__.__name__,
             "violation_id": violation.get("id", "unknown"),
         }
+
+    def _v15_enhanced_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
+        """V15-enforced healing through V15ExecutionGateway."""
+        import uuid
+        
+        # Generate trace ID for this healing operation
+        trace_id = kwargs.get("trace_id", str(uuid.uuid4()))
+        
+        # Convert violation to SurgicalManifest (Phase 1 simplified version)
+        import hashlib
+        from agentic_core.L0_maintenance.types.v15_p2_types import FixConstraint
+        
+        ast_snippet = f"heal({violation.get('id', 'unknown')})"
+        
+        manifest = SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id=self.__class__.__name__,
+            target_layer="L2",
+            ast_snippet=ast_snippet,
+            serialization_canon="heal_operation",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=hashlib.sha256(ast_snippet.encode("utf-8")).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+        
+        # Create V15ExecutionGateway
+        gateway = V15ExecutionGateway()
+        
+        def heal_fn(manifest: SurgicalManifest) -> dict[str, Any]:
+            """Actual healing function passed to gateway."""
+            # Use meta-learning enhanced heal if available
+            if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
+                return self.ml_enhanced_heal(manifest.payload, self._do_heal, **kwargs)
+            
+            # Default healing implementation
+            return {
+                "status": "completed",
+                "reason": "v15_enforced_healing",
+                "handler": self.__class__.__name__,
+                "violation_id": manifest.payload.get("id", "unknown"),
+                "trace_id": manifest.trace_id,
+            }
+        
+        def state_hash_fn() -> tuple[str, str, str]:
+            """Return current state hashes."""
+            # Simplified state hash for Phase 1
+            return ("fs_hash", "git_hash", "mem_hash")
+        
+        # Execute through gateway
+        result = gateway.execute(
+            execution_input=manifest,
+            heal_fn=heal_fn,
+            state_hash_fn=state_hash_fn,
+            trace_id=trace_id,
+        )
+        
+        # Return gateway result in expected format
+        if result.success:
+            return {
+                "status": "completed",
+                "reason": "v15_enforced_healing",
+                "handler": self.__class__.__name__,
+                "violation_id": violation.get("id", "unknown"),
+                "trace_id": trace_id,
+                "semantic_clock_tick": result.semantic_clock_tick,
+                "gateway_result": result.healing_output,
+            }
+        else:
+            return {
+                "status": "failed",
+                "reason": result.error or "v15_gateway_failure",
+                "handler": self.__class__.__name__,
+                "violation_id": violation.get("id", "unknown"),
+                "trace_id": trace_id,
+                "error": result.error,
+            }
 
     def _do_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """
