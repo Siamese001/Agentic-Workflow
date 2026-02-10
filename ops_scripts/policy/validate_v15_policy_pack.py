@@ -19,6 +19,11 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.L0_maintenance.types.integration_contract import (
+    Finding,
+    ResultEnvelope,
+)
+
 # ---------------------------------------------------------------------------
 # Schema constants
 # ---------------------------------------------------------------------------
@@ -149,24 +154,72 @@ def validate_policy_pack(data: dict) -> tuple[int, list[str], list[str]]:
 # ---------------------------------------------------------------------------
 
 
+def build_validator_envelope(
+    pack_path: str,
+    exit_code: int,
+    errors: list[str],
+    warnings: list[str],
+) -> ResultEnvelope:
+    """Build a ResultEnvelope for the policy pack validator run."""
+    env = ResultEnvelope(tool="policy_pack_validator", exit_code=exit_code)
+    env.inputs["policy_pack"] = {
+        "path": Path(pack_path).name,
+        "present": Path(pack_path).is_file(),
+    }
+
+    for w in warnings:
+        env.findings.append(
+            Finding(
+                code="SCHEMA_WARN",
+                severity="WARN",
+                message=w,
+            ),
+        )
+    for e in errors:
+        env.findings.append(
+            Finding(
+                code="SCHEMA_ERROR" if exit_code == 2 else "DUPLICATE_RULE_ID",
+                severity="ERROR",
+                message=e,
+            ),
+        )
+
+    return env
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a V15 policy pack JSON file.")
     parser.add_argument("--path", type=str, required=True, help="Path to policy pack JSON")
+    parser.add_argument(
+        "--json-out",
+        type=str,
+        default=None,
+        help="Optional: write JSON result envelope to this path",
+    )
     args = parser.parse_args()
 
     path = Path(args.path)
     if not path.is_file():
         print(f"ERROR: File not found: {path}", file=sys.stderr)
+        env = build_validator_envelope(args.path, 2, [f"File not found: {path.name}"], [])
+        if args.json_out:
+            env.write_json(Path(args.json_out))
         return 2
 
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         print(f"ERROR: Invalid JSON: {e}", file=sys.stderr)
+        env = build_validator_envelope(args.path, 2, [f"Invalid JSON: {e}"], [])
+        if args.json_out:
+            env.write_json(Path(args.json_out))
         return 2
 
     if not isinstance(data, dict):
         print("ERROR: Top-level must be a JSON object", file=sys.stderr)
+        env = build_validator_envelope(args.path, 2, ["Top-level must be a JSON object"], [])
+        if args.json_out:
+            env.write_json(Path(args.json_out))
         return 2
 
     exit_code, errors, warnings = validate_policy_pack(data)
@@ -180,6 +233,10 @@ def main() -> int:
     else:
         for e in errors:
             print(f"ERROR: {e}", file=sys.stderr)
+
+    if args.json_out:
+        env = build_validator_envelope(args.path, exit_code, errors, warnings)
+        env.write_json(Path(args.json_out))
 
     return exit_code
 

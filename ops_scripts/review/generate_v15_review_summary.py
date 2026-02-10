@@ -19,6 +19,11 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.L0_maintenance.types.integration_contract import (
+    Finding,
+    ResultEnvelope,
+)
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -235,6 +240,126 @@ def generate_summary(
 # ---------------------------------------------------------------------------
 
 
+def _build_envelope(
+    exit_code: int,
+    evidence_files: dict[str, Path],
+    guardian_report_paths: list[Path],
+    out_path: str | None,
+    all_gates_pass: bool,
+    guardian_pass: bool,
+) -> ResultEnvelope:
+    """Build a ResultEnvelope for the review summary run."""
+    env = ResultEnvelope(tool="review_summary", exit_code=exit_code)
+
+    # Inputs
+    for phase, path in sorted(evidence_files.items()):
+        env.inputs[f"evidence_{phase.lower()}"] = {
+            "path": path.name,
+            "present": path.is_file(),
+        }
+    guardian_present = any(p.is_file() for p in guardian_report_paths)
+    env.inputs["guardian_report"] = {
+        "path": guardian_report_paths[0].name if guardian_report_paths else "guardian_report.json",
+        "present": guardian_present,
+    }
+
+    # Outputs
+    if out_path:
+        env.outputs["markdown"] = {"path": Path(out_path).name}
+
+    # Findings
+    if exit_code == 1:
+        env.findings.append(
+            Finding(
+                code="ALL_INPUTS_MISSING",
+                severity="ERROR",
+                message="All input files missing, nothing to summarize",
+            ),
+        )
+        return env
+
+    for phase, path in sorted(evidence_files.items()):
+        if not path.is_file():
+            env.findings.append(
+                Finding(
+                    code="INPUT_MISSING",
+                    severity="WARN",
+                    message=f"Evidence file missing: {phase}",
+                    context={"phase": phase},
+                ),
+            )
+    if not guardian_present:
+        env.findings.append(
+            Finding(
+                code="INPUT_MISSING",
+                severity="WARN",
+                message="Guardian report not found",
+            ),
+        )
+    if not all_gates_pass:
+        env.findings.append(
+            Finding(
+                code="APPROVAL_NO",
+                severity="WARN",
+                message="Gate failures or missing evidence",
+            ),
+        )
+    if not guardian_pass:
+        env.findings.append(
+            Finding(
+                code="APPROVAL_NO",
+                severity="WARN",
+                message="Guardian report not PASS",
+            ),
+        )
+
+    return env
+
+
+def generate_summary_with_envelope(
+    evidence_files: dict[str, Path] | None = None,
+    guardian_report_paths: list[Path] | None = None,
+    out_path: str | None = None,
+) -> tuple[str, int, ResultEnvelope]:
+    """Generate summary and build envelope in one call."""
+    if evidence_files is None:
+        evidence_files = EVIDENCE_FILES
+    if guardian_report_paths is None:
+        guardian_report_paths = GUARDIAN_REPORT_PATHS
+
+    md, exit_code = generate_summary(evidence_files, guardian_report_paths)
+
+    # Compute gate/guardian status for envelope
+    evidence: dict[str, dict | None] = {}
+    for phase, path in sorted(evidence_files.items()):
+        evidence[phase] = _load_json(path)
+    guardian = None
+    for p in guardian_report_paths:
+        guardian = _load_json(p)
+        if guardian is not None:
+            break
+
+    all_gates_pass = True
+    for phase in sorted(evidence.keys()):
+        data = evidence[phase]
+        if data is None:
+            all_gates_pass = False
+        elif data.get("violations", 0) > 0 or data.get("blocking", False):
+            all_gates_pass = False
+
+    guardian_pass = guardian is not None and guardian.get("status") == "PASS"
+
+    env = _build_envelope(
+        exit_code,
+        evidence_files,
+        guardian_report_paths,
+        out_path,
+        all_gates_pass,
+        guardian_pass,
+    )
+    return md, exit_code, env
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate V15 review summary markdown.")
     parser.add_argument(
@@ -243,9 +368,19 @@ def main() -> int:
         required=True,
         help="Output markdown file path",
     )
+    parser.add_argument(
+        "--json-out",
+        type=str,
+        default=None,
+        help="Optional: write JSON result envelope to this path",
+    )
     args = parser.parse_args()
 
-    md, exit_code = generate_summary()
+    md, exit_code, env = generate_summary_with_envelope(out_path=args.out)
+
+    if args.json_out:
+        env.write_json(Path(args.json_out))
+
     if exit_code != 0:
         print("ERROR: All input files missing. Nothing to summarize.", file=sys.stderr)
         return exit_code
