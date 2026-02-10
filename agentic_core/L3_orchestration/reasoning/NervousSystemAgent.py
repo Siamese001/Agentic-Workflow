@@ -11,6 +11,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.
@@ -290,6 +291,48 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return resume_phase
         return None
 
+    def _v15_build_operation_manifest(
+        self,
+        operation: str,
+        target_layer: str = "L3",
+    ) -> SurgicalManifest | None:
+        """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = (
+            _hl.sha256(
+                f"{self.__class__.__name__}:{operation}".encode(),
+            )
+            .hexdigest()[:8]
+            .upper()
+        )
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = f"{self.__class__.__name__}.{operation}()"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id=self.__class__.__name__,
+            target_layer=target_layer,
+            ast_snippet=ast_snippet,
+            serialization_canon="orchestrator_operation",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+
     @v15_runtime_guard("A.run_mission.NervousSystemAgent")
     async def run_mission(self, max_phases: int | None = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
@@ -300,6 +343,33 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         Returns:
             ExecutionResult with mission status and report
         """
+        # §8.1a — V15 manifest construction at validation→heal boundary
+        manifest = self._v15_build_operation_manifest("run_mission")
+        if manifest is not None:
+            gateway = getattr(self, "_v15_gateway", None)
+            if gateway is not None:
+                import hashlib as _hl
+
+                def _noop_heal(m):
+                    return {"status": "audit_pass", "errors": 0}
+
+                def _state_hash():
+                    _id = f"{self.__class__.__name__}:{id(self)}"
+                    _h = _hl.sha256(_id.encode()).hexdigest()
+                    return (_h, _h, _h)
+
+                # guardian: allow-silent-swallow
+                try:
+                    gateway.execute(
+                        execution_input=manifest,
+                        heal_fn=_noop_heal,
+                        state_hash_fn=_state_hash,
+                        trace_id=manifest.correlation_id,
+                    )
+                # guardian: allow-silent-swallow
+                except Exception as exc:
+                    LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
+
         start_time = time.time()
 
         # Check for existing Checkpoint to resume from

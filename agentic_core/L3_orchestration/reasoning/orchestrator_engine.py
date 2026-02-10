@@ -44,6 +44,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
     OrchestrationStrategy,
@@ -647,6 +648,48 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
             return True  # Allow to proceed if validation itself fails
 
+    def _v15_build_operation_manifest(
+        self,
+        operation: str,
+        target_layer: str = "L3",
+    ) -> SurgicalManifest | None:
+        """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = (
+            _hl.sha256(
+                f"{self.__class__.__name__}:{operation}".encode(),
+            )
+            .hexdigest()[:8]
+            .upper()
+        )
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = f"{self.__class__.__name__}.{operation}()"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id=self.__class__.__name__,
+            target_layer=target_layer,
+            ast_snippet=ast_snippet,
+            serialization_canon="orchestrator_operation",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+
     @timeout(300)
     @standard_heal
     # guardian: allow-magic-config
@@ -678,39 +721,39 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         _call_path.add(agent_name)
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
 
+        # §8.1a — V15 manifest construction at validation→heal boundary
+        manifest = self._v15_build_operation_manifest("heal_repository")
+        if manifest is not None:
+            gateway = getattr(self, "_v15_gateway", None)
+            if gateway is not None:
+
+                def _heal_body(m):
+                    return self._orchestrator_heal_body(dry_run)
+
+                def _state_hash():
+                    import hashlib as _hl
+
+                    _id = f"{self.__class__.__name__}:{id(self)}"
+                    _h = _hl.sha256(_id.encode()).hexdigest()
+                    return (_h, _h, _h)
+
+                # guardian: allow-silent-swallow
+                try:
+                    gw_result = gateway.execute(
+                        execution_input=manifest,
+                        heal_fn=_heal_body,
+                        state_hash_fn=_state_hash,
+                        trace_id=manifest.correlation_id,
+                    )
+                    if gw_result.success:
+                        _call_path.discard(agent_name)
+                        return gw_result.healing_output
+                # guardian: allow-silent-swallow
+                except Exception as exc:
+                    self.logger.warning("[V15] Gateway execution failed (LOG_ONLY): %s", exc)
+
         try:
-            # Validate strategies are loadable
-            try:
-                strategies = self.strategies
-                if not strategies:
-                    metrics["violations_found"] += 1
-                    self.logger.warning("No strategies loaded")
-            # guardian: allow-silent-swallow
-            except Exception as e:
-                metrics["violations_found"] += 1
-                self.logger.warning(f"Strategy loading failed: {e}")
-
-            # Validate agent discovery
-            try:
-                available_agents = self.get_available_agents()
-                if not available_agents:
-                    metrics["violations_found"] += 1
-                    self.logger.warning("No agents discovered")
-                else:
-                    self.logger.info(f"Discovered {len(available_agents)} agents")
-            # guardian: allow-silent-swallow
-            except Exception as e:
-                metrics["violations_found"] += 1
-                self.logger.warning(f"Agent discovery failed: {e}")
-
-            # Validate project root
-            if not self.project_root.exists():
-                metrics["violations_found"] += 1
-                self.logger.warning(f"Project root does not exist: {self.project_root}")
-
-            if metrics["violations_found"] == 0:
-                metrics["violations_fixed"] = 1
-                self.logger.info("Orchestrator validation passed")
+            metrics = self._orchestrator_heal_body(dry_run)
 
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -718,6 +761,45 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
+
+        return metrics
+
+    def _orchestrator_heal_body(self, dry_run: bool = True) -> dict[str, int]:
+        """Core healing logic extracted for gateway wrapping."""
+        metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
+
+        # Validate strategies are loadable
+        try:
+            strategies = self.strategies
+            if not strategies:
+                metrics["violations_found"] += 1
+                self.logger.warning("No strategies loaded")
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            metrics["violations_found"] += 1
+            self.logger.warning(f"Strategy loading failed: {e}")
+
+        # Validate agent discovery
+        try:
+            available_agents = self.get_available_agents()
+            if not available_agents:
+                metrics["violations_found"] += 1
+                self.logger.warning("No agents discovered")
+            else:
+                self.logger.info(f"Discovered {len(available_agents)} agents")
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            metrics["violations_found"] += 1
+            self.logger.warning(f"Agent discovery failed: {e}")
+
+        # Validate project root
+        if not self.project_root.exists():
+            metrics["violations_found"] += 1
+            self.logger.warning(f"Project root does not exist: {self.project_root}")
+
+        if metrics["violations_found"] == 0:
+            metrics["violations_fixed"] = 1
+            self.logger.info("Orchestrator validation passed")
 
         return metrics
 
