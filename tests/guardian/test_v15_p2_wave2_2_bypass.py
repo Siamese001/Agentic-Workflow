@@ -156,23 +156,38 @@ class TestInventoryCoverageAssertion:
 
 
 def _ast_find_guard_decorator(tree: ast.Module, entry_point_id: str) -> bool:
-    """AST-search for @v15_runtime_guard("<entry_point_id>") decorator in module."""
+    """AST-search for @v15_runtime_guard("<entry_point_id>") decorator in module.
+
+    Also recognises the lazy-import variant @_optional_v15_runtime_guard()("ID").
+    """
     import ast
 
     for node in ast.walk(tree):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
         for dec in node.decorator_list:
-            # Match @v15_runtime_guard("entry_point_id")
-            if isinstance(dec, ast.Call):
-                func = dec.func
-                func_name = None
-                if isinstance(func, ast.Name):
-                    func_name = func.id
-                elif isinstance(func, ast.Attribute):
-                    func_name = func.attr
-                if func_name == "v15_runtime_guard" and dec.args:
-                    arg = dec.args[0]
-                    if isinstance(arg, ast.Constant) and arg.value == entry_point_id:
-                        return True
+            if not isinstance(dec, ast.Call) or not dec.args:
+                continue
+            arg = dec.args[0]
+            if not (isinstance(arg, ast.Constant) and arg.value == entry_point_id):
+                continue
+            func = dec.func
+            # Shape 1: @v15_runtime_guard("ID")
+            func_name = None
+            if isinstance(func, ast.Name):
+                func_name = func.id
+            elif isinstance(func, ast.Attribute):
+                func_name = func.attr
+            if func_name == "v15_runtime_guard":
+                return True
+            # Shape 2: @_optional_v15_runtime_guard()("ID")
+            if isinstance(func, ast.Call):
+                inner = func.func
+                inner_name = None
+                if isinstance(inner, ast.Name):
+                    inner_name = inner.id
+                elif isinstance(inner, ast.Attribute):
+                    inner_name = inner.attr
+                if inner_name == "_optional_v15_runtime_guard":
+                    return True
     return False
