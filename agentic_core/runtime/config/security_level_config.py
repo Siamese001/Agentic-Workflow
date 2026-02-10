@@ -881,6 +881,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 else:
                     agent_func()
                 agents_executed.append(agent_name)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 errors.append(f"{agent_name}: {str(e)}")
 
