@@ -18,7 +18,11 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_hard_fail
+from agentic_core.L0_maintenance.types.guardian_contract import (
+    V15SoftFailAbort,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
 from agentic_core.L0_maintenance.types.v15_contracts import (
     PipeOrderEnforcer,
     PipeOrderViolation,
@@ -113,6 +117,32 @@ class V15ExecutionGateway:
         self._pipe_violations = []
         self._policy_violations = []
 
+        # §8.2a — Catch SOFT_FAIL aborts for controlled structured failure
+        try:
+            return self._execute_inner(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
+        except V15SoftFailAbort as sfa:
+            Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
+            return GatewayResult(
+                success=False,
+                manifest=execution_input,
+                semantic_clock_tick=self._clock.step_id,
+                pre_snapshot=None,
+                post_snapshot=None,
+                rollback_verified=False,
+                healing_output={},
+                error=f"SOFT_FAIL: {sfa}",
+                dedupe_hit=False,
+            )
+
+    def _execute_inner(
+        self,
+        execution_input: Any,
+        heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        trace_id: str = "gw-default",
+        **kwargs: Any,
+    ) -> GatewayResult:
+        """Inner execution body, may raise V15SoftFailAbort on violations."""
         # §2.5 — Instantiate pipe order enforcer for this execution wave
         pipe = PipeOrderEnforcer()
 
@@ -264,6 +294,8 @@ class V15ExecutionGateway:
             self._pipe_violations.append(record)
             if is_v15_hard_fail():
                 raise
+            if is_v15_soft_fail():
+                raise V15SoftFailAbort(f"SOFT_FAIL pipe order violation: {record}")
             Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
 
     def _policy_check(
@@ -286,6 +318,8 @@ class V15ExecutionGateway:
             self._policy_violations.append(record)
             if is_v15_hard_fail():
                 raise
+            if is_v15_soft_fail():
+                raise V15SoftFailAbort(f"SOFT_FAIL policy mutation: {record}")
             Logger.warning("[V15-GW] §4.1 policy mutation (non-blocking): %s", record)
 
 
