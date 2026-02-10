@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "rules": [
+    {
+      "rule_id": "PIPE_ORDER_001",
+      "applies_to": "PIPE",
+      "severity": "WARN",
+      "description": "Enforce 10-step pipe order in V15ExecutionGateway",
+      "enabled": true
+    },
+    {
+      "rule_id": "POLICY_IMMUTABILITY_001",
+      "applies_to": "POLICY",
+      "severity": "WARN",
+      "description": "PolicyConfigGuard detects config mutation during execution wave",
+      "enabled": true
+    },
+    {
+      "rule_id": "HASH_ROLLBACK_001",
+      "applies_to": "HASH",
+      "severity": "WARN",
+      "description": "HashMismatchTracker verifies rollback integrity on failed commits",
+      "enabled": true
+    }
+  ]
+}
