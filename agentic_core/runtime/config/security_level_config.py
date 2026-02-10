@@ -13,6 +13,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 """
 Security Level Agent Types
 Defines security levels and related types for agent operations.
@@ -778,6 +782,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
         self._cycles = 0
         self._converged = False
 
+    @v15_runtime_guard("A.run_mission.security_level_config")
     async def run_mission(
         self,
         resume: dict[str, Any],

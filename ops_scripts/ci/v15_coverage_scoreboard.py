@@ -14,7 +14,7 @@ Usage:
 Phase thresholds:
     P0: FAIL == 0
     P1: D_RUNTIME_WIRED >= 80%
-    P2: MISSING == 0
+    P2: unwired_count == 0 (evidence-only, from P2 D-evidence)
     P3: E_CI_ENFORCED >= 95% (excl. process-only §14)
     P4: COMPLIANT >= 87
 """
@@ -84,7 +84,7 @@ def validate_sub_capability_schema(
 PHASE_GATES: dict[str, dict[str, object]] = {
     "P0": {"metric": "FAIL_count", "op": "==", "threshold": 0},
     "P1": {"metric": "D_RUNTIME_WIRED_pct", "op": ">=", "threshold": 80.0},
-    "P2": {"metric": "MISSING_count", "op": "==", "threshold": 0},
+    "P2": {"metric": "unwired_count", "op": "==", "threshold": 0},
     "P3": {"metric": "E_CI_ENFORCED_pct", "op": ">=", "threshold": 95.0},
     "P4": {"metric": "COMPLIANT_count", "op": ">=", "threshold": 87},
 }
@@ -174,12 +174,14 @@ def check_gate(
     *,
     raw_data: dict | None = None,
     d_evidence: dict | None = None,
+    p2_evidence: dict | None = None,
 ) -> tuple[bool, str]:
     """Check if phase gate passes. Returns (passed, message).
 
     For P0: uses _p0_meta.evidence_fail_count from *raw_data* exclusively.
     For P1: uses D-evidence report for critical D-set verification and coverage percentage.
-    Baseline-inherited FAIL counts are ignored for P0/P1 gating.
+    For P2: uses P2 evidence report for runtime enforcement wiring verification.
+    Baseline-inherited FAIL counts are ignored for P0/P1/P2 gating.
     Raises SchemaValidationError if required data is missing.
     """
     gate = PHASE_GATES.get(phase)
@@ -248,6 +250,50 @@ def check_gate(
 
         return passed, msg
 
+    # P2 special path: evidence-only gating (runtime enforcement wiring)
+    if phase == "P2":
+        if p2_evidence is None:
+            raise SchemaValidationError(
+                "P2 gate requires --p2-evidence report from v15_d_evidence_collect_p2.py",
+            )
+
+        # Validate required fields
+        required_fields = {
+            "schema_version",
+            "inventory_sha256",
+            "entrypoints_total",
+            "wired_count",
+            "unwired_count",
+            "already_enforced_count",
+            "unwired_ids",
+            "entries",
+        }
+        missing = required_fields - set(p2_evidence.keys())
+        if missing:
+            raise SchemaValidationError(
+                f"P2 evidence missing required fields: {sorted(missing)}",
+            )
+
+        unwired_count = p2_evidence.get("unwired_count", -1)
+        total = p2_evidence.get("entrypoints_total", 0)
+        wired = p2_evidence.get("wired_count", 0)
+        already = p2_evidence.get("already_enforced_count", 0)
+        unwired_ids = p2_evidence.get("unwired_ids", [])
+
+        passed = unwired_count == 0
+        status = "PASS" if passed else "FAIL"
+
+        msg = (
+            f"{status}: P2 gate -- unwired_count = {unwired_count} "
+            f"(threshold: == 0, wired={wired}, already_enforced={already}, "
+            f"total={total}, source=p2_evidence)"
+        )
+
+        if not passed:
+            msg += f" [unwired_ids={unwired_ids}]"
+
+        return passed, msg
+
     # All other phases: use scoreboard metrics
     metric_name = gate["metric"]
     op = gate["op"]
@@ -303,6 +349,12 @@ def main() -> int:
         dest="d_evidence",
         help="Path to D-evidence report from v15_d_evidence_collect_p1.py (required for P1)",
     )
+    parser.add_argument(
+        "--p2-evidence",
+        type=Path,
+        dest="p2_evidence",
+        help="Path to P2 evidence report from v15_d_evidence_collect_p2.py (required for P2)",
+    )
     args = parser.parse_args()
 
     # Resolve gap JSON path
@@ -328,9 +380,23 @@ def main() -> int:
             return 1
         d_evidence_data = load_gap_json(args.d_evidence)
 
+    # Load P2 evidence for P2
+    p2_evidence_data = None
+    if args.phase == "P2":
+        if args.p2_evidence is None:
+            print("ERROR: P2 gate requires --p2-evidence argument", file=sys.stderr)
+            return 1
+        p2_evidence_data = load_gap_json(args.p2_evidence)
+
     try:
         scoreboard = compute_scoreboard(data, allow_legacy=args.allow_legacy)
-        passed, message = check_gate(scoreboard, args.phase, raw_data=data, d_evidence=d_evidence_data)
+        passed, message = check_gate(
+            scoreboard,
+            args.phase,
+            raw_data=data,
+            d_evidence=d_evidence_data,
+            p2_evidence=p2_evidence_data,
+        )
     except SchemaValidationError as exc:
         print(f"SCHEMA ERROR: {exc}", file=sys.stderr)
         return 1

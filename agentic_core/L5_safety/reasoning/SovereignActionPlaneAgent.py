@@ -7,6 +7,9 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 
 """Sovereign Action Plane Implementation.
 
@@ -19,9 +22,9 @@ import subprocess
 import time
 from typing import Any
 
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.shared.interfaces import ActionRequest, ActionResult, IActionPlane
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SCRIPTS_DIR,
 )
@@ -93,6 +96,7 @@ class SovereignSandbox:
         self._is_running = False
         Logger.info("Sovereign Sandbox stopped")
 
+    @v15_runtime_guard("B.execute_tool.SovereignActionPlaneAgent")
     async def execute_tool(self, tool_path: str, args: list[str] | None = None) -> dict[str, Any]:
         """
         Execute a tool in the sandbox.

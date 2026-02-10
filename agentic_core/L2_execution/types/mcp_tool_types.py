@@ -13,6 +13,10 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -154,6 +158,7 @@ class MCPToolServer:
 
         return tools
 
+    @v15_runtime_guard("B.execute_tool.mcp_tool_types")
     def execute_tool(
         self,
         name: str,

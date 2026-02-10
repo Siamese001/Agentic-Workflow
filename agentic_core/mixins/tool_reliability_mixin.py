@@ -25,6 +25,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypeVar
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 Logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
@@ -345,6 +349,7 @@ class ToolReliabilityMixin:
                         f"{health.consecutive_failures} consecutive failures",
                     )
 
+    @v15_runtime_guard("D.with_retry.tool_reliability_mixin")
     async def with_retry(
         self,
         tool_name: str,
@@ -416,6 +421,7 @@ class ToolReliabilityMixin:
 
         raise RetryExhaustedError(tool_name, policy.max_retries + 1, last_error or Exception("Unknown error"))
 
+    @v15_runtime_guard("D.with_retry_sync.tool_reliability_mixin")
     def with_retry_sync(
         self,
         tool_name: str,

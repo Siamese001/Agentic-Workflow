@@ -3,6 +3,9 @@
 
 import logging
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.runtime.state import AgentState
@@ -17,6 +20,7 @@ class AgentEngine:
         self.tools = tools
         self.max_turns = max_turns
 
+    @v15_runtime_guard("B.run.agent_engine")
     async def run(self, user_input: str, task_id: str = "default") -> AgentState:
         """
         Executes the agent loop until completion or max_turns.

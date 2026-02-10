@@ -33,6 +33,9 @@ from typing import Any
 from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
     V15ExecutionGateway,
 )
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 from agentic_core.L0_maintenance.types.v15_p2_types import (
     SurgicalManifest,
@@ -170,6 +173,7 @@ class SovereignBaseAgent(
 
     # Base execute method returns Any - subclasses should override with specific types
     # guardian: allow-type-erasure
+    @v15_runtime_guard("B.execute.SovereignBaseAgent")
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
         raise NotImplementedError("Subclasses must implement execute()")

@@ -19,6 +19,10 @@ from pathlib import Path
 
 from agentic_core.utils.security import safe_git_execute
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
@@ -115,6 +119,7 @@ def _get_imports():
 # ==============================================================================
 
 
+@v15_runtime_guard("C.run_daemon_mode.mission_runner")
 def run_daemon_mode():
     """
     L5 Autonomous Mode: The Watchman - monitors repository for changes.
@@ -172,6 +177,7 @@ def run_daemon_mode():
 # ==============================================================================
 
 
+@v15_runtime_guard("E.run_surgical_mode.mission_runner")
 def run_surgical_mode(target_file: str):
     """
     Surgical mode: Target a specific file for validation.
@@ -196,6 +202,7 @@ def run_surgical_mode(target_file: str):
 # ==============================================================================
 
 
+@v15_runtime_guard("C.run_standard_mode.mission_runner")
 def run_standard_mode():
     """
     Standard L4 Mode: Full validation mission with self-healing cycles.
@@ -342,6 +349,7 @@ def run_standard_mode():
     return run_mission
 
 
+@v15_runtime_guard("C._start_websocket_server.mission_runner")
 def _start_websocket_server(ctx):
     """Start WebSocket server for live reasoning stream."""
     import threading

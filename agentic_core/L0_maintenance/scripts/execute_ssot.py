@@ -36,6 +36,10 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 try:
     from dotenv import load_dotenv
 
@@ -702,6 +706,7 @@ class NonInteractiveGuard:
         raise RuntimeError(f"Interactive prompt blocked in autonomous mode: {prompt}")
 
 
+@v15_runtime_guard("D.with_retry.execute_ssot")
 def with_retry(max_retries=3, delay=1.0):
     """
     [HARDENED] Decorator for transient failure resilience with exponential backoff.
@@ -2061,6 +2066,7 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
 # ============================================================================
 
 
+@v15_runtime_guard("E.execute_ssot_main.execute_ssot")
 def main():
     # Add project root to Python path
     project_root = Path.cwd()
