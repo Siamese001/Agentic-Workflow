@@ -57,6 +57,24 @@ def is_v15_hard_fail() -> bool:
     return os.environ.get("V15_ENFORCEMENT", "").lower() in ("1", "true", "yes")
 
 
+def is_v15_soft_fail() -> bool:
+    """Return True when V15_ENFORCEMENT is set to SOFT_FAIL mode.
+
+    SOFT_FAIL mode: violations produce a controlled abort (structured failure
+    return via ``V15SoftFailAbort``) without crashing the process.
+    Only the literal value "soft" (case-insensitive) activates this mode.
+    """
+    return os.environ.get("V15_ENFORCEMENT", "").lower() == "soft"
+
+
+class V15SoftFailAbort(Exception):
+    """Raised internally when SOFT_FAIL mode detects a contract violation.
+
+    Caught by V15ExecutionGateway.execute() to produce a structured
+    GatewayResult with success=False instead of crashing the process.
+    """
+
+
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
