@@ -8,6 +8,9 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 
 """Brief description of functionality and purpose."""
 
@@ -124,6 +127,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
             )
         return dep
 
+    @v15_runtime_guard("B.run.SubatomicHopAgent")
     async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
         trace_id: Any = context.get("trace_id", self.id)

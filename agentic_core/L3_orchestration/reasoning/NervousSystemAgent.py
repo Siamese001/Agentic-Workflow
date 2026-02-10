@@ -6,9 +6,11 @@ from __future__ import annotations
 # This boosts alignment detection — review and integrate appropriately
 from dataclasses import dataclass
 
-from agentic_core.base_agents.timeout_decorator import timeout
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.
@@ -283,6 +285,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return resume_phase
         return None
 
+    @v15_runtime_guard("A.run_mission.NervousSystemAgent")
     async def run_mission(self, max_phases: int | None = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
 
@@ -359,6 +362,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
 
+    @v15_runtime_guard("A.execute.NervousSystemAgent")
     async def execute(self, context: ExecutionContext, resume_phase: str | None = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 

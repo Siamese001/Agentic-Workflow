@@ -5,6 +5,9 @@ import time
 import uuid
 from typing import Any
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 from agentic_core.runtime.core.telemetry import TraceEvent
 from agentic_core.runtime.types.core_contracts_types import AgentPlan
 
@@ -108,6 +111,7 @@ class SubatomicHop:
             )
         return dep
 
+    @v15_runtime_guard("B.run.subatomic_hop_util")
     async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
         trace_id = context.get("trace_id", self.id)

@@ -5,6 +5,10 @@ import time
 from collections.abc import Callable
 from typing import Any
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
 try:
     from rich.console import Console
     from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
@@ -17,6 +21,7 @@ except ImportError as _err:
 _console = Console()
 
 
+@v15_runtime_guard("D.retry_query.query_runtime_util")
 def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: allow-magic_configuration
     """
     Decorator to provide exponential backoff with jitter for database queries.
@@ -56,7 +61,8 @@ def execute_sql(sql: str) -> Any:
 
 
 def run_hardened_query(
-    query_string: str, timeout_seconds: int = 300
+    query_string: str,
+    timeout_seconds: int = 300,
 ) -> Any:  # guardian: allow-magic_configuration
     """
     Executes a database query with a decoupled animation thread.

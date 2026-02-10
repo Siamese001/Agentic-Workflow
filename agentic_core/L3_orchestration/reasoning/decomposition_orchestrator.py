@@ -21,6 +21,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
 
 
 @dataclass
@@ -250,6 +253,7 @@ class DecompositionOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             indent=2,
         )
 
+    @v15_runtime_guard("A.execute.decomposition_orchestrator")
     def execute(self, plan: MissionPlan, dry_run: bool = True) -> dict[str, Any]:
         """
         Execute a mission plan.
