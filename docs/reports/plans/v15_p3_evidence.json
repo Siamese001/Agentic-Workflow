@@ -25,7 +25,7 @@
     },
     {
       "check": "semantic_clock_wiring",
-      "detail": "SemanticClock imported and tick/advance called",
+      "detail": "SemanticClock imported, _clock.tick() called, prepare_commit=True",
       "file": "v15_execution_gateway.py"
     },
     {
@@ -36,7 +36,7 @@
   ],
   "phase": "P3",
   "spec_section": "\u00a713.1",
-  "timestamp": "2026-02-10T15:59:23.226459+00:00",
+  "timestamp": "2026-02-10T19:24:39.169390+00:00",
   "total_checks": 6,
   "violation_details": [],
   "violations": 0

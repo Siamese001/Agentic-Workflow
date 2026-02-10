@@ -108,6 +108,11 @@ class V15ExecutionGateway:
         Returns:
             GatewayResult with full audit trail.
         """
+        # CC-1 §2.5 — Reset per-execution audit state to prevent leakage on
+        # singleton gateways (e.g. SovereignBaseAgent reuses one gateway).
+        self._pipe_violations = []
+        self._policy_violations = []
+
         # §2.5 — Instantiate pipe order enforcer for this execution wave
         pipe = PipeOrderEnforcer()
 
