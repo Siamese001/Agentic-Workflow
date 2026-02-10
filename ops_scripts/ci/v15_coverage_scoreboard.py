@@ -173,12 +173,14 @@ def check_gate(
     phase: str,
     *,
     raw_data: dict | None = None,
+    d_evidence: dict | None = None,
 ) -> tuple[bool, str]:
     """Check if phase gate passes. Returns (passed, message).
 
     For P0: uses _p0_meta.evidence_fail_count from *raw_data* exclusively.
-    Baseline-inherited FAIL counts are ignored for P0 gating.
-    Raises SchemaValidationError if _p0_meta is missing for P0.
+    For P1: uses D-evidence report for critical D-set verification and coverage percentage.
+    Baseline-inherited FAIL counts are ignored for P0/P1 gating.
+    Raises SchemaValidationError if required data is missing.
     """
     gate = PHASE_GATES.get(phase)
     if gate is None:
@@ -209,6 +211,41 @@ def check_gate(
             f"evaluated_ids={p0_meta.get('evaluated_ids', '?')}, "
             f"source=evidence_only)"
         )
+        return passed, msg
+
+    # P1 special path: D-evidence gating
+    if phase == "P1":
+        if d_evidence is None:
+            raise SchemaValidationError(
+                "P1 gate requires --d-evidence report from v15_d_evidence_collect_p1.py",
+            )
+        
+        # Check critical D-set (must be 100%)
+        summary = d_evidence.get("summary", {})
+        critical_d_set_passed = summary.get("critical_d_set_passed", False)
+        coverage_percentage = summary.get("coverage_percentage", 0.0)
+        
+        # P1 passes if:
+        # 1) Critical D-set is 100% wired
+        # 2) Overall D coverage >= 80%
+        passed = critical_d_set_passed and coverage_percentage >= 80.0
+        status = "PASS" if passed else "FAIL"
+        
+        details = []
+        if not critical_d_set_passed:
+            details.append("critical_d_set_passed=false")
+        if coverage_percentage < 80.0:
+            details.append(f"coverage={coverage_percentage:.1f}% < 80%")
+        
+        msg = (
+            f"{status}: P1 gate — D_RUNTIME_WIRED = {coverage_percentage:.1f}% "
+            f"(threshold: >= 80.0%, critical_d_set_passed={critical_d_set_passed}, "
+            f"source=d_evidence)"
+        )
+        
+        if not passed and details:
+            msg += f" [{', '.join(details)}]"
+        
         return passed, msg
 
     # All other phases: use scoreboard metrics
@@ -260,6 +297,12 @@ def main() -> int:
         dest="allow_legacy",
         help="Accept legacy 'coverage' key instead of canonical 'layers'",
     )
+    parser.add_argument(
+        "--d-evidence",
+        type=Path,
+        dest="d_evidence",
+        help="Path to D-evidence report from v15_d_evidence_collect_p1.py (required for P1)",
+    )
     args = parser.parse_args()
 
     # Resolve gap JSON path
@@ -276,9 +319,18 @@ def main() -> int:
         return 1
 
     data = load_gap_json(gap_path)
+    
+    # Load D-evidence for P1
+    d_evidence_data = None
+    if args.phase == "P1":
+        if args.d_evidence is None:
+            print("ERROR: P1 gate requires --d-evidence argument", file=sys.stderr)
+            return 1
+        d_evidence_data = load_gap_json(args.d_evidence)
+    
     try:
         scoreboard = compute_scoreboard(data, allow_legacy=args.allow_legacy)
-        passed, message = check_gate(scoreboard, args.phase, raw_data=data)
+        passed, message = check_gate(scoreboard, args.phase, raw_data=data, d_evidence=d_evidence_data)
     except SchemaValidationError as exc:
         print(f"SCHEMA ERROR: {exc}", file=sys.stderr)
         return 1
