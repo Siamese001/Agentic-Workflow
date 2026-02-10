@@ -1,14 +1,39 @@
 # .pre-commit-config.yaml
-# STREAMLINED: Syntax Gate -> Auto-Fix -> Analysis -> Structural -> Cleanup
+# STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Analysis -> Structural -> Cleanup
 # Order of operations:
+#   0. normalize     — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
 #   1. py_compile    — fastest gate, catches broken syntax immediately
 #   2. ruff --fix    — auto-fix lint issues (imports, unused vars, etc.)
 #   3. ruff-format   — normalize style on clean code
 #   4. anti-patterns — logic analysis runs on already-fixed/formatted code
 #   5. report-loc    — structural SSOT check (independent of code content)
-#   6. purge-cache   — cleanup, always last
+#   6. guard         — reject generated artifacts that got re-tracked
+#   7. purge-cache   — cleanup, always last
+
+fail_fast: true
+default_language_version:
+  python: python3.12
 
 repos:
+  # ============================================================================
+  # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
+  # ============================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: "T0: Trailing Whitespace"
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+      - id: end-of-file-fixer
+        name: "T0: End-of-File Fixer"
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+      - id: mixed-line-ending
+        name: "T0: Enforce LF Line Endings"
+        args: [--fix=lf]
+        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+      - id: check-merge-conflict
+        name: "T0: Check Merge Conflict Markers"
+
   # ============================================================================
   # TIER 1: Syntax Gate (Fastest Fail — broken files never proceed)
   # ============================================================================
@@ -19,6 +44,7 @@ repos:
         entry: python -m py_compile
         language: system
         types: [python]
+        require_serial: true
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
 
   # ============================================================================
@@ -45,6 +71,7 @@ repos:
         entry: python ops_scripts/ci/check_anti_patterns.py
         language: system
         types: [python]
+        require_serial: true
         exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
 
       - id: check-report-location
@@ -53,13 +80,26 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
 
   # ============================================================================
-  # TIER 4: Cleanup (always runs last)
+  # TIER 4: Generated-Artifact Tracking Guard
+  # ============================================================================
+      - id: reject-generated-artifacts-tracked
+        name: "T4: Reject Tracked Generated Artifacts"
+        entry: python ops_scripts/hooks/reject_tracked_generated_artifacts.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+  # ============================================================================
+  # TIER 5: Cleanup (always runs last)
   # ============================================================================
       - id: purge-cache
-        name: "T4: Pycache Purge"
+        name: "T5: Pycache Purge"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
