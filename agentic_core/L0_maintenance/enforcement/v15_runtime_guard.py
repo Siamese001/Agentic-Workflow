@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import functools
 import logging
+import os
 import threading
 import uuid
 from typing import Any, Callable, TypeVar
@@ -25,6 +26,7 @@ from typing import Any, Callable, TypeVar
 from agentic_core.L0_maintenance.types.guardian_contract import (
     V15EnforcementError,
     is_v15_enforced,
+    is_v15_hard_fail,
 )
 
 Logger = logging.getLogger(__name__)
@@ -174,10 +176,13 @@ def assert_v15_guarded(entry_point_id: str) -> None:
         return
     active = _get_active_guards()
     if entry_point_id not in active:
-        raise V15EnforcementError(
+        msg = (
             f"V15 bypass detected: '{entry_point_id}' called without "
-            f"v15_runtime_guard. Active guards: {sorted(active)}",
+            f"v15_runtime_guard. Active guards: {sorted(active)}"
         )
+        if is_v15_hard_fail():
+            raise V15EnforcementError(msg)
+        Logger.warning("[V15-GUARD] %s (mode=%s, not blocking)", msg, os.environ.get("V15_ENFORCEMENT", ""))
 
 
 def v15_runtime_boundary(entry_point_id: str) -> Callable[[F], F]:
