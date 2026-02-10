@@ -122,14 +122,17 @@ class P3EvidenceCollector:
 
         content = gw_path.read_text(encoding="utf-8")
         has_import = "SemanticClock" in content
-        has_tick = "tick(" in content or "advance(" in content
+        # CC-1: Match _clock.tick( specifically to avoid false positives from
+        # unrelated tick() calls (e.g. on other objects).
+        has_clock_tick = "_clock.tick(" in content
+        has_clock_prepare = "_clock.prepare_commit(" in content
 
-        if has_import and has_tick:
+        if has_import and has_clock_tick:
             self.checks_passed.append(
                 {
                     "check": "semantic_clock_wiring",
                     "file": "v15_execution_gateway.py",
-                    "detail": "SemanticClock imported and tick/advance called",
+                    "detail": f"SemanticClock imported, _clock.tick() called, prepare_commit={has_clock_prepare}",
                 },
             )
         else:
@@ -137,7 +140,7 @@ class P3EvidenceCollector:
                 {
                     "check": "semantic_clock_wiring",
                     "file": "v15_execution_gateway.py",
-                    "detail": f"SemanticClock import={has_import}, tick={has_tick}",
+                    "detail": f"SemanticClock import={has_import}, _clock.tick={has_clock_tick}",
                 },
             )
 

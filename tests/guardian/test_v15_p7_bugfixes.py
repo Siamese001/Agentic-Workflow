@@ -254,7 +254,7 @@ class TestStateHashReal:
 
         _orig_execute = V15ExecutionGateway.execute
 
-        def _spy_execute(self_gw, *, execution_input, heal_fn, state_hash_fn, trace_id):
+        def _spy_execute(self_gw, *, execution_input, heal_fn, state_hash_fn, trace_id, **kwargs):
             hashes = state_hash_fn()
             captured.append(hashes)
             return _orig_execute(
@@ -263,6 +263,7 @@ class TestStateHashReal:
                 heal_fn=heal_fn,
                 state_hash_fn=state_hash_fn,
                 trace_id=trace_id,
+                **kwargs,
             )
 
         with patch.object(V15ExecutionGateway, "execute", _spy_execute):
