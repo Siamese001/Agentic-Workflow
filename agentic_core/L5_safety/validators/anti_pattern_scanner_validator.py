@@ -152,14 +152,29 @@ class AntiPatternScanner:
         self.scan_dirs = scan_dirs or self.DEFAULT_SCAN_DIRS
         self.exclude_patterns = exclude_patterns or self.DEFAULT_EXCLUDES
 
-        # Initialize detectors
+        # Initialize detectors with their whitelist comments
         self.composite = CompositeDetector(
             [
-                SilentSwallowerDetector(enforcement_level=enforcement_level),
-                TypeErasureDetector(enforcement_level=enforcement_level),
-                PathFragilityDetector(enforcement_level=enforcement_level),
-                MagicConfigDetector(enforcement_level=enforcement_level),
-                GlobalMutationDetector(enforcement_level=enforcement_level),
+                SilentSwallowerDetector(
+                    enforcement_level=enforcement_level,
+                    whitelisted_patterns=[SilentSwallowerDetector.WHITELIST_COMMENT],
+                ),
+                TypeErasureDetector(
+                    enforcement_level=enforcement_level,
+                    whitelisted_patterns=[TypeErasureDetector.WHITELIST_COMMENT],
+                ),
+                PathFragilityDetector(
+                    enforcement_level=enforcement_level,
+                    whitelisted_patterns=[PathFragilityDetector.WHITELIST_COMMENT],
+                ),
+                MagicConfigDetector(
+                    enforcement_level=enforcement_level,
+                    whitelisted_patterns=[MagicConfigDetector.WHITELIST_COMMENT],
+                ),
+                GlobalMutationDetector(
+                    enforcement_level=enforcement_level,
+                    whitelisted_patterns=[GlobalMutationDetector.WHITELIST_COMMENT],
+                ),
             ],
         )
 
@@ -213,6 +228,8 @@ class AntiPatternScanner:
                                     report.total_violations += 1
                                     report.all_violations.append(violation)
 
+            # Error handling - log and continue scanning other directories
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Error scanning {target_dir}: {e}")
                 report.errors.append(f"Error scanning {target_dir}: {e}")
