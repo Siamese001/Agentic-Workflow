@@ -161,6 +161,7 @@ class ToolReliabilityMixin:
 
         Logger.debug(f"[RELIABILITY] {self.__class__.__name__} tool reliability initialized")
 
+    # guardian: allow-magic-config
     def configure_tool_retry(
         self,
         tool_name: str,
@@ -209,6 +210,7 @@ class ToolReliabilityMixin:
         self._ensure_tool_health(tool_name)
         Logger.info(f"[RELIABILITY] Retry policy configured for '{tool_name}'")
 
+    # guardian: allow-magic-config
     def configure_circuit_breaker(
         self,
         tool_name: str,

@@ -172,8 +172,8 @@ class SovereignBaseAgent(
         }
 
     # Base execute method returns Any - subclasses should override with specific types
-    # guardian: allow-type-erasure
     @v15_runtime_guard("B.execute.SovereignBaseAgent")
+    # guardian: allow-type-erasure
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
         raise NotImplementedError("Subclasses must implement execute()")

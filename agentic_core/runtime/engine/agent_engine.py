@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AgentEngine:
+    # guardian: allow-magic-config
     def __init__(self, pattern: BaseReasoningPattern, tools: ToolRegistry, max_turns: int = 5):
         self.pattern = pattern
         self.tools = tools

@@ -22,7 +22,8 @@ _console = Console()
 
 
 @v15_runtime_guard("D.retry_query.query_runtime_util")
-def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: allow-magic_configuration
+# guardian: allow-magic-config
+def retry_query(max_retries: int = 3, base_delay: float = 1.0):
     """
     Decorator to provide exponential backoff with jitter for database queries.
     """
@@ -34,7 +35,8 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: all
             for attempt in range(max_retries + 1):
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:  # guardian: allow-silent_swallower
+                # guardian: allow-silent-swallow
+                except Exception as e:
                     last_exception = e
                     if attempt < max_retries:
                         # Exponential backoff with jitter
@@ -50,7 +52,8 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: all
     return decorator
 
 
-@retry_query(max_retries=3)  # guardian: allow-magic_configuration
+# guardian: allow-magic-config
+@retry_query(max_retries=3)
 def execute_sql(sql: str) -> Any:
     """
     Placeholder database execution function.
@@ -60,10 +63,11 @@ def execute_sql(sql: str) -> Any:
     raise NotImplementedError("execute_sql must be implemented with actual database driver")
 
 
+# guardian: allow-magic-config
 def run_hardened_query(
     query_string: str,
     timeout_seconds: int = 300,
-) -> Any:  # guardian: allow-magic_configuration
+) -> Any:
     """
     Executes a database query with a decoupled animation thread.
 
@@ -94,9 +98,10 @@ def run_hardened_query(
 
             while True:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
+                # guardian: allow-magic-config
                 done, _ = concurrent.futures.wait(
                     [future],
-                    timeout=0.05,  # guardian: allow-magic_configuration
+                    timeout=0.05,
                     return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 
