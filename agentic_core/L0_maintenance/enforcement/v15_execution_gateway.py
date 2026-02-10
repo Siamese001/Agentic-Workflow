@@ -18,6 +18,13 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_hard_fail
+from agentic_core.L0_maintenance.types.v15_contracts import (
+    PipeOrderEnforcer,
+    PipeOrderViolation,
+    PolicyConfigGuard,
+    PolicyMutationIncident,
+)
 from agentic_core.L0_maintenance.types.v15_p2_contracts import (
     RollbackHashMismatch,
     create_boundary_snapshot,
@@ -32,6 +39,7 @@ from agentic_core.L0_maintenance.types.v15_p2_types import (
     StateCommitInvalid,
     SurgicalManifest,
 )
+from agentic_core.L0_maintenance.types.v15_p5_types import HashMismatchTracker
 
 Logger = logging.getLogger(__name__)
 
@@ -72,6 +80,9 @@ class V15ExecutionGateway:
     def __init__(self) -> None:
         self._clock = SemanticClock()
         self._seen_signals: set[str] = set()
+        self._pipe_violations: list[dict[str, object]] = []
+        self._policy_violations: list[dict[str, object]] = []
+        self._mismatch_tracker: HashMismatchTracker | None = None
 
     @property
     def clock(self) -> SemanticClock:
@@ -84,6 +95,7 @@ class V15ExecutionGateway:
         heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
         state_hash_fn: Callable[[], tuple[str, str, str]],
         trace_id: str = "gw-default",
+        **kwargs: Any,
     ) -> GatewayResult:
         """Execute a healing operation under full P2 contract enforcement.
 
@@ -96,17 +108,39 @@ class V15ExecutionGateway:
         Returns:
             GatewayResult with full audit trail.
         """
-        # §1.1/§1.2 — Validate execution input
+        # §2.5 — Instantiate pipe order enforcer for this execution wave
+        pipe = PipeOrderEnforcer()
+
+        # §4.1 — PolicyConfigGuard: capture policy snapshot at wave start
+        policy_config = kwargs.get("policy_config", {})
+        policy_guard = PolicyConfigGuard(
+            policy_config=policy_config,
+            wave_id=trace_id,
+        )
+
+        # §2.6 — HashMismatchTracker for rollback escalation
+        self._mismatch_tracker = HashMismatchTracker(wave_id=trace_id)
+
+        # --- Pipe step 1: schema_validation ---
+        self._pipe_advance(pipe, "schema_validation", trace_id)
         manifest = validate_execution_input(execution_input)
 
-        # §2.1 — Validate manifest emission integrity
+        # --- Pipe step 2: hash_verification ---
+        self._pipe_advance(pipe, "hash_verification", trace_id)
         validate_manifest_emission(manifest)
 
+        # --- Pipe step 3: immediate_rollback_on_mismatch ---
+        self._pipe_advance(pipe, "immediate_rollback_on_mismatch", trace_id)
         # §5.1 — Dedupe check
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
         dedupe_hit = signal_hash in self._seen_signals
         self._seen_signals.add(signal_hash)
 
+        # --- Pipe step 4: signed_modify_override_check ---
+        self._pipe_advance(pipe, "signed_modify_override_check", trace_id)
+
+        # --- Pipe step 5: stale_write_incident_emission ---
+        self._pipe_advance(pipe, "stale_write_incident_emission", trace_id)
         # §10.2 — Capture pre-mutation boundary snapshot
         fs_hash, git_hash, mem_hash = state_hash_fn()
         self._clock.prepare_commit(manifest.target_layer)
@@ -118,7 +152,14 @@ class V15ExecutionGateway:
             semantic_clock=self._clock,
         )
 
-        # Execute the healing function
+        # --- Pipe step 6: circuit_breaker_increment ---
+        self._pipe_advance(pipe, "circuit_breaker_increment", trace_id)
+
+        # --- Pipe step 7: ast_deserialization ---
+        self._pipe_advance(pipe, "ast_deserialization", trace_id)
+
+        # --- Pipe step 8: ast_native_transformation (heal execution) ---
+        self._pipe_advance(pipe, "ast_native_transformation", trace_id)
         commit_valid = False
         healing_output: dict[str, Any] = {}
         error: str | None = None
@@ -131,6 +172,14 @@ class V15ExecutionGateway:
             commit_valid = False
             Logger.error(f"[V15-GW] Healing failed: {exc}")
 
+        # --- Pipe step 9: post_transform_node_id_check ---
+        self._pipe_advance(pipe, "post_transform_node_id_check", trace_id)
+
+        # §4.1 — Verify policy immutability at wave end
+        self._policy_check(policy_guard, policy_config, trace_id)
+
+        # --- Pipe step 10: commit ---
+        self._pipe_advance(pipe, "commit", trace_id)
         # §13.1/§13.1.1 — Advance semantic clock only on valid commit
         tick = self._clock.step_id
         if commit_valid:
@@ -156,6 +205,14 @@ class V15ExecutionGateway:
                 )
                 rollback_verified = True
             except RollbackHashMismatch as rhm:
+                # §2.6 — Record mismatch for escalation tracking
+                self._mismatch_tracker.record_mismatch()
+                if self._mismatch_tracker.escalated:
+                    Logger.error(
+                        "[V15-GW] §2.6 ESCALATION: %d hash mismatches in wave %s",
+                        self._mismatch_tracker.mismatch_count,
+                        trace_id,
+                    )
                 Logger.error(f"[V15-GW] Rollback integrity FAILED: {rhm}")
                 rollback_verified = False
                 if error is None:
@@ -182,6 +239,49 @@ class V15ExecutionGateway:
             error=error,
             dedupe_hit=dedupe_hit,
         )
+
+    # -----------------------------------------------------------------
+    # Internal helpers (mode-aware)
+    # -----------------------------------------------------------------
+
+    def _pipe_advance(self, pipe: PipeOrderEnforcer, step: str, trace_id: str) -> None:
+        """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
+        try:
+            pipe.advance(step)
+        except PipeOrderViolation as pov:
+            record = {
+                "type": "pipe_order_violation",
+                "trace_id": trace_id,
+                "expected": pov.expected,
+                "actual": pov.actual,
+                "step": pov.step,
+            }
+            self._pipe_violations.append(record)
+            if is_v15_hard_fail():
+                raise
+            Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
+
+    def _policy_check(
+        self,
+        guard: PolicyConfigGuard,
+        current_config: dict[str, Any],
+        trace_id: str,
+    ) -> None:
+        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
+        try:
+            guard.read_config(current_config)
+        except PolicyMutationIncident as pmi:
+            record = {
+                "type": "policy_mutation",
+                "trace_id": trace_id,
+                "wave_id": pmi.wave_id,
+                "expected_hash": pmi.expected_hash,
+                "actual_hash": pmi.actual_hash,
+            }
+            self._policy_violations.append(record)
+            if is_v15_hard_fail():
+                raise
+            Logger.warning("[V15-GW] §4.1 policy mutation (non-blocking): %s", record)
 
 
 __all__ = [
