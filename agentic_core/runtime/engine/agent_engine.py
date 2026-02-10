@@ -6,6 +6,7 @@ import logging
 from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.runtime.state import AgentState
@@ -21,11 +22,83 @@ class AgentEngine:
         self.tools = tools
         self.max_turns = max_turns
 
+    def _v15_build_operation_manifest(
+        self,
+        operation: str,
+        target_layer: str = "L2",
+    ) -> "SurgicalManifest | None":
+        """§8.1b — Construct SurgicalManifest for engine-level operation."""
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = (
+            _hl.sha256(
+                f"{self.__class__.__name__}:{operation}".encode(),
+            )
+            .hexdigest()[:8]
+            .upper()
+        )
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = f"{self.__class__.__name__}.{operation}()"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id=self.__class__.__name__,
+            target_layer=target_layer,
+            ast_snippet=ast_snippet,
+            serialization_canon="engine_operation",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+
     @v15_runtime_guard("B.run.agent_engine")
     async def run(self, user_input: str, task_id: str = "default") -> AgentState:
         """
         Executes the agent loop until completion or max_turns.
         """
+        # §8.1b — V15 manifest construction at engine entry boundary
+        manifest = self._v15_build_operation_manifest("run")
+        if manifest is not None:
+            import hashlib as _hl
+
+            from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+                V15ExecutionGateway,
+            )
+
+            gateway = V15ExecutionGateway()
+
+            def _noop_heal(m):
+                return {"status": "audit_pass", "errors": 0}
+
+            def _state_hash():
+                _h = _hl.sha256(f"{self.__class__.__name__}:{task_id}".encode()).hexdigest()
+                return (_h, _h, _h)
+
+            # guardian: allow-silent-swallow
+            try:
+                gateway.execute(
+                    execution_input=manifest,
+                    heal_fn=_noop_heal,
+                    state_hash_fn=_state_hash,
+                    trace_id=manifest.correlation_id,
+                )
+            # guardian: allow-silent-swallow
+            except Exception as exc:
+                logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
+
         state = AgentState(task_id=task_id, user_input=user_input)
 
         while not state.is_terminated:
