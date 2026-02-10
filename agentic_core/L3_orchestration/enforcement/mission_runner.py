@@ -22,6 +22,7 @@ from agentic_core.utils.security import safe_git_execute
 from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -115,6 +116,75 @@ def _get_imports():
 
 
 # ==============================================================================
+# V15 MANIFEST CONSTRUCTION (§8.1c)
+# ==============================================================================
+
+
+def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
+    """§8.1c — Construct SurgicalManifest for mission runner mode entry.
+
+    Returns None when V15 enforcement is off (zero overhead).
+    Lazy imports to avoid pulling heavy dependency chains at module level.
+    """
+    if not is_v15_enforced():
+        return None
+
+    import hashlib as _hl
+
+    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+        generate_trace_id,
+    )
+    from agentic_core.L0_maintenance.types.v15_p2_types import (
+        FixConstraint,
+        SurgicalManifest,
+    )
+
+    _hex8 = _hl.sha256(f"mission_runner.{mode_name}".encode()).hexdigest()[:8].upper()
+    trace_id = generate_trace_id(_hex8)
+
+    ast_snippet = f"mission_runner.{mode_name}()"
+    return SurgicalManifest(
+        schema_version="1.0.0",
+        correlation_id=trace_id,
+        node_id="MissionRunner",
+        target_layer=target_layer,
+        ast_snippet=ast_snippet,
+        serialization_canon="mission_runner",
+        fix_constraint=FixConstraint.RELAXED,
+        manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+        change_history=(),
+        provenance_chain=(trace_id,),
+    )
+
+
+def _v15_gateway_audit(manifest, trace_id: str) -> None:
+    """§8.1c — Invoke gateway.execute in LOG_ONLY mode for audit trail."""
+    if manifest is None:
+        return
+    try:
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            V15ExecutionGateway,
+        )
+
+        gw = V15ExecutionGateway()
+        gw.execute(
+            manifest,
+            lambda m: {"status": "audit", "errors": 0},
+            lambda: (
+                _hl.sha256(b"fs_mission").hexdigest(),
+                _hl.sha256(b"git_mission").hexdigest(),
+                _hl.sha256(b"mem_mission").hexdigest(),
+            ),
+            trace_id=trace_id,
+        )
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
+
+
+# ==============================================================================
 # DAEMON MODE (L5 Watchman)
 # ==============================================================================
 
@@ -127,6 +197,11 @@ def run_daemon_mode():
     Watches the repository for file modifications and automatically triggers
     surgical validation missions using blast radius analysis.
     """
+    # §8.1c — V15 manifest at daemon entry (AGGREGATE, long-running L5 mode)
+    manifest = _v15_build_mission_manifest("run_daemon_mode", target_layer="L5")
+    if manifest is not None:
+        _v15_gateway_audit(manifest, trace_id=manifest.correlation_id)
+
     if not WATCHDOG_AVAILABLE:
         print("[X] WATCHDOG NOT AVAILABLE. Install with: pip install watchdog")
         sys.exit(1)
@@ -188,6 +263,11 @@ def run_surgical_mode(target_file: str):
     Args:
         target_file: Path to the file to validate
     """
+    # §8.1c — V15 manifest at surgical entry (RESULT on terminal success, L3)
+    manifest = _v15_build_mission_manifest("run_surgical_mode", target_layer="L3")
+    if manifest is not None:
+        _v15_gateway_audit(manifest, trace_id=manifest.correlation_id)
+
     imports = _get_imports()
     CanonSwarmScheduler = imports["CanonSwarmScheduler"]
 
@@ -215,6 +295,11 @@ def run_standard_mode():
     - Rollback on critical regression
     - Remote sync on completion
     """
+    # §8.1c — V15 manifest at standard entry (AGGREGATE, multi-cycle L4 mode)
+    manifest = _v15_build_mission_manifest("run_standard_mode", target_layer="L4")
+    if manifest is not None:
+        _v15_gateway_audit(manifest, trace_id=manifest.correlation_id)
+
     imports = _get_imports()
 
     ValidationContext = imports["ValidationContext"]
