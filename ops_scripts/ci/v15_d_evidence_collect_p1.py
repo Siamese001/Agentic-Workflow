@@ -267,7 +267,9 @@ class DEvidenceCollector:
         with open(heal_file, encoding="utf-8") as f:
             content = f.read()
 
-        has_uuid = "uuid.uuid4()" in content
+        # §15.5 — V15-compliant trace ID uses generate_trace_id (CC3AL1 format),
+        # not raw uuid.uuid4(). Accept either for backwards compat detection.
+        has_trace_gen = "generate_trace_id" in content or "uuid.uuid4()" in content
         has_trace_id = "trace_id" in content
 
         # Check that artifacts accept trace_id
@@ -278,11 +280,11 @@ class DEvidenceCollector:
                 p2_content = f.read()
             has_trace_in_artifacts = "correlation_id: str" in p2_content  # Use correlation_id instead
 
-        passed = has_uuid and has_trace_id and has_trace_in_artifacts
+        passed = has_trace_gen and has_trace_id and has_trace_in_artifacts
 
         details = []
-        if not has_uuid:
-            details.append("Missing uuid.uuid4() usage")
+        if not has_trace_gen:
+            details.append("Missing generate_trace_id() or uuid.uuid4() usage")
         if not has_trace_id:
             details.append("Missing trace_id handling")
         if not has_trace_in_artifacts:
