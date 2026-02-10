@@ -18,7 +18,6 @@ def calculate_file_hash(file_path: Path) -> str:
         with open(file_path, "rb") as f:
             content = f.read()
         return hashlib.sha256(content).hexdigest()
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Could not hash {file_path}: {e}")
         return ""
@@ -29,7 +28,6 @@ def load_registry(registry_path: Path) -> dict:
     try:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)

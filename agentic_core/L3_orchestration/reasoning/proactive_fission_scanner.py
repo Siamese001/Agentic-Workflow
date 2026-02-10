@@ -35,7 +35,6 @@ class ProactiveFissionScanner:
     5. Create GitKraken refactor proposal branches
     """
 
-    # guardian: allow-magic-config
     def __init__(self, McpRouterAgent, line_threshold: int = 600):
         """
         Initialize Proactive Fission Scanner.
@@ -80,7 +79,6 @@ class ProactiveFissionScanner:
         for root, _, files in os.walk(target_dir):
             for file in files:
                 if file.endswith(".py"):
-                    # guardian: allow-path-string
                     path: Any = os.path.join(root, file)
                     line_count: Any = self.get_line_count(path)
                     if line_count > self.threshold:
@@ -125,7 +123,6 @@ class ProactiveFissionScanner:
         Returns:
             Strategy dictionary with design patterns
         """
-        # guardian: allow-path-string
         file_name: Any = os.path.basename(file_path)
         Logger.info(f"🧠 Generating strategy for {file_name}")
         try:
@@ -236,7 +233,6 @@ class ProactiveFissionScanner:
         return report
 
 
-# guardian: allow-magic-config
 def get_proactive_scanner(McpRouterAgent: Any, line_threshold: int = 600) -> ProactiveFissionScanner:
     """
     Factory function to create ProactiveFissionScanner instance.

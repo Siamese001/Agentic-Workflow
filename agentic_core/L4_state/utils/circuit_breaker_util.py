@@ -101,13 +101,10 @@ class CircuitBreaker:
 _BREAKERS: dict[str, CircuitBreaker] = {}
 
 
-# guardian: allow-magic-config
 def get_breaker(
     name: str,
-    # guardian: allow-magic-config
     failure_threshold: int = 5,
     reset_after_s: int = 30,
-    # guardian: allow-magic-config
     half_open_max_calls: int = 3,
 ) -> CircuitBreaker:
     """Get or create a circuit breaker by name.

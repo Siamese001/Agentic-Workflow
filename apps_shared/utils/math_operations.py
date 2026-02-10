@@ -58,11 +58,9 @@ class MathProcessor:
         return round(numerator / denominator, decimals)
 
     @staticmethod
-    # guardian: allow-magic-config
     def normalize_score(
         score: float,
         min_val: float = 0.0,
-        # guardian: allow-magic-config
         max_val: float = 100.0,
         target_min: float = 0.0,
         target_max: float = 1.0,

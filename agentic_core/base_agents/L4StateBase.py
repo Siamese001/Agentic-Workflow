@@ -43,7 +43,6 @@ class L4StateBase(SovereignBaseAgent):
         """Cooperative MRO initialization."""
         super().__post_init__()
 
-    # guardian: allow-type-erasure
     def get_state(self, key: str) -> Any:
         """
         Retrieve state by key.

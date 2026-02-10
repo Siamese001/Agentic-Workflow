@@ -66,7 +66,6 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_client = get_meta_learning_client()
                 Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[{self.__class__.__name__}] MetaLearningClient unavailable: {e}")
 
@@ -80,7 +79,6 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_embedder = get_healing_memory_embedder()
                 Logger.debug(f"[{self.__class__.__name__}] HealingMemoryEmbedder initialized")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}")
 
@@ -94,7 +92,6 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_cache_manager = get_cache_strategy_manager()
                 Logger.debug(f"[{self.__class__.__name__}] CacheStrategyManager initialized")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[{self.__class__.__name__}] CacheStrategyManager unavailable: {e}")
 
@@ -106,7 +103,6 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[{self.__class__.__name__}] Guardrails unavailable: {e}")
 

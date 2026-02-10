@@ -23,7 +23,6 @@ class ContextWindow:
 class ContextManager:
     """LLM context management utilities."""
 
-    # guardian: allow-magic-config
     def __init__(self, max_tokens: int = 4000):
         """
         Initialize context manager.
@@ -154,10 +153,8 @@ class ContextManager:
         return self.max_tokens - current_window.current_tokens
 
     @staticmethod
-    # guardian: allow-magic-config
     def create_conversation_context(
         messages: list[dict[str, str]],
-        # guardian: allow-magic-config
         max_tokens: int = 4000,
     ) -> ContextWindow:
         """

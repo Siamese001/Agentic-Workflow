@@ -46,7 +46,6 @@ class ResourceInfo:
 class ResourceManager:
     """Manages system resources with automatic cleanup."""
 
-    # guardian: allow-magic-config
     def __init__(self, name: str = "default", max_resources: int = 1000):
         """Initialize the resource manager.
 
@@ -177,7 +176,6 @@ class ResourceManager:
                         asyncio.create_task(resource_info.cleanup_callback())
                     else:
                         resource_info.cleanup_callback()
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.error(f"Cleanup callback failed for {resource_id}: {e}")
 
@@ -237,7 +235,6 @@ class ResourceManager:
 
             except asyncio.CancelledError:
                 break
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Error in cleanup loop: {e}")
 
@@ -326,7 +323,6 @@ class ResourceManager:
             # Cleanup on failure
             try:
                 await aiofiles.os.remove(temp_path)
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
             raise
@@ -361,7 +357,6 @@ _managers: dict[str, ResourceManager] = {}
 _manager_lock = threading.Lock()
 
 
-# guardian: allow-magic-config
 def get_resource_manager(name: str = "default", max_resources: int = 1000) -> ResourceManager:
     """Get or create a resource manager.
 
@@ -392,7 +387,6 @@ async def shutdown_all_managers() -> None:
 class ConnectionPool:
     """Simple connection pool for reusing connections."""
 
-    # guardian: allow-magic-config
     def __init__(self, name: str, max_connections: int = 10):
         """Initialize the connection pool.
 

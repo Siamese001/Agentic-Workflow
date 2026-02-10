@@ -164,7 +164,6 @@ class ObservabilityToolExecutor:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
@@ -322,7 +321,6 @@ class ObservabilityToolExecutor:
                 all_artifacts.extend(item_result.get("artifacts", []))
                 all_warnings.extend(item_result.get("warnings", []))
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 all_warnings.append(f"Batch item failed: {str(e)}")
 
@@ -538,11 +536,8 @@ class ObservabilityToolExecutor:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_observability_tool_executor(
-    # guardian: allow-magic-config
     timeout: float = 30.0,
-    # guardian: allow-magic-config
     retry_count: int = 3,
     enable_tracing: bool = True,
     **kwargs: object,

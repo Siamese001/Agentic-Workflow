@@ -91,7 +91,6 @@ class HealingMemoryEmbedder:
 
             self._embedding_agent = EmbeddingSovereignAgent(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")
             self._embedding_agent = None
@@ -127,7 +126,6 @@ class HealingMemoryEmbedder:
                 if embedding:
                     self.stats["embeddings_generated"] += 1
                     return embedding
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
                 self.stats["errors"] += 1
@@ -167,7 +165,6 @@ class HealingMemoryEmbedder:
                 if embedding:
                     self.stats["embeddings_generated"] += 1
                     return embedding
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
                 self.stats["errors"] += 1

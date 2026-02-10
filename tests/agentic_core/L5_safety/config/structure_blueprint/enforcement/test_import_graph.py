@@ -13,12 +13,12 @@ def test_test_import_graph_can_import():
     """Test that the module can be imported successfully."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph",
+            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph"
         )
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph: {e}",
+            f"Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph: {e}"
         )
 
 
@@ -26,12 +26,12 @@ def test_test_import_graph_has_file_attribute():
     """Test that module has __file__ attribute."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph",
+            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph"
         )
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph",
+            "Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph"
         )
 
 
@@ -39,7 +39,7 @@ def test_test_import_graph_has_public_attributes():
     """Test that module has public attributes or callables."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph",
+            "agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph"
         )
         # Count non-private attributes
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
@@ -54,5 +54,5 @@ def test_test_import_graph_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph",
+            "Cannot import module agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph"
         )

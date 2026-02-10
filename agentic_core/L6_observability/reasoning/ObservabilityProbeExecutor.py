@@ -26,7 +26,6 @@ class ObservabilityProbeExecutor(SovereignBaseAgent):
     probe_type: str = "generic"
     _results: dict = field(init=False, default_factory=dict)
 
-    # guardian: allow-type-erasure
     def execute(self, context: dict | None = None) -> dict:
         """Dispatch to probe-specific execution."""
         ctx = context or {}
@@ -65,7 +64,6 @@ class ObservabilityProbeExecutor(SovereignBaseAgent):
         return {"probe": "runtime_telemetry", "benchmarks": ctx.get("benchmarks", {})}
 
     @standard_heal
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         return super().heal_repository(**kwargs)
 

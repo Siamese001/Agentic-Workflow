@@ -72,7 +72,6 @@ class ScriptBridge:
 
             return ScriptResult(success=True, data=result, errors=[], metadata={})
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Script execution failed: {script_name}.{operation} - {e}")
             return ScriptResult(

@@ -101,7 +101,6 @@ class CapabilityExtractor:
         # Unparse method body for keyword search
         try:
             body_source = ast.unparse(item.body) if hasattr(ast, "unparse") else ""
-        # guardian: allow-silent-swallow
         except:
             body_source = ""
 

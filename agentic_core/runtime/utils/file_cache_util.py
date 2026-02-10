@@ -156,7 +156,6 @@ class FileCache:
 
         except PermissionError as e:
             Logger.warning(f"[FileCache] Permission error during scan: {e}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[FileCache] Error during scan: {e}")
 

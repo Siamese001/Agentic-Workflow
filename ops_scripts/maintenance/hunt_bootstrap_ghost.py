@@ -37,7 +37,6 @@ def hunt_bootstrap():
                 try:
                     found_path.rename(dest)
                     print(f" -> Archived to {dest.name}")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f" -> Failed to archive: {e}")
 

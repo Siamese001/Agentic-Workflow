@@ -49,12 +49,6 @@ class ReasoningToggles(BaseModel):
             raise ValueError(f"temperature_cap must be between 0.0 and 1.0. Got {v}.")
         return v
 
-    # guardian: allow-magic-config
-    # guardian: allow-magic-config
-    # guardian: allow-magic-config
-    # guardian: allow-magic-config
-    # guardian: allow-magic-config
-    # guardian: allow-magic-config
     class Config:
         """Pydantic configuration."""
 

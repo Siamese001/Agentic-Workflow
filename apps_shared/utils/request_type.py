@@ -213,7 +213,6 @@ class ObservabilityLoadPlanner:
             )
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"observability load planning failed: {str(e)}")
             return ObservabilityLoadResult(

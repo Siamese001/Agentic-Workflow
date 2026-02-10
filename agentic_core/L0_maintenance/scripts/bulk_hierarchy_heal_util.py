@@ -18,7 +18,6 @@ project_root: Any = next((p for p in current_file.parents if (p / ".env").exists
 if not project_root:
     print("[!] Project root not found (.env Missing).")
     sys.exit(1)
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 try:
     from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
@@ -153,7 +152,6 @@ def main() -> Any:
                         try:
                             shutil.rmtree(legacy_path)
                             print(f"   [CLEAN] Purged legacy folder: {legacy_path.relative_to(project_root)}")
-                        # guardian: allow-silent-swallow
                         except Exception as e:
                             print(f"   [!] Could not purge {legacy}: {e}")
     print("\n" + "=" * 70)

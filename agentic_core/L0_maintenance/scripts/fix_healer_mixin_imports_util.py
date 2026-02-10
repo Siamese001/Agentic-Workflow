@@ -33,7 +33,6 @@ def fix_healer_mixin_imports(project_root: Path):
                 py_file.write_text(new_content, encoding="utf-8")
                 print(f"Fixed: {py_file.relative_to(project_root)}")
                 fixed_count += 1
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Error processing {py_file}: {e}")
 

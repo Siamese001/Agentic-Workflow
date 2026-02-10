@@ -30,7 +30,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
         self.manager: MCPConnectionManager | None = None
         self.initialized = False
 
-    # guardian: allow-type-erasure
     async def initialize(self) -> Any:
         """Async initialization with L5 shielding and immediate fail-fast"""
         try:
@@ -71,7 +70,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         "findings": redteam_result.get("vulnerabilities", []),
                         "insight": "L5 shield tested against adversarial simulation",
                     }
-                # guardian: allow-silent-swallow
                 except Exception as red_e:
                     Logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
             elif key_id in {21, 13}:
@@ -86,7 +84,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         "recall": memory_result,
                         "insight": "Pattern matched against eternal knowledge graph.",
                     }
-                # guardian: allow-silent-swallow
                 except Exception as mem_e:
                     Logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
             elif key_id == 18:
@@ -116,10 +113,8 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                                     "guidance": answer.get("response", ""),
                                     "insight": "Applied internal repository guidance to healing round.",
                                 }
-                            # guardian: allow-silent-swallow
                             except Exception as wiki_e:
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
-                # guardian: allow-silent-swallow
                 except Exception:
                     pass
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
@@ -137,10 +132,8 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                                     "guidance": "Enforce these audited design tokens in the heal.",
                                     "tokens": tokens,
                                 }
-                            # guardian: allow-silent-swallow
                             except Exception as figma_e:
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
-                # guardian: allow-silent-swallow
                 except Exception:
                     pass
             if key_id in {40, 41, 42, 49}:
@@ -152,7 +145,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                         if cached:
                             cached_template: Any = json.loads(cached)
                             Logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
-                    # guardian: allow-silent-swallow
                     except Exception:
                         pass
                     reasoning_result: Any = await self.manager.call_tool(
@@ -173,7 +165,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                                 json.dumps(reasoning_result.get("steps", [])),
                                 ex=60 * 60 * 24 * 30,
                             )
-                        # guardian: allow-silent-swallow
                         except Exception:
                             pass
                     return {
@@ -260,7 +251,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
                             "tool": "brave_search",
                             "results": search_result,
                         }
-                    # guardian: allow-silent-swallow
                     except Exception as search_e:
                         Logger.error(f"[L2 EXECUTION] Brave search failed: {search_e}")
                     return {"status": "fallback", "reason": str(search_e)}
@@ -275,7 +265,6 @@ class SovereignMcpRouter(AtomicExecutionMixin, SovereignBaseAgent):
             mcp_authority.record_breach(str(e))
             return {"status": "error", "exception": str(e)}
 
-    # guardian: allow-type-erasure
     async def cleanup(self) -> Any:
         """Graceful eternal shutdown"""
         if self.manager:

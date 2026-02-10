@@ -36,6 +36,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 Logger: Any = logging.getLogger("L4.PineconeStore")
 
 from agentic_core.base_agents.decorators import standard_heal
+
 from agentic_core.L2_execution.reasoning.SovereignPineconeMcpClientAgent import (
     SovereignPineconeMcpClientAgent,
 )
@@ -88,13 +89,11 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -147,7 +146,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
         await self.McpClient.upsert(vectors=vectors, namespace=self.namespace)
         return result_ids
 
-    # guardian: allow-type-erasure
     async def upsert_file_vector(self, file_path: Path, territory_hint: str | None = None) -> Any:
         """
         Upsert single file — used during healing.
@@ -167,7 +165,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             vectors: Any = [{"id": file_id, "metadata": metadata}]
             await self.McpClient.upsert(vectors=vectors)
             Logger.info(f"[L4 PINECONE STORE] Upserted file vector: {file_path}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L4 PINECONE STORE] File upsert failed for {file_path}: {e}")
 
@@ -189,7 +186,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
                 f"[L4 PINECONE STORE] Semantic search returned {len(results.get('matches', []))} results",
             )
             return results.get("matches", [])
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L4 PINECONE STORE] Semantic search failed: {e}")
             return []
@@ -212,12 +208,10 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
                 f"[L4 PINECONE STORE] Hybrid search returned {len(results.get('matches', []))} results",
             )
             return results.get("matches", [])
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L4 PINECONE STORE] Hybrid search failed: {e}")
             return []
 
-    # guardian: allow-type-erasure
     def purge_ghost_vector(self, file_path: Path) -> Any:
         """
         Surgical strike to remove stale vector data.
@@ -232,7 +226,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             f"[L4 PINECONE STORE] purge_ghost_vector called but delete not supported via MCP: {file_path}",
         )
 
-    # guardian: allow-type-erasure
     async def health_check(self) -> dict:
         """
         Enhanced health check with sample quality assessment.
@@ -258,7 +251,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
                 "sample_quality": "degraded",
             }
 
-    # guardian: allow-type-erasure
     async def execute(self, ctx: Any = None) -> Any:
         """
         Health check for the validator loop.
@@ -276,7 +268,6 @@ class SovereignPineconeStoreAgent(SovereignBaseAgent):
             Logger.info(f"[L4 PINECONE STORE] {status_msg}")
             if ctx:
                 ctx.report("VectorHealth", 1, health["status"] == "healthy", status_msg)
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L4 PINECONE STORE] Execute failed: {e}")
             if ctx:

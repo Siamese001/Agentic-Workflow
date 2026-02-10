@@ -135,7 +135,6 @@ class L5ConsolidatedKnowledge:
                 if profile:
                     Logger.info("Retrieved profile from MEMemory")
                     return profile
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Failed to retrieve from MEMemory: {e}")
         Logger.info("Using fallback user profile")
@@ -153,7 +152,6 @@ class L5ConsolidatedKnowledge:
                 if templates:
                     Logger.info("Retrieved template from Pinecone")
                     return templates[0].metadata
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Failed to retrieve from Pinecone: {e}")
         template_type = "professional" if "professional" in query.lower() else "modern"

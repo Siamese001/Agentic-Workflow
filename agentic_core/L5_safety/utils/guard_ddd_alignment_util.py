@@ -69,7 +69,6 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                 },
             )
             continue
-        # guardian: allow-silent-swallow
         except Exception as e:
             violations.append(
                 {

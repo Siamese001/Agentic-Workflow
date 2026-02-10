@@ -274,7 +274,6 @@ class InputValidator:
                     # Try ISO format first
                     try:
                         return datetime.fromisoformat(value)
-                    # guardian: allow-silent-swallow
                     except Exception:
                         # Try timestamp
                         return datetime.fromtimestamp(float(value))
@@ -405,7 +404,6 @@ class InputValidator:
 
 # Predefined validation rules
 COMMON_RULES = {
-    # guardian: allow-magic-config
     "hop_id": ValidationRule(
         "hop_id",
         ValidationType.STRING,
@@ -414,14 +412,12 @@ COMMON_RULES = {
         max_length=100,
         pattern=r"^[a-zA-Z0-9_-]+$",
     ),
-    # guardian: allow-magic-config
     "context_data": ValidationRule(
         "context_data",
         ValidationType.DICT,
         required=False,
         max_length=1000,  # Max 1000 keys
     ),
-    # guardian: allow-magic-config
     "retry_count": ValidationRule(
         "retry_count",
         ValidationType.INTEGER,
@@ -429,7 +425,6 @@ COMMON_RULES = {
         min_value=0,
         max_value=10,
     ),
-    # guardian: allow-magic-config
     "timeout": ValidationRule(
         "timeout",
         ValidationType.FLOAT,
@@ -437,14 +432,12 @@ COMMON_RULES = {
         min_value=0.1,
         max_value=300.0,
     ),
-    # guardian: allow-magic-config
     "json_payload": ValidationRule(
         "json_payload",
         ValidationType.JSON,
         required=False,
         max_length=10000,  # Max 10KB
     ),
-    # guardian: allow-magic-config
     "xml_content": ValidationRule(
         "xml_content",
         ValidationType.XML,

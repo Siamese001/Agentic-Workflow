@@ -22,7 +22,6 @@ class SupremeCourt(SovereignBaseAgent):
     Multi-model consensus system for critical decision making.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, consensus_threshold: float = 0.7):
         super().__init__()
         self.threshold = consensus_threshold

@@ -31,7 +31,6 @@ def signal_handler(signum, frame):
     print(f"\n\n⚠️  Received {signal_name} signal - shutting down server...")
     if server_process:
         server_process.terminate()
-        # guardian: allow-magic-config
         server_process.wait(timeout=5)
     print("✅ Server stopped gracefully.")
     sys.exit(0)
@@ -46,7 +45,6 @@ if is_port_in_use(PORT):
 else:
     print(f"Starting dashboard server on port {PORT}...")
     print("Press Ctrl+C to stop the server")
-    # guardian: allow-path-string
     os.chdir(REPORTS_DIR)
     try:
         server_process = safe_popen([sys.executable, "-m", "http.server", str(PORT)])

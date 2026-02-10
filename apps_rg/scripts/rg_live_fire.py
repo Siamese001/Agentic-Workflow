@@ -15,7 +15,6 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 # Force Sovereign Imports
@@ -117,7 +116,6 @@ async def main():
             f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}",
         )
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
         sys.exit(1)

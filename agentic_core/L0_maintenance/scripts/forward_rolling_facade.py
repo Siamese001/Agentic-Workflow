@@ -107,11 +107,9 @@ class ForwardRollingFacade:
         result = facade.execute("agent_name", context)
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         initial_stage: RolloutStage = RolloutStage.DISABLED,
-        # guardian: allow-magic-config
         max_depth: int = 50,
         enable_pruning: bool = True,
         enable_adaptive_depth: bool = True,
@@ -141,7 +139,6 @@ class ForwardRollingFacade:
 
         # Caching
         self._result_cache: dict[str, ForwardRollingResult] = {}
-        # guardian: allow-magic-config
         self._cache_max_size = 100
         self._cache_enabled = True
 

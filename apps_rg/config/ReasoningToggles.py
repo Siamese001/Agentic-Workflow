@@ -49,7 +49,6 @@ def get_toggles(env: str = None) -> ReasoningToggles:
 
     if environment == "dev":
         # Dev Mode: More expensive reasoning, loose constraints
-        # guardian: allow-magic-config
         return ReasoningToggles(tot_branches=5, min_tot_depth=3, strict_mode=False)
     elif environment == "test":
         # Test Mode: Deterministic, fast

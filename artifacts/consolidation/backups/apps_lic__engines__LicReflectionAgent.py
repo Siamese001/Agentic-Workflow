@@ -64,7 +64,6 @@ class LicReflectionAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.record_result(True, f"Passed: {len(passed_agents)}, Failed: {len(failed_agents)}")
         print(f"   [{self.name}] ✅ Reflection complete")
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

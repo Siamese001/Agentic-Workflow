@@ -38,7 +38,6 @@ DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
 DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
 
 # Add project root to path for imports
-# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import SSOT definitions
@@ -365,7 +364,6 @@ def generate_strategic_recommendations(dashboard_data: list[dict]) -> dict[str, 
             "review": "Strategic analysis unavailable - module not found.",
             "recommendations": [],
         }
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  ⚠️  StrategicRecommendationAgent failed: {e}")
         # Return fallback

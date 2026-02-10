@@ -292,7 +292,6 @@ class SSOTRelocator:
 
                 # Clean up empty parent directories
                 self._cleanup_empty_dirs(source.parent)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -345,7 +344,6 @@ class SSOTRelocator:
                 shutil.move(str(source), str(target))
                 result.success = True
                 logger.info(f"{action}: {result.source} → {result.target}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -401,7 +399,6 @@ class SSOTRelocator:
 
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to flatten {result.source}: {e}")

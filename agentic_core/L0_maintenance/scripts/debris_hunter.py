@@ -92,7 +92,6 @@ class DebrisHunter:
                 os.remove(path)
                 print(f"[DELETED] {path.name}")
                 deleted += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"[ERROR] Could not delete {path.name}: {e}")
 

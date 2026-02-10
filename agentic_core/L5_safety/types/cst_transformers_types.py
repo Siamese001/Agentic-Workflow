@@ -416,7 +416,6 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
     Reduces multiple consecutive blank lines to a maximum of 2.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, max_blank_lines: int = 2):
         """
         Initialize the blank line normalizer.
@@ -518,7 +517,6 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
                 new_returns = cst.Annotation(annotation=annotation)
                 updated_node = updated_node.with_changes(returns=new_returns)
                 self.modifications_made += 1
-            # guardian: allow-silent-swallow
             except Exception:
                 pass  # Skip if annotation parsing fails
 
@@ -588,7 +586,6 @@ def create_trailing_whitespace_fixer(violations) -> SurgicalTrailingWhitespaceFi
     return None
 
 
-# guardian: allow-magic-config
 def create_blank_line_normalizer(violations, max_blank_lines: int = 2) -> SurgicalBlankLineNormalizer | None:
     """
     Factory function to create blank line normalizer from violations.

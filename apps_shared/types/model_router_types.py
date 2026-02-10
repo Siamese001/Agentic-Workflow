@@ -67,7 +67,6 @@ class TaskProfile:
 class ModelRouter:
     """Routes tasks to appropriate models based on various factors."""
 
-    # guardian: allow-magic-config
     def __init__(self, daily_budget: float = 5.0, budget_period_hours: int = 24):
         """Initialize model router.
 
@@ -105,7 +104,6 @@ class ModelRouter:
     def _initialize_defaults(self) -> None:
         """Initialize default model configurations and task profiles."""
         # Fast tier models
-        # guardian: allow-magic-config
         self._models["gpt-4o-mini"] = ModelConfig(
             provider="openai",
             model_name="gpt-4o-mini",
@@ -115,7 +113,6 @@ class ModelRouter:
             cost_per_1k_tokens=0.00015,
         )
 
-        # guardian: allow-magic-config
         self._models["claude-3-haiku"] = ModelConfig(
             provider="anthropic",
             model_name="claude-3-haiku-20240307",
@@ -126,7 +123,6 @@ class ModelRouter:
         )
 
         # Balanced tier models
-        # guardian: allow-magic-config
         self._models["gpt-4o"] = ModelConfig(
             provider="openai",
             model_name="gpt-4o",
@@ -136,7 +132,6 @@ class ModelRouter:
             cost_per_1k_tokens=0.005,
         )
 
-        # guardian: allow-magic-config
         self._models["claude-3-5-sonnet"] = ModelConfig(
             provider="anthropic",
             model_name="claude-3-5-sonnet-20241022",
@@ -147,7 +142,6 @@ class ModelRouter:
         )
 
         # Reasoning tier models
-        # guardian: allow-magic-config
         self._models["o1-preview"] = ModelConfig(
             provider="openai",
             model_name="o1-preview",
@@ -157,7 +151,6 @@ class ModelRouter:
             cost_per_1k_tokens=0.015,
         )
 
-        # guardian: allow-magic-config
         self._models["claude-3-opus"] = ModelConfig(
             provider="anthropic",
             model_name="claude-3-opus-20240229",
@@ -548,7 +541,6 @@ class FallbackClient:
                     logger.info(f"Fallback to {fallback_config.model_name} succeeded")
                     return result
 
-                # guardian: allow-silent-swallow
                 except Exception as fallback_error:
                     logger.error(f"Fallback also failed: {fallback_error}")
 

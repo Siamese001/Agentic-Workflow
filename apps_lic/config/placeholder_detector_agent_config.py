@@ -52,7 +52,6 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
 
         return True, ""
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

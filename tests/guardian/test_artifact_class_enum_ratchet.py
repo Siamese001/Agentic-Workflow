@@ -70,7 +70,7 @@ def _find_guardian_result_with_value_usage(root_dir: pathlib.Path) -> list[tuple
                                             py_file,
                                             node.lineno,
                                             f"GuardianResult with artifact_class=ArtifactClass.{kw.value.value.attr}.value",
-                                        ),
+                                        )
                                     )
 
     return violations
@@ -128,10 +128,10 @@ def test_no_artifact_class_value_usage_in_construction():
             f"  {file_path.relative_to(repo_root)}:{line} - {desc}"
             for file_path, line, desc in all_violations
         ]
-        raise AssertionError(
+        assert False, (
             "Found GuardianResult construction using .value:\n"
             + "\n".join(violation_msgs)
-            + "\n\nUse ArtifactClass enum directly, e.g., artifact_class=ArtifactClass.AGGREGATE",
+            + "\n\nUse ArtifactClass enum directly, e.g., artifact_class=ArtifactClass.AGGREGATE"
         )
 
 
@@ -142,7 +142,7 @@ def test_synthetic_value_usage_detected():
 
     synthetic_code = textwrap.dedent("""
         from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
-
+        
         # This should be flagged
         result = GuardianResult(
             guardian_id="test",
@@ -172,7 +172,7 @@ def test_synthetic_value_usage_allowed_in_to_dict():
 
     synthetic_code = textwrap.dedent("""
         from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
-
+        
         class GuardianResult:
             def to_dict(self):
                 # This should be allowed - inside to_dict() method
@@ -199,7 +199,7 @@ def test_synthetic_value_usage_rejected_in_construction():
 
     synthetic_code = textwrap.dedent("""
         from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
-
+        
         def run_all_guardians():
             # This should be flagged - not in allowed context
             results = []

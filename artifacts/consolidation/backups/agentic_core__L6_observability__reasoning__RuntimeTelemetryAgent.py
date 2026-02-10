@@ -68,7 +68,6 @@ class RuntimeTelemetryAgent(AtomicExecutionMixin, SubatomicTestingMixin, Soverei
 
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
-    # guardian: allow-magic-config
     def __init__(self, limit_multiplier: float = 2.0) -> None:
         """
         Initialize with the Gospel-mandated 2x overhead limit.

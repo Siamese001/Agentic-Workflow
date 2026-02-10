@@ -66,7 +66,6 @@ class DependencyPruningAgent(SovereignBaseAgent):
             List of unused package names, empty if deptry fails or not installed.
         """
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 ["deptry", ".", "--json"],
                 capture_output=True,
@@ -80,7 +79,6 @@ class DependencyPruningAgent(SovereignBaseAgent):
                 return data.get("unused", [])
         except FileNotFoundError:
             pass  # deptry not installed
-        # guardian: allow-silent-swallow
         except (json.JSONDecodeError, Exception):
             pass  # JSON parsing or other error
         return []
@@ -127,13 +125,11 @@ class DependencyPruningAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:
@@ -195,7 +191,6 @@ class DependencyPruningAgent(SovereignBaseAgent):
             "dry_run": self.dry_run,
         }
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal dependency pruning violations using standard_heal decorator pattern.
 
@@ -220,7 +215,6 @@ class DependencyPruningAgent(SovereignBaseAgent):
                     "errors": 0,
                     "skipped": 0,
                 }
-            # guardian: allow-silent-swallow
             except Exception:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

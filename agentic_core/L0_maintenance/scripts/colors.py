@@ -148,7 +148,6 @@ def _save_runtime_state(project_root_path: Path):
     try:
         state_path = project_root_path / RUNTIME_STATE_FILE
         state_path.write_text(_json.dumps(_runtime_state, indent=2, default=str), encoding="utf-8")
-    # guardian: allow-silent-swallow
     except Exception:
         pass  # Non-critical
 
@@ -304,7 +303,6 @@ if not project_root:
 # [SOVEREIGN ANCHOR] Force project root into sys.path for Discovery
 project_root_str = str(project_root)
 if project_root_str not in sys.path:
-    # guardian: allow-global-mutation
     sys.path.insert(0, project_root_str)
 
 # Re-establish Neural Link to Resurrected Territories
@@ -316,7 +314,6 @@ sovereign_paths = [
 for p in sovereign_paths:
     p_str = str(p)
     if p.exists() and p_str not in sys.path:
-        # guardian: allow-global-mutation
         sys.path.insert(0, p_str)
 
 
@@ -381,11 +378,8 @@ def main():
     # [PHASE 33j] Unified Environment Variable Strategy for Agent Control Signals
     # Set environment variables BEFORE initializing any agents
     if args.yes:
-        # guardian: allow-global-mutation
         os.environ["SOVEREIGN_AUTO_APPROVE"] = "1"  # Unified auto-approval signal
-        # guardian: allow-global-mutation
         os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"  # ArchivalGatekeeper batch mode
-        # guardian: allow-global-mutation
         os.environ["CI"] = "true"  # Disables generic interactive prompts
         print("   [SYSTEM] SOVEREIGN MODE ACTIVE: Auto-approval enabled.")
 
@@ -403,7 +397,6 @@ def main():
 
             purge_volatile_state()
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Reset failed: {e}")
 
@@ -434,7 +427,6 @@ def main():
             discovery_data = discover_all_agents(project_root)
             agents = process_discovery_data(discovery_data)
             print(f"   [OK] SSOT Verified: {len(agents)} agents discovered")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Live discovery failed: {e}")
             traceback.print_exc()
@@ -472,7 +464,6 @@ def main():
             # Pass extra config if needed to inject targets during JSON generation
             print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
             guardian.generate_compliance_report(context={"target_resolver": get_target})
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Report failed: {e}")
             traceback.print_exc()
@@ -554,7 +545,6 @@ def main():
 
             method = getattr(agent, method_name)
             if method_name == "heal_repository":
-                # guardian: allow-magic-config
                 result = method(
                     dry_run=not execute,
                     execute=execute,
@@ -576,7 +566,6 @@ def main():
                 if result:
                     print(f"   Result: {result}")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Agent invocation failed: {e}")
             traceback.print_exc()
@@ -642,7 +631,6 @@ def main():
             print("\n[HYGIENE COMPLETE]")
             print(f"   Total violations: {results.get('total_violations', 0)}")
             print(f"   Violations fixed: {results.get('violations_fixed', 0)}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"\n[!] Hygiene mode failed: {e}")
             traceback.print_exc()
@@ -682,7 +670,6 @@ def main():
                         perf_module = importlib.util.module_from_spec(spec)
                         spec.loader.exec_module(perf_module)
                         return perf_module.get_performance_analyst(root)
-                # guardian: allow-silent-swallow
                 except:
                     pass
                 return None
@@ -729,7 +716,6 @@ def main():
 
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, "gemini_embedder") and guardian.gemini_embedder is not None
-            # guardian: allow-silent-swallow
             except:
                 pass
 
@@ -801,7 +787,6 @@ def main():
             # Phase 4.5: Autonomous Executive Summary
             report_consolidated_summary(consolidated_results, gemini_active)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()

@@ -50,7 +50,6 @@ def main():
             test_file.unlink()
             print(f"Removed: {test_file}")
             removed_count += 1
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Failed to remove {test_file}: {e}")
 

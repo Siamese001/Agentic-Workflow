@@ -14,7 +14,6 @@ from pathlib import Path
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
-    # guardian: allow-global-mutation
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
@@ -37,7 +36,6 @@ def test_circuit_breaker():
     print("\n1.1 Testing state transitions...")
     breaker = CircuitBreaker(
         "test_1",
-        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=3, reset_timeout_seconds=0.1),
     )
     assert breaker.state == CircuitState.CLOSED
@@ -50,7 +48,6 @@ def test_circuit_breaker():
     print("\n1.2 Testing exponential backoff...")
     breaker2 = CircuitBreaker(
         "test_2",
-        # guardian: allow-magic-config
         CircuitBreakerConfig(
             failure_threshold=1,
             backoff_multiplier=2.0,
@@ -69,7 +66,6 @@ def test_circuit_breaker():
     print("\n1.3 Testing recovery...")
     breaker3 = CircuitBreaker(
         "test_3",
-        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=1, success_threshold=1, reset_timeout_seconds=0.1),
     )
     breaker3.record_failure()
@@ -83,7 +79,6 @@ def test_circuit_breaker():
     print("\n1.4 Testing decorator...")
     breaker4 = CircuitBreaker(
         "test_4",
-        # guardian: allow-magic-config
         CircuitBreakerConfig(failure_threshold=2, execution_timeout_seconds=1.0),
     )
     count = 0
@@ -113,7 +108,6 @@ def test_circuit_breaker():
 
     # 1.5 Hung Query (Execution Timeout)
     print("\n1.5 Testing Hung Query Timeout...")
-    # guardian: allow-magic-config
     breaker5 = CircuitBreaker("test_5", CircuitBreakerConfig(execution_timeout_seconds=0.5))
 
     @breaker5.protect
@@ -428,7 +422,6 @@ def main():
 
     try:
         results.append(("Circuit Breaker", test_circuit_breaker()))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Circuit Breaker tests FAILED: {e}")
         import traceback
@@ -438,28 +431,24 @@ def main():
 
     try:
         results.append(("Adapter Base", test_adapter_base()))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Adapter Base tests FAILED: {e}")
         results.append(("Adapter Base", False))
 
     try:
         results.append(("Atomic Execution", test_atomic_execution()))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Atomic Execution tests FAILED: {e}")
         results.append(("Atomic Execution", False))
 
     try:
         results.append(("Context Session", test_context_session()))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Context Session tests FAILED: {e}")
         results.append(("Context Session", False))
 
     try:
         results.append(("Contextual Router", test_contextual_router()))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Contextual Router tests FAILED: {e}")
         results.append(("Contextual Router", False))

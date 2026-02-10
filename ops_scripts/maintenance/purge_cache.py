@@ -65,7 +65,6 @@ def purge_all_pycache(quiet=False, extended=False):
                     logging.warning(f"Permission denied: {p}. File likely locked. Skipping...")
             except FileNotFoundError:
                 pass
-            # guardian: allow-silent-swallow
             except Exception as e:
                 if not quiet:
                     logging.error(f"Failed to delete {p}: {e}")
@@ -119,7 +118,6 @@ def purge_all_cache():
                 error_count += 1
             except FileNotFoundError:
                 pass
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to delete {p}: {e}")
                 error_count += 1
@@ -142,7 +140,6 @@ def purge_all_cache():
                 error_count += 1
             except FileNotFoundError:
                 pass
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to delete {p}: {e}")
                 error_count += 1
@@ -156,7 +153,6 @@ def purge_all_cache():
             p.unlink()
             count += 1
             print(f"Removed file: {p.relative_to(root_dir)}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to delete {p}: {e}")
             error_count += 1

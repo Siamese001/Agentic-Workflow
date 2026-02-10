@@ -51,7 +51,6 @@ class QueryDecomposer(SimpleAgentBase):
     that can be answered by the retrieval system.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, model_name: str = "gpt-4", max_sub_queries: int = 4):
         """Initialize the Query Decomposer.
 
@@ -138,7 +137,6 @@ class QueryDecomposer(SimpleAgentBase):
             client = get_client(Provider.ANTHROPIC)
 
             # Call LLM with token limit
-            # guardian: allow-magic-config
             response = await client.messages.create(
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=200,  # Strict token limit for cost control
@@ -152,7 +150,6 @@ class QueryDecomposer(SimpleAgentBase):
 
             return LLMResponseImpl(response.content[0].text)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
 
@@ -251,7 +248,6 @@ Output: {{
                 complexity_score=complexity,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to decompose query: {e}")
             # Fallback to original query
@@ -304,7 +300,6 @@ Output: {{
             )
             return processed_results
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to execute sub-queries: {e}")
             return [[] for _ in decomposed_query.sub_queries]

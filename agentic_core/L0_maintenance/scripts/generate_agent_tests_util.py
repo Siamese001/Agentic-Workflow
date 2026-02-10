@@ -88,7 +88,6 @@ if __name__ == "__main__":
     return template
 
 
-# guardian: allow-magic-config
 def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10) -> int:
     """Generate test files for agents in a specific layer."""
     layer_agents = [a for a in agents if a["layer"] == layer]
@@ -121,7 +120,6 @@ def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10
             print(f"  ✅ {class_name}: test generated")
             generated += 1
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"  ❌ {class_name}: failed - {e}")
 
@@ -142,7 +140,6 @@ def main():
 
     # Generate tests by priority
     for layer in LAYER_PRIORITY:
-        # guardian: allow-magic-config
         generated = generate_tests_for_layer(layer, untested_agents, max_count=10)
         total_generated += generated
 

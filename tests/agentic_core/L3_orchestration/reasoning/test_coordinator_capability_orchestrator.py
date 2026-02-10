@@ -13,12 +13,12 @@ def test_test_coordinator_capability_orchestrator_can_import():
     """Test that the module can be imported successfully."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator",
+            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator"
         )
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator: {e}",
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator: {e}"
         )
 
 
@@ -26,12 +26,12 @@ def test_test_coordinator_capability_orchestrator_has_file_attribute():
     """Test that module has __file__ attribute."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator",
+            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator"
         )
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator",
+            "Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator"
         )
 
 
@@ -39,7 +39,7 @@ def test_test_coordinator_capability_orchestrator_has_public_attributes():
     """Test that module has public attributes or callables."""
     try:
         mod = importlib.import_module(
-            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator",
+            "agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator"
         )
         # Count non-private attributes
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
@@ -54,5 +54,5 @@ def test_test_coordinator_capability_orchestrator_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator",
+            "Cannot import module agentic_core.L3_orchestration.reasoning.coordinator_capability_orchestrator"
         )

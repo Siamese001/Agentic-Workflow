@@ -71,7 +71,6 @@ def repair_file(file_path: Path):
 
     try:
         content = textwrap.dedent(content)
-    # guardian: allow-silent-swallow
     except:
         pass  # If dedent fails, continue with original
 

@@ -50,7 +50,6 @@ class AgentDispositionAnalyzer:
 
             return classification, details
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return "LEGACY_ARTIFACTS", {"reason": f"Error reading file: {e}"}
 

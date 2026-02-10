@@ -281,7 +281,6 @@ class HOP5GenerationAgent(HOPStageCapability, SubatomicTestingMixin, LICAgentBas
                 prompt = "Generate a single compelling value proposition in 5-7 words."
                 synthetic = self._run_async(self.llm.generate(prompt, temperature=0.7))
                 bullets.append(f"• {synthetic.strip()}")
-            # guardian: allow-silent-swallow
             except:
                 bullets.append("• Innovative partnership opportunities")
         else:

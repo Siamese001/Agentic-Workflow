@@ -174,7 +174,6 @@ class SecureCheckpointManager:
                 checkpoint_file.replace(quarantine_file)
                 logger.warning(f"Moved corrupted checkpoint to {quarantine_file}")
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"Failed to load checkpoint {checkpoint_file}: {e}")
 

@@ -113,7 +113,6 @@ class FeatureFlaggedAgentMixin:
         if hasattr(obj, "is_available"):
             try:
                 return obj.is_available()
-            # guardian: allow-silent-swallow
             except Exception:
                 return True  # Assume available if check fails
         return True  # Assume available if no is_available method
@@ -184,7 +183,6 @@ class FeatureFlaggedAgentMixin:
                     success=result if isinstance(result, bool) else True,
                     reason="legacy_implementation",
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"Verification gate error: {e}")
                 return VerificationResult(
@@ -252,7 +250,6 @@ class FeatureFlaggedAgentMixin:
 
     # ==================== HUMAN REVIEW ====================
 
-    # guardian: allow-magic-config
     def submit_for_review(
         self,
         action_type: str,
@@ -260,7 +257,6 @@ class FeatureFlaggedAgentMixin:
         description: str,
         risk_level: str = "high",
         context_bundle: dict[str, Any] | None = None,
-        # guardian: allow-magic-config
         timeout_seconds: int = 3600,
     ) -> ReviewResult:
         """Submit an operation for human review.
@@ -384,7 +380,6 @@ class FeatureFlaggedAgentMixin:
                     result=result,
                     metadata={"flag": "ENABLE_META_LEARNING", "status": "disabled"},
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return LearningResult(
                     success=False,
@@ -408,7 +403,6 @@ class FeatureFlaggedAgentMixin:
                     result=result,
                     metadata={"reason": "ml_unavailable"},
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return LearningResult(
                     success=False,
@@ -550,7 +544,6 @@ class FeatureFlaggedAgentMixin:
         else:
             try:
                 result = do_heal()
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result = {
                     "status": "error",

@@ -143,7 +143,6 @@ class HOP1ProfileAnalysisAgent(HOPStageCapability, LICAgentBase):
         for token in cxo_tokens:
             # Hardened boundary regex: case-insensitive flag in pattern
             # Target: 'CEO', 'CTO', 'CFO', 'COO', 'CHRO', 'CMO'
-            # guardian: allow-path-string
             pattern = r"(?i)\b" + re.escape(token) + r"\b"
             if re.search(pattern, combined_text):
                 archetype = "C_LEVEL"
@@ -188,7 +187,6 @@ class HOP1ProfileAnalysisAgent(HOPStageCapability, LICAgentBase):
                         archetype = llm_response["archetype"]
                         confidence = llm_response["confidence"]
                         needs_override = False
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     registry.add_trace("REASONING_ERROR", {"error": str(e)})
             else:

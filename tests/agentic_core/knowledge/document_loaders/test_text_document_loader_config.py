@@ -16,7 +16,7 @@ def test_test_text_document_loader_config_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config: {e}",
+            f"Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config: {e}"
         )
 
 
@@ -27,7 +27,7 @@ def test_test_text_document_loader_config_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config",
+            "Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config"
         )
 
 
@@ -48,5 +48,5 @@ def test_test_text_document_loader_config_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config",
+            "Cannot import module agentic_core.knowledge.document_loaders.text_document_loader_config"
         )

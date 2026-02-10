@@ -26,9 +26,7 @@ class SovereignReasoningMemory(SovereignBaseAgent):
 
     def __init__(self):
         super().__init__()
-        # guardian: allow-magic-config
         self.max_thought_length = 4000
-        # guardian: allow-magic-config
         self.max_history_per_file = 50
         self.redis_cache_ttl = 604800
         self.mission_id = "default_mission"
@@ -64,7 +62,6 @@ class SovereignReasoningMemory(SovereignBaseAgent):
                 self.redis_client.rpush(self.redis_reasoning_key, json.dumps(entry))
                 self.redis_client.ltrim(self.redis_reasoning_key, -self.max_history_per_file, -1)
                 self.redis_client.expire(self.redis_reasoning_key, self.redis_cache_ttl)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 self.log_warning(f"Redis write failed: {e}")
 
@@ -73,7 +70,6 @@ class SovereignReasoningMemory(SovereignBaseAgent):
             try:
                 raw = self.redis_client.lrange(self.redis_reasoning_key, 0, -1)
                 return [json.loads(x) for x in raw]
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 

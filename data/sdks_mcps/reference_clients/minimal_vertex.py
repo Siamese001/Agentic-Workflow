@@ -31,7 +31,6 @@ def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     return response.text
 
 
-# guardian: allow-magic-config
 def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     """Generation with Google Search grounding and citations.
 

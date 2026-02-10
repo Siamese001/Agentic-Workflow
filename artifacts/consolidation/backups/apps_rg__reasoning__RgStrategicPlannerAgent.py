@@ -74,7 +74,6 @@ class RgStrategicPlannerAgent(RGAgentBase):
 
         self.record_pass(f"Strategy: {plan['strategy']}", data=plan)
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

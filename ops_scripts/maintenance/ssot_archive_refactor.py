@@ -39,7 +39,6 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
                     continue
                 matches.append((i, line))
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  ⚠️  Error reading {file_path}: {e}")
 

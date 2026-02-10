@@ -78,6 +78,5 @@ class SovereignMemoryMcp:
                 include_metadata=True,
             )
             return [match.metadata for match in results.matches]
-        # guardian: allow-silent-swallow
         except Exception:
             return []

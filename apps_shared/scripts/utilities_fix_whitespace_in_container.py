@@ -29,7 +29,6 @@ def fix_all_files(root_dir: Any) -> Any:
     for root, _dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith(".py"):
-                # guardian: allow-path-string
                 filepath: Any = os.path.join(root, file)
                 if fix_whitespace_in_file(filepath):
                     fixed_count += 1

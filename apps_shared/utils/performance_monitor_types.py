@@ -190,7 +190,6 @@ class PerformanceThresholds:
 
     def __init__(self):
         self._thresholds: dict[str, float] = {}
-        # guardian: allow-magic-config
         self._default_threshold_ms = 1000.0
 
     def set_threshold(self, operation: str, max_duration_ms: float) -> None:

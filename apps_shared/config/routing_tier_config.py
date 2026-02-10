@@ -69,7 +69,6 @@ class RouteConfig:
 
 # Default routing configurations
 DEFAULT_ROUTING_CONFIGS = {
-    # guardian: allow-magic-config
     RoutingTier.REASONING: RouteConfig(
         tier_name=RoutingTier.REASONING.value,
         primary_provider=Provider.OPENAI,
@@ -81,7 +80,6 @@ DEFAULT_ROUTING_CONFIGS = {
             Provider.GOOGLE.value: "gemini-2.5-flash",
         },
     ),
-    # guardian: allow-magic-config
     RoutingTier.SPEED: RouteConfig(
         tier_name=RoutingTier.SPEED.value,
         primary_provider=Provider.GOOGLE,
@@ -93,7 +91,6 @@ DEFAULT_ROUTING_CONFIGS = {
             Provider.ANTHROPIC.value: "claude-3-5-haiku-20241022",
         },
     ),
-    # guardian: allow-magic-config
     RoutingTier.COST_OPTIMIZED: RouteConfig(
         tier_name=RoutingTier.COST_OPTIMIZED.value,
         primary_provider=Provider.OPENAI,
@@ -105,7 +102,6 @@ DEFAULT_ROUTING_CONFIGS = {
             Provider.ANTHROPIC.value: "claude-3-5-haiku-20241022",
         },
     ),
-    # guardian: allow-magic-config
     RoutingTier.BALANCED: RouteConfig(
         tier_name=RoutingTier.BALANCED.value,
         primary_provider=Provider.ANTHROPIC,

@@ -40,14 +40,10 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SovereignBaseAgent):
     - Self-healing recommendations
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         success_rate_threshold: float = 0.8,
-        # guardian: allow-magic-config
         error_rate_threshold: float = 0.2,
-        # guardian: allow-magic-config
         response_time_threshold_ms: float = 5000.0,
         enable_logging: bool = True,
     ) -> None:
@@ -122,7 +118,6 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return HealthStatus.DEGRADED
         return HealthStatus.HEALTHY
 
-    # guardian: allow-magic-config
     def get_metrics(self, agent_id: str, limit: int = 10) -> list[health_metrics]:
         """Get recent metrics for an agent.
 
@@ -192,7 +187,6 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         for callback in self._alert_callbacks:
             try:
                 callback(alert)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 if self.enable_logging:
                     Logger.error("alert_callback_failed", extra={"error": str(e)}, exc_info=True)
@@ -255,17 +249,13 @@ class AutonomicMonitorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         }
 
     @standard_heal
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)
 
 
-# guardian: allow-magic-config
 def create_autonomic_monitor(
-    # guardian: allow-magic-config
     success_rate_threshold: float = 0.8,
-    # guardian: allow-magic-config
     error_rate_threshold: float = 0.2,
 ) -> AutonomicMonitorAgent:
     """Factory function to create autonomic monitor.

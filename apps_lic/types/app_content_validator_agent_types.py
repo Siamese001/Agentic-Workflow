@@ -483,7 +483,6 @@ def create_legacy_message_diversity_validator(**kwargs: Any) -> AppContentValida
         DeprecationWarning,
         stacklevel=2,
     )
-    # guardian: allow-magic-config
     config = ContentConfig(
         validate_email=False,
         validate_linkedin=False,

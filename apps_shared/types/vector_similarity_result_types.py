@@ -43,13 +43,10 @@ class CacheEntry:
 class EnhancedSemanticCache:
     """Enhanced semantic cache with similarity-based retrieval."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         max_size: int = 1000,
         ttl_seconds: int = 3600,
-        # guardian: allow-magic-config
         similarity_threshold: float = 0.8,
     ):
         """Initialize enhanced semantic cache.

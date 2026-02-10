@@ -12,7 +12,6 @@ import time
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
@@ -63,7 +62,6 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
                 if func_name in ("setup", "configure", "init", "initialize", "connect"):
                     suspicious.append(f"Line {node.lineno}: {func_name}() called at module level")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         suspicious.append(f"Parse error: {e}")
 
@@ -136,7 +134,6 @@ def main():
             try:
                 __import__(module_name)
                 result["status"] = "ok"
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result["status"] = "error"
                 result["error"] = f"{type(e).__name__}: {str(e)[:100]}"
@@ -144,7 +141,6 @@ def main():
         thread = threading.Thread(target=do_import)
         thread.daemon = True
         thread.start()
-        # guardian: allow-magic-config
         thread.join(timeout=3.0)  # 3 second timeout
 
         duration = time.time() - start

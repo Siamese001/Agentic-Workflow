@@ -88,7 +88,6 @@ class LateInteractionReranker:
             self._model_loaded = True
             return False
 
-    # guardian: allow-magic-config
     def rerank(
         self,
         query: str,
@@ -164,14 +163,12 @@ class LateInteractionReranker:
 
             return reranked
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Reranking failed: {e}")
             # Fallback to original order
             logger.info("Falling back to original document order")
             return documents[:top_k]
 
-    # guardian: allow-magic-config
     def rerank_with_scores(
         self,
         query: str,
@@ -222,7 +219,6 @@ class LateInteractionReranker:
 
             return scored_docs[:top_k]
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
@@ -254,7 +250,6 @@ class LateInteractionReranker:
                             "num_labels": getattr(self._model.config, "num_labels", "unknown"),
                         },
                     )
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 

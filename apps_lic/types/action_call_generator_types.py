@@ -75,7 +75,6 @@ class ActionCallGenerator:
         "\\b(?:next|this)\\s+(?:week|tuesday|wednesday|thursday|friday|monday)\\b",
         "\\b(?:tomorrow|today)\\b",
         "\\b\\d{1,2}(?:am|pm)\\b",
-        # guardian: allow-path-string
         "\\b(?:january|february|march|april|may|june)"
         + "|(july|august|september|october|november|december)"
         + "\\s+\\d{1,2}\\b",

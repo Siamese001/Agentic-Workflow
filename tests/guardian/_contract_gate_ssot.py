@@ -72,7 +72,7 @@ STATUS_ASSERTION_ENUM_VALUES: frozenset[str] = frozenset(
         "FAIL",
         "ERROR",
         "SKIP",
-    },
+    }
 )
 
 # Canonical assertion families the gate accepts (must be structural, not substring):
@@ -82,7 +82,7 @@ ALLOWED_STATUS_ASSERTION_FAMILIES: frozenset[str] = frozenset(
     {
         "dot_status_equals",
         "rolled_up_equals",
-    },
+    }
 )
 
 # Derived contract gate test modules (SSOT)

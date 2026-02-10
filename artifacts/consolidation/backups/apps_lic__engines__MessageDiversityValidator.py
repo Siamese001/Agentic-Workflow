@@ -31,7 +31,6 @@ class MessageDiversityValidator(SubatomicTestingMixin, SovereignBaseAgent):
     FEATURE 1.3 from SUPREME_SPELL
     """
 
-    # guardian: allow-magic-config
     MIN_DIVERSITY_THRESHOLD = 0.85  # Messages must be <85% similar
 
     def __init__(self) -> None:
@@ -83,7 +82,6 @@ class MessageDiversityValidator(SubatomicTestingMixin, SovereignBaseAgent):
         """
         self.message_history.append(message)
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """
         Invoke healing chain via super().

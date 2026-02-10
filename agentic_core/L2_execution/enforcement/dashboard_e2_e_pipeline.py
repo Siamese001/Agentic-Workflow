@@ -144,7 +144,6 @@ class DashboardE2EPipeline:
                 print(f"   ✅ Fixed: {name}")
                 fixed_count += 1
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   ❌ ERROR: {name} - {str(e)}")
 
@@ -166,7 +165,6 @@ class DashboardE2EPipeline:
         try:
             print("   ⏳ Running discovery (this may take 2-3 minutes)...")
             # Run discovery script with longer timeout
-            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(discovery_script)],
                 cwd=str(self.project_root),
@@ -218,7 +216,6 @@ class DashboardE2EPipeline:
             return False
 
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(dashboard_script)],
                 cwd=str(self.project_root),
@@ -268,7 +265,6 @@ class DashboardE2EPipeline:
             return False
 
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(test_script)],
                 cwd=str(self.project_root),

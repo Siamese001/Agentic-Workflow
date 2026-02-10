@@ -96,7 +96,6 @@ class HygieneMixin:
                     except SyntaxError as e:
                         results["syntax_errors"].append({"file": str(rel_path), "error": str(e)})
 
-                # guardian: allow-silent-swallow
                 except Exception:
                     # Log error but continue processing other files
                     continue
@@ -120,7 +119,6 @@ class HygieneMixin:
                 if file_path.exists():
                     file_path.unlink()
                     fixed += 1
-            # guardian: allow-silent-swallow
             except Exception:
                 # Log error but continue
                 continue
@@ -132,7 +130,6 @@ class HygieneMixin:
                 if duplicate_path.exists():
                     duplicate_path.unlink()
                     fixed += 1
-            # guardian: allow-silent-swallow
             except Exception:
                 # Log error but continue
                 continue

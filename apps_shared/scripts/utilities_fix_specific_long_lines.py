@@ -170,7 +170,6 @@ def main() -> None:
     """Fix all specific long lines."""
     fixed_count: Any = 0
     for filepath, line_num in VIOLATIONS:
-        # guardian: allow-path-string
         if os.path.exists(filepath):
             if fix_long_line(filepath, line_num):
                 LOGGER.info(f"Fixed {filepath}: {line_num}")

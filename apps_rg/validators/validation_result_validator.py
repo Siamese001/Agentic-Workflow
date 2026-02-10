@@ -59,12 +59,10 @@ class WordCountEnforcementEngine:
 
         return ValidationResult(True, word_count, min_w, max_w, None)
 
-    # guardian: allow-magic-config
     def enforce_with_regeneration(
         self,
         content: str,
         content_type: str,
-        # guardian: allow-magic-config
         max_attempts: int = 3,
     ) -> dict[str, Any]:
         """

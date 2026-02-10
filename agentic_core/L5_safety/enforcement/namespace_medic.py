@@ -103,7 +103,6 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(healed_content)
         return (True, len(Missing))
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"   [!] Failed to heal {file_path.name}: {e}")
         return (False, 0)

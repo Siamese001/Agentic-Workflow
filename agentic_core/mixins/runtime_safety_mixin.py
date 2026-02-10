@@ -105,15 +105,12 @@ class RuntimeSafetyMixin:
         """
         return safe_popen(command, cwd=cwd, **kwargs)
 
-    # guardian: allow-magic-config
     def safe_communicate(
         self,
         process,
         input_data: str | bytes | None = None,
-        # guardian: allow-magic-config
         timeout: float | None = 60.0,
         sanitize_output: bool = True,
-        # guardian: allow-magic-config
         max_output_chars: int = 2000,
     ):
         """

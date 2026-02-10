@@ -156,7 +156,6 @@ class ObservabilityOperationAdapter:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Operation failed: {str(e)}")
             return self._create_error_outcome(context.operation_id, str(e), start_time)
@@ -314,7 +313,6 @@ class ObservabilityOperationAdapter:
                     warnings=warnings,
                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 last_error = str(e)
                 if attempt < self.config.retry_attempts:
@@ -526,11 +524,8 @@ class ObservabilityOperationAdapter:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_observability_operation_adapter(
-    # guardian: allow-magic-config
     timeout: float = 30.0,
-    # guardian: allow-magic-config
     retry_attempts: int = 3,
     enable_caching: bool = True,
     **kwargs: object,

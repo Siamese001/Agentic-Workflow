@@ -217,7 +217,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                     metadata={"agent": self.__class__.__name__, "target": str(file_path)},
                 )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error healing location violation for {file_path}: {e}")
             return HealResult(
@@ -230,7 +229,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 metadata={"agent": self.__class__.__name__, "target": str(file_path)},
             )
 
-    # guardian: allow-type-erasure
     def heal_violations(self, violations: list, auto_approve: bool = True) -> dict:
         """
         Heal multiple location violations.
@@ -341,20 +339,17 @@ class LocationHealerAgent(SovereignBaseAgent):
                         return self.project_root / "agentic_core" / layer / correct_folder
                 except ValueError:
                     pass
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:
@@ -412,7 +407,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                         print(f"  [!] ERROR: {file_path.name} - {cleanup_results[0]['error']}")
                     else:
                         counts["skipped"] += 1
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
@@ -530,7 +524,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             else:
                 result["gravity_resolution_expected"] = False
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Move failed: {e}")
@@ -566,7 +559,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Auto post-heal validation (now using LocationHealerAgent's own method)
             result.update(self.post_heal_validation(file_path, None, dry_run=False))
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Delete failed: {e}")
@@ -635,7 +627,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             if original_path.exists():
                 report["post_heal_message"] += " | WARNING: Original file still exists (partial move?)"
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             report["post_heal_status"] = "ERROR"
             report["post_heal_message"] = f"Post-heal validation error: {e}"
@@ -696,7 +687,6 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 try:
                     content = py_file.read_text(encoding="utf-8", errors="ignore")
-                # guardian: allow-silent-swallow
                 except Exception:
                     continue
 
@@ -714,7 +704,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                         backup_path = backup_dir / py_file.relative_to(self.project_root)
                         backup_path.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy2(py_file, backup_path)
-                    # guardian: allow-silent-swallow
                     except Exception:
                         pass  # Best effort backup
 
@@ -748,7 +737,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 },
                             )
                             remaining_count += 1
-                # guardian: allow-silent-swallow
                 except Exception:
                     continue
 
@@ -774,7 +762,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"{import_result['import_post_fix_status']} ({remaining_count} remaining)",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             import_result["import_message"] = f"ERROR during import fix: {e}"
             import_result["import_post_fix_status"] = "ERROR"
@@ -1067,7 +1054,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 result["action_taken"] = "SKIPPED: User chose to skip"
                 return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Void violation healing failed: {e}")
@@ -1211,7 +1197,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
                 )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] SSOT update failed: {e}")
@@ -1289,7 +1274,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
             return archive_result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous resolution failed: {e}")
@@ -1454,7 +1438,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
                 )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous subfolder creation failed: {e}")
@@ -1614,7 +1597,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 except ValueError:
                     pass
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
 
@@ -1644,7 +1626,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                     self._apply_convention_fixes(path, action, affected_paths)
                     healed_count += 1
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 action["error"] = str(e)
 
@@ -1691,7 +1672,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             "",
             "# SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)",
             "# File appears to be a sovereign component but missing canon high-signal keywords.",
-            # guardian: allow-path-string
             "# Suggested keywords to add in docstring/code: " + ", ".join(sorted(missing_signals)),
             "# This boosts alignment detection — review and integrate appropriately",
             "",
@@ -1808,7 +1788,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"[LocationHealerAgent] Post-naming validation: {naming_report['naming_post_heal_status']} ({total_naming_issues} issues)",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             naming_report["naming_post_heal_status"] = "ERROR"
             naming_report["naming_message"] = f"Naming validation error: {e}"
@@ -1878,7 +1857,6 @@ class LocationHealerAgent(SovereignBaseAgent):
             else:
                 heal_report["naming_heal_message"] = "No naming issues required auto-heal"
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             heal_report["naming_heal_message"] = f"ERROR during naming auto-heal: {e}"
             Logger.error(f"[LocationHealerAgent] Naming auto-heal failed: {e}")
@@ -1971,7 +1949,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f" → Final: {full_report['import_final_status']} (gravity remaining: {final_gravity})"
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             full_report["import_validation_status"] = "ERROR"
             full_report["import_message"] = f"Import validation error: {e}"
@@ -2063,7 +2040,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                         )
                         affected_paths.append(new_path)
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 heal_actions.append(
                     {
@@ -2202,7 +2178,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 move_result = self.safe_move(path, target, dry_run=False)
                                 additional_moves.append(move_result)
 
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     convention_actions.append(
                         {"type": "IMPORT_HEAL_ERROR", "file": str(path), "error": str(e)},
@@ -2230,7 +2205,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"→ Final: {deep_report['import_final_status']}"
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             deep_report["import_deep_status"] = "ERROR"
             deep_report["import_message"] = f"Deep import error: {e}"
@@ -2303,12 +2277,10 @@ class LocationHealerAgent(SovereignBaseAgent):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.enforce_void_compliance(files)
 
-    # guardian: allow-magic-config
     def cleanup_violations(
         self,
         violations: list[tuple[Path, str]],
         dry_run: bool = True,
-        # guardian: allow-magic-config
         max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """ULTRA HEALING ENGINE — Full autonomous healing with batch post-validation.
@@ -2417,7 +2389,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                 else:
                     batch_report["batch_post_heal_status"] = "NO_ACTIONS"
                     batch_report["batch_message"] = "No healing actions applied"
-            # guardian: allow-silent-swallow
             except Exception as e:
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
@@ -2503,7 +2474,6 @@ class LocationHealerAgent(SovereignBaseAgent):
                     duplicate_report["duplicate_message"] = f"Resolved {len(duplicate_actions)} duplicates"
                 else:
                     duplicate_report["duplicate_message"] = "No duplicates detected"
-            # guardian: allow-silent-swallow
             except Exception as e:
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")

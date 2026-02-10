@@ -106,7 +106,6 @@ class LLMExecutionStrategy(ExecutionStrategy):
             model_name: Name of LLM model to use
         """
         self.model_name = model_name
-        # guardian: allow-magic-config
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"llm_{model_name}",
             failure_threshold=5,
@@ -160,7 +159,6 @@ class LLMExecutionStrategy(ExecutionStrategy):
                 context=context,
                 error="Circuit breaker is open",
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             return ExecutionResult(
                 status=ExecutionStatus.FAILED,
@@ -242,7 +240,6 @@ class LLMExecutionStrategy(ExecutionStrategy):
 class APIExecutionStrategy(ExecutionStrategy):
     """Strategy for API-based execution."""
 
-    # guardian: allow-magic-config
     def __init__(self, api_endpoint: str, timeout: float = 30.0):
         """Initialize API execution strategy.
 
@@ -252,7 +249,6 @@ class APIExecutionStrategy(ExecutionStrategy):
         """
         self.api_endpoint = api_endpoint
         self.timeout = timeout
-        # guardian: allow-magic-config
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"api_{api_endpoint}",
             failure_threshold=3,
@@ -290,7 +286,6 @@ class APIExecutionStrategy(ExecutionStrategy):
                 context=context,
                 error="API circuit breaker is open",
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             return ExecutionResult(
                 status=ExecutionStatus.FAILED,
@@ -327,7 +322,6 @@ class APIExecutionStrategy(ExecutionStrategy):
 class BatchExecutionStrategy(ExecutionStrategy):
     """Strategy for batch execution."""
 
-    # guardian: allow-magic-config
     def __init__(self, batch_size: int = 10, concurrency: int = 5):
         """Initialize batch execution strategy.
 
@@ -377,7 +371,6 @@ class BatchExecutionStrategy(ExecutionStrategy):
                 metrics=metrics,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return ExecutionResult(
                 status=ExecutionStatus.FAILED,

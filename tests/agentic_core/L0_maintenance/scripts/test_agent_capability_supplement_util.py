@@ -16,7 +16,7 @@ def test_test_agent_capability_supplement_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util: {e}",
+            f"Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util: {e}"
         )
 
 
@@ -27,7 +27,7 @@ def test_test_agent_capability_supplement_util_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util",
+            "Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util"
         )
 
 
@@ -48,5 +48,5 @@ def test_test_agent_capability_supplement_util_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util",
+            "Cannot import module agentic_core.L0_maintenance.scripts.agent_capability_supplement_util"
         )

@@ -12,7 +12,6 @@ if archives_path.exists():
         if ".sovereign_healing_backup" in root:
             continue
         if "L4Agent.py" in files:
-            # guardian: allow-path-string
             l4_archived.append(os.path.join(root, "L4Agent.py"))
 for _path in l4_archived:
     pass
@@ -27,7 +26,6 @@ if archives_path.exists():
             continue
         for file in files:
             if file.endswith("Agent.py"):
-                # guardian: allow-path-string
                 rel_path = os.path.relpath(os.path.join(root, file), archives_path)
                 archived_agents.append(rel_path)
 by_subdir = {}

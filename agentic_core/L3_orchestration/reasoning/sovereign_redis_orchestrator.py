@@ -40,7 +40,6 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
         self.connection: redis.Redis | None = None
         # BOUNDED FALLBACK: Max 1000 items to prevent MemoryError
         self.fallback_cache = OrderedDict()
-        # guardian: allow-magic-config
         self.max_fallback_size = 1000
         self.use_fallback = False
 
@@ -61,7 +60,6 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         return redis.Redis(**params)
 
-    # guardian: allow-type-erasure
     def get(self, key: str) -> Any:
         """Execute get operation."""
         if not self.use_fallback:
@@ -75,7 +73,6 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         return self.fallback_cache.get(key)
 
-    # guardian: allow-type-erasure
     def set(self, key: str, value: Any) -> Any:
         """Execute set operation."""
         if not self.use_fallback:
@@ -120,7 +117,6 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         return key in self.fallback_cache
 
-    # guardian: allow-type-erasure
     def clear(self) -> Any:
         """Clear all data from Redis and fallback cache"""
         if not self.use_fallback:
@@ -133,7 +129,6 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
         self.fallback_cache.clear()
 
-    # guardian: allow-type-erasure
     def get_connection_info(self) -> dict:
         """Get information about the current connection state"""
         return {
@@ -145,13 +140,11 @@ class SovereignRedisOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> Dict[str, int]:

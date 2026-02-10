@@ -208,11 +208,9 @@ class LICVectorMemory:
             filter_metadata={"executive_name": executive_name},
         )
 
-    # guardian: allow-magic-config
     def get_strategic_briefs(
         self,
         company_name: str,
-        # guardian: allow-magic-config
         max_age_days: int = 90,
     ) -> QueryResult:
         """Get strategic briefs for a company."""

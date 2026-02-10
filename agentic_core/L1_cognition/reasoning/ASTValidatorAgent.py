@@ -99,7 +99,6 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
         if not hasattr(self, "FORBIDDEN_CALLS") or self.FORBIDDEN_CALLS is None:
             self.FORBIDDEN_CALLS = {"eval", "exec"}
 
-    # guardian: allow-type-erasure
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
         """
         Check for bare and empty except blocks.
@@ -127,7 +126,6 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
 
         self.generic_visit(node)
 
-    # guardian: allow-type-erasure
     def visit_Call(self, node: ast.Call) -> Any:
         """
         Check for forbidden function calls.
@@ -174,13 +172,11 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
         self.generic_visit(node)
 
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, Any]:

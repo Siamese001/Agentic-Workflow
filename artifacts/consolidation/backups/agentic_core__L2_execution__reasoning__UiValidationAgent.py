@@ -36,7 +36,6 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
             and "figma" in self.ctx.services.mcp_clients
         )
 
-    # guardian: allow-type-erasure
     def execute(self) -> Any:
         """
         Executes UI pattern validation using Figma MCP.
@@ -163,7 +162,6 @@ class UiValidationAgent(SubatomicTestingMixin, SovereignBaseAgent):
                 "errors": [str(e)],
             }
 
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

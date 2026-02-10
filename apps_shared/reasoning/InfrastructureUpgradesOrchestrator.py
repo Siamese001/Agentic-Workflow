@@ -96,7 +96,6 @@ class InfrastructureUpgradesOrchestrator:
                         ),
                     )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle content generated: {e}")
 
@@ -116,7 +115,6 @@ class InfrastructureUpgradesOrchestrator:
 
             # Could trigger cache warming logic here
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle cache miss: {e}")
 
@@ -137,7 +135,6 @@ class InfrastructureUpgradesOrchestrator:
 
             # Could trigger adaptive learning here
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle tone violation: {e}")
 

@@ -63,14 +63,10 @@ class SignalQualityPipeline:
     to ensure only high-signal, verifiable content reaches the generation agents.
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         relevance_threshold: float = 0.3,
-        # guardian: allow-magic-config
         authority_threshold: float = 0.4,
-        # guardian: allow-magic-config
         specificity_threshold: float = 0.5,
         enable_coherence_check: bool = False,
     ):
@@ -245,7 +241,6 @@ class SignalQualityPipeline:
 
             return assessment
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
             # Return safe fallback
@@ -310,7 +305,6 @@ class SignalQualityPipeline:
 
             # Default to tier 4 for unknown sources
             return self.authority_tiers["tier_4"]["score"]
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error checking authority: {str(e)}")
             return 0.2  # Conservative default
@@ -346,7 +340,6 @@ class SignalQualityPipeline:
             else:
                 # Very low specificity: neither impact nor metrics
                 return 0.1
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error checking specificity: {str(e)}")
             return 0.1  # Conservative default
@@ -391,7 +384,6 @@ class SignalQualityPipeline:
             coherence = length_score * 0.4 + repetition_score * 0.4 + (1.0 - fragment_penalty) * 0.2
 
             return min(1.0, max(0.0, coherence))
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error checking coherence: {str(e)}")
             return 0.5  # Neutral default
@@ -449,7 +441,6 @@ class SignalQualityPipeline:
             }
 
             return [token for token in tokens if len(token) > 2 and token not in stop_words]
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error normalizing text: {str(e)}")
             return []
@@ -480,20 +471,15 @@ class SignalQualityPipeline:
 
             logger.info(f"Batch evaluation: {len(documents)} input, {len(results)} passed")
             return results
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error in batch evaluation: {str(e)}")
             return []
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_quality_pipeline(
-    # guardian: allow-magic-config
     relevance_threshold: float = 0.3,
-    # guardian: allow-magic-config
     authority_threshold: float = 0.4,
-    # guardian: allow-magic-config
     specificity_threshold: float = 0.5,
     strict_mode: bool = False,
 ) -> SignalQualityPipeline:
@@ -509,7 +495,6 @@ def create_quality_pipeline(
         Configured SignalQualityPipeline instance
     """
     if strict_mode:
-        # guardian: allow-magic-config
         return SignalQualityPipeline(
             relevance_threshold=0.4,
             authority_threshold=0.6,

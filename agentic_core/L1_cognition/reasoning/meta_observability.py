@@ -116,11 +116,9 @@ class MetaLearningObservability:
         if len(self._metrics) > self._max_metrics:
             self._metrics = self._metrics[-self._max_metrics :]
 
-    # guardian: allow-magic-config
     def get_metrics(
         self,
         name: str | None = None,
-        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[MetricPoint]:
         """
@@ -188,7 +186,6 @@ class MetaLearningObservability:
                 message="Connected" if pinecone_available else "Unavailable",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self._health_status["MetaLearningClient"] = HealthStatus(
                 component="MetaLearningClient",
@@ -213,7 +210,6 @@ class MetaLearningObservability:
                 details={"domains_configured": len(stats.get("domain_configs", {}))},
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self._health_status["CacheStrategyManager"] = HealthStatus(
                 component="CacheStrategyManager",
@@ -238,7 +234,6 @@ class MetaLearningObservability:
                 details={"registered_domains": stats.get("registered_domains", [])},
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self._health_status["DomainContextManager"] = HealthStatus(
                 component="DomainContextManager",
@@ -363,7 +358,6 @@ class MetaLearningObservability:
             "performance": self.get_operation_stats(),
             "recent_metrics": [
                 {"name": m.name, "value": m.value, "timestamp": m.timestamp}
-                # guardian: allow-magic-config
                 for m in self.get_metrics(limit=20)
             ],
         }

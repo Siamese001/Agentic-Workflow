@@ -18,11 +18,11 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 import networkx as nx
+from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.base_agents.timeout_decorator import timeout
 from pydantic import BaseModel, Field, validator
 
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 if TYPE_CHECKING:
@@ -260,7 +260,6 @@ class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                 return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             # Create error result
             error_result = MutationResult(
@@ -494,13 +493,11 @@ class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(120)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -544,7 +541,6 @@ class DAGMutatorAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 self._validate_mutation(test_graph, test_mutation)
                 metrics["fixed"] = metrics.get("fixed", 0) + 1
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"DAG Mutator healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1

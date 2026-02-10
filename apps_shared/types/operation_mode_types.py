@@ -176,7 +176,6 @@ class ObservabilityOperationPerformer:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Operation execution failed: {str(e)}")
             return self._create_error_result(
@@ -379,7 +378,6 @@ class ObservabilityOperationPerformer:
                     all_traces.extend(item_output.get("traces", []))
                     all_artifacts.extend(item_output.get("artifacts", []))
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 self.logger.warning(f"Batch item failed: {str(e)}")
                 results.append({"error": str(e)})
@@ -590,9 +588,7 @@ class ObservabilityOperationPerformer:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_observability_operation_performer(
-    # guardian: allow-magic-config
     default_timeout: float = 30.0,
     enable_tracing: bool = True,
     enable_metrics: bool = True,

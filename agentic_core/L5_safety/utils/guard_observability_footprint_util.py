@@ -62,7 +62,6 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                 if not any(log_sig in ContextWindow for log_sig in log_signals):
                     issues.append(f"Potential Dark Reasoning at line {i + 1}: Action without L6 footprint")
 
-    # guardian: allow-silent-swallow
     except Exception:
         # Silently skip files that can't be read
         pass

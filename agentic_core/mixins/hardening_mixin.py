@@ -101,7 +101,6 @@ class HardeningMixin:
         try:
             # Pre-flight validation
             if validate_token_budget:
-                # guardian: allow-magic-config
                 await asyncio.wait_for(
                     asyncio.to_thread(validate_token_budget),
                     timeout=2.5,

@@ -48,7 +48,6 @@ async def run_hardened_orchestrator(
     Logger.info("🚀 Hardened Orchestrator (Wrapper)")
     Logger.info(f"   Workflow: {workflow_id}")
     Logger.info(f"   Type: {WorkflowType}")
-    # guardian: allow-magic-config
     config: Any = OrchestratorConfig(
         max_cycles=5,
         enable_checkpointing=True,

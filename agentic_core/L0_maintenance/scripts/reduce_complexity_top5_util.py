@@ -24,7 +24,6 @@ def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
                         method_complexities.append((f"{node.name}.{item.name}", cc))
 
         return sorted(method_complexities, key=lambda x: x[1], reverse=True)
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"Error analyzing {file_path}: {e}")
         return []

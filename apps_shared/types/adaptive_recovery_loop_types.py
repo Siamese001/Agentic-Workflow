@@ -73,13 +73,10 @@ class AdaptiveRecoveryLoop:
     - Max 3 attempts before HARD_HALT
     """
 
-    # guardian: allow-magic-config
     MAX_ATTEMPTS = 3
     CREATIVE_TEMP_INCREASE = 0.15
     MECHANICAL_TEMP_INCREASE = 0.05
-    # guardian: allow-magic-config
     CREATIVE_MAX_TEMP = 0.9
-    # guardian: allow-magic-config
     MECHANICAL_MAX_TEMP = 0.7
 
     CREATIVE_FAILURE_PATTERNS = {

@@ -45,7 +45,6 @@ class OpenAIClient:
         # Track usage for cost monitoring
         self.usage_stats = {"total_requests": 0, "total_tokens": 0, "total_cost": 0.0, "errors": 0}
 
-    # guardian: allow-magic-config
     @backoff.on_exception(
         backoff.expo,
         (RateLimitError, APIError, APITimeoutError),
@@ -196,7 +195,6 @@ class OpenAIClient:
 
         return chunks
 
-    # guardian: allow-magic-config
     def batch_completion(
         self,
         batch_requests: list[dict[str, object]],
@@ -341,6 +339,5 @@ if __name__ == "__main__":
 
         # Usage stats
 
-    # guardian: allow-silent-swallow
     except Exception:
         pass  # Added pass to complete the try-except block

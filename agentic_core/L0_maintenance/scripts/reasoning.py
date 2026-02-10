@@ -18,7 +18,6 @@ Logger = logging.getLogger(__name__)
 class ReasoningStrategy(ABC):
     """Base strategy for polymorphic reasoning execution."""
 
-    # guardian: allow-magic-config
     def __init__(self, max_steps: int = 8, config: dict[str, Any] | None = None):
         """
         Initialize reasoning strategy.
@@ -210,11 +209,9 @@ class ReasoningStrategyFactory:
     }
 
     @classmethod
-    # guardian: allow-magic-config
     def create(
         cls,
         strategy_type: str,
-        # guardian: allow-magic-config
         max_steps: int = 8,
         config: dict[str, Any] | None = None,
     ) -> ReasoningStrategy:

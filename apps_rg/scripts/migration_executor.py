@@ -132,7 +132,6 @@ class MigrationExecutor:
         tools = [Path(p).stem for p in self.manifest.get("actions", {}).get("move_to_tools", [])]
         if tools:
             # Matches: from apps_rg.engines.toolname import ...
-            # guardian: allow-path-string
             pattern = r"from apps_rg\.engines\.(" + "|".join(map(re.escape, tools)) + r")"
             replacement = r"from apps_rg.tools.\1"
             self._apply_regex_patch(pattern, replacement)
@@ -161,7 +160,6 @@ class MigrationExecutor:
                             new_content = regex.sub(replacement, content)
                             path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Patched imports in {path.name}")
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         logger.error(f"Failed to patch {path.name}: {e}")
 
@@ -176,7 +174,6 @@ class MigrationExecutor:
                             new_content = content.replace(old, new)
                             path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Replaced '{old}' in {path.name}")
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         logger.error(f"Failed to patch {path.name}: {e}")
 

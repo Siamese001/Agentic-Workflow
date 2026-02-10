@@ -49,7 +49,6 @@ class AgentConfig(BaseEntity):
     HARDENED: Explicit Field definitions with validation constraints.
     """
 
-    # guardian: allow-magic-config
     name: str = Field(
         ...,
         min_length=1,

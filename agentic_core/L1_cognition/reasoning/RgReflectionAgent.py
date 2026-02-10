@@ -15,8 +15,9 @@ import logging
 import os
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 Logger = logging.getLogger(__name__)
 
@@ -94,24 +95,10 @@ class RgReflectionAgent(SovereignBaseAgent):
                 Logger.info(f"Created Pinecone index: {self._index_name}")
             self.index = self.pinecone_client.Index(self._index_name)
             Logger.info(f"Pinecone index ready: {self._index_name}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to initialize Pinecone: {str(e)}")
             self.pinecone_client = None
 
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
-
-    # guardian: allow-type-erasure
     def _get_successful_traces(self) -> list[dict[str, Any]]:
         """Get successful traces from context.
 
@@ -142,26 +129,18 @@ class RgReflectionAgent(SovereignBaseAgent):
             return False
         return True
 
-    # guardian: allow-type-erasure
     async def _process_single_trace(self, trace: dict[str, Any], results: dict[str, Any]) -> None:
         """Process a single trace and update results.
 
-        # guardian: allow-type-erasure
-
-                Args:
-                    # guardian: allow-type-erasure
-                    trace: Trace dictionary to process.
-                    results: Results dictionary to update.
-                # guardian: allow-type-erasure
+        Args:
+            trace: Trace dictionary to process.
+            results: Results dictionary to update.
         """
         analysis = await self._analyze_success_pattern(trace)
-        # guardian: allow-type-erasure
         if await self._internalize_trace(trace, analysis):
             results["internalized"] += 1
-        # guardian: allow-type-erasure
         results["processed"] += 1
         recommendations = await self._generate_recommendations(trace, analysis)
-        # guardian: allow-type-erasure
         if isinstance(recommendations, list):
             results["recommendations"].extend(recommendations)
 
@@ -178,41 +157,30 @@ class RgReflectionAgent(SovereignBaseAgent):
         """
         successful_traces = self._get_successful_traces()
 
-        # guardian: allow-type-erasure
-
         if not successful_traces:
             Logger.debug("No successful traces to process")
             return {"processed": 0, "internalized": 0, "errors": [], "recommendations": []}
 
-        # guardian: allow-type-erasure
-
         Logger.info(f"RgReflectionAgent processing {len(successful_traces)} successful traces")
         results: dict[str, Any] = {
-            # guardian: allow-type-erasure
             "processed": 0,
             "internalized": 0,
             "errors": [],
-            # guardian: allow-type-erasure
             "recommendations": [],
         }
 
-        # guardian: allow-type-erasure
         for trace in successful_traces:
             if not self._is_valid_trace(trace):
                 continue
-            # guardian: allow-type-erasure
             try:
                 await self._process_single_trace(trace, results)
-            # guardian: allow-silent-swallow
             except Exception as e:
-                # guardian: allow-type-erasure
                 error_msg = f"Error processing trace: {str(e)}"
                 Logger.error(error_msg)
                 results["errors"].append(error_msg)
 
         try:
             results["critique"] = await self._self_critique(results)
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Self-critique failed: {e}")
             results["critique"] = "Internal critique unavailable"
@@ -223,45 +191,37 @@ class RgReflectionAgent(SovereignBaseAgent):
         """
         Analyze a trace to identify reusable patterns.
 
-        # guardian: allow-type-erasure
         Args:
             trace: Successful execution trace to analyze.
 
         Returns:
             Dict with pattern analysis results.
         """
-        # guardian: allow-type-erasure
         return {"pattern_id": "success_analysis_01"}
 
     async def _internalize_trace(self, trace: dict[str, Any], analysis: dict[str, Any]) -> bool:
         """
-        # guardian: allow-type-erasure
         Store analyzed patterns in Pinecone or local fallback.
 
         Args:
             trace: Original trace data.
-            # guardian: allow-type-erasure
             analysis: Pattern analysis results.
 
         Returns:
             True if internalization succeeded.
-        # guardian: allow-type-erasure
         """
         return True
 
     async def _generate_recommendations(self, trace: dict[str, Any], analysis: dict[str, Any]) -> list[str]:
-        # guardian: allow-type-erasure
         """
-                Generate recommendations for future executions.
+        Generate recommendations for future executions.
 
-                Args:
-                    trace: Original trace data.
-                    analysis: Pattern analysis results.
+        Args:
+            trace: Original trace data.
+            analysis: Pattern analysis results.
 
-        # guardian: allow-type-erasure
-
-                Returns:
-                    List of recommendation strings.
+        Returns:
+            List of recommendation strings.
         """
         return []
 
@@ -345,7 +305,6 @@ class RgReflectionAgent(SovereignBaseAgent):
                 research_output[hop_name] = result
                 Logger.info(f"Research hop '{hop_name}' completed for {topic}")
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Research hop '{hop_name}' failed: {e}")
                 research_output[hop_name] = {"error": str(e)}
@@ -384,13 +343,11 @@ class RgReflectionAgent(SovereignBaseAgent):
         )
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:

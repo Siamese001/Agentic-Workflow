@@ -54,21 +54,18 @@ class RouteConfig:
 
 # Default routing configurations
 DEFAULT_ROUTING_CONFIGS = {
-    # guardian: allow-magic-config
     RoutingTier.PRIMARY: RouteConfig(
         provider="openai",
         model="gpt-4",
         temperature=0.7,
         max_tokens=2048,
     ),
-    # guardian: allow-magic-config
     RoutingTier.SECONDARY: RouteConfig(
         provider="anthropic",
         model="claude-3-sonnet",
         temperature=0.7,
         max_tokens=2048,
     ),
-    # guardian: allow-magic-config
     RoutingTier.TERTIARY: RouteConfig(
         provider="google",
         model="gemini-pro",

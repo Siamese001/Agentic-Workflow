@@ -132,7 +132,6 @@ class RedisSovereignAgent(SovereignBaseAgent):
             keys: list = self.client.keys(pattern)
             if keys:
                 self.client.delete(*keys)
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 
@@ -153,12 +152,10 @@ class RedisSovereignAgent(SovereignBaseAgent):
             if keys:
                 deleted = self.client.delete(*keys)
                 print(f"   [CACHE] Purged {deleted} ghost entries for: {file_path.name}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             # Non-critical, don't break the healer
             print(f"   [!] cache invalidation failed for {file_path}: {e}")
 
-    # guardian: allow-type-erasure
     async def execute(self, ctx=None) -> Any:
         """Execute execute operation."""
         info = self.client.info()
@@ -169,13 +166,11 @@ class RedisSovereignAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

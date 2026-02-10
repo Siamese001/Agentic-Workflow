@@ -187,7 +187,6 @@ class MCPToolServer:
                 result=result,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Tool execution failed for {name}: {e}")
 

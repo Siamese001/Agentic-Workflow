@@ -20,18 +20,12 @@ class ConfidenceMetrics:
 class EarlyStoppingStrategy:
     """Strategy for early stopping in reasoning chains."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         confidence_threshold: float = 0.95,
-        # guardian: allow-magic-config
         convergence_threshold: float = 0.90,
-        # guardian: allow-magic-config
         min_confidence_for_pruning: float = 0.80,
-        # guardian: allow-magic-config
         min_steps: int = 2,
-        # guardian: allow-magic-config
         max_steps: int = 8,
     ):
         """Initialize early stopping strategy."""
@@ -209,7 +203,6 @@ class ConfidenceEstimator:
 class PathPruningStrategy:
     """Strategy for pruning low-confidence reasoning paths."""
 
-    # guardian: allow-magic-config
     def __init__(self, min_confidence: float = 0.80):
         """Initialize path pruning strategy."""
         self.min_confidence = min_confidence

@@ -37,7 +37,6 @@ def validate_json_schema(schema: dict[str, object]) -> list[str]:
         errors.append("Draft-07 meta-schema not found")
     except jsonschema.ValidationError as e:
         errors.append(f"schema validation error: {e.message}")
-    # guardian: allow-silent-swallow
     except Exception as e:
         errors.append(f"Unexpected validation error: {e}")
 
@@ -112,7 +111,6 @@ def validate_mcp_catalogs() -> dict[str, object]:
         except json.JSONDecodeError as e:
             results["errors"].append(f"Invalid JSON in {catalog_file}: {e}")
             results["valid"] = False
-        # guardian: allow-silent-swallow
         except Exception as e:
             results["errors"].append(f"Error validating {catalog_file}: {e}")
             results["valid"] = False
@@ -169,7 +167,6 @@ def validate_python_files() -> dict[str, object]:
                 results["errors"].append(f"Syntax error in {py_file}: {e}")
                 results["valid"] = False
                 results["files"][str(py_file)] = {"valid": False, "error": str(e)}
-            # guardian: allow-silent-swallow
             except Exception as e:
                 results["errors"].append(f"Error checking {py_file}: {e}")
                 results["valid"] = False
@@ -217,7 +214,6 @@ def validate_schemas() -> dict[str, object]:
         except json.JSONDecodeError as e:
             results["errors"].append(f"Invalid JSON in {schema_file}: {e}")
             results["valid"] = False
-        # guardian: allow-silent-swallow
         except Exception as e:
             results["errors"].append(f"Error validating {schema_file}: {e}")
             results["valid"] = False
@@ -253,7 +249,6 @@ def main():
     """Run all validation checks."""
 
     # Change to sdks_mcps directory
-    # guardian: allow-path-string
     os.chdir(Path(__file__).parent.parent)
 
     # Run validations

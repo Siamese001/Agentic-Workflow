@@ -87,7 +87,6 @@ def main():
                                 f"references '{old_stem}' -> '{line.strip()}'",
                             )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"  [WARN] Could not read {path}: {e}")
 
@@ -112,7 +111,6 @@ def main():
                     content = path.read_text(encoding="utf-8")
                     if f"class {stem}" not in content:
                         pascal_violations.append(str(path.relative_to(ROOT_DIR)))
-                # guardian: allow-silent-swallow
                 except:
                     pass
 

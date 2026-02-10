@@ -19,7 +19,6 @@ Renamed: 2026-01-22 (Utility Renaming - Not an Agent)
 
 
 import networkx as nx
-
 from agentic_core.base_agents.decorators import standard_heal
 
 
@@ -259,13 +258,11 @@ class DAGManager(
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> Dict[str, int]:

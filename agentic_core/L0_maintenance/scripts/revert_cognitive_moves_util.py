@@ -34,7 +34,6 @@ def main():
                     original_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(target_path), str(original_path))
                     reverted += 1
-                # guardian: allow-silent-swallow
                 except Exception:
                     errors += 1
             else:

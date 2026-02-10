@@ -16,7 +16,7 @@ def test_test_reasoning_pattern_validator_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L5_safety.validators.reasoning_pattern_validator: {e}",
+            f"Cannot import module agentic_core.L5_safety.validators.reasoning_pattern_validator: {e}"
         )
 
 

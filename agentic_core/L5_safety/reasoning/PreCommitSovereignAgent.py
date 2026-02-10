@@ -99,7 +99,6 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBase):
                     metrics["violations"] += (
                         len(validation_result) if isinstance(validation_result, list) else 1
                     )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Error in validate_staged_files: {e}")
                 metrics["errors"] += 1
@@ -110,7 +109,6 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBase):
                     metrics["violations"] += (
                         len(validation_result) if isinstance(validation_result, list) else 1
                     )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Error in validate_sovereignty: {e}")
                 metrics["errors"] += 1
@@ -210,7 +208,6 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBase):
 
         try:
             report = self.validator.validate_all()
-        # guardian: allow-silent-swallow
         except Exception as e:
             return self._create_error_result(f"Validation error: {str(e)}")
 

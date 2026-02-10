@@ -44,7 +44,6 @@ def has_core_dependency(file_path: Path) -> bool:
             elif isinstance(node, ast.ImportFrom):
                 if node.module and node.module.startswith("agentic_core"):
                     return True
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  [WARN] Could not parse {file_path.name}: {e}")
     return False

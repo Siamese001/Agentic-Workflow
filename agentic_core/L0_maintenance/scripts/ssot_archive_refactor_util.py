@@ -31,7 +31,6 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
                 if "#" in line and line.index("#") < line.find("archives"):
                     continue
                 matches.append((i, line))
-    # guardian: allow-silent-swallow
     except Exception:
         pass
     return matches

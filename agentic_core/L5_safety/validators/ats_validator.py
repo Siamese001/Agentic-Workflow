@@ -167,7 +167,6 @@ class AtsValidator:
         # Normalize case for comparison
         return text.lower()
 
-    # guardian: allow-magic-config
     def extract_keywords(self, text: str, min_length: int = 3) -> set[str]:
         """
         Extract keywords from text using deterministic regex.

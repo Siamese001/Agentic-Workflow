@@ -151,7 +151,6 @@ class ProcessGuard:
                 self._kill_process(pid)
                 result["terminated"].append(pid)
                 logger.info(f"ProcessGuard: Terminated PID {pid}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 result["failed"].append(pid)
                 logger.warning(f"ProcessGuard: Failed to terminate PID {pid}: {e}")
@@ -204,7 +203,6 @@ class ProcessGuard:
         base_cmd = command[0].lower()
 
         # Strip path if present (e.g., /usr/bin/pip -> pip)
-        # guardian: allow-path-string
         base_cmd = os.path.basename(base_cmd)
 
         # Strip extension on Windows (e.g., pip.exe -> pip)

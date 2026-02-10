@@ -170,7 +170,6 @@ def main():
         try:
             source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source)
-        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"Parse error in {py_file.name}: {e}")
             continue

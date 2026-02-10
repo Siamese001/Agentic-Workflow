@@ -147,7 +147,6 @@ for agent in no_tests:
         else:
             skipped.append(f"{class_name}: No changes needed")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         errors.append(f"{class_name}: {str(e)}")
 

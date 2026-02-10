@@ -365,7 +365,6 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
         Logger.info(f"Saved tool {name} to {directory}")
         return True
 
-    # guardian: allow-type-erasure
     def get_statistics(self) -> dict:
         """Get tool creation statistics."""
         stats: Any = {
@@ -383,13 +382,11 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(180)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -434,7 +431,6 @@ class ToolsmithAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         self.save_tool(tool_name)
                         metrics["fixed"] += 1
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[{agent_name}] Toolsmith Healing Failed: {str(e)}")
             metrics["errors"] += 1

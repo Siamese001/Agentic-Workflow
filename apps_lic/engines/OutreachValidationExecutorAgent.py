@@ -507,7 +507,6 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
 
         return len(intersection) / len(union)
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

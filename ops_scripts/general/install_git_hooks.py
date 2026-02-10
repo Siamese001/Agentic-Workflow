@@ -81,7 +81,6 @@ def install_hook():
         print("[SUCCESS] Pre-commit hook installed.")
         print("          Pascal Sovereignty will now protect this repo from regression.")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"[ERROR] Failed to install hook: {e}")
         sys.exit(1)

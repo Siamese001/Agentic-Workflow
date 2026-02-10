@@ -84,7 +84,6 @@ class VectorMemoryStore:
         except ImportError:
             logger.warning("Pinecone not installed, vector memory disabled")
             self._initialized = False
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to initialize vector memory: {e}")
             self._initialized = False
@@ -136,7 +135,6 @@ class VectorMemoryStore:
             self._index.upsert(vectors=[(id, embedding, meta)], namespace=self.config.namespace)
             logger.debug(f"Stored vector: {id}")
             return id
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to store vector: {e}")
             return ""
@@ -190,7 +188,6 @@ class VectorMemoryStore:
             logger.debug(f"Found {len(results)} results above threshold")
             return results
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to search vectors: {e}")
             return []

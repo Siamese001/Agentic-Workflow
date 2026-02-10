@@ -157,14 +157,11 @@ class ToolReliabilityMixin:
 
         Logger.debug(f"[RELIABILITY] {self.__class__.__name__} tool reliability initialized")
 
-    # guardian: allow-magic-config
     def configure_tool_retry(
         self,
         tool_name: str,
-        # guardian: allow-magic-config
         max_retries: int = 3,
         base_delay_seconds: float = 1.0,
-        # guardian: allow-magic-config
         max_delay_seconds: float = 30.0,
         exponential_base: float = 2.0,
         jitter: bool = True,
@@ -208,17 +205,12 @@ class ToolReliabilityMixin:
         self._ensure_tool_health(tool_name)
         Logger.info(f"[RELIABILITY] Retry policy configured for '{tool_name}'")
 
-    # guardian: allow-magic-config
     def configure_circuit_breaker(
         self,
         tool_name: str,
-        # guardian: allow-magic-config
         failure_threshold: int = 5,
-        # guardian: allow-magic-config
         success_threshold: int = 2,
-        # guardian: allow-magic-config
         timeout_seconds: float = 60.0,
-        # guardian: allow-magic-config
         half_open_max_calls: int = 3,
     ) -> None:
         """

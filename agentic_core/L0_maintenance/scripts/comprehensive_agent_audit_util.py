@@ -89,7 +89,6 @@ def analyze_agents():
                     "has_heal": has_heal,
                 },
             )
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 

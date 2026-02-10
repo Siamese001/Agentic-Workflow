@@ -100,13 +100,11 @@ def process_file(file_path: Any) -> Any:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write("\n".join(new_lines))
             changed: Any = True
-        # guardian: allow-path-string
         if os.path.exists(backup_path):
             os.remove(backup_path)
         return changed
     except Exception as e:
         print(f"   ERROR: Failed to process {file_path}: {e}")
-        # guardian: allow-path-string
         if os.path.exists(backup_path):
             with open(backup_path) as src:
                 with open(file_path, "w") as dst:
@@ -129,7 +127,6 @@ def main() -> Any:
             if file in EXCLUDED_FILES:
                 continue
             if file.endswith(".py"):
-                # guardian: allow-path-string
                 if process_file(os.path.join(root, file)):
                     count += 1
                 else:

@@ -148,7 +148,6 @@ class BulkheadHealthChecker(HealthChecker):
                 metrics=metrics,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return HealthCheckResult(
                 component_name=self.component_name,
@@ -231,7 +230,6 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 details={"circuit_stats": all_stats},
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return HealthCheckResult(
                 component_name=self.component_name,
@@ -299,7 +297,6 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 metrics=health,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return HealthCheckResult(
                 component_name=self.component_name,
@@ -372,7 +369,6 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 metrics=stats,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             return HealthCheckResult(
                 component_name=self.component_name,
@@ -507,7 +503,6 @@ class HealthCheckRegistry:
         """
         try:
             return await checker.check_health()
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Health check failed for {checker.component_name}: {e}")
             return HealthCheckResult(

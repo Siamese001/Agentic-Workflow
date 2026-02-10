@@ -172,7 +172,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.2.5",
             name="Competitive Positioning Agent",
             purpose="Analyze peer JDs to identify table stakes and differentiators.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -206,7 +205,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.4",
             name="Professional Headline",
             purpose="Generate 3-axis professional headline.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=1,
@@ -221,7 +219,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.5",
             name="Executive Summary",
             purpose="Generate 110-130 token executive summary.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -233,7 +230,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.6",
             name="Most Recent Experience",
             purpose="Generate bullets for most recent role with unified format.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -245,7 +241,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.7",
             name="Prior Experience",
             purpose="Generate bullets for prior roles (IBM Bullets format).",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -272,7 +267,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.9",
             name="Leadership Competencies",
             purpose="Generate 6 key leadership competencies.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -299,7 +293,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.10",
             name="Cover Letter - Specificity-Driven Research Agent",
             purpose="Generate highly specific cover letter content.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,
@@ -321,7 +314,6 @@ Base this on typical {job_title} roles at {company_type} companies.""",
             id="K.11",
             name="Optimized Skills Keyword Generation",
             purpose="Generate 10-15 ATS-optimized skill keywords.",
-            # guardian: allow-magic-config
             config=ThresholdConfig(
                 rag_recency_weight=0.25,
                 cot_min_paths=2,

@@ -142,7 +142,6 @@ class SyntaxScarRepairer:
                     },
                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 results["failed"] += 1
                 results["details"].append({"file": file_rel_path, "status": "error", "error": str(e)})

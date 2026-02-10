@@ -12,18 +12,17 @@ from pathlib import Path
 from typing import Any
 
 # Concurrent access retry configuration
-# guardian: allow-magic-config
 MAX_READ_RETRIES = 3
 RETRY_DELAY_MS = 10
 
 from agentic_core.L2_execution.enforcement.redis import SovereignRedisClient
-
 try:
     from fastapi import FastAPI, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
 except ImportError as _err:
     raise ImportError(
-        "fastapi is required for this module. Install with: pip install -e '.[infra]'",
+        "fastapi is required for this module. "
+        "Install with: pip install -e '.[infra]'"
     ) from _err
 from pydantic import BaseModel
 
@@ -52,7 +51,6 @@ pinecone_wrapper = PineconeTelemetryWrapper()
 
 # Simple in-memory log buffer for the Live Runtime tab.
 _LOG_BUFFER: list[str] = []
-# guardian: allow-magic-config
 _MAX_LOG_LINES = 250
 
 
@@ -80,7 +78,6 @@ async def health_check() -> dict[str, Any]:
 
 
 @app.get("/api/redis/logs")
-# guardian: allow-magic-config
 async def get_redis_logs(limit: int = 50) -> dict[str, Any]:
     # For now this is an in-memory stream. Hooking it to Redis MCP is optional.
     lim = max(1, min(int(limit), 200))
@@ -146,7 +143,6 @@ def _safe_read_json(file_path: Path, retries: int = MAX_READ_RETRIES) -> dict[st
         except json.JSONDecodeError as e:
             last_error = e
             time.sleep(RETRY_DELAY_MS / 1000)  # Brief delay before retry
-        # guardian: allow-silent-swallow
         except Exception as e:
             last_error = e
             break

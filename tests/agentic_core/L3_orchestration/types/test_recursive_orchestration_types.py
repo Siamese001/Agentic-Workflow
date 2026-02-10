@@ -16,7 +16,7 @@ def test_test_recursive_orchestration_types_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.types.recursive_orchestration_types: {e}",
+            f"Cannot import module agentic_core.L3_orchestration.types.recursive_orchestration_types: {e}"
         )
 
 

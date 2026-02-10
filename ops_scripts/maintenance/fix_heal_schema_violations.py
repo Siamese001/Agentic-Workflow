@@ -50,7 +50,6 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
 
         return False, 0
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  ❌ Error fixing {filepath}: {e}")
         return False, 0

@@ -60,7 +60,6 @@ class TextSimilarityCalculator:
             return 0.0
         return numerator / denominator
 
-    # guardian: allow-magic-config
     def find_duplicates(self, texts: list[str], threshold: float = 0.9) -> list[tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
         duplicates = []

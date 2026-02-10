@@ -83,7 +83,6 @@ class DeepWikiHealingStrategy:
                     if rel_path not in documented_paths:
                         undocumented.append(py_file)
             return undocumented[: config.DEEPWIKI_HEALING_BATCH_SIZE]
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] Error finding undocumented files: {e}")
             return []
@@ -100,7 +99,6 @@ class DeepWikiHealingStrategy:
                 f"[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}",
             )
             return set()
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] Error getting documented paths: {e}")
             return set()

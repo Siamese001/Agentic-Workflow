@@ -99,7 +99,6 @@ class Historian:
                 with open(self.file_history_file) as f:
                     self.file_history = json.load(f)
                 LOGGER.info(f"Loaded history for {len(self.file_history)} files")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Failed to load file history: {e}")
                 self.file_history = {}
@@ -110,7 +109,6 @@ class Historian:
         try:
             with open(self.file_history_file, "w") as f:
                 json.dump(self.file_history, f, indent=2)
-        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Failed to save file history: {e}")
 
@@ -131,7 +129,6 @@ class Historian:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
                 return hash_md5.hexdigest()
-        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Failed to hash {file_path}: {e}")
             return ""

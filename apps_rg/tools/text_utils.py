@@ -16,7 +16,6 @@ def sanitize_campaign_text(text: str) -> str:
     return re.sub(r"[^\w\s-]", "", text).strip()
 
 
-# guardian: allow-magic-config
 def extract_keywords(text: str, max_words: int = 5) -> list[str]:
     """Extract top keywords from text blob."""
     return text.split()[:max_words]

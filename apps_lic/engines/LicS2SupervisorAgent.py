@@ -15,6 +15,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 # This boosts alignment detection — review and integrate appropriately
 
 from agentic_core.base_agents.decorators import standard_heal
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
@@ -25,13 +26,11 @@ class LicS2SupervisorAgent(SovereignBaseAgent):
     """
 
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set = None,
         **kwargs,
@@ -274,7 +273,6 @@ Return a numbered list of weaknesses (max 3). Format: "1. [weakness]"
 
             return findings[:3]
 
-        # guardian: allow-silent-swallow
         except Exception:
             return []
 

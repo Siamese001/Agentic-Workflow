@@ -92,7 +92,6 @@ def get_file_content(commit: str, file_path: str) -> str:
             errors="replace",
         )
         return result.stdout
-    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -160,7 +159,6 @@ def restore_file(file_path: str, commit: str) -> tuple[bool, str]:
         full_path.write_text(fixed_content, encoding="utf-8")
 
         return True, "Restored and imports fixed"
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, str(e)
 

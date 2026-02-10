@@ -22,7 +22,6 @@ from pathlib import Path
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
-    # guardian: allow-global-mutation
     sys.path.insert(0, str(REPO_ROOT))
 
 # Import available Guardians

@@ -83,7 +83,7 @@ def test_{module_path.stem}_has_public_attributes():
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
         # Look for at least one callable
         callables = [name for name in public_attrs if callable(getattr(mod, name))]
-
+        
         if callables:
             # Test that first callable is callable
             assert callable(getattr(mod, callables[0]))
@@ -146,7 +146,6 @@ def main():
                 generated_count += 1
                 if generated_count % 100 == 0:
                     print(f"Generated {generated_count} tests...")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Failed to generate test for {module_path}: {e}")
             failed_imports += 1

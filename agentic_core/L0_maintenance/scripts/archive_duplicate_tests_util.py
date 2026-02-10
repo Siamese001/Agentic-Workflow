@@ -58,7 +58,6 @@ def main():
                 shutil.move(str(dup), str(archive_target))
                 print(f"✅ Archived: {relative_path}")
                 archived += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"❌ Failed to archive {dup}: {e}")
 

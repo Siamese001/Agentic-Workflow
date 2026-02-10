@@ -42,7 +42,6 @@ class TaskInfo:
 class AsyncCoordinator:
     """Coordinates async tasks and prevents orphaned operations."""
 
-    # guardian: allow-magic-config
     def __init__(self, name: str = "default", max_concurrent: int = 100):
         """Initialize the coordinator.
 
@@ -225,7 +224,6 @@ class AsyncCoordinator:
             else:
                 task_info.state = TaskState.COMPLETED
                 logger.debug(f"Task {task_id} completed successfully")
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error handling task completion for {task_id}: {e}")
 
@@ -236,7 +234,6 @@ class AsyncCoordinator:
                     await task_info.cleanup_callback()
                 else:
                     task_info.cleanup_callback()
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
@@ -363,7 +360,6 @@ class AsyncCoordinator:
 
             except asyncio.CancelledError:
                 break
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Error in cleanup loop: {e}")
 
@@ -396,7 +392,6 @@ _coordinators: dict[str, AsyncCoordinator] = {}
 _coordinator_lock = asyncio.Lock()
 
 
-# guardian: allow-magic-config
 async def get_coordinator(name: str = "default", max_concurrent: int = 100) -> AsyncCoordinator:
     """Get or create an async coordinator.
 

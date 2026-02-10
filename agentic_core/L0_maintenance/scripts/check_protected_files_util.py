@@ -51,7 +51,6 @@ def get_commit_message() -> str:
         if commit_msg_file.exists():
             return commit_msg_file.read_text()
         return ""
-    # guardian: allow-silent-swallow
     except Exception:
         return ""
 

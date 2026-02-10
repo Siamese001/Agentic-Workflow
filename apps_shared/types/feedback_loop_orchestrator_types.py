@@ -85,10 +85,8 @@ class FeedbackLoopOrchestrator:
     policies, and detailed failure feedback.
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         max_attempts: int = 5,
         checkpoint_saving: bool = True,
         reversion_enabled: bool = True,
@@ -157,7 +155,6 @@ class FeedbackLoopOrchestrator:
             # Generate content
             try:
                 content = await generator(context, temperature)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Generation failed on attempt {attempt}: {e}")
                 continue

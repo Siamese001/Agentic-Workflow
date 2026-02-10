@@ -37,7 +37,6 @@ class SemanticCacheMixin:
             self._semantic_cache = SemanticCacheManager()
         return self._semantic_cache
 
-    # guardian: allow-magic-config
     async def semantic_recall(self, query: str, threshold: float = 0.85) -> Any:
         """Recall from semantic cache (L1 Redis + L2 Pinecone)."""
         return await self.semantic_cache.recall(query, threshold=threshold)

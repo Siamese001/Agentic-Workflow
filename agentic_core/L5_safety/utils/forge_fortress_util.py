@@ -68,13 +68,11 @@ def forge_fortress() -> Any:
                         logging.info(f"  [MOVED] {item.name}")
                     else:
                         logging.warning(f"  [COLLISION] {item.name} exists in target. Manual merge required.")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logging.error(f"  [FAILED] Move {item.name}: {e}")
             if not any(old_path.iterdir()):
                 try:
                     old_path.rmdir()
-                # guardian: allow-silent-swallow
                 except:
                     pass
     logging.info("--- FORGE COMPLETE: Sovereign Architecture In Place ---")

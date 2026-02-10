@@ -172,7 +172,6 @@ class SchemaHistoryFetcher:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to fetch schema history: {str(e)}")
             return SchemaHistoryResult(
@@ -383,7 +382,6 @@ class SchemaHistoryFetcher:
 
                     self._history_records[schema_id] = records
 
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     self.logger.error(f"Failed to load history from {history_file}: {str(e)}")
 
@@ -392,7 +390,6 @@ class SchemaHistoryFetcher:
                 f"Loaded {total_records} history records for {len(self._history_records)} schemas",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
@@ -460,7 +457,6 @@ class SchemaHistoryFetcher:
             with open(history_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to save schema history: {str(e)}")
 
@@ -471,10 +467,8 @@ class SchemaHistoryFetcher:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_schema_history_fetcher(
     storage_path: str = "data/schema_history",
-    # guardian: allow-magic-config
     max_records_per_schema: int = 1000,
     retention_days: int = 365,
     **kwargs: object,
@@ -490,7 +484,6 @@ def create_schema_history_fetcher(
 
 
 # Convenience function for direct usage
-# guardian: allow-magic-config
 def fetch_schema_history(
     schema_id: str | None = None,
     actions: list[str] = None,
@@ -498,7 +491,6 @@ def fetch_schema_history(
     date_from: datetime | None = None,
     date_to: datetime | None = None,
     include_changes: bool = True,
-    # guardian: allow-magic-config
     limit: int = 100,
     offset: int = 0,
     config: dict[str, Any] | None = None,

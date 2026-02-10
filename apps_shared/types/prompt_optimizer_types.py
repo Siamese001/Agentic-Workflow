@@ -108,7 +108,6 @@ class PromptOptimizer:
         )
 
     @staticmethod
-    # guardian: allow-magic-config
     def compress_prompt(prompt: str, max_tokens: int = 4000) -> str:
         """
         Compress prompt to fit within token limit.
@@ -136,7 +135,6 @@ class PromptOptimizer:
         return prompt
 
     @staticmethod
-    # guardian: allow-magic-config
     def add_context(prompt: str, context: dict[str, Any], max_context_items: int = 5) -> str:
         """
         Add context information to prompt.

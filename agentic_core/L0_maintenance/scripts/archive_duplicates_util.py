@@ -28,7 +28,6 @@ def main():
     if not ARCHIVE_BASE.exists():
         try:
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
-        # guardian: allow-silent-swallow
         except Exception:
             sys.exit(1)
     moved_count = 0
@@ -44,7 +43,6 @@ def main():
             try:
                 shutil.move(str(source_path), str(dest_path))
                 moved_count += 1
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
         else:

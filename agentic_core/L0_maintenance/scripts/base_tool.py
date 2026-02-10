@@ -39,7 +39,6 @@ class FunctionalTool(BaseTool):
             # Handle both async and sync functions if needed,
             # for now assuming sync func wrapped in async logic or simple return
             return str(self.func(**kwargs))
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Error executing {self.name}: {str(e)}"
 

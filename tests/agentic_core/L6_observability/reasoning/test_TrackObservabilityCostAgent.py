@@ -16,7 +16,7 @@ def test_test_TrackObservabilityCostAgent_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent: {e}",
+            f"Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent: {e}"
         )
 
 
@@ -27,7 +27,7 @@ def test_test_TrackObservabilityCostAgent_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent",
+            "Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent"
         )
 
 
@@ -48,5 +48,5 @@ def test_test_TrackObservabilityCostAgent_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent",
+            "Cannot import module agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent"
         )

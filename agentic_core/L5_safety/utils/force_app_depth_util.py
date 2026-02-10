@@ -38,7 +38,6 @@ def force_app_depth() -> Any:
                 shutil.move(str(item), str(dest / item.name))
             try:
                 shutil.rmtree(str(engine_folder))
-            # guardian: allow-silent-swallow
             except:
                 pass
                 print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
@@ -61,7 +60,6 @@ def force_app_depth() -> Any:
                 shutil.move(str(item), str(dest / item.name))
             try:
                 shutil.rmtree(str(layer_folder))
-            # guardian: allow-silent-swallow
             except:
                 pass
             print(f"  [✓] LAYER ANNEXED: {layer_folder.name} -> Core/{target_layer}/P1_core")

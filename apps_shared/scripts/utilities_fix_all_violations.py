@@ -81,7 +81,6 @@ def split_large_types_files() -> Any:
                     ConfigurationService().Logger.info(
                         f"  Updated {ConfigurationService().full_path.name} as re-export shim",
                     )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 ConfigurationService().Logger.info(f"Error processing {file_path}: {e}")
 

@@ -67,7 +67,6 @@ def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
                     violations.append((line_num, line.strip()))
                     break
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"⚠️  Error reading {file_path}: {e}")
 

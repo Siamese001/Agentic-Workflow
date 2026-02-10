@@ -19,13 +19,11 @@ import tempfile
 
 
 def _repo_root() -> str:
-    # guardian: allow-path-string
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
 
 def _read_bytes(path: str) -> bytes | None:
     """Read file as bytes, return None if missing."""
-    # guardian: allow-path-string
     if not os.path.isfile(path):
         return None
     with open(path, "rb") as f:
@@ -40,7 +38,6 @@ def _run_verify(*extra_args: str) -> tuple[int, str]:
         "agentic_core.L5_safety.config.structure_blueprint._verify",
         *extra_args,
     ]
-    # guardian: allow-magic-config
     result = subprocess.run(
         cmd,
         cwd=_repo_root(),
@@ -53,11 +50,8 @@ def _run_verify(*extra_args: str) -> tuple[int, str]:
 
 def main() -> int:
     root = _repo_root()
-    # guardian: allow-path-string
     baseline_path = os.path.join(root, "docs", "reports", "plans", "phantom_baseline.json")
-    # guardian: allow-path-string
     hash_path = os.path.join(root, "docs", "reports", "plans", "allowlist_hash.txt")
-    # guardian: allow-path-string
     debt_path = os.path.join(root, "docs", "reports", "plans", "phantom_debt.md")
     results: list[tuple[str, bool, str]] = []  # (name, passed, detail)
 
@@ -68,31 +62,22 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="ssot_sim_") as tmpdir:
         # Backup originals
-        # guardian: allow-path-string
         backup_baseline = os.path.join(tmpdir, "phantom_baseline.json")
-        # guardian: allow-path-string
         backup_hash = os.path.join(tmpdir, "allowlist_hash.txt")
-        # guardian: allow-path-string
         backup_debt = os.path.join(tmpdir, "phantom_debt.md")
-        # guardian: allow-path-string
         if os.path.isfile(baseline_path):
             shutil.copy2(baseline_path, backup_baseline)
-        # guardian: allow-path-string
         if os.path.isfile(hash_path):
             shutil.copy2(hash_path, backup_hash)
-        # guardian: allow-path-string
         if os.path.isfile(debt_path):
             shutil.copy2(debt_path, backup_debt)
 
         def _restore() -> None:
             """Restore original lock files from backup."""
-            # guardian: allow-path-string
             if os.path.isfile(backup_baseline):
                 shutil.copy2(backup_baseline, baseline_path)
-            # guardian: allow-path-string
             if os.path.isfile(backup_hash):
                 shutil.copy2(backup_hash, hash_path)
-            # guardian: allow-path-string
             if os.path.isfile(backup_debt):
                 shutil.copy2(backup_debt, debt_path)
 
@@ -139,7 +124,6 @@ def main() -> int:
             _restore()
 
         # ── SIM 4: SyntaxError in scanned file → FAIL with location ──
-        # guardian: allow-path-string
         syntax_err_path = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
         try:
             with open(syntax_err_path, "w", encoding="utf-8") as sf:
@@ -150,7 +134,6 @@ def main() -> int:
             detail = f"rc={rc}, syntax_detected={'SyntaxError' in out}"
             results.append(("SIM4: SyntaxError in tests/", passed, detail))
         finally:
-            # guardian: allow-path-string
             if os.path.isfile(syntax_err_path):
                 os.remove(syntax_err_path)
             _restore()
@@ -160,7 +143,7 @@ def main() -> int:
             with open(baseline_path, encoding="utf-8") as bf:
                 data = json.load(bf)
             if len(data) > 1:
-                data.pop()
+                removed_entry = data.pop()
                 with open(baseline_path, "w", encoding="utf-8") as bf:
                     json.dump(data, bf, indent=2, sort_keys=True)
                 rc, out = _run_verify()
@@ -209,7 +192,6 @@ def main() -> int:
                         found.append(s)
                 return found
 
-            # guardian: allow-path-string
             wf_path = os.path.join(root, ".github", "workflows", "ssot_verify.yml")
             with open(wf_path, encoding="utf-8") as wf:
                 wf_text = wf.read()
@@ -246,7 +228,6 @@ def main() -> int:
                 f"tampered_detected={tampered_detected}"
             )
             results.append(("SIM7: CI guard self-test (in-memory)", passed, detail))
-        # guardian: allow-silent-swallow
         except Exception as exc:
             results.append(("SIM7: CI guard self-test (in-memory)", False, str(exc)))
 
@@ -280,9 +261,7 @@ def main() -> int:
             all_pass = False
 
     # Verify temp files deleted
-    # guardian: allow-path-string
     syntax_leftover = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
-    # guardian: allow-path-string
     if os.path.isfile(syntax_leftover):
         print("    Temp syntax file: WARNING — not cleaned up")
         all_pass = False
@@ -291,7 +270,6 @@ def main() -> int:
 
     # Optional git diff check
     try:
-        # guardian: allow-magic-config
         git_result = subprocess.run(
             [
                 "git",

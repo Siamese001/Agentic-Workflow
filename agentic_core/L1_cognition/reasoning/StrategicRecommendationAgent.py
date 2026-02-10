@@ -149,7 +149,6 @@ Output strict JSON:
             try:
                 response = self.llm_client.complete(plan)
                 return self._parse_llm_response(response)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 log.warning(f"[STRATEGIC] LLM call failed: {e}, using fallback")
 

@@ -58,7 +58,6 @@ class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
             self.record_result(True, "Templates optimized")
             print(f"   [{self.name}] ✅ Templates optimized")
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

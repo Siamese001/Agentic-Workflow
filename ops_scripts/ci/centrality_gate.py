@@ -87,7 +87,6 @@ def compute_centrality(project_root: Path) -> tuple[dict[str, int], dict[str, se
             for f in files:
                 if not f.endswith(".py"):
                     continue
-                # guardian: allow-path-string
                 fpath = os.path.join(dirpath, f)
                 rel = os.path.relpath(fpath, project_root)
                 mod = _path_to_module(rel)

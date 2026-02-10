@@ -34,9 +34,7 @@ except ImportError:
 
 Logger: Any = logging.getLogger(__name__)
 
-# guardian: allow-magic-config
 SIMILARITY_THRESHOLD = 0.92  # Tunable cosine threshold for semantic matches
-# guardian: allow-magic-config
 EMBEDDING_MODEL = "text-embedding-3-small"  # Or whatever model is configured in core_embedder
 EMBEDDING_DIM = 1536  # Adjust based on model
 
@@ -88,11 +86,9 @@ class CacheMiss:
 class semantic_cache:
     """Enhanced semantic cache with optional embedding-based similarity matching."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         ttl: int = 3600,
-        # guardian: allow-magic-config
         max_entries: int = 10000,
         enable_logging: bool = True,
         enable_semantic_matching: bool = True,
@@ -283,10 +279,8 @@ class semantic_cache:
         return len(expired_keys)
 
 
-# guardian: allow-magic-config
 def create_semantic_cache(
     ttl: int = 3600,
-    # guardian: allow-magic-config
     max_entries: int = 10000,
     enable_semantic_matching: bool = True,
     similarity_threshold: float = SIMILARITY_THRESHOLD,

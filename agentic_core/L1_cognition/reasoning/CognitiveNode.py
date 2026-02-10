@@ -302,7 +302,6 @@ class CognitiveNode:
                 success=True,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             return CognitiveResult(
@@ -320,7 +319,6 @@ class CognitiveNode:
         try:
             results = self.semantic_memory.query(query, top_k=3)
             return results
-        # guardian: allow-silent-swallow
         except Exception:
             return []
 
@@ -346,9 +344,7 @@ class CognitiveNode:
         """Async replay and learning."""
         if self.meta_learner:
             try:
-                # guardian: allow-magic-config
                 self.meta_learner.replay_and_learn(batch_size=16)
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 

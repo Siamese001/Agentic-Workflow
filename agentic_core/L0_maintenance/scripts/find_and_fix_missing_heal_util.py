@@ -85,7 +85,6 @@ for agent in missing:
         print(f"  ✅ Fixed: {agent['path']}")
         fixed_count += 1
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  ❌ Error fixing {agent['path']}: {e}")
 

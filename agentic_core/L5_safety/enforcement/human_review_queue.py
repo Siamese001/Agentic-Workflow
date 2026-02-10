@@ -334,7 +334,6 @@ class HumanReviewQueue:
         if callback:
             try:
                 callback(request_id, action)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
 

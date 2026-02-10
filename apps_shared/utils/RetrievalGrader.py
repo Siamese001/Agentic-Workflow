@@ -44,15 +44,11 @@ class RetrievalGrade:
 class RetrievalGrader:
     """Grades retrieved documents for relevance to the query."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         relevance_threshold: float = 0.5,
-        # guardian: allow-magic-config
         confidence_threshold: float = 0.7,
         use_fast_model: bool = True,
-        # guardian: allow-magic-config
         max_docs_to_grade: int = 10,
     ):
         """Initialize the retrieval grader.
@@ -237,7 +233,6 @@ class RetrievalGrader:
 class WebSearchFallback:
     """Fallback web search when retrieval fails."""
 
-    # guardian: allow-magic-config
     def __init__(self, search_provider: str = "tavily", max_results: int = 5, timeout: float = 5.0):
         """Initialize web search fallback.
 

@@ -18,7 +18,6 @@ def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     """
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    # guardian: allow-magic-config
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
@@ -41,7 +40,6 @@ def structured_completion(prompt: str, schema: dict) -> dict:
     """
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    # guardian: allow-magic-config
     response = client.chat.completions.create(
         model="gpt-4o-2024-08-06",
         messages=[{"role": "user", "content": prompt}],

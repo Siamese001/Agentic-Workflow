@@ -4,7 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-# guardian: allow-global-mutation
 sys.path.insert(0, ".")
 DEPRECATION_PATTERNS = [
     ("\\blegacy\\b", "legacy"),
@@ -40,7 +39,6 @@ def scan_file(filepath):
                             },
                         )
                         break
-    # guardian: allow-silent-swallow
     except Exception:
         pass
     return findings

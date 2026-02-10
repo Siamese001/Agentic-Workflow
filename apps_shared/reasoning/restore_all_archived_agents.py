@@ -101,7 +101,6 @@ def restore_agent(source: Path, target: Path, dry_run: bool = False) -> tuple[bo
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(source), str(target))
         return True, f"Restored to {target.relative_to(PROJECT_ROOT)}"
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Error: {e}"
 

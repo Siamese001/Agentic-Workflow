@@ -436,7 +436,6 @@ class RGPlanner:
                         "validation_level": processing_plan.analysis_plan.validation_level,
                     },
                 )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.debug(f"Failed to record telemetry: {e}")
 
