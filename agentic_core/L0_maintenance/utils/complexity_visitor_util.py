@@ -44,9 +44,7 @@ except ImportError:
     SSOT_AVAILABLE = False
 
 # SSOT: Import territory name definitions
-# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
-# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core" / "L0_maintenance" / "scripts"))
 try:
     from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
@@ -315,7 +313,6 @@ LAYER_BASE_MAP = {
 #
 # Update MINIMUM_AGENT_COUNT when legitimately removing agents (with justification).
 MINIMUM_AGENT_COUNT = 1  # Temporarily lowered to debug discovery after structural changes (2026-01-22)
-# guardian: allow-magic-config
 MAX_AGENT_DROP_PERCENT = 50  # Temporarily relaxed for hardened exclusion recovery (2026-01-19)
 EXPECTED_AGENT_COUNT = 268  # Phase 3.2: Updated after test fixture exclusion (2026-01-12)
 # 2026-01-07: Reduced from 276 to 273 after Phase 2 relocation (legitimate consolidation)
@@ -1211,7 +1208,6 @@ def main():
             except OSError as e:
                 log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
                 incremental_mode = False
-            # guardian: allow-silent-swallow
             except Exception as e:
                 log.error(f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan")
                 incremental_mode = False
@@ -1250,7 +1246,6 @@ def main():
                 log.warning(f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
-            # guardian: allow-silent-swallow
             except Exception as e:
                 log.warning(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
                 incremental_mode = False
@@ -1278,7 +1273,6 @@ def main():
                 if stale_path.exists():
                     os.remove(stale_path)
                     log.info(f"[FRESH] Deleted stale {stale_path.name}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 log.warning(f"Could not delete {stale_path.name}: {e}")
 
@@ -1313,7 +1307,6 @@ def main():
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)
                 hash_compute_errors += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 # Unexpected error - mark as changed for safety
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
@@ -1377,7 +1370,6 @@ def main():
             if tree:
                 build_inheritance_map(tree)
                 parsed_files[py_file] = (source, tree)
-        # guardian: allow-silent-swallow
         except Exception:
             continue
     log.info(f"   Built map with {len(CLASS_INHERITANCE_MAP)} classes")
@@ -1645,7 +1637,6 @@ def main():
         rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
         try:
             file_hashes[rel_path] = hashlib.md5(py_file.read_bytes()).hexdigest()
-        # guardian: allow-silent-swallow
         except Exception as e:
             hash_errors += 1
             log.warning(f"   [HASH ERROR] {rel_path}: {e}")
@@ -1662,7 +1653,6 @@ def main():
             raise ValueError("Written JSON agent count mismatch")
         tmp_json.replace(OUTPUT_JSON)
         log.info(f"[SAVED] {OUTPUT_JSON} ({len(agents)} agents)")
-    # guardian: allow-silent-swallow
     except Exception as e:
         log.error(f"Failed to save/verify JSON: {e}")
         sys.exit(1)
@@ -1681,7 +1671,6 @@ def main():
         json.loads(manifest_text)  # Raises if invalid
         tmp_manifest.replace(MANIFEST_JSON)
         log.info(f"[SAVED] {MANIFEST_JSON}")
-    # guardian: allow-silent-swallow
     except Exception as e:
         log.warning(f"Manifest save failed ({e}) - continuing (JSON is primary)")
         # Non-fatal - JSON is primary

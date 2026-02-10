@@ -137,14 +137,12 @@ class SovereignLLMGateway:
                 raise
         return self._google_client
 
-    # guardian: allow-magic-config
     async def generate(
         self,
         prompt: str,
         model: str | None = None,
         provider: Provider = "openai",
         temperature: float = 0.7,
-        # guardian: allow-magic-config
         max_tokens: int = 4096,
         fallback_providers: list[Provider] | None = None,
         **kwargs,
@@ -191,7 +189,6 @@ class SovereignLLMGateway:
 
                 return result
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)

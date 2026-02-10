@@ -173,7 +173,6 @@ class ObservabilityToolExecutor:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
@@ -366,7 +365,6 @@ class ObservabilityToolExecutor:
                 if isinstance(output, dict) and output.get("exit_code", 0) != 0:
                     total_exit_code = output["exit_code"]
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 self.logger.warning(f"Batch command failed: {str(e)}")
                 results.append({"error": str(e)})
@@ -526,11 +524,8 @@ class ObservabilityToolExecutor:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_observability_tool_executor(
-    # guardian: allow-magic-config
     default_timeout: float = 30.0,
-    # guardian: allow-magic-config
     max_retries: int = 3,
     enable_health_checks: bool = True,
     **kwargs: object,
@@ -546,14 +541,12 @@ def create_observability_tool_executor(
 
 
 # Convenience function for direct usage
-# guardian: allow-magic-config
 def tool_use_observability_execution(
     tool_id: str,
     command: str,
     parameters: dict[str, Any],
     execution_id: str | None = None,
     execution_type: str = "sync",
-    # guardian: allow-magic-config
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Execute observability tool.

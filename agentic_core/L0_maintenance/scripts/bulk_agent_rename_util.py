@@ -159,7 +159,6 @@ def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = Tru
     """Rename classes in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    # guardian: allow-silent-swallow
     except Exception:
         return []
 

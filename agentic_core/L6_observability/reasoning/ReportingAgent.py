@@ -84,7 +84,6 @@ class ReportingAgent(SovereignBaseAgent):
         if METRICS_AGENT_AVAILABLE:
             try:
                 self.metrics_agent = MetricsAgent(self.project_root)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 # Silent fallback — metrics optional
                 print(f"[ReportingAgent] MetricsAgent init failed (optional): {e}")
@@ -120,7 +119,6 @@ class ReportingAgent(SovereignBaseAgent):
 
         return summary
 
-    # guardian: allow-magic-config
     def generate_ascii_tree(self, max_depth: int = 3) -> str:
         """
         Generate clean ASCII directory tree visualization.
@@ -189,7 +187,6 @@ class ReportingAgent(SovereignBaseAgent):
                 "compliance_rate": self.metrics_agent.get_gauge("compliance.compliance_rate"),
                 "last_scan_timestamp": self.metrics_agent.get_metadata("compliance.last_scan"),
             }
-        # guardian: allow-silent-swallow
         except Exception:
             return {}
 
@@ -222,13 +219,11 @@ class ReportingAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

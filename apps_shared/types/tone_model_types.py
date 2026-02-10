@@ -78,7 +78,6 @@ class GenerationConfig(BaseModel):
 class ToneAnalyzer:
     """Analyzes communication style from content samples."""
 
-    # guardian: allow-magic-config
     def __init__(self, min_sample_length: int = 50):
         """Initialize the tone analyzer.
 
@@ -214,7 +213,6 @@ class ToneAnalyzer:
 
             return profile
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error analyzing style: {str(e)}")
             return self._get_neutral_profile()
@@ -273,7 +271,6 @@ class ToneAnalyzer:
                 "question_ratio": question_ratio,
                 "confidence": confidence,
             }
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error calculating metrics: {str(e)}")
             return {
@@ -320,7 +317,6 @@ class ToneAnalyzer:
 
             return max(tone_scores, key=tone_scores.get)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
@@ -358,7 +354,6 @@ class ToneAnalyzer:
 
             return max(0.0, min(1.0, formality))
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error calculating formality: {str(e)}")
             return 0.7  # Default to semi-formal
@@ -395,7 +390,6 @@ class ToneAnalyzer:
             frequency = emoji_count / sentence_count
             return min(1.0, frequency)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error calculating emoji frequency: {str(e)}")
             return 0.1
@@ -426,7 +420,6 @@ class ToneAnalyzer:
 
             return max(0.0, min(1.0, complexity))
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
@@ -527,7 +520,6 @@ class ToneAdapter:
             logger.debug(f"Adapted message for tone: {tone.value}")
             return adapted
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error adapting message: {str(e)}")
             return draft
@@ -553,7 +545,6 @@ class ToneAdapter:
                     shortened.append(sentence)
 
             return ". ".join(shortened)
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error shortening sentences: {str(e)}")
             return text
@@ -571,7 +562,6 @@ class ToneAdapter:
                     sentences[i] = f"{sentences[i].strip()} {connector}"
 
             return ". ".join(sentences)
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error lengthening sentences: {str(e)}")
             return text
@@ -587,7 +577,6 @@ class ToneModel:
 
         # Predefined configurations for each tone
         self.config_templates = {
-            # guardian: allow-magic-config
             ToneType.AUTHORITATIVE: GenerationConfig(
                 system_prompt_fragment="Use confident, expert language. Lead with insights. Be decisive and clear.",
                 temperature_setting=0.4,
@@ -595,7 +584,6 @@ class ToneModel:
                 preferred_transitions=["Therefore", "Consequently", "Based on"],
                 max_sentence_length=20,
             ),
-            # guardian: allow-magic-config
             ToneType.EMPATHETIC: GenerationConfig(
                 system_prompt_fragment="Use supportive, understanding language. Focus on people and values. Show genuine care.",
                 temperature_setting=0.6,
@@ -607,7 +595,6 @@ class ToneModel:
                 ],
                 max_sentence_length=18,
             ),
-            # guardian: allow-magic-config
             ToneType.ANALYTICAL: GenerationConfig(
                 system_prompt_fragment="Use data-driven, logical language. Provide evidence and reasoning. Be thorough.",
                 temperature_setting=0.3,
@@ -615,7 +602,6 @@ class ToneModel:
                 preferred_transitions=["According to", "Based on", "Analysis shows"],
                 max_sentence_length=25,
             ),
-            # guardian: allow-magic-config
             ToneType.ENTHUSIASTIC: GenerationConfig(
                 system_prompt_fragment="Use energetic, positive language. Express excitement and possibility. Be engaging.",
                 temperature_setting=0.7,
@@ -623,7 +609,6 @@ class ToneModel:
                 preferred_transitions=["Excited to", "Thrilled about", "What's great is"],
                 max_sentence_length=15,
             ),
-            # guardian: allow-magic-config
             ToneType.DIRECT: GenerationConfig(
                 system_prompt_fragment="Use concise, action-oriented language. Be clear and specific. No fluff.",
                 temperature_setting=0.3,
@@ -675,7 +660,6 @@ class ToneModel:
 
             return profile, config
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error in analyze_and_configure: {str(e)}")
             # Return safe defaults
@@ -711,7 +695,6 @@ class ToneModel:
 
             return config
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error adjusting for archetype: {str(e)}")
             return config

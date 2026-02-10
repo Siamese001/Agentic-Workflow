@@ -9,7 +9,6 @@ from pathlib import Path
 
 # Add project root to Python path
 project_root = Path(__file__).parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 

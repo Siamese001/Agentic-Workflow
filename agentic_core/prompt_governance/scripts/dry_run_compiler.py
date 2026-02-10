@@ -23,7 +23,6 @@ def initialize_jinja_environment(template_dir: Path):
         # Create environment with the template directory
         env = Environment(loader=FileSystemLoader(str(template_dir)), trim_blocks=True, lstrip_blocks=True)
         return env
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Failed to initialize Jinja2 environment: {e}")
         sys.exit(1)

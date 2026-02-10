@@ -243,7 +243,6 @@ class SovereignPromptRenderer:
             except TemplateNotFound:
                 # Skip missing fragments (non-critical)
                 continue
-            # guardian: allow-silent-swallow
             except Exception as e:
                 # Log but continue for non-critical fragments
                 print(f"[WARNING] Fragment '{frag}' failed to render: {e}")

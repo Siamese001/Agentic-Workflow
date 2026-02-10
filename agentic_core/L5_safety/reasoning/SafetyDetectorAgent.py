@@ -273,7 +273,6 @@ class SafetyDetectorAgent(SovereignBaseAgent):
         with self._lock:
             self._threats.clear()
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal safety detection violations using standard_heal decorator pattern.
 

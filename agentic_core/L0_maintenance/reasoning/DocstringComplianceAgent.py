@@ -121,7 +121,6 @@ class DocstringComplianceAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 ctx.report(self.__class__.__name__, key_id=18, success=True, msg=message)
                 return {"healed": True, "details": message}
             return {"healed": False}
-        # guardian: allow-silent-swallow
         except Exception as e:
             ctx.report(self.__class__.__name__, 18, False, f"Docstring healing failed: {str(e)[:100]}")
             return {"healed": False}
@@ -145,13 +144,11 @@ class DocstringComplianceAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

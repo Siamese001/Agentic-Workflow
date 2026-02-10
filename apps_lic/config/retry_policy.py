@@ -225,7 +225,6 @@ class RetryPolicy:
                     attempts_history=attempts_history,
                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 last_exception = e
                 delay = DelayCalculator.calculate_delay(retry_config, attempt)
@@ -260,7 +259,6 @@ class RetryPolicy:
                 if on_retry:
                     try:
                         on_retry(attempt_info)
-                    # guardian: allow-silent-swallow
                     except Exception as callback_error:
                         logger.error(f"Retry callback failed: {callback_error}")
 
@@ -389,13 +387,10 @@ async def get_retry_executor() -> RetryableExecutor:
 
 
 # Decorators for automatic retry
-# guardian: allow-magic-config
 def retry(
-    # guardian: allow-magic-config
     max_attempts: int = 3,
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL_BACKOFF,
     base_delay: float = 1.0,
-    # guardian: allow-magic-config
     max_delay: float = 60.0,
     retryable_exceptions: list[type[Exception]] | None = None,
 ):
@@ -467,28 +462,24 @@ def retry_with_policy(policy_name: str):
 
 # Predefined configurations
 RETRY_CONFIGS = {
-    # guardian: allow-magic-config
     "aggressive": RetryConfig(
         max_attempts=5,
         strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
         base_delay=0.5,
         max_delay=30.0,
     ),
-    # guardian: allow-magic-config
     "conservative": RetryConfig(
         max_attempts=3,
         strategy=RetryStrategy.LINEAR_BACKOFF,
         base_delay=2.0,
         max_delay=60.0,
     ),
-    # guardian: allow-magic-config
     "fast": RetryConfig(
         max_attempts=3,
         strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
         base_delay=0.1,
         max_delay=5.0,
     ),
-    # guardian: allow-magic-config
     "slow": RetryConfig(
         max_attempts=5,
         strategy=RetryStrategy.EXPONENTIAL_BACKOFF,

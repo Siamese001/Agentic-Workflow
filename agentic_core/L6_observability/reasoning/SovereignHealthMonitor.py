@@ -65,7 +65,6 @@ class SovereignHealthMonitor:
             # Increment global fix counter
             self.redis.incr("autonomous_fixes_total", amount=fixes)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             # Graceful degradation - health monitoring is optional
             print(f"[WARNING] Failed to persist health snapshot: {e}")
@@ -84,12 +83,10 @@ class SovereignHealthMonitor:
             data = self.redis.get(f"sovereign_health:{domain}")
             if data:
                 return json.loads(data)
-        # guardian: allow-silent-swallow
         except Exception:
             pass
         return None
 
-    # guardian: allow-magic-config
     def get_health_history(self, limit: int = 100) -> list:
         """
         Retrieve historical health snapshots.
@@ -103,7 +100,6 @@ class SovereignHealthMonitor:
         try:
             snapshots = self.redis.lrange("sovereign_health_history", 0, limit - 1)
             return [json.loads(s) for s in snapshots]
-        # guardian: allow-silent-swallow
         except Exception:
             return []
 

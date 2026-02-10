@@ -19,7 +19,6 @@ BANNED_BASES = ["BaseAgent", "Agent", "LLMChain"]
 def scan_for_violations() -> list[str]:
     violations = []
 
-    # guardian: allow-path-string
     if not os.path.exists(TARGET_DIR):
         print(f"Target directory {TARGET_DIR} does not exist. Skipping.")
         return []
@@ -40,7 +39,6 @@ def scan_for_violations() -> list[str]:
                     )
 
             # Rule 2: Content policing via AST
-            # guardian: allow-path-string
             full_path = os.path.join(root, file)
             try:
                 with open(full_path, encoding="utf-8") as f:
@@ -68,7 +66,6 @@ def scan_for_violations() -> list[str]:
                                     f"[Inheritance Violation] {file} defines class '{node.name}' inheriting from '{base.id}'",
                                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 # Parse errors are warnings, not necessarily violations, but good to know
                 print(f"Warning: Could not parse {file}: {e}")

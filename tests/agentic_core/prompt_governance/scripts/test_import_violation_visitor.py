@@ -16,7 +16,7 @@ def test_test_import_violation_visitor_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.prompt_governance.scripts.import_violation_visitor: {e}",
+            f"Cannot import module agentic_core.prompt_governance.scripts.import_violation_visitor: {e}"
         )
 
 

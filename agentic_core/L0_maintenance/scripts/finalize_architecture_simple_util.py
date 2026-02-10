@@ -6,9 +6,7 @@ import sys
 from pathlib import Path
 
 # Add project root to Python path
-# guardian: allow-path-string
 PROJECT_ROOT = Path(os.getcwd())
-# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Configure logging
@@ -122,7 +120,6 @@ def step_3_seal_architecture():
         logger.info("   Boot integrity check is now ACTIVE.")
         return checksum
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Failed to seal manifest: {e}")
         # Fallback: create a simple lock file manually
@@ -161,7 +158,6 @@ if __name__ == "__main__":
         print(f"   Checksum:       {checksum[:16]}...")
         print("=" * 60)
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         logger.critical(f"Finalization Failed: {e}", exc_info=True)
         exit(1)

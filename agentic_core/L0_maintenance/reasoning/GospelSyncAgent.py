@@ -89,7 +89,6 @@ class GospelSyncAgent(L0MaintenanceBase):
                 continue
             for agent in config.get("agents", []):
                 # Normalize path for multi-OS compatibility
-                # guardian: allow-path-string
                 rel_path = os.path.join(layer_path, f"{agent}.py")
                 paths.add(rel_path.replace("\\", "/"))
         return paths

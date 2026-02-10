@@ -139,7 +139,6 @@ class GoldenStateEvaluator:
         except FileNotFoundError:
             if self.enable_logging:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
-        # guardian: allow-silent-swallow
         except Exception as e:
             if self.enable_logging:
                 Logger.error(

@@ -30,7 +30,6 @@ def extract_json_keys(js_content, var_pattern):
     content = "\n".join(lines)
 
     # Try to extract JSON array/object
-    # guardian: allow-path-string
     match = re.search(var_pattern + r"\s*=\s*(\[[\s\S]*?\]);?$", content, re.MULTILINE)
     if match:
         try:
@@ -39,7 +38,6 @@ def extract_json_keys(js_content, var_pattern):
                 return list(data[0].keys()) if isinstance(data[0], dict) else []
             elif isinstance(data, dict):
                 return list(data.keys())
-        # guardian: allow-silent-swallow
         except:
             pass
     return []
@@ -80,7 +78,6 @@ def audit_data_files():
             for col in schema:
                 print(f"      - {col}")
             findings["dashboardData_schema"] = schema
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"   ❌ Failed to parse schema: {e}")
 

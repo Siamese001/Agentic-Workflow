@@ -108,13 +108,11 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -148,7 +146,6 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal constitutional review violations using standard_heal decorator pattern.
 

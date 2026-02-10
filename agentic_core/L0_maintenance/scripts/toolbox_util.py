@@ -13,12 +13,10 @@ Logger: Any = logging.getLogger("Toolbox")
 def repository_get_file_content(file_path: Any) -> Any:
     """Safely reads a file from the repository."""
     try:
-        # guardian: allow-path-string
         if not os.path.exists(file_path):
             return f"Error: File '{file_path}' does not exist."
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
     except Exception as e:
         return f"Error reading file: {e}"
 
@@ -34,7 +32,6 @@ def repository_list_files(directory: Any = ".") -> Any:
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         return [str(f) for f in get_python_files(Path(directory))]
-    # guardian: allow-silent-swallow
     except Exception as e:
         return f"Error listing files: {e}"
 
@@ -44,15 +41,12 @@ def repository_save_file(file_path: Any, content: Any) -> Any:
     try:
         if ".git" in file_path or ".env" in file_path:
             return f"Error: Write access denied for sensitive file '{file_path}'."
-        # guardian: allow-path-string
         directory: Any = os.path.dirname(file_path)
-        # guardian: allow-path-string
         if directory and (not os.path.exists(directory)):
             os.makedirs(directory, exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         return f"Success: File '{file_path}' saved."
-    # guardian: allow-silent-swallow
     except Exception as e:
         return f"Error writing file: {e}"
 

@@ -188,7 +188,6 @@ class ContentQualityAgent(RGAgentBase):
                     f"({skill_analysis.extraction_result.confidence_score:.2f})",
                 )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             issues.append(f"Skill validation failed: {str(e)}")
 

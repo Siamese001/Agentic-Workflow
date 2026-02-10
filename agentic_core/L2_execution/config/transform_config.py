@@ -264,7 +264,6 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
             operation="rename_symbol",
             changes_made=renamer.changes,
         )
-    # guardian: allow-silent-swallow
     except Exception as e:
         return TransformResult(
             success=False,
@@ -427,7 +426,6 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
             operation="add_decorator",
             changes_made=modifier.changes,
         )
-    # guardian: allow-silent-swallow
     except Exception as e:
         return TransformResult(
             success=False,
@@ -477,7 +475,6 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
             operation="remove_decorator",
             changes_made=modifier.changes,
         )
-    # guardian: allow-silent-swallow
     except Exception as e:
         return TransformResult(
             success=False,

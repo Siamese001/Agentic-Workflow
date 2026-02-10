@@ -211,13 +211,10 @@ class BatchingTrait(Trait):
 
         def new_post_init(self):
             self._batch_queues = {}
-            # guardian: allow-magic-config
             self._batch_size = 100
-            # guardian: allow-magic-config
             self._max_batch_queues = 50
             self._batching_lock = threading.RLock()
             self._async_semaphore = None
-            # guardian: allow-magic-config
             self._async_pool_size = 10
             self._batching_trait_applied = True
 

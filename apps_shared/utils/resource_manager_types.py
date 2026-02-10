@@ -117,7 +117,6 @@ class ResourceManager:
         except ImportError:
             logger.warning("Redis not installed, using in-memory cache")
             self._initialized = True
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Redis connection failed: {e}, using in-memory cache")
             self._redis_client = None
@@ -370,7 +369,6 @@ class ResourceManager:
 
             return stats
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to get namespace stats: {e}")
             return stats

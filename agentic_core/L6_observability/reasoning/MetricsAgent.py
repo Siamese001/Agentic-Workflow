@@ -141,7 +141,6 @@ class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 Logger.info(f"[MetricsAgent] Redis Monitor detected: {monitor_sentinel.decode('utf-8')}")
             else:
                 Logger.warning("[MetricsAgent] Redis Monitor sentinel Missing from state.")
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.set_gauge("state_sync.redis_monitor_active", 0)
             Logger.error(f"[MetricsAgent] State sync probe failed: {e}")
@@ -194,7 +193,6 @@ class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
         with self._lock:
             self._metadata[key] = value
 
-    # guardian: allow-type-erasure
     def get_metadata(self, key: str) -> Any:
         """Retrieve metadata."""
         with self._lock:
@@ -232,7 +230,6 @@ class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 self.alerting_rules_file.parent.mkdir(parents=True, exist_ok=True)
                 self.alerting_rules_file.write_text(yaml_str, encoding="utf-8")
                 Logger.info(f"[MetricsAgent] Alerting rules synchronized: {self.alerting_rules_file}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"[MetricsAgent] Failed to write alerting rules: {e}")
 
@@ -323,13 +320,11 @@ class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
         }
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

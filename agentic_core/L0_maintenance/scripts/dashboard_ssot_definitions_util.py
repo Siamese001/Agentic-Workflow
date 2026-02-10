@@ -71,38 +71,22 @@ FIELD_BASE_CLASSES = "base_classes"
 # ============================================================================
 # Auto-generated from dashboard_ssot.yaml - DO NOT EDIT MANUALLY
 
-# guardian: allow-magic-config
 THRESHOLD_MCP_HARDENED_TARGET = 100.0
-# guardian: allow-magic-config
 THRESHOLD_HEAL_CAP_TARGET = 100.0
-# guardian: allow-magic-config
 THRESHOLD_TEST_COVERAGE_MIN = 50.0
-# guardian: allow-magic-config
 THRESHOLD_HEALTH_SCORE_MIN = 60.0
-# guardian: allow-magic-config
 THRESHOLD_COMPLEXITY_HEALTH_MIN = 30.0
-# guardian: allow-magic-config
 THRESHOLD_TEST_COVERAGE_TARGET = 80.0
-# guardian: allow-magic-config
 THRESHOLD_TYPED_TARGET = 100.0
-# guardian: allow-magic-config
 THRESHOLD_DOCUMENTED_TARGET = 100.0
-# guardian: allow-magic-config
 THRESHOLD_SCHEMA_STRICTNESS_TARGET = 100.0
-# guardian: allow-magic-config
 THRESHOLD_OUTLIER_THRESHOLD_DEFAULT = 50.0
 THRESHOLD_OUTLIER_THRESHOLD_CRITICAL = 0.0
-# guardian: allow-magic-config
 THRESHOLD_COMPLEXITY_HEALTH_MAX = 60.0
-# guardian: allow-magic-config
 THRESHOLD_AVG_CC_WARNING = 15.0
-# guardian: allow-magic-config
 THRESHOLD_AVG_CC_CRITICAL = 25.0
-# guardian: allow-magic-config
 THRESHOLD_COVERAGE_WARNING = 70.0
-# guardian: allow-magic-config
 THRESHOLD_COVERAGE_CRITICAL = 40.0
-# guardian: allow-magic-config
 THRESHOLD_QUALITY_TARGET = 90.0
 
 

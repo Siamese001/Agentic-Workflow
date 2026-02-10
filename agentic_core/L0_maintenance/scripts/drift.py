@@ -102,7 +102,6 @@ def scan_repository(root_path: str = ".") -> int:
         "archives",
     }
 
-    # guardian: allow-path-string
     print(f"Scanning root: {os.path.abspath(root_path)}")
 
     for root, dirs, files in os.walk(root_path):
@@ -113,7 +112,6 @@ def scan_repository(root_path: str = ".") -> int:
             if not f.endswith(".py"):
                 continue
 
-            # guardian: allow-path-string
             full_path = os.path.join(root, f)
             try:
                 # Force UTF-8 to avoid CP1252 errors on Windows
@@ -128,7 +126,6 @@ def scan_repository(root_path: str = ".") -> int:
                 parse_errors.append(f"{full_path} [ENCODING ERROR]")
             except SyntaxError as e:
                 parse_errors.append(f"{full_path} [SYNTAX ERROR: line {e.lineno}]")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 parse_errors.append(f"{full_path} [UNKNOWN ERROR: {str(e)}]")
 
@@ -163,7 +160,6 @@ def scan_repository(root_path: str = ".") -> int:
 
 if __name__ == "__main__":
     # Determine project root based on SSOT markers if running from subdir
-    # guardian: allow-path-string
     current_dir = os.getcwd()
     print(f"Starting AST Audit for {TARGET_VIOLATION}...")
 

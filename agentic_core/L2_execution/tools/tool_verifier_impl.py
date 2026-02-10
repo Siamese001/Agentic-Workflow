@@ -304,7 +304,6 @@ class ToolVerifier:
                         suggestion="Fix syntax errors before execution",
                     ),
                 )
-        # guardian: allow-silent-swallow
         except Exception as e:
             issues.append(
                 VerificationIssue(

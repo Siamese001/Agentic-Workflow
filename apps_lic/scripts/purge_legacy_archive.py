@@ -7,22 +7,17 @@ def purge_legacy_artifacts() -> None:
     """
     Verifies SSOT migration success, then permanently deletes apps_lic/legacy_archive.
     """
-    # guardian: allow-path-string
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # guardian: allow-path-string
     legacy_dir = os.path.join(base_dir, "legacy_archive")
-    # guardian: allow-path-string
     ssot_dir = os.path.join(base_dir, "engines")
 
     required_rescues = ["CompetitorReconAgent.py", "StackModernizationAgent.py"]
     for agent in required_rescues:
-        # guardian: allow-path-string
         if not os.path.exists(os.path.join(ssot_dir, agent)):
             print(f"CRITICAL STOP: {agent} missing from canonical SSOT engines/ folder.")
             print("Executing forced healing to resolve path mismatch.")
             sys.exit(1)
 
-    # guardian: allow-path-string
     if os.path.exists(legacy_dir):
         try:
             shutil.rmtree(legacy_dir)

@@ -16,7 +16,7 @@ def test_test_synchronize_registry_hashes_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.prompt_governance.scripts.synchronize_registry_hashes: {e}",
+            f"Cannot import module agentic_core.prompt_governance.scripts.synchronize_registry_hashes: {e}"
         )
 
 

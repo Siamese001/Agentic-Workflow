@@ -19,7 +19,6 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 # Common problematic suffixes that indicate duplicates
@@ -124,7 +123,6 @@ def remove_duplicates(
                 dup_path.unlink()
                 print(f"  ✓ Deleted: {rel_dup} (suffix: {suffix})")
                 removed_count += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"  ✗ Failed to delete {rel_dup}: {e}")
 

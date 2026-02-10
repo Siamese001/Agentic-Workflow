@@ -82,7 +82,6 @@ def check_if_used(file_path, agent_file):
             content = py_file.read_text(encoding="utf-8")
             if re.search(import_pattern, content) or re.search(inheritance_pattern, content):
                 return True
-        # guardian: allow-silent-swallow
         except Exception:
             continue
 

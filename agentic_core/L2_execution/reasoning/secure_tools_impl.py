@@ -135,7 +135,6 @@ class SecureToolsImpl:
             )
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:
-            # guardian: allow-magic-config
             result: Any = subprocess.run(
                 command,
                 shell=True,
@@ -152,7 +151,6 @@ class SecureToolsImpl:
         except subprocess.TimeoutExpired:
             Logger.error(f"Command timed out: {command}")
             return "Command Error: Execution timed out (30s limit)."
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Command execution failed: {e}")
             return f"Command Error: {str(e)}"

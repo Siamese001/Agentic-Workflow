@@ -217,13 +217,11 @@ class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 Logger.info(f"[TracingAgent] OTLP export enabled: {endpoint}")
             else:
                 Logger.info("[TracingAgent] Using mock Provider (OTEL_EXPORTER_OTLP_ENDPOINT not set)")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[TracingAgent] OTLP setup failed — using mock tracer: {e}")
 
         return tracer
 
-    # guardian: allow-type-erasure
     def get_tracer(self) -> Any:
         """Expose tracer for external mission use."""
         return self.tracer
@@ -234,7 +232,6 @@ class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
             # It's a directory
             try:
                 self.export_path.mkdir(parents=True, exist_ok=True)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"[TracingAgent] Failed to create export directory {self.export_path}: {e}")
                 self.export_path = None
@@ -324,7 +321,6 @@ class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
             self._always_sample_traces.add(trace_id)
 
     @contextmanager
-    # guardian: allow-type-erasure
     def create_span(
         self,
         name: str,
@@ -426,7 +422,6 @@ class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
     # === Compliance Mission Helpers ===
 
     @contextmanager
-    # guardian: allow-type-erasure
     def trace_compliance_mission(self, mission_id: str = "manual") -> Any:
         """High-level context for full compliance mission."""
         trace_id = str(uuid.uuid4())
@@ -460,13 +455,11 @@ class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
         }
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

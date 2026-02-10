@@ -38,7 +38,6 @@ for agent in data:
             updated += 1
             print(f"⚠️  {agent['class_name']}: removed MCP hardened flag")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"❌ {agent['class_name']}: error - {e}")
 

@@ -229,7 +229,6 @@ class ProvenanceTracker:
         matcher = SequenceMatcher(None, snippet.lower(), output.lower())
         return matcher.ratio()
 
-    # guardian: allow-magic-config
     def _has_exact_phrase(self, snippet: str, output: str, min_words: int = 3) -> bool:
         """Check if snippet contains an exact phrase in output.
 
@@ -316,12 +315,10 @@ class ProvenanceTracker:
         with open(self.lineage_file, encoding="utf-8") as f:
             return f.readlines()
 
-    # guardian: allow-magic-config
     async def search_lineage(
         self,
         trace_id: str | None = None,
         model_version: str | None = None,
-        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[ArtifactLineage]:
         """Search lineage records.
@@ -353,7 +350,6 @@ class ProvenanceTracker:
                 if len(results) >= limit:
                     break
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to search lineage: {e}")
 

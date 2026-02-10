@@ -26,7 +26,6 @@ from pathlib import Path
 
 # Add project root to path
 REPO = Path(__file__).parent.parent.resolve()
-# guardian: allow-global-mutation
 sys.path.insert(0, str(REPO))
 
 from agentic_core.base_agents.ssot_scanner import SSOTScanner

@@ -29,7 +29,7 @@ def load_mislocated_tests() -> list[dict]:
                             "module": module["module"],
                             "expected_test": module["expected_test"],
                             "actual_test": str(test_file),
-                        },
+                        }
                     )
                     break
 

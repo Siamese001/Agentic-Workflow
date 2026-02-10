@@ -149,7 +149,6 @@ class ReflectionEngine:
         # Initialize circuit breaker for LLM calls
         self.circuit_breaker = CircuitBreakerFactory.get(
             "reflection_engine",
-            # guardian: allow-magic-config
             CircuitBreakerConfig(failure_threshold=3, recovery_timeout=60.0, timeout=self.config.timeout),
         )
 
@@ -211,7 +210,6 @@ class ReflectionEngine:
                 validation_type="circuit_breaker_fallback",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             # Unexpected error - return conservative result
             logger.error(f"Reflection evaluation failed: {e}")
@@ -278,7 +276,6 @@ class ReflectionEngine:
 
                 total_weight += criterion.weight
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
@@ -348,7 +345,6 @@ Respond in JSON format:
                 validation_type="llm",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result

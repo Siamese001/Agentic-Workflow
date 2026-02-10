@@ -9,7 +9,6 @@ Extracted from BudgetManagerAgent.py for single responsibility.
 class BudgetAuditor:
     """Tracks estimated token usage and enforces budget limits."""
 
-    # guardian: allow-magic-config
     def __init__(self, limit_usd: float = 2.0):
         """Initialize budget auditor with spending limit.
 

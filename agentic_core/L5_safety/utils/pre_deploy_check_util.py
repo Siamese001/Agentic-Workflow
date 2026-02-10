@@ -45,7 +45,6 @@ def run_e2e_tests() -> bool:
         return False
 
     try:
-        # guardian: allow-magic-config
         result = safe_execute(
             [sys.executable, str(test_script), "--auto", "--yes"],
             cwd=str(PROJECT_ROOT),

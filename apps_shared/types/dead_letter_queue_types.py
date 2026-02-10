@@ -135,11 +135,9 @@ class DeadLetterStorage(ABC):
         pass
 
     @abstractmethod
-    # guardian: allow-magic-config
     async def list(
         self,
         status: DeadLetterStatus | None = None,
-        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List items in queue.
@@ -280,17 +278,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                         content = await f.read()
                     data = json.loads(content)
                     return DeadLetterItem.from_dict(data)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.error(f"Failed to read dead letter item {item_id}: {e}")
 
         return None
 
-    # guardian: allow-magic-config
     async def list(
         self,
         status: DeadLetterStatus | None = None,
-        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List items in queue.
@@ -336,7 +331,6 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     if not status or item.status == status:
                         items.append(item)
 
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.error(f"Failed to read dead letter file {file_path}: {e}")
 
@@ -438,7 +432,6 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     await aiofiles.os.remove(file_path)
                     count += 1
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to cleanup dead letter file {file_path}: {e}")
 
@@ -517,11 +510,9 @@ class DeadLetterQueue:
         """
         return await self.storage.get(trace_id)
 
-    # guardian: allow-magic-config
     async def list_failed_envelopes(
         self,
         status: DeadLetterStatus | None = None,
-        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List failed envelopes.

@@ -48,7 +48,6 @@ class RagHealthCheckAgent(SovereignBaseAgent):
     def __init__(self):
         """Initialize RAG health check agent."""
         super().__init__()
-        # guardian: allow-magic-config
         self.check_interval_seconds = 300  # 5 minutes
         self.last_check_time = 0.0
         self.last_status: RagHealthStatus | None = None
@@ -192,13 +191,11 @@ class RagHealthCheckAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

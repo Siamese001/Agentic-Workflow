@@ -74,9 +74,7 @@ class PineconeVectorMixin(RedisCacheMixin):
     _default_ttl: int = 3600  # 1 hour
 
     EXPECTED_DIMENSION = 1536
-    # guardian: allow-magic-config
     MAX_QUERY_TOP_K = 50
-    # guardian: allow-magic-config
     QUERY_TIMEOUT = 12.0
 
     circuit_breaker = None
@@ -188,7 +186,6 @@ class PineconeVectorMixin(RedisCacheMixin):
                 if hasattr(self.circuit_breaker, "can_execute") and not self.circuit_breaker.can_execute():
                     log.warning("Pinecone circuit open -> fallback to local immediately")
                     local_only = True
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -227,7 +224,6 @@ class PineconeVectorMixin(RedisCacheMixin):
                 log.debug(f"Vector search returned {len(matches)} results")
                 return matches
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 latency = (time.time() - start) * 1000
                 log.warning(f"Pinecone query failed after {latency:.0f}ms: {e}")
@@ -289,7 +285,6 @@ class PineconeVectorMixin(RedisCacheMixin):
                     metrics.record("pinecone_upsert", hit=True, latency_ms=latency)
                 log.debug(f"Vector upserted to Pinecone: {id}")
                 return True
-            # guardian: allow-silent-swallow
             except Exception as e:
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("pinecone_upsert")
@@ -319,7 +314,6 @@ class PineconeVectorMixin(RedisCacheMixin):
         if self.pinecone:
             try:
                 await self.pinecone.delete(ids=ids, namespace=self._namespace)
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -337,7 +331,6 @@ class PineconeVectorMixin(RedisCacheMixin):
             try:
                 response = await self.pinecone.fetch(ids=ids, namespace=self._namespace)
                 results.update(response.get("vectors", {}))
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 

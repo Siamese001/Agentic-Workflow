@@ -165,7 +165,6 @@ def main():
 
             if status == "No (missing super)":
                 missing_invocation.append({"path": str(path), "rel_path": path_str})
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Error reading {path}: {e}")
 
@@ -215,7 +214,6 @@ def main():
                 print(f"  ✓ Fixed: {agent['rel_path']}")
                 fixed_count += 1
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"  ✗ Error fixing {agent['rel_path']}: {e}")
 

@@ -37,7 +37,6 @@ class IntegrationConfig:
 
 
 # Predefined configurations
-# guardian: allow-magic-config
 RG_CONFIG = IntegrationConfig(
     domain="rg",
     domain_prefix="apps_rg",
@@ -55,7 +54,6 @@ RG_CONFIG = IntegrationConfig(
     ],
 )
 
-# guardian: allow-magic-config
 LIC_CONFIG = IntegrationConfig(
     domain="lic",
     domain_prefix="apps_lic",

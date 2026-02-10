@@ -51,7 +51,6 @@ class AtomicStateManager:
         # Initialize backend-specific storage
         if backend == BackendType.FILE:
             if not storage_path:
-                # guardian: allow-path-string
                 storage_path = os.path.join(os.getcwd(), ".workflow_state")
             self.storage_path = Path(storage_path)
             self.storage_path.mkdir(parents=True, exist_ok=True)
@@ -148,7 +147,6 @@ class AtomicStateManager:
                 shadow_key = self._get_shadow_key(workflow_id)
                 self._delete_from_backend(shadow_key)
                 logger.debug("Cleaned up shadow state after failure")
-            # guardian: allow-silent-swallow
             except Exception as cleanup_error:
                 logger.warning(f"Failed to cleanup shadow state: {cleanup_error}")
 
@@ -235,7 +233,6 @@ class AtomicStateManager:
                     state = self._load_state(workflow_id)
                     if state:
                         checkpoints[workflow_id] = state
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.warning(f"Failed to load checkpoint {workflow_id}: {e}")
 

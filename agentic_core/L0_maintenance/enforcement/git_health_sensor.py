@@ -56,7 +56,6 @@ class GitHealthSensor:
             Tuple of (exit_code, stdout, stderr)
         """
         try:
-            # guardian: allow-magic-config
             result = subprocess.run(
                 ["git"] + args,
                 cwd=self.repo_root,
@@ -69,7 +68,6 @@ class GitHealthSensor:
             return -1, "", "Git command timed out"
         except FileNotFoundError:
             return -1, "", "Git not found in PATH"
-        # guardian: allow-silent-swallow
         except Exception as e:
             return -1, "", str(e)
 

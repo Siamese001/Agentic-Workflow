@@ -156,7 +156,6 @@ def main():
                 file_path.write_text(fixed_content, encoding="utf-8")
                 print(f"Fixed: {file_path}")
                 fixed_count += 1
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Error fixing {file_path}: {e}")
 

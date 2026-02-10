@@ -192,7 +192,6 @@ class ObservabilityPlanningOrchestrator:
             )
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"observability planning failed: {str(e)}")
             return ObservabilityPlanningResult(
@@ -302,7 +301,6 @@ class ObservabilityPlanningOrchestrator:
         service_name = request.get("service_name")
         sampling_rate = request.get("tracing_sampling_rate", self.config.default_sampling_rate)
 
-        # guardian: allow-magic-config
         return TraceConfiguration(
             service_name=service_name,
             sampling_rate=sampling_rate,
@@ -320,7 +318,6 @@ class ObservabilityPlanningOrchestrator:
 
         # Common alerts
         alerts.append(
-            # guardian: allow-magic-config
             AlertRule(
                 name=f"{service_name}_high_error_rate",
                 condition="error_rate > 0.05",
@@ -332,7 +329,6 @@ class ObservabilityPlanningOrchestrator:
         )
 
         alerts.append(
-            # guardian: allow-magic-config
             AlertRule(
                 name=f"{service_name}_high_latency",
                 condition="p95_latency > 1000",
@@ -346,7 +342,6 @@ class ObservabilityPlanningOrchestrator:
         # Service-specific alerts
         if service_type == "api":
             alerts.append(
-                # guardian: allow-magic-config
                 AlertRule(
                     name=f"{service_name}_api_availability",
                     condition="availability < 0.99",
@@ -358,7 +353,6 @@ class ObservabilityPlanningOrchestrator:
             )
         elif service_type == "worker":
             alerts.append(
-                # guardian: allow-magic-config
                 AlertRule(
                     name=f"{service_name}_queue_backlog",
                     condition="queue_size > 1000",

@@ -92,7 +92,6 @@ class PascalSovereigntyFixer:
         count = 0
         old_mod, new_mod = old_name.replace(".py", ""), new_name.replace(".py", "")
 
-        # guardian: allow-path-string
         regex_from = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)")
         regex_import = re.compile(
             rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
@@ -106,16 +105,13 @@ class PascalSovereigntyFixer:
                 if old_mod not in content:
                     continue
 
-                # guardian: allow-path-string
                 new_content = regex_from.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", content)
-                # guardian: allow-path-string
                 new_content = regex_import.sub(r"\g<prefix>" + new_mod + r"\g<suffix>", new_content)
 
                 if new_content != content:
                     if not self.dry_run:
                         path.write_text(new_content, encoding="utf-8")
                     count += 1
-            # guardian: allow-silent-swallow
             except:
                 continue
         return count
@@ -190,7 +186,6 @@ class PascalSovereigntyFixer:
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            # guardian: allow-silent-swallow
             except:
                 pass
         return True
@@ -295,7 +290,6 @@ class PascalSovereigntyFixer:
             result = fca.get_compliant_name(path)
             if result and result != path.name:
                 return result
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 

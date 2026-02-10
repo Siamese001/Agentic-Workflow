@@ -31,7 +31,6 @@ class CoreSynthesisExecutor:
             archive_files = [r for r in results if r["disposition"] == "ARCHIVE"]
 
             return {"synthesize": synthesis_files, "archive": archive_files}
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"❌ Failed to load synthesis plan: {e}")
             return {"synthesize": [], "archive": []}

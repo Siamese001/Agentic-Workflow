@@ -16,7 +16,7 @@ def test_test_proactive_fission_scanner_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.proactive_fission_scanner: {e}",
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.proactive_fission_scanner: {e}"
         )
 
 

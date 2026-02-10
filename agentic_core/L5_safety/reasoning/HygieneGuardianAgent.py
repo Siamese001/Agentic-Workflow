@@ -27,9 +27,7 @@ from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatek
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # --- SOVEREIGN GUARDRAILS ---
-# guardian: allow-magic-config
 MAX_FILENAME_WORDS = 5  # Enforcement for semantic conciseness
-# guardian: allow-magic-config
 MAX_TEST_FILENAME_WORDS = 8  # Allow more descriptive names for tests
 
 # Common noisy words to target for removal suggestions first
@@ -200,7 +198,6 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         debug_lines.append(i)
 
             return debug_lines
-        # guardian: allow-silent-swallow
         except Exception:
             return []
 
@@ -220,7 +217,6 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 return True, len(matches)
 
             return False, 0
-        # guardian: allow-silent-swallow
         except Exception:
             return False, 0
 
@@ -442,7 +438,6 @@ class HygieneGuardianAgent(AtomicExecutionMixin, SovereignBaseAgent):
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
 

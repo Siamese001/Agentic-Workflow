@@ -44,7 +44,6 @@ class ReasoningMemory:
     - Relevance-based retrieval
     """
 
-    # guardian: allow-magic-config
     def __init__(self, capacity: int = 500, persist: bool = True, semantic_offload: bool = True):
         """
         Initialize reasoning memory.
@@ -187,7 +186,6 @@ class ReasoningMemory:
         matching = [t for t in self.thoughts if t.thought_type == thought_type]
         return [self._thought_to_dict(t) for t in matching[-count:]]
 
-    # guardian: allow-magic-config
     def retrieve_high_confidence(self, threshold: float = 0.9, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve high-confidence thoughts.
@@ -269,7 +267,6 @@ class ReasoningMemory:
                             metadata=thought_dict.get("metadata", {}),
                         ),
                     )
-        # guardian: allow-silent-swallow
         except (ImportError, Exception):
             # No persistent storage available
             pass

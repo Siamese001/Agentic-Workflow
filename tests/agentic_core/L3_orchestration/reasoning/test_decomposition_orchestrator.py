@@ -16,7 +16,7 @@ def test_test_decomposition_orchestrator_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.decomposition_orchestrator: {e}",
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.decomposition_orchestrator: {e}"
         )
 
 

@@ -23,14 +23,12 @@ HARD_CAP = 149
 
 def main() -> int:
     project_root = Path(__file__).resolve().parents[2]
-    # guardian: allow-global-mutation
     sys.path.insert(0, str(project_root))  # guardian: allow-global_mutation
 
     from ops_scripts.ci.active_set_helper import get_active_set
 
     try:
         result = get_active_set(project_root)
-    # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-silent_swallower
         print(f"FAIL: could not enumerate active agents: {exc}", file=sys.stderr)
         return 1

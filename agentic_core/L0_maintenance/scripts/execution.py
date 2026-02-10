@@ -131,7 +131,6 @@ class DAGStrategy(ExecutionStrategy):
                     results[step_id] = result
                     completed.add(step_id)
                     steps_executed += 1
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     return WorkflowResult(
                         workflow_id=context.workflow_id,
@@ -216,7 +215,6 @@ class StateMachineStrategy(ExecutionStrategy):
                     else:
                         current_state = "end"
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
@@ -294,7 +292,6 @@ class EventDrivenStrategy(ExecutionStrategy):
                     else:
                         await event_queue.put("complete")
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
@@ -347,7 +344,6 @@ class ReactiveStrategy(ExecutionStrategy):
                 results[step.step_id] = result
                 current_value = result
                 steps_executed += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return WorkflowResult(
                     workflow_id=context.workflow_id,

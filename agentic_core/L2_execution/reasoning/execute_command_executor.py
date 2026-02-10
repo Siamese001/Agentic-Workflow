@@ -122,10 +122,8 @@ def is_command_allowed(command: str) -> bool:
     return False
 
 
-# guardian: allow-magic-config
 def execute_with_timeout(
     command: list[str],
-    # guardian: allow-magic-config
     timeout: int = 30,
     cwd: str | None = None,
     capture_output: bool = True,
@@ -222,7 +220,6 @@ def check_tool_installed(tool_name: str) -> bool:
         return False
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
-            # guardian: allow-magic-config
             result: Any = safe_execute([command, "--version"], capture_output=True, timeout=5, check=False)
             if result.returncode == 0:
                 return True
@@ -250,12 +247,10 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
         args.extend(extra_args)
     args.append(target_path)
     try:
-        # guardian: allow-magic-config
         result: Any = execute_with_timeout(command=args, timeout=120, capture_output=True, check=False)
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr
         return (success, output)
-    # guardian: allow-silent-swallow
     except Exception as e:
         return (False, str(e))
 

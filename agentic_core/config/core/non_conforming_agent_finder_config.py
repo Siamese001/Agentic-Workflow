@@ -122,7 +122,6 @@ def main():
         try:
             source = py_file.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        # guardian: allow-silent-swallow
         except Exception:
             continue  # Skip unparseable files
 

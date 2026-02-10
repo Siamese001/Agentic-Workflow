@@ -227,7 +227,6 @@ class BatchingMixin:
             async with semaphore:
                 try:
                     results[index] = await awaitable
-                # guardian: allow-silent-swallow
                 except Exception as exc:
                     results[index] = exc
 
@@ -245,11 +244,9 @@ class BatchingMixin:
 
         return results
 
-    # guardian: allow-magic-config
     async def batch_execute(
         self,
         tasks: list,
-        # guardian: allow-magic-config
         max_workers: int = 5,
         sequential: bool = False,
     ) -> list[Any]:
@@ -262,12 +259,10 @@ class BatchingMixin:
             for task in tasks:
                 try:
                     results.append(await task)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     results.append(e)
             return results
 
-        # guardian: allow-magic-config
         return await self.execute_batch(
             tasks,
             concurrency=max_workers,

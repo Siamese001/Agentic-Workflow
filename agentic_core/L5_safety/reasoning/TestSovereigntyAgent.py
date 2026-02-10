@@ -27,9 +27,9 @@ import re
 from enum import Enum
 from pathlib import Path
 
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.utils.security import safe_execute
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
@@ -73,7 +73,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
         """Return canon keys for test sovereignty."""
         return [99]  # Testing sovereignty key
 
-    # guardian: allow-type-erasure
     async def execute(self, request: dict = None) -> dict:
         """Run advanced tests on Artifact or repo."""
         if request is None:
@@ -122,7 +121,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
     def _run_full_repo_tests(self, coverage_target: float) -> dict:
         """Run full pytest with coverage."""
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 ["pytest", "--cov=.", "--cov-report=term-Missing", "-q", "--tb=short"],
                 capture_output=True,
@@ -141,7 +139,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
                 TESTS_DIR: [{"name": "pytest_cov", "passed": result.returncode == 0}],
                 "output": output[:2000],
             }
-        # guardian: allow-silent-swallow
         except Exception as e:
             return {
                 "passed": False,
@@ -153,7 +150,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
     def _run_basic_tests(self) -> dict:
         """Run basic pytest without coverage."""
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 ["pytest", "-q", "--tb=no"],
                 capture_output=True,
@@ -169,7 +165,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
                 TESTS_DIR: [{"name": "pytest_basic", "passed": passed}],
                 "output": result.stdout.decode()[:1000],
             }
-        # guardian: allow-silent-swallow
         except Exception as e:
             return {
                 "passed": False,
@@ -182,7 +177,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
         """Run targeted tests on specific files/modules."""
         target = request.get("target", "tests/")
         try:
-            # guardian: allow-magic-config
             result = safe_execute(
                 ["pytest", target, "-q", "--tb=short"],
                 capture_output=True,
@@ -198,7 +192,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
                 TESTS_DIR: [{"name": f"pytest_{target}", "passed": passed}],
                 "output": result.stdout.decode()[:1000],
             }
-        # guardian: allow-silent-swallow
         except Exception as e:
             return {
                 "passed": False,
@@ -246,7 +239,6 @@ class TestSovereigntyAgent(SovereignBaseAgent):
             print(f"  Payload: {payload}")
 
     @timeout(300)
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal method for L5 safety compliance."""
         return {"violations_found": 1, "violations_fixed": 0, "errors": [], "skipped": 1}

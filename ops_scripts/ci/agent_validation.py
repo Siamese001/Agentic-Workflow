@@ -15,7 +15,6 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 
@@ -55,7 +54,6 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         print("\n✅ No duplicate filenames detected")
         return True, "Code deduplication check passed"
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Code deduplication check failed: {e}"
 
@@ -95,7 +93,6 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
         return True, "Architecture governance check passed"
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Architecture governance check failed: {e}"
 

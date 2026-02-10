@@ -142,9 +142,7 @@ class SelfUpdatingSafetyEngine:
 
     def __init__(self, rules_storage_path: str | None = None):
         """Initialize the self-updating safety engine."""
-        # guardian: allow-path-string
         self.rules_storage_path = rules_storage_path or os.path.join(
-            # guardian: allow-path-string
             os.getcwd(),
             ".canon_memory",
             "safety_rules.json",
@@ -210,7 +208,6 @@ class SelfUpdatingSafetyEngine:
 
     def _load_rules(self):
         """Load rules from storage."""
-        # guardian: allow-path-string
         if not os.path.exists(self.rules_storage_path):
             Logger.info("No existing rules found, using base rules only")
             return
@@ -225,14 +222,12 @@ class SelfUpdatingSafetyEngine:
                     self.rules[rule.rule_id] = rule
 
             Logger.info(f"Loaded {len(self.rules)} safety rules")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to load rules: {e}")
 
     def _save_rules(self):
         """Save rules to storage."""
         try:
-            # guardian: allow-path-string
             os.makedirs(os.path.dirname(self.rules_storage_path), exist_ok=True)
 
             data = {
@@ -244,7 +239,6 @@ class SelfUpdatingSafetyEngine:
                 json.dump(data, f, indent=2)
 
             Logger.debug(f"Saved {len(self.rules)} rules")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to save rules: {e}")
 

@@ -223,7 +223,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
 
                 return exec_result
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 end_time = datetime.utcnow()
                 execution_time = (end_time - start_time).total_seconds() * 1000
@@ -289,7 +288,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                         message=f"Safety score {score:.2f} below threshold {self._agent_config.safety_score_threshold}",
                     )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Safety check error: {e}")
 
@@ -314,7 +312,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                     else:
                         Logger.warning(f"Non-blocking gate failed: {gate.name}")
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Gate {gate.name} error: {e}")
 
@@ -359,7 +356,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                 if score < self._agent_config.safety_score_threshold:
                     return True, f"Safety score {score:.2f} below threshold"
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Check error: {e}")
 
@@ -379,7 +375,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
         """Get all execution results."""
         return self._results.copy()
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal safety execution violations using standard_heal decorator pattern.
 

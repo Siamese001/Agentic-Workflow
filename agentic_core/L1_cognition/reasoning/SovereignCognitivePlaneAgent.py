@@ -114,7 +114,6 @@ class SovereignCognitivePlaneAgent(SovereignBaseAgent):
                 try:
                     self._streamer = streamer_factory()
                     LOGGER.info("L5 Streamer integrated with SovereignCognitivePlaneAgent via factory")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     LOGGER.warning(
                         f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled",
@@ -122,13 +121,11 @@ class SovereignCognitivePlaneAgent(SovereignBaseAgent):
             else:
                 LOGGER.warning("L5 Streamer not provided via factory - reasoning broadcast disabled")
 
-    # guardian: allow-type-erasure
     async def start_streaming(self) -> Any:
         """Start the L5 streamer if enabled."""
         if self._streamer:
             await self._streamer.start_streamer()
 
-    # guardian: allow-type-erasure
     async def stop_streaming(self) -> Any:
         """Stop the L5 streamer."""
         if self._streamer:

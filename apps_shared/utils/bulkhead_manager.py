@@ -103,7 +103,6 @@ class Bulkhead:
         # Circuit breaker
         self.circuit_breaker: CircuitBreaker | None = None
         if enable_circuit_breaker:
-            # guardian: allow-magic-config
             self._circuit_breaker_config = CircuitBreakerConfig(
                 failure_threshold=max(3, config.max_concurrency // 2),
                 timeout=60.0,
@@ -320,25 +319,21 @@ class BulkheadManager:
 
         # Default configurations
         self._default_configs = {
-            # guardian: allow-magic-config
             "RESUME_GENERATION": BulkheadConfig(
                 max_concurrency=5,
                 priority=TaskPriority.HIGH,
                 queue_size=50,
             ),
-            # guardian: allow-magic-config
             "OUTREACH_GENERATION": BulkheadConfig(
                 max_concurrency=10,
                 priority=TaskPriority.MEDIUM,
                 queue_size=100,
             ),
-            # guardian: allow-magic-config
             "BACKGROUND_ANALYSIS": BulkheadConfig(
                 max_concurrency=2,
                 priority=TaskPriority.LOW,
                 queue_size=20,
             ),
-            # guardian: allow-magic-config
             "CRITICAL_OPERATIONS": BulkheadConfig(
                 max_concurrency=3,
                 priority=TaskPriority.CRITICAL,

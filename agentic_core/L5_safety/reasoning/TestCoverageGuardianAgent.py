@@ -81,7 +81,6 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
         if self.history_file.exists():
             try:
                 return json.loads(self.history_file.read_text(encoding="utf-8"))
-            # guardian: allow-silent-swallow
             except Exception:
                 return []
         return []
@@ -138,7 +137,6 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
         except FileNotFoundError:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, "coverage not installed")
-        # guardian: allow-silent-swallow
         except Exception as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, f"Advanced coverage failed: {e}")
@@ -185,7 +183,6 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
                                 )
                         except ValueError:
                             continue
-            # guardian: allow-silent-swallow
             except Exception:
                 continue
         return candidates
@@ -285,7 +282,6 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
                                     "methods": methods,
                                 },
                             )
-            # guardian: allow-silent-swallow
             except Exception:
                 continue
         return candidates
@@ -374,13 +370,11 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
             if hasattr(self.ctx, "report"):
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, "mutmut not installed")
             return {"score": 0, "survived": 0, "examples": []}
-        # guardian: allow-silent-swallow
         except Exception as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("TestCoverageGuardianAgent", 0, False, f"Mutation testing failed: {e}")
             return {"score": 0, "survived": 0, "examples": []}
 
-    # guardian: allow-type-erasure
     async def execute(self) -> dict:
         """Ultimate verification: coverage, mutation, property, and stateful testing."""
         print("   [SOVEREIGN VERIFICATION] Running coverage, mutation, and stateful discovery...")
@@ -457,13 +451,11 @@ class TestCoverageGuardianAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -599,7 +591,6 @@ class Test{py_file.stem.title().replace("_", "")}:
                                 violations_fixed += 1
                                 self.logger.info(f"    Generated: {test_file.name}")
 
-                        # guardian: allow-silent-swallow
                         except Exception as e:
                             self.logger.error(f"    Error generating test for {py_file}: {e}")
                             errors += 1

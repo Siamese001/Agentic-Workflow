@@ -129,7 +129,6 @@ class MetaLearningClient:
             RedisSovereignAgent = get_redis_sovereign(Path.cwd())
             self._redis_client = RedisSovereignAgent.get_client()
             Logger.info("[MetaLearningClient] Redis connection established")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Redis unavailable, using local cache: {e}")
             self._redis_client = None
@@ -150,7 +149,6 @@ class MetaLearningClient:
                 Logger.info("[MetaLearningClient] Pinecone connection established")
             else:
                 Logger.warning(f"[MetaLearningClient] Pinecone status: {SovereignPineconeStoreAgent.status}")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Pinecone unavailable: {e}")
             self._pinecone_client = None
@@ -207,7 +205,6 @@ class MetaLearningClient:
                     self.stats["cache_hits"] += 1
                     self._update_domain_stats(domain, "cache_hits")
                     return json.loads(value)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[MetaLearningClient] Redis get failed: {e}")
 
@@ -260,7 +257,6 @@ class MetaLearningClient:
                     json.dumps(value),
                 )
                 return True
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[MetaLearningClient] Redis set failed: {e}")
 
@@ -280,7 +276,6 @@ class MetaLearningClient:
         if self._redis_client:
             try:
                 self._redis_client.delete(cache_key)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[MetaLearningClient] Redis delete failed: {e}")
 
@@ -346,7 +341,6 @@ class MetaLearningClient:
                     self._update_domain_stats(domain, "pattern_stores")
                     Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
                     return pattern_id
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[MetaLearningClient] Pinecone store failed: {e}")
 
@@ -382,7 +376,6 @@ class MetaLearningClient:
             embedding = self._generate_embedding(violation)
             if not embedding:
                 return []
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
             return []
@@ -424,7 +417,6 @@ class MetaLearningClient:
 
             return patterns
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[MetaLearningClient] Pattern retrieval failed: {e}")
             return []

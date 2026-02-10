@@ -49,7 +49,6 @@ def calculate_mccabe_complexity(node: ast.AST) -> int:
     return complexity
 
 
-# guardian: allow-magic-config
 def check_function_complexity(node: ast.AST, max_complexity: int = 10) -> tuple[bool, int]:
     """
     Check if function exceeds complexity threshold.
@@ -72,7 +71,6 @@ def check_function_complexity(node: ast.AST, max_complexity: int = 10) -> tuple[
     return complexity <= max_complexity, complexity
 
 
-# guardian: allow-magic-config
 def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[dict[str, any]]:
     """
     Analyze all functions in a file for complexity violations.

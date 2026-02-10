@@ -223,7 +223,6 @@ class InfrastructureOrchestrator:
                         payload.get("prompt"),
                     )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle artifact generated event: {e}")
 
@@ -243,7 +242,6 @@ class InfrastructureOrchestrator:
                 event.payload.get("error", "Unknown error"),
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle error event: {e}")
 
@@ -268,7 +266,6 @@ class InfrastructureOrchestrator:
                     usage.get("cost", 0.0),
                 )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle agent completed event: {e}")
 

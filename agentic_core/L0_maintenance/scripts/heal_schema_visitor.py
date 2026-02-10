@@ -123,7 +123,6 @@ def check_file(filepath: Path) -> list[dict]:
         return visitor.violations
     except SyntaxError:
         return []
-    # guardian: allow-silent-swallow
     except Exception:
         return []
 
@@ -141,13 +140,7 @@ def main():
         sys.exit(1)
     all_violations = []
     files_checked = 0
-    # guardian: allow-silent-swallow
-    # guardian: allow-silent-swallow
-    # guardian: allow-silent-swallow
-    # guardian: allow-silent-swallow
-    # guardian: allow-silent-swallow
     for py_file in root.rglob("*.py"):
-        # guardian: allow-silent-swallow
         if "__pycache__" in str(py_file) or ".venv" in str(py_file):
             continue
         violations = check_file(py_file)

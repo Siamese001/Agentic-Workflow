@@ -60,7 +60,6 @@ def classify_app_domain(filepath: Path) -> tuple:
             return "outreach", resume_score, outreach_score
         else:
             return "generic", resume_score, outreach_score
-    # guardian: allow-silent-swallow
     except Exception:
         return "error", 0, 0
 

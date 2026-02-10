@@ -252,7 +252,6 @@ class CircuitBreaker:
             def target():
                 try:
                     result_container["result"] = func(*args, **kwargs)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     result_container["exception"] = e
                 finally:
@@ -273,7 +272,6 @@ class CircuitBreaker:
                 # Record failure outside of any thread locks
                 try:
                     self.record_failure(error)
-                # guardian: allow-silent-swallow
                 except Exception:
                     pass
                 raise error
@@ -281,14 +279,12 @@ class CircuitBreaker:
             if "exception" in result_container:
                 try:
                     self.record_failure(result_container["exception"])
-                # guardian: allow-silent-swallow
                 except Exception:
                     pass  # Still raise the original exception
                 raise result_container["exception"]
 
             try:
                 self.record_success()
-            # guardian: allow-silent-swallow
             except Exception:
                 pass  # Still return the result
             return result_container["result"]

@@ -53,7 +53,6 @@ def generate_report():
                     for r in data["regex_patterns"]:
                         report.append(f"  - `{r}`")
                 report.append("")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Error analyzing {f.name}: {e}")
             pass

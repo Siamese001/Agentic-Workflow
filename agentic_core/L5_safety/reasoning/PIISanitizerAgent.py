@@ -102,13 +102,11 @@ class PIISanitizerAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:
@@ -149,7 +147,6 @@ class PIISanitizerAgent(SovereignBaseAgent):
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         return results
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal PII sanitization violations using standard_heal decorator pattern.
 

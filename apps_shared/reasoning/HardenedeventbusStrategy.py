@@ -164,7 +164,6 @@ class HardenedEventBus:
     async def _register_bulkheads(self) -> None:
         """Register bulkheads for event operations."""
         # Bulkhead for publishing events
-        # guardian: allow-magic-config
         await self.bulkhead_manager.create_bulkhead(
             "event_publish",
             max_concurrency=10,
@@ -173,7 +172,6 @@ class HardenedEventBus:
         )
 
         # Bulkhead for processing events
-        # guardian: allow-magic-config
         await self.bulkhead_manager.create_bulkhead(
             "event_process",
             max_concurrency=20,
@@ -190,14 +188,12 @@ class HardenedEventBus:
         # Circuit breaker for publishing
         await registry.get_circuit_breaker(
             "event_publish",
-            # guardian: allow-magic-config
             CircuitBreakerConfig(failure_threshold=5, timeout=30.0, failure_rate_threshold=0.5),
         )
 
         # Circuit breaker for processing
         await registry.get_circuit_breaker(
             "event_process",
-            # guardian: allow-magic-config
             CircuitBreakerConfig(failure_threshold=10, timeout=60.0, failure_rate_threshold=0.3),
         )
 
@@ -210,14 +206,12 @@ class HardenedEventBus:
         # Retry policy for publishing
         executor.register_policy(
             "event_publish",
-            # guardian: allow-magic-config
             RetryConfig(max_attempts=3, base_delay=0.5, max_delay=5.0),
         )
 
         # Retry policy for processing
         executor.register_policy(
             "event_process",
-            # guardian: allow-magic-config
             RetryConfig(max_attempts=5, base_delay=1.0, max_delay=10.0),
         )
 
@@ -256,7 +250,6 @@ class HardenedEventBus:
                     bulkhead_name="event_process",
                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 # Log error but don't crash
                 logger.error(f"Failed to process event {event.id}: {e}")

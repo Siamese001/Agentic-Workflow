@@ -17,7 +17,6 @@ except ImportError as _err:
 _console = Console()
 
 
-# guardian: allow-magic-config
 def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: allow-magic_configuration
     """
     Decorator to provide exponential backoff with jitter for database queries.
@@ -30,7 +29,6 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: all
             for attempt in range(max_retries + 1):
                 try:
                     return func(*args, **kwargs)
-                # guardian: allow-silent-swallow
                 except Exception as e:  # guardian: allow-silent_swallower
                     last_exception = e
                     if attempt < max_retries:
@@ -47,7 +45,6 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):  # guardian: all
     return decorator
 
 
-# guardian: allow-magic-config
 @retry_query(max_retries=3)  # guardian: allow-magic_configuration
 def execute_sql(sql: str) -> Any:
     """
@@ -58,11 +55,8 @@ def execute_sql(sql: str) -> Any:
     raise NotImplementedError("execute_sql must be implemented with actual database driver")
 
 
-# guardian: allow-magic-config
 def run_hardened_query(
-    query_string: str,
-    # guardian: allow-magic-config
-    timeout_seconds: int = 300,
+    query_string: str, timeout_seconds: int = 300
 ) -> Any:  # guardian: allow-magic_configuration
     """
     Executes a database query with a decoupled animation thread.
@@ -94,7 +88,6 @@ def run_hardened_query(
 
             while True:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
-                # guardian: allow-magic-config
                 done, _ = concurrent.futures.wait(
                     [future],
                     timeout=0.05,  # guardian: allow-magic_configuration

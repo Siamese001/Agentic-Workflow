@@ -41,7 +41,6 @@ def main():
         try:
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
             print("[+] Created archive directory.")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"[!] Critical Error: Could not create archive directory: {e}")
             sys.exit(1)
@@ -65,7 +64,6 @@ def main():
                 shutil.move(str(source_path), str(dest_path))
                 print(f"[+] Archived: {rel_path}")
                 moved_count += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"[!] Failed to move {rel_path}: {e}")
         else:

@@ -64,7 +64,6 @@ class NetworkingUtility:
             self.blocked_count += 1
             Logger.warning(f"P8_BLOCK: Host {host} is not whitelisted")
             return EgressResult(status="FAIL", reason=f"Host {host} not in whitelist", host=host)
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"P8_ERROR: Failed to parse URL {url}: {e}")
             return EgressResult(status="FAIL", reason=f"Parse error: {str(e)}", host="unknown")

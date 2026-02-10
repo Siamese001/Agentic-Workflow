@@ -50,7 +50,6 @@ class GitTools:
             return f"[OK] Committed: {message}"
         except ImportError:
             return "Commit Error: 'mcp0_git_add_or_commit' client not available. Git operations require this client."
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Commit Error (Unexpected): {e}"
 
@@ -70,7 +69,6 @@ class GitTools:
             return result
         except ImportError:
             return "Status Error: 'mcp0_git_status' client not available. Git operations require this client."
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Status Error (Unexpected): {e}"
 

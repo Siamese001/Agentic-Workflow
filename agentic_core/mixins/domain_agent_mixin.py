@@ -153,7 +153,6 @@ class RGDomainMixin(DomainAgentMixin):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, domain="rg", **kwargs)
-        # guardian: allow-magic-config
         self._similarity_threshold = 0.85
         self._ttl_seconds = 3600  # 1 hour
 
@@ -194,7 +193,6 @@ class LICDomainMixin(DomainAgentMixin):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, domain="lic", **kwargs)
-        # guardian: allow-magic-config
         self._similarity_threshold = 0.92  # Stricter for LIC
         self._ttl_seconds = 7200  # 2 hours
 

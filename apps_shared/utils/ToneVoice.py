@@ -111,7 +111,6 @@ class ToneEnforcer:
             Dictionary of tone settings by voice
         """
         return {
-            # guardian: allow-magic-config
             ToneVoice.AUTHORITATIVE: ToneSettings(
                 primary_voice=ToneVoice.AUTHORITATIVE,
                 max_sentence_length=20,
@@ -124,7 +123,6 @@ class ToneEnforcer:
                 },
                 max_passive_voice_percent=10.0,
             ),
-            # guardian: allow-magic-config
             ToneVoice.COLLABORATIVE: ToneSettings(
                 primary_voice=ToneVoice.COLLABORATIVE,
                 max_sentence_length=25,
@@ -137,7 +135,6 @@ class ToneEnforcer:
                 },
                 max_passive_voice_percent=15.0,
             ),
-            # guardian: allow-magic-config
             ToneVoice.TECHNICAL: ToneSettings(
                 primary_voice=ToneVoice.TECHNICAL,
                 max_sentence_length=30,
@@ -150,7 +147,6 @@ class ToneEnforcer:
                 },
                 max_passive_voice_percent=20.0,
             ),
-            # guardian: allow-magic-config
             ToneVoice.EXECUTIVE: ToneSettings(
                 primary_voice=ToneVoice.EXECUTIVE,
                 max_sentence_length=25,
@@ -163,7 +159,6 @@ class ToneEnforcer:
                 },
                 max_passive_voice_percent=5.0,
             ),
-            # guardian: allow-magic-config
             ToneVoice.CREATIVE: ToneSettings(
                 primary_voice=ToneVoice.CREATIVE,
                 max_sentence_length=30,

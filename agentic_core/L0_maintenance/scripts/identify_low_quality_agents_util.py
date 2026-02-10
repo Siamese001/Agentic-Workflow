@@ -67,7 +67,6 @@ def main():
     print("REFACTORING BATCHES (5-6 agents each)")
     print("=" * 70)
 
-    # guardian: allow-magic-config
     batch_size = 6
     for batch_num, i in enumerate(range(0, min(30, len(needs_work)), batch_size), 1):
         batch = needs_work[i : i + batch_size]

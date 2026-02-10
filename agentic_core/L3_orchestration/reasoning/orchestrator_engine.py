@@ -119,7 +119,6 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
                 project_root = get_validated_project_root()
                 agent_paths = get_agent_paths(project_root)
                 self._available_agents = [Path(p).stem for p in agent_paths]
-            # guardian: allow-silent-swallow
             except Exception:
                 self._available_agents = []
         return self._available_agents
@@ -310,7 +309,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 total_violations_found += result.violations_found
                 total_violations_fixed += result.violations_fixed
                 total_errors += result.errors
-            # guardian: allow-silent-swallow
             except Exception as e:
                 self.logger.error(f"[MISSION] Critical error running {agent_name}: {e}")
                 total_errors += 1
@@ -372,7 +370,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             else:
                 # FULL or UNIFIED mode - run all operations
                 return self._run_full_mode(agent_name, dry_run, context)
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"[AGENT] {agent_name} failed: {e}")
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
@@ -439,7 +436,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 message="CredentialScannerAgent missing",
                 metadata={"dry_run": dry_run},
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"[COMPLIANCE] Credential scan failed: {e}")
             return AgentResult(
@@ -539,7 +535,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 self.logger.debug(
                     f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery",
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 self.logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
                 self._available_agents = []
@@ -617,7 +612,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 return False
 
             # Perform subprocess import check
-            # guardian: allow-magic-config
             result = subprocess.run(
                 [sys.executable, "-c", f"import {module_path}"],
                 capture_output=True,
@@ -636,20 +630,17 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             self._import_cache[module_path] = True
             return True
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
             return True  # Allow to proceed if validation itself fails
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -680,7 +671,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 if not strategies:
                     metrics["violations_found"] += 1
                     self.logger.warning("No strategies loaded")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 metrics["violations_found"] += 1
                 self.logger.warning(f"Strategy loading failed: {e}")
@@ -693,7 +683,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                     self.logger.warning("No agents discovered")
                 else:
                     self.logger.info(f"Discovered {len(available_agents)} agents")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 metrics["violations_found"] += 1
                 self.logger.warning(f"Agent discovery failed: {e}")
@@ -707,7 +696,6 @@ class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
                 metrics["violations_fixed"] = 1
                 self.logger.info("Orchestrator validation passed")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Orchestrator healing failed: {e}")
             metrics["errors"] += 1

@@ -35,7 +35,6 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         super().__init__(project_root, mission_id=requesting_agent)
         self.registry = SubAtomicRegistry(project_root)
 
-    # guardian: allow-magic-config
     def discover_capable_agents(self, Task: str, min_confidence: float = 0.85) -> list[dict]:
         """
         Discover agents/methods capable of Task via hybrid registry search.
@@ -64,18 +63,15 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         if self.redis and capable:
             try:
                 self.redis.set(cache_key, json.dumps(capable), ex=3600)
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
         return sorted(capable, key=lambda x: x["confidence"], reverse=True)
 
-    # guardian: allow-magic-config  # guardian: allow-type-erasure
     def delegate_task(
         self,
         Task: str,
         args: dict | None = None,
         kwargs: dict | None = None,
-        # guardian: allow-magic-config
         min_confidence: float = 0.85,
     ) -> dict:
         """
@@ -129,7 +125,6 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         return trail
 
     @standard_heal
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

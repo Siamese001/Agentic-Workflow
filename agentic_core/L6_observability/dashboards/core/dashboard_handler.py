@@ -18,7 +18,6 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         # Set directory to dashboard location
         dashboard_dir = Path(__file__).parent
-        # guardian: allow-path-string
         os.chdir(dashboard_dir)
         super().__init__(*args, **kwargs)
 
@@ -37,7 +36,6 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
 def main():
     """Start HTTP server."""
     dashboard_dir = Path(__file__).parent
-    # guardian: allow-path-string
     os.chdir(dashboard_dir)
 
     with socketserver.TCPServer(("", PORT), DashboardHandler) as httpd:

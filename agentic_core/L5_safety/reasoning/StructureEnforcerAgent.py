@@ -160,7 +160,6 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
@@ -365,7 +364,6 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
         except Exception as e:
             result["error"] = str(e)
             return result
@@ -436,7 +434,6 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         """Get all recorded violations."""
         return self._violations.copy()
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal structure enforcement violations using standard_heal decorator pattern.
 
@@ -489,7 +486,6 @@ class StructureEnforcerAgent(SovereignBaseAgent):
                 }
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[STRUCTURE_ENFORCER] Failed to heal: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

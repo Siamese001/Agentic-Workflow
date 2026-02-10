@@ -160,7 +160,6 @@ def run_manifest_guardian(
             result.remediation_hints = [
                 "Re-seal manifest with ManifestGuardian.seal_manifest() after intentional changes",
             ]
-    # guardian: allow-silent-swallow
     except Exception as exc:
         result.add_check(
             check_id="checksum_match",

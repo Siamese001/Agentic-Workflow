@@ -55,7 +55,6 @@ def analyze_archive(archive_path: Path):
                         "has_outreach": has_outreach,
                     },
                 )
-        # guardian: allow-silent-swallow
         except Exception:
             continue
 

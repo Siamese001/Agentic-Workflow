@@ -277,7 +277,6 @@ for _name, _cfg in _REASONING_CONFIGS:
         setattr(ReasoningConfig, _name, ReasoningConfig(**_cfg))
 
 # Safety threshold for guardrail validation
-# guardian: allow-magic-config
 SAFETY_THRESHOLD = 0.95
 
 __all__ = [

@@ -56,7 +56,6 @@ class RagGuardrail:
             pairs: Any = [[query, doc.text] for doc in documents]
 
             def _compute():
-                # guardian: allow-magic-config
                 return self.bge_reranker.compute_score(pairs, batch_size=32)
 
             raw_logits: Any = await asyncio.to_thread(_compute)
@@ -76,7 +75,6 @@ class RagGuardrail:
             if not confident_docs:
                 print("   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.")
             return confident_docs[:top_k]
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] BGE reranking failed: {e}")
             return documents

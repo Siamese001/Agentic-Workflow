@@ -96,7 +96,6 @@ class DetectionSignalProtocol(ABC):
         pass
 
     @abstractmethod
-    # guardian: allow-magic-config
     def get_signals(
         self,
         file_path: str | None = None,

@@ -27,7 +27,6 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
     Identifies the most critical components of the Sovereign Architecture.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, root_dir: str = ".", toxic_threshold: int = 10):
         self.root = Path(root_dir)
         self.threshold = toxic_threshold
@@ -102,7 +101,6 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
                     for alias in node.names:
                         if alias.name.startswith(AGENTIC_CORE_DIR):
                             imports.add(alias.name)
-        # guardian: allow-silent-swallow
         except Exception:
             pass
         return imports
@@ -138,7 +136,6 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
             print(f"Impact: A single violation here affects {hub['fan_in']} components.")
             print("-" * 60)
 
-    # guardian: allow-type-erasure
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict:
         """
         Autonomous healing method (Canon Key 51 compliance).
@@ -160,7 +157,6 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
             "reason": "Toxic dependencies require architectural refactoring",
         }
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal toxic dependency violations using standard_heal decorator pattern.
 

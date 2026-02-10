@@ -146,11 +146,9 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         self.memory_dir.mkdir(parents=True, exist_ok=True)
         self.archive_dir = Path("archives/logs")
         self.archive_dir.mkdir(parents=True, exist_ok=True)
-        # guardian: allow-magic-config
         self.MAX_CONTEXT_SIZE = 50000
         self.TARGET_COMPRESSED_SIZE = 5000
 
-    # guardian: allow-type-erasure
     async def execute(self) -> Any:
         """
         Execute context curation.
@@ -241,13 +239,11 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
         prompt = self._build_compression_prompt(semantic_facts)
         if hasattr(self.ctx, "generate_with_thinking"):
             try:
-                # guardian: allow-magic-config
                 compressed = await self.ctx.generate_with_thinking(
                     prompt=prompt,
                     thinking_budget=8000,
                     temperature=0.1,
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Could not use Gemini for compression: {e}")
                 compressed = self._simple_compression(semantic_facts)
@@ -379,13 +375,11 @@ class ContextCuratorAgent(SovereignBaseAgent, SubAtomicAgent):
             return None
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

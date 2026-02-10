@@ -379,7 +379,6 @@ class SchemaFillStrategy(FormatRepair):
                 attempts=1,
             )
 
-        # guardian: allow-silent-swallow
         except (ValidationError, Exception) as e:
             return RepairResult(
                 success=False,
@@ -536,7 +535,6 @@ class SelfHealingFormatter:
             if result.success:
                 self._stats["successful_formats"] += 1
                 return result
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Standard formatting failed: {e}")
             result = FormatResult(
@@ -585,12 +583,10 @@ class SelfHealingFormatter:
                             logger.info(f"Successfully healed using {strategy.strategy_name.value}")
                             return healed_result
 
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         logger.warning(f"Healed data still failed to format: {e}")
                         continue
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Repair strategy {strategy.strategy_name.value} failed: {e}")
                 continue

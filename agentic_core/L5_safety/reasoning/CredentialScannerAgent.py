@@ -316,7 +316,6 @@ class CredentialScannerAgent(SovereignBaseAgent):
                                 confidence=confidence,
                             ),
                         )
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.debug(f"[CREDENTIAL SCAN] Error scanning {file_path}: {e}")
 
@@ -395,13 +394,11 @@ class CredentialScannerAgent(SovereignBaseAgent):
             "confidence": match.confidence,
         }
 
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
         **kwargs,

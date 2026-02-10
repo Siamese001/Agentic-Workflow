@@ -34,7 +34,6 @@ class ContextualCompressor:
     that are relevant to the query while maintaining context.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, similarity_threshold: float = 0.1, use_llm: bool = False):
         """Initialize the Contextual Compressor.
 
@@ -230,7 +229,6 @@ Text:
 
 Extracted sentences:"""
 
-            # guardian: allow-magic-config
             response = await client.messages.create(
                 model="claude-3-5-sonnet-20241022",
                 max_tokens=1000,
@@ -240,7 +238,6 @@ Extracted sentences:"""
 
             return response.content[0].text.strip()
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"LLM compression failed: {e}")
             # Fallback to heuristic
@@ -307,7 +304,6 @@ Extracted sentences:"""
 
 
 # Convenience function for direct usage
-# guardian: allow-magic-config
 def compress_chunks(chunks: list[str], query: str, similarity_threshold: float = 0.1) -> str:
     """Compress chunks using default settings.
 

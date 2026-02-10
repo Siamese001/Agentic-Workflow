@@ -16,7 +16,7 @@ def test_test_filter_inappropriate_content_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L1_cognition.utils.filter_inappropriate_content_util: {e}",
+            f"Cannot import module agentic_core.L1_cognition.utils.filter_inappropriate_content_util: {e}"
         )
 
 

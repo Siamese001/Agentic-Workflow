@@ -134,7 +134,6 @@ class GraphMemoryBridge:
             # Default: assume MCP is available (will fail gracefully if not)
             self._mcp_available = True
             Logger.info("[GraphMemoryBridge] Initialized (MCP mode)")
-        # guardian: allow-silent-swallow
         except Exception as e:
             self._mcp_available = False
             Logger.warning(f"[GraphMemoryBridge] MCP unavailable: {e}")

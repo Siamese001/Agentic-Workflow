@@ -174,7 +174,6 @@ class TalentSignalEnhancer:
 
             return enhanced
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
@@ -283,7 +282,6 @@ class TalentSignalEnhancer:
 
             return detected[:5]  # Limit to 5 most prestigious
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error detecting pedigree: {str(e)}")
             return []
@@ -415,7 +413,6 @@ class TalentSignalEnhancer:
 
             return bullet
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error strengthening generic bullet: {str(e)}")
             return bullet

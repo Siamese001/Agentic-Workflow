@@ -80,21 +80,17 @@ class ResourceManagementGuardrail:
 
         # Default quotas
         self.quotas: dict[ResourceType, ResourceQuota] = {
-            # guardian: allow-magic-config
             ResourceType.TOKENS: ResourceQuota(
                 resource_type=ResourceType.TOKENS,
                 limit=1_000_000,
                 unit="tokens",
             ),
-            # guardian: allow-magic-config
             ResourceType.API_CALLS: ResourceQuota(
                 resource_type=ResourceType.API_CALLS,
                 limit=10_000,
                 unit="calls",
             ),
-            # guardian: allow-magic-config
             ResourceType.COST: ResourceQuota(resource_type=ResourceType.COST, limit=100.0, unit="USD"),
-            # guardian: allow-magic-config
             ResourceType.MEMORY: ResourceQuota(resource_type=ResourceType.MEMORY, limit=1024, unit="MB"),
         }
 

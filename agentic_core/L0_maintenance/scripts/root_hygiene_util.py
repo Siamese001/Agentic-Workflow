@@ -53,7 +53,6 @@ def enforce_root_hygiene():
 
                     print(f"  - {item.name} -> {action}")
                     shutil.move(str(item), str(target))
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"  [ERROR] Could not move {item.name}: {e}")
 

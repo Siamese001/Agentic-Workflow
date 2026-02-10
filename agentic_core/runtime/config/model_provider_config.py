@@ -24,14 +24,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 # CORE CONSTANTS
 # =============================================================================
 
-# guardian: allow-magic-config
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RETRY_DELAY = 1.0
-# guardian: allow-magic-config
 DEFAULT_API_TIMEOUT = 60.0
 DEFAULT_GENERATION_TEMPERATURE = 0.7
 DEFAULT_SYNTHESIS_TEMPERATURE = 0.3
-# guardian: allow-magic-config
 DEFAULT_MAX_OUTPUT_TOKENS = 4000
 SAFETY_THRESHOLD = "MEDIUM_AND_ABOVE"
 

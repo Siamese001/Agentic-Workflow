@@ -62,7 +62,6 @@ def main():
         with open(arg, encoding="utf-8") as f:
             try:
                 ModelVisitor().visit(ast.parse(f.read()))
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Parse Warning in {arg}: {e}")
 

@@ -14,7 +14,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
 )
 
 project_root = Path(__file__).parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 
@@ -23,7 +22,6 @@ def compute_file_hash(file_path: Path) -> str:
     try:
         with open(file_path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
-    # guardian: allow-silent-swallow
     except Exception:
         return "ERROR"
 
@@ -33,7 +31,6 @@ def read_file_content(file_path: Path) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -44,7 +41,6 @@ def get_file_stats(file_path: Path) -> dict:
         stat = file_path.stat()
         content = read_file_content(file_path)
         return {"size": stat.st_size, "lines": len(content.splitlines()), "exists": True}
-    # guardian: allow-silent-swallow
     except Exception:
         return {"size": 0, "lines": 0, "exists": False}
 

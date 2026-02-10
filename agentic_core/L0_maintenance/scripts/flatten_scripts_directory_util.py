@@ -54,7 +54,6 @@ def flatten_scripts() -> Any:
                 shutil.move(str(py_file), str(target))
                 print(f"  [✓] {rel_path} -> {target.relative_to(CORE)}")
                 moved += 1
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"  [X] Failed: {py_file.name} - {e}")
     print("\n[*] Cleaning empty directories...")
@@ -65,7 +64,6 @@ def flatten_scripts() -> Any:
                 if not any(dir_path.iterdir()) and dir_path != SCRIPTS_DIR:
                     dir_path.rmdir()
                     print(f"  [✓] Removed: {dir_path.relative_to(CORE)}")
-            # guardian: allow-silent-swallow
             except:
                 pass
     print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-{REQUIRED_DEPTH}.")

@@ -187,7 +187,6 @@ class HybridRetriever:
                 self.index_ready.set()
                 print("   [OK] Sovereign local BM25 index loaded")
                 return
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!] Local index cache corrupt — rebuilding: {e}")
         await self.rebuild_from_ingestion()
@@ -217,7 +216,6 @@ class HybridRetriever:
                 self.bm25_index = await asyncio.to_thread(_sync)
                 self.index_ready.set()
             print("   [OK] Sovereign local index synchronized")
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [X] Local index rebuild failed: {e}")
 
@@ -234,7 +232,6 @@ class HybridRetriever:
                 )
                 for r in results
             ]
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Dense search failed: {e}")
             return []

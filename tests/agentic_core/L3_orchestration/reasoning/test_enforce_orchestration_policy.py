@@ -16,7 +16,7 @@ def test_test_enforce_orchestration_policy_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy: {e}",
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy: {e}"
         )
 
 
@@ -27,7 +27,7 @@ def test_test_enforce_orchestration_policy_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy",
+            "Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy"
         )
 
 
@@ -48,5 +48,5 @@ def test_test_enforce_orchestration_policy_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy",
+            "Cannot import module agentic_core.L3_orchestration.reasoning.enforce_orchestration_policy"
         )

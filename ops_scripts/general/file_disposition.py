@@ -66,7 +66,6 @@ class AgentVisitor(ast.NodeVisitor):
 
 def analyze_directory(directory: str) -> list[FileDisposition]:
     results = []
-    # guardian: allow-path-string
     if not os.path.exists(directory):
         print(f"Directory not found: {directory}")
         return []
@@ -76,7 +75,6 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
             if not file.endswith(".py"):
                 continue
 
-            # guardian: allow-path-string
             full_path = os.path.join(root, file)
             with open(full_path, encoding="utf-8") as f:
                 try:
@@ -92,7 +90,6 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
                             signals=visitor.signals,
                         ),
                     )
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     results.append(
                         FileDisposition(

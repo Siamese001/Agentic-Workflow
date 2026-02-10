@@ -18,7 +18,6 @@ def calculate_file_hash(file_path: Path) -> str:
         with open(file_path, "rb") as f:
             content = f.read()
         return hashlib.sha256(content).hexdigest()
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Could not hash {file_path}: {e}")
         return ""
@@ -29,7 +28,6 @@ def load_registry(registry_path: Path) -> dict:
     try:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)
@@ -41,7 +39,6 @@ def save_registry(registry_path: Path, registry: dict):
         with open(registry_path, "w", encoding="utf-8") as f:
             json.dump(registry, f, indent=2, ensure_ascii=False)
         print(f"✅ Registry saved to {registry_path}")
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"ERROR: Failed to save registry: {e}")
         sys.exit(1)
@@ -126,7 +123,6 @@ def main():
         shutil.copy2(registry_path, backup_path)
         print(f"📋 Backup created: {backup_path}")
         print()
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"WARNING: Could not create backup: {e}")
         print()

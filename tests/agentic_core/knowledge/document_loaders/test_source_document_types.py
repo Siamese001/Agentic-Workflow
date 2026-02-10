@@ -16,7 +16,7 @@ def test_test_source_document_types_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.knowledge.document_loaders.source_document_types: {e}",
+            f"Cannot import module agentic_core.knowledge.document_loaders.source_document_types: {e}"
         )
 
 

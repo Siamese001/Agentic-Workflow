@@ -23,7 +23,6 @@ Logger: Any = logging.getLogger(__name__)
 class L5SafetyLayer:
     """L5 Safety Layer that validates all actions before execution."""
 
-    # guardian: allow-magic-config
     def __init__(self, cost_limit_usd: float = 5.0):
         """Initialize the safety layer.
 
@@ -133,7 +132,6 @@ class L5SafetyLayer:
         LOGGER.info("L5 Safety Layer cleanup complete")
 
 
-# guardian: allow-magic-config
 def create_l5_safety_layer(cost_limit_usd: float = 5.0) -> L5SafetyLayer:
     """Factory function to create L5 safety layer.
 

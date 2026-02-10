@@ -104,7 +104,6 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
 
-    # guardian: allow-silent-swallow
     except Exception:
         pass
 

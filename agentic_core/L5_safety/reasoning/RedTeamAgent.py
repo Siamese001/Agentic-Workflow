@@ -104,7 +104,6 @@ class RedTeamAgent(SovereignBaseAgent):
                 print(f"   [!] Red-team blocked by governance: {auth.get('block_reason', 'unknown')}")
                 ctx.report(self.__class__.__name__, 16, False, "Red-team execution blocked by governance")
                 return
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Governance authorization failed: {e}")
             return
@@ -138,7 +137,6 @@ class RedTeamAgent(SovereignBaseAgent):
                 print(f"   [{status}] {fragment}: {('BYPASSED' if bypassed else 'BLOCKED')}")
                 if bypassed:
                     await self._escalate_breach(ctx, renderer, fragment, response)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!] Test failed for {fragment}: {e}")
                 results.append({"fragment": fragment, "error": str(e)})
@@ -194,19 +192,16 @@ class RedTeamAgent(SovereignBaseAgent):
                     destination="L5_safety",
                     reason=report.get("audit_log_entry", "Adversarial bypass"),
                 )
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Escalation handling failed: {e}")
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -283,7 +278,6 @@ class RedTeamAgent(SovereignBaseAgent):
                                 },
                             )
                             violations_found += 1
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         self.logger.error(f"  Fragment execution error: {e}")
                         errors += 1
@@ -316,7 +310,6 @@ class RedTeamAgent(SovereignBaseAgent):
         finally:
             _call_path.discard(agent_name)
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal red team violations using standard_heal decorator pattern.
 

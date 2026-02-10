@@ -31,7 +31,6 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
             corrupted.append((py_file, e.lineno or 0, str(e)))
         except UnicodeDecodeError as e:
             corrupted.append((py_file, 0, f"Encoding error: {e}"))
-        # guardian: allow-silent-swallow
         except Exception as e:
             # Catch other parsing issues
             corrupted.append((py_file, 0, f"Parse error: {e}"))
@@ -78,7 +77,6 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
                         suspicious.append(
                             (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}"),
                         )
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 

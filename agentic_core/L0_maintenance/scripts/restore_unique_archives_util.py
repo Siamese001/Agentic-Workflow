@@ -81,7 +81,6 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
                         classes.add(node.name.lower())
                     elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         functions.add(node.name.lower())
-            # guardian: allow-silent-swallow
             except:
                 pass
 
@@ -232,7 +231,6 @@ def main():
                 file_hash = hashlib.md5(content.encode()).hexdigest()
                 if file_hash in file_hashes:
                     continue  # Exact duplicate
-            # guardian: allow-silent-swallow
             except:
                 continue
 

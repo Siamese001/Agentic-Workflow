@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 # Load agents without tests
@@ -126,7 +125,6 @@ for territory, ags in sorted(territories.items()):
             modified.append(class_name)
             print(f"  ✅ {class_name}")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"{class_name}: {str(e)}")
             print(f"  ❌ {class_name}: {str(e)[:50]}")

@@ -201,7 +201,6 @@ def run_hygiene_guardian(
                 details="No temporary artifacts found",
             )
             result.metrics["temp_artifact_count"] = 0
-    # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="temp_artifacts",
@@ -227,7 +226,6 @@ def run_hygiene_guardian(
                 details="No empty folders found",
             )
         result.metrics["empty_folder_count"] = len(empty)
-    # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="empty_folders",
@@ -253,7 +251,6 @@ def run_hygiene_guardian(
                 details="No __init__.py-only folders found",
             )
         result.metrics["init_only_folder_count"] = len(init_only)
-    # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-silent_swallower
         result.add_check(
             check_id="init_only_folders",

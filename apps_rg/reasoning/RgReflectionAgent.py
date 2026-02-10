@@ -98,7 +98,6 @@ class RgReflectionAgent(RGAgentBase):
         passed = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
         return passed / total_agents
 
-    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()
@@ -141,7 +140,6 @@ class RgReflectionAgent(RGAgentBase):
         cache_key = f"execution_insight:{insight_id}"
         return self.ml_cache_set(cache_key, insight_data)
 
-    # guardian: allow-type-erasure
     def ml_recall_execution_insight(
         self,
         insight_id: str,
@@ -176,7 +174,6 @@ class RgReflectionAgent(RGAgentBase):
         cache_key = f"quality_pattern:{pattern_id}"
         return self.ml_cache_set(cache_key, pattern_data)
 
-    # guardian: allow-type-erasure
     def ml_recall_quality_pattern(
         self,
         pattern_id: str,
@@ -221,7 +218,6 @@ class RgReflectionAgent(RGAgentBase):
             )
         return False
 
-    # guardian: allow-type-erasure
     def ml_recall_similar_reflection(
         self,
         context_hash: str,

@@ -49,22 +49,16 @@ class HardenedGeminiConfig:
     }
 
     # Safety threshold (80% of limit)
-    # guardian: allow-magic-config
     SAFETY_THRESHOLD_RATIO = 0.8
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         model: str = "gemini-3-pro-preview",
         temperature: float = 0.3,
-        # guardian: allow-magic-config
         max_output_tokens: int = 8192,
         safety_threshold_ratio: float | None = None,
-        # guardian: allow-magic-config
         max_retries: int = 5,
-        # guardian: allow-magic-config
         retry_min_wait: float = 2.0,
-        # guardian: allow-magic-config
         retry_max_wait: float = 30.0,
     ):
         self.model = model
@@ -116,14 +110,10 @@ class CircuitBreakerState:
 class CircuitBreaker:
     """Circuit breaker to prevent cascading failures during sustained outages."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
-        # guardian: allow-magic-config
         failure_threshold: int = 5,
-        # guardian: allow-magic-config
         recovery_timeout: float = 60.0,
-        # guardian: allow-magic-config
         half_open_max_calls: int = 3,
     ):
         """Initialize circuit breaker.
@@ -222,7 +212,6 @@ class HardenedGeminiExecutor:
         self.config = config or HardenedGeminiConfig()
         self._client = None
         self._setup_client()
-        # guardian: allow-magic-config
         self._circuit_breaker = CircuitBreaker(
             failure_threshold=5,
             recovery_timeout=60.0,
@@ -305,7 +294,6 @@ class HardenedGeminiExecutor:
                 # Fallback: estimate using tiktoken or simple heuristic
                 token_count = self._estimate_tokens(input_payload)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Token counting failed, estimating: {e}")
             token_count = self._estimate_tokens(input_payload)

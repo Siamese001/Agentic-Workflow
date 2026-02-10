@@ -40,7 +40,6 @@ def main():
             try:
                 shutil.move(str(actual_test), str(expected_test_path))
                 print("Successfully moved mislocated test")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"Failed to move {actual_test}: {e}")
 

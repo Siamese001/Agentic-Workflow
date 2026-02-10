@@ -50,7 +50,6 @@ class MetaLearningEngine:
                         cls._kg_bridge = KnowledgeGraphBridge.get_instance()
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         Logger.warning(f"[{agent_name}] Knowledge Graph unavailable: {e}")
 
@@ -68,7 +67,6 @@ class MetaLearningEngine:
                     f"observations from Knowledge Graph",
                 )
             return context
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{agent_name}] Context discovery failed: {e}")
             return {}
@@ -111,7 +109,6 @@ class MetaLearningEngine:
                 if not isinstance(result, dict):
                     payload = {"result": result, "_wrapped": True}
                 asyncio.create_task(MetaLearningStorage.learn_async(context, agent_name, payload))
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{agent_name}] DNA WRITE ERROR: Could not learn experience: {e}")
 
@@ -145,7 +142,6 @@ class MetaLearningEngine:
                 duration_ms=duration_ms,
             )
             cls._kg_bridge.reflect_on_execution(trace)
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{agent_name}] Reflection failed: {e}")
 
@@ -168,7 +164,6 @@ class MetaLearningEngine:
                 success=success,
                 error_type=error_type,
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{caller_agent}] Interaction recording failed: {e}")
 
@@ -183,7 +178,6 @@ class MetaLearningEngine:
                 child_entity=child_entity,
                 parent_entity=parent_entity,
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{child_entity}] Inheritance setup failed: {e}")
 
@@ -204,7 +198,6 @@ class MetaLearningEngine:
                 entity_b=entity_b,
                 reason=reason,
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{entity_a}] Incompatibility marking failed: {e}")
 
@@ -219,7 +212,6 @@ class MetaLearningEngine:
                 entity_name=agent_name,
                 observation=observation,
             )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[{agent_name}] Observation recording failed: {e}")
 

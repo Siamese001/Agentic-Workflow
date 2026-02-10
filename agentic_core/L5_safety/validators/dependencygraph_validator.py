@@ -132,7 +132,6 @@ def _get_python_files(base_path: str = ".") -> list[str]:
     for root, _, files in os.walk(base_path):
         for file in files:
             if file.endswith(".py"):
-                # guardian: allow-path-string
                 python_files.append(os.path.join(root, file))
     return python_files
 
@@ -151,7 +150,6 @@ def _clean_llm_code(text: str) -> str:
     return text
 
 
-# guardian: allow-magic-config
 def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     """
     A simple retry decorator for async functions with a delay.
@@ -318,7 +316,6 @@ class ValidationContext:
                 self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -329,7 +326,6 @@ class ValidationContext:
                     data = json.load(f)
                     self.file_hashes = data.get("hashes", {})
                     self.skip_files = set(data.get("skip", []))
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -338,7 +334,6 @@ class ValidationContext:
             data = {"hashes": self.file_hashes, "skip": list(self.skip_files)}
             with open(self.memory_file, "w") as f:
                 json.dump(data, f)
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 
@@ -351,7 +346,6 @@ class ValidationContext:
         try:
             with open(file_path, encoding="utf-8") as f:
                 return f.read()
-        # guardian: allow-silent-swallow
         except Exception:
             return ""
 
@@ -360,7 +354,6 @@ class ValidationContext:
         Writes content to a file, ensuring directory exists.
         """
         try:
-            # guardian: allow-path-string
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -373,14 +366,12 @@ class ValidationContext:
         return self._client
 
     @_rate_limited_retry()  # Refactored
-    # guardian: allow-magic-config
     async def resilient_mutation(
         self,
         agent_name: str,
         Task: str,
         code: str = "",
         file_path: str = None,
-        # guardian: allow-magic-config
         max_attempts: int = 3,
         **kwargs,
     ) -> str:
@@ -396,12 +387,10 @@ class ValidationContext:
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)  # Refactored
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [{agent_name}] Mutation failed: {e}")
             return code
 
-    # guardian: allow-magic-config
     def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
         """Signal the start of a healing cycle."""
         print(f"   [~] Healing Cycle {cycle_number}/{max_cycles}")
@@ -444,7 +433,6 @@ class ValidationContext:
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(content)
                     print(f"   ↩️ Rolled back: {file_path}")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"   [!] Rollback failed for {file_path}: {e}")
             self.file_backups.clear()

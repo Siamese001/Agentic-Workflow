@@ -20,7 +20,6 @@ def find_long_lines() -> None:
             dirs.remove("__pycache__")
         for file in files:
             if file.endswith(".py"):
-                # guardian: allow-path-string
                 os.path.join(root, file)
                 try:
                     with open(ConfigurationService().FILEPATH, encoding="utf-8") as f:
@@ -34,7 +33,6 @@ def find_long_lines() -> None:
                                 )
                                 ConfigurationService().Logger.info(f"  {line[:150]}...")
                                 ConfigurationService().Logger.info("")
-                # guardian: allow-silent-swallow
                 except Exception:
                     ConfigurationService().Logger.warning("Swallowed exception", exc_info=True)
     ConfigurationService().Logger.info(

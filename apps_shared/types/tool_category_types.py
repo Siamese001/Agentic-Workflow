@@ -194,7 +194,6 @@ class ObservabilityToolInvoker:
 
             return result
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
@@ -321,7 +320,6 @@ class ObservabilityToolInvoker:
                     # Simulate invocation
                     return self._simulate_invocation(context, parameters)
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 last_error = str(e)
                 if attempt < max_retries:
@@ -577,11 +575,8 @@ class ObservabilityToolInvoker:
 
 
 # Factory function for easy instantiation
-# guardian: allow-magic-config
 def create_observability_tool_invoker(
-    # guardian: allow-magic-config
     default_timeout: float = 30.0,
-    # guardian: allow-magic-config
     max_retries: int = 3,
     enable_circuit_breaker: bool = True,
     **kwargs: object,
@@ -597,14 +592,12 @@ def create_observability_tool_invoker(
 
 
 # Convenience function for direct usage
-# guardian: allow-magic-config
 def tool_invoke_observability_tool(
     tool_id: str,
     method: str,
     parameters: dict[str, Any],
     invocation_id: str | None = None,
     caller_id: str | None = None,
-    # guardian: allow-magic-config
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Invoke observability tool.

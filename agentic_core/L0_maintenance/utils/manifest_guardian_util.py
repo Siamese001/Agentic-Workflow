@@ -45,7 +45,6 @@ class ManifestGuardian:
         try:
             os.chmod(cls.MANIFEST_PATH, 0o444)
             logger.info(f"Manifest sealed. Checksum: {checksum[:8]}...")
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Could not enforce read-only permissions: {e}")
 

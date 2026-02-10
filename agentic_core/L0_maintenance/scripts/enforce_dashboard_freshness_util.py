@@ -22,7 +22,6 @@ from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from ops_scripts.smart_discovery import get_json_mtime, is_discovery_stale
@@ -72,7 +71,6 @@ def check_dashboard_freshness() -> tuple[bool, str]:
                 False,
                 f"Dashboard ({dashboard_mtime}) is older than discovery JSON ({json_mtime})",
             )
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Failed to check dashboard mtime: {e}"
 

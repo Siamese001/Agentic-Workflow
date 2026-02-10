@@ -283,7 +283,6 @@ class CompetitorReconAgent:
 
             return filtered
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error identifying competitors: {str(e)}")
             return []
@@ -309,7 +308,6 @@ class CompetitorReconAgent:
 
             return moves
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error gathering intel on {competitor}: {str(e)}")
             return []
@@ -359,7 +357,6 @@ class CompetitorReconAgent:
 
             return matches
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error finding skill matches: {str(e)}")
             return []

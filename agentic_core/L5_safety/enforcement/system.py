@@ -137,7 +137,6 @@ class SystemValidator:
             return None
         except SyntaxError as e:
             return f"SyntaxError line {e.lineno}: {e.msg}"
-        # guardian: allow-silent-swallow
         except Exception as e:
             return str(e)
 

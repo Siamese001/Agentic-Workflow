@@ -123,7 +123,6 @@ class HealthChecker:
             result = check_fn()
             result.duration_ms = (time.perf_counter() - start) * 1000
             return result
-        # guardian: allow-silent-swallow
         except Exception as e:
             return CheckResult(
                 name=name,
@@ -212,7 +211,6 @@ class CommonChecks:
             try:
                 import redis
 
-                # guardian: allow-magic-config
                 client = redis.Redis(host=host, port=port, socket_timeout=2)
                 client.ping()
                 return CheckResult(
@@ -226,7 +224,6 @@ class CommonChecks:
                     status=HealthStatus.DEGRADED,
                     message="Redis client not installed",
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
                     name="redis",
@@ -264,7 +261,6 @@ class CommonChecks:
                         message=f"Low disk space: {free_gb:.2f} GB free",
                         metadata={"free_gb": round(free_gb, 2)},
                     )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
                     name="disk_space",
@@ -275,7 +271,6 @@ class CommonChecks:
         return check
 
     @staticmethod
-    # guardian: allow-magic-config
     def memory_check(max_percent: float = 90.0) -> Callable[[], CheckResult]:
         """Create a memory usage check."""
 
@@ -306,7 +301,6 @@ class CommonChecks:
                     status=HealthStatus.UNKNOWN,
                     message="psutil not installed",
                 )
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
                     name="memory",

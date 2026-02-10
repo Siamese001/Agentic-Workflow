@@ -265,9 +265,7 @@ class SkillExtractorNode:
         }
 
         # Skill matching thresholds
-        # guardian: allow-magic-config
         self.exact_match_threshold = 0.9
-        # guardian: allow-magic-config
         self.partial_match_threshold = 0.7
 
     def __call__(self, job_description: str, candidate_profile: dict[str, Any] = None) -> SkillAnalysisOutput:

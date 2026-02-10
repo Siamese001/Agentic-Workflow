@@ -68,7 +68,6 @@ class ValidationMixin:
 
             passed = len(issues) == 0
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             issues.append(f"Validation error: {str(e)}")
             passed = False

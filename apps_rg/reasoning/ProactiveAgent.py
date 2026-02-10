@@ -33,7 +33,6 @@ class ProactiveAgent(RGAgentBase):
         # self.handoff = PredictiveHandoff(ctx)
         # self.monitor = CapabilityMonitorAgent(ctx)
 
-    # guardian: allow-type-erasure
     def record_result(self, passed: bool, details: str = "") -> Any:
         """
         Record the agent's execution result.
@@ -44,7 +43,6 @@ class ProactiveAgent(RGAgentBase):
         """
         self.ctx.record_result(self.name, passed, details)
 
-    # guardian: allow-type-erasure
     def add_signal(self, signal: str) -> Any:
         """
         Add a signal to the context.

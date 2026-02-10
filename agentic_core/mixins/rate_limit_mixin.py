@@ -45,7 +45,6 @@ class RateLimitMixin:
             from agentic_core.L2_execution.enforcement.caching_redis_mcp_client import get_redis_client
 
             self._redis = get_redis_client()
-        # guardian: allow-silent-swallow
         except Exception:
             self._redis = None
 
@@ -104,7 +103,6 @@ class RateLimitMixin:
                 state = json.loads(data)
                 if isinstance(state, dict) and "tokens" in state and "last_updated" in state:
                     self._bucket_state[key] = state
-        # guardian: allow-silent-swallow
         except Exception:
             return
 
@@ -117,7 +115,6 @@ class RateLimitMixin:
             result = self._redis.set(f"rate_limit:{skey}", payload, ex=3600)
             if asyncio.iscoroutine(result) or asyncio.isfuture(result):
                 await result
-        # guardian: allow-silent-swallow
         except Exception:
             return
 

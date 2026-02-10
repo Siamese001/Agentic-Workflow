@@ -328,7 +328,6 @@ class InstructionalInjectionMixin:
         prompt = self.inject_pattern(prompt, 5, target_tokens=target_tokens)
         return prompt
 
-    # guardian: allow-magic-config
     def inject_context_layer(
         self,
         prompt: str,
@@ -389,7 +388,6 @@ class InstructionalInjectionMixin:
         prompt = self.inject_pattern(prompt, 25)
         return prompt
 
-    # guardian: allow-magic-config
     def inject_output_layer(
         self,
         prompt: str,

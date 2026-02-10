@@ -81,7 +81,6 @@ class DeterministicCleaner:
             if was_modified:
                 LOGGER.debug(f"Deterministic cleaning applied to {file_path or 'code'}")
             return (cleaned_code, was_modified)
-        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Error in deterministic cleaning: {e}")
             return (original_code, False)

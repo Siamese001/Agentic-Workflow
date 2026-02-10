@@ -40,7 +40,6 @@ async def example_batch_embedding_workflow() -> Any:
         "Led team of 5 engineers to deliver microservices architecture",
         "Reduced API latency by 60% through caching optimization",
     ] * 100
-    # guardian: allow-magic-config
     batch_service: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
     Logger.info(f"Generating embeddings for {len(resume_sections)} sections...")
     embeddings: Any = await batch_service.embed_batch(
@@ -56,7 +55,6 @@ async def example_batch_embedding_workflow() -> Any:
 async def example_hot_cache_workflow() -> Any:
     """Example: Store and search vectors in hot cache."""
     Logger.info("\n=== Hot cache Example ===")
-    # guardian: allow-magic-config
     hot_cache: Any = create_memory_vector_cache(collection_name="resume_sections", max_memory_gb=8)
     documents: Any = [
         "Python expert with ML experience",
@@ -89,9 +87,7 @@ async def example_hot_cache_workflow() -> Any:
 async def example_full_pipeline() -> Any:
     """Example: Complete pipeline with batch embeddings + hot cache."""
     Logger.info("\n=== Full Pipeline Example ===")
-    # guardian: allow-magic-config
     batch_service: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
-    # guardian: allow-magic-config
     hot_cache: Any = create_memory_vector_cache(collection_name="resumes", max_memory_gb=8)
     resume_texts: Any = [
         "Senior Data Scientist specializing in NLP and deep learning",

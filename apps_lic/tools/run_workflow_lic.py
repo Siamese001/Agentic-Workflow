@@ -24,10 +24,8 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, An
     Raises:
         SystemExit: If file not found or invalid JSON
     """
-    # guardian: allow-path-string
     if not os.path.exists(filename):
         print(f"FATAL: {filename} not found. Please create it.")
-        # guardian: allow-path-string
         print(f"\nExpected location: {os.path.abspath(filename)}")
         print("\nThe file should contain:")
         print("- sender_profile: Your profile information")
@@ -219,7 +217,6 @@ async def main():
     try:
         orchestrator = create_orchestrator()
         print("✓ Orchestrator initialized")
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"❌ Failed to initialize orchestrator: {e}")
         sys.exit(1)
@@ -235,7 +232,6 @@ async def main():
     except KeyboardInterrupt:
         print("\n\n⚠️  Workflow interrupted by user")
         sys.exit(130)
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n\n❌ Workflow failed with exception: {e}")
         import traceback
@@ -296,7 +292,6 @@ if __name__ == "__main__":
             sys.exit(0)
         else:
             sys.exit(1)
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Fatal error: {e}")
         sys.exit(1)

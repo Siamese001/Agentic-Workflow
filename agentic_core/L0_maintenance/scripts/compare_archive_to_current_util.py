@@ -9,7 +9,6 @@ def file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
         return hashlib.md5(path.read_bytes()).hexdigest()
-    # guardian: allow-silent-swallow
     except:
         return ""
 

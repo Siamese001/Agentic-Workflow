@@ -178,7 +178,6 @@ class StackModernizationAgent:
 
             return diagnostic
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(detected_legacy_tech=[], implied_pain_points=[], modernization_score=0.0)
@@ -215,7 +214,6 @@ class StackModernizationAgent:
                 bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity",
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error generating thesis: {str(e)}")
             return MigrationThesis(
@@ -251,7 +249,6 @@ class StackModernizationAgent:
 
             return hook
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error generating migration hook: {str(e)}")
             return "I have experience leading successful technology modernizations."
@@ -281,7 +278,6 @@ class StackModernizationAgent:
 
             return summary
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error rewriting resume summary: {str(e)}")
             return "Senior AI Engineer with modernization experience"

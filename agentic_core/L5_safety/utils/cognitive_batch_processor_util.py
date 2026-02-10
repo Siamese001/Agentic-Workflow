@@ -45,15 +45,12 @@ class CognitiveBatchProcessor:
         max_retries: Maximum retry attempts for failed items
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         agent: Any,  # CognitiveDispositionAgent
         checkpoint_file: str | Path = "cognitive_checkpoint.json",
         rate_limit_delay: float = 1.0,
-        # guardian: allow-magic-config
         checkpoint_interval: int = 10,
-        # guardian: allow-magic-config
         max_retries: int = 3,
     ):
         """
@@ -92,7 +89,6 @@ class CognitiveBatchProcessor:
                 data = json.loads(self.checkpoint_file.read_text(encoding="utf-8"))
                 Logger.info(f"[BATCH] Checkpoint loaded: {len(data)} items")
                 return data
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"[BATCH] Failed to load checkpoint: {e}")
                 return {}
@@ -107,7 +103,6 @@ class CognitiveBatchProcessor:
                 encoding="utf-8",
             )
             Logger.debug(f"[BATCH] Checkpoint saved: {len(self.results)} items")
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[BATCH] Failed to save checkpoint: {e}")
 

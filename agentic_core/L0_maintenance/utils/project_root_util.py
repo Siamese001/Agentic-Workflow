@@ -65,7 +65,6 @@ def get_project_root(start_path: str | None = None) -> Path:
             idx = parts.index("agentic_core")
             # If agentic_core is at root/agentic_core, the root is parts[:idx]
             return Path(*parts[:idx])
-    # guardian: allow-silent-swallow
     except Exception:
         pass
 

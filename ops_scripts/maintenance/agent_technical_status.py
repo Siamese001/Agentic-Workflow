@@ -23,7 +23,6 @@ from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent
-# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Configure logging
@@ -96,7 +95,6 @@ class NuclearAuditor:
                         for target in node.targets:
                             if isinstance(target, ast.Name) and target.id == "SOVEREIGN_TERRITORIES":
                                 return ast.literal_eval(node.value)
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Failed to load structure blueprint: {e}")
 
@@ -114,7 +112,6 @@ class NuclearAuditor:
             try:
                 agents = self._analyze_file(file_path)
                 self.agent_statuses.extend(agents)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to analyze {file_path}: {e}")
 
@@ -136,7 +133,6 @@ class NuclearAuditor:
                     status = self._analyze_agent_class(node, file_path, content)
                     agents.append(status)
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error parsing {file_path}: {e}")
 
@@ -291,7 +287,6 @@ class NuclearAuditor:
             else:
                 return "[BROKEN]"
 
-        # guardian: allow-silent-swallow
         except Exception:
             return "[ERROR]"
 

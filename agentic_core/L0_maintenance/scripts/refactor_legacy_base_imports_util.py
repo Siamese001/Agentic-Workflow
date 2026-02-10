@@ -113,7 +113,6 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
 
         return modified, changes_made
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"❌ Error processing {file_path}: {e}")
         return False, [f"Error: {e}"]

@@ -58,7 +58,6 @@ def debug_dashboard():
         page.on("requestfailed", lambda req: failed_requests.append(f"{req.url} - {req.failure}"))
 
         print(f"\n[LOADING] http://localhost:{PORT}/autonomy_dashboard.html")
-        # guardian: allow-magic-config
         page.goto(f"http://localhost:{PORT}/autonomy_dashboard.html", timeout=30000)
         time.sleep(5)  # Wait for everything to load
 

@@ -56,7 +56,6 @@ def check_file(filepath: Any) -> Any:
         return True
     except SyntaxError:
         return True
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"⚠️  Warning: Could not parse {filepath}: {e}")
         return True

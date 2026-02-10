@@ -343,7 +343,6 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
         "protocol",
     }
 
-    # guardian: allow-magic-config
     def __init__(self, min_depth_score: float = 0.7) -> None:
         """
         Initialize integrity gate executor.
@@ -502,13 +501,11 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -640,7 +637,6 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
                     except json.JSONDecodeError:
                         skipped += 1
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         self.logger.error(f"    Error processing {json_file}: {e}")
                         errors += 1
@@ -698,10 +694,8 @@ class IntegrityGateExecutorAgent(AtomicExecutionMixin, SovereignBaseAgent):
             }
 
 
-# guardian: allow-magic-config
 def validate_research_output(
     research_output: DeepResearchOutput,
-    # guardian: allow-magic-config
     min_depth_score: float = 0.7,
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""

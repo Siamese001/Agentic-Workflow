@@ -75,7 +75,6 @@ class OrchestrationMixin:
                     {"name": step.name, "status": "completed", "result": step.result},
                 )
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 step.status = WorkflowStatus.FAILED
                 step.error = str(e)
@@ -102,7 +101,6 @@ class OrchestrationMixin:
             if hasattr(step.func, "rollback"):
                 try:
                     step.func.rollback(step.result)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     if hasattr(self, "log"):
                         self.log(f"Rollback failed for {step.name}: {e}")
@@ -126,7 +124,6 @@ class OrchestrationMixin:
             try:
                 result = func(*args, **kwargs)
                 results["tasks"][name] = {"status": "completed", "result": result}
-            # guardian: allow-silent-swallow
             except Exception as e:
                 results["tasks"][name] = {"status": "failed", "error": str(e)}
                 results["errors"].append({"task": name, "error": str(e)})
@@ -170,7 +167,6 @@ class OrchestrationMixin:
                         results[agent_name] = {"status": "completed", "result": result}
                         completed.add(agent_name)
                         progress_made = True
-                    # guardian: allow-silent-swallow
                     except Exception as e:
                         results[agent_name] = {"status": "failed", "error": str(e)}
                         errors.append({"agent": agent_name, "error": str(e)})

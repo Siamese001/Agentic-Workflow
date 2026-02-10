@@ -78,7 +78,6 @@ class ResumeGenerator:
 
             return tailored_resume
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error generating tailored resume: {e}")
             # Return original with error note
@@ -114,7 +113,6 @@ Return ONLY the rewritten summary, no additional text."""
         try:
             response = self._generate_response(prompt)
             return response.strip()
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error tailoring summary: {e}")
             return original_summary
@@ -228,7 +226,6 @@ Return ONLY the rewritten bullet, no additional text."""
             try:
                 response = self._generate_response(prompt)
                 tailored_bullets.append(response.strip())
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Error tailoring bullet: {e}")
                 tailored_bullets.append(bullet)
@@ -255,7 +252,6 @@ Return ONLY the rewritten description, no additional text."""
         try:
             response = self._generate_response(prompt)
             return response.strip()
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error tailoring description: {e}")
             return description

@@ -235,7 +235,6 @@ class PromptEnhancer:
 
                 return content, result
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Contract validation failed: {e}")
                 result["validation_errors"].append(str(e))

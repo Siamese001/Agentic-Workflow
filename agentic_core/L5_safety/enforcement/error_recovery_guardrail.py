@@ -121,12 +121,10 @@ class ErrorRecoveryGuardrail:
         self.recoveries_failed = 0
         self.error_log: list[ErrorContext] = []
 
-    # guardian: allow-magic-config
     async def handle_error(
         self,
         error: Exception,
         context: dict[str, Any] | None = None,
-        # guardian: allow-magic-config
         max_retries: int = 3,
     ) -> RecoveryResult:
         """
@@ -276,7 +274,6 @@ class ErrorRecoveryGuardrail:
             "error_log_size": len(self.error_log),
         }
 
-    # guardian: allow-magic-config
     def get_error_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent error log."""
         return [

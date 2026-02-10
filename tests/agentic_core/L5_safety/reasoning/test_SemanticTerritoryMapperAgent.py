@@ -16,7 +16,7 @@ def test_test_SemanticTerritoryMapperAgent_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L5_safety.reasoning.SemanticTerritoryMapperAgent: {e}",
+            f"Cannot import module agentic_core.L5_safety.reasoning.SemanticTerritoryMapperAgent: {e}"
         )
 
 

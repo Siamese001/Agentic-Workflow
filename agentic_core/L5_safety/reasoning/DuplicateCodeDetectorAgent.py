@@ -140,11 +140,9 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             try:
                 self.ts_parser = Parser()
                 self.ts_parser.language = language()
-            # guardian: allow-silent-swallow
             except Exception:
                 self.ts_parser = None
 
-    # guardian: allow-type-erasure
     async def execute(self, file_types: set[str] = None, scan_whole_files: bool = True) -> dict:
         """Scan files for duplicates.
 
@@ -189,7 +187,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                 file_size = len(content)
 
                 file_hashes[file_hash].append((file_path, file_size))
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Failed to read {file_path}: {e}")
                 continue
@@ -229,7 +226,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                         rel_path = file_path
                     code_blocks[block_hash].append((str(rel_path), i + 1))
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.warning(f"Failed to scan {file_path}: {e}")
                 continue
@@ -304,7 +300,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         else:
             return f"Keep shortest path: {len(keep_path.parts)} levels deep"
 
-    # guardian: allow-type-erasure
     def archive_duplicates(self, recommendations: list[dict], dry_run: bool = True) -> dict:
         """Archive duplicate files to archives/ directory (Phase 2.2).
 
@@ -353,7 +348,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                             f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}",
                         )
                         archived.append(delete_path_str)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.error(f"Failed to archive {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
@@ -368,7 +362,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
             "dry_run": dry_run,
         }
 
-    # guardian: allow-type-erasure
     def delete_duplicates(self, recommendations: list[dict], dry_run: bool = True) -> dict:
         """Delete duplicate files based on recommendations.
 
@@ -394,7 +387,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                         full_path.unlink()
                         Logger.info(f"[DELETED] {delete_path_str}")
                         deleted.append(delete_path_str)
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.error(f"Failed to delete {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
@@ -419,7 +411,6 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
                 tree = ast.parse(code)
                 norm_tree = self._normalize_ast_tree(tree)
                 return hashlib.sha256(code.encode()).hexdigest()
-        # guardian: allow-silent-swallow
         except Exception:
             # Fallback to token-based hash if AST parsing fails
             return hashlib.sha256(code.encode()).hexdigest()
@@ -445,13 +436,11 @@ class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardened
         return f"{node.type}({'|'.join(children)})" if children else node.type
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set[str] | None = None,
     ) -> dict[str, int]:

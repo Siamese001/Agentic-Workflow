@@ -48,13 +48,10 @@ class ContrastiveSemanticCache:
     for recurring questions even if phrased differently.
     """
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         model_name: str = "all-MiniLM-L6-v2",
-        # guardian: allow-magic-config
         similarity_threshold: float = 0.92,
-        # guardian: allow-magic-config
         max_entries: int = 1000,
         lazy_load: bool = True,
         ttl_seconds: int | None = None,
@@ -185,7 +182,6 @@ class ContrastiveSemanticCache:
         try:
             embeddings = [np.array(entry.embedding) for entry in self._cache]
             self._embedding_matrix = np.vstack(embeddings)
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to update embedding matrix: {e}")
             self._embedding_matrix = None
@@ -216,7 +212,6 @@ class ContrastiveSemanticCache:
 
             return similarities
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to calculate similarities: {e}")
             return np.array([])
@@ -409,7 +404,6 @@ class ContrastiveSemanticCache:
 
             logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to export cache: {e}")
 
@@ -437,7 +431,6 @@ class ContrastiveSemanticCache:
 
             logger.info(f"Imported {len(data.get('entries', []))} cache entries from {filepath}")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to import cache: {e}")
 

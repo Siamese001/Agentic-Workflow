@@ -16,7 +16,7 @@ def test_test_PerformanceAnalystAgentSimple_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple: {e}",
+            f"Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple: {e}"
         )
 
 
@@ -27,7 +27,7 @@ def test_test_PerformanceAnalystAgentSimple_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple",
+            "Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple"
         )
 
 
@@ -48,5 +48,5 @@ def test_test_PerformanceAnalystAgentSimple_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple",
+            "Cannot import module agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple"
         )

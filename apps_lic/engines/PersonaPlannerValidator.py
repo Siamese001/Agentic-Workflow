@@ -285,7 +285,6 @@ class PersonaPlanner:
                         "confidence_score": plan.confidence_score,
                     },
                 )
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.debug(f"Failed to record telemetry: {e}")
 

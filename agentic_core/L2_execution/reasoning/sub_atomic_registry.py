@@ -27,9 +27,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.memory.PineconeSovereignAgent import PineconeSovereignAgent
-
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.L4_state.memory.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
@@ -350,12 +349,10 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
                                 "is_async": isinstance(node, ast.AsyncFunctionDef),
                             },
                         )
-            # guardian: allow-silent-swallow
             except Exception:
                 continue
         return methods
 
-    # guardian: allow-type-erasure
     def rebuild_registry(self) -> Any:
         """Eternal rebuild — full method index + Redis cache warm"""
         print("   [REBUILD] SubAtomicRegistry: Indexing all methods...")
@@ -370,7 +367,6 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
             cache_key = f"method_meta:{vec_id}"
             try:
                 self.redis.set(cache_key, json.dumps(m), ex=86400)  # 24h
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -386,11 +382,9 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
             if cached:
                 print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 
-        # guardian: allow-magic-config
         results = self.pinecone.hybrid_search(
             query_text=Task,
             keywords=[w for w in self.pinecone.CANON_SIGNALS if w in Task.lower()],
@@ -402,13 +396,11 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)  # 1h
-        # guardian: allow-silent-swallow
         except Exception:
             pass
 
         return results
 
-    # guardian: allow-type-erasure
     def find_and_invoke(self, task_description: str, *args, **kwargs) -> Any:
         """The ultimate sovereign loop: Find it, then do it."""
         matches = self.find_method(task_description, top_k=1)
@@ -420,7 +412,6 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Dynamic import and execution logic would go here
         return meta
 
-    # guardian: allow-type-erasure
     def invoke_method(self, method_meta: dict, *args, **kwargs) -> Any:
         """Dynamically invoke a method by metadata"""
         try:
@@ -441,7 +432,6 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
             print(f"   [ERROR] Failed to invoke {method_meta['method']}: {e}")
             raise
 
-    # guardian: allow-type-erasure
     async def execute(self, ctx=None) -> Any:
         """Execute execute operation."""
         count = len(self.extract_methods())
@@ -451,13 +441,11 @@ class SubAtomicRegistryAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

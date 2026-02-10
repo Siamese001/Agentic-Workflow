@@ -16,7 +16,7 @@ def test_test_semantic_gatekeeper_validator_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L1_cognition.validators.semantic_gatekeeper_validator: {e}",
+            f"Cannot import module agentic_core.L1_cognition.validators.semantic_gatekeeper_validator: {e}"
         )
 
 

@@ -51,7 +51,6 @@ def check_file(file_path: Path, violations: list[str]):
                 if has_standard_heal_decorator(node):
                     check_function_return_schema(node, file_path, violations)
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         violations.append(f"Could not parse {file_path.relative_to(PROJECT_ROOT)}: {e}")
 

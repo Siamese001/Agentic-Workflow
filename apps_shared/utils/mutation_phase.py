@@ -240,7 +240,6 @@ class DAGSafetyManager:
                 if mutation_info["snapshot_id"]:
                     self.restore_snapshot(mutation_info["snapshot_id"], graph)
                 logger.info(f"Mutation rolled back: {mutation_id}")
-            # guardian: allow-silent-swallow
             except Exception as rollback_error:
                 logger.error(f"Rollback failed: {mutation_id}, error: {rollback_error}")
 

@@ -28,12 +28,9 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
         bool: True if fission was successful, False otherwise
     """
     try:
-        # guardian: allow-path-string
         file_dir: Any = os.path.dirname(file_path)
-        # guardian: allow-path-string
         file_name: Any = os.path.basename(file_path)
         base_name: Any = file_name.replace(".py", "")
-        # guardian: allow-path-string
         submodule_dir: Any = os.path.join(file_dir, f"{base_name}_modules")
         os.makedirs(submodule_dir, exist_ok=True)
         created_modules: Any = []
@@ -45,7 +42,6 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
             if not module_content:
                 Logger.warning(f"   [!] Empty content for module {module_name}")
                 continue
-            # guardian: allow-path-string
             module_file: Any = os.path.join(submodule_dir, f"{module_name}.py")
             with open(module_file, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(module_content)

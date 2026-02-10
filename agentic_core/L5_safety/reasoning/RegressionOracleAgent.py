@@ -61,7 +61,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     pc = Pinecone(api_key=api_key)
                     pinecone_index = pc.Index("canon-healing-patterns")
                     Logger.info("[OK] Regression Oracle connected to Pinecone")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     pinecone_available = False
@@ -73,7 +72,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 try:
                     genai_client = genai.Client(api_key=api_key)
                     Logger.info("[OK] Regression Oracle connected to Gemini 2.5")
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     genai_available = False
@@ -95,7 +93,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
         )
         self.generated_tests: list[GeneratedTest] = []
 
-    # guardian: allow-type-erasure
     async def execute(self) -> Any:
         """
         Execute regression oracle monitoring.
@@ -157,13 +154,11 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -230,7 +225,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
             Logger.info(f"[RegressionOracleAgent] {report['message']}")
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
@@ -238,12 +232,10 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
         return report
 
-    # guardian: allow-magic-config
     def cleanup_violations(
         self,
         violations: list[RegressionViolation],
         dry_run: bool = True,
-        # guardian: allow-magic-config
         max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
@@ -290,7 +282,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     action["applied"] = not dry_run
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 action["error"] = str(e)
                 Logger.error(f"[RegressionOracleAgent] Cleanup error: {e}")

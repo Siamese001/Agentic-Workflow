@@ -79,7 +79,6 @@ class MetricsWitnessAgent(
             )
 
             self.metrics = MetricsAgentCls(project_root)
-        # guardian: allow-silent-swallow
         except Exception:
             self.Logger.warning("MetricsAgent unavailable – witness operating in degraded mode")
 

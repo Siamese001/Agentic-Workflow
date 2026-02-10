@@ -80,7 +80,6 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         visitor.visit(tree)
         issues.extend(visitor.issues)
 
-    # guardian: allow-silent-swallow
     except Exception:
         pass
 

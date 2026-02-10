@@ -10,6 +10,7 @@ import shutil
 
 def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathlib.Path]]:
     """Discover all mislocated tests and their target locations."""
+    root = pathlib.Path(".")
     mislocated = []
 
     # Existing tests in old structure
@@ -108,7 +109,6 @@ def update_imports_in_moved_test(test_file: pathlib.Path, old_path: pathlib.Path
             test_file.write_text(updated_content, encoding="utf-8")
             print(f"Updated imports in: {test_file}")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"Failed to update imports in {test_file}: {e}")
 

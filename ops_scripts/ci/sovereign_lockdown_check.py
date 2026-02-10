@@ -32,7 +32,6 @@ def main() -> int:
     try:
         # Add project root to path for imports
         project_root = Path(__file__).resolve().parent.parent.parent
-        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
@@ -88,7 +87,6 @@ def main() -> int:
         print(f"[ERROR] Import Error: {e}")
         print("Ensure agentic_core is properly installed.")
         return 2
-    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"[ERROR] Verification Error: {e}")
         return 2

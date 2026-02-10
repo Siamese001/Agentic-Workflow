@@ -22,9 +22,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security import safe_git_execute
-
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.security import safe_git_execute
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -147,13 +146,11 @@ class GitAgent(SovereignBaseAgent):
         return git_dir.exists()
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:
@@ -187,7 +184,6 @@ class GitAgent(SovereignBaseAgent):
             Completed process
         """
         try:
-            # guardian: allow-magic-config
             result = safe_git_execute(args, repo_root=self.repo_root, timeout=30, check=check)
             return result
         except subprocess.CalledProcessError as e:
@@ -227,7 +223,6 @@ class GitAgent(SovereignBaseAgent):
                     if status.strip() and status[0] in ["M", "A", "R"]:
                         modified.append(Path(file_path))
             return modified
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to get modified files: {e}")
             return []
@@ -263,7 +258,6 @@ class GitAgent(SovereignBaseAgent):
                     if pattern in content:
                         suspicious.append(str(file_path))
                         break
-            # guardian: allow-silent-swallow
             except Exception:
                 pass
         return suspicious
@@ -325,7 +319,6 @@ class GitAgent(SovereignBaseAgent):
             try:
                 self._run_git(["config", "user.name", "AgenticWorkflow"])
                 self._run_git(["config", "user.email", "workflow@agentic.system"])
-            # guardian: allow-silent-swallow
             except:
                 pass
             self._run_git(["commit", "-m", message])
@@ -351,7 +344,6 @@ class GitAgent(SovereignBaseAgent):
         try:
             try:
                 self._run_git(["remote", "add", "origin", self.remote_repo], check=False)
-            # guardian: allow-silent-swallow
             except:
                 pass
             if branch_name:
@@ -432,13 +424,11 @@ class GitAgent(SovereignBaseAgent):
             return {"status": "error", "error": str(e)}
 
     @timeout(300)
-    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

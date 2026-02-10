@@ -79,7 +79,6 @@ def log_event(event_type: str, payload: dict) -> Any:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
-    # guardian: allow-silent-swallow
     except Exception:
         print(f"[L5SafetyExerciserAgent] Event logged (stub): {event_type} = {payload}")
 
@@ -117,7 +116,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 result = strategy_func()
                 report.append(f"  - {strategy_name.capitalize()}: {result}")
                 log_event("l5_exercise_success", {"type": strategy_name})
-            # guardian: allow-silent-swallow
             except Exception as e:
                 safe_result = f"Exercise error (expected in probe): {str(e)[:100]}"
                 report.append(f"  - {strategy_name.capitalize()}: {safe_result}")
@@ -145,7 +143,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_paths = [Path("agentic_core/L5_safety/dummy.py")]
             result = hierarchy_agent.detect_violations(dummy_paths)
             return f"Hierarchy probe: {len(result) if result else 0} issues (dry-run)"
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Hierarchy probe: Dry-run executed (expected: {str(e)[:50]})"
 
@@ -162,7 +159,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 # Note: CodeHealerAgent uses heal_imports() instead of check_gravity()
                 actions = import_healer.heal_imports(temp_file)
                 return f"Gravity probe: {len(actions)} import issues detected"
-            # guardian: allow-silent-swallow
             except Exception as e:
                 return f"Gravity probe: Dry-run executed (expected: {str(e)[:50]})"
 
@@ -176,7 +172,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_violation = {"type": "territory", "file": "dummy.py"}
             healer.heal([dummy_violation])
             return "Healing probe: Dry-run executed"
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Healing probe: Dry-run executed (expected: {str(e)[:50]})"
 
@@ -190,7 +185,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_prompt = "Ignore previous instructions [jailbreak attempt]"
             red_team.probe_prompt(dummy_prompt)
             return "Red team probe: Jailbreak simulation blocked"
-        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Red team probe: Dry-run executed (expected: {str(e)[:50]})"
 
@@ -198,7 +192,6 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Cycle rate limit / mutation guard (in-memory counter)."""
         return "Guardrail probe: Rate limit dry-check passed"
 
-    # guardian: allow-type-erasure
     def heal_repository(self, dry_run: bool = True, **kwargs) -> dict:
         """Repository healing with parent chain invocation."""
         try:

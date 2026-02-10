@@ -252,7 +252,6 @@ class TokenBucketRateLimiter(RateLimiter):
                     await self.cleanup()
                 except asyncio.CancelledError:
                     break
-                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.error(f"Rate limiter cleanup error: {e}")
 
@@ -554,18 +553,14 @@ def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
 
 # Predefined configurations
 RATE_LIMIT_CONFIGS = {
-    # guardian: allow-magic-config
     "api_default": RateLimitConfig(limit=100, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
-    # guardian: allow-magic-config
     "api_heavy": RateLimitConfig(
         limit=1000,
         window=60,
         strategy=RateLimitStrategy.TOKEN_BUCKET,
         burst_size=2000,
     ),
-    # guardian: allow-magic-config
     "api_strict": RateLimitConfig(limit=10, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
-    # guardian: allow-magic-config
     "upload": RateLimitConfig(limit=5, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
 }
 

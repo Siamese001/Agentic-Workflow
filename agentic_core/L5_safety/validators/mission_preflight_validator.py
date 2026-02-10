@@ -148,7 +148,6 @@ class MissionPreflight:
                     for v in span_result.get("details", [])[:3]:
                         print(f"   [X] {v}")
                 return violations
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!] Span check failed: {e}")
         else:
@@ -173,7 +172,6 @@ class MissionPreflight:
                     if len(violations) > 3:
                         print(f"   ... and {len(violations) - 3} more violations")
                 return violations
-            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!] Hierarchy check failed: {e}")
         return []
@@ -185,7 +183,6 @@ class MissionPreflight:
             return 0
 
         waterfall_violations = []
-        # guardian: allow-magic-config
         MAX_SCAN_FILES = 3000
         scanned_count = 0
 
@@ -214,7 +211,6 @@ class MissionPreflight:
                             violations = import_agent.check_waterfall_violations(str(py_file))
                             if violations:
                                 waterfall_violations.extend([(py_file, v) for v in violations])
-                    # guardian: allow-silent-swallow
                     except Exception:
                         continue
 
@@ -249,7 +245,6 @@ class MissionPreflight:
                         is_valid, reason = location_agent.validate_file_location(py_file)
                         if not is_valid:
                             location_violations.append((py_file, reason))
-                    # guardian: allow-silent-swallow
                     except Exception:
                         continue
 

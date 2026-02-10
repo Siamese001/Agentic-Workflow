@@ -45,7 +45,6 @@ def check_discovery_consistency(project_root: Path) -> tuple[list[str], dict[str
 
     try:
         result = get_active_set(project_root)
-    # guardian: allow-silent-swallow
     except Exception as exc:
         return [f"active_set_helper failed: {exc}"], {}
 

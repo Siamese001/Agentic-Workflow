@@ -95,7 +95,6 @@ def restore_agent(filename: str, target_dir: str, dry_run: bool = False) -> tupl
         target_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(source), str(target_path))
         return True, f"Restored to {target_path.relative_to(PROJECT_ROOT)}"
-    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Error: {e}"
 

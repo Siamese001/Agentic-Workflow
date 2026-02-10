@@ -179,7 +179,6 @@ class MetricAugmenter:
                 final_text=final_text,
             )
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error augmenting bullet: {str(e)}")
             return AugmentedBullet(
@@ -247,7 +246,6 @@ class MetricAugmenter:
 
             return augmented
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error augmenting batch: {str(e)}")
             return [
@@ -344,7 +342,6 @@ class MetricAugmenter:
 
             return detected_metrics
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error detecting metrics: {str(e)}")
             return []
@@ -492,7 +489,6 @@ class MetricAugmenter:
 
             return augmented
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Error creating augmented text: {str(e)}")
             return original

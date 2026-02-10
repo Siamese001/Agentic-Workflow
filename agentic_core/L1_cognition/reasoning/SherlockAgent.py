@@ -71,7 +71,6 @@ class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
         """Execute can_run operation."""
         return self.triggered and self.last_failure is not None
 
-    # guardian: allow-type-erasure
     def trigger_investigation(self, modified_file: str, test_file: str, traceback: str) -> Any:
         """Manually trigger an investigation from another agent (TestPilot)."""
         self.triggered = True
@@ -109,7 +108,6 @@ class SherlockAgent(SovereignBaseAgent, SubAtomicAgent):
 
         files_content = {}
         for fpath in [primary, error_file]:
-            # guardian: allow-path-string
             if fpath and isinstance(fpath, str) and os.path.exists(fpath):
                 files_content[fpath] = self.ctx.get_file_content(fpath)
 
@@ -148,7 +146,6 @@ Return ONLY the python code for {primary}.
         return None
 
     @standard_heal
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

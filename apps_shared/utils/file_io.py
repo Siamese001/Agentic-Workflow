@@ -12,7 +12,6 @@ def calculate_file_hash(file_path: str) -> str:
     try:
         with open(file_path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
-    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -34,7 +33,6 @@ def get_python_files(root: str = ".") -> list[str]:
         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
         for file in files:
             if file.endswith(".py") and file not in EXCLUDED_FILES:
-                # guardian: allow-path-string
                 file_path: Any = os.path.join(root_dir, file)
                 if not is_excluded(file_path):
                     python_files.append(file_path)
@@ -65,7 +63,6 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
         return False
     if not dry_run:
         try:
-            # guardian: allow-path-string
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w", encoding="utf-8") as f:
                 f.write(clean_content)

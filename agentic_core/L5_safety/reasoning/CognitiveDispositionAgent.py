@@ -53,7 +53,6 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     - Expand beyond file-level to architectural analysis
     """
 
-    # guardian: allow-magic-config
     def __init__(self, project_root: Path | None = None, confidence_threshold: float = 0.75):
         super().__init__()
         self.project_root = project_root or Path.cwd()
@@ -106,7 +105,6 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
             try:
                 data = json.loads(response["content"])
-            # guardian: allow-silent-swallow
             except:
                 text = response["content"].replace("```json", "").replace("```", "").strip()
                 data = json.loads(text)
@@ -133,12 +131,10 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
             return decision
 
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"CDA Analysis failed: {e}")
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
 
-    # guardian: allow-type-erasure
     def get_analytics(self) -> dict:
         """Get usage analytics for the CognitiveDispositionAgent.
 
@@ -162,7 +158,6 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         Return JSON.
         """
 
-    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal cognitive disposition violations using standard_heal decorator pattern.
 
@@ -262,7 +257,6 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                     Logger.warning(f"  Low confidence ({decision.confidence}) - requires manual review")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
-            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"  Error in cognitive healing: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

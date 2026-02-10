@@ -58,7 +58,6 @@ class SovereignPineconeMcpClientAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         self.audit_log.append({"op": operation, "success": success, "ts": time.time()})
 
-    # guardian: allow-type-erasure
     async def initialize(self) -> Any:
         """Async initialization of MCP router."""
         try:
@@ -258,7 +257,6 @@ class SovereignPineconeMcpClientAgent(AtomicExecutionMixin, SovereignBaseAgent):
             return {"status": "unhealthy", "error": str(e)}
 
     @standard_heal
-    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

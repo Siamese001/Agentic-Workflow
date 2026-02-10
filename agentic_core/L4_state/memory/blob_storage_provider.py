@@ -318,7 +318,6 @@ class RedisDistributedLock(SovereignBaseAgent):
     Redis-based distributed lock for coordination across multiple processes.
     """
 
-    # guardian: allow-magic-config
     def __init__(self, redis_client=None, lock_timeout: int = 30):
         """
         Initialize the distributed lock.
@@ -409,7 +408,6 @@ class RedisDistributedLock(SovereignBaseAgent):
         try:
             lock_key: Any = f"lock:{key}"
             return await self.redis.exists(lock_key)
-        # guardian: allow-silent-swallow
         except Exception:
             return key in self._local_cache
 
@@ -476,7 +474,6 @@ class RedisHotCache(SovereignBaseAgent):
                 LOGGER.debug(f"Cached value: {key} (TTL: {expire_time}s)")
                 return True
             return False
-        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Error caching {key}: {e}")
             self._local_cache[key] = value
@@ -550,7 +547,6 @@ class RedisHotCache(SovereignBaseAgent):
                 del self._local_cache_times[key]
             return False
 
-    # guardian: allow-type-erasure
     async def clear_expired_local(self) -> Any:
         """Clear expired entries from local fallback cache."""
         now: Any = time.time()
@@ -591,7 +587,6 @@ async def initialize_redis(redis_url: str = "redis://localhost:6379") -> Any:
         LOGGER.warning("redis not installed - using local fallback only")
         _distributed_lock = RedisDistributedLock()
         _hot_cache = RedisHotCache()
-    # guardian: allow-silent-swallow
     except Exception as e:
         LOGGER.error(f"Failed to connect to Redis: {e} - using local fallback")
         _distributed_lock = RedisDistributedLock()
@@ -790,11 +785,9 @@ class HotBrainCache:
                 LOGGER.info("Hot brain connected to Redis")
             except ImportError:
                 LOGGER.warning("redis not installed - using local cache only")
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.warning(f"Redis connection failed: {e} - using local cache only")
 
-    # guardian: allow-magic-config
     async def acquire_lock(self, key: str, timeout: float = 30.0) -> bool:
         """
         Acquire a distributed lock.
@@ -811,7 +804,6 @@ class HotBrainCache:
                 lock_key: Any = f"lock:{key}"
                 result: Any = await self.redis_client.set(lock_key, "locked", ex=timeout, nx=True)
                 return result is not None
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Redis lock acquisition failed: {e}")
         if key in self._local_locks:
@@ -834,7 +826,6 @@ class HotBrainCache:
                 lock_key: Any = f"lock:{key}"
                 result: Any = await self.redis_client.delete(lock_key)
                 return result > 0
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Redis lock release failed: {e}")
         if key in self._local_locks:
@@ -849,7 +840,6 @@ class HotBrainCache:
                 value: Any = await self.redis_client.get(key)
                 if value:
                     return json.loads(value)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Redis get failed: {e}")
         return self._local_cache.get(key)
@@ -864,7 +854,6 @@ class HotBrainCache:
                 else:
                     await self.redis_client.set(key, serialized)
                 return True
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Redis set failed: {e}")
         self._local_cache[key] = value
@@ -875,7 +864,6 @@ class HotBrainCache:
         if self.redis_client:
             try:
                 await self.redis_client.delete(key)
-            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Redis delete failed: {e}")
         if key in self._local_cache:

@@ -57,12 +57,10 @@ class HyDeResult:
 class HyDeProcessor:
     """Brief description of functionality and purpose."""
 
-    # guardian: allow-magic-config
     def __init__(
         self,
         llm_client: Any | None = None,
         default_industry: str = "Technology",
-        # guardian: allow-magic-config
         max_retries: int = 2,
         fallback_enabled: bool = True,
     ):

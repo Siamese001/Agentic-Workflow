@@ -183,7 +183,6 @@ class ZombieVaccinator:
         except SyntaxError as e:
             Logger.error(f"Syntax Error in {class_name}: {e}")
             return []
-        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"AST Error in {class_name}: {e}")
             return []
