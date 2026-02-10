@@ -68,6 +68,7 @@ class LeadQualityAgent(SubatomicTestingMixin, LICAgentBase):
             self.record_result(True, "All leads validated")
             print(f"   [{self.name}] ✅ Lead quality validated")
 
+    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

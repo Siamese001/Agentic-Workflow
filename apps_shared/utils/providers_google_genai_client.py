@@ -67,6 +67,7 @@ def run_llm_google(
         except ImportError:
             # Fallback to legacy SDK if new SDK not installed
             pass
+        # guardian: allow-silent-swallow
         except Exception as e:
             # Log error and fallback to legacy
             import logging

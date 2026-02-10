@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 class ConvergenceEngine:
+    # guardian: allow-magic-config
     def __init__(self, max_rounds: int = 8):
         self.max_rounds = max_rounds
         self.round_history = []

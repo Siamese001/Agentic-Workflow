@@ -18,9 +18,11 @@ class PDFDocumentLoader:
             for page in reader.pages:
                 try:
                     text_parts.append(page.extract_text() or "")
+                # guardian: allow-silent-swallow
                 except Exception:
                     text_parts.append("")
             return "\n".join(text_parts)
+        # guardian: allow-silent-swallow
         except Exception as e:
             log.warning(f"PDF load failed ({e})")
             return ""

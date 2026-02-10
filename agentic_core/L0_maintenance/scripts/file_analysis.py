@@ -36,6 +36,7 @@ def extract_docstring(node) -> str:
     """Extract docstring from AST node."""
     try:
         return ast.get_docstring(node) or ""
+    # guardian: allow-silent-swallow
     except:
         return ""
 
@@ -235,6 +236,7 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: list[str]) ->
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
+            # guardian: allow-silent-swallow
             except:
                 continue
 

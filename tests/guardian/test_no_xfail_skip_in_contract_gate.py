@@ -115,7 +115,7 @@ def find_bypass_constructs_ast(source: str) -> list[BypassViolation]:
                             line=decorator.lineno,
                             construct=matched,
                             kind="decorator",
-                        )
+                        ),
                     )
                     # Track if decorator is a Call to avoid double-counting
                     if isinstance(decorator, ast.Call):
@@ -136,7 +136,7 @@ def find_bypass_constructs_ast(source: str) -> list[BypassViolation]:
                         line=node.lineno,
                         construct=matched,
                         kind="call",
-                    )
+                    ),
                 )
 
     return violations

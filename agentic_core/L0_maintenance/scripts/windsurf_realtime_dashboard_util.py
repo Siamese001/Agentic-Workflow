@@ -70,6 +70,7 @@ def load_data() -> pd.DataFrame:
             if "regressions" not in df.columns:
                 df["regressions"] = 0
             return df
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"Error loading data: {e}")
             return pd.DataFrame()

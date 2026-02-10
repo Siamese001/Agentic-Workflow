@@ -495,10 +495,12 @@ class WordCountEnforcementEngine:
             regeneration_needed=regeneration_needed,
         )
 
+    # guardian: allow-magic-config
     def enforce_with_regeneration(
         self,
         content: str,
         content_type: str,
+        # guardian: allow-magic-config
         max_attempts: int = 3,
     ) -> tuple[str, ValidationResult]:
         """

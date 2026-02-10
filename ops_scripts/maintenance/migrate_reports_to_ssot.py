@@ -28,6 +28,7 @@ from datetime import datetime
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.report_location_validator_types import (  # noqa: E402
@@ -356,6 +357,7 @@ class ReportMigrator:
                     rollback_count += 1
                 else:
                     print(f"❌ Failed to restore: {entry.source}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"❌ Error restoring {entry.source}: {e}")
 

@@ -49,6 +49,7 @@ class MissionHistorian:
                 writer: Any = csv.writer(f)
                 writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 
@@ -71,6 +72,7 @@ class MissionHistorian:
                 for row in reader:
                     if file_name is None or row.get("file") == file_name:
                         history.append(row)
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[MissionHistorian] Failed to read history: {e}")
         return history

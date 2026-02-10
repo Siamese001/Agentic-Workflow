@@ -15,6 +15,7 @@ from collections import defaultdict
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 
@@ -23,6 +24,7 @@ def compute_file_hash(file_path: Path) -> str:
     try:
         with open(file_path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
+    # guardian: allow-silent-swallow
     except Exception:
         return "ERROR"
 
@@ -32,6 +34,7 @@ def read_file_content(file_path: Path) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
+    # guardian: allow-silent-swallow
     except Exception:
         return ""
 

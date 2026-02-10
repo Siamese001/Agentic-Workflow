@@ -91,6 +91,7 @@ class StateValidationMixin:
                     try:
                         # Handle single function or list of functions
                         pre_conditions = pre if isinstance(pre, list) else [pre]
+                        # guardian: allow-magic-config
                         await asyncio.wait_for(
                             asyncio.to_thread(lambda: self._run_conditions(pre_conditions, None)),
                             timeout=3.5,

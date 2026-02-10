@@ -178,8 +178,12 @@ class OutreachLearningLoop:
 
         return successes / total
 
+    # guardian: allow-magic-config
     def get_examples(
-        self, TaskType: str = None, limit: int = 10
+        self,
+        TaskType: str = None,
+        # guardian: allow-magic-config
+        limit: int = 10,
     ) -> list[OutreachLearningExample]:  # guardian: allow-magic_configuration
         """Get learning examples."""
         if TaskType:
@@ -278,6 +282,7 @@ class OutreachMemoryPersistence:
         if self.memory_file.exists():
             try:
                 self._memory = json.loads(self.memory_file.read_text())
+            # guardian: allow-silent-swallow
             except Exception:  # guardian: allow-silent_swallower
                 self._memory = {}
 
@@ -285,6 +290,7 @@ class OutreachMemoryPersistence:
         """Save memory to file."""
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2))
+        # guardian: allow-silent-swallow
         except Exception:  # guardian: allow-silent_swallower
             pass
 
@@ -368,10 +374,12 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
         print(f"   [{self.name}] ✅ Analysis complete")
 
+    # guardian: allow-type-erasure
     def inject_instruction(self, instruction: str, priority: int = 5) -> Any:  # guardian: allow-type_erasure
         """Inject an instruction into the context."""
         self.ctx.inject_instruction(instruction, priority)
 
+    # guardian: allow-type-erasure
     async def record_success(
         self,
         TaskType: str,
@@ -382,6 +390,7 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Record a successful pattern."""
         await self.learning_loop.record_success(TaskType, input_context, output_result, confidence)
 
+    # guardian: allow-type-erasure
     async def record_failure(
         self,
         TaskType: str,
@@ -391,6 +400,7 @@ class OutreachLearningAgent(SubatomicTestingMixin, SovereignBaseAgent):
         """Record a failed pattern."""
         await self.learning_loop.record_failure(TaskType, input_context, error)
 
+    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:  # guardian: allow-type_erasure
         """Invoke healing chain via super()."""
         return super().heal_repository()

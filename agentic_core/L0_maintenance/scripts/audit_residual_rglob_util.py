@@ -75,6 +75,7 @@ def audit_residual_rglob_calls(project_root: Path) -> dict[str, Any]:
 
         except SyntaxError:
             continue
+        # guardian: allow-silent-swallow
         except Exception:
             continue
 

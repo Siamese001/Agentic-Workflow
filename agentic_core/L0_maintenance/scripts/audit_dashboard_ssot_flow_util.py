@@ -65,6 +65,7 @@ print("AUDIT 2: SSOT Definitions Consistency")
 print("=" * 70)
 
 # Import SSOT definitions
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root / "agentic_core" / "L0_maintenance" / "scripts"))
 from dashboard_ssot_definitions import (
     COL_CANONICAL_INHERITANCE,

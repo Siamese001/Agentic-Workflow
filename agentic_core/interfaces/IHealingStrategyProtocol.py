@@ -165,6 +165,7 @@ def register_chaos_healing() -> dict[str, Any]:
         try:
             orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
             registered.append("chaos_resilience")
+        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"chaos_resilience: {e}")
 

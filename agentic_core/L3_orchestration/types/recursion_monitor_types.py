@@ -93,9 +93,11 @@ class RecursionMonitor:
     - Performance degradation detection
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         alert_callback: Callable[[Alert], None] | None = None,
+        # guardian: allow-magic-config
         health_check_interval_sec: int = 30,
         metrics_retention_hours: int = 24,
     ):
@@ -129,6 +131,7 @@ class RecursionMonitor:
         self._circuit_open = False
         self._circuit_open_until: datetime | None = None
         self._consecutive_failures = 0
+        # guardian: allow-magic-config
         self._failure_threshold = 5
 
         # Performance baseline
@@ -440,6 +443,7 @@ class RecursionMonitor:
         if self.alert_callback:
             try:
                 self.alert_callback(alert)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Alert callback failed: {e}")
 

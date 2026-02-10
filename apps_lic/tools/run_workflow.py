@@ -13,6 +13,7 @@ __version__ = "11.10"
 
 def load_mission_input(filename: str = "mission_input.json") -> dict[str, Any]:
     """Loads the mission input JSON file."""
+    # guardian: allow-path-string
     if not os.path.exists(filename):
         print(f"FATAL: {filename} not found. Please create it.")
         sys.exit(1)

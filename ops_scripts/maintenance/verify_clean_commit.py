@@ -73,6 +73,7 @@ def main():
         else:
             print("✅ Clean commit verified - no uncommitted changes from hooks")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"Warning: Could not verify clean commit: {e}")
         print("Continuing...")

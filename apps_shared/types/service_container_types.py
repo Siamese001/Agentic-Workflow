@@ -122,6 +122,7 @@ class ServiceContainer:
                 implementation = self._services[interface]
                 try:
                     return type(implementation)()
+                # guardian: allow-silent-swallow
                 except Exception:
                     # If we can't create a new instance, return the original
                     logger.warning(

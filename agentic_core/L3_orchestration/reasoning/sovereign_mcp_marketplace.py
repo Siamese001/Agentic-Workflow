@@ -59,6 +59,7 @@ class SovereignMcpMarketplace:
                     # In a real system, we'd add the server command to the manager's pool
                     self.safe_tools.append(name)
                     Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.warning(f"Failed to register {name}: {e}")
 

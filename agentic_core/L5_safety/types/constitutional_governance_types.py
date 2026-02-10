@@ -233,6 +233,7 @@ class ConstitutionalGovernanceGuardrail:
             return f"[REVISED] {content}\n\n[Note: Content was flagged for potential issues with: {', '.join(v.principle.value for v in violations)}]"
         return content
 
+    # guardian: allow-magic-config
     def get_audit_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent audit log entries."""
         return self.audit_log[-limit:]

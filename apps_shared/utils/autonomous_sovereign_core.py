@@ -155,6 +155,7 @@ class AutonomousSovereignCore:
                 if status["global_budget_remaining"] < 10:
                     print(f"   [L2] Low resource budget: {status['global_budget_remaining']}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!] Executive Worker Error: {e}")
             finally:

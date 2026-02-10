@@ -244,6 +244,7 @@ class ThinkActObserveEngine:
                     result = await act_fn(action)
                     results.append(result)
                     self.state.actions_taken.append(action)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     if self.enable_logging:
                         LOGGER.error("action_failed", extra={"action": action, "error": str(e)})

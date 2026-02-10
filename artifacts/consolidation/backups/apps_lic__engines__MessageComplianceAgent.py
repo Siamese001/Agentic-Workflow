@@ -88,6 +88,7 @@ class MessageComplianceAgent(SubatomicTestingMixin, SovereignBaseAgent):
             self.record_result(True, "All messages compliant")
             print(f"   [{self.name}] ✅ Messages compliant")
 
+    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

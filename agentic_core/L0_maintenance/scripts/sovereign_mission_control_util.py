@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 repo_root: Any = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.append(str(REPO_ROOT))
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any

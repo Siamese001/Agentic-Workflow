@@ -18,6 +18,7 @@ class RetrieveResumeHistory:
         self.cache: dict[str, object] = {}
         Logger.info(f"Initialized {self.__class__.__name__}")
 
+    # guardian: allow-magic-config
     def retrieve(self, query: str, filters: dict | None = None, limit: int = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"

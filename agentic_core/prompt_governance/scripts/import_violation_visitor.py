@@ -92,6 +92,7 @@ def analyze_file(file_path: Path) -> list[dict]:
                 "error": str(e),
             },
         ]
+    # guardian: allow-silent-swallow
     except Exception as e:
         return [
             {

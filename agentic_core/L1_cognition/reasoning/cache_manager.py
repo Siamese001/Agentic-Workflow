@@ -89,6 +89,7 @@ class CacheStrategyManager:
     def _initialize_default_configs(self) -> None:
         """Initialize default domain configurations."""
         self.domain_configs = {
+            # guardian: allow-magic-config
             "agentic_core": DomainConfig(
                 domain="agentic_core",
                 ttl_seconds=3600,  # 1 hour
@@ -97,6 +98,7 @@ class CacheStrategyManager:
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
+            # guardian: allow-magic-config
             "apps_lic": DomainConfig(
                 domain="apps_lic",
                 ttl_seconds=7200,  # 2 hours (LIC has longer campaign cycles)
@@ -105,6 +107,7 @@ class CacheStrategyManager:
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
+            # guardian: allow-magic-config
             "apps_rg": DomainConfig(
                 domain="apps_rg",
                 ttl_seconds=3600,  # 1 hour

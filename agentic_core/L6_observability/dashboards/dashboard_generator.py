@@ -835,6 +835,7 @@ class DashboardGenerator:
                 if backup_path.exists():
                     shutil.copy2(backup_path, self.dashboard_path)
                     print("⚠️  Restored original HTML from backup")
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
             return False

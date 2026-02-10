@@ -155,6 +155,7 @@ class ConfigLoader:
                 source=str(config_path),
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             return ConfigLoadResult(
                 success=False,

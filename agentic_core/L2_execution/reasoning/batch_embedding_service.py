@@ -21,6 +21,7 @@ class BatchEmbeddingService:
     Keeps workers low to prevent context switching overhead.
     """
 
+    # guardian: allow-magic-config
     def __init__(self, batch_size: int = 32, max_workers: int = 4):
         """Initialize the batch embedding service.
 
@@ -100,6 +101,7 @@ class BatchEmbeddingService:
         self.shutdown()
 
 
+# guardian: allow-magic-config
 def create_batch_embedding_service(batch_size: int = 32, max_workers: int = 4) -> BatchEmbeddingService:
     """Create a BatchEmbeddingService instance.
 

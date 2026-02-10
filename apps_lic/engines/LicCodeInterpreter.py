@@ -271,10 +271,12 @@ class LICCodeInterpreter:
 
         return scored
 
+    # guardian: allow-magic-config
     def extract_keywords(
         self,
         text: str,
         top_n: int = 10,
+        # guardian: allow-magic-config
         min_length: int = 4,
     ) -> KeywordExtractionResult:
         """
@@ -317,10 +319,12 @@ class LICCodeInterpreter:
             top_n=top_n,
         )
 
+    # guardian: allow-magic-config
     def calculate_overlap(
         self,
         text1: str,
         text2: str,
+        # guardian: allow-magic-config
         min_word_length: int = 4,
     ) -> dict[str, object]:
         """

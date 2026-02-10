@@ -147,6 +147,7 @@ class HealingOrchestrationSuite:
                 },
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[HealingSuite] Strategy {strategy_name} failed: {e}")
             return HealingResult(

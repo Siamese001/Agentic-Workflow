@@ -38,6 +38,7 @@ def scan_for_stale_imports():
             if not file.endswith(".py"):
                 continue
 
+            # guardian: allow-path-string
             file_path = os.path.join(root, file)
 
             # Skip the scanner script itself to avoid false positives

@@ -60,6 +60,7 @@ class VertexClient:
             "errors": 0,
         }
 
+    # guardian: allow-magic-config
     @backoff.on_exception(
         backoff.expo,
         Exception,  # Vertex AI uses standard exceptions
@@ -138,6 +139,7 @@ class VertexClient:
             if enable_grounding if enable_grounding is not None else self.config.enable_grounding:
                 grounding_tool = Tool.from_google_search_retrieval(
                     vertex_grounding.GoogleSearchRetrieval(
+                        # guardian: allow-magic-config
                         dynamic_retrieval_config=vertex_grounding.DynamicRetrievalConfig(
                             mode="MODE_DYNAMIC",
                             dynamic_threshold=0.7,
@@ -179,6 +181,7 @@ class VertexClient:
             self.usage_stats["errors"] += 1
             raise self._handle_error(e)
 
+    # guardian: allow-magic-config
     def grounded_response(
         self,
         prompt: str,
@@ -457,6 +460,7 @@ if __name__ == "__main__":
         response = client.generate_content("Explain quantum computing in 100 words.")
 
         # Grounded response
+        # guardian: allow-magic-config
         grounded = client.grounded_response(
             "What are the latest developments in AI large language models?",
             grounding_threshold=0.7,
@@ -471,5 +475,6 @@ if __name__ == "__main__":
         # Usage stats
         print("Usage Stats:", client.get_usage_stats())
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"An error occurred: {e}")

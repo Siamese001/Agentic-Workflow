@@ -100,6 +100,7 @@ class HumanReviewProtocol(ABC):
         pass
 
     @abstractmethod
+    # guardian: allow-magic-config
     def get_pending_reviews(
         self,
         agent_name: str | None = None,

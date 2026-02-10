@@ -145,6 +145,7 @@ class SchemaVectorSearcher:
 
             return search_result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"schema vector search failed: {str(e)}")
             return SchemaSearchResult(
@@ -537,9 +538,11 @@ class SchemaVectorSearcher:
 
 
 # Factory function for easy instantiation
+# guardian: allow-magic-config
 def create_schema_vector_searcher(
     dimension: int = 1536,
     enable_field_vectors: bool = True,
+    # guardian: allow-magic-config
     similarity_threshold: float = 0.7,
     **kwargs: object,
 ) -> SchemaVectorSearcher:
@@ -554,12 +557,14 @@ def create_schema_vector_searcher(
 
 
 # Convenience function for direct usage
+# guardian: allow-magic-config
 def search_schema_vectors(
     query_text: str | None = None,
     query_schema: dict[str, Any] | None = None,
     search_mode: str = "semantic",
     similarity_type: str = "semantic",
     top_k: int = 10,
+    # guardian: allow-magic-config
     threshold: float = 0.7,
     config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:

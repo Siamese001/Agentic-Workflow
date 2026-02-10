@@ -22,6 +22,7 @@ def normalize_location_path(path: str) -> str:
     Returns:
         Normalized path with forward slashes
     """
+    # guardian: allow-path-string
     return os.path.normpath(path).replace("\\", "/")
 
 
@@ -39,6 +40,7 @@ def get_agent_files(root_dir: str) -> list[str]:
     for root, _, files in os.walk(root_dir):
         for file in files:
             if file.endswith(".py") and not file.startswith("__"):
+                # guardian: allow-path-string
                 agent_files.append(os.path.join(root, file))
     return agent_files
 

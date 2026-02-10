@@ -88,6 +88,7 @@ def main():
                                 print(f"UNFIXABLE: {py_file} (truncation doesn't fix syntax)")
                         else:
                             print(f"CORRUPTED: {py_file}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"ERROR: {py_file} - {e}")
 

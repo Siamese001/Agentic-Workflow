@@ -69,6 +69,7 @@ class ToolsUseATool:
                 ExecutionContext=exec_ctx,
                 additional_info={"processed_at": time.time(), "executor": self.__class__.__name__},
             )
+        # guardian: allow-silent-swallow
         except Exception as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)

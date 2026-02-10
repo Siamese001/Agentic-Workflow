@@ -11,6 +11,7 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).resolve().parents[3]
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent

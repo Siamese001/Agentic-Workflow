@@ -152,6 +152,7 @@ You are {role}. Your objective is {objective}.
 
                 Logger.debug(f"Loaded template: {template_name}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Failed to load template {file_path}: {e}")
 

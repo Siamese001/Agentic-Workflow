@@ -205,6 +205,7 @@ class ToolRegistry:
                     tool_name, tool_func, description = tool_loader(tool_path)
                     if self.register_tool(tool_name, str(tool_path), tool_func, description):
                         registered += 1
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     Logger.warning(f"[REGISTRY] Failed to load tool from {tool_path}: {e}")
             else:

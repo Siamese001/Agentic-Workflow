@@ -131,11 +131,13 @@ class CoordinateObservabilityOperationsAgent(AtomicExecutionMixin, SubatomicTest
 
     @timeout(300)
     @standard_heal
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,  # guardian: allow-magic_configuration
         _call_path: set | None = None,
     ) -> dict[str, int]:

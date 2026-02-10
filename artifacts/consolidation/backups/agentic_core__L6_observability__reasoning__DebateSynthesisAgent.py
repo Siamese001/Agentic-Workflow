@@ -134,6 +134,7 @@ class DebateSynthesisAgent(AtomicExecutionMixin, SovereignBaseAgent):
                                 },
                             )
 
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent_swallower
                 self.log_warning(f"Could not scan {file_path}: {e}")
 

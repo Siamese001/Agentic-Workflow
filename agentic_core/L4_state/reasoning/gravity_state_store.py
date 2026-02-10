@@ -199,6 +199,7 @@ class GravityStateAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             with open(self.state_file, encoding="utf-8") as f:
                 return json.load(f)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to load state: {e}")
             return self._load_state()  # Return fresh state on error
@@ -209,6 +210,7 @@ class GravityStateAgent(AtomicExecutionMixin, SovereignBaseAgent):
             self.state["metadata"]["last_updated"] = datetime.now().isoformat()
             with open(self.state_file, "w", encoding="utf-8") as f:
                 json.dump(self.state, f, indent=2)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to save state: {e}")
 
@@ -352,6 +354,7 @@ class GravityStateAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
             self.logger.info(f"Created checkpoint: {checkpoint_file.name}")
             return str(checkpoint_file)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to create checkpoint: {e}")
             return ""

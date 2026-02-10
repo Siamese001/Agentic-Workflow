@@ -160,6 +160,7 @@ class AtomicExecutionMixin:
                 if backup.backup_path.exists():
                     shutil.copy2(backup.backup_path, backup.original_path)
                     logger.debug(f"Restored {backup.original_path} from backup")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 errors.append(f"Failed to restore {backup.original_path}: {e}")
 
@@ -169,6 +170,7 @@ class AtomicExecutionMixin:
                 if created_path.exists() and created_path not in [b.original_path for b in txn.backups]:
                     created_path.unlink()
                     logger.debug(f"Removed created file {created_path}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 errors.append(f"Failed to remove {created_path}: {e}")
 
@@ -186,6 +188,7 @@ class AtomicExecutionMixin:
             if backup_dir.exists():
                 shutil.rmtree(backup_dir)
                 logger.debug(f"Cleaned up backup directory {backup_dir}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Failed to cleanup transaction {txn.transaction_id}: {e}")
 

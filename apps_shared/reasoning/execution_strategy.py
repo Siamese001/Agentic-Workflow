@@ -173,6 +173,7 @@ class ObservabilityExecutionEngine:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Execution failed: {str(e)}")
             return self._create_error_result(
@@ -540,8 +541,11 @@ class ObservabilityExecutionEngine:
 
 
 # Factory function for easy instantiation
+# guardian: allow-magic-config
 def create_observability_execution_engine(
+    # guardian: allow-magic-config
     default_timeout: float = 30.0,
+    # guardian: allow-magic-config
     max_concurrent_executions: int = 10,
     enable_queueing: bool = True,
     **kwargs: object,
@@ -557,12 +561,14 @@ def create_observability_execution_engine(
 
 
 # Convenience function for direct usage
+# guardian: allow-magic-config
 def use_observability_execution(
     operation_type: str,
     parameters: dict[str, Any],
     request_id: str | None = None,
     strategy: str = "immediate",
     priority: str = "normal",
+    # guardian: allow-magic-config
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Execute observability operation.

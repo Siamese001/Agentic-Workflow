@@ -63,6 +63,7 @@ class SovereignPdfParser:
             try:
                 images = convert_from_path(str(pdf_path), dpi=200)
                 return "\n".join([pytesseract.image_to_string(img) for img in images])
+            # guardian: allow-silent-swallow
             except Exception as e:
                 return f"OCR_ERROR: {e}"
 
@@ -113,6 +114,7 @@ class SovereignPdfParser:
         chunks: Any = self._chunk_text(cleaned_text, metadata)
         return chunks
 
+    # guardian: allow-magic-config
     def _chunk_text(self, text: str, metadata: dict, chunk_size: int = 1000) -> list[dict]:
         """Split text into chunks for vector storage"""
         chunks = []

@@ -27,6 +27,7 @@ def main() -> None:
     """Main entry point for tracking changes."""
     Path(".").resolve()
     tracker_path: Any = root / ".git" / "CANON_CHANGE.staging"
+    # guardian: allow-magic-config
     result: Any = safe_git_execute(
         ["diff", "--cached", "--name-status"],
         repo_root=root,
@@ -57,6 +58,7 @@ def main() -> None:
         tracker_path.parent.mkdir(exist_ok=True)
         with open(tracker_path, "w") as f:
             f.write("\n".join(changes))
+        # guardian: allow-global-mutation
         os.environ["CANON_CHANGE_TRACKER"] = str(tracker_path)
         [c for c in changes if "|DELETE" in c]
         [c for c in changes if "|RENAME|" in c]

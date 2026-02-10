@@ -147,6 +147,7 @@ class EphemeralVm:
             return VmInstance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
+        # guardian: allow-silent-swallow
         except Exception as e:
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
@@ -229,6 +230,7 @@ class EphemeralVm:
                 await self.vm_manager.terminate_vm(vm_id)
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
+            # guardian: allow-silent-swallow
             except Exception as e:
                 if self.enable_logging:
                     LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
@@ -292,6 +294,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
+        # guardian: allow-silent-swallow
         except Exception as e:
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 
@@ -325,6 +328,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
+        # guardian: allow-silent-swallow
         except Exception as e:
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 

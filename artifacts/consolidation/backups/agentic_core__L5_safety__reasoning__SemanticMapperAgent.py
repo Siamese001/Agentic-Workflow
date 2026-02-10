@@ -24,6 +24,7 @@ class SemanticMapperAgent(SubatomicTestingMixin, SovereignBaseAgent):
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
     """
 
+    # guardian: allow-type-erasure
     def execute(self) -> Any:
         """
         Performs semantic analysis to identify refactoring opportunities.
@@ -31,6 +32,7 @@ class SemanticMapperAgent(SubatomicTestingMixin, SovereignBaseAgent):
         print(f"\n[>>>] {self.agent.name} ACTIVATED: Semantic Analysis...")
         print("   ℹ No refactoring opportunities identified.")
 
+    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

@@ -16,7 +16,7 @@ def test_test_add_dataclass_to_agents_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.add_dataclass_to_agents_util: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.add_dataclass_to_agents_util: {e}",
         )
 
 

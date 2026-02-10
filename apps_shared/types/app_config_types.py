@@ -481,6 +481,7 @@ class AppConfig:
 ReasoningConfig.DEFAULT = ReasoningConfig(self_consistency=3)
 
 # K0_HEADLINE: Lightweight (unchanged)
+# guardian: allow-magic-config
 ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
     cot_min_paths=2,
     tot_branches=2,
@@ -491,6 +492,7 @@ ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
 
 # K1_EXECUTIVE_SUMMARY: RATIONALIZED - Reduced SC from 8 -> 3
 # Inspector handles evaluation, no need for extreme SC
+# guardian: allow-magic-config
 ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=3,
@@ -501,6 +503,7 @@ ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
 )
 
 # K2_UNIFY_BULLETS: Reduced SC from 6 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=3,
@@ -510,6 +513,7 @@ ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
 )
 
 # K2_UNIFY_OVERVIEW: Reduced SC from 4 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=3,
@@ -519,6 +523,7 @@ ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
 )
 
 # K3_IBM_BULLETS: Reduced SC from 5 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=3,
@@ -528,6 +533,7 @@ ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
 )
 
 # K3_IBM_OVERVIEW: Reduced SC from 4 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=3,
@@ -537,6 +543,7 @@ ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
 )
 
 # K4_TRADERSENSE_NARRATIVE: Unchanged
+# guardian: allow-magic-config
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
     cot_min_paths=2,
     tot_branches=2,
@@ -546,6 +553,7 @@ ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
 )
 
 # K5_EY_NARRATIVE: Reduced SC from 4 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=2,
@@ -555,6 +563,7 @@ ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
 )
 
 # K6_EARLY_CAREER_NARRATIVE: Unchanged
+# guardian: allow-magic-config
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
     cot_min_paths=2,
     tot_branches=2,
@@ -564,6 +573,7 @@ ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
 )
 
 # K9_COMPETENCIES: Reduced SC from 6 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
     cot_min_paths=3,
     tot_branches=2,
@@ -582,6 +592,7 @@ ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
 )
 
 # K11_COVER_LETTER: Reduced SC from 6 -> 3
+# guardian: allow-magic-config
 ReasoningConfig.K11_COVER_LETTER_CONFIG = ReasoningConfig(
     cot_min_paths=4,
     tot_branches=3,

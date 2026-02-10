@@ -115,6 +115,7 @@ class ResumeEnhancementOrchestrator:
                         ),
                     )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle resume generation started: {e}")
 
@@ -132,6 +133,7 @@ class ResumeEnhancementOrchestrator:
             # For now, just log the analysis
             logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
 

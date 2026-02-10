@@ -84,6 +84,7 @@ class CheckpointStorageBackend(ABC):
         pass
 
     @abstractmethod
+    # guardian: allow-magic-config
     async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoint trace IDs.
 
@@ -232,6 +233,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to delete checkpoint {trace_id}: {e}")
             return False
 
+    # guardian: allow-magic-config
     async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoints.
 
@@ -256,6 +258,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
 
             return trace_ids
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to list checkpoints: {e}")
             return []
@@ -413,6 +416,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             logger.error(f"Failed to delete checkpoint {trace_id} from Redis: {e}")
             return False
 
+    # guardian: allow-magic-config
     async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List available checkpoints in Redis.
 
@@ -439,6 +443,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
 
             return trace_ids
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to list checkpoints in Redis: {e}")
             return []
@@ -458,6 +463,7 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
 class MemoryCheckpointStorage(CheckpointStorageBackend):
     """In-memory checkpoint storage for testing."""
 
+    # guardian: allow-magic-config
     def __init__(self, max_size: int = 100):
         """Initialize memory storage.
 
@@ -514,6 +520,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
                 return True
             return False
 
+    # guardian: allow-magic-config
     async def list_checkpoints(self, limit: int = 100) -> list[str]:
         """List checkpoints in memory.
 

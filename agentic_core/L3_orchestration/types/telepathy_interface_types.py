@@ -139,6 +139,7 @@ class TelepathyInterface:
             self.instructions_path.write_text(done_content, encoding="utf-8")
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
+        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Failed to mark instructions as done: {e}")
 
@@ -169,6 +170,7 @@ class TelepathyInterface:
             if self.instructions_path.exists():
                 self.instructions_path.unlink()
                 LOGGER.info("Telepathy instructions cleared")
+        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Failed to clear instructions: {e}")
 

@@ -138,6 +138,7 @@ class TracingMixin:
                 self._initialize_tracing_safe()
                 self._tracing_initialized = True
                 TracingMixin._circuit_breaker_failures = 0  # Reset on success
+            # guardian: allow-silent-swallow
             except Exception as e:
                 # Increment failure counter
                 TracingMixin._circuit_breaker_failures += 1

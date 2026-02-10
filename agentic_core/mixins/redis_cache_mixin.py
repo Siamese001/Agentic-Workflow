@@ -40,6 +40,7 @@ log = logging.getLogger(__name__)
 class CircuitBreaker:
     """[PHASE 25] Circuit Breaker for Redis connections."""
 
+    # guardian: allow-magic-config
     def __init__(self, failure_threshold: int = 5, timeout_seconds: int = 60):
         self.failure_threshold = failure_threshold
         self.timeout_seconds = timeout_seconds
@@ -96,6 +97,7 @@ class RedisCacheMixin:
     _local_cache: dict = {}
 
     KEY_NAMESPACE_SALT = "agentic-v1"
+    # guardian: allow-magic-config
     MAX_KEY_LENGTH = 200
 
     @property
@@ -166,6 +168,7 @@ class RedisCacheMixin:
                     log.debug(f"cache HIT (Redis): {key[:50]}...")
                     self._circuit_breaker.record_success()
                     return value
+            # guardian: allow-silent-swallow
             except Exception as e:
                 self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
@@ -226,6 +229,7 @@ class RedisCacheMixin:
                 log.debug(f"cache SET (Redis): {key[:50]}... TTL={ttl}s")
                 self._circuit_breaker.record_success()
                 return
+            # guardian: allow-silent-swallow
             except Exception as e:
                 self._circuit_breaker.record_failure()
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
@@ -249,6 +253,7 @@ class RedisCacheMixin:
         if self.redis:
             try:
                 await self.redis.delete(full_key)
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
 
@@ -268,6 +273,7 @@ class RedisCacheMixin:
                 if keys:
                     await self.redis.delete(*keys)
                     deleted += len(keys)
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
 

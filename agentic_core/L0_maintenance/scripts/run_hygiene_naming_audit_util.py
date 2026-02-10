@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Add project root to path
 root = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(root))
 
 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent

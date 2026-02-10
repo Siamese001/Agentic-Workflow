@@ -244,6 +244,7 @@ class PromptRegistry:
                 template = PromptTemplate.from_dict(template_data)
                 self._templates[template.template_id] = template
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             if self.enable_logging:
                 logger.error(
@@ -267,6 +268,7 @@ class PromptRegistry:
             with open(self.registry_path, "w") as f:
                 json.dump(data, f, indent=2)
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             if self.enable_logging:
                 logger.error(

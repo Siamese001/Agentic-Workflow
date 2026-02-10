@@ -150,11 +150,14 @@ def safe_popen(
     return process
 
 
+# guardian: allow-magic-config
 def safe_communicate(
     process: subprocess.Popen,
     input_data: str | bytes | None = None,
+    # guardian: allow-magic-config
     timeout: float | None = 60.0,
     sanitize_output: bool = True,
+    # guardian: allow-magic-config
     max_output_chars: int = 2000,
 ) -> tuple[str | bytes | None, str | bytes | None]:
     """

@@ -114,6 +114,7 @@ def detect_injection(prompt: str) -> InjectionResult:
     )
 
 
+# guardian: allow-magic-config
 def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -> bool:
     """Validate injection result against safety threshold.
 

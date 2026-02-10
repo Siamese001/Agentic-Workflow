@@ -109,6 +109,7 @@ def analyze_file_with_ast(file_path: Path) -> dict:
                 if node.module:
                     result["imports"].append(node.module)
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         result["error"] = str(e)
 

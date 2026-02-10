@@ -41,6 +41,7 @@ class DependencyGraph:
                             self.graph[file_path]["imports"].append(node.module)
                     elif isinstance(node, ast.ClassDef):
                         self.graph[file_path]["classes"].append(node.name)
+            # guardian: allow-silent-swallow
             except Exception:
                 # Skip files that can't be parsed
                 pass

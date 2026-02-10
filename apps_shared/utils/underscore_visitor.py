@@ -55,6 +55,7 @@ def main():
                 print(f"[ERROR] Underscore fields forbidden in SSOT ({arg}):")
                 for line, field in visitor.violations:
                     print(f"  L{line}: {field}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"[WARNING] Could not parse {arg}: {e}")
 

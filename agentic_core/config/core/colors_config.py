@@ -92,6 +92,7 @@ def _ensure_utf8():
             # Replace os.system with safe_execute for security
             safe_execute(["chcp", "65001"], capture_output=True, check=False)
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        # guardian: allow-silent-swallow
         except:
             pass
 

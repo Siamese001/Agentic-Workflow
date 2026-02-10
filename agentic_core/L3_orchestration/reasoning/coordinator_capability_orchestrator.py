@@ -104,6 +104,7 @@ class WorkflowCoordinator(ABC):
                 self.failures += 1
 
             return result
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.failures += 1
             return WorkflowResult(

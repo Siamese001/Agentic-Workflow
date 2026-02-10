@@ -104,6 +104,7 @@ class CartographerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
             # Specific error handling for file access and encoding
             pass
 
+    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

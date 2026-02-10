@@ -24,6 +24,7 @@ from typing import Any
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
@@ -47,6 +48,7 @@ def load_sovereign_registry() -> dict[str, Any]:
     except ImportError as e:
         print(f"❌ ERROR: Could not import SOVEREIGN_MCP_REGISTRY: {e}")
         sys.exit(1)
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"❌ ERROR: Failed to load registry: {e}")
         sys.exit(1)

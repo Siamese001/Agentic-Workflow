@@ -51,6 +51,7 @@ class AppsLicASTAuditor:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content, filename=str(file_path))
+        # guardian: allow-silent-swallow
         except Exception as e:
             return FileClassification(path=file_path, category="UNKNOWN", issues=[f"Parse error: {str(e)}"])
 

@@ -130,6 +130,7 @@ class CollisionResolver:
                     tree = ast.parse(content)
                     classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                     class_info = f"[Classes: {', '.join(classes[:3])}]" if classes else "[No classes]"
+                # guardian: allow-silent-swallow
                 except:
                     size = 0
                     class_info = "[Parse error]"

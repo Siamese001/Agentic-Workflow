@@ -103,6 +103,7 @@ def update_imports_in_moved_test(test_file: pathlib.Path):
             test_file.write_text(updated_content, encoding="utf-8")
             print(f"Updated imports in: {test_file}")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"Failed to update imports in {test_file}: {e}")
 
@@ -135,7 +136,7 @@ def main():
         for source, target, module_path in sorted(tests):
             print(f"  {module_path}")
             print(
-                f"    {source.relative_to(pathlib.Path('tests'))} -> {target.relative_to(pathlib.Path('tests'))}"
+                f"    {source.relative_to(pathlib.Path('tests'))} -> {target.relative_to(pathlib.Path('tests'))}",
             )
 
             # Move the file

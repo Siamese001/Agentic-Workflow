@@ -17,6 +17,7 @@ OUTPUT_REPORT = r"C:\Git\Agentic-Workflow\apps_rg\RG_JSON_KNOWLEDGE_MAP.md"
 
 def mine_workflows():
     # 1. Identify the Golden Master (Latest Version)
+    # guardian: allow-path-string
     files = glob.glob(os.path.join(ARCHIVE_PATH, "*.json"))
     if not files:
         print("CRITICAL: No JSON archives found.")
@@ -226,6 +227,7 @@ def mine_workflows():
             print(f"[MINER] Prompts extracted: {prompt_count}")
             print(f"[MINER] Configs extracted: {len(configs)}")
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             report.write(f"\n# ❌ EXTRACTION FAILED\n\nError: {str(e)}\n")
             print(f"[MINER] Error processing {golden_master}: {e}")
@@ -281,6 +283,7 @@ def extract_keys_recursive(data, target_keys, parent_key=""):
     return found
 
 
+# guardian: allow-magic-config
 def extract_long_text_blocks(data, parent_key="", min_length=100):
     """Extract all string values longer than min_length."""
     found = {}

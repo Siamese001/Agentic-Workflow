@@ -176,6 +176,7 @@ async def main() -> None:
 
         return 0
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         LOGGER.ERROR("=" * 60)
         logger.error("❌ WORKFLOW FAILED")
@@ -196,6 +197,7 @@ async def main() -> None:
         if orchestrator:
             try:
                 logger.info("🧹 Workflow execution completed")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"Cleanup warning: {e}")
 
@@ -208,6 +210,7 @@ def run_sync() -> None:
     except KeyboardInterrupt:
         logger.info("\n⚠️ Workflow interrupted by user")
         return 130
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return 1

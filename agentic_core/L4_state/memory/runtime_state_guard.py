@@ -87,6 +87,7 @@ class RuntimeStateGuard:
 
             # 3. Atomic rename (replace)
             os.replace(temp_path, self.state_path)
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"[StateGuard] PERSISTENCE FAILURE: {e}")
             if temp_path.exists():

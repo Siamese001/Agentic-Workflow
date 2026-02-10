@@ -248,6 +248,7 @@ class BaseAgent(IAgent[InputT, OutputT]):
         # Pre-execute hook
         try:
             self.pre_execute(input_data, context)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._logger.warning(f"Pre-execute hook failed: {e}")
 
@@ -262,11 +263,13 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 # Post-execute hook
                 try:
                     self.post_execute(input_data, context, result)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     self._logger.warning(f"Post-execute hook failed: {e}")
 
                 return result
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 last_error = e
                 self._logger.warning(f"Attempt {attempt + 1}/{context.max_retries + 1} failed: {e}")
@@ -274,6 +277,7 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 # Call error hook
                 try:
                     self.on_error(input_data, context, e)
+                # guardian: allow-silent-swallow
                 except Exception as hook_error:
                     self._logger.warning(f"Error hook failed: {hook_error}")
 

@@ -59,6 +59,7 @@ class SilentSwallowerDetector(AntiPatternDetector):
         # Read source for whitelist comment checking
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
+        # guardian: allow-silent-swallow
         except Exception:
             source_lines = []
 

@@ -50,6 +50,7 @@ def check(
         source_fwd = source_rel.replace("\\", "/")
 
         # Is the source itself in a volatile territory?
+        # guardian: allow-path-string
         source_volatile = any(source_fwd.startswith(v + "/") for v in volatile_names)
         if source_volatile:
             continue

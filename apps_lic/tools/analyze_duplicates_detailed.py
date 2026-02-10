@@ -14,6 +14,7 @@ import sys
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 
@@ -50,6 +51,7 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
                     with open(fpath, encoding="utf-8") as f:
                         content = f.read()
                         contents.append(content)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     contents.append(f"ERROR: {e}")
 

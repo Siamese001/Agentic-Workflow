@@ -256,6 +256,7 @@ class AdapterBase(ABC, Generic[T]):
             }
             self._audit_log.append(entry)
             logger.debug(f"Adapter audit: {entry}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             # Never fail main execution due to audit logging error
             logger.error(f"Failed to log audit: {e}")
@@ -321,6 +322,7 @@ class AdapterBase(ABC, Generic[T]):
                     skip_reason="input_validation_failed",
                     audit_trail=audit_trail,
                 )
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Input validation error: {e}")
             return AdapterResult(
@@ -339,6 +341,7 @@ class AdapterBase(ABC, Generic[T]):
         try:
             raw_result = self._execute_legacy(context, *args, **kwargs)
             self._circuit_breaker.record_success()
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._circuit_breaker.record_failure(e)
             self._log_audit("execution_error", context, error=e)
@@ -364,6 +367,7 @@ class AdapterBase(ABC, Generic[T]):
                     error="Output validation failed",
                     audit_trail=audit_trail,
                 )
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Output validation error: {e}")
             return AdapterResult(

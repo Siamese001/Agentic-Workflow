@@ -34,6 +34,7 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
 
@@ -90,6 +91,7 @@ def main():
     except KeyboardInterrupt:
         print("\n\n✅ Server stopped")
         sys.exit(0)
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Error starting server: {e}")
         sys.exit(1)

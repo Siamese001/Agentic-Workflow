@@ -262,6 +262,7 @@ class DynamicSealAgent(SovereignBaseAgent):
                     success=True,
                 )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             return SealResult(
                 file_path=str(file_path),

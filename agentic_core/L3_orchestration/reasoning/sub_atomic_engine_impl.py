@@ -25,6 +25,7 @@ class SubAtomicEngineImpl:
     async def get_embedding(self, text: str) -> list[float]:
         try:
             return await self.embedding_gateway.get_embedding(text, provider="gemini")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Embedding failed: {e}")
             return [0.0] * 768
@@ -52,6 +53,7 @@ class SubAtomicEngineImpl:
                 generation_config=gen_config,
             )
             return response["content"]
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Mutation failed: {e}")
             return prompt

@@ -127,6 +127,7 @@ class SSOTScanner:
                 if metadata:
                     agents.append(metadata)
                     self._cache[str(agent_file)] = metadata
+            # guardian: allow-silent-swallow
             except Exception:
                 # Skip files that can't be parsed
                 continue

@@ -16,7 +16,7 @@ def test_test_sub_atomic_engine_impl_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.sub_atomic_engine_impl: {e}"
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.sub_atomic_engine_impl: {e}",
         )
 
 

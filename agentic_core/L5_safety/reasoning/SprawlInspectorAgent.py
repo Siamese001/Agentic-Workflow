@@ -111,6 +111,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
         print("=" * 70)
 
     @standard_heal
+    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

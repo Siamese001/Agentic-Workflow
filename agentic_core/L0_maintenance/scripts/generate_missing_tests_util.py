@@ -241,6 +241,7 @@ def main():
         try:
             test_file = create_test_file(agent)
             created_files.append(test_file)
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"  [ERROR] Failed to create test: {e}")
 

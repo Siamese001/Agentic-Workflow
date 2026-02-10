@@ -19,8 +19,11 @@ from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 Logger = logging.getLogger(__name__)
 
 # configuration (NAMING FIXED: Consistent lowercase to match usage)
+# guardian: allow-magic-config
 max_phase_time = 300  # 5 minutes
+# guardian: allow-magic-config
 heartbeat_interval = 30  # 30 seconds
+# guardian: allow-magic-config
 deadlock_threshold = 2  # Alerts after 2 timeouts
 
 
@@ -58,6 +61,7 @@ class TaskMonitor:
             if coro:
                 try:
                     return f"Coroutine: {coro} | State: {inspect.getcoroutinestate(coro)}"
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     return f"Error getting stack: {e}"
         return "Task completed"

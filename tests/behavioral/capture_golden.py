@@ -18,6 +18,7 @@ import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from tests.behavioral.conftest import (
@@ -137,6 +138,7 @@ class TestCaptureDomainPlannerGolden:
             if hasattr(agent, "run") and callable(agent.run):
                 try:
                     result = agent.run(standard_input)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"  run() failed: {e}")
 
@@ -144,6 +146,7 @@ class TestCaptureDomainPlannerGolden:
             if result is None and hasattr(agent, "execute"):
                 try:
                     result = agent.execute(standard_input)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"  execute() failed: {e}")
 
@@ -151,6 +154,7 @@ class TestCaptureDomainPlannerGolden:
             if result is None and hasattr(agent, "plan"):
                 try:
                     result = agent.plan(standard_input)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"  plan() failed: {e}")
 
@@ -220,6 +224,7 @@ class TestCaptureCodeHealerGolden:
             if hasattr(agent, "heal"):
                 try:
                     result = agent.heal(standard_input)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"  heal() failed: {e}")
 

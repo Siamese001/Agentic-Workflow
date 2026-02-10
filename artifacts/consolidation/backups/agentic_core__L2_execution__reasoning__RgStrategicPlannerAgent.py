@@ -112,6 +112,7 @@ Propose optimal agent agenda based on priority rules above.
 Output ONLY the plan in Markdown.
 """
 
+        # guardian: allow-magic-config
         plan = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=2)
 
         if "NO_PLAN_NEEDED" not in plan:
@@ -170,11 +171,13 @@ Output ONLY the plan in Markdown.
             }
 
     @standard_heal
+    # guardian: allow-magic-config  # guardian: allow-type-erasure
     def heal_repository(
         self,
         dry_run=True,
         execute=False,
         depth=0,
+        # guardian: allow-magic-config
         max_depth=3,
         _call_path=None,
         **kwargs,

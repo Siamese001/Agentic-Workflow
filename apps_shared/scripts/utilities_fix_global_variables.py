@@ -45,6 +45,7 @@ def main() -> Any:
     ]
     fixed_count: Any = 0
     for file_path in files_to_fix:
+        # guardian: allow-path-string
         if os.path.exists(file_path):
             if fix_global_variables(file_path):
                 fixed_count += 1

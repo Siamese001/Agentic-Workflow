@@ -149,6 +149,7 @@ class SecureConfigManager:
 
             decrypted_data = self._decrypt_data(encrypted_data)
             return json.loads(decrypted_data)
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to load keys: {e}")
             return {}

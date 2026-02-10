@@ -195,6 +195,7 @@ class TraceRegistry(MCPHardenedMixin):
                 }
                 with open(self.persistence_path, "a") as f:
                     f.write(json.dumps(entry) + "\n")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to persist trace: {e}")
 

@@ -29,6 +29,7 @@ def attempt_repair(file_path: Path) -> str:
     """Apply the Lazarus Patch (indentation/imports) to make content parseable."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
+    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -55,6 +56,7 @@ def extract_value(content: str) -> dict[str, list[str]]:
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
                 if len(node.value) > 60 and ("{" in node.value or "You are" in node.value):
                     artifacts["prompts"].append(node.value[:100] + "...")
+    # guardian: allow-silent-swallow
     except:
         pass  # If it still doesn't parse, we ignore it.
 

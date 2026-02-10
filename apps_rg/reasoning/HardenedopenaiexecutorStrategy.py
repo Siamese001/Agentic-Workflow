@@ -42,14 +42,20 @@ class HardenedOpenAIConfig:
         "gpt-3.5-turbo-16k-0613": 16384,
     }
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         model: str = "gpt-4o-2024-08-06",
         temperature: float = 0.7,
+        # guardian: allow-magic-config
         max_tokens: int = 4096,
+        # guardian: allow-magic-config
         timeout_s: int = 60,
+        # guardian: allow-magic-config
         max_retries: int = 3,
+        # guardian: allow-magic-config
         failure_threshold: int = 5,
+        # guardian: allow-magic-config
         reset_timeout_s: int = 30,
     ):
         self.model = model

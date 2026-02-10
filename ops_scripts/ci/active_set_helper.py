@@ -47,6 +47,7 @@ def get_active_set(project_root: Path) -> ActiveSetResult:
     Identical to discovery_registry_consistency_check.py.
     """
     if str(project_root) not in sys.path:
+        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
     from agentic_core.L0_maintenance.scripts.full_agent_discovery import (

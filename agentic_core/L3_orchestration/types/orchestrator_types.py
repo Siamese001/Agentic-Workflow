@@ -275,11 +275,13 @@ class IHealable(Protocol):
         The **kwargs ensures backward compatibility with legacy callers.
     """
 
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         **kwargs,
     ) -> dict[str, Any]:

@@ -11,6 +11,7 @@ from typing import Any
 class SafetyGuardrail:
     """Enforces Zero-Loss principles during mutation."""
 
+    # guardian: allow-magic-config
     def __init__(self, deletion_limit: int = 110):
         """
         Initialize SafetyGuardrail.

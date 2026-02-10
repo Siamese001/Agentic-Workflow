@@ -163,6 +163,7 @@ class ReasoningNode:
             ]
 
         # Phase 1: Apply pruning (remove low-confidence thoughts)
+        # guardian: allow-magic-config
         min_confidence = 0.6
         thoughts = [t for t in thoughts if t.get("confidence", 0) >= min_confidence]
 

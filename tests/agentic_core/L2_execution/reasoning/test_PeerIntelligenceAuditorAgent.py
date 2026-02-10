@@ -16,7 +16,7 @@ def test_test_PeerIntelligenceAuditorAgent_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L2_execution.reasoning.PeerIntelligenceAuditorAgent: {e}"
+            f"Cannot import module agentic_core.L2_execution.reasoning.PeerIntelligenceAuditorAgent: {e}",
         )
 
 

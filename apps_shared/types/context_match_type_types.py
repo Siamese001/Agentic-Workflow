@@ -148,6 +148,7 @@ class SchemaContextMatcher:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Context matching failed: {str(e)}")
             return SchemaContextMatchResult(
@@ -484,10 +485,12 @@ def create_schema_context_matcher(
 
 
 # Convenience function for direct usage
+# guardian: allow-magic-config
 def match_schema_context(
     query_context: dict[str, Any],
     candidate_schemas: list[tuple[str, dict[str, Any], dict[str, Any]]],
     match_types: list[str] = None,
+    # guardian: allow-magic-config
     min_score: float = 0.5,
     top_k: int = 10,
     include_explanations: bool = False,

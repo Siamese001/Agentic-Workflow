@@ -20,6 +20,7 @@ def run_verification():
     print("\n📋 Test 1: Dry-run Mode Verification")
     print("-" * 40)
     try:
+        # guardian: allow-magic-config
         result = subprocess.run(
             [
                 sys.executable,
@@ -57,6 +58,7 @@ def run_verification():
     print("\n📋 Test 2: Agent Registry Verification")
     print("-" * 40)
     try:
+        # guardian: allow-magic-config
         result = subprocess.run(
             [
                 sys.executable,
@@ -106,6 +108,7 @@ def run_verification():
     print("\n📋 Test 3: Help System Verification")
     print("-" * 40)
     try:
+        # guardian: allow-magic-config
         result = subprocess.run(
             [sys.executable, "agentic_core/L0_maintenance/scripts/execute_ssot.py", "--help"],
             cwd=project_root,
@@ -142,6 +145,7 @@ def run_verification():
     print("-" * 40)
     try:
         # Test that the patched module can be imported
+        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
         from agentic_core.L0_maintenance.scripts.execute_ssot import (
             AutonomousDecisionEngine,

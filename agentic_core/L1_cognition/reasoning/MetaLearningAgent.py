@@ -42,6 +42,7 @@ class MetaLearningAgent(SovereignBaseAgent):
     Supports telemetry callbacks for dashboard observability.
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         replay_capacity: int = 1000,

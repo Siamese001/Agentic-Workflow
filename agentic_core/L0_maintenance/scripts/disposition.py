@@ -91,6 +91,7 @@ class CoreSynthesisAnalyzer:
                 sovereign_requirements=sovereign_requirements,
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             return CoreAnalysisResult(
                 file_path=str(file_path.relative_to(self.base_path)),

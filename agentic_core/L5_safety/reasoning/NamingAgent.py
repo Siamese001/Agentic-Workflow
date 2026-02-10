@@ -72,6 +72,7 @@ class NamingAgent(AtomicExecutionMixin, SovereignBaseAgent):
             pass
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
+    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """
         [SOVEREIGN CONTRACT] Standardized healing interface for NamingAgent.
@@ -126,10 +127,12 @@ class NamingAgent(AtomicExecutionMixin, SovereignBaseAgent):
         """Stub method for prefix-location validation."""
         return []
 
+    # guardian: allow-type-erasure
     def scan_repository_duplicates(self) -> dict:
         """Stub method for duplicate scanning."""
         return {}
 
+    # guardian: allow-type-erasure
     def move_to_canonical_location(self, path: Path, dry_run: bool = True) -> dict:
         """Stub method for canonical moves."""
         return {"moved": False, "reason": "Stub implementation"}

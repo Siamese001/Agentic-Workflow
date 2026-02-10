@@ -16,7 +16,7 @@ def test_test_sovereign_redis_orchestrator_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator: {e}"
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator: {e}",
         )
 
 
@@ -27,7 +27,7 @@ def test_test_sovereign_redis_orchestrator_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator"
+            "Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator",
         )
 
 
@@ -48,5 +48,5 @@ def test_test_sovereign_redis_orchestrator_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator"
+            "Cannot import module agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestrator",
         )

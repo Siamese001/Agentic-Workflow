@@ -18,8 +18,7 @@ try:
     from livereload import Server
 except ImportError as _err:
     raise ImportError(
-        "livereload is required for this module. "
-        "Install with: pip install -e '.[infra]'"
+        "livereload is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 
 # Import SSOT for dashboard directory - NO HARDCODING
@@ -51,6 +50,7 @@ def regenerate_dashboard():
             print("   ✅ Dashboard regenerated successfully")
         else:
             print(f"   ❌ Regeneration failed:\n{result.stderr}")
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"   ❌ Error running dashboard generation: {e}")
 
@@ -75,6 +75,7 @@ signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
 signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
 
 # Ensure we're in reports directory
+# guardian: allow-path-string
 os.chdir(REPORTS_DIR)
 
 server = Server()

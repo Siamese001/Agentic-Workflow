@@ -77,11 +77,13 @@ class Executive_Title_Composer(Agent):
     - VG_INDUSTRY_FIRST_COMPLIANCE (no tech in Segment 1)
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         config: Any,
         word_count_min: int = 8,
         word_count_max: int = 13,
+        # guardian: allow-magic-config
         char_limit: int = 90,
     ):
         """Initialize Executive Title Composer.

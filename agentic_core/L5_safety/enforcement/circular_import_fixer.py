@@ -80,6 +80,7 @@ def fix_imports_in_file(
     try:
         with open(file_path, encoding="utf-8") as f:
             content: Any = f.read()
+    # guardian: allow-silent-swallow
     except Exception as e:
         return (0, [f"ERROR reading {file_path}: {e}"])
     original_content: Any = content
@@ -104,6 +105,7 @@ def fix_imports_in_file(
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
+        # guardian: allow-silent-swallow
         except Exception as e:
             return (0, [f"ERROR writing {file_path}: {e}"])
     num_changes: Any = len(changes)

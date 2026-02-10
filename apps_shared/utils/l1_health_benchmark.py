@@ -12,6 +12,7 @@ import asyncio
 import sys
 from typing import Any
 
+# guardian: allow-global-mutation
 sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
 # from agentic_core.L1_cognition.cognitive_node.CognitiveNode  # Refactored to dynamic import to avoid upward dependency

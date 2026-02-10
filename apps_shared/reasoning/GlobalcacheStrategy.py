@@ -51,6 +51,7 @@ class CacheEntry(BaseModel):
 class L1MemoryCache:
     """L1 cache - LRU memory cache for exact matches."""
 
+    # guardian: allow-magic-config
     def __init__(self, max_size: int = 1000):
         """Initialize L1 cache.
 
@@ -138,6 +139,7 @@ class L1MemoryCache:
 class L2VectorStore:
     """L2 cache - Vector store for semantic matches."""
 
+    # guardian: allow-magic-config
     def __init__(self, max_size: int = 10000):
         """Initialize L2 vector store.
 
@@ -185,10 +187,13 @@ class L2VectorStore:
             self.entries.pop(0)
             self.embeddings = self.embeddings[1:]
 
+    # guardian: allow-magic-config
     def search(
         self,
         query_embedding: list[float],
+        # guardian: allow-magic-config
         threshold: float = 0.92,
+        # guardian: allow-magic-config
         max_results: int = 5,
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
@@ -320,6 +325,7 @@ class SimpleEmbedder:
 class GlobalCache:
     """Global semantic cache with L1/L2 storage."""
 
+    # guardian: allow-magic-config
     def __init__(self, l1_size: int = 1000, l2_size: int = 10000, semantic_threshold: float = 0.92):
         """Initialize global cache.
 
@@ -537,10 +543,12 @@ def get_global_cache() -> GlobalCache:
 
 
 # Decorator for caching function results
+# guardian: allow-magic-config
 def cached(
     key_func: callable | None = None,
     ttl: int = 3600,
     semantic: bool = False,
+    # guardian: allow-magic-config
     threshold: float = 0.92,
 ):
     """Decorator for caching function results.

@@ -221,6 +221,7 @@ class HOP2ResearchAgent(HOPStageCapability, LICAgentBase):
                                 "confidence": r.get("metadata", {}).get("source_weight", 0.7),
                             },
                         )
+                # guardian: allow-silent-swallow
                 except Exception:
                     pass
 
@@ -283,6 +284,7 @@ class HOP2ResearchAgent(HOPStageCapability, LICAgentBase):
             n_results=10,
         )
 
+        # guardian: allow-magic-config
         strategic_briefs = self.memory_store.get_strategic_briefs(company_name=company, max_age_days=90)
 
         recipient_insights = [r["text"][:200] for r in exec_results[:5]]

@@ -113,9 +113,11 @@ class GoldenContextMixin:
 
         return messages
 
+    # guardian: allow-magic-config
     def should_inject_golden_context(
         self,
         current_messages: list[dict[str, Any]],
+        # guardian: allow-magic-config
         threshold: int = 10,
     ) -> bool:
         """

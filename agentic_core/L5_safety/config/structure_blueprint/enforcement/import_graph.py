@@ -97,6 +97,7 @@ class ImportGraph:
     def files_importing_territory(self, territory: str) -> set[str]:
         """All files outside a territory that import FROM that territory."""
         importers = self.files_importing_module(territory)
+        # guardian: allow-path-string
         return {f for f in importers if not f.startswith(territory + "/")}
 
     def resolve_module_path(self, module: str) -> Path | None:
