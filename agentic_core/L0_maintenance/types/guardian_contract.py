@@ -39,7 +39,7 @@ def is_v15_enforced() -> bool:
     LOG_ONLY and SOFT_FAIL modes enter the V15 path but do not block;
     use ``is_v15_hard_fail()`` to decide whether to raise/block.
     """
-    return os.environ.get("V15_ENFORCEMENT", "").lower() in (
+    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() in (
         "1",
         "true",
         "yes",
@@ -54,7 +54,7 @@ def is_v15_hard_fail() -> bool:
     Hard-fail values: "1", "true", "yes" (case-insensitive).
     "log" and "soft" return False — violations are logged, not blocked.
     """
-    return os.environ.get("V15_ENFORCEMENT", "").lower() in ("1", "true", "yes")
+    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() in ("1", "true", "yes")
 
 
 def is_v15_soft_fail() -> bool:
@@ -64,7 +64,7 @@ def is_v15_soft_fail() -> bool:
     return via ``V15SoftFailAbort``) without crashing the process.
     Only the literal value "soft" (case-insensitive) activates this mode.
     """
-    return os.environ.get("V15_ENFORCEMENT", "").lower() == "soft"
+    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() == "soft"
 
 
 class V15SoftFailAbort(Exception):
