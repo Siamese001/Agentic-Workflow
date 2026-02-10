@@ -729,7 +729,9 @@ class TestP1CriticalDWiring:
             return ("fs_hash", "git_hash", "mem_hash")
 
         # Test with invalid input
-        with pytest.raises((ValueError, TypeError)):  # Should raise validation error
+        from agentic_core.L0_maintenance.types.v15_p2_contracts import ForbiddenInputError
+
+        with pytest.raises(ForbiddenInputError):  # Should raise validation error
             gateway.execute(
                 execution_input={"invalid": "input"},
                 heal_fn=mock_heal,

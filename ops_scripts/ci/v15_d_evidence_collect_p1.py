@@ -145,8 +145,8 @@ class DEvidenceCollector:
                 if passed
                 else f"Runtime test failed: {result.stderr.strip()}",
             }
-        # guardian: allow-silent-swallow
         # Runtime test failures are expected and should be reported as failed tests
+        # guardian: allow-silent-swallow
         except Exception as e:
             return {"passed": False, "details": f"Runtime test failed: {e}"}
 
