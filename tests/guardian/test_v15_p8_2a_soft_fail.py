@@ -273,12 +273,13 @@ class TestGatewayHardFail:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "1"})
     def test_hard_fail_raises_on_pipe_violation(self):
-        """HARD_FAIL must raise the raw PipeOrderViolation, not catch it."""
+        """HARD_FAIL must escalate PipeOrderViolation to V15HardFailAbort."""
         from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer, PipeOrderViolation
+        from agentic_core.L0_maintenance.types.guardian_contract import V15HardFailAbort
+        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
 
         pipe = PipeOrderEnforcer()
-        with pytest.raises(PipeOrderViolation):
+        with pytest.raises(V15HardFailAbort):
             gw._pipe_advance(pipe, "hash_verification", "test-trace")
