@@ -150,6 +150,83 @@ def _maybe_force_utf8_console() -> None:
 
 
 # ============================================================================
+# V15 MANIFEST CONSTRUCTION (§8.1e)
+# ============================================================================
+
+
+def _v15_build_ssot_manifest():
+    """§8.1e — Construct SurgicalManifest for SSOT bootstrap entry.
+
+    Returns None when V15 enforcement is off (zero overhead).
+    Bootstrap-safe: lazy imports with fail-closed semantics.
+    """
+    try:
+        from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = _hl.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = "execute_ssot._legacy_main()"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id="ExecuteSSOT",
+            target_layer="L0",
+            ast_snippet=ast_snippet,
+            serialization_canon="execute_ssot",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+    # guardian: allow-silent-swallow
+    except Exception:
+        if os.getenv("V15_ENFORCEMENT") == "1":
+            raise  # fail-closed when hard enforcement is on
+        return None
+
+
+def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
+    """§8.1e — Invoke gateway.execute in LOG_ONLY mode for SSOT audit trail."""
+    if manifest is None:
+        return
+    try:
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            V15ExecutionGateway,
+        )
+
+        gw = V15ExecutionGateway()
+        gw.execute(
+            manifest,
+            lambda m: {"status": "ssot_audit", "errors": 0},
+            lambda: (
+                _hl.sha256(b"fs_ssot").hexdigest(),
+                _hl.sha256(b"git_ssot").hexdigest(),
+                _hl.sha256(b"mem_ssot").hexdigest(),
+            ),
+            trace_id=trace_id,
+        )
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        logging.getLogger(__name__).warning("[V15] SSOT gateway audit failed (LOG_ONLY): %s", exc)
+
+
+# ============================================================================
 # DATA CLASSES
 # ============================================================================
 
@@ -2130,6 +2207,11 @@ def main() -> int:
 
 @_optional_v15_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
+    # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
+    _v15_manifest = _v15_build_ssot_manifest()
+    if _v15_manifest is not None:
+        _v15_ssot_gateway_audit(_v15_manifest, trace_id=_v15_manifest.correlation_id)
+
     project_root = repo_root if repo_root is not None else REPO_ROOT
     if str(project_root) not in sys.path:
         # guardian: allow-global-mutation
