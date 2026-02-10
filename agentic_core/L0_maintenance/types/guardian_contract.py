@@ -75,6 +75,15 @@ class V15SoftFailAbort(Exception):
     """
 
 
+class V15HardFailAbort(Exception):
+    """Raised when HARD_FAIL mode detects a contract violation.
+
+    Single deterministic exception type for all HARD_FAIL aborts.
+    Propagates out of V15ExecutionGateway.execute() uncaught —
+    callers must handle or let the process terminate.
+    """
+
+
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------

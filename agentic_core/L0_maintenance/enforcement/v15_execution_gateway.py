@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    V15HardFailAbort,
     V15SoftFailAbort,
     is_v15_hard_fail,
     is_v15_soft_fail,
@@ -293,7 +294,7 @@ class V15ExecutionGateway:
             }
             self._pipe_violations.append(record)
             if is_v15_hard_fail():
-                raise
+                raise V15HardFailAbort(f"HARD_FAIL pipe order violation: {record}") from pov
             if is_v15_soft_fail():
                 raise V15SoftFailAbort(f"SOFT_FAIL pipe order violation: {record}")
             Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
@@ -317,7 +318,7 @@ class V15ExecutionGateway:
             }
             self._policy_violations.append(record)
             if is_v15_hard_fail():
-                raise
+                raise V15HardFailAbort(f"HARD_FAIL policy mutation: {record}") from pmi
             if is_v15_soft_fail():
                 raise V15SoftFailAbort(f"SOFT_FAIL policy mutation: {record}")
             Logger.warning("[V15-GW] §4.1 policy mutation (non-blocking): %s", record)
