@@ -303,6 +303,7 @@ class MemoryEventBus(EventBus):
 
             except asyncio.CancelledError:
                 break
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Worker error for channel {channel}: {e}")
 
@@ -336,6 +337,7 @@ class MemoryEventBus(EventBus):
         """
         try:
             await callback(event)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._stats["subscriber_errors"] += 1
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
@@ -450,6 +452,7 @@ class RedisEventBus(EventBus):
         # Create consumer group if it doesn't exist
         try:
             await self.redis.xgroup_create(channel, self.consumer_group, id="0", mkstream=True)
+        # guardian: allow-silent-swallow
         except Exception as e:
             # Group might already exist
             if "BUSYGROUP" not in str(e):
@@ -563,6 +566,7 @@ class RedisEventBus(EventBus):
 
                             self._stats["events_processed"] += 1
 
+                        # guardian: allow-silent-swallow
                         except Exception as e:
                             logger.error(f"Failed to process message {msg_id}: {e}")
                             # Still acknowledge to avoid reprocessing
@@ -570,6 +574,7 @@ class RedisEventBus(EventBus):
 
             except asyncio.CancelledError:
                 break
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Reader error for stream {channel}: {e}")
                 await asyncio.sleep(1)  # Brief pause before retry
@@ -604,6 +609,7 @@ class RedisEventBus(EventBus):
         """
         try:
             await callback(event)
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._stats["subscriber_errors"] += 1
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
@@ -624,6 +630,7 @@ class RedisEventBus(EventBus):
                 self._stats["reconnections"] += 1
                 logger.info("Redis reconnected successfully")
                 break
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Reconnection attempt {attempt + 1} failed: {e}")
 

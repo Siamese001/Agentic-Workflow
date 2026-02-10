@@ -63,6 +63,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
     except SyntaxError as e:
         Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.debug(f"Could not parse {file_path}: {e}")
         return []

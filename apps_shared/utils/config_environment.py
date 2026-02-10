@@ -162,6 +162,7 @@ class ConfigPlanningOrchestrator:
             )
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Config planning failed: {str(e)}")
             return ConfigPlanningResult(

@@ -32,6 +32,7 @@ SCAN_ROOTS = [
 
 GOVERNED_SUBDIRS = ["engines", "reasoning", "validators"]
 
+# guardian: allow-magic-config
 MAX_EAGER_IMPORTS = 10
 
 SHIM_MANIFEST_PATH = "artifacts/consolidation/target_manifest_v3.json"

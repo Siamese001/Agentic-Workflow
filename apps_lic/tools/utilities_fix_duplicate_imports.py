@@ -50,6 +50,7 @@ def main() -> None:
         DIRS[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
         for file in files:
             if file.endswith(".py") and (not file.startswith("fix_")):
+                # guardian: allow-path-string
                 os.path.join(root, file)
                 if fix_duplicate_imports(ConfigurationService().filepath):
                     COUNT += 1

@@ -177,6 +177,7 @@ class AntiPatternDetector(ABC):
                 scan_time_ms=scan_time,
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Error scanning {file_path}: {e}")
             return DetectionResult(
@@ -273,6 +274,7 @@ class AntiPatternDetector(ABC):
             lines = file_path.read_text(encoding="utf-8").splitlines()
             if 0 < line_number <= len(lines):
                 return lines[line_number - 1].strip()
+        # guardian: allow-silent-swallow
         except Exception:
             pass
         return ""

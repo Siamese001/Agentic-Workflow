@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
@@ -111,6 +112,7 @@ def remove_artifacts(artifacts: list[Path]) -> tuple[int, list[str]]:
             elif path.is_dir():
                 shutil.rmtree(path)
                 removed += 1
+        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"{path}: {e}")
 
@@ -133,6 +135,7 @@ def remove_empty_folders(folders: list[Path]) -> tuple[int, list[str]]:
                 if not children:
                     folder.rmdir()
                     removed += 1
+        # guardian: allow-silent-swallow
         except Exception as e:
             errors.append(f"{folder}: {e}")
 

@@ -183,6 +183,7 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
     }
 
     if path.name in core_base_agents:
+        # guardian: allow-path-string
         if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
             return True, ""
         else:
@@ -197,6 +198,7 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
         if path.name.startswith(prefix) and path.name.endswith("BaseAgent.py"):
             # Find the expected app directory
             expected_app_dir = f"apps_{prefix.lower()}" if prefix != "SHARED" else "apps_shared"
+            # guardian: allow-path-string
             if posix_path.startswith(expected_app_dir + "/"):
                 return True, ""
             else:
@@ -207,6 +209,7 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
                 )
 
     # For any other base agents, default to agentic_core/base_agents/
+    # guardian: allow-path-string
     if posix_path.startswith(BASE_AGENT_CANONICAL_DIR + "/"):
         return True, ""
 

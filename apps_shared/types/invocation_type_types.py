@@ -168,6 +168,7 @@ class ObservabilityToolInvoker:
 
             return response
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             return self._create_error_response(
@@ -448,8 +449,11 @@ class ObservabilityToolInvoker:
 
 
 # Factory function for easy instantiation
+# guardian: allow-magic-config
 def create_observability_tool_invoker(
+    # guardian: allow-magic-config
     default_timeout: float = 30.0,
+    # guardian: allow-magic-config
     retry_attempts: int = 3,
     enable_caching: bool = True,
     **kwargs: object,

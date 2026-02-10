@@ -59,6 +59,7 @@ class InputSanitizer:
     PATH_TRAVERSAL_PATTERN = re.compile(r"\.\./|\.\.\\")
 
     @classmethod
+    # guardian: allow-magic-config
     def sanitize_string(
         cls,
         value: str,
@@ -101,6 +102,7 @@ class InputSanitizer:
         return sanitized
 
     @classmethod
+    # guardian: allow-magic-config
     def sanitize_identifier(cls, value: str, max_length: int = 255) -> str:
         """Sanitize an identifier (e.g., username, key name)."""
         # Only allow alphanumeric, underscore, hyphen
@@ -147,6 +149,7 @@ class InputValidator:
         return ValidationResult.success(url)
 
     @classmethod
+    # guardian: allow-magic-config
     def validate_length(
         cls,
         value: str,
@@ -232,6 +235,7 @@ class SecureTokenGenerator:
 class RateLimiter:
     """Simple in-memory rate limiter."""
 
+    # guardian: allow-magic-config
     def __init__(self, max_requests: int = 100, window_seconds: int = 60):
         self.max_requests = max_requests
         self.window_seconds = window_seconds

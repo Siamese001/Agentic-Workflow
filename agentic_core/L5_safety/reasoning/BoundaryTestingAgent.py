@@ -245,6 +245,7 @@ class BoundaryTestingAgent(SovereignBaseAgent):
         result = super().heal_repository(dry_run=dry_run, **kwargs)
         return {"violations_fixed": 0, "skipped": 0, "parent": result}
 
+    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal boundary testing violations using standard_heal decorator pattern.
 

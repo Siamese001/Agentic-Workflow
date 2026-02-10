@@ -233,6 +233,7 @@ class ReportLocationAgent:
             else:
                 result["status"] = "failed"
                 result["error"] = "Move operation failed"
+        # guardian: allow-silent-swallow
         except Exception as e:
             result["status"] = "failed"
             result["error"] = str(e)

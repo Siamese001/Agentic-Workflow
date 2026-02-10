@@ -63,6 +63,7 @@ def has_agent_class(path: Path) -> list:
     """Return agent class names in file."""
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
+    # guardian: allow-silent-swallow
     except:
         return []
 

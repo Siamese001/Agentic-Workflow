@@ -32,6 +32,7 @@ class DashboardDataGenerator:
             data = json.loads(self.registry_path.read_text(encoding="utf-8"))
             self.registry_by_path = {entry["path"].replace("\\", "/"): entry for entry in data}
             return data
+        # guardian: allow-silent-swallow
         except Exception as e:
             log.error(f"Failed to load registry: {e}")
             return []

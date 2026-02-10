@@ -37,6 +37,7 @@ CRITICAL_DNA_KEYS: frozenset[str] = frozenset(
 # Default configuration
 DEFAULT_MAX_CONTEXT_SIZE = 1024 * 1024  # 1MB
 DEFAULT_PRUNE_RATIO = 0.3  # Prune 30% when triggered
+# guardian: allow-magic-config
 DEFAULT_MIN_ENTRIES_TO_KEEP = 10
 
 
@@ -339,10 +340,14 @@ class AdaptiveDepthManager:
     that adapts to mission requirements and available resources.
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
+        # guardian: allow-magic-config
         base_limit: int = 50,
+        # guardian: allow-magic-config
         max_limit: int = 200,
+        # guardian: allow-magic-config
         min_limit: int = 10,
         enable_adaptive: bool = True,
     ):

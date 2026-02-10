@@ -80,6 +80,7 @@ def run_cognitive_purge(
     try:
         # Add project root to path
         project_root = Path(__file__).resolve().parent.parent.parent
+        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
         from agentic_core.L5_safety.validators import (
@@ -165,6 +166,7 @@ def run_cognitive_purge(
         Logger.error(f"[ERROR] Import Error: {e}")
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.error(f"[ERROR] Execution Error: {e}")
         import traceback

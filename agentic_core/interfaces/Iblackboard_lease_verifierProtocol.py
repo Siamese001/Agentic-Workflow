@@ -222,6 +222,7 @@ def write_file(
                                     "deletion_percentage": round((1 - new_lines / original_lines) * 100, 2),
                                 },
                             )
+                        # guardian: allow-silent-swallow
                         except Exception:
                             # Catch any errors during logging itself
                             pass

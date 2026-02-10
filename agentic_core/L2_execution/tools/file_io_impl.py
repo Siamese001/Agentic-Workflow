@@ -45,6 +45,7 @@ class FileIo:
             return f"Read Error (PDF): Could not read PDF file '{file_path}'. {e}"
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
+        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Read Error (PDF Unexpected): {e}"
 
@@ -81,6 +82,7 @@ class FileIo:
             return f"Read Error: File not found at '{file_path}'."
         except UnicodeDecodeError:
             return f"Read Error: Could not decode file '{file_path}' with utf-8. Try a different encoding."
+        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Read Error (Text Unexpected): {e}"
 
@@ -96,6 +98,7 @@ class FileIo:
             str: The content of the file or an error message.
         """
         Logger.info(f"📖 Reading file: '{file_path}'")
+        # guardian: allow-path-string
         if not os.path.exists(file_path):
             return f"Read Error: File not found at '{file_path}'."
         if file_path.endswith(".pdf"):
@@ -117,12 +120,14 @@ class FileIo:
         """
         Logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
         try:
+            # guardian: allow-path-string
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
             return f"[OK] File saved successfully: {file_path}"
         except OSError as e:
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
+        # guardian: allow-silent-swallow
         except Exception as e:
             return f"Save Error (Unexpected): {e}"
 

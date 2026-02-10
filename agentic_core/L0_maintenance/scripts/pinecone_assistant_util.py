@@ -45,6 +45,7 @@ try:
         print("  1. PINECONE_API_KEY is set in environment")
         print("  2. SovereignEnv configuration is correct")
 
+# guardian: allow-silent-swallow
 except Exception as e:
     print(f"❌ Failed to initialize Sovereign Gateway: {e}")
     print()

@@ -56,8 +56,11 @@ class FlatteningPattern:
     """
 
     # Thresholds
+    # guardian: allow-magic-config
     MAX_METHOD_LINES = 40
+    # guardian: allow-magic-config
     MAX_NESTING_DEPTH = 3
+    # guardian: allow-magic-config
     MIN_EXTRACTION_LINES = 8
 
     # Pattern Recognition

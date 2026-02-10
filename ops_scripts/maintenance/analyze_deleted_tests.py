@@ -116,6 +116,7 @@ def analyze_file_with_ast(content: str, file_path: str) -> dict[str, Any]:
     except SyntaxError as e:
         result["reasons"].append(f"Syntax error: {e}")
         result["confidence"] = 0.7
+    # guardian: allow-silent-swallow
     except Exception as e:
         result["reasons"].append(f"Analysis error: {e}")
 

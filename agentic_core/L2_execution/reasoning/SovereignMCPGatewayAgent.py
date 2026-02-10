@@ -56,6 +56,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
         else:
             self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1
 
+    # guardian: allow-type-erasure
     async def llm_route(self, prompt: str, model: str = "gpt-4", **kwargs) -> dict:
         """
         Route LLM request with fallback and retry.
@@ -79,6 +80,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
             Logger.error(f"[MCP Gateway] LLM Route failed: {e}")
             raise
 
+    # guardian: allow-type-erasure
     async def kg_query(self, query: str, **kwargs) -> dict:
         """
         Query knowledge graph with caching.
@@ -101,6 +103,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
             Logger.error(f"[MCP Gateway] KG Query failed: {e}")
             raise
 
+    # guardian: allow-type-erasure
     async def archive_operation(self, operation: str, **kwargs) -> dict:
         """
         Execute archive operation.

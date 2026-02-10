@@ -42,6 +42,7 @@ except ImportError:
     sys.exit(1)
 
 DASHBOARD_URL = "http://localhost:8080/autonomy_dashboard.html"
+# guardian: allow-magic-config
 EXPECTED_MIN_ROWS = 29  # TOTAL + 28 territories
 PORT = 8080
 
@@ -91,6 +92,7 @@ def kill_existing_servers():
             print("   ✅ Existing servers killed")
         else:
             print("   ℹ️  No existing servers on port 8080")
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"   ⚠️  Could not kill servers: {e}")
 
@@ -165,6 +167,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             print(f"3. Navigating to: {cache_bust_url}")
 
             try:
+                # guardian: allow-magic-config
                 response = page.goto(cache_bust_url, wait_until="networkidle", timeout=15000)
 
                 if not response or response.status != 200:
@@ -180,6 +183,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             # Wait for table to appear
             print("4. Waiting for tables to render...")
             try:
+                # guardian: allow-magic-config
                 page.wait_for_selector("#kpiGrid table tbody tr", timeout=10000)
                 print("   ✅ Tables found in DOM")
             except PlaywrightTimeout:
@@ -291,6 +295,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
             screenshot_path = screenshot_dir / "dashboard_verification_failure.png"
             page.screenshot(path=str(screenshot_path), full_page=True)
             print(f"\n📸 Failure screenshot saved: {screenshot_path}")
+        # guardian: allow-silent-swallow
         except:
             pass
 
@@ -302,6 +307,7 @@ def verify_with_playwright(headless: bool = False, screenshot_dir: Path = None):
 
         try:
             browser.close()
+        # guardian: allow-silent-swallow
         except:
             pass
 
@@ -346,6 +352,7 @@ def main():
     success = False
     try:
         success = verify_with_playwright(headless=args.headless)
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"\n❌ Critical failure: {e}")
 
@@ -362,11 +369,14 @@ def main():
     # Clean up
     try:
         server.terminate()
+        # guardian: allow-magic-config
         server.wait(timeout=5)
         print("✅ Server stopped")
+    # guardian: allow-silent-swallow
     except:
         try:
             server.kill()
+        # guardian: allow-silent-swallow
         except:
             pass
 

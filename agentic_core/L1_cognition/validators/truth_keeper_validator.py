@@ -68,6 +68,7 @@ class TruthKeeper:
                         )
         except SyntaxError as e:
             violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
+        # guardian: allow-silent-swallow
         except Exception as e:
             LOGGER.error(f"Error checking {file_path}: {e}")
         return {"violations": violations, "fixes": fixes, "file": file_path}

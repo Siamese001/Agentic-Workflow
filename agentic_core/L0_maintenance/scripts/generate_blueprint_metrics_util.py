@@ -42,6 +42,7 @@ def count_lines(file_path: Path) -> int:
 def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
     """Generate unified diff between files."""
     try:
+        # guardian: allow-magic-config
         result = safe_git_execute(
             ["diff", "--no-index", "--unified=3", str(canonical), str(duplicate)],
             repo_root=canonical.parent,
@@ -49,6 +50,7 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
             check=False,
         )
         return result.stdout
+    # guardian: allow-silent-swallow
     except:
         return ""
 

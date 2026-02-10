@@ -90,6 +90,7 @@ class PromptInjectionLoader:
 
                 logger.debug(f"Loaded injection {injection.id} from {file_path}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to load {file_path}: {e}")
 

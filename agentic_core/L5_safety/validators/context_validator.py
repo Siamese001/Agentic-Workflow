@@ -252,6 +252,7 @@ class L4ContextManager:
             "mtime": file_path.stat().st_mtime if file_path.exists() else 0,
         }
 
+    # guardian: allow-magic-config
     def get_python_files(self, max_age: int = 300) -> list[Path]:
         """
         Get list of Python files in project.

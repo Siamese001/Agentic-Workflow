@@ -61,6 +61,7 @@ def load_rg_specs(force_reload: bool = False) -> RGAgentSpecs:
         _RG_SPECS_CACHE = specs
         return specs
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.error(f"Failed to load RG agent specs: {e}")
         Logger.info("Falling back to default configuration")

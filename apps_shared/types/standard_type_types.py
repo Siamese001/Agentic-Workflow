@@ -260,6 +260,7 @@ class CrossEngineQualityStandards:
             },
             preferred_standards={"professional_tone", "concise", "adds_value"},
             excellence_standards={"exceptional_quality"},
+            # guardian: allow-magic-config
             custom_thresholds=QualityThresholds(
                 MIN_RELEVANCE=0.75,
                 MIN_AUTHORITY=0.6,
@@ -288,6 +289,7 @@ class CrossEngineQualityStandards:
             },
             preferred_standards={"professional_tone", "adds_value"},
             excellence_standards={"concise", "exceptional_quality"},
+            # guardian: allow-magic-config
             custom_thresholds=QualityThresholds(
                 MIN_RELEVANCE=0.8,
                 MIN_AUTHORITY=0.5,

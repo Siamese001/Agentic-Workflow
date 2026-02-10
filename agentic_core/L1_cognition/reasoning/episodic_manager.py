@@ -47,6 +47,7 @@ class EpisodicMemory:
     - Mission pattern extraction
     """
 
+    # guardian: allow-magic-config
     def __init__(self, capacity: int = 200, embed_index: bool = True):
         """
         Initialize episodic memory.
@@ -207,6 +208,7 @@ class EpisodicMemory:
         matching = [e for e in self.episodes if e.mission_type == mission_type]
         return [self._episode_to_dict(e) for e in matching[-count:]]
 
+    # guardian: allow-magic-config
     def retrieve_high_reward(self, threshold: float = 0.5, count: int = 10) -> list[dict[str, Any]]:
         """
         Retrieve high-reward episodes.

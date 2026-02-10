@@ -219,33 +219,33 @@ def check_gate(
             raise SchemaValidationError(
                 "P1 gate requires --d-evidence report from v15_d_evidence_collect_p1.py",
             )
-        
+
         # Check critical D-set (must be 100%)
         summary = d_evidence.get("summary", {})
         critical_d_set_passed = summary.get("critical_d_set_passed", False)
         coverage_percentage = summary.get("coverage_percentage", 0.0)
-        
+
         # P1 passes if:
         # 1) Critical D-set is 100% wired
         # 2) Overall D coverage >= 80%
         passed = critical_d_set_passed and coverage_percentage >= 80.0
         status = "PASS" if passed else "FAIL"
-        
+
         details = []
         if not critical_d_set_passed:
             details.append("critical_d_set_passed=false")
         if coverage_percentage < 80.0:
             details.append(f"coverage={coverage_percentage:.1f}% < 80%")
-        
+
         msg = (
             f"{status}: P1 gate — D_RUNTIME_WIRED = {coverage_percentage:.1f}% "
             f"(threshold: >= 80.0%, critical_d_set_passed={critical_d_set_passed}, "
             f"source=d_evidence)"
         )
-        
+
         if not passed and details:
             msg += f" [{', '.join(details)}]"
-        
+
         return passed, msg
 
     # All other phases: use scoreboard metrics
@@ -319,7 +319,7 @@ def main() -> int:
         return 1
 
     data = load_gap_json(gap_path)
-    
+
     # Load D-evidence for P1
     d_evidence_data = None
     if args.phase == "P1":
@@ -327,7 +327,7 @@ def main() -> int:
             print("ERROR: P1 gate requires --d-evidence argument", file=sys.stderr)
             return 1
         d_evidence_data = load_gap_json(args.d_evidence)
-    
+
     try:
         scoreboard = compute_scoreboard(data, allow_legacy=args.allow_legacy)
         passed, message = check_gate(scoreboard, args.phase, raw_data=data, d_evidence=d_evidence_data)

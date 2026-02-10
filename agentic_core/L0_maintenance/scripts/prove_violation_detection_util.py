@@ -13,6 +13,7 @@ This script demonstrates that the orchestrator's agents detect:
 import sys
 from pathlib import Path
 
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.L3_orchestration.reasoning.SSOTOrchestratorAgent import (

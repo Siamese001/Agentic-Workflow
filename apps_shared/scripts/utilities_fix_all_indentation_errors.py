@@ -53,6 +53,7 @@ def main() -> Any:
         for file in files:
             if file.endswith(".py"):
                 total_files += 1
+                # guardian: allow-path-string
                 file_path: Any = os.path.join(root, file)
                 if fix_indentation_errors(file_path):
                     print(f"Fixed: {file_path}")

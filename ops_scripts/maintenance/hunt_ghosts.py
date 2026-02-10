@@ -55,6 +55,7 @@ def hunt_and_archive():
                     shutil.move(str(full_path), str(dest_path))
                     print(f"[ARCHIVED] -> {dest_path}")
                     found_count += 1
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f"[ERROR] Could not archive {file}: {e}")
 

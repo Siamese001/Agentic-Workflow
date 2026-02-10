@@ -48,7 +48,9 @@ except ImportError:
     EMBEDDINGS_AVAILABLE = False
     get_embedding = None
 
+# guardian: allow-magic-config
 SIMILARITY_THRESHOLD = 0.9
+# guardian: allow-magic-config
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 
@@ -153,6 +155,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
                 data = json.loads(content)
                 self.registry = data.get("prompts", {})
                 Logger.info(f"Loaded registry with {len(self.registry)} prompt families")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Failed to load {self.REGISTRY_FILE}: {e}")
                 self.registry = {}
@@ -331,6 +334,7 @@ class PromptRegistryAgent(SovereignBaseAgent):
         Logger.info(f"Registered: {template_name} {version} (Territory: {territory}, Author: {author})")
         print(f"    [REGISTERED] {template_name} {version} (Territory: {territory})")
 
+    # guardian: allow-type-erasure
     def get_active_version(self, template_name: str) -> dict[str, Any] | None:
         """Return the current active version metadata for a given template."""
         versions = self.registry.get(template_name, [])

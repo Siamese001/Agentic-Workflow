@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
 _logger = logging.getLogger(__name__)
@@ -75,11 +74,13 @@ class RgResumeOrchestrator(RGAgentBase):
         self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
 
     @timeout(300)
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

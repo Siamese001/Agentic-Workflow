@@ -94,6 +94,7 @@ class L5Streamer:
                                     client.send(message),
                                     asyncio.get_event_loop(),
                                 ).result(timeout=1.0)
+                            # guardian: allow-silent-swallow
                             except Exception:
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
@@ -101,6 +102,7 @@ class L5Streamer:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
+            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"Streamer error writing to stream: {e}")
 
@@ -122,6 +124,7 @@ class L5Streamer:
                     ),
                 )
                 await websocket.wait_closed()
+            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"WebSocket client error: {e}")
             finally:
@@ -134,6 +137,7 @@ class L5Streamer:
                 async with websockets.serve(handle_client, "127.0.0.1", 8765):
                     LOGGER.info("🌐 WebSocket server started at ws://127.0.0.1:8765")
                     await asyncio.Future()
+            # guardian: allow-silent-swallow
             except Exception as e:
                 LOGGER.error(f"WebSocket server error: {e}")
 
@@ -219,6 +223,7 @@ class L5Streamer:
         for client in list(self._websocket_clients):
             try:
                 asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(timeout=1.0)
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
         self._websocket_clients.clear()

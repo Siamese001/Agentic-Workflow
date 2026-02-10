@@ -23,11 +23,13 @@ class IHealerProtocol(Protocol):
     - heal(): Single violation healing method
     """
 
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
         **kwargs,

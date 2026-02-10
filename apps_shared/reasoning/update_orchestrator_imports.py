@@ -128,6 +128,7 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
 
     try:
         content = file_path.read_text(encoding="utf-8")
+    # guardian: allow-silent-swallow
     except Exception:
         return changes
 

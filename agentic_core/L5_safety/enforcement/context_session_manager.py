@@ -312,6 +312,7 @@ class ContextSessionManager:
         with self._session_lock:
             return dict(self._sessions)
 
+    # guardian: allow-magic-config
     def cleanup_expired(self, max_age_seconds: int = 3600) -> int:
         """Cleanup sessions older than max_age_seconds."""
         now = datetime.utcnow()

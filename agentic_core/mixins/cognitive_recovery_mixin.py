@@ -44,6 +44,7 @@ class CognitiveRecoveryMixin:
                 }
                 for r in results
             ]
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"[{self.__class__.__name__}] Brain Freeze (Knowledge Query Failed): {e}")
             return []

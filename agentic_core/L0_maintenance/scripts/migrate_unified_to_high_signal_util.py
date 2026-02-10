@@ -154,6 +154,7 @@ def migrate_unified():
                 print(f"[REFACTOR] {py_file.relative_to(project_root)}")
                 py_file.write_text(content, encoding="utf-8")
                 files_refactored += 1
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"[ERROR] Could not process {py_file.relative_to(project_root)}: {e}")
 

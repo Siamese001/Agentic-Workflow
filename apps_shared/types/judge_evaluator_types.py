@@ -94,10 +94,12 @@ class JudgeEvaluator:
     Integrates with golden state datasets for validation.
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         llm_client: Callable[[str], Awaitable[str]] | None = None,
         criteria: list[JudgmentCriterion] | None = None,
+        # guardian: allow-magic-config
         pass_threshold: float = 0.7,
         enable_logging: bool = True,
     ):
@@ -222,6 +224,7 @@ class JudgeEvaluator:
             try:
                 response = await self.llm_client(prompt)
                 verdict = self._parse_llm_response(response, criterion)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 if self.enable_logging:
                     logger.error(
@@ -526,8 +529,10 @@ class JudgeEvaluator:
         return " | ".join(summary_parts)
 
 
+# guardian: allow-magic-config
 def create_judge_evaluator(
     llm_client: Callable[[str], Awaitable[str]] | None = None,
+    # guardian: allow-magic-config
     pass_threshold: float = 0.7,
 ) -> JudgeEvaluator:
     """Factory function to create judge evaluator.

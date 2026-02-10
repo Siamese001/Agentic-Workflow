@@ -56,10 +56,12 @@ class TelemetryAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     EVENT_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR"}
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         project_root: Path | None = None,
         log_file: Path | None = None,
+        # guardian: allow-magic-config
         max_events: int = 10_000,
     ) -> None:
         """
@@ -139,6 +141,7 @@ class TelemetryAgent(AtomicExecutionMixin, SovereignBaseAgent):
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event))
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"[TelemetryAgent] Failed to write event to file: {e}")
 
@@ -246,6 +249,7 @@ class TelemetryAgent(AtomicExecutionMixin, SovereignBaseAgent):
                 for event in events:
                     f.write(json.dumps(event) + "\n")
             Logger.info(f"[TelemetryAgent] Exported {len(events)} events to {output_path}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[TelemetryAgent] Failed to export events: {e}")
 
@@ -268,11 +272,13 @@ class TelemetryAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
     @timeout(300)
     @standard_heal
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

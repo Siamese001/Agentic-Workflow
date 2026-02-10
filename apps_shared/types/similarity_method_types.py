@@ -169,6 +169,7 @@ class SchemaSimilarityRetriever:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to compute schema similarity: {str(e)}")
             return SchemaSimilarityResult(

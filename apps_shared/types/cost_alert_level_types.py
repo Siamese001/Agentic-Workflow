@@ -93,9 +93,11 @@ class CostTracker:
     - Financial accountability
     """
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         default_budget_per_agent: float | None = None,
+        # guardian: allow-magic-config
         alert_threshold_percent: float = 0.8,
         enable_logging: bool = True,
     ):

@@ -92,6 +92,7 @@ class MemoryManager:
 
         logger.debug(f"Initialized MemoryManager: {name}")
 
+    # guardian: allow-magic-config
     def start_monitoring(self, interval_seconds: float = 5.0) -> None:
         """Start memory monitoring.
 
@@ -390,6 +391,7 @@ class MemoryManager:
             try:
                 self._check_memory_limits()
                 time.sleep(interval_seconds)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Memory monitoring error: {e}")
 
@@ -407,6 +409,7 @@ class MemoryManager:
                 process = psutil.Process()
                 stats["process_memory_mb"] = process.memory_info().rss / 1024 / 1024
                 stats["process_memory_percent"] = process.memory_percent()
+            # guardian: allow-silent-swallow
             except Exception:
                 stats["process_memory_mb"] = 0
                 stats["process_memory_percent"] = 0

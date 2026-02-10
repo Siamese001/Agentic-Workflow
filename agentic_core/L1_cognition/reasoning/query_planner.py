@@ -48,6 +48,7 @@ class query_planner:
             queries: Any = result.get("queries", [])[:8]
             if original_query not in queries:
                 queries.insert(0, original_query)
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Multi-query parse failure: {e}")
             queries: Any = [original_query]
@@ -71,6 +72,7 @@ class query_planner:
             sub_queries: Any = list(dict.fromkeys([q.strip() for q in sub_queries if q.strip()]))
             if not sub_queries:
                 sub_queries: Any = [query]
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] Decomposition parse error: {e}")
             sub_queries: Any = [query]
@@ -90,6 +92,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             expanded: Any = result.get("queries", [])[:8]
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"L1 Decomposition failure: {e}")
             expanded: Any = [query]
@@ -108,6 +111,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             return result.get("passages", [])[:3]
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"L1 HyDE failure: {e}")
             return []

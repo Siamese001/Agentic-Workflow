@@ -340,6 +340,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
             return checkpoint
 
+    # guardian: allow-type-erasure
     def restore_checkpoint(
         self,
         checkpoint_id: str,
@@ -365,10 +366,12 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
             return checkpoint.metadata.get("data")
 
+    # guardian: allow-magic-config
     def get_audit_log(
         self,
         agent_id: str | None = None,
         action: SecurityAction | None = None,
+        # guardian: allow-magic-config
         limit: int = 100,
     ) -> list[SecurityAuditEntry]:
         """Get audit log entries."""
@@ -383,6 +386,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
             return entries[-limit:]
 
+    # guardian: allow-type-erasure
     def heal(self, violation: dict) -> dict:
         """Heal security management violations using standard_heal decorator pattern.
 

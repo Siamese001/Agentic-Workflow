@@ -54,6 +54,7 @@ class ErrorHandler:
             "skip": self._skip_strategy,
             "abort": self._abort_strategy,
         }
+        # guardian: allow-magic-config
         self.max_retries = 3
 
     async def handle_error(
@@ -188,6 +189,7 @@ class UnifiedWorkflowEngine:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.metrics.failed_workflows += 1
             return await self.error_handler.handle_error(e, context, "abort")

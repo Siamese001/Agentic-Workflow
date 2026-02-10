@@ -28,6 +28,7 @@ from pathlib import Path
 
 # Setup project root
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
@@ -358,7 +359,9 @@ class DashboardVerifier:
                 page.on("pageerror", lambda exc: js_errors.append(str(exc)))
 
                 print("\n13. Navigating to dashboard...")
+                # guardian: allow-magic-config
                 page.goto("http://localhost:8765/autonomy_dashboard.html", timeout=60000)
+                # guardian: allow-magic-config
                 page.wait_for_load_state("networkidle", timeout=60000)
                 time.sleep(3)
 

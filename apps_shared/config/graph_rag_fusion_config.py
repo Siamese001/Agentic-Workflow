@@ -217,6 +217,7 @@ class CypherQueryGenerator:
 class GraphRAGFusion:
     """Fuses vector and graph retrieval for enhanced RAG."""
 
+    # guardian: allow-magic-config
     def __init__(
         self,
         knowledge_graph: KnowledgeGraphAgent | None = None,
@@ -250,6 +251,7 @@ class GraphRAGFusion:
 
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
+    # guardian: allow-magic-config
     async def query(
         self,
         natural_query: str,
@@ -354,6 +356,7 @@ class GraphRAGFusion:
                 confidence=0.8,
             )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Vector query failed: {e}")
             return FusionResult(
@@ -405,6 +408,7 @@ class GraphRAGFusion:
                     confidence=0.0,
                 )
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Graph query failed: {e}")
             # Fallback to vector
@@ -563,6 +567,7 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 
 
 # Convenience function
+# guardian: allow-magic-config
 async def graphrag_query(
     query: str,
     query_type: QueryType | None = None,

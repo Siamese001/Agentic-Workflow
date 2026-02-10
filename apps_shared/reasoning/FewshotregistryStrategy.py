@@ -61,10 +61,12 @@ class FewShotRegistry(BaseModel):
         self.examples[example.instruction_id].append(example)
         logger.debug(f"Added example for {example.instruction_id} ({example.context_tag.value})")
 
+    # guardian: allow-magic-config
     def get_examples(
         self,
         instruction_id: str,
         context: str = "general",
+        # guardian: allow-magic-config
         max_examples: int = 3,
     ) -> str:
         """Get formatted examples for an instruction.
@@ -183,6 +185,7 @@ class FewShotRegistry(BaseModel):
 
                 logger.info(f"Loaded examples from {file_path}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.error(f"Failed to load examples from {file_path}: {e}")
 
@@ -317,9 +320,11 @@ def _initialize_default_examples() -> None:
     logger.info(f"Initialized {len(registry.examples)} default few-shot examples")
 
 
+# guardian: allow-magic-config
 def get_examples_for_injection(
     instruction_id: str,
     context: str = "general",
+    # guardian: allow-magic-config
     max_examples: int = 3,
 ) -> str:
     """Get few-shot examples for an instruction.
@@ -356,6 +361,7 @@ def enhance_with_examples(
 
     # Add examples for each injection
     for injection in injections:
+        # guardian: allow-magic-config
         examples = registry.get_examples(injection.id, context, max_examples=2)
         if examples:
             enhanced += f"\n\n{examples}"

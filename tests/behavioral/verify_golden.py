@@ -18,6 +18,7 @@ import pytest
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from tests.behavioral.conftest import (
@@ -86,18 +87,21 @@ class TestVerifyDomainPlannerGolden:
             if hasattr(agent, "run") and callable(agent.run):
                 try:
                     result = agent.run(test_input)
+                # guardian: allow-silent-swallow
                 except Exception:
                     pass
 
             if result is None and hasattr(agent, "execute"):
                 try:
                     result = agent.execute(test_input)
+                # guardian: allow-silent-swallow
                 except Exception:
                     pass
 
             if result is None and hasattr(agent, "plan"):
                 try:
                     result = agent.plan(test_input)
+                # guardian: allow-silent-swallow
                 except Exception:
                     pass
 

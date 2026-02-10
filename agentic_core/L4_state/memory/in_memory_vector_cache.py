@@ -25,6 +25,7 @@ class InMemoryVectorCache:
     similarity search without network or disk I/O overhead.
     """
 
+    # guardian: allow-magic-config
     def __init__(self, collection_name: str = "hot_cache", max_memory_gb: int | None = 8):
         """Initialize in-memory ChromaDB cache.
 
@@ -111,6 +112,7 @@ class InMemoryVectorCache:
             )
             Logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
             return results
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"In-memory search failed: {e}")
             return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
@@ -215,8 +217,10 @@ class TieredVectorStore:
         return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
 
 
+# guardian: allow-magic-config
 def create_memory_vector_cache(
     collection_name: str = "hot_cache",
+    # guardian: allow-magic-config
     max_memory_gb: int = 8,
 ) -> InMemoryVectorCache:
     """Create an InMemoryVectorCache instance.

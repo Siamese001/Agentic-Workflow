@@ -45,6 +45,7 @@ class JsonParser:
                 errors=[f"JSON decode error: {str(e)}"],
                 metadata={"line": e.lineno, "column": e.colno},
             )
+        # guardian: allow-silent-swallow
         except Exception as e:
             return ParseResult(
                 success=False,

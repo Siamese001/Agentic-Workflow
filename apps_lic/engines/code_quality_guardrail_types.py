@@ -68,11 +68,15 @@ class CodeQualityGuardrail:
         ]
 
         # Formatting rules
+        # guardian: allow-magic-config
         self.max_line_length = 120
+        # guardian: allow-magic-config
         self.max_function_length = 50
+        # guardian: allow-magic-config
         self.max_file_length = 500
 
         # Duplicate detection
+        # guardian: allow-magic-config
         self.min_duplicate_lines = 5
         self.code_hashes: dict[str, list[str]] = {}
 

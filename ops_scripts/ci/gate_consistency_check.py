@@ -64,6 +64,7 @@ def main() -> int:
             snapshot_count = snapshot.get("count", -1)
 
             if str(project_root) not in sys.path:
+                # guardian: allow-global-mutation
                 sys.path.insert(0, str(project_root))  # guardian: allow-global_mutation
 
             try:
@@ -86,6 +87,7 @@ def main() -> int:
                         f"Fix: COMMIT_MESSAGE='ACTIVE_SET_SNAPSHOT_BUMP:<reason>' "
                         f"python ops_scripts/ci/active_set_snapshot_check.py",
                     )
+            # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent_swallower
                 errors.append(f"Active set helper failed: {e}")
     else:

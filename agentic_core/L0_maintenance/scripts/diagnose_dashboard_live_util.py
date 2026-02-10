@@ -10,8 +10,7 @@ try:
     from playwright.sync_api import sync_playwright
 except ImportError as _err:
     raise ImportError(
-        "playwright is required for this module. "
-        "Install with: pip install -e '.[infra]'"
+        "playwright is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 
 
@@ -30,6 +29,7 @@ def diagnose():
         page.on("response", lambda res: requests.append(f"← {res.status} {res.url}"))
 
         print("Loading dashboard...")
+        # guardian: allow-magic-config
         page.goto("http://localhost:8765/autonomy_dashboard.html", timeout=30000)
 
         print("\nWaiting 5 seconds for data to load...")

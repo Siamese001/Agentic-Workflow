@@ -7,6 +7,7 @@ import re
 import sys
 from pathlib import Path
 
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
@@ -55,9 +56,11 @@ def fix_agent_file(file_path: Path) -> bool:
                     last_import = agentic_imports[-1]
                     content = content.replace(last_import, last_import + import_line)
                 else:
+                    # guardian: allow-path-string
                     content = re.sub(r"(from agentic_core.*?\n)", r"\1" + import_line, content, count=1)
             else:
                 # Add after other imports
+                # guardian: allow-path-string
                 content = re.sub(r"(import.*?\n)", r"\1\n" + import_line, content, count=1)
 
         # Write back

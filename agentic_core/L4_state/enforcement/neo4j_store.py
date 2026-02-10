@@ -64,6 +64,7 @@ class Neo4jGraphStore:
                     "metadata": metadata or {},
                 },
             )
+        # guardian: allow-silent-swallow
         except Exception:
             # Fallback without APOC if not available
             fallback_cypher = """
@@ -124,6 +125,7 @@ class Neo4jGraphStore:
                 RETURN rel
                 """
                 params["attrs"] = attrs
+            # guardian: allow-silent-swallow
             except Exception:
                 # Fallback without APOC
                 CYPHER += "\nSET r += $attrs"

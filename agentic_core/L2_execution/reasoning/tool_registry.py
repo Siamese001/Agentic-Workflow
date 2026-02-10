@@ -114,10 +114,13 @@ class tool_registry:
         self.tools[name] = tool
         LOGGER.info(f"Registered tool: {name} ({category})")
 
+    # guardian: allow-magic-config
     async def find_tools_for_task(
         self,
         task_description: str,
+        # guardian: allow-magic-config
         max_tools: int = 5,
+        # guardian: allow-magic-config
         min_relevance: float = 0.6,
         categories: list[str] | None = None,
     ) -> list[ToolMatch]:

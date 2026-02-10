@@ -58,6 +58,7 @@ class OmniContext(SubAtomicAgent):
                 start_pos = len("".join(sections[:-2]))
                 end_pos = start_pos + len(content)
                 self.index[file_path] = {"start": start_pos, "end": end_pos, "content": content}
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   [!]  Failed to read {file_path}: {e}")
 

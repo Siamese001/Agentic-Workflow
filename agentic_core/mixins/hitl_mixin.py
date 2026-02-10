@@ -541,8 +541,10 @@ class HITLMixin:
 
             return [req.to_dict() for req in self._pending_approvals.values()]
 
+    # guardian: allow-magic-config
     def get_approval_history(
         self,
+        # guardian: allow-magic-config
         limit: int = 100,
         operation_name: str | None = None,
     ) -> list[dict[str, Any]]:
@@ -586,6 +588,7 @@ class HITLMixin:
         if callback and request.status == ApprovalStatus.APPROVED:
             try:
                 callback(request)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")
 

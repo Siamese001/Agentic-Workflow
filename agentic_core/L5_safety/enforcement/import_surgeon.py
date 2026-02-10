@@ -94,6 +94,7 @@ class SovereignImportSurgeon:
                         violations.append(
                             ImportViolation(str(file_path), line_num, line, "APP_STAGING", suggested.strip()),
                         )
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"⚠️  Error scanning {file_path}: {e}")
         return violations
@@ -189,6 +190,7 @@ class SovereignImportSurgeon:
                     f.writelines(lines)
                 fixed_count += 1
                 print(f"✅ Fixed: {file_path}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"❌ Error fixing {file_path}: {e}")
         print(f"\n✅ SURGERY COMPLETE: {fixed_count} files modified")

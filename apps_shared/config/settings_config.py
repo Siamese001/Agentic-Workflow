@@ -57,6 +57,7 @@ class Settings:
         except (ValueError, TypeError, KeyError) as e:
             self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
+        # guardian: allow-silent-swallow
         except Exception as e:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")

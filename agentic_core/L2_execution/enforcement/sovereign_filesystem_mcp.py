@@ -112,5 +112,6 @@ class SovereignFilesystemMcp:
             # Persist for continuity
             redis_shield.execute("set", self.roots_key, json.dumps(validated), ex=60 * 60 * 24)
             Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"MCP Server does not support dynamic roots: {e}")

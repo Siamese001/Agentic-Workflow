@@ -140,6 +140,7 @@ class ObservabilityExecutionAdapter:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"observability execution failed: {str(e)}")
             return self._create_error_result(request, str(e), start_time)
@@ -256,6 +257,7 @@ class ObservabilityExecutionAdapter:
 
             return result
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             return ObservabilityResult(
                 request_id=request.request_id,
@@ -398,7 +400,9 @@ class ObservabilityExecutionAdapter:
 
 
 # Factory function for easy instantiation
+# guardian: allow-magic-config
 def create_observability_execution_adapter(
+    # guardian: allow-magic-config
     default_timeout: float = 10.0,
     enable_tracing: bool = True,
     enable_metrics: bool = True,

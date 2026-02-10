@@ -319,6 +319,7 @@ class OrchestrationStrategy(BaseStrategy):
                 if step_result.get("terminate", False):
                     break
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 errors.append(f"Step {step_name} failed: {str(e)}")
                 agent.log_error(f"Orchestration step failed: {step_name} - {e}")
@@ -402,6 +403,7 @@ class HealingStrategy(BaseStrategy):
                         artifacts.extend(fix_result.get("artifacts", []))
                     else:
                         skipped.append(violation.get("type", "unknown"))
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     errors.append(f"Failed to fix violation: {str(e)}")
 
@@ -784,6 +786,7 @@ class UnifiedAgent(SovereignBaseAgent):
         except ImportError:
             logger.warning("config_loader not available, using empty config")
             return {}
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Failed to load config {self._config_name}: {e}")
             return {}

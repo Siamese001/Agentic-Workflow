@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 # Add project root to path for imports
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from agentic_core.discovery import AgentRegistry
@@ -111,6 +112,7 @@ class BootSequence:
             boot_result["status"] = "aborted"
             boot_result["errors"].append(str(e))
             raise
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Boot sequence failed: {e}")
             boot_result["status"] = "failed"

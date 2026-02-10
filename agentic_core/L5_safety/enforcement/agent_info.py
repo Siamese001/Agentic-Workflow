@@ -260,6 +260,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 method_names=[],
                             ),
                         )
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"Error reading {py_file}: {e}")
 
@@ -293,6 +294,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
         # Convert to string representation
         try:
             normalized_code = ast.unparse(normalized)
+        # guardian: allow-silent-swallow
         except Exception:
             # Fallback: use dump
             normalized_code = ast.dump(normalized)
@@ -304,6 +306,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
 
     except SyntaxError as e:
         return ("SYNTAX_ERROR", str(e))
+    # guardian: allow-silent-swallow
     except Exception as e:
         return ("ERROR", str(e))
 

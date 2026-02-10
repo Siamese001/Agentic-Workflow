@@ -26,5 +26,6 @@ class CapabilityDiscoveryMixin:
             if self._capabilities:
                 await client.sadd(key, *self._capabilities)
                 await client.expire(key, 3600)
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.warning(f"Capability publish failed: {e}")

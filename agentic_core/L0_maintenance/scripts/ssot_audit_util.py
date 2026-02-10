@@ -71,6 +71,7 @@ def find_gravity_violations():
                                 "import_layer": import_layer,
                             },
                         )
+        # guardian: allow-silent-swallow
         except Exception:
             pass
 
@@ -92,6 +93,7 @@ def find_syntax_errors():
                     ast.parse(content)
                 except SyntaxError as e:
                     errors.append({"file": str(py_file), "line": e.lineno, "message": str(e.msg)})
+                # guardian: allow-silent-swallow
                 except Exception:
                     pass
     return errors

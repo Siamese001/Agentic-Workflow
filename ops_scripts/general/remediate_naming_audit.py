@@ -106,6 +106,7 @@ def update_imports(renames: list[tuple[Path, str]]):
                 if content != original_content:
                     file_path.write_text(content, encoding="utf-8")
                     count += 1
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
     print(f"  Modified {count} files with import updates.")

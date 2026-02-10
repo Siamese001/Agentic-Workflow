@@ -60,6 +60,7 @@ class ResearchCache:
                                 self._index[query_hash] = line_num
                         except json.JSONDecodeError:
                             continue
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to load cache index: {e}")
 
@@ -97,6 +98,7 @@ class ResearchCache:
                     if i == line_num:
                         entry = json.loads(line.strip())
                         return entry.get("result")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to retrieve cache entry: {e}")
 
@@ -141,6 +143,7 @@ class ResearchCache:
                 self.cache_file.unlink()
             self._index = {}
             Logger.info("Research cache cleared")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to clear cache: {e}")
 

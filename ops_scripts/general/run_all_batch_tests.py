@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 # Add apps_rg to path
+# guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 

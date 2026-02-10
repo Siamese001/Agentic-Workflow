@@ -76,10 +76,14 @@ class CircuitBreakerMixin:
         super().__init_subclass__(**kwargs)
         cls._circuit_stats = CircuitStats()
 
+    # guardian: allow-magic-config
     def configure_circuit_breaker(
         self,
+        # guardian: allow-magic-config
         failure_threshold: int = 5,
+        # guardian: allow-magic-config
         recovery_timeout: int = 30,
+        # guardian: allow-magic-config
         success_threshold: int = 2,
     ) -> None:
         """

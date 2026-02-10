@@ -22,10 +22,13 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 
 
+# guardian: allow-magic-config
 async def run_l5_outreach_orchestrator(
     campaign_id: str,
     Archetype: str = "RECRUITER",
+    # guardian: allow-magic-config
     max_cycles: int = 5,
+    # guardian: allow-magic-config
     quality_threshold: float = 0.75,
     enable_intervention: bool = True,
 ) -> Any:

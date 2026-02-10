@@ -72,6 +72,7 @@ class AnalysisMixin:
 
         return results
 
+    # guardian: allow-magic-config
     def calculate_trends(
         self,
         time_series: list[tuple[Any, float]],
@@ -233,6 +234,7 @@ class AnalysisMixin:
 
         return weighted_sum / total_weight
 
+    # guardian: allow-magic-config
     def identify_outliers(self, values: list[float], threshold: float = 2.0) -> dict[str, Any]:
         """
         Identify outliers in a dataset using standard deviation.

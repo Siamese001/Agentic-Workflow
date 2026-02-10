@@ -71,6 +71,7 @@ class PitchGenerator:
                     "timestamp": datetime.now().isoformat(),
                 },
             )
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"LLM pitch generation failed: {e}")
             return self._generate_with_template(context, relationships)
@@ -131,6 +132,7 @@ class PitchGenerator:
                     "timestamp": datetime.now().isoformat(),
                 },
             )
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"LLM pitch refinement failed: {e}")
             return self._refine_with_rules(pitch, error_reason)

@@ -179,6 +179,7 @@ class RootCustomsAgent(SovereignBaseAgent):
             else:
                 content_matches.update(self._analyze_text(content))
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             content_matches["error"] = str(e)
 

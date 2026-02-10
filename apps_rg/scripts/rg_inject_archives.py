@@ -63,6 +63,7 @@ def inject_archives():
             logger.info(f"INJECTED: {src.name} -> {dest.relative_to(BASE_DIR)}")
             success_count += 1
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"FAILED: {src.name} -> {e}")
             error_count += 1

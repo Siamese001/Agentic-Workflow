@@ -22,7 +22,6 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
@@ -107,6 +106,7 @@ class Guardrail(ABC):
 class RateLimitGuardrail(Guardrail):
     """Rate limiting guardrail - consolidated from multiple rate limiters."""
 
+    # guardian: allow-magic-config
     def __init__(self, max_calls: int = 100, window_seconds: int = 60) -> None:
         """Initialize rate limit guardrail."""
         super().__init__("RateLimit")
@@ -185,6 +185,7 @@ class ContentFilterGuardrail(Guardrail):
 class CircuitBreakerGuardrail(Guardrail):
     """Circuit breaker guardrail - prevents cascading failures."""
 
+    # guardian: allow-magic-config
     def __init__(self, failure_threshold: int = 5, reset_timeout: int = 60) -> None:
         """Initialize circuit breaker."""
         super().__init__("CircuitBreaker")
@@ -305,9 +306,11 @@ class CompositeGuardrailAgent(AtomicExecutionMixin, SovereignBaseAgent):
     def __init__(self) -> None:
         """Initialize composite guardrail with all 21 canonical guardrails."""
         self.guardrails: list[Guardrail] = [
+            # guardian: allow-magic-config
             RateLimitGuardrail(max_calls=100, window_seconds=60),
             MutationGuardrail(),
             ContentFilterGuardrail(),
+            # guardian: allow-magic-config
             CircuitBreakerGuardrail(failure_threshold=5),
             PIIAirlockGuardrail(),
             AuthenticationGuardrail(),

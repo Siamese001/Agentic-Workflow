@@ -29,6 +29,7 @@ class BudgetExceededError(Exception):
 class CostGovernor:
     """ """
 
+    # guardian: allow-magic-config
     def __init__(self, budget_limit: float = 5.0, warning_threshold: float = 0.8, session_id: str = None):
         self.LIMIT = budget_limit
         self.warning_threshold = warning_threshold

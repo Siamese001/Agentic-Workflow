@@ -17,14 +17,17 @@ def get_active_files(entry_points: Any, root_dir: Any) -> Any:
     for script in entry_points:
         finder.run_script(script)
     active_files: Any = set()
+    # guardian: allow-path-string
     abs_root: Any = os.path.abspath(root_dir)
     for _name, mod in finder.modules.items():
         if mod.__file__:
+            # guardian: allow-path-string
             abs_path: Any = os.path.abspath(mod.__file__)
             if abs_path.startswith(abs_root):
                 rel_path: Any = os.path.relpath(abs_path, abs_root)
                 active_files.add(rel_path)
     for ep in entry_points:
+        # guardian: allow-path-string
         rel_ep: Any = os.path.relpath(os.path.abspath(ep), abs_root)
         active_files.add(rel_ep)
     return sorted(active_files)

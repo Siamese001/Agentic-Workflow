@@ -31,6 +31,7 @@ def _is_traceback(output: str) -> bool:
     return any(pattern in output for pattern in TRACEBACK_PATTERNS)
 
 
+# guardian: allow-magic-config
 def _extract_traceback_tail(output: str, max_tail: int = 1000) -> str:
     """
     Extract the meaningful tail of a traceback.

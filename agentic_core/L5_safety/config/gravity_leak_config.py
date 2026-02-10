@@ -189,6 +189,7 @@ class GravityLeakDetector:
                         },
                     )
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 gravity_heal_actions.append(
                     {
