@@ -152,29 +152,14 @@ class AntiPatternScanner:
         self.scan_dirs = scan_dirs or self.DEFAULT_SCAN_DIRS
         self.exclude_patterns = exclude_patterns or self.DEFAULT_EXCLUDES
 
-        # Initialize detectors with their whitelist comments
+        # Initialize detectors
         self.composite = CompositeDetector(
             [
-                SilentSwallowerDetector(
-                    enforcement_level=enforcement_level,
-                    whitelisted_patterns=[SilentSwallowerDetector.WHITELIST_COMMENT],
-                ),
-                TypeErasureDetector(
-                    enforcement_level=enforcement_level,
-                    whitelisted_patterns=[TypeErasureDetector.WHITELIST_COMMENT],
-                ),
-                PathFragilityDetector(
-                    enforcement_level=enforcement_level,
-                    whitelisted_patterns=[PathFragilityDetector.WHITELIST_COMMENT],
-                ),
-                MagicConfigDetector(
-                    enforcement_level=enforcement_level,
-                    whitelisted_patterns=[MagicConfigDetector.WHITELIST_COMMENT],
-                ),
-                GlobalMutationDetector(
-                    enforcement_level=enforcement_level,
-                    whitelisted_patterns=[GlobalMutationDetector.WHITELIST_COMMENT],
-                ),
+                SilentSwallowerDetector(enforcement_level=enforcement_level),
+                TypeErasureDetector(enforcement_level=enforcement_level),
+                PathFragilityDetector(enforcement_level=enforcement_level),
+                MagicConfigDetector(enforcement_level=enforcement_level),
+                GlobalMutationDetector(enforcement_level=enforcement_level),
             ],
         )
 
