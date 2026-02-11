@@ -1,7 +1,7 @@
 # Migration Summary: Reports to SSOT Location
 
-**Date**: 2026-02-03  
-**Migration**: From `.windsurf/plans/` to `docs/reports/plans/` (SSOT)  
+**Date**: 2026-02-03
+**Migration**: From `.windsurf/plans/` to `docs/reports/plans/` (SSOT)
 **Status**: Complete
 
 ## Changes Made
@@ -12,7 +12,7 @@
 - **Purpose**: Official SSOT constant for plans directory
 
 ### 2. File Migration
-**Source**: `C:\Users\amita\.windsurf\plans\`  
+**Source**: `C:\Users\amita\.windsurf\plans\`
 **Destination**: `c:\Git\Agentic-Workflow\docs\reports\plans\`
 
 **Files Migrated**:
@@ -27,7 +27,7 @@ Updated references in 4 files:
 3. `docs/reports/plans/ssot-report-storage-protocol-f312d7.md`
 4. `docs/reports/plans/ssot-report-storage-implementation-phased-53085d.md`
 
-**Changed from**: `.windsurf/plans/`  
+**Changed from**: `.windsurf/plans/`
 **Changed to**: `docs/reports/plans/`
 
 ## SSOT Compliance

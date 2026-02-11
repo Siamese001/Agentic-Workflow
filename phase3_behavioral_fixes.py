@@ -34,11 +34,13 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
         for line in lines:
             if line.strip().startswith("import ") and "agentic_core.base_agents.L0MaintenanceBase" in line:
                 line = line.replace(
-                    "import agentic_core.base_agents.L0MaintenanceBase", f"import {module_import_path}"
+                    "import agentic_core.base_agents.L0MaintenanceBase",
+                    f"import {module_import_path}",
                 )
             elif "from agentic_core.base_agents.L0MaintenanceBase" in line:
                 line = line.replace(
-                    "from agentic_core.base_agents.L0MaintenanceBase", f"from {module_import_path}"
+                    "from agentic_core.base_agents.L0MaintenanceBase",
+                    f"from {module_import_path}",
                 )
 
             fixed_lines.append(line)

@@ -1,7 +1,7 @@
 # Architectural Anomalies Report — apps_* Folders
 
-**Generated:** 2026-02-07  
-**Scope:** `apps_rg/` and `apps_lic/` directories  
+**Generated:** 2026-02-07
+**Scope:** `apps_rg/` and `apps_lic/` directories
 **Analyzer:** Deep Static Analysis with import/inheritance/content heuristics
 
 ---

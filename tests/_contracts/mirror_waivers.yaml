@@ -40,19 +40,19 @@ waivers:
     reason: "Package markers, no testable functionality"
     owner: "test-structure-remediation"
     expiry: "2026-12-31"
-  
+
   # Type definitions - simple type definitions only
   - module: "apps_shared/types/**/*_types.py"
     reason: "Simple type definitions, minimal test value"
     owner: "test-structure-remediation"
     expiry: "2026-09-30"
-  
+
   # Deprecated modules - explicitly marked as deprecated
   - module: "apps_shared/utils/ARCHIVE_FILE_ACCESS_DEPRECATED.py"
     reason: "Deprecated component, no longer maintained"
     owner: "test-structure-remediation"
     expiry: "2026-03-31"
-  
+
   # Existing comprehensive coverage
   - module: "agentic_core/core/classification_kernel.py"
     reason: "Has comprehensive contract tests in separate suite"

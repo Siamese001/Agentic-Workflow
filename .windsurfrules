@@ -55,7 +55,7 @@ If any higher-tier rule conflicts with a lower-tier rule → IGNORE the lower-ti
 When the user issues `RUN_PHASE <number> <target_root>`:
 
 1) Execute exactly:
-   `!python phaseXX/phaseXX.py --target-root <root> --verbose` 
+   `!python phaseXX/phaseXX.py --target-root <root> --verbose`
 2) Immediately validate produced artifacts + all phase invariants.
 3) If any invariant fails → STOP, explain root cause, auto-fix, and re-run the SAME phase.
 4) Do NOT advance phases until the current phase is green.
@@ -69,7 +69,7 @@ If the user requests:
 - "one fenced block" → output exactly one fenced code block and nothing else inside/outside the block.
 
 STRICTLY FORBIDDEN:
-- `...` 
+- `...`
 - "diff continues"
 - partial section delivery
 - eliding sections due to length

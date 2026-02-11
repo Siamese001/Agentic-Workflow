@@ -179,7 +179,9 @@ class OutreachLearningLoop:
         return successes / total
 
     def get_examples(
-        self, TaskType: str = None, limit: int = 10
+        self,
+        TaskType: str = None,
+        limit: int = 10,
     ) -> list[OutreachLearningExample]:  # guardian: allow-magic_configuration
         """Get learning examples."""
         if TaskType:

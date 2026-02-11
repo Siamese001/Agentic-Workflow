@@ -11,7 +11,7 @@ During the Guardian Layer implementation, we encountered several issues with the
 - Ruff linting errors (S110, S112, F821)
 - Syntax errors in test files
 
-**Root Cause**: 
+**Root Cause**:
 - The Guardian test files had long error messages that exceeded line length limits
 - Exception handling patterns used bare `except Exception:` without logging
 - Undefined name `TestGravityCompliance` in test file

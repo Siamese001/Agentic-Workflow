@@ -16,7 +16,7 @@ def test_test_mission_preflight_validator_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L5_safety.validators.mission_preflight_validator: {e}"
+            f"Cannot import module agentic_core.L5_safety.validators.mission_preflight_validator: {e}",
         )
 
 

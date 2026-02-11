@@ -3,7 +3,7 @@
 @@ -2,6 +2,11 @@
  requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
  build-backend = "setuptools.build_meta"
- 
+
 +[tool.setuptools.packages.find]
 +where = ["."]
 +include = ["agentic_core*", "apps_lic*", "apps_rg*", "apps_shared*"]

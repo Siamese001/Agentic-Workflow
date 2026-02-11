@@ -52,7 +52,7 @@ repos:
         # NO --all-files flag
         # NO pass_filenames: false
         # = Runs on staged files only ✅
-      
+
       - id: ruff-format
         # NO --all-files flag
         # NO pass_filenames: false

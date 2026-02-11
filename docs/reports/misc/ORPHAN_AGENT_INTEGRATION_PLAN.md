@@ -1,6 +1,6 @@
 # Orphan Agent Integration Plan
 
-**Generated:** 2026-02-02  
+**Generated:** 2026-02-02
 **Status:** ACTIONABLE - Ready for Implementation
 
 ---
@@ -49,16 +49,16 @@ from agentic_core.L4_state.validation_context import ValidationContext
 
 class AdversarialValidator(ValidatorProtocol):
     """Adapter to use AdversarialProbeAgent as a validator."""
-    
+
     def __init__(self):
         ctx = ValidationContext()
         self.agent = AdversarialProbeAgent(ctx=ctx)
-    
+
     def validate(self, content: any, context: dict) -> dict:
         """Run adversarial probes and return validation result."""
         import asyncio
         result = asyncio.run(self.agent.act())
-        
+
         # Convert to validator format
         vulnerabilities = result.get("vulnerabilities_exposed", 0)
         return {
@@ -74,16 +74,16 @@ class AdversarialValidator(ValidatorProtocol):
 
 class BoundaryValidator(ValidatorProtocol):
     """Adapter to use BoundaryTestingAgent as a validator."""
-    
+
     def __init__(self):
         ctx = ValidationContext()
         self.agent = BoundaryTestingAgent(ctx=ctx)
-    
+
     def validate(self, content: any, context: dict) -> dict:
         """Run boundary tests and return validation result."""
         import asyncio
         result = asyncio.run(self.agent.act())
-        
+
         edge_cases = result.get("edge_cases_found", 0)
         return {
             "valid": edge_cases == 0,
@@ -98,10 +98,10 @@ class BoundaryValidator(ValidatorProtocol):
 def register_red_team_validators():
     """Register all red team agents as validators."""
     orchestrator = get_validator_orchestrator()
-    
+
     orchestrator.register_validator("adversarial_probe", AdversarialValidator())
     orchestrator.register_validator("boundary_testing", BoundaryValidator())
-    
+
     print("[Red Team Integration] Registered 2 security validators")
 
 
@@ -121,27 +121,27 @@ from agentic_core.L5_safety.validators.ValidatorOrchestrator import get_validato
 async def test_adversarial_validator_registered():
     """Verify adversarial probe is registered and callable."""
     orchestrator = get_validator_orchestrator()
-    
+
     result = await orchestrator.validate(
         content={"test_input": "sample"},
         validator_name="adversarial_probe",
         context={}
     )
-    
+
     assert "valid" in result
     assert "threat_assessment" in result
 
-@pytest.mark.asyncio  
+@pytest.mark.asyncio
 async def test_boundary_validator_registered():
     """Verify boundary testing is registered and callable."""
     orchestrator = get_validator_orchestrator()
-    
+
     result = await orchestrator.validate(
         content={"test_input": ""},  # Empty input for boundary test
         validator_name="boundary_testing",
         context={}
     )
-    
+
     assert "valid" in result
     assert "recommendations" in result
 ```
@@ -170,15 +170,15 @@ from agentic_core.L4_state.validation_context import ValidationContext
 class ChaosResilienceStrategy(HealingStrategy):
     """
     Healing strategy that validates system resilience after healing.
-    
+
     Use case: After a healing operation completes, run chaos tests
     to verify the system can handle failures gracefully.
     """
-    
+
     def __init__(self):
         ctx = ValidationContext()
         self.agent = ChaosEngineeringAgent(ctx=ctx)
-    
+
     def can_heal(self, violation: dict) -> bool:
         """Handle resilience validation violations."""
         return violation.get("type") in [
@@ -186,15 +186,15 @@ class ChaosResilienceStrategy(HealingStrategy):
             "post_healing_validation",
             "chaos_test_required",
         ]
-    
+
     def heal(self, violation: dict, context: dict) -> dict:
         """Run chaos tests and report resilience status."""
         import asyncio
         result = asyncio.run(self.agent.act())
-        
+
         failures = result.get("failures_detected", 0)
         recovery_metrics = result.get("recovery_metrics", {})
-        
+
         return {
             "success": failures == 0,
             "resilience_score": 1.0 - (failures / max(1, result.get("tests_executed", 1))),
@@ -239,10 +239,10 @@ class DependencyPruningStrategy(HealingStrategy):
     """
     Healing strategy for unused dependency violations.
     """
-    
+
     def __init__(self, project_root: Path = None):
         self.project_root = project_root or Path.cwd()
-    
+
     def can_heal(self, violation: dict) -> bool:
         """Handle dependency-related violations."""
         return violation.get("type") in [
@@ -250,25 +250,25 @@ class DependencyPruningStrategy(HealingStrategy):
             "dependency_bloat",
             "requirements_cleanup",
         ]
-    
+
     def heal(self, violation: dict, context: dict) -> dict:
         """Prune unused dependencies."""
         import asyncio
-        
+
         # Create agent with context
         class MockContext:
             def report(self, msg): pass
-        
+
         agent = DependencyPruningAgent(
             project_root=self.project_root,
             ctx=MockContext()
         )
-        
+
         # Use dry_run from context or default to True for safety
         agent.dry_run = context.get("dry_run", True)
-        
+
         result = asyncio.run(agent.execute())
-        
+
         return {
             "success": result.get("removed", 0) > 0 or result.get("unused_found", 0) == 0,
             "unused_found": result.get("unused_found", 0),
@@ -325,7 +325,7 @@ def test_pre_commit_agent_executable():
         text=True,
         cwd=Path(__file__).parents[2]
     )
-    
+
     # Should exit 0 if no violations (or no staged files)
     assert result.returncode in [0, 1], f"Unexpected exit code: {result.stderr}"
 ```
@@ -352,10 +352,10 @@ from agentic_core.L3_orchestration.workflow_engines.DecompositionOrchestratorAge
 def integrate_with_nervous_system():
     """
     Integration point for NervousSystemAgent to use DecompositionOrchestratorAgent.
-    
+
     Usage in NervousSystemAgent:
         from .decomposition_integration import decompose_task
-        
+
         plan = decompose_task("Refactor all L2 agents")
         for task in plan.tasks:
             self.dispatch_to_agent(task.target_agent, task.description)
@@ -366,7 +366,7 @@ def integrate_with_nervous_system():
 def decompose_task(prompt: str, max_tasks: int = 10) -> MissionPlan:
     """
     Decompose a high-level prompt into atomic agent tasks.
-    
+
     This is the public API for task decomposition.
     """
     orchestrator = DecompositionOrchestratorAgent()
@@ -376,11 +376,11 @@ def decompose_task(prompt: str, max_tasks: int = 10) -> MissionPlan:
 def execute_mission(plan: MissionPlan, dry_run: bool = True) -> dict:
     """
     Execute a mission plan.
-    
+
     Args:
         plan: MissionPlan from decompose_task()
         dry_run: If True, only log proposed actions
-    
+
     Returns:
         Execution results
     """
@@ -419,21 +419,21 @@ def initialize():
     global _REGISTERED
     if _REGISTERED:
         return
-    
+
     print("[Sovereign Integration] Initializing orphan agent integrations...")
-    
+
     # Red Team Validators
     from . import red_team_integration
     red_team_integration.register_red_team_validators()
-    
+
     # Chaos Engineering
     from . import chaos_healing_integration
     chaos_healing_integration.register_chaos_healing()
-    
+
     # Dependency Pruning
     from . import dependency_healing_integration
     dependency_healing_integration.register_dependency_healing()
-    
+
     _REGISTERED = True
     print("[Sovereign Integration] All orphan agents integrated successfully")
 
@@ -442,10 +442,10 @@ def get_integration_status() -> dict:
     """Return status of all integrations."""
     from .ValidatorOrchestrator import get_validator_orchestrator
     from .HealingSovereignOrchestrator import get_healing_orchestrator
-    
+
     validator_orch = get_validator_orchestrator()
     healing_orch = get_healing_orchestrator()
-    
+
     return {
         "initialized": _REGISTERED,
         "validators_registered": list(validator_orch._validators.keys()),
@@ -469,68 +469,68 @@ import pytest
 
 class TestOrphanAgentIntegration:
     """Test that all orphan agents are properly integrated."""
-    
+
     def test_all_integrations_initialize(self):
         """Verify all integrations can be initialized without error."""
         from agentic_core.L5_safety.validators import register_all_validators
-        
+
         # Should not raise
         register_all_validators.initialize()
-        
+
         status = register_all_validators.get_integration_status()
         assert status["initialized"] is True
-    
+
     def test_red_team_validators_registered(self):
         """Verify red team validators are registered."""
         from agentic_core.L5_safety.validators import register_all_validators
         register_all_validators.initialize()
-        
+
         status = register_all_validators.get_integration_status()
-        
+
         assert "adversarial_probe" in status["validators_registered"]
         assert "boundary_testing" in status["validators_registered"]
-    
+
     def test_healing_strategies_registered(self):
         """Verify healing strategies are registered."""
         from agentic_core.L5_safety.validators import register_all_validators
         register_all_validators.initialize()
-        
+
         status = register_all_validators.get_integration_status()
-        
+
         assert "chaos_resilience" in status["healing_strategies_registered"]
         assert "dependency_pruning" in status["healing_strategies_registered"]
-    
+
     @pytest.mark.asyncio
     async def test_adversarial_validation_works(self):
         """Verify adversarial validation can be executed."""
         from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.validators.ValidatorOrchestrator import get_validator_orchestrator
-        
+
         register_all_validators.initialize()
         orchestrator = get_validator_orchestrator()
-        
+
         result = await orchestrator.validate(
             content={"test": "data"},
             validator_name="adversarial_probe"
         )
-        
+
         assert "valid" in result
         assert "threat_assessment" in result
-    
+
     @pytest.mark.asyncio
     async def test_chaos_healing_works(self):
         """Verify chaos healing can be executed."""
         from agentic_core.L5_safety.validators import register_all_validators
         from agentic_core.L5_safety.validators.HealingSovereignOrchestrator import get_healing_orchestrator
-        
+
         register_all_validators.initialize()
         orchestrator = get_healing_orchestrator()
-        
+
         result = await orchestrator.heal(
             violation={"type": "resilience_check"},
             context={}
         )
-        
+
         assert result["status"] in ["healed", "no_strategy"]
 ```
 

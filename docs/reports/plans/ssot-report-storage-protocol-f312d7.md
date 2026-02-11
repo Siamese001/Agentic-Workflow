@@ -45,7 +45,7 @@ Add report location validation to existing Guardian tests:
 ## Implementation Phases
 
 **Phase 1**: Create pre-commit hook and validation logic
-**Phase 2**: Implement migration script and run initial cleanup  
+**Phase 2**: Implement migration script and run initial cleanup
 **Phase 3**: Update all report generation methods
 **Phase 4**: Add comprehensive test coverage
 **Phase 5**: Documentation and team training

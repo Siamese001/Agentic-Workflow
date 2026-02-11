@@ -51,7 +51,7 @@ agentic_core/prompt_governance/agents/SovereignPromptRenderer.py
 # Target (VALID) - Option 1
 agentic_core/base_agents/SovereignPromptRenderer.py
 
-# Target (VALID) - Option 2  
+# Target (VALID) - Option 2
 agentic_core/L5_safety/validators/SovereignPromptRenderer.py
 ```
 
@@ -222,7 +222,7 @@ After implementing all fixes:
 
 ---
 
-**Next Steps:** 
+**Next Steps:**
 1. Review and approve this violation report
 2. Execute Phase 1 fixes (test files and Sovereign class)
 3. Run validation tests

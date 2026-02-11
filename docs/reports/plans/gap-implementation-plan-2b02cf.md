@@ -195,14 +195,14 @@ class SomeValidatorAgent(
             context=f"validate:{item.hash}",
             execution_fn=lambda: self._do_validate(item)
         )
-    
+
     def _do_validate(self, item) -> DetectionSignal:
         signal = DetectionSignal(
             source_sensor=self.__class__.__name__,
             detection_type="validation_failure",
             ...
         )
-        
+
         if signal.is_failure and signal.classify_risk_level() == "high":
             # Route to human review
             self.submit_for_review(signal)
@@ -210,7 +210,7 @@ class SomeValidatorAgent(
             # Auto-heal with verification
             if self.verification_gate.verify_target(item):
                 self.heal(item)
-        
+
         self.log_audit_event("validation", signal.to_dict())
         return signal
 ```

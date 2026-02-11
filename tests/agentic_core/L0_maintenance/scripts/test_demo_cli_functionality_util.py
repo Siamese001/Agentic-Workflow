@@ -16,7 +16,7 @@ def test_test_demo_cli_functionality_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.demo_cli_functionality_util: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.demo_cli_functionality_util: {e}",
         )
 
 

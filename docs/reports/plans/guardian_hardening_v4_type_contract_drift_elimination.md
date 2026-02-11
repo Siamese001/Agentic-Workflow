@@ -12,7 +12,7 @@ All 4 phases completed. Eliminates remaining type/contract drift risks by enforc
 
 **Problem**: `artifact_class` was stored as string, losing enum identity and allowing invalid values.
 
-**Fix**: 
+**Fix**:
 - Changed `GuardianResult.artifact_class` type from `str` to `ArtifactClass` enum (default `INDIVIDUAL`)
 - `to_dict()` serializes as `artifact_class.value` (string)
 - `load_guardian_result()` parses string back to `ArtifactClass` enum with validation

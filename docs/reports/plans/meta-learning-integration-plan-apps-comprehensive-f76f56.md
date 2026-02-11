@@ -29,7 +29,7 @@ Based on comprehensive repository analysis of **109 agents** across agentic_core
 
 #### apps_rg Territory (18 agents):
 - **RGAgentBase** extends SovereignBaseAgent with MetaLearningMixin (already imported!)
-- **10 agents** with active `heal()` methods  
+- **10 agents** with active `heal()` methods
 - **RgHealingOrchestratorAgent** manages multi-cycle healing with convergence detection
 - **RgReflectionAgent** learns from execution and records insights
 - **Resume generation pipeline** with quality optimization

@@ -16,7 +16,7 @@ def test_test_audit_registry_linkages_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.prompt_governance.scripts.audit_registry_linkages: {e}"
+            f"Cannot import module agentic_core.prompt_governance.scripts.audit_registry_linkages: {e}",
         )
 
 

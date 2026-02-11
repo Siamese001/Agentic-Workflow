@@ -6,7 +6,7 @@ This plan implements critical meta-learning infrastructure for apps_rg and apps_
 
 ### Phase 1.1: Guardrails Integration Foundation
 - **Objective**: Prevent cache poisoning and infinite loops
-- **Files to Modify**: 
+- **Files to Modify**:
   - `apps_rg/shared/core/RGAgentBaseAgent.py`
   - `apps_lic/shared/core/LICAgentBaseAgent.py`
 - **Key Actions**:

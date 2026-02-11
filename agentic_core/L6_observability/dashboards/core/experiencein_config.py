@@ -16,13 +16,13 @@ MAX_READ_RETRIES = 3
 RETRY_DELAY_MS = 10
 
 from agentic_core.L2_execution.enforcement.redis import SovereignRedisClient
+
 try:
     from fastapi import FastAPI, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
 except ImportError as _err:
     raise ImportError(
-        "fastapi is required for this module. "
-        "Install with: pip install -e '.[infra]'"
+        "fastapi is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 from pydantic import BaseModel
 

@@ -4,9 +4,8 @@ Test for HumanReviewAdapter
 Generated as part of test structure mirror contract enforcement.
 """
 
-import pytest
-
 import agentic_core.L5_safety.enforcement.HumanReviewAdapter
+import pytest
 
 
 def test_HumanReviewAdapter_can_import():

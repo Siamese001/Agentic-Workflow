@@ -1,13 +1,13 @@
 # Guardian MECE Audit — Authoritative Inputs
 
-> Generated deterministically from source files.  
+> Generated deterministically from source files.
 > Every claim below is evidenced by file path and line number.
 
 ---
 
 ## 1. Full Inventory of Guardian Tests
 
-**Source**: `pytest --collect-only -q tests/guardian` → 503 tests collected.  
+**Source**: `pytest --collect-only -q tests/guardian` → 503 tests collected.
 **Raw artifact**: `docs/reports/plans/guardian_test_inventory_raw.txt`
 
 ### 1.1 Test Files (44 files)

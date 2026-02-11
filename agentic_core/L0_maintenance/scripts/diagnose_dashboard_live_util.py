@@ -10,8 +10,7 @@ try:
     from playwright.sync_api import sync_playwright
 except ImportError as _err:
     raise ImportError(
-        "playwright is required for this module. "
-        "Install with: pip install -e '.[infra]'"
+        "playwright is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 
 

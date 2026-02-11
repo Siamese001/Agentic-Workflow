@@ -160,7 +160,7 @@ For each of the 6 blocking deps moved to infra, implement minimal guards to prev
 +++ b/agentic_core/config/core/global_settings_config.py
 @@ -6,7 +6,13 @@
  from typing import Literal
- 
+
  from pydantic import Field, SecretStr
 -from pydantic_settings import BaseSettings, SettingsConfigDict
 +
@@ -170,8 +170,8 @@ For each of the 6 blocking deps moved to infra, implement minimal guards to prev
 +    raise ImportError(
 +        "pydantic-settings is required for Settings. Install with: pip install -e '.[infra]'"
 +    ) from e
- 
- 
+
+
  class Settings(BaseSettings):
 ```
 
@@ -185,7 +185,7 @@ def test_settings_import_without_pydantic_settings(monkeypatch):
     """Settings import raises clear error when pydantic-settings missing."""
     # Hide pydantic_settings
     monkeypatch.setitem(sys.modules, 'pydantic_settings', None)
-    
+
     with pytest.raises(ImportError, match="Install with: pip install -e '\\[infra\\]'"):
         from agentic_core.config.core.global_settings_config import Settings
 ```
@@ -204,12 +204,12 @@ def test_settings_import_without_pydantic_settings(monkeypatch):
 @@ -11,8 +11,6 @@
  from concurrent.futures import ThreadPoolExecutor
  from typing import Any
- 
+
 -import numpy as np
 -
  Logger: Any = logging.getLogger(__name__)
- 
- 
+
+
 @@ -45,6 +43,12 @@ class BatchEmbeddingService:
          Returns:
              List of embedding vectors
@@ -220,7 +220,7 @@ def test_settings_import_without_pydantic_settings(monkeypatch):
 +            raise ImportError(
 +                "numpy is required for embeddings. Install with: pip install -e '.[infra]'"
 +            ) from e
-+        
++
          if not texts:
              return []
 ```
@@ -236,9 +236,9 @@ import pytest
 def test_batch_embedding_without_numpy(monkeypatch):
     """BatchEmbeddingService raises clear error when numpy missing."""
     monkeypatch.setitem(sys.modules, 'numpy', None)
-    
+
     from agentic_core.L2_execution.reasoning.batch_embedding_service import BatchEmbeddingService
-    
+
     service = BatchEmbeddingService()
     with pytest.raises(ImportError, match="Install with: pip install -e '\\[infra\\]'"):
         service.embed_batch(["test"])
@@ -254,12 +254,12 @@ def test_batch_embedding_without_numpy(monkeypatch):
 @@ -8,8 +8,6 @@
  import logging
  from typing import Any
- 
+
 -import chromadb
 -
  Logger: Any = logging.getLogger(__name__)
- 
- 
+
+
 @@ -20,6 +18,12 @@ class InMemoryVectorCache:
      def __init__(self):
          """Initialize the in-memory vector cache."""
@@ -269,7 +269,7 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +            raise ImportError(
 +                "chromadb is required for vector caching. Install with: pip install -e '.[infra]'"
 +            ) from e
-+        
++
          self.client = chromadb.Client()
          self.collection = self.client.create_collection("cache")
 ```
@@ -284,12 +284,12 @@ def test_batch_embedding_without_numpy(monkeypatch):
 @@ -8,8 +8,6 @@
  from dataclasses import dataclass
  from typing import Any
- 
+
 -import duckdb
 -
  Logger = logging.getLogger(__name__)
- 
- 
+
+
 @@ -20,6 +18,12 @@ class TraceEvent:
      def store(self):
          """Store trace event to DuckDB."""
@@ -299,7 +299,7 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +            raise ImportError(
 +                "duckdb is required for trace storage. Install with: pip install -e '.[infra]'"
 +            ) from e
-+        
++
          conn = duckdb.connect("trace.db")
          # ... rest of implementation
 ```
@@ -314,12 +314,12 @@ def test_batch_embedding_without_numpy(monkeypatch):
 --- a/agentic_core/L4_state/memory/bm25_store.py
 +++ b/agentic_core/L4_state/memory/bm25_store.py
 @@ -9,8 +9,6 @@
- 
+
  from typing import Any
- 
+
 -from rank_bm25 import BM25Okapi
 -
- 
+
  class Bm25Store:
      """BM25-based retrieval store."""
 @@ -18,6 +16,12 @@ class Bm25Store:
@@ -331,7 +331,7 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +            raise ImportError(
 +                "rank-bm25 is required for BM25 retrieval. Install with: pip install -e '.[infra]'"
 +            ) from e
-+        
++
          self.bm25 = BM25Okapi(corpus)
 ```
 
@@ -346,14 +346,14 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +++ b/apps_shared/types/validation_status_types.py
 @@ -18,9 +18,6 @@
  from typing import Any
- 
+
  import numpy as np
 -from sklearn.feature_extraction.text import TfidfVectorizer
 -from sklearn.metrics.pairwise import cosine_similarity
 -
  logger = logging.getLogger(__name__)
- 
- 
+
+
 @@ -45,6 +42,14 @@ class ValidationStatus:
      def compute_similarity(self, text1: str, text2: str) -> float:
          """Compute TF-IDF cosine similarity between two texts."""
@@ -364,7 +364,7 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +            raise ImportError(
 +                "scikit-learn is required for validation. Install with: pip install -e '.[infra]'"
 +            ) from e
-+        
++
          vectorizer = TfidfVectorizer()
          vectors = vectorizer.fit_transform([text1, text2])
          return cosine_similarity(vectors[0], vectors[1])[0][0]
@@ -401,7 +401,7 @@ def test_batch_embedding_without_numpy(monkeypatch):
 +    "PyYAML>=6.0.0",
 +    "psutil>=5.9.0",
  ]
- 
+
  [project.optional-dependencies]
  dev = [
 +    "pytest>=7.4.0",

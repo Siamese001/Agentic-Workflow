@@ -63,7 +63,7 @@ Created `agentic_core/L5_safety/validators/surgical_healer_mixin.py` with:
 ```python
 class SurgicalHealerMixin:
     """Mixin providing surgical healing capabilities to agents."""
-    
+
     def heal_surgical(self, context: SurgicalContext) -> Dict[str, Any]:
         """Perform surgical healing using SurgicalContext."""
         transformer = SurgicalASTTransformer(context)

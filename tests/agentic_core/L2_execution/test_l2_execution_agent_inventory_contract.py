@@ -14,6 +14,7 @@ Rules enforced:
   3. PINNED BUDGET: The *Agent.py count must not exceed the post-cleanup
      ceiling without a baseline update + justification.
 """
+
 from __future__ import annotations
 
 import ast
@@ -105,16 +106,15 @@ class TestL2AgentNamingAndStructure:
         for af in agent_files:
             classes = _parse_top_level_classes(af)
             agent_classes = [
-                c for c in classes
+                c
+                for c in classes
                 if c.endswith("Agent")
-                or (af.name in CLASS_NAME_EXCEPTIONS
-                    and c == CLASS_NAME_EXCEPTIONS[af.name])
+                or (af.name in CLASS_NAME_EXCEPTIONS and c == CLASS_NAME_EXCEPTIONS[af.name])
             ]
             if len(agent_classes) == 0:
                 violations.append(f"{af}: NO agent ClassDef found (classes: {classes})")
-        assert not violations, (
-            "L2 *Agent.py files without a qualifying agent ClassDef:\n"
-            + "\n".join(violations)
+        assert not violations, "L2 *Agent.py files without a qualifying agent ClassDef:\n" + "\n".join(
+            violations
         )
 
 
@@ -128,8 +128,7 @@ class TestL2AgentReachability:
             classes = _parse_top_level_classes(af)
             for c in classes:
                 if c.endswith("Agent") or (
-                    af.name in CLASS_NAME_EXCEPTIONS
-                    and c == CLASS_NAME_EXCEPTIONS[af.name]
+                    af.name in CLASS_NAME_EXCEPTIONS and c == CLASS_NAME_EXCEPTIONS[af.name]
                 ):
                     class_to_file[c] = str(af)
 

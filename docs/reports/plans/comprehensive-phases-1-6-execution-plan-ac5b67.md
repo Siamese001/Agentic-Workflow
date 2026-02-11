@@ -34,8 +34,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 1: Nuclear Audit Tool Fixes (2 sub-phases)
 
 ### Phase 1A: Fix Namespace Validation Logic
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** HIGH (fixes false positives for all agents)
 
 **Tasks:**
@@ -51,8 +51,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 1A: Nuclear Audit Namespace Validation Fix"
 
 ### Phase 1B: Exclude False Positives
-**Duration:** 30 minutes  
-**Risk:** LOW  
+**Duration:** 30 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -69,8 +69,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 2: Broken Import Resolution (3 sub-phases)
 
 ### Phase 2A: Archive L0MaintenanceBaseAgent Stub
-**Duration:** 30 minutes  
-**Risk:** LOW  
+**Duration:** 30 minutes
+**Risk:** LOW
 **Impact:** HIGH (unblocks 4 dependent agents)
 
 **Tasks:**
@@ -91,8 +91,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 2A: Archive L0MaintenanceBaseAgent and Fix Dependencies"
 
 ### Phase 2B: Remove Duplicate Agents
-**Duration:** 45 minutes  
-**Risk:** MEDIUM  
+**Duration:** 45 minutes
+**Risk:** MEDIUM
 **Impact:** HIGH (eliminates architectural confusion)
 
 **Tasks:**
@@ -108,8 +108,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 2B: Remove Duplicate Agent Definitions"
 
 ### Phase 2C: Fix Remaining Broken Imports
-**Duration:** 45 minutes  
-**Risk:** LOW  
+**Duration:** 45 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -126,8 +126,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 3: Missing heal() Methods (2 sub-phases)
 
 ### Phase 3A: Implement heal() for Core Agents
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -142,8 +142,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 3A: Core Agent heal() Method Implementation"
 
 ### Phase 3B: Implement heal() for Utility Agents
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -160,8 +160,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 4: Execute Phase 4 Findings (3 sub-phases)
 
 ### Phase 4A: Fix High-Priority Agents
-**Duration:** 1 hour  
-**Risk:** MEDIUM  
+**Duration:** 1 hour
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Tasks:**
@@ -177,8 +177,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 4A: High-Priority Agent Fixes Complete"
 
 ### Phase 4B: Fix Medium-Priority Agents
-**Duration:** 2 hours  
-**Risk:** MEDIUM  
+**Duration:** 2 hours
+**Risk:** MEDIUM
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -193,8 +193,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 4B: Medium-Priority Agent Fixes Complete"
 
 ### Phase 4C: Execute Archival
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** LOW
 
 **Tasks:**
@@ -212,8 +212,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 5: Test Coverage Expansion (3 sub-phases)
 
 ### Phase 5A: Fix Test Infrastructure
-**Duration:** 2 hours  
-**Risk:** MEDIUM  
+**Duration:** 2 hours
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Tasks:**
@@ -229,8 +229,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 5A: Test Infrastructure Fixed"
 
 ### Phase 5B: Expand Core Coverage
-**Duration:** 3 hours  
-**Risk:** MEDIUM  
+**Duration:** 3 hours
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Tasks:**
@@ -246,8 +246,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 5B: Core Test Coverage Expanded"
 
 ### Phase 5C: Achieve Target Coverage
-**Duration:** 2 hours  
-**Risk:** MEDIUM  
+**Duration:** 2 hours
+**Risk:** MEDIUM
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -265,8 +265,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 ## Phase 6: Namespace Validation (2 sub-phases)
 
 ### Phase 6A: Complete Namespace Fixes
-**Duration:** 1.5 hours  
-**Risk:** MEDIUM  
+**Duration:** 1.5 hours
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Tasks:**
@@ -282,8 +282,8 @@ Based on the chat history and reports, here's what's been completed vs remaining
 **Commit:** "Phase 6A: Namespace Validation Complete"
 
 ### Phase 6B: Final Validation
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** HIGH
 
 **Tasks:**

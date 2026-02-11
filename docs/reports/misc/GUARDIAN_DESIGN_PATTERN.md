@@ -51,14 +51,14 @@ if 'phase1' in filename:
 def analyze_with_ast(self, file_path: Path) -> Dict:
     """Use AST to determine if file is obsolete."""
     tree = ast.parse(content)
-    
+
     # Extract and verify imports
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom):
             spec = importlib.util.find_spec(node.module)
             if spec is None:
                 broken_imports.append(node.module)
-    
+
     # Only mark obsolete if ALL imports are broken
     if len(broken_imports) == len(all_imports):
         return {'is_obsolete': True, 'confidence': 0.9}
@@ -101,10 +101,10 @@ tests/                          ← Level 1: Root test files
 def collect_test_files_all_levels(self, tests_root: Path) -> Dict[str, List[Path]]:
     """Collect test files at ALL levels of tests/ hierarchy."""
     result = {}
-    
+
     # Level 1: tests/ root
     result['tests_root'] = list(tests_root.glob("test_*.py"))
-    
+
     # Level 2+: Recursive subdirectories
     for subdir in tests_root.iterdir():
         if subdir.is_dir():
@@ -160,20 +160,20 @@ Guardian tests should only implement checks that are:
 ```python
 class TestGuardianCompliance:
     """Guardian test following the validation gate pattern."""
-    
+
     def test_architectural_compliance(self, project_root):
         """Main compliance verification."""
         violations = {}
-        
+
         # 1. Call existing agents for validation
         violations.update(self.check_mro_integrity())
         violations.update(self.check_ssot_compliance())
         violations.update(self.check_naming_conventions())
-        
+
         # 2. Guardian-specific hard rules
         violations.update(self.check_layer_hierarchy())
         violations.update(self.check_boundary_violations())
-        
+
         # 3. Emit signed artifact (pass/fail with metadata)
         if violations:
             self.emit_failure_artifact(violations)
@@ -261,22 +261,22 @@ Guardian tests should focus on:
 def test_architectural_compliance_gate(self, project_root):
     """Guardian gate that enforces architectural compliance."""
     violations = {}
-    
+
     # 1. Hard Rules - MRO Integrity
     mro_violations = self.check_mro_integrity()
     if mro_violations:
         violations['mro'] = mro_violations
-    
+
     # 2. Hard Rules - SSOT Compliance
     ssot_violations = self.check_ssot_compliance()
     if ssot_violations:
         violations['ssot'] = ssot_violations
-    
+
     # 3. Hard Rules - Layer Hierarchy
     hierarchy_violations = self.check_layer_hierarchy()
     if hierarchy_violations:
         violations['hierarchy'] = hierarchy_violations
-    
+
     # 4. Emit Signed Artifact
     if violations:
         self.emit_compliance_failure(violations)
@@ -290,7 +290,7 @@ def test_architectural_compliance_gate(self, project_root):
 From the user's memory and architecture diagram:
 
 > **Guardian tests are VALIDATION GATES that call VALIDATORS (agents).**
-> 
+>
 > - Maintain separation from validation code in agents
 > - Be able to call agents for validation
 > - Don't replicate logic already in FileClassificationAgent, LocationAgent, etc.

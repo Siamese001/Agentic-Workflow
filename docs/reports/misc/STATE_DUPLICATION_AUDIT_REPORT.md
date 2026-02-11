@@ -1,7 +1,7 @@
 # State Duplication Audit Report
 
-**Generated:** 2026-02-02  
-**Scope:** StructuralEngineerAgent, GravityLeakRepairAgent  
+**Generated:** 2026-02-02
+**Scope:** StructuralEngineerAgent, GravityLeakRepairAgent
 **Objective:** Identify redundant in-memory state and propose L4 context manager
 
 ---
@@ -152,13 +152,13 @@ from typing import Any
 @dataclass
 class CacheEntry:
     """Represents a cached analysis result."""
-    
+
     key: str
     value: Any
     timestamp: float
     ttl: int  # Time-to-live in seconds
     agent: str  # Which agent created this entry
-    
+
     def is_expired(self) -> bool:
         """Check if cache entry has expired."""
         return time.time() - self.timestamp > self.ttl
@@ -167,7 +167,7 @@ class CacheEntry:
 @dataclass
 class HealingPattern:
     """Represents a successful healing pattern."""
-    
+
     violation_signature: str  # Hash of violation characteristics
     healing_strategy: str  # Type of fix applied
     success_count: int  # Number of times this pattern succeeded
@@ -179,64 +179,64 @@ class HealingPattern:
 class L4ContextManager:
     """
     Centralized state management for L5 agents.
-    
+
     Singleton pattern ensures all agents share the same context.
     """
-    
+
     _instance: L4ContextManager | None = None
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        
+
         # Meta-learning cache (cross-agent)
         self._cache: dict[str, CacheEntry] = {}
-        
+
         # Healing patterns (cross-agent learning)
         self._patterns: dict[str, HealingPattern] = {}
-        
+
         # File analysis results (performance optimization)
         self._file_cache: dict[str, dict[str, Any]] = {}
-        
+
         # Python files list (shared across all agents)
         self._python_files: list[Path] | None = None
         self._python_files_timestamp: float = 0
-        
+
     @classmethod
     def get_instance(cls, project_root: Path) -> L4ContextManager:
         """Get or create singleton instance."""
         if cls._instance is None:
             cls._instance = cls(project_root)
         return cls._instance
-    
+
     # ========================================================================
     # META-LEARNING CACHE
     # ========================================================================
-    
+
     def cache_get(self, key: str, agent: str) -> Any | None:
         """
         Retrieve cached value.
-        
+
         Args:
             key: Cache key
             agent: Agent requesting the value
-            
+
         Returns:
             Cached value or None if not found/expired
         """
         entry = self._cache.get(key)
         if entry is None:
             return None
-        
+
         if entry.is_expired():
             del self._cache[key]
             return None
-        
+
         return entry.value
-    
+
     def cache_set(self, key: str, value: Any, agent: str, ttl: int = 3600):
         """
         Store value in cache.
-        
+
         Args:
             key: Cache key
             value: Value to cache
@@ -250,11 +250,11 @@ class L4ContextManager:
             ttl=ttl,
             agent=agent,
         )
-    
+
     def cache_clear(self, agent: str | None = None):
         """
         Clear cache entries.
-        
+
         Args:
             agent: If specified, only clear entries from this agent
         """
@@ -264,56 +264,56 @@ class L4ContextManager:
             self._cache = {
                 k: v for k, v in self._cache.items() if v.agent != agent
             }
-    
+
     # ========================================================================
     # HEALING PATTERN STORAGE (CROSS-AGENT LEARNING)
     # ========================================================================
-    
+
     def recall_healing_pattern(
         self, violation: dict[str, Any], agent: str
     ) -> dict[str, Any] | None:
         """
         Recall a successful healing pattern.
-        
+
         Enables cross-agent learning: If GravityLeakRepairAgent successfully
         fixed a similar violation, StructuralEngineerAgent can reuse that pattern.
-        
+
         Args:
             violation: Violation characteristics
             agent: Agent requesting the pattern
-            
+
         Returns:
             Healing pattern metadata or None
         """
         signature = self._compute_violation_signature(violation)
         pattern = self._patterns.get(signature)
-        
+
         if pattern is None:
             return None
-        
+
         # Update usage statistics
         pattern.last_used = time.time()
-        
+
         return {
             "healing_strategy": pattern.healing_strategy,
             "success_count": pattern.success_count,
             "discovered_by": pattern.agent,
             "metadata": pattern.metadata,
         }
-    
+
     def store_healing_pattern(
         self, violation: dict[str, Any], result: dict[str, Any], agent: str
     ):
         """
         Store a successful healing pattern.
-        
+
         Args:
             violation: Violation that was healed
             result: Healing result
             agent: Agent that performed the healing
         """
         signature = self._compute_violation_signature(violation)
-        
+
         if signature in self._patterns:
             # Increment success count
             self._patterns[signature].success_count += 1
@@ -328,11 +328,11 @@ class L4ContextManager:
                 agent=agent,
                 metadata=result,
             )
-    
+
     def _compute_violation_signature(self, violation: dict[str, Any]) -> str:
         """
         Compute a unique signature for a violation.
-        
+
         Similar violations should have the same signature to enable pattern reuse.
         """
         # Extract key characteristics
@@ -341,46 +341,46 @@ class L4ContextManager:
             "layer": violation.get("file_layer", violation.get("layer", "")),
             "target_layer": violation.get("import_layer", violation.get("target_layer", "")),
         }
-        
+
         # Create deterministic hash
         signature_str = json.dumps(characteristics, sort_keys=True)
         return hashlib.sha256(signature_str.encode()).hexdigest()[:16]
-    
+
     # ========================================================================
     # FILE ANALYSIS CACHE (PERFORMANCE OPTIMIZATION)
     # ========================================================================
-    
+
     def get_file_analysis(
         self, file_path: Path, analysis_type: str
     ) -> dict[str, Any] | None:
         """
         Get cached file analysis result.
-        
+
         Args:
             file_path: Path to file
             analysis_type: Type of analysis (e.g., "complexity", "gravity")
-            
+
         Returns:
             Cached analysis or None
         """
         cache_key = f"{file_path}:{analysis_type}"
-        
+
         # Check if file has been modified since cache
         if cache_key in self._file_cache:
             cached_mtime = self._file_cache[cache_key].get("mtime", 0)
             current_mtime = file_path.stat().st_mtime if file_path.exists() else 0
-            
+
             if current_mtime <= cached_mtime:
                 return self._file_cache[cache_key].get("result")
-        
+
         return None
-    
+
     def set_file_analysis(
         self, file_path: Path, analysis_type: str, result: dict[str, Any]
     ):
         """
         Cache file analysis result.
-        
+
         Args:
             file_path: Path to file
             analysis_type: Type of analysis
@@ -391,37 +391,37 @@ class L4ContextManager:
             "result": result,
             "mtime": file_path.stat().st_mtime if file_path.exists() else 0,
         }
-    
+
     # ========================================================================
     # SHARED PYTHON FILES LIST
     # ========================================================================
-    
+
     def get_python_files(self, max_age: int = 300) -> list[Path]:
         """
         Get list of Python files in project.
-        
+
         Cached for performance - all agents share the same list.
-        
+
         Args:
             max_age: Maximum age of cache in seconds
-            
+
         Returns:
             List of Python file paths
         """
         current_time = time.time()
-        
+
         if (
             self._python_files is None
             or current_time - self._python_files_timestamp > max_age
         ):
             # Refresh cache
             from agentic_core.utils.ssot_discovery_validator import get_python_files
-            
+
             self._python_files = get_python_files(self.project_root)
             self._python_files_timestamp = current_time
-        
+
         return self._python_files
-    
+
     def invalidate_python_files_cache(self):
         """Force refresh of Python files list on next access."""
         self._python_files = None

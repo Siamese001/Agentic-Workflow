@@ -8,7 +8,7 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 
 **Core Orchestration Components:**
 - `OrchestratorAgent.py` - Main facade delegating to UnifiedAgent (801 lines)
-- `DagEngineAgent.py` - Static DAG execution engine (537 lines) 
+- `DagEngineAgent.py` - Static DAG execution engine (537 lines)
 - `DAGManager.py` - Dynamic DAG mutation manager (275 lines)
 
 **Supporting Infrastructure:**
@@ -65,7 +65,7 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 +        # [FORWARD-ROLLING] Enhanced depth tracking with successor chain validation
 +        current_depth = context.metadata.get("depth", 0) if context else 0
 +        successor_chain = context.metadata.get("successor_chain", []) if context else []
-+        
++
 +        # DNA Integrity: Validate successor chain prevents circular references
 +        if agent_name in successor_chain:
 +            self.logger.critical(f"[DNA_SEVERED] Circular successor reference detected: {agent_name}")
@@ -76,7 +76,7 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 +                status="DNA_SEVERED",
 +                message="Circular successor reference violates DNA integrity",
 +            )
-+            
++
 +        if current_depth > 50:
 +            self.logger.critical(f"[CIRCUIT_BREAKER] Max depth (50) reached for {agent_name}.")
 +            return AgentResult(
@@ -88,12 +88,12 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 +            )
 
          self.logger.debug(f"[AGENT] Running {agent_name} (depth={current_depth})")
- 
+
          try:
 +            # [FORWARD-ROLLING] Successor spawning logic
 +            if hasattr(context, 'spawn_successor') and context.spawn_successor:
 +                return self._spawn_successor_agent(agent_name, dry_run, context)
-+                
++
              # Mode-specific execution logic
              if self.mode == OrchestratorMode.COMPLIANCE:
                  return self._run_compliance_mode(agent_name, dry_run, context)
@@ -122,11 +122,11 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 +                status="ERROR",
 +                message="Successor spawn requires valid context",
 +            )
-+            
++
 +        # Update successor chain for DNA tracking
 +        successor_chain = context.metadata.get("successor_chain", []).copy()
 +        successor_chain.append(agent_name)
-+        
++
 +        # Create successor context with preserved DNA
 +        successor_context = ExecutionContext(
 +            dry_run=context.dry_run,
@@ -139,7 +139,7 @@ Based on full agent discovery scan, the L3 orchestration layer contains:
 +                "predecessor_agent": agent_name,
 +            }
 +        )
-+        
++
 +        # Execute successor with enhanced validation
 +        return self.run_agent(agent_name, dry_run, successor_context)
 ```
@@ -182,7 +182,7 @@ class SuccessorSpec:
 class RecursiveOrchestrator(SovereignBaseAgent):
     """
     Forward-Rolling Recursion Orchestrator.
-    
+
     Implements successor-based recursion pattern that maintains:
     - Acyclicity through successor chain validation
     - DNA integrity through zero-loss context merging
@@ -196,16 +196,16 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         self.enable_validation_cache = enable_validation_cache
         self._validation_cache: Dict[str, bool] = {}
         self._successor_graph = nx.DiGraph()
-        
+
     def spawn_successor(
-        self, 
-        current_agent: str, 
+        self,
+        current_agent: str,
         successor_spec: SuccessorSpec,
         context: ExecutionContext
     ) -> AgentResult:
         """
         Spawn successor agent using Forward-Rolling pattern.
-        
+
         [ACYCLICITY GUARD] Validates successor maintains DAG properties
         [DNA PRESERVATION] Ensures context continuity across spawns
         """
@@ -218,79 +218,79 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                 status="CYCLE_DETECTED",
                 message=f"Successor {successor_spec.agent_name} would create cycle",
             )
-            
+
         # Update successor graph
         self._successor_graph.add_edge(current_agent, successor_spec.agent_name)
-        
+
         # Create successor context with DNA preservation
         successor_context = self._create_successor_context(
             current_agent, successor_spec, context
         )
-        
+
         # Execute successor through main orchestrator
         from agentic_core.L3_orchestration.OrchestratorAgent import OrchestratorAgent
         main_orchestrator = OrchestratorAgent()
-        
+
         return main_orchestrator.run_agent(
-            successor_spec.agent_name, 
-            context.dry_run, 
+            successor_spec.agent_name,
+            context.dry_run,
             successor_context
         )
-    
+
     def _validate_successor_acyclicality(self, predecessor: str, successor: str) -> bool:
         """
         Validate that adding successor maintains acyclicity.
-        
+
         Uses NetworkX is_directed_acyclic_graph for mathematical proof.
         Implements validation caching for performance optimization.
         """
         cache_key = f"{predecessor}->{successor}"
-        
+
         if self.enable_validation_cache and cache_key in self._validation_cache:
             return self._validation_cache[cache_key]
-            
+
         # Create temporary graph to test acyclicity
         temp_graph = self._successor_graph.copy()
         temp_graph.add_edge(predecessor, successor)
-        
+
         is_acyclic = nx.is_directed_acyclic_graph(temp_graph)
-        
+
         if self.enable_validation_cache:
             self._validation_cache[cache_key] = is_acyclic
-            
+
         if not is_acyclic:
             self.logger.critical(
                 f"[ACYCLICITY_VIOLATION] Edge {predecessor}->{successor} would create cycle"
             )
-            
+
         return is_acyclic
-    
+
     def _create_successor_context(
-        self, 
-        predecessor: str, 
+        self,
+        predecessor: str,
         successor_spec: SuccessorSpec,
         context: ExecutionContext
     ) -> ExecutionContext:
         """
         Create successor context with zero-loss DNA preservation.
-        
+
         Implements deep context merging strategy ensuring no data loss
         across successor spawns while maintaining metadata integrity.
         """
         # Deep merge accumulated context
         merged_context = context.accumulated_context.copy() if context.accumulated_context else {}
-        
+
         # Add predecessor metadata for DNA tracking
         merged_context.update({
             "predecessor_agent": predecessor,
             "spawn_timestamp": self._get_timestamp(),
             "context_merge_strategy": successor_spec.context_merge_strategy,
         })
-        
+
         # Update successor chain
         successor_chain = context.metadata.get("successor_chain", []).copy()
         successor_chain.append(predecessor)
-        
+
         return ExecutionContext(
             dry_run=context.dry_run,
             execute=context.execute,
@@ -303,23 +303,23 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                 "spawn_reason": "forward_rolling_recursion",
             }
         )
-    
+
     @standard_heal
     def heal_repository(self, dry_run: bool = True, execute: bool = False) -> Dict[str, int]:
         """
         Heal recursive orchestration infrastructure.
-        
+
         Validates successor graph acyclicity and repairs DNA integrity violations.
         """
         metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0, "skipped": 0}
-        
+
         try:
             # Validate successor graph acyclicity
             if not nx.is_directed_acyclic_graph(self._successor_graph):
                 cycles = list(nx.simple_cycles(self._successor_graph))
                 metrics["violations_found"] += len(cycles)
                 self.logger.critical(f"[HEAL] Found {len(cycles)} cycles in successor graph")
-                
+
                 if execute:
                     # Remove edges causing cycles
                     for cycle in cycles:
@@ -329,15 +329,15 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                             if self._successor_graph.has_edge(source, target):
                                 self._successor_graph.remove_edge(source, target)
                                 metrics["violations_fixed"] += 1
-                                
+
             # Clear validation cache if healing performed
             if metrics["violations_fixed"] > 0:
                 self._validation_cache.clear()
-                
+
         except Exception as e:
             self.logger.error(f"[HEAL] RecursiveOrchestrator healing failed: {e}")
             metrics["errors"] += 1
-            
+
         return metrics
 ```
 
@@ -348,11 +348,11 @@ class RecursiveOrchestrator(SovereignBaseAgent):
          self, executor: Callable[[Task], Awaitable[Any]], context: dict[str, Any] | None = None
      ) -> DAGExecutionResult:
          """Execute the DAG.
- 
+
          Args:
              executor: Async function to execute each Task
              context: Optional execution context
- 
+
          Returns:
              DAGExecutionResult with execution summary
          """
@@ -378,11 +378,11 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 -            completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order
 -        )
 +        context: Any = context or {}
-+        
++
 +        # [FORWARD-ROLLING] Check for recursive execution mode
 +        if context.get("forward_rolling_mode", False):
 +            return await self._execute_forward_rolling(executor, context)
-+        
++
 +        # Traditional static DAG execution
 +        execution_order: Any = self.topological_sort()
 +        completed_tasks: set[str] = set()
@@ -421,7 +421,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 +        execution_order: list[str] = []
 +        current_depth = context.get("depth", 0)
 +        successor_chain = context.get("successor_chain", [])
-+        
++
 +        # [DNA PRESERVATION] Validate successor chain integrity
 +        if self._has_circular_successor_chain(successor_chain):
 +            return DAGExecutionResult(
@@ -433,20 +433,20 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 +                execution_order=[],
 +                metadata={"error": "Circular successor chain detected"},
 +            )
-+        
++
 +        # Forward-rolling execution through successor spawning
 +        ready_tasks = self._get_ready_tasks(completed_tasks)
-+        
++
 +        while ready_tasks and current_depth < 50:
 +            # Execute next ready task
 +            task_id = ready_tasks.pop(0)
 +            Task = self.tasks[task_id]
-+            
++
 +            execution_order.append(task_id)
 +            success = await self._execute_single_task(
 +                Task, task_id, executor, completed_tasks, failed_tasks, task_results
 +            )
-+            
++
 +            if success:
 +                completed_tasks.add(task_id)
 +                # Spawn successors using forward-rolling pattern
@@ -465,10 +465,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 +            else:
 +                failed_tasks.append(task_id)
 +                break
-+                
++
 +            ready_tasks = self._get_ready_tasks(completed_tasks)
 +            current_depth += 1
-+        
++
 +        return self._create_dag_result(
 +            completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order
 +        )
@@ -508,7 +508,7 @@ class TestForwardRollingRecursion:
     def orchestrator(self):
         """Create test orchestrator instance."""
         return OrchestratorAgent(mode="unified")
-    
+
     @pytest.fixture
     def recursive_orchestrator(self):
         """Create recursive orchestrator instance."""
@@ -517,7 +517,7 @@ class TestForwardRollingRecursion:
     def test_linear_depth_exhaustion(self, orchestrator):
         """
         Test Case 1: Linear Depth Exhaustion
-        
+
         Forces the 50-step depth limit to verify circuit breaker functionality.
         Ensures recursive exhaustion is handled gracefully without system failure.
         """
@@ -527,7 +527,7 @@ class TestForwardRollingRecursion:
             accumulated_context={"test": "depth_exhaustion"},
             metadata={"depth": 49}  # One step from limit
         )
-        
+
         # Mock agent execution to always spawn successor
         with pytest.MonkeyPatch().context() as m:
             def mock_run_agent(agent_name, dry_run, ctx):
@@ -547,12 +547,12 @@ class TestForwardRollingRecursion:
                     status="PASS",
                     message="Agent executed successfully",
                 )
-            
+
             m.setattr(orchestrator, "_run_full_mode", mock_run_agent)
-            
+
             # Execute at depth limit
             result = orchestrator.run_agent("test_agent", True, context)
-            
+
             # Verify depth limit enforcement
             assert not result.success
             assert result.status == "DEPTH_LIMIT_EXCEEDED"
@@ -561,7 +561,7 @@ class TestForwardRollingRecursion:
     def test_dna_continuity_across_successors(self, recursive_orchestrator):
         """
         Test Case 2: DNA Continuity Verification
-        
+
         Verifies accumulated_context survives 5+ successor spawns without data loss.
         Tests zero-loss context merging across recursive successor chain.
         """
@@ -577,17 +577,17 @@ class TestForwardRollingRecursion:
             },
             metadata={"depth": 0, "successor_chain": []}
         )
-        
+
         # Spawn 5 successors in chain
         successor_chain = []
         accumulated_context = initial_context.accumulated_context.copy()
-        
+
         for i in range(5):
             successor_spec = SuccessorSpec(
                 agent_name=f"successor_{i}",
                 context_merge_strategy="deep_merge"
             )
-            
+
             # Mock main orchestrator to avoid circular dependency
             with pytest.MonkeyPatch().context() as m:
                 mock_orchestrator = MagicMock()
@@ -601,15 +601,15 @@ class TestForwardRollingRecursion:
                     "agentic_core.L3_orchestration.OrchestratorAgent.OrchestratorAgent",
                     lambda: mock_orchestrator
                 )
-                
+
                 result = recursive_orchestrator.spawn_successor(
                     f"predecessor_{i}", successor_spec, initial_context
                 )
-                
+
                 # Verify DNA preservation
                 assert result.success
                 successor_chain.append(f"successor_{i}")
-        
+
         # Validate DNA integrity across entire chain
         assert "original_goal" in accumulated_context
         assert "dataset" in accumulated_context
@@ -620,13 +620,13 @@ class TestForwardRollingRecursion:
     def test_cache_efficiency_optimization(self, recursive_orchestrator):
         """
         Test Case 3: Cache Efficiency Measurement
-        
+
         Measures subprocess reduction during recursive loops through validation caching.
         Verifies that validation caching provides significant performance improvements.
         """
         # Disable cache initially
         recursive_orchestrator.enable_validation_cache = False
-        
+
         # Perform multiple validations without cache
         validation_count_no_cache = 0
         for i in range(100):
@@ -634,11 +634,11 @@ class TestForwardRollingRecursion:
                 f"agent_{i % 10}", f"successor_{i % 10}"
             )
             validation_count_no_cache += 1
-            
+
         # Enable cache
         recursive_orchestrator.enable_validation_cache = True
         recursive_orchestrator._validation_cache.clear()
-        
+
         # Perform same validations with cache
         validation_count_with_cache = 0
         for i in range(100):
@@ -646,25 +646,25 @@ class TestForwardRollingRecursion:
                 f"agent_{i % 10}", f"successor_{i % 10}"
             )
             validation_count_with_cache += 1
-            
+
         # Verify cache effectiveness
         assert len(recursive_orchestrator._validation_cache) <= 10  # Only unique validations cached
         assert validation_count_no_cache == validation_count_with_cache  # Same number of validations
-        
+
         # Test cache hit performance
         cache_hits = 0
         for i in range(100):
             cache_key = f"agent_{i % 10}->successor_{i % 10}"
             if cache_key in recursive_orchestrator._validation_cache:
                 cache_hits += 1
-                
+
         # Majority should be cache hits
         assert cache_hits >= 90  # 90% cache hit rate
 
     def test_acyclicity_verification(self, recursive_orchestrator):
         """
         Test Case 4: Acyclicity Mathematical Proof
-        
+
         Proves that nx.is_directed_acyclic_graph remains true even after
         "backward" logic is simulated via successors. Verifies mathematical
         guarantees of acyclicity are preserved.
@@ -675,34 +675,34 @@ class TestForwardRollingRecursion:
             ("A", "E"), ("E", "F"), ("F", "G"),
             ("B", "E"), ("C", "F"),
         ]
-        
+
         # Add edges to successor graph
         for source, target in test_edges:
             recursive_orchestrator._successor_graph.add_edge(source, target)
-            
+
         # Verify initial acyclicity
         assert nx.is_directed_acyclic_graph(recursive_orchestrator._successor_graph)
-        
+
         # Test successor validation prevents cycles
         # Attempt to add edge that would create cycle: D -> A
         cycle_prevented = not recursive_orchestrator._validate_successor_acyclicality("D", "A")
         assert cycle_prevented, "Should prevent cycle-creating edge"
-        
+
         # Verify graph remains acyclic after prevention
         assert nx.is_directed_acyclic_graph(recursive_orchestrator._successor_graph)
-        
+
         # Test valid successor addition
         valid_successor = recursive_orchestrator._validate_successor_acyclicality("D", "H")
         assert valid_successor, "Should allow valid successor"
-        
+
         # Add valid successor and verify continued acyclicity
         recursive_orchestrator._successor_graph.add_edge("D", "H")
         assert nx.is_directed_acyclic_graph(recursive_orchestrator._successor_graph)
-        
+
         # Mathematical verification: no cycles exist
         cycles = list(nx.simple_cycles(recursive_orchestrator._successor_graph))
         assert len(cycles) == 0, f"Graph should have no cycles, found: {cycles}"
-        
+
         # Verify graph properties
         assert recursive_orchestrator._successor_graph.number_of_nodes() >= 8
         assert recursive_orchestrator._successor_graph.number_of_edges() >= 7
@@ -720,7 +720,7 @@ class TestIntegrationScenarios:
             accumulated_context={"mission": "integration_test"},
             metadata={"depth": 0, "successor_chain": [], "spawn_successor": True}
         )
-        
+
         # Mock agent execution to simulate successor spawning
         def mock_run_agent(agent_name, dry_run, ctx):
             # Simulate successor spawn for first agent
@@ -738,12 +738,12 @@ class TestIntegrationScenarios:
                 status="PASS",
                 message=f"{agent_name} executed"
             )
-        
+
         with pytest.MonkeyPatch().context() as m:
             m.setattr(orchestrator, "_run_full_mode", mock_run_agent)
-            
+
             mission_result = orchestrator.run_mission(agents, dry_run=True, context=context)
-            
+
             # Verify mission completed successfully
             assert mission_result.success
             assert mission_result.total_agents == len(agents)
@@ -767,7 +767,7 @@ class TestIntegrationScenarios:
             },
             metadata={"depth": 0, "successor_chain": []}
         )
-        
+
         # Simulate multiple recursion levels with context merging
         current_context = base_context
         for depth in range(1, 6):
@@ -787,17 +787,17 @@ class TestIntegrationScenarios:
                 }
             )
             current_context = successor_context
-        
+
         # Verify all context levels preserved
         assert "level_0" in current_context.accumulated_context
         assert "level_5" in current_context.accumulated_context
         assert current_context.accumulated_context["level_0"] == "base_data"
         assert current_context.accumulated_context["level_5"] == "data_at_depth_5"
-        
+
         # Verify nested structure preserved
         assert "nested" in current_context.accumulated_context
         assert current_context.accumulated_context["nested"]["level_1"]["level_2"] == "deep_data"
-        
+
         # Verify array properly merged
         expected_array = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
         assert current_context.accumulated_context.get("updated_array") == expected_array
@@ -822,37 +822,37 @@ The proposed Forward-Rolling Recursion architecture introduces significant memor
 ```python
 class ContextPruningStrategy:
     """Phase 2: Selective context pruning to prevent memory leaks."""
-    
+
     def __init__(self, max_context_size: int = 1024 * 1024, prune_ratio: float = 0.3):
         self.max_context_size = max_context_size  # 1MB default
         self.prune_ratio = prune_ratio
         self.critical_keys = {"original_goal", "dataset", "mission_params"}
-    
+
     def prune_context(self, context: ExecutionContext) -> ExecutionContext:
         """Prune accumulated context to prevent memory leaks."""
         current_size = self._estimate_context_size(context.accumulated_context)
-        
+
         if current_size > self.max_context_size:
             # Preserve critical DNA keys
             preserved_context = {
-                k: context.accumulated_context[k] 
-                for k in self.critical_keys 
+                k: context.accumulated_context[k]
+                for k in self.critical_keys
                 if k in context.accumulated_context
             }
-            
+
             # Prune non-critical data
             pruned_context = self._selective_prune(context.accumulated_context)
             preserved_context.update(pruned_context)
-            
+
             return ExecutionContext(
                 dry_run=context.dry_run,
                 execute=context.execute,
                 accumulated_context=preserved_context,
                 metadata=context.metadata
             )
-        
+
         return context
-    
+
     def _selective_prune(self, context: dict) -> dict:
         """Selectively prune non-critical context data."""
         # Implement LRU or priority-based pruning
@@ -875,16 +875,16 @@ The assumption that 50 steps is sufficient for long-running autonomous missions 
 ```python
 class AdaptiveDepthManager:
     """Phase 2: Adaptive depth management based on mission complexity."""
-    
+
     def __init__(self, base_limit: int = 50, max_limit: int = 200):
         self.base_limit = base_limit
         self.max_limit = max_limit
         self.complexity_metrics = ["context_size", "successor_count", "error_rate"]
-    
+
     def calculate_adaptive_limit(self, context: ExecutionContext) -> int:
         """Calculate adaptive depth limit based on mission complexity."""
         complexity_score = self._assess_complexity(context)
-        
+
         # Scale depth limit based on complexity
         if complexity_score < 0.3:
             return self.base_limit
@@ -892,7 +892,7 @@ class AdaptiveDepthManager:
             return int(self.base_limit * 1.5)
         else:
             return self.max_limit
-    
+
     def _assess_complexity(self, context: dict) -> float:
         """Assess mission complexity from 0.0 to 1.0."""
         # Implement complexity assessment algorithm

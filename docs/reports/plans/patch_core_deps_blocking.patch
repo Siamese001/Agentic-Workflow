@@ -30,7 +30,7 @@
 +    "tqdm>=4.65.0",
 +    "watchdog>=3.0.0",
  ]
- 
+
  [project.optional-dependencies]
  dev = [
 +    "pytest>=7.4.0",

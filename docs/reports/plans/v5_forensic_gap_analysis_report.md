@@ -1,10 +1,10 @@
 # FORENSIC GAP ANALYSIS REPORT — Prompt v5.0 Enhanced (V15 Target State)
 
-**Generated**: 2026-02-09T19:37:00Z  
-**Discovery Commit**: `7f6d87befab360bf9cff3dd87772832cbbcbf742`  
-**Discovery Schema Version**: 1.2.1-corrected  
-**ACTIVE Agents**: 150  
-**Non-ACTIVE (INVALID)**: 40  
+**Generated**: 2026-02-09T19:37:00Z
+**Discovery Commit**: `7f6d87befab360bf9cff3dd87772832cbbcbf742`
+**Discovery Schema Version**: 1.2.1-corrected
+**ACTIVE Agents**: 150
+**Non-ACTIVE (INVALID)**: 40
 **Auditor Role**: Deterministic Forensic Auditor (Static Capability Audit)
 
 ---

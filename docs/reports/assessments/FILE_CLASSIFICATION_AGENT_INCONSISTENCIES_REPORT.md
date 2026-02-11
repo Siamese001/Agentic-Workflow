@@ -59,11 +59,11 @@ if file_type == "TEST":
     # Regex to convert PascalCase/camelCase to snake_case
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     snake_name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
-    
+
     # Ensure test_ prefix if missing
     if not snake_name.startswith("test_"):
         snake_name = f"test_{snake_name}"
-    
+
     return f"{snake_name}.py"
 ```
 
@@ -167,12 +167,12 @@ Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
                          try:
                              with open(file_path, encoding="utf-8") as f:
                                  content = f.read()
- 
+
 -                            # Check if it's actually an agent class
 -                            if "class " in content and "Agent" in content:
 +                            # Use same classification logic as main audit
 +                            file_type = self.classify_file(file_path)
-+                            
++
 +                            if file_type == "AGENT":
 +                                # Use same naming logic as get_compliant_name
 +                                new_name = self.get_compliant_name(file_path, file_type)
@@ -192,7 +192,7 @@ Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
 @@ -572,9 +572,6 @@
          if file_type == "UTILITY":
              return None
- 
+
 -        # --- TEST STANDARDIZATION ---
 -        # Handle TEST files before AST parsing (tests may not have classes)
 -        if file_type == "TEST":
@@ -222,7 +222,7 @@ Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
 +# Logger for healing operations
 +import logging
 +Logger = logging.getLogger(__name__)
- 
+
  # SSOT Integration with fast-fail pruning
  def get_python_files_fast(root: Path) -> list[Path]:
 ```
@@ -252,7 +252,7 @@ Path: agentic_core/L5_safety/validators/PascalSovereigntyAgent.py
 @@ -569,7 +569,6 @@
              target = f"{clean_stem}.py"
              return target if target != path.name else None
- 
+
 -        if file_type == "UTILITY":
 -            return None
 -

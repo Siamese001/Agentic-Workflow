@@ -231,10 +231,10 @@ ruff check --select I --fix .
    ```bash
    # Fix import order
    ruff check --select I --fix .
-   
+
    # Create missing __init__.py
    python -m agentic_core.L0_maintenance.scripts.SovereignHealingEngine --fix-init
-   
+
    # Fix base agent locations (constitutional)
    python -m agentic_core.L5_safety.validators.LocationAgent --heal-base-agents
    ```
@@ -244,7 +244,7 @@ ruff check --select I --fix .
    # Fix gravity leaks
    python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run
    python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply
-   
+
    # Move files to correct locations
    python -m agentic_core.L5_safety.validators.LocationAgent --heal --dry-run
    python -m agentic_core.L5_safety.validators.LocationAgent --heal --apply
@@ -280,7 +280,7 @@ To create a new remediation agent for a violation type:
 1. **Extend SovereignHealingEngine**
    ```python
    from agentic_core.L0_maintenance.scripts.SovereignHealingEngine import SovereignHealingEngine
-   
+
    class MyHealingStrategy:
        async def heal(self, violations):
            # Implement healing logic

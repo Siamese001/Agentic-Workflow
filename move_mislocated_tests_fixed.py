@@ -135,7 +135,7 @@ def main():
         for source, target, module_path in sorted(tests):
             print(f"  {module_path}")
             print(
-                f"    {source.relative_to(pathlib.Path('tests'))} -> {target.relative_to(pathlib.Path('tests'))}"
+                f"    {source.relative_to(pathlib.Path('tests'))} -> {target.relative_to(pathlib.Path('tests'))}",
             )
 
             # Move the file

@@ -16,7 +16,7 @@ def test_test_run_guardian_contract_integrity_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity: {e}",
         )
 
 
@@ -27,7 +27,7 @@ def test_test_run_guardian_contract_integrity_has_file_attribute():
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity"
+            "Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity",
         )
 
 
@@ -48,5 +48,5 @@ def test_test_run_guardian_contract_integrity_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity"
+            "Cannot import module agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity",
         )

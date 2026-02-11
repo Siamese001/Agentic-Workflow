@@ -151,16 +151,16 @@ def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
     import {module_import_path}
-    
+
     # Check that module has some content
     module_dict = {module_import_path}.__dict__
-    
+
     # Count meaningful items (excluding dunder methods)
     meaningful_items = [
         name for name in module_dict.keys()
         if not name.startswith('__') or name in ['__all__', '__version__']
     ]
-    
+
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, f"Module {module_import_path} appears to be empty"
 '''

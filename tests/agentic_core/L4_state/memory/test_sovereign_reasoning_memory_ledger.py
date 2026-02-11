@@ -16,7 +16,7 @@ def test_test_sovereign_reasoning_memory_ledger_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger: {e}"
+            f"Cannot import module agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger: {e}",
         )
 
 

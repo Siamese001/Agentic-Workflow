@@ -1,9 +1,9 @@
 # Phase 1 Technical Specification: Agent Integration Migration
 
-**Date:** 2026-02-03  
-**Phase:** 1 - Foundation Layer  
-**Scope:** SovereignBaseAgent enhancement with Mixins and Interface Decoupling  
-**Critical Risks Addressed:** Circular Dependencies, Runtime Safety  
+**Date:** 2026-02-03
+**Phase:** 1 - Foundation Layer
+**Scope:** SovereignBaseAgent enhancement with Mixins and Interface Decoupling
+**Critical Risks Addressed:** Circular Dependencies, Runtime Safety
 
 ---
 
@@ -27,7 +27,7 @@ agentic_core/
 ├── interfaces/
 │   ├── __init__.py
 │   ├── verification_protocol.py      # VerificationGateProtocol
-│   ├── detection_protocol.py         # DetectionSignalProtocol  
+│   ├── detection_protocol.py         # DetectionSignalProtocol
 │   ├── review_protocol.py            # HumanReviewProtocol
 │   └── meta_learning_protocol.py     # MetaLearningProtocol
 ├── primitives/
@@ -63,17 +63,17 @@ class VerificationResult:
 
 class VerificationGateProtocol(ABC):
     """Protocol for verification gate implementations."""
-    
+
     @abstractmethod
     async def verify_action(self, request: VerificationRequest) -> VerificationResult:
         """Verify if an action can be performed."""
         pass
-    
+
     @abstractmethod
     def is_available(self) -> bool:
         """Check if verification gate is available."""
         pass
-    
+
     @abstractmethod
     def get_supported_actions(self) -> list[str]:
         """Get list of supported action types."""
@@ -92,43 +92,43 @@ T = TypeVar('T')
 
 class DynamicLoader:
     """Dynamically loads implementations to avoid circular dependencies."""
-    
+
     _cache: Dict[str, Any] = {}
-    
+
     @classmethod
     def load_implementation(cls, protocol_name: str, module_path: str, class_name: str) -> Optional[T]:
         """Load implementation dynamically."""
         cache_key = f"{protocol_name}:{module_path}:{class_name}"
-        
+
         if cache_key in cls._cache:
             return cls._cache[cache_key]
-        
+
         try:
             module = importlib.import_module(module_path)
             implementation = getattr(module, class_name)
-            
+
             # Verify implementation follows protocol
             if protocol_name == "verification":
                 from ..interfaces.verification_protocol import VerificationGateProtocol
                 if not issubclass(implementation, VerificationGateProtocol):
                     raise TypeError(f"Implementation {class_name} does not follow VerificationGateProtocol")
-            
+
             cls._cache[cache_key] = implementation
             return implementation
-            
+
         except (ImportError, AttributeError) as e:
             # Log error but don't crash
             print(f"Warning: Could not load {protocol_name} implementation: {e}")
             return None
-    
+
     @classmethod
     def create_instance(cls, protocol_name: str, module_path: str, class_name: str, *args, **kwargs) -> Optional[T]:
         """Create instance of implementation."""
         implementation = cls.load_implementation(protocol_name, module_path, class_name)
-        
+
         if implementation is None:
             return None
-            
+
         try:
             return implementation(*args, **kwargs)
         except Exception as e:
@@ -146,13 +146,13 @@ from ..primitives.dependency_resolver import DynamicLoader
 
 class SovereignBaseAgent:
     """Enhanced base agent with dynamic dependency resolution."""
-    
+
     def __init__(self):
         # Lazy loading to avoid circular dependencies
         self._verification_gate: Optional[VerificationGateProtocol] = None
         self._human_review_queue: Optional[Any] = None  # Similar pattern
         self._detection_signal_emitter: Optional[Any] = None  # Similar pattern
-    
+
     @property
     def verification_gate(self) -> Optional[VerificationGateProtocol]:
         """Get verification gate instance (lazy loaded)."""
@@ -163,22 +163,22 @@ class SovereignBaseAgent:
                 class_name="VerificationGate"
             )
         return self._verification_gate
-    
+
     async def verify_action(self, file_path: str, action_type: str, target_node: str) -> VerificationResult:
         """Verify action using dynamically loaded verification gate."""
         gate = self.verification_gate
-        
+
         if gate is None or not gate.is_available():
             # Graceful fallback - assume verification passes
             return VerificationResult(success=True, reason="verification_unavailable")
-        
+
         request = VerificationRequest(
             file_path=file_path,
             action_type=action_type,
             target_node=target_node,
             context={"agent": self.__class__.__name__}
         )
-        
+
         return await gate.verify_action(request)
 ```
 
@@ -204,7 +204,7 @@ class FeatureFlag:
 
 class FeatureFlagManager:
     """Centralized feature flag management."""
-    
+
     FLAGS: Dict[str, FeatureFlag] = {
         "ENABLE_META_LEARNING": FeatureFlag(
             name="ENABLE_META_LEARNING",
@@ -237,30 +237,30 @@ class FeatureFlagManager:
             required_for_healing=True
         ),
     }
-    
+
     @classmethod
     def is_enabled(cls, flag_name: str, agent_name: Optional[str] = None) -> bool:
         """Check if feature flag is enabled."""
         flag = cls.FLAGS.get(flag_name)
         if flag is None:
             return False
-        
+
         # Check environment variable
         env_value = os.getenv(flag_name, str(flag.default)).lower()
         enabled = env_value in ('true', '1', 'yes', 'on')
-        
+
         # Log flag usage for debugging
         if agent_name:
             print(f"[FLAG] {flag_name}={enabled} for {agent_name}")
-        
+
         return enabled
-    
+
     @classmethod
     def required_for_healing(cls, flag_name: str) -> bool:
         """Check if flag is required for healing operations."""
         flag = cls.FLAGS.get(flag_name)
         return flag.required_for_healing if flag else False
-    
+
     @classmethod
     def get_all_flags(cls) -> Dict[str, bool]:
         """Get all flag states."""
@@ -280,29 +280,29 @@ from ..primitives.feature_flags import FeatureFlagManager
 
 class FeatureFlaggedMixin:
     """Base mixin with feature flag support."""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._feature_flags_checked = False
-    
+
     def _check_feature_flags(self) -> None:
         """Check and cache feature flag states."""
         if self._feature_flags_checked:
             return
-        
+
         self._flag_cache = {
             flag: FeatureFlagManager.is_enabled(flag, self.__class__.__name__)
             for flag in self.REQUIRED_FLAGS
         }
         self._feature_flags_checked = True
-    
+
     def _is_flag_enabled(self, flag_name: str) -> bool:
         """Check if specific flag is enabled."""
         self._check_feature_flags()
         return self._flag_cache.get(flag_name, False)
-    
-    async def _execute_with_flag(self, 
-                                flag_name: str, 
+
+    async def _execute_with_flag(self,
+                                flag_name: str,
                                 enabled_fn: Callable,
                                 disabled_fn: Optional[Callable] = None,
                                 *args, **kwargs) -> Any:
@@ -318,9 +318,9 @@ class FeatureFlaggedMixin:
 # Specific mixin implementations
 class MetaLearningMixin(FeatureFlaggedMixin):
     """Meta-learning mixin with feature flag protection."""
-    
+
     REQUIRED_FLAGS = ["ENABLE_META_LEARNING"]
-    
+
     async def recall_or_execute(self, context: str, execution_fn: Callable) -> Any:
         """Recall from cache or execute with learning."""
         return await self._execute_with_flag(
@@ -330,21 +330,21 @@ class MetaLearningMixin(FeatureFlaggedMixin):
             context=context,
             execution_fn=execution_fn
         )
-    
+
     async def _do_recall_or_execute(self, context: str, execution_fn: Callable) -> Any:
         """Full meta-learning implementation."""
         # Implementation here
         pass
-    
+
     async def _direct_execute(self, context: str, execution_fn: Callable) -> Any:
         """Fallback: just execute without learning."""
         return await execution_fn()
 
 class AuditTrailMixin(FeatureFlaggedMixin):
     """Audit trail mixin with feature flag protection."""
-    
+
     REQUIRED_FLAGS = ["ENABLE_AUDIT_TRAIL"]
-    
+
     async def log_audit_event(self, event_type: str, data: Dict[str, Any]) -> Optional[str]:
         """Log audit event if enabled."""
         return await self._execute_with_flag(
@@ -353,7 +353,7 @@ class AuditTrailMixin(FeatureFlaggedMixin):
             event_type=event_type,
             data=data
         )
-    
+
     async def _do_log_audit_event(self, event_type: str, data: Dict[str, Any]) -> str:
         """Full audit trail implementation."""
         # Implementation here
@@ -361,27 +361,27 @@ class AuditTrailMixin(FeatureFlaggedMixin):
 
 class HealerMixin(FeatureFlaggedMixin):
     """Healer mixin with feature flag protection."""
-    
+
     REQUIRED_FLAGS = ["ENABLE_VERIFICATION_GATE", "ENABLE_HITL_WORKFLOW", "ENABLE_AUDIT_TRAIL"]
-    
+
     async def heal_with_verification(self, violation: Dict[str, Any]) -> Dict[str, Any]:
         """Heal with all safety checks if flags are enabled."""
         # Check if all required flags are enabled
         all_flags_enabled = all(
-            self._is_flag_enabled(flag) 
+            self._is_flag_enabled(flag)
             for flag in self.REQUIRED_FLAGS
         )
-        
+
         if all_flags_enabled:
             return await self._do_heal_with_verification(violation)
         else:
             return await self._do_simple_heal(violation)
-    
+
     async def _do_heal_with_verification(self, violation: Dict[str, Any]) -> Dict[str, Any]:
         """Full healing implementation with verification."""
         # Implementation here
         pass
-    
+
     async def _do_simple_heal(self, violation: Dict[str, Any]) -> Dict[str, Any]:
         """Fallback: simple healing without safety checks."""
         # Implementation here
@@ -398,35 +398,35 @@ class HealerMixin(FeatureFlaggedMixin):
 # Final inheritance structure for SovereignBaseAgent
 class SovereignBaseAgent(
     MetaLearningMixin,        # P0 - Cache/learn first
-    AuditTrailMixin,          # P1 - Log everything  
+    AuditTrailMixin,          # P1 - Log everything
     CostGuardrailMixin,       # P1 - Check costs
     HITLMixin,               # P0 - Human approval
     HealerMixin,             # P0 - Healing capabilities
     OriginalBaseAgent        # Existing base functionality
 ):
     """Enhanced sovereign base agent with all mixins."""
-    
+
     def __init__(self):
         # Initialize mixins in order
         super().__init__()
-        
+
         # Feature flag validation
         self._validate_required_flags()
-    
+
     def _validate_required_flags(self):
         """Validate required feature flags for agent type."""
         if hasattr(self, 'has_healing') and self.has_healing:
             required_flags = [
                 "ENABLE_VERIFICATION_GATE",
-                "ENABLE_HITL_WORKFLOW", 
+                "ENABLE_HITL_WORKFLOW",
                 "ENABLE_AUDIT_TRAIL"
             ]
-            
+
             missing = [
                 flag for flag in required_flags
                 if not FeatureFlagManager.is_enabled(flag, self.__class__.__name__)
             ]
-            
+
             if missing:
                 print(f"WARNING: Healing agent {self.__class__.__name__} missing required flags: {missing}")
 ```
@@ -465,11 +465,11 @@ COMPONENT_PATTERNS.update({
 def analyze_feature_flags(self, content: str) -> dict:
     """Analyze feature flag usage patterns."""
     flags_found = []
-    
+
     for flag_name in FeatureFlagManager.FLAGS.keys():
         if flag_name in content:
             flags_found.append(flag_name)
-    
+
     return {
         'uses_feature_flags': len(flags_found) > 0,
         'flags_found': flags_found,
@@ -500,7 +500,7 @@ Add these metrics to the analysis output:
 
 ### 5.1 Phase 1 Prerequisites
 - [ ] Create `agentic_core/interfaces/` module
-- [ ] Create `agentic_core/primitives/` module  
+- [ ] Create `agentic_core/primitives/` module
 - [ ] Implement all Protocol interfaces
 - [ ] Implement DynamicLoader
 - [ ] Implement FeatureFlagManager
