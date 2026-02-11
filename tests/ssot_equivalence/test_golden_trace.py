@@ -6,9 +6,9 @@ that becomes the gating oracle for all future extraction waves.
 Design decisions:
   - ``--legacy --plan`` mode is safe (pure introspection, no writes).
     This is used as the primary golden trace.
-  - Full ``--legacy`` execution requires the live repo and writes to
-    tracked files; it is marked xfail until a controlled fixture is
-    available.
+  - Full ``--legacy --validate`` execution runs in an isolated sandbox
+    repo (git worktree or local clone under tmp_path) so that any
+    file mutations are confined to the sandbox.
   - All snapshots use stable sorting and sha256 hashing.
   - stdout/stderr capped at 2000 chars for determinism.
 """
@@ -23,6 +23,12 @@ import sys
 from pathlib import Path
 
 import pytest
+
+from tests.ssot_equivalence._sandbox_repo import (
+    create_sandbox,
+    destroy_sandbox,
+    run_legacy_in_sandbox,
+)
 
 # ── Constants ─────────────────────────────────────────────────────
 
@@ -279,31 +285,94 @@ class TestLegacyPlanModeTrace:
         assert loaded["legacy"]["tree_before"] == loaded["legacy"]["tree_after"]
 
 
-# ── Test: full legacy execution (requires controlled fixture) ─────
+# ── Test: full legacy execution in sandbox ─────────────────────────
 
 
 class TestLegacyFullExecution:
-    """Full --legacy execution requires the live repo and writes to tracked
-    files during healing phases.  Until a sandboxed fixture is available,
-    these tests are marked xfail.
+    """Run full legacy pipeline inside an isolated sandbox repo.
+
+    The sandbox is created via ``git worktree add --detach`` (or local
+    clone as fallback) under ``tmp_path``.  All file mutations happen
+    inside the sandbox; the primary working tree is verified unchanged.
     """
 
-    @pytest.mark.xfail(
-        reason=(
-            "Full legacy execution requires live repo context with all agent "
-            "imports resolvable, writes to tracked files during L2 healing "
-            "phases, and cannot be safely isolated in a tmp_path fixture. "
-            "Prerequisite: sandboxed repo clone fixture with mock agent "
-            "registry (Phase 2 Wave 2.3+)."
-        ),
-        strict=False,
-    )
-    def test_full_legacy_run_captures_artifacts(self) -> None:
-        """Placeholder: run full legacy pipeline and capture artifacts."""
-        # This will be implemented when a controlled fixture exists.
-        # For now, assert False to trigger xfail.
-        msg = "Not yet implemented — awaiting sandboxed fixture"
-        raise NotImplementedError(msg)
+    @pytest.fixture()
+    def sandbox(self, tmp_path: Path):
+        """Create and yield a sandbox repo, then destroy it."""
+        from tests.ssot_equivalence._sandbox_repo import _git_available
+
+        if not _git_available(REPO_ROOT):
+            pytest.skip("git not available")
+        sandbox_path = create_sandbox(REPO_ROOT, tmp_path)
+        yield sandbox_path
+        destroy_sandbox(REPO_ROOT, sandbox_path)
+
+    @staticmethod
+    def _primary_porcelain() -> str:
+        return subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        ).stdout
+
+    def test_sandbox_created(self, sandbox: Path) -> None:
+        """Sandbox exists and contains agentic_core."""
+        assert sandbox.exists()
+        assert (sandbox / "agentic_core").is_dir()
+
+    def test_full_legacy_validate_captures_output(self, sandbox: Path) -> None:
+        """Run --legacy --validate in sandbox and capture trace."""
+        porcelain_before = self._primary_porcelain()
+
+        # Snapshot sandbox before
+        scripts_dir = sandbox / "agentic_core" / "L0_maintenance" / "scripts"
+        tree_before = _snapshot_tree(scripts_dir, rel_base=sandbox)
+
+        # Run legacy in validate mode (dry-run, no healing writes)
+        result = run_legacy_in_sandbox(sandbox, extra_args=["--validate"], timeout=120)
+
+        # Snapshot sandbox after
+        tree_after = _snapshot_tree(scripts_dir, rel_base=sandbox)
+
+        # Collect any artifacts written by legacy
+        artifacts_dir = sandbox / "logs" / "compliance_reports"
+        if artifacts_dir.is_dir():
+            artifacts_after = _snapshot_tree(artifacts_dir, rel_base=sandbox)
+        else:
+            artifacts_after = []
+
+        # Schema validity
+        assert isinstance(result["command"], list)
+        assert isinstance(result["returncode"], int)
+        assert isinstance(result["stdout_head"], str)
+        assert isinstance(result["stderr_head"], str)
+        assert len(result["stdout_head"]) <= MAX_CAPTURE
+        assert len(result["stderr_head"]) <= MAX_CAPTURE
+
+        # Trees are sorted and hashes are valid
+        for tree in (tree_before, tree_after, artifacts_after):
+            paths = [e["path"] for e in tree]
+            assert paths == sorted(paths)
+            for entry in tree:
+                assert len(entry["sha256"]) == 64
+                assert all(c in "0123456789abcdef" for c in entry["sha256"])
+
+        # Primary repo unchanged
+        porcelain_after = self._primary_porcelain()
+        assert porcelain_before == porcelain_after, (
+            "Sandboxed legacy run mutated primary working tree!\n"
+            f"Before:\n{porcelain_before}\nAfter:\n{porcelain_after}"
+        )
+
+    def test_primary_repo_no_new_untracked(self, sandbox: Path) -> None:
+        """After sandbox run, no new untracked files in primary repo."""
+        porcelain_before = self._primary_porcelain()
+
+        run_legacy_in_sandbox(sandbox, extra_args=["--validate"], timeout=120)
+
+        porcelain_after = self._primary_porcelain()
+        assert porcelain_before == porcelain_after
 
 
 # ── Test: golden snapshot file deterministic assertions ───────────
