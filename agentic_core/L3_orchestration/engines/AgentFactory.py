@@ -8,7 +8,6 @@ from __future__ import annotations
 # Downstream imports removed — move shared logic to apps_shared or sovereign utils
 # Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_shared']. Move shared logic to apps_shared or sovereign utils.
 # Removed: apps_shared.base_agents.canon_base_agent_interface (moved to agentic_core.utils.core_extensions)
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 """
 Agent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)
@@ -70,7 +69,7 @@ except ImportError:
 
 
 # NAMING FIXED: AgentFactory → AgentFactory
-class AgentFactory(SovereignBaseAgent):
+class AgentFactory:
     """
     Centralized factory for sovereign agent injection.
 

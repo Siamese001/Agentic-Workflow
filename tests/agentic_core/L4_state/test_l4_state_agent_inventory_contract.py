@@ -22,7 +22,7 @@ from pathlib import Path
 L4_ROOT = os.path.join("agentic_core", "L4_state")
 
 ENTRYPOINTS = [
-    os.path.join("agentic_core", "L3_orchestration", "reasoning", "AgentFactory.py"),
+    os.path.join("agentic_core", "L3_orchestration", "engines", "AgentFactory.py"),
     os.path.join("agentic_core", "L3_orchestration", "enforcement", "mission_runner.py"),
     os.path.join("agentic_core", "L3_orchestration", "enforcement", "safety_strategy.py"),
     os.path.join("agentic_core", "L5_safety", "enforcement", "HealingStrategy.py"),
