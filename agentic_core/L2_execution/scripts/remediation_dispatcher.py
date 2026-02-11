@@ -78,8 +78,27 @@ PHASE_APPROVAL_REQUIRED_OVERRIDES: dict[str, bool] = {
 }
 
 
+SANDBOX_SENTINEL = ".ssot_sandbox"
+
+
 class ApprovalGatingError(Exception):
     """Raised when a phase requires approval but none was provided."""
+
+
+class MutationGuardError(Exception):
+    """Raised when apply mode is used without sandbox or explicit override."""
+
+
+def mutation_allowed(repo_root: Path, allow_override: bool) -> bool:
+    """Check if mutations are permitted in the given repo root.
+
+    Mutations allowed iff:
+    - repo_root contains the sandbox sentinel file, OR
+    - allow_override is True (--allow-repo-mutation)
+    """
+    if allow_override:
+        return True
+    return (repo_root / SANDBOX_SENTINEL).is_file()
 
 
 # ---------------------------------------------------------------------------
@@ -221,15 +240,22 @@ def load_approval_bundle(path: Path) -> ApprovalBundle:
 # ---------------------------------------------------------------------------
 
 
-def _invoke_healer(check_id: str, check_dict: dict) -> HealCheckResult:
+def _invoke_healer(
+    check_id: str,
+    check_dict: dict,
+    *,
+    repo_root: Path | None = None,
+    apply: bool = False,
+) -> HealCheckResult:
     """Invoke a registered healer safely, converting errors to FAILED results.
 
+    Passes repo_root and apply as keyword arguments to healers that accept them.
     Returns the healer's HealCheckResult on success, or a FAILED result
     containing the exception class name on error.
     """
     healer_fn = HEALER_REGISTRY[check_id]
     try:
-        return healer_fn(check_dict)
+        return healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
         return HealCheckResult(
@@ -252,29 +278,47 @@ def run_dispatcher(
     created_utc: str,
     plan_name: str = "LEGACY_MIRROR_PLAN",
     approval_bundle_path: Path | None = None,
+    *,
+    apply: bool = False,
+    repo_root: Path | None = None,
+    allow_repo_mutation: bool = False,
 ) -> CombinedHealResult:
     """Execute the dispatcher interpreting LEGACY_MIRROR_PLAN PhaseSpec.
 
     1. Validates PhaseSpec name integrity.
-    2. Loads the guardian aggregate and extracts check_ids.
-    3. Loads optional ApprovalBundle (needed before phase iteration for gating).
-    4. Classifies check_ids as mapped or unmapped via phase prefix mapping.
-    5. Iterates phases in order, enforcing approval gating.
-    6. Produces a CombinedHealResult with all checks SKIPPED.
-    7. Validates and writes the result to the output directory.
+    2. Enforces mutation guard if apply mode requested.
+    3. Loads the guardian aggregate and extracts check_ids.
+    4. Loads optional ApprovalBundle (needed before phase iteration for gating).
+    5. Classifies check_ids as mapped or unmapped via phase prefix mapping.
+    6. Iterates phases in order, enforcing approval gating.
+    7. Produces a CombinedHealResult.
+    8. Validates and writes the result to the output directory.
 
     Returns the CombinedHealResult.
     Raises ApprovalGatingError if a phase requires approval and none is provided.
+    Raises MutationGuardError if apply without sandbox or override.
     """
     # 1. Validate PhaseSpec integrity
     validate_phase_names(LEGACY_MIRROR_PLAN)
 
-    # 2. Load guardian aggregate
+    # 2. Mutation guard
+    if apply:
+        if repo_root is None:
+            raise MutationGuardError(
+                "--apply requires --repo-root to identify the target repository",
+            )
+        if not mutation_allowed(repo_root, allow_repo_mutation):
+            raise MutationGuardError(
+                f"Mutation refused: repo at '{repo_root}' is not a sandbox "
+                f"(missing {SANDBOX_SENTINEL}) and --allow-repo-mutation not set",
+            )
+
+    # 3. Load guardian aggregate
     guardian_data = json.loads(guardian_result_path.read_text(encoding="utf-8"))
     check_ids = extract_check_ids(guardian_data)
     checks_by_id = extract_checks_by_id(guardian_data)
 
-    # 3. Load optional approval bundle (before phase iteration for gating)
+    # 4. Load optional approval bundle (before phase iteration for gating)
     bundle: ApprovalBundle | None = None
     approved_tokens: list[str] = []
     if approval_bundle_path is not None:
@@ -284,10 +328,10 @@ def run_dispatcher(
                 approved_tokens.append(record.token)
     approved_tokens = sorted(set(approved_tokens))
 
-    # 4. Classify check_ids
+    # 5. Classify check_ids
     mapped_ids, unmapped_ids = classify_check_ids(check_ids)
 
-    # 5. Iterate phases in PhaseSpec order
+    # 6. Iterate phases in PhaseSpec order
     heal_checks: list[HealCheckResult] = []
     for phase in LEGACY_MIRROR_PLAN.phases:
         # Select check_ids for this phase
@@ -309,7 +353,9 @@ def run_dispatcher(
         for cid in phase_cids:
             if cid in HEALER_REGISTRY:
                 check_dict = checks_by_id.get(cid, {"check_id": cid})
-                heal_checks.append(_invoke_healer(cid, check_dict))
+                heal_checks.append(
+                    _invoke_healer(cid, check_dict, repo_root=repo_root, apply=apply),
+                )
             else:
                 heal_checks.append(
                     HealCheckResult(
@@ -325,7 +371,7 @@ def run_dispatcher(
         if phase.rerun_guardians:
             pass  # Future: re-run specified guardians after healing
 
-    # 6. Add unmapped check_ids (coverage preservation)
+    # 7. Add unmapped check_ids (coverage preservation)
     for cid in sorted(unmapped_ids):
         heal_checks.append(
             HealCheckResult(
@@ -337,7 +383,7 @@ def run_dispatcher(
             ),
         )
 
-    # 7. Build CombinedHealResult
+    # 8. Build CombinedHealResult
     result = CombinedHealResult(
         tool_id=TOOL_ID,
         plan_name=plan_name,
@@ -346,12 +392,12 @@ def run_dispatcher(
         created_utc=created_utc,
     )
 
-    # 8. Validate before writing
+    # 9. Validate before writing
     errors = result.validate()
     if errors:
         raise ValueError(f"CombinedHealResult validation failed: {errors}")
 
-    # 9. Write artifact
+    # 10. Write artifact
     write_artifacts_dir.mkdir(parents=True, exist_ok=True)
     out_path = write_artifacts_dir / OUTPUT_FILENAME
     out_path.write_text(result.to_json(), encoding="utf-8")
@@ -392,6 +438,21 @@ def main() -> int:
         help="Execution plan name (default: LEGACY_MIRROR_PLAN)",
     )
     parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Enable mutating healers (default: dry-run only)",
+    )
+    parser.add_argument(
+        "--repo-root",
+        default=None,
+        help="Path to repository root (required if --apply)",
+    )
+    parser.add_argument(
+        "--allow-repo-mutation",
+        action="store_true",
+        help="Allow mutations on non-sandbox repos (use with caution)",
+    )
+    parser.add_argument(
         "--strict",
         action="store_true",
         help="Reserved for future use (no-op in this wave)",
@@ -405,7 +466,13 @@ def main() -> int:
             created_utc=args.created_utc,
             plan_name=args.plan_name,
             approval_bundle_path=Path(args.approval_bundle) if args.approval_bundle else None,
+            apply=args.apply,
+            repo_root=Path(args.repo_root) if args.repo_root else None,
+            allow_repo_mutation=args.allow_repo_mutation,
         )
+    except MutationGuardError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 3
     except ApprovalGatingError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
