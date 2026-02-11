@@ -2172,6 +2172,193 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
 
 
 # ============================================================================
+# EXECUTION PLAN (DETERMINISTIC, ORDERED)
+# ============================================================================
+
+# Canonical phase→agent→method mapping. This is the SSOT for pipeline structure.
+# Used by --plan introspection and by AST contract tests.
+EXECUTION_PLAN = [
+    {
+        "phase": "1",
+        "name": "Discovery",
+        "agents": [
+            {
+                "key": "reconciler",
+                "method": "detect_root_drift",
+                "description": "filesystem SSOT drift detection",
+            },
+            {
+                "key": "location",
+                "method": "run",
+                "description": "location validation (confidence gated heal)",
+            },
+            {
+                "key": "file_classification",
+                "method": "run",
+                "description": "file classification early detection",
+                "kwargs": "validate_only=True, dry_run=True",
+            },
+        ],
+    },
+    {
+        "phase": "2",
+        "name": "Reconciliation",
+        "agents": [
+            {"key": "reconciler", "method": "heal", "description": "drift reconciliation (confidence gated)"},
+        ],
+    },
+    {
+        "phase": "2.5",
+        "name": "Structural Alignment & Sovereignty",
+        "agents": [
+            {
+                "key": "hierarchy",
+                "method": "heal_hierarchy",
+                "description": "hierarchy alignment (confidence gated)",
+            },
+            {
+                "key": "file_classification",
+                "method": "heal_repository",
+                "description": "sovereignty purge (confidence gated, not dry_run, not validate)",
+            },
+        ],
+    },
+    {
+        "phase": "3",
+        "name": "Architectural Validation",
+        "agents": [
+            {
+                "key": "arch_governor",
+                "method": "comprehensive_territory_audit",
+                "description": "territory audit",
+            },
+            {
+                "key": "system_architect",
+                "method": "validate_core_architecture",
+                "description": "architecture validation",
+            },
+        ],
+    },
+    {
+        "phase": "4",
+        "name": "Healing",
+        "agents": [
+            {
+                "key": "arch_governor",
+                "method": "generate_healing_plan",
+                "description": "healing plan generation",
+            },
+            {
+                "key": "arch_governor",
+                "method": "execute_healing_plan",
+                "description": "healing plan execution",
+            },
+        ],
+    },
+    {
+        "phase": "4.5",
+        "name": "Additional Agents",
+        "agents": [
+            {
+                "key": "conversational_repair",
+                "method": "scan_violations",
+                "description": "conversational repair scan",
+            },
+            {
+                "key": "root_hygiene",
+                "method": "scan_root_violations",
+                "description": "root hygiene scan (if registered)",
+            },
+        ],
+    },
+    {
+        "phase": "5",
+        "name": "Certification",
+        "agents": [
+            {"key": "*", "method": "aggregate", "description": "final aggregation and certification"},
+        ],
+    },
+]
+
+# Agent dependency graph for --agent subset closure.
+# If agent A requires agent B to run first, declare it here.
+AGENT_DEPENDENCIES: dict[str, list[str]] = {
+    "hierarchy": ["reconciler", "location"],
+    "file_classification": ["reconciler", "location"],
+    "arch_governor": ["reconciler", "location", "hierarchy"],
+    "system_architect": ["reconciler", "location"],
+    "conversational_repair": [],
+    "root_hygiene": [],
+    "reconciler": [],
+    "location": ["reconciler"],
+    "cognitive_disposition": [],
+}
+
+# Canonical roster keys. Every agents["key"] reference in _legacy_main MUST
+# exist in this set. AST contract tests enforce this invariant.
+CANONICAL_ROSTER_KEYS = frozenset(
+    {
+        "reconciler",
+        "location",
+        "hierarchy",
+        "arch_governor",
+        "system_architect",
+        "file_classification",
+        "conversational_repair",
+        "cognitive_disposition",
+        "root_hygiene",
+    },
+)
+
+
+def get_execution_plan() -> list[dict]:
+    """Return the deterministic, ordered execution plan.
+
+    Pure introspection — no side effects, no file mutations.
+    """
+    return EXECUTION_PLAN
+
+
+def print_execution_plan() -> None:
+    """Print stable, sorted execution plan to stdout."""
+    for phase in EXECUTION_PLAN:
+        print(f"PHASE {phase['phase']}: {phase['name']}")
+        for agent in phase["agents"]:
+            kwargs_str = f" ({agent['kwargs']})" if agent.get("kwargs") else ""
+            print(f"  - {agent['key']}.{agent['method']}{kwargs_str}")
+            print(f"    # {agent['description']}")
+        print()
+
+
+def resolve_agent_subset(requested: list[str]) -> list[str]:
+    """Resolve requested agent keys to a closed set including dependencies.
+
+    Raises ValueError on unknown keys.
+    Deterministic ordering: sorted alphabetically after closure.
+    """
+    unknown = set(requested) - CANONICAL_ROSTER_KEYS
+    if unknown:
+        raise ValueError(f"Unknown agent key(s): {sorted(unknown)}. Valid: {sorted(CANONICAL_ROSTER_KEYS)}")
+
+    closed = set(requested)
+    frontier = list(requested)
+    while frontier:
+        key = frontier.pop()
+        for dep in AGENT_DEPENDENCIES.get(key, []):
+            if dep not in closed:
+                closed.add(dep)
+                frontier.append(dep)
+    return sorted(closed)
+
+
+def list_available_agents(project_root=None):
+    """Alias for discover_agents_from_registry (backward compat)."""
+    if project_root is None:
+        project_root = REPO_ROOT
+    return discover_agents_from_registry(project_root)
+
+
+# ============================================================================
 # MAIN ORCHESTRATOR
 # ============================================================================
 
@@ -2259,6 +2446,17 @@ Examples:
         action="store_true",
         help="Run in validation-only mode (CI/Dry-Run Mode)",
     )
+    parser.add_argument(
+        "--plan",
+        action="store_true",
+        help="Print the deterministic execution plan and exit. No side effects.",
+    )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        default=None,
+        help="Comma-separated list of agent keys to run (e.g. --agents location,hierarchy). Includes dependencies automatically. Hard-fails on unknown keys.",
+    )
     # [PHASE 8] New Flag for Golden Baseline capture
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
     parser.add_argument(
@@ -2276,6 +2474,27 @@ Examples:
         help="Increase log verbosity (repeatable).",
     )
     args = parser.parse_args(extra_argv)
+
+    # [PLAN MODE] Pure introspection — no execution, no side effects.
+    if args.plan:
+        print_execution_plan()
+        return
+
+    # [AGENT SUBSET] Validate and resolve --agents early (before imports).
+    requested_agent_keys: list[str] | None = None
+    if args.agents:
+        raw_keys = [k.strip() for k in args.agents.split(",") if k.strip()]
+        try:
+            requested_agent_keys = resolve_agent_subset(raw_keys)
+            logger.info(f"Agent subset resolved: {requested_agent_keys}")
+        except ValueError as ve:
+            parser.error(str(ve))
+
+    # [CENTRALIZED] validate ⇒ dry_run mapping (single source of truth).
+    # When --validate is set, dry_run is forced True. This ensures
+    # FileClassificationAgent and all other agents see consistent flags.
+    if args.validate:
+        args.dry_run = True
 
     # [HARDENED] 0. Pre-Flight Validation
     validator = PreFlightValidator(project_root)
@@ -2366,8 +2585,8 @@ Examples:
     # 3. Initialize Sovereign State & Agents
     state_mgr = RuntimeStateManager(project_root)
 
-    # [SIMPLIFIED] Parse arguments first
-    dry_run = args.dry_run or args.validate
+    # [SIMPLIFIED] Parse arguments — validate⇒dry_run already centralized above.
+    dry_run = args.dry_run
     auto_approve = not args.interactive
 
     # [SIMPLIFIED] LLM enabled by default for healing, disabled in dry-run mode
@@ -2404,7 +2623,7 @@ Examples:
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
         from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
-            RootHygieneAgent,  # noqa: F401
+            RootHygieneAgent,
         )
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
         from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
@@ -2424,6 +2643,7 @@ Examples:
             "file_classification": FileClassificationAgent,
             "conversational_repair": DebateSynthesisAgent,
             "cognitive_disposition": CognitiveDispositionAgent,
+            "root_hygiene": RootHygieneAgent,
         }
 
         logger.info("Total Awareness: Mandatory agent roster registered.")
@@ -2896,4 +3116,10 @@ class GracefulExitHandler:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    print(
+        "ERROR: Direct invocation of execute_ssot.py is not supported.\n"
+        "Use the entrypoint instead:\n"
+        "  python -m agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint --legacy\n",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
