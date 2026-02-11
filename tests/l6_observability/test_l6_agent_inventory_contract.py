@@ -30,9 +30,7 @@ L6_ROOT = ROOT / "agentic_core" / "L6_observability"
 # ---------------------------------------------------------------------------
 # Budget constant — update this (with justification comment) if adding agents
 # ---------------------------------------------------------------------------
-# Post-cleanup baseline: 0 *Agent.py files remain in production L6.
-# All real agents relocated to tests/support/l6_observability/.
-# All shims deleted (ObservabilityProbeExecutor is the canonical executor).
+# L6 production must not contain *Agent.py; test-only agents live under tests/support/.
 AGENT_FILE_BUDGET = 0
 
 # Shim files explicitly allowed to exist as *Agent.py without a ClassDef.
@@ -138,8 +136,8 @@ class TestL6AgentReachability:
 
     def test_all_agents_reachable_or_allowlisted(self) -> None:
         agents = _collect_l6_agent_classes()
-        if not agents:
-            pytest.skip("No L6 agent classes in production (budget=0)")
+        # When budget=0 and no agents exist, the empty-unreachable assertion
+        # passes deterministically (vacuous truth).  No skip branch.
 
         # Collect all L6 symbols imported by entrypoints
         reachable: set[str] = set()
@@ -148,10 +146,11 @@ class TestL6AgentReachability:
             if ep_path.exists():
                 reachable |= _find_l6_imports_in_file(ep_path)
 
-        unreachable = []
-        for cls_name in sorted(agents):
-            if cls_name not in reachable and cls_name not in UNREACHABLE_ALLOWLIST:
-                unreachable.append(cls_name)
+        unreachable = [
+            cls_name
+            for cls_name in sorted(agents)
+            if cls_name not in reachable and cls_name not in UNREACHABLE_ALLOWLIST
+        ]
 
         assert not unreachable, (
             f"L6 agent classes not reachable from any entrypoint "
