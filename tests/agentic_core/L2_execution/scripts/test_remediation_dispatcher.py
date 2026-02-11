@@ -22,6 +22,8 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     NOTE_UNMAPPED,
     OUTPUT_FILENAME,
     TOOL_ID,
+    ApprovalGatingError,
+    approvals_satisfy_phase,
     classify_check_ids,
     extract_check_ids,
     run_dispatcher,
@@ -487,6 +489,218 @@ class TestClassifyCheckIds:
             ["guardian_drift_detection_extra"],
         )
         assert "guardian_drift_detection_extra" in mapped
+
+
+# ---------------------------------------------------------------------------
+# Approval gating enforcement
+# ---------------------------------------------------------------------------
+
+
+class TestApprovalGating:
+    """Proves approval gating blocks/allows correctly."""
+
+    def test_healing_phase_blocks_without_approval(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(ApprovalGatingError, match="healing"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+            )
+
+    def test_healing_phase_allows_with_phase_wide_approval(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+        )
+        bundle_data = {
+            "contract_version": 1,
+            "records": [
+                {
+                    "phase_name": "healing",
+                    "guardian_id": None,
+                    "check_ids": [],
+                    "decision": "APPROVED",
+                    "approver": "lead@example.com",
+                    "rationale": None,
+                    "token": "t-ok",
+                    "created_utc": TIMESTAMP,
+                },
+            ],
+        }
+        bundle_path = tmp_path / "bundle.json"
+        bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            approval_bundle_path=bundle_path,
+        )
+        assert result.validate() == []
+        d = result.to_dict()
+        assert d["approved_by"] == ["t-ok"]
+
+    def test_non_healing_phases_do_not_require_approval(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert result.validate() == []
+
+    def test_healing_phase_rejected_only_still_blocks(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+        )
+        bundle_data = {
+            "contract_version": 1,
+            "records": [
+                {
+                    "phase_name": "healing",
+                    "guardian_id": None,
+                    "check_ids": [],
+                    "decision": "REJECTED",
+                    "approver": "lead@example.com",
+                    "rationale": "Not ready",
+                    "token": "t-rej",
+                    "created_utc": TIMESTAMP,
+                },
+            ],
+        }
+        bundle_path = tmp_path / "bundle.json"
+        bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(ApprovalGatingError, match="healing"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+                approval_bundle_path=bundle_path,
+            )
+
+    def test_wrong_phase_approval_does_not_satisfy(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+        )
+        bundle_data = {
+            "contract_version": 1,
+            "records": [
+                {
+                    "phase_name": "discovery",
+                    "guardian_id": None,
+                    "check_ids": [],
+                    "decision": "APPROVED",
+                    "approver": "lead@example.com",
+                    "rationale": None,
+                    "token": "t-wrong",
+                    "created_utc": TIMESTAMP,
+                },
+            ],
+        }
+        bundle_path = tmp_path / "bundle.json"
+        bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(ApprovalGatingError, match="healing"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+                approval_bundle_path=bundle_path,
+            )
+
+
+class TestApprovalsSatisfyPhase:
+    """Proves the pure approval matcher function."""
+
+    def test_none_bundle_returns_false(self) -> None:
+        assert approvals_satisfy_phase(None, "healing") is False
+
+    def test_matching_approval_returns_true(self) -> None:
+        from agentic_core.L3_orchestration.types.approval_contract import (
+            ApprovalBundle,
+            ApprovalDecision,
+            ApprovalRecord,
+        )
+
+        bundle = ApprovalBundle(
+            records=(
+                ApprovalRecord(
+                    phase_name="healing",
+                    decision=ApprovalDecision.APPROVED,
+                    approver="a@x.com",
+                    token="t1",
+                    created_utc=TIMESTAMP,
+                ),
+            ),
+        )
+        assert approvals_satisfy_phase(bundle, "healing") is True
+
+    def test_wrong_phase_returns_false(self) -> None:
+        from agentic_core.L3_orchestration.types.approval_contract import (
+            ApprovalBundle,
+            ApprovalDecision,
+            ApprovalRecord,
+        )
+
+        bundle = ApprovalBundle(
+            records=(
+                ApprovalRecord(
+                    phase_name="discovery",
+                    decision=ApprovalDecision.APPROVED,
+                    approver="a@x.com",
+                    token="t1",
+                    created_utc=TIMESTAMP,
+                ),
+            ),
+        )
+        assert approvals_satisfy_phase(bundle, "healing") is False
+
+    def test_rejected_returns_false(self) -> None:
+        from agentic_core.L3_orchestration.types.approval_contract import (
+            ApprovalBundle,
+            ApprovalDecision,
+            ApprovalRecord,
+        )
+
+        bundle = ApprovalBundle(
+            records=(
+                ApprovalRecord(
+                    phase_name="healing",
+                    decision=ApprovalDecision.REJECTED,
+                    approver="a@x.com",
+                    token="t1",
+                    created_utc=TIMESTAMP,
+                ),
+            ),
+        )
+        assert approvals_satisfy_phase(bundle, "healing") is False
 
 
 # ---------------------------------------------------------------------------
