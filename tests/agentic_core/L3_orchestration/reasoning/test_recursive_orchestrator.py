@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test for test_sovereign_mcp_router
+Test for test_recursive_orchestrator
 # GENERATED_MIRROR_TEST
 """
 
@@ -9,28 +9,30 @@ import importlib
 import pytest
 
 
-def test_test_sovereign_mcp_router_can_import():
+def test_test_recursive_orchestrator_can_import():
     """Test that the module can be imported successfully."""
     try:
-        mod = importlib.import_module("agentic_core.L3_orchestration.engines.sovereign_mcp_router")
+        mod = importlib.import_module("agentic_core.L3_orchestration.reasoning.recursive_orchestrator")
         assert mod is not None
     except ImportError as e:
-        pytest.skip(f"Cannot import module agentic_core.L3_orchestration.engines.sovereign_mcp_router: {e}")
+        pytest.skip(
+            f"Cannot import module agentic_core.L3_orchestration.reasoning.recursive_orchestrator: {e}",
+        )
 
 
-def test_test_sovereign_mcp_router_has_file_attribute():
+def test_test_recursive_orchestrator_has_file_attribute():
     """Test that module has __file__ attribute."""
     try:
-        mod = importlib.import_module("agentic_core.L3_orchestration.engines.sovereign_mcp_router")
+        mod = importlib.import_module("agentic_core.L3_orchestration.reasoning.recursive_orchestrator")
         assert hasattr(mod, "__file__")
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.L3_orchestration.engines.sovereign_mcp_router")
+        pytest.skip("Cannot import module agentic_core.L3_orchestration.reasoning.recursive_orchestrator")
 
 
-def test_test_sovereign_mcp_router_has_public_attributes():
+def test_test_recursive_orchestrator_has_public_attributes():
     """Test that module has public attributes or callables."""
     try:
-        mod = importlib.import_module("agentic_core.L3_orchestration.engines.sovereign_mcp_router")
+        mod = importlib.import_module("agentic_core.L3_orchestration.reasoning.recursive_orchestrator")
         # Count non-private attributes
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
         # Look for at least one callable
@@ -43,4 +45,4 @@ def test_test_sovereign_mcp_router_has_public_attributes():
             # If no callables, at least assert we have some public attributes
             assert len(public_attrs) >= 0
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.L3_orchestration.engines.sovereign_mcp_router")
+        pytest.skip("Cannot import module agentic_core.L3_orchestration.reasoning.recursive_orchestrator")
