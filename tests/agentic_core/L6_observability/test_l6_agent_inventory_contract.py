@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 L6_ROOT = ROOT / "agentic_core" / "L6_observability"
 
 # ---------------------------------------------------------------------------
