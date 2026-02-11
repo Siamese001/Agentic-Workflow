@@ -26,8 +26,10 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     ApprovalGatingError,
     MutationGuardError,
     approvals_satisfy_phase,
+    build_healer_worklist,
     classify_check_ids,
     extract_check_ids,
+    extract_healable_items_from_guardian_check,
     run_dispatcher,
     validate_phase_names,
 )
@@ -507,27 +509,35 @@ class TestClassifyCheckIds:
 class TestApprovalGating:
     """Proves approval gating blocks/allows correctly."""
 
-    def test_healing_phase_blocks_without_approval(
+    def test_phase_blocks_without_approval(
         self,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _mod
+
+        monkeypatch.setitem(_mod.PHASE_APPROVAL_REQUIRED_OVERRIDES, "arch_validation", True)
         agg = _write_guardian_aggregate(
             tmp_path / "agg.json",
             ["guardian_architecture_governance"],
         )
         out = tmp_path / "out"
         out.mkdir()
-        with pytest.raises(ApprovalGatingError, match="healing"):
+        with pytest.raises(ApprovalGatingError, match="arch_validation"):
             run_dispatcher(
                 guardian_result_path=agg,
                 write_artifacts_dir=out,
                 created_utc=TIMESTAMP,
             )
 
-    def test_healing_phase_allows_with_phase_wide_approval(
+    def test_phase_allows_with_matching_approval(
         self,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _mod
+
+        monkeypatch.setitem(_mod.PHASE_APPROVAL_REQUIRED_OVERRIDES, "arch_validation", True)
         agg = _write_guardian_aggregate(
             tmp_path / "agg.json",
             ["guardian_architecture_governance"],
@@ -536,7 +546,7 @@ class TestApprovalGating:
             "contract_version": 1,
             "records": [
                 {
-                    "phase_name": "healing",
+                    "phase_name": "arch_validation",
                     "guardian_id": None,
                     "check_ids": [],
                     "decision": "APPROVED",
@@ -573,10 +583,14 @@ class TestApprovalGating:
         )
         assert result.validate() == []
 
-    def test_healing_phase_rejected_only_still_blocks(
+    def test_rejected_only_still_blocks(
         self,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _mod
+
+        monkeypatch.setitem(_mod.PHASE_APPROVAL_REQUIRED_OVERRIDES, "arch_validation", True)
         agg = _write_guardian_aggregate(
             tmp_path / "agg.json",
             ["guardian_architecture_governance"],
@@ -585,7 +599,7 @@ class TestApprovalGating:
             "contract_version": 1,
             "records": [
                 {
-                    "phase_name": "healing",
+                    "phase_name": "arch_validation",
                     "guardian_id": None,
                     "check_ids": [],
                     "decision": "REJECTED",
@@ -600,7 +614,7 @@ class TestApprovalGating:
         bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
         out = tmp_path / "out"
         out.mkdir()
-        with pytest.raises(ApprovalGatingError, match="healing"):
+        with pytest.raises(ApprovalGatingError, match="arch_validation"):
             run_dispatcher(
                 guardian_result_path=agg,
                 write_artifacts_dir=out,
@@ -611,7 +625,11 @@ class TestApprovalGating:
     def test_wrong_phase_approval_does_not_satisfy(
         self,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _mod
+
+        monkeypatch.setitem(_mod.PHASE_APPROVAL_REQUIRED_OVERRIDES, "arch_validation", True)
         agg = _write_guardian_aggregate(
             tmp_path / "agg.json",
             ["guardian_architecture_governance"],
@@ -635,7 +653,7 @@ class TestApprovalGating:
         bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
         out = tmp_path / "out"
         out.mkdir()
-        with pytest.raises(ApprovalGatingError, match="healing"):
+        with pytest.raises(ApprovalGatingError, match="arch_validation"):
             run_dispatcher(
                 guardian_result_path=agg,
                 write_artifacts_dir=out,
@@ -862,14 +880,18 @@ class TestDispatcherHealerWiring:
     def test_approval_gating_still_enforced_with_healer(
         self,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _mod
+
+        monkeypatch.setitem(_mod.PHASE_APPROVAL_REQUIRED_OVERRIDES, "arch_validation", True)
         agg = _write_guardian_aggregate(
             tmp_path / "agg.json",
             ["guardian_architecture_governance"],
         )
         out = tmp_path / "out"
         out.mkdir()
-        with pytest.raises(ApprovalGatingError, match="healing"):
+        with pytest.raises(ApprovalGatingError, match="arch_validation"):
             run_dispatcher(
                 guardian_result_path=agg,
                 write_artifacts_dir=out,
@@ -1113,3 +1135,442 @@ class TestDispatcherNoSideEffects:
         new_files = after - before
         assert len(new_files) == 1
         assert OUTPUT_FILENAME in new_files.pop()
+
+
+# ---------------------------------------------------------------------------
+# Wave 2.1: Sub-check extraction + worklist unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestExtractHealableItems:
+    """Proves extract_healable_items_from_guardian_check handles all evidence shapes."""
+
+    def test_evidence_checks_shape(self) -> None:
+        check = {
+            "check_id": "guardian_classification_compliance",
+            "status": "FAIL",
+            "details": "2/2 checks failed",
+            "evidence": {
+                "guardian_id": "classification_compliance",
+                "checks": [
+                    {
+                        "check_id": "naming_compliance",
+                        "status": "FAIL",
+                        "details": "3 violations",
+                        "evidence": {"violation_count": 3, "violations": ["a", "b", "c"]},
+                    },
+                    {
+                        "check_id": "territory_compliance",
+                        "status": "FAIL",
+                        "details": "1 violation",
+                        "evidence": {"violation_count": 1, "violations": ["d"]},
+                    },
+                ],
+            },
+        }
+        items = extract_healable_items_from_guardian_check(check)
+        ids = [i[0] for i in items]
+        assert ids == ["naming_compliance", "territory_compliance"]
+        assert items[0][1]["evidence"]["violation_count"] == 3
+        assert items[1][1]["evidence"]["violation_count"] == 1
+
+    def test_evidence_violations_shape(self) -> None:
+        check = {
+            "check_id": "guardian_classification_compliance",
+            "status": "FAIL",
+            "details": "violations",
+            "evidence": {
+                "violations": {
+                    "naming_compliance": ["file_a.py", "file_b.py"],
+                    "territory_compliance": ["file_c.py"],
+                },
+            },
+        }
+        items = extract_healable_items_from_guardian_check(check)
+        ids = [i[0] for i in items]
+        assert ids == ["naming_compliance", "territory_compliance"]
+        assert items[0][1]["evidence"]["violations"] == ["file_a.py", "file_b.py"]
+
+    def test_unsupported_evidence_returns_empty(self) -> None:
+        check = {
+            "check_id": "guardian_foo",
+            "status": "FAIL",
+            "details": "",
+            "evidence": {"guardian_id": "foo", "status": "FAIL"},
+        }
+        assert extract_healable_items_from_guardian_check(check) == ()
+
+    def test_no_evidence_returns_empty(self) -> None:
+        check = {"check_id": "guardian_foo", "status": "FAIL", "details": ""}
+        assert extract_healable_items_from_guardian_check(check) == ()
+
+    def test_non_dict_evidence_returns_empty(self) -> None:
+        check = {"check_id": "x", "status": "FAIL", "details": "", "evidence": "string"}
+        assert extract_healable_items_from_guardian_check(check) == ()
+
+    def test_sorted_output(self) -> None:
+        check = {
+            "check_id": "g",
+            "status": "FAIL",
+            "details": "",
+            "evidence": {
+                "checks": [
+                    {"check_id": "z_check", "status": "FAIL", "details": "", "evidence": {}},
+                    {"check_id": "a_check", "status": "FAIL", "details": "", "evidence": {}},
+                ],
+            },
+        }
+        items = extract_healable_items_from_guardian_check(check)
+        assert [i[0] for i in items] == ["a_check", "z_check"]
+
+    def test_missing_sub_evidence_defaults_to_empty_dict(self) -> None:
+        check = {
+            "check_id": "g",
+            "status": "FAIL",
+            "details": "",
+            "evidence": {
+                "checks": [
+                    {"check_id": "sub1", "status": "FAIL", "details": "no evidence key"},
+                ],
+            },
+        }
+        items = extract_healable_items_from_guardian_check(check)
+        assert items[0][1]["evidence"] == {}
+
+
+class TestBuildHealerWorklist:
+    """Proves build_healer_worklist deduplicates, sorts, and filters by registry."""
+
+    def test_sub_checks_included_when_in_registry(self) -> None:
+        checks = [
+            {
+                "check_id": "guardian_classification_compliance",
+                "status": "FAIL",
+                "details": "",
+                "evidence": {
+                    "checks": [
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                        {"check_id": "territory_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        ]
+        worklist = build_healer_worklist(checks)
+        ids = [w[0] for w in worklist]
+        assert "naming_compliance" in ids
+        assert "territory_compliance" in ids
+
+    def test_rollup_not_in_registry_excluded(self) -> None:
+        checks = [
+            {
+                "check_id": "guardian_classification_compliance",
+                "status": "FAIL",
+                "details": "",
+                "evidence": {
+                    "checks": [
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        ]
+        worklist = build_healer_worklist(checks)
+        ids = [w[0] for w in worklist]
+        assert "guardian_classification_compliance" not in ids
+
+    def test_rollup_in_registry_included(self) -> None:
+        checks = [
+            {
+                "check_id": "guardian_drift_detection",
+                "status": "FAIL",
+                "details": "",
+                "evidence": {},
+            },
+        ]
+        worklist = build_healer_worklist(checks)
+        ids = [w[0] for w in worklist]
+        assert "guardian_drift_detection" in ids
+
+    def test_sorted_deterministic(self) -> None:
+        checks = [
+            {
+                "check_id": "guardian_hierarchy_compliance",
+                "status": "FAIL",
+                "details": "",
+                "evidence": {
+                    "checks": [
+                        {"check_id": "subfolder_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                        {"check_id": "missing_structure", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        ]
+        worklist = build_healer_worklist(checks)
+        ids = [w[0] for w in worklist]
+        assert ids == sorted(ids)
+
+    def test_empty_aggregate_returns_empty(self) -> None:
+        assert build_healer_worklist([]) == ()
+
+    def test_unknown_sub_check_not_in_registry_excluded(self) -> None:
+        checks = [
+            {
+                "check_id": "guardian_classification_compliance",
+                "status": "FAIL",
+                "details": "",
+                "evidence": {
+                    "checks": [
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                        {"check_id": "unknown_check_xyz", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        ]
+        worklist = build_healer_worklist(checks)
+        ids = [w[0] for w in worklist]
+        assert "naming_compliance" in ids
+        assert "unknown_check_xyz" not in ids
+
+
+# ---------------------------------------------------------------------------
+# Wave 2.2: Dispatcher integration — healer reachability via sub-check expansion
+# ---------------------------------------------------------------------------
+
+
+class TestSubCheckHealerReachability:
+    """Proves sub-check healers are invoked when aggregate evidence contains sub-checks."""
+
+    def test_naming_compliance_healer_reached(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_classification_compliance"],
+            evidence_overrides={
+                "guardian_classification_compliance": {
+                    "guardian_id": "classification_compliance",
+                    "checks": [
+                        {
+                            "check_id": "naming_compliance",
+                            "status": "FAIL",
+                            "details": "2 compound suffix conflicts",
+                            "evidence": {
+                                "violation_count": 2,
+                                "violations": [
+                                    {"file": "bad_agent_types.py", "suffixes": ["agent", "types"]},
+                                ],
+                            },
+                        },
+                        {
+                            "check_id": "territory_compliance",
+                            "status": "PASS",
+                            "details": "All files correct",
+                            "evidence": {"violation_count": 0, "violations": []},
+                        },
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        ids_and_notes = {c.check_id: c.notes for c in result.results}
+        assert "naming_compliance" in ids_and_notes
+        assert ids_and_notes["naming_compliance"] != NOTE_MAPPED
+        assert ids_and_notes["naming_compliance"] != NOTE_UNMAPPED
+
+    def test_territory_compliance_healer_reached(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_classification_compliance"],
+            evidence_overrides={
+                "guardian_classification_compliance": {
+                    "guardian_id": "classification_compliance",
+                    "checks": [
+                        {
+                            "check_id": "territory_compliance",
+                            "status": "FAIL",
+                            "details": "1 violation",
+                            "evidence": {
+                                "violation_count": 1,
+                                "violations": [{"file": "misplaced.py", "expected": "config/"}],
+                            },
+                        },
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        ids_and_notes = {c.check_id: c.notes for c in result.results}
+        assert "territory_compliance" in ids_and_notes
+        assert ids_and_notes["territory_compliance"] != NOTE_MAPPED
+
+    def test_hierarchy_sub_checks_reached(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_hierarchy_compliance"],
+            evidence_overrides={
+                "guardian_hierarchy_compliance": {
+                    "guardian_id": "hierarchy_compliance",
+                    "checks": [
+                        {
+                            "check_id": "missing_structure",
+                            "status": "FAIL",
+                            "details": "2 missing dirs",
+                            "evidence": {"violation_count": 2, "violations": ["a/b", "c/d"]},
+                        },
+                        {
+                            "check_id": "subfolder_compliance",
+                            "status": "PASS",
+                            "details": "ok",
+                            "evidence": {"violation_count": 0, "violations": []},
+                        },
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        ids = {c.check_id for c in result.results}
+        assert "missing_structure" in ids
+        assert "subfolder_compliance" in ids
+
+    def test_arch_sub_checks_reached(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+            evidence_overrides={
+                "guardian_architecture_governance": {
+                    "guardian_id": "architecture_governance",
+                    "checks": [
+                        {
+                            "check_id": "import_compliance",
+                            "status": "FAIL",
+                            "details": "1 violation",
+                            "evidence": {"violation_count": 1, "violations": ["x"]},
+                        },
+                        {
+                            "check_id": "layer_gravity",
+                            "status": "PASS",
+                            "details": "ok",
+                            "evidence": {"violation_count": 0, "violations": []},
+                        },
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        ids_and_notes = {c.check_id: c.notes for c in result.results}
+        assert "import_compliance" in ids_and_notes
+        assert "layer_gravity" in ids_and_notes
+        assert ids_and_notes["import_compliance"] != NOTE_MAPPED
+
+    def test_rollup_without_sub_checks_still_skipped(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_classification_compliance"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        rollup = next(
+            (c for c in result.results if c.check_id == "guardian_classification_compliance"),
+            None,
+        )
+        assert rollup is not None
+        assert rollup.status == HealStatus.SKIPPED
+        assert rollup.notes == NOTE_MAPPED
+
+    def test_unmapped_rollup_remains_unmapped(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_hygiene", "guardian_classification_compliance"],
+            evidence_overrides={
+                "guardian_classification_compliance": {
+                    "checks": [
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        hygiene = next(c for c in result.results if c.check_id == "guardian_hygiene")
+        assert hygiene.notes == NOTE_UNMAPPED
+
+    def test_output_validates_with_sub_checks(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_classification_compliance", "guardian_hierarchy_compliance"],
+            evidence_overrides={
+                "guardian_classification_compliance": {
+                    "checks": [
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                        {"check_id": "territory_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+                "guardian_hierarchy_compliance": {
+                    "checks": [
+                        {"check_id": "missing_structure", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        assert result.validate() == []
+
+    def test_sub_check_ids_sorted_in_output(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_classification_compliance"],
+            evidence_overrides={
+                "guardian_classification_compliance": {
+                    "checks": [
+                        {"check_id": "territory_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                        {"check_id": "naming_compliance", "status": "FAIL", "details": "", "evidence": {}},
+                    ],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        ids = [c.check_id for c in result.results]
+        assert ids == sorted(ids)

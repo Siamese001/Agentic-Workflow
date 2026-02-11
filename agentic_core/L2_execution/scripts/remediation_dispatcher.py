@@ -61,9 +61,21 @@ EXPECTED_PHASE_NAMES: tuple[str, ...] = (
 PHASE_CHECK_ID_PREFIXES: dict[str, tuple[str, ...]] = {
     "pre_audit": ("guardian_drift_detection",),
     "discovery": ("guardian_location_alignment",),
-    "reconciliation": ("guardian_classification_compliance",),
-    "alignment": ("guardian_hierarchy_compliance",),
-    "arch_validation": ("guardian_architecture_governance",),
+    "reconciliation": (
+        "guardian_classification_compliance",
+        "naming_compliance",
+        "territory_compliance",
+    ),
+    "alignment": (
+        "guardian_hierarchy_compliance",
+        "missing_structure",
+        "subfolder_compliance",
+    ),
+    "arch_validation": (
+        "guardian_architecture_governance",
+        "import_compliance",
+        "layer_gravity",
+    ),
     "healing": (),
     "certification": (),
 }
@@ -208,6 +220,81 @@ def extract_checks_by_id(guardian_aggregate: dict[str, Any]) -> dict[str, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Sub-check expansion (healer reachability)
+# ---------------------------------------------------------------------------
+
+
+def extract_healable_items_from_guardian_check(
+    check: dict[str, Any],
+) -> tuple[tuple[str, dict[str, Any]], ...]:
+    """Extract healable (sub_check_id, evidence_dict) pairs from a roll-up check.
+
+    Supported evidence shapes (defensive):
+    1. evidence.checks is list[dict] with "check_id" and optional "evidence" keys.
+    2. evidence.violations is dict keyed by sub_check_id -> list/obj.
+    3. Otherwise returns empty tuple.
+
+    Returns tuple sorted by sub_check_id.
+    """
+    evidence = check.get("evidence")
+    if not isinstance(evidence, dict):
+        return ()
+
+    # Shape 1: evidence has "checks" list of dicts with "check_id"
+    sub_checks = evidence.get("checks")
+    if isinstance(sub_checks, list):
+        items: list[tuple[str, dict[str, Any]]] = []
+        for sc in sub_checks:
+            if isinstance(sc, dict) and "check_id" in sc:
+                sub_evidence = sc.get("evidence", {})
+                if not isinstance(sub_evidence, dict):
+                    sub_evidence = {}
+                items.append((sc["check_id"], {**sc, "evidence": sub_evidence}))
+        return tuple(sorted(items, key=lambda x: x[0]))
+
+    # Shape 2: evidence has "violations" dict keyed by sub_check_id
+    violations = evidence.get("violations")
+    if isinstance(violations, dict):
+        items_v: list[tuple[str, dict[str, Any]]] = []
+        for sub_id, val in violations.items():
+            if isinstance(sub_id, str):
+                items_v.append((sub_id, {"check_id": sub_id, "evidence": {"violations": val}}))
+        return tuple(sorted(items_v, key=lambda x: x[0]))
+
+    return ()
+
+
+def build_healer_worklist(
+    aggregate_checks: list[dict[str, Any]],
+) -> tuple[tuple[str, dict[str, Any]], ...]:
+    """Build a deduplicated, sorted worklist of (check_id, check_dict) pairs.
+
+    For each roll-up check:
+    - If roll-up check_id itself exists in HEALER_REGISTRY, include it.
+    - Also include extracted sub-items where sub_check_id exists in HEALER_REGISTRY.
+    Deduplicate by check_id (roll-up form wins over sub-check form).
+    Stable sort final tuple by check_id.
+    """
+    seen: dict[str, dict[str, Any]] = {}
+
+    for check in aggregate_checks:
+        if not isinstance(check, dict):
+            continue
+        rollup_id = check.get("check_id", "")
+
+        # Include roll-up if it has a healer
+        if rollup_id in HEALER_REGISTRY and rollup_id not in seen:
+            seen[rollup_id] = check
+
+        # Extract and include sub-items
+        for sub_id, sub_dict in extract_healable_items_from_guardian_check(check):
+            if sub_id in HEALER_REGISTRY and sub_id not in seen:
+                seen[sub_id] = sub_dict
+
+    return tuple(sorted(seen.items(), key=lambda x: x[0]))
+
+
+# ---------------------------------------------------------------------------
 # Approval bundle parsing
 # ---------------------------------------------------------------------------
 
@@ -315,6 +402,12 @@ def run_dispatcher(
     guardian_data = json.loads(guardian_result_path.read_text(encoding="utf-8"))
     check_ids = extract_check_ids(guardian_data)
     checks_by_id = extract_checks_by_id(guardian_data)
+    aggregate_checks = guardian_data.get("checks", [])
+
+    # 3b. Build healer worklist (roll-up + sub-check expansion)
+    worklist = build_healer_worklist(aggregate_checks)
+    worklist_by_id: dict[str, dict[str, Any]] = dict(worklist)
+    all_healable_ids = set(worklist_by_id.keys())
 
     # 4. Load optional approval bundle (before phase iteration for gating)
     bundle: ApprovalBundle | None = None
@@ -326,15 +419,21 @@ def run_dispatcher(
                 approved_tokens.append(record.token)
     approved_tokens = sorted(set(approved_tokens))
 
-    # 5. Classify check_ids
-    mapped_ids, unmapped_ids = classify_check_ids(check_ids)
+    # 5. Classify check_ids (both roll-up and healable sub-check ids)
+    all_routable_ids = sorted(set(check_ids) | all_healable_ids)
+    mapped_ids, unmapped_ids = classify_check_ids(all_routable_ids)
 
     # 6. Iterate phases in PhaseSpec order
     heal_checks: list[HealCheckResult] = []
+    emitted_ids: set[str] = set()
     for phase in LEGACY_MIRROR_PLAN.phases:
-        # Select check_ids for this phase
+        # Select check_ids for this phase (from both roll-ups and sub-checks)
         prefixes = PHASE_CHECK_ID_PREFIXES.get(phase.name, ())
-        phase_cids = sorted(cid for cid in check_ids if any(cid.startswith(p) for p in prefixes))
+        phase_cids = sorted(
+            cid
+            for cid in all_routable_ids
+            if any(cid.startswith(p) for p in prefixes) and cid not in emitted_ids
+        )
 
         # --- Approval gating enforcement ---
         phase_requires_approval = PHASE_APPROVAL_REQUIRED_OVERRIDES.get(
@@ -349,8 +448,12 @@ def run_dispatcher(
                 )
 
         for cid in phase_cids:
+            emitted_ids.add(cid)
             if cid in HEALER_REGISTRY:
-                check_dict = checks_by_id.get(cid, {"check_id": cid})
+                check_dict = worklist_by_id.get(
+                    cid,
+                    checks_by_id.get(cid, {"check_id": cid}),
+                )
                 heal_checks.append(
                     _invoke_healer(cid, check_dict, repo_root=repo_root, apply=apply),
                 )
@@ -371,15 +474,16 @@ def run_dispatcher(
 
     # 7. Add unmapped check_ids (coverage preservation)
     for cid in sorted(unmapped_ids):
-        heal_checks.append(
-            HealCheckResult(
-                check_id=cid,
-                status=HealStatus.SKIPPED,
-                changes_made=(),
-                rollback_info=None,
-                notes=NOTE_UNMAPPED,
-            ),
-        )
+        if cid not in emitted_ids:
+            heal_checks.append(
+                HealCheckResult(
+                    check_id=cid,
+                    status=HealStatus.SKIPPED,
+                    changes_made=(),
+                    rollback_info=None,
+                    notes=NOTE_UNMAPPED,
+                ),
+            )
 
     # 8. Build CombinedHealResult
     result = CombinedHealResult(
