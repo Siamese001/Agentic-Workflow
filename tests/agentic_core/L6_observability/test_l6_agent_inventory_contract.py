@@ -47,7 +47,7 @@ UNREACHABLE_ALLOWLIST: dict[str, str] = {
 
 # Production entrypoint modules to check for reachability
 PRODUCTION_ENTRYPOINTS = [
-    "agentic_core/L3_orchestration/reasoning/AgentFactory.py",
+    "agentic_core/L3_orchestration/engines/AgentFactory.py",
     "agentic_core/L3_orchestration/enforcement/mission_runner.py",
     "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
     "agentic_core/L5_safety/enforcement/HealingStrategy.py",
