@@ -28,7 +28,7 @@ class TestCompleteHealingWorkflow:
             MetaLearningClient,
         )
 
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -120,7 +120,7 @@ class TestCompleteHealingWorkflow:
             MetaLearningClient,
         )
 
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -238,7 +238,7 @@ class TestSystemIntegration:
             MetaLearningClient,
         )
 
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         client = MetaLearningClient()
         guardrails = MetaLearningGuardrails()
@@ -305,7 +305,7 @@ class TestSystemIntegration:
             get_meta_learning_client,
         )
 
-        from agentic_core.L1_cognition.reasoning.guardrails import (
+        from agentic_core.L1_cognition.utils.guardrails import (
             get_guardrails,
         )
         from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
@@ -331,7 +331,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_invalid_key(self):
         """Test system handles invalid cache keys gracefully."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -343,7 +343,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_oversized_value(self):
         """Test system handles oversized values gracefully."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -355,7 +355,7 @@ class TestErrorRecovery:
 
     def test_recovery_from_depth_limit(self):
         """Test system handles depth limit correctly."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -440,7 +440,7 @@ class TestPerformanceBenchmarks:
 
     def test_guardrails_validation_performance(self):
         """Test guardrails validation meets performance targets."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 
@@ -488,7 +488,7 @@ class TestProductionScenarios:
 
     def test_healing_loop_prevention(self):
         """Test healing loop is prevented in production scenario."""
-        from agentic_core.L1_cognition.reasoning.guardrails import MetaLearningGuardrails
+        from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
 
         guardrails = MetaLearningGuardrails()
 

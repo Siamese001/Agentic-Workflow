@@ -22,7 +22,7 @@ from typing import Any
 from agentic_core.utils.security import safe_execute
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.reasoning.code_tool_runner_core import CodeToolRunnerCapability
+from agentic_core.L5_safety.utils.code_tool_runner_core import CodeToolRunnerCapability
 
 
 @dataclass

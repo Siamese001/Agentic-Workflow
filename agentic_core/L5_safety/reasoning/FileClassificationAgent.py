@@ -86,8 +86,19 @@ except ImportError:
         return func
 
 
+# Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
 # Logger for healing operations
 import logging
+
+from agentic_core.L5_safety.utils._fca_safety_gates import (
+    NestedLCDPolicy,
+    SafetyGateResult,
+    WaveConfig,
+    build_execution_plan,
+    check_observability_violation,
+    detect_agent_lineage,
+    run_all_safety_gates,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +152,16 @@ class FileClassificationAgent(*BASE_CLASSES):
     dry_run: bool = False
     verbose: bool = False
     validate_only: bool = False
+    # WAVE 1.2: Blast radius limiter threshold
+    max_import_impact: int = 25
+    # WAVE 1.3: Mass action guard
+    max_actions: int = 50
+    force: bool = False
+    wave_id: str | None = None
+    # WAVE 2.3: Nested LCD subtree policy
+    strict_lcd_roots_only: bool = False
+    # WAVE 3.2: Wave execution scoping
+    wave_config: WaveConfig | None = None
 
     def __post_init__(self):
         if HAS_SOVEREIGN_BASE and hasattr(super(), "__post_init__"):
@@ -192,6 +213,11 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # GLOBAL RUN-LEVEL IDEMPOTENCE CACHE (FINAL HARDENING 2026-02-05)
         self.processed_paths: set[Path] = set()
+
+        # WAVE 1.1–1.3: Safety gate result from last preflight run
+        self.last_safety_gate_result: SafetyGateResult | None = None
+        # WAVE 3.1: Last execution plan
+        self.last_execution_plan: dict | None = None
 
         # APP-SPECIFIC TERRITORY MAP (APPS-AWARE HARDENING 2026-02-08)
         # apps_* folders have their OWN valid structure distinct from agentic_core layers.
@@ -1534,8 +1560,15 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         parts = path.parts
 
-        # --- NESTED LCD PREVENTION ---
-        nested_violation = validate_no_nested_lcd(parts)
+        # --- NESTED LCD PREVENTION (WAVE 2.3 HARDENED) ---
+        # When strict_lcd_roots_only=False (default), findings are WARN not VIOLATION
+        # and are NOT executable moves.
+        from agentic_core.L5_safety.utils._fca_safety_gates import (
+            check_nested_lcd_with_policy,
+        )
+
+        _lcd_policy = NestedLCDPolicy(strict_lcd_roots_only=self.strict_lcd_roots_only)
+        nested_violation = check_nested_lcd_with_policy(parts, validate_no_nested_lcd, _lcd_policy)
         if nested_violation:
             return {
                 "file": str(path),
@@ -1593,20 +1626,15 @@ class FileClassificationAgent(*BASE_CLASSES):
                         ),
                     }
 
-        # --- AGENT OUTSIDE REASONING ---
+        # --- AGENT OUTSIDE REASONING (WAVE 2.1 HARDENED) ---
+        # Uses AST-based lineage detection instead of regex name matching.
+        # Uncertain detections (name looks like Agent but no confirmed base) do NOT
+        # produce executable moves — they are flagged as AGENT_DETECTION_UNCERTAIN.
         if path.name.endswith(".py") and "reasoning" not in parts:
-            try:
-                content = path.read_text(encoding="utf-8", errors="ignore")
-            except OSError:
-                content = ""
-            # Quick heuristic: look for concrete Agent class definitions
-            import re as _re
-
-            agent_classes = _re.findall(r"^class\s+(\w+Agent)\s*[\(:]", content, _re.MULTILINE)
-            if agent_classes:
-                # Exclude files in base_agents/ (constitutional location)
-                if "base_agents" not in parts:
-                    # Determine the layer this file is in
+            if "base_agents" not in parts:
+                lineage = detect_agent_lineage(path)
+                if lineage in ("AGENT", "ORCHESTRATOR", "EXECUTOR"):
+                    # Confirmed agent via AST lineage
                     current_layer = None
                     for p in parts:
                         if p.startswith("L") and "_" in p:
@@ -1616,22 +1644,41 @@ class FileClassificationAgent(*BASE_CLASSES):
                         return {
                             "file": str(path),
                             "violation": "AGENT_OUTSIDE_REASONING",
-                            "agent_classes": agent_classes,
+                            "lineage": lineage,
                             "current_folder": path.parent.name,
                             "target_folder": "reasoning",
                             "message": (
-                                f"'{path.name}' contains Agent class(es) {agent_classes} "
+                                f"'{path.name}' confirmed {lineage} via AST lineage "
                                 f"but is in '{path.parent.name}/', not 'reasoning/'. "
-                                f"Move Agent class to '{current_layer}/reasoning/'."
+                                f"Move to '{current_layer}/reasoning/'."
+                            ),
+                        }
+                elif lineage == "AGENT_DETECTION_UNCERTAIN":
+                    current_layer = None
+                    for p in parts:
+                        if p.startswith("L") and "_" in p:
+                            current_layer = p
+                            break
+                    if current_layer:
+                        return {
+                            "file": str(path),
+                            "violation": "AGENT_DETECTION_UNCERTAIN",
+                            "current_folder": path.parent.name,
+                            "executable": False,
+                            "message": (
+                                f"'{path.name}' has Agent-like class name but no confirmed "
+                                f"base class lineage. Manual review required."
                             ),
                         }
 
         # --- AGENT LAYER MISPLACEMENT DETECTION ---
         # Exclude FileClassificationAgent itself — its code inherently contains
         # signal keywords for ALL layers (they live in dict literals).
-        if (path.name.endswith("Agent.py")
-                and "base_agents" not in parts
-                and path.name != "FileClassificationAgent.py"):
+        if (
+            path.name.endswith("Agent.py")
+            and "base_agents" not in parts
+            and path.name != "FileClassificationAgent.py"
+        ):
             suggestion = self.suggest_agent_layer(path)
             if suggestion is not None:
                 return {
@@ -1658,8 +1705,11 @@ class FileClassificationAgent(*BASE_CLASSES):
                 tree = ast.parse(content)
                 has_agent_class = any(
                     isinstance(n, ast.ClassDef)
-                    and (n.name.endswith("Agent") or n.name.endswith("Orchestrator")
-                         or n.name.endswith("Executor"))
+                    and (
+                        n.name.endswith("Agent")
+                        or n.name.endswith("Orchestrator")
+                        or n.name.endswith("Executor")
+                    )
                     for n in ast.walk(tree)
                 )
             except (SyntaxError, OSError):
@@ -1682,13 +1732,15 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- CONFIG SUFFIX ENFORCEMENT: .py files in config/ missing _config ---
         if "config" in parts or any(p.endswith("_configs") or p.endswith("_config") for p in parts):
             stem = path.stem
-            if (not stem.startswith("test_")
-                    and not stem.startswith("__")
-                    and not stem.startswith("conftest")
-                    and not stem.endswith("_config")
-                    and not stem.endswith("_settings")
-                    and not stem.endswith("_blueprint")
-                    and not stem.endswith("_constants")):
+            if (
+                not stem.startswith("test_")
+                and not stem.startswith("__")
+                and not stem.startswith("conftest")
+                and not stem.endswith("_config")
+                and not stem.endswith("_settings")
+                and not stem.endswith("_blueprint")
+                and not stem.endswith("_constants")
+            ):
                 return {
                     "file": str(path),
                     "violation": "CONFIG_SUFFIX_MISSING",
@@ -1704,8 +1756,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 content = path.read_text(encoding="utf-8", errors="ignore")
                 tree = ast.parse(content)
                 agent_classes = [
-                    n.name for n in ast.walk(tree)
-                    if isinstance(n, ast.ClassDef) and n.name.endswith("Agent")
+                    n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name.endswith("Agent")
                 ]
             except (SyntaxError, OSError):
                 agent_classes = []
@@ -1721,29 +1772,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                     ),
                 }
 
-        # --- DASHBOARD/OBSERVABILITY OUTSIDE L6 ---
-        if "L6_observability" not in parts:
-            _dashboard_kw = ("dashboard", "metric", "telemetry")
-            stem_lower = path.stem.lower()
-            for kw in _dashboard_kw:
-                if kw in stem_lower:
-                    current_layer = next(
-                        (p for p in parts if p.startswith("L") and "_" in p and len(p) > 1 and p[1].isdigit()),
-                        None,
-                    )
-                    if current_layer:
-                        return {
-                            "file": str(path),
-                            "violation": "OBSERVABILITY_OUTSIDE_L6",
-                            "keyword": kw,
-                            "current_layer": current_layer,
-                            "message": (
-                                f"'{path.name}' contains observability keyword '{kw}' "
-                                f"but is in {current_layer}, not L6_observability. "
-                                f"Move to L6_observability/."
-                            ),
-                        }
-                    break
+        # --- DASHBOARD/OBSERVABILITY OUTSIDE L6 (WAVE 2.2 HARDENED) ---
+        # Uses import-based evidence instead of keyword-only triggers.
+        # L0 maintenance scripts referencing dashboards are allowlisted.
+        obs_violation = check_observability_violation(path, parts=parts)
+        if obs_violation:
+            return obs_violation
 
         return None
 
@@ -1826,17 +1860,28 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- Pass 1: AST import scoring ---
         infra_signals: dict[str, list[tuple[str, int]]] = {
             "L4_state": [
-                ("redis", 5), ("pinecone", 5), ("chromadb", 5), ("faiss", 5),
-                ("sqlalchemy", 5), ("psycopg2", 5), ("pymongo", 5),
+                ("redis", 5),
+                ("pinecone", 5),
+                ("chromadb", 5),
+                ("faiss", 5),
+                ("sqlalchemy", 5),
+                ("psycopg2", 5),
+                ("pymongo", 5),
             ],
             "L1_cognition": [
-                ("google.generativeai", 4), ("openai", 4), ("langchain", 4),
+                ("google.generativeai", 4),
+                ("openai", 4),
+                ("langchain", 4),
             ],
             "L2_execution": [
-                ("subprocess", 3), ("requests", 2), ("aiohttp", 3), ("httpx", 3),
+                ("subprocess", 3),
+                ("requests", 2),
+                ("aiohttp", 3),
+                ("httpx", 3),
             ],
             "L6_observability": [
-                ("prometheus_client", 5), ("opentelemetry", 5),
+                ("prometheus_client", 5),
+                ("opentelemetry", 5),
             ],
         }
         # Cross-layer agentic_core imports
@@ -1863,9 +1908,15 @@ class FileClassificationAgent(*BASE_CLASSES):
                         import_evidence.setdefault(layer, []).append(mod)
             # Check cross-layer agentic_core imports
             if mod.startswith("agentic_core."):
-                for layer_name in ("L0_maintenance", "L1_cognition", "L2_execution",
-                                   "L3_orchestration", "L4_state", "L5_safety",
-                                   "L6_observability"):
+                for layer_name in (
+                    "L0_maintenance",
+                    "L1_cognition",
+                    "L2_execution",
+                    "L3_orchestration",
+                    "L4_state",
+                    "L5_safety",
+                    "L6_observability",
+                ):
                     if f"agentic_core.{layer_name}" in mod and layer_name != current_layer:
                         import_scores[layer_name] = import_scores.get(layer_name, 0) + cross_layer_weight
                         import_evidence.setdefault(layer_name, []).append(mod)
@@ -1873,10 +1924,19 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- Pass 2: Content keyword scoring ---
         content_lower = content.lower()
         content_signals: dict[str, tuple[str, ...]] = {
-            "L4_state": ("cache", "persist", "store", "redis", "pinecone",
-                         "embedding", "vector", "upsert", "ledger", "checkpoint"),
-            "L3_orchestration": ("workflow", "dag", "pipeline", "orchestrat",
-                                 "coordinator", "schedule"),
+            "L4_state": (
+                "cache",
+                "persist",
+                "store",
+                "redis",
+                "pinecone",
+                "embedding",
+                "vector",
+                "upsert",
+                "ledger",
+                "checkpoint",
+            ),
+            "L3_orchestration": ("workflow", "dag", "pipeline", "orchestrat", "coordinator", "schedule"),
             "L2_execution": ("subprocess", "execute_tool", "sandbox", "api_call"),
             "L1_cognition": ("inference", "llm_generate", "prompt_template"),
             "L6_observability": ("dashboard", "metric", "telemetry", "monitor"),
@@ -1910,12 +1970,30 @@ class FileClassificationAgent(*BASE_CLASSES):
         # suppress the suggestion when the agent's own-layer purpose signals
         # DOMINATE the suggested-layer's content signals (ratio-based).
         layer_purpose_keywords: dict[str, tuple[str, ...]] = {
-            "L5_safety": ("safety", "security", "governance", "guardrail",
-                          "sanitize", "compliance", "policy", "shield",
-                          "threat", "vulnerability"),
-            "L3_orchestration": ("orchestrat", "coordinator", "workflow", "dag",
-                                 "pipeline", "dispatch", "schedule", "cycle",
-                                 "phase", "mission"),
+            "L5_safety": (
+                "safety",
+                "security",
+                "governance",
+                "guardrail",
+                "sanitize",
+                "compliance",
+                "policy",
+                "shield",
+                "threat",
+                "vulnerability",
+            ),
+            "L3_orchestration": (
+                "orchestrat",
+                "coordinator",
+                "workflow",
+                "dag",
+                "pipeline",
+                "dispatch",
+                "schedule",
+                "cycle",
+                "phase",
+                "mission",
+            ),
         }
         if current_layer in layer_purpose_keywords:
             purpose_keywords = layer_purpose_keywords[current_layer]
@@ -4497,6 +4575,93 @@ class FileClassificationAgent(*BASE_CLASSES):
         except Exception as e:
             self.logger.error(f"  Error processing {path}: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    def preflight_safety_gates(
+        self,
+        scan_root: Path | None = None,
+    ) -> SafetyGateResult:
+        """
+        WAVE 1.1–1.3: Run all safety gates on the current file registry.
+
+        Builds a rename_map from proposed renames, then checks:
+          1. Rename collisions (dst conflict, casing, existing file)
+          2. Import impact / blast radius
+          3. Mass action threshold
+
+        Stores result in self.last_safety_gate_result.
+        Must be called AFTER _orchestrate_audit populates file_registry,
+        or after an explicit scan.
+        """
+        if scan_root is None:
+            scan_root = self.project_root
+
+        # Scan files if registry is empty
+        if not self.file_registry:
+            self.file_registry = get_python_files_fast(scan_root)
+
+        # Build rename map by running get_compliant_name on each file
+        rename_map: dict[str, str] = {}
+        existing_files: set[str] = set()
+
+        for path in self.file_registry:
+            if path is None or not path.exists():
+                continue
+            try:
+                rel = str(path.relative_to(self.project_root)).replace("\\", "/")
+            except ValueError:
+                continue
+            existing_files.add(rel)
+
+            ftype = self.classify_file(path)
+            if ftype == "IGNORE":
+                continue
+
+            new_name = self.get_compliant_name(path, ftype)
+            if new_name and new_name != path.name:
+                dst_rel = str((path.parent / new_name).relative_to(self.project_root)).replace("\\", "/")
+                rename_map[rel] = dst_rel
+
+        # Run unified preflight
+        result = run_all_safety_gates(
+            rename_map=rename_map,
+            existing_files=existing_files,
+            python_files=[p for p in self.file_registry if p is not None],
+            project_root=self.project_root,
+            case_sensitive=False,  # Windows/macOS default
+            max_import_impact=self.max_import_impact,
+            max_actions=self.max_actions,
+            force=self.force,
+            wave_id=self.wave_id,
+        )
+
+        self.last_safety_gate_result = result
+        self.logger.info(
+            f"[SAFETY GATES] collisions={result.collision_count}, "
+            f"high_impact={result.high_impact_count}, "
+            f"mass_abort={result.mass_action_abort}, "
+            f"blocked={result.blocked_count}/{len(result.actions)}",
+        )
+        return result
+
+    # guardian: allow-type-erasure
+    def generate_execution_plan(
+        self,
+        scan_root: Path | None = None,
+    ) -> dict[str, Any]:
+        """
+        WAVE 3.1: Produce a deterministic, machine-readable execution plan.
+
+        Runs preflight_safety_gates if not already run, then builds
+        a stable-ordered plan with blocking annotations.
+
+        Stores result in self.last_execution_plan.
+        """
+        if self.last_safety_gate_result is None:
+            self.preflight_safety_gates(scan_root)
+
+        plan = build_execution_plan(self.last_safety_gate_result.actions)
+        self.last_execution_plan = plan
+        return plan
 
     @standard_heal
     # guardian: allow-magic-config
