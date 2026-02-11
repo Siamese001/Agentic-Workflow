@@ -61,10 +61,10 @@ EXPECTED_PHASE_NAMES: tuple[str, ...] = (
 PHASE_CHECK_ID_PREFIXES: dict[str, tuple[str, ...]] = {
     "pre_audit": ("guardian_drift_detection",),
     "discovery": ("guardian_location_alignment",),
-    "reconciliation": (),
-    "alignment": (),
-    "arch_validation": (),
-    "healing": ("guardian_architecture_governance",),
+    "reconciliation": ("guardian_classification_compliance",),
+    "alignment": ("guardian_hierarchy_compliance",),
+    "arch_validation": ("guardian_architecture_governance",),
+    "healing": (),
     "certification": (),
 }
 
@@ -73,9 +73,7 @@ NOTE_UNMAPPED = "unmapped to phase; no healer registered"
 
 # Dispatcher-local override: which phases require L3 approval.
 # Does NOT modify LEGACY_MIRROR_PLAN; evaluated at dispatch time.
-PHASE_APPROVAL_REQUIRED_OVERRIDES: dict[str, bool] = {
-    "healing": True,
-}
+PHASE_APPROVAL_REQUIRED_OVERRIDES: dict[str, bool] = {}
 
 
 SANDBOX_SENTINEL = ".ssot_sandbox"
