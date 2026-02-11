@@ -36,7 +36,7 @@ class TestLLMPromptGovernorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L1_cognition.reasoning.LLMPromptGovernorAgent import (
+            from tests.support.l1_cognition.LLMPromptGovernorAgent import (
                 LLMPromptGovernorAgent,
             )
 
@@ -89,7 +89,7 @@ class TestLLMPromptGovernorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L1_cognition.reasoning.LLMPromptGovernorAgent import (
+                from tests.support.l1_cognition.LLMPromptGovernorAgent import (
                     LLMPromptGovernorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
