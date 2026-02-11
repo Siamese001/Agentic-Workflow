@@ -14,7 +14,7 @@ def _get_pinecone_sovereign_agent():
     """Lazy load PineconeSovereignAgent to avoid L0 → L5 dependency."""
     import importlib
 
-    module = importlib.import_module("agentic_core.L4_state.memory.PineconeSovereignAgent")
+    module = importlib.import_module("agentic_core.L4_state.reasoning.PineconeSovereignAgent")
     return module.PineconeSovereignAgent
 
 
