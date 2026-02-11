@@ -83,7 +83,7 @@ Status: DEPRECATED - Do not use in production
 #     BiasDetectorAgent,
 #     ConstitutionalReviewerAgent,  # v10.7 (Fix #30)
 #     HILAmbiguityDetectorAgent,
-#     PIISanitizerAgent,
+#     (PII sanitizer removed),
 #     PromptEngineerAgent,
 #     QueryComplexityClassifier,
 # )
@@ -452,7 +452,7 @@ Status: DEPRECATED - Do not use in production
 #     """Node 0: Sanitize PII"""
 #     context = workflow_context
 #     context.complexity = state.get("metadata", {}).get("complexity", "unknown")
-#     pii_agent = PIISanitizerAgent(context)
+#     pii_agent = None  # PII sanitizer removed
 #     sanitized = await asyncio.to_thread(pii_agent.run, state["resume"]["master_resume"])
 
 #     bias_agent = BiasDetectorAgent(context)

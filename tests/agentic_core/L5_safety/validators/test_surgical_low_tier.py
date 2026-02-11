@@ -7,7 +7,7 @@ Tests surgical healing integration for agents with 1-2 violations:
 - CheckpointManagerAgent (1)
 - CodeDeduplicationAgent (2)
 - CredentialScannerAgent (1)
-- MCPGuardianAgent (1)
+- CodeValidatorAgent (1)
 - NamingAgent (1)
 - NervousSystemAgent (1)
 - PineconeSovereignAgent (2)
@@ -185,19 +185,19 @@ class TestCredentialScannerAgentIntegration:
             temp_path.unlink()
 
 
-class TestMCPGuardianAgentIntegration:
-    """Tests for MCPGuardianAgent surgical healing."""
+class TestCodeValidatorAgentIntegration:
+    """Tests for CodeValidatorAgent surgical healing."""
 
     def test_adapter_with_mcp_validation(self):
         """Test MCP validation."""
-        source = "class MCPGuardianAgent: pass\n"
+        source = "class CodeValidatorAgent: pass\n"
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
             f.write(source)
             temp_path = Path(f.name)
 
         try:
-            adapter = SurgicalHealingAdapter(agent_name="MCPGuardianAgent")
+            adapter = SurgicalHealingAdapter(agent_name="CodeValidatorAgent")
 
             detection_result = {
                 "type": "mcp_violation",
@@ -506,7 +506,7 @@ class TestLowTierGenericTemplate:
             "CheckpointManagerAgent",
             "CodeDeduplicationAgent",
             "CredentialScannerAgent",
-            "MCPGuardianAgent",
+            "CodeValidatorAgent",
             "NamingAgent",
             "NervousSystemAgent",
             "PineconeSovereignAgent",

@@ -284,7 +284,7 @@ class TestCodeHealerAgentIntegration:
 
 
 class TestCompositeGuardrailIntegration:
-    """Integration tests for CompositeGuardrailAgent with surgical adapter."""
+    """Integration tests for CodeEnforcerAgent with surgical adapter."""
 
     def test_adapter_with_guardrail_detection(self):
         """Test adapter with guardrail-style detection results."""
@@ -293,7 +293,7 @@ class TestCompositeGuardrailIntegration:
             temp_path = Path(f.name)
 
         try:
-            adapter = SurgicalHealingAdapter(agent_name="CompositeGuardrailAgent")
+            adapter = SurgicalHealingAdapter(agent_name="CodeEnforcerAgent")
 
             # Simulate detection of missing guardrail
             detection_result = {
@@ -310,7 +310,7 @@ class TestCompositeGuardrailIntegration:
             )
 
             assert context is not None
-            assert context.detector_agent == "CompositeGuardrailAgent"
+            assert context.detector_agent == "CodeEnforcerAgent"
             assert context.violations[0].fix_type == "insert"
         finally:
             temp_path.unlink()
@@ -324,7 +324,7 @@ class TestCompositeGuardrailIntegration:
             temp_path = Path(f.name)
 
         try:
-            adapter = SurgicalHealingAdapter(agent_name="CompositeGuardrailAgent")
+            adapter = SurgicalHealingAdapter(agent_name="CodeEnforcerAgent")
 
             detection_results = [
                 {

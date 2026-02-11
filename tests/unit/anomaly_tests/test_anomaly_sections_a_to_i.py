@@ -99,7 +99,7 @@ class TestSectionD_EmbeddedAgentsInNonReasoning:
             ("L5_safety/types/code_enforcement_types.py", "CodeEnforcerAgent.py"),
             ("L5_safety/types/code_validation_types.py", "CodeValidatorAgent.py"),
             ("L5_safety/types/credential_types.py", "CredentialScannerAgent.py"),
-            ("L5_safety/types/rag_health_check_types.py", "RagHealthCheckAgent.py"),
+            ("L5_safety/types/rag_health_check_types.py", "SafetyDetectorAgent.py"),
             ("L5_safety/types/resource_types.py", "ResourceManagerAgent.py"),
             ("L5_safety/types/safety_detection_types.py", "SafetyDetectorAgent.py"),
             ("L5_safety/types/security_types.py", "SecurityManagerAgent.py"),

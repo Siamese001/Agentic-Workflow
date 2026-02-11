@@ -58,7 +58,6 @@ def test_instantiation():
     agents_to_test = [
         ("L3_orchestration.engine.FissionManagerAgent", "FissionManagerAgent"),
         ("L5_safety.guardrails.HallucinationHunterAgent", "HallucinationHunterAgent"),
-        ("L5_safety.validators.cached_safety_shield", "CachedSafetyShield"),
         ("L5_safety.reasoning.neural_autoimmune_agent", "NeuralAutoImmuneAgent"),
         ("L0_maintenance.scripts.DependencyDiplomatAgent", "DependencyDiplomatAgent"),
         (

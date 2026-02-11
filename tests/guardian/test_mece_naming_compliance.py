@@ -81,7 +81,7 @@ class TestAcronymProtection:
 
     def test_pii_preserved_in_snake_case(self):
         """Verify PII acronym is preserved as 'pii' not 'p_i_i'."""
-        result = to_smart_snake_case("PIISanitizerAgent")
+        result = to_smart_snake_case("PIIDetectionEngine")
         assert "pii" in result
         assert "p_i_i" not in result
 

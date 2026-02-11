@@ -102,7 +102,6 @@ RENAMES = {
     "DagManagerAgent": "DagManagerAgent",
     "DagRuntimeInspectorAgent": "DagRuntimeInspectorAgent",
     "FissionManagerAgent": "FissionManagerAgent",
-    "GitSafetyHandlerAgent": "GitSafetyHandlerAgent",
     "HallucinationDetectorAgent": "HallucinationDetectorAgent",
     "HardenedWorkflowOrchestratorAgent": "HardenedWorkflowOrchestratorAgent",
     "McpRouterAgent": "McpRouterAgent",
@@ -120,7 +119,6 @@ RENAMES = {
     "ValidationContextManagerAgent": "ValidationContextManagerAgent",
     # L5
     "ComplianceOrchestratorAgent": "ComplianceOrchestratorAgent",
-    "HealValidatorAgent": "HealValidatorAgent",
     "InputValidatorAgent": "InputValidatorAgent",
     "MethodChangeDetectorAgent": "MethodChangeDetectorAgent",
     "MultiProviderRouterAgent": "MultiProviderRouterAgent",

@@ -140,7 +140,7 @@ class DecompositionOrchestrator(AtomicExecutionMixin, SovereignBaseAgent):
             "fix": ["HierarchyAgent", "CodeHealerAgent", "NamingAgent"],
             "security": ["SecurityManagerAgent", "SafetyInspector"],
             "format": ["CodeFormatterAgent"],
-            "test": ["TestCoverageGuardianAgent", "CoverageAgent"],
+            "test": ["TestGeneratorAgent", "CoverageAgent"],
             "import": ["CodeHealerAgent", "StructureEnforcerAgent"],
             "naming": ["NamingAgent"],
             "heal": ["ArchitectureGovernorAgent", "HygieneGuardianAgent"],
