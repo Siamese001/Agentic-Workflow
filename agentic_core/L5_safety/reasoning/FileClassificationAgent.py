@@ -1651,6 +1651,100 @@ class FileClassificationAgent(*BASE_CLASSES):
                     ),
                 }
 
+        # --- REASONING PURITY: non-agent files in reasoning/ ---
+        if "reasoning" in parts and "base_agents" not in parts:
+            try:
+                content = path.read_text(encoding="utf-8", errors="ignore")
+                tree = ast.parse(content)
+                has_agent_class = any(
+                    isinstance(n, ast.ClassDef)
+                    and (n.name.endswith("Agent") or n.name.endswith("Orchestrator")
+                         or n.name.endswith("Executor"))
+                    for n in ast.walk(tree)
+                )
+            except (SyntaxError, OSError):
+                has_agent_class = False
+            if not has_agent_class:
+                current_layer = next(
+                    (p for p in parts if p.startswith("L") and "_" in p and len(p) > 1 and p[1].isdigit()),
+                    None,
+                )
+                return {
+                    "file": str(path),
+                    "violation": "NON_AGENT_IN_REASONING",
+                    "message": (
+                        f"'{path.name}' is in reasoning/ but contains no Agent, "
+                        f"Orchestrator, or Executor class. Move to utils/ or "
+                        f"enforcement/ under {current_layer or 'its layer'}."
+                    ),
+                }
+
+        # --- CONFIG SUFFIX ENFORCEMENT: .py files in config/ missing _config ---
+        if "config" in parts or any(p.endswith("_configs") or p.endswith("_config") for p in parts):
+            stem = path.stem
+            if (not stem.startswith("test_")
+                    and not stem.startswith("__")
+                    and not stem.startswith("conftest")
+                    and not stem.endswith("_config")
+                    and not stem.endswith("_settings")
+                    and not stem.endswith("_blueprint")
+                    and not stem.endswith("_constants")):
+                return {
+                    "file": str(path),
+                    "violation": "CONFIG_SUFFIX_MISSING",
+                    "message": (
+                        f"'{path.name}' lives in a config/ directory but is missing "
+                        f"the '_config' suffix. Rename to '{stem}_config.py'."
+                    ),
+                }
+
+        # --- AGENT NAMING: snake_case file containing Agent class ---
+        if "reasoning" in parts and "_" in path.stem and path.stem == path.stem.lower():
+            try:
+                content = path.read_text(encoding="utf-8", errors="ignore")
+                tree = ast.parse(content)
+                agent_classes = [
+                    n.name for n in ast.walk(tree)
+                    if isinstance(n, ast.ClassDef) and n.name.endswith("Agent")
+                ]
+            except (SyntaxError, OSError):
+                agent_classes = []
+            if agent_classes:
+                return {
+                    "file": str(path),
+                    "violation": "AGENT_NAMING_SNAKE_CASE",
+                    "agent_classes": agent_classes,
+                    "message": (
+                        f"'{path.name}' contains Agent class(es) {agent_classes} but "
+                        f"uses snake_case filename. Rename to '{agent_classes[0]}.py' "
+                        f"(PascalCase convention)."
+                    ),
+                }
+
+        # --- DASHBOARD/OBSERVABILITY OUTSIDE L6 ---
+        if "L6_observability" not in parts:
+            _dashboard_kw = ("dashboard", "metric", "telemetry")
+            stem_lower = path.stem.lower()
+            for kw in _dashboard_kw:
+                if kw in stem_lower:
+                    current_layer = next(
+                        (p for p in parts if p.startswith("L") and "_" in p and len(p) > 1 and p[1].isdigit()),
+                        None,
+                    )
+                    if current_layer:
+                        return {
+                            "file": str(path),
+                            "violation": "OBSERVABILITY_OUTSIDE_L6",
+                            "keyword": kw,
+                            "current_layer": current_layer,
+                            "message": (
+                                f"'{path.name}' contains observability keyword '{kw}' "
+                                f"but is in {current_layer}, not L6_observability. "
+                                f"Move to L6_observability/."
+                            ),
+                        }
+                    break
+
         return None
 
     def suggest_manager_layer(self, path: Path) -> str | None:
