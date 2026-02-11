@@ -26,7 +26,7 @@ class PromptConstitution:
     """Immutable SSOT for all prompt definitions.
 
     ARCHITECTURAL GUARANTEE: This class is frozen to prevent runtime mutations.
-    All prompt modifications must go through PromptRegistryAgent's versioning system.
+    All prompt modifications must go through the prompt governance versioning system.
     """
 
     prompts: dict[str, PromptEntry] = field(default_factory=lambda: _build_prompt_registry())
@@ -241,7 +241,7 @@ def get_constitution() -> PromptConstitution:
     """Get the immutable constitution singleton.
 
     ARCHITECTURAL GUARANTEE: Returns a frozen dataclass that cannot be mutated.
-    All runtime prompt modifications must go through PromptRegistryAgent.
+    All runtime prompt modifications must go through the prompt governance system.
     """
     global _CONSTITUTION
     if _CONSTITUTION is None:

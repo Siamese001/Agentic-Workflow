@@ -13,7 +13,6 @@ DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 
 # Target agents for this batch (10 agents)
 TARGET_AGENTS = [
-    "GitSafetyHandlerAgent",
     "CodeFormatterAgent",
     "DocstringComplianceAgent",
     "InferenceTypeHintAgent",

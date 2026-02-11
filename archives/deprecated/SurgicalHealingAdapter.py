@@ -4,7 +4,7 @@ Surgical Healing Adapter - Bridge for Resolution Asymmetry Remediation
 Provides adapters to upgrade existing agents to use SurgicalContext-based healing
 without breaking backwards compatibility.
 
-Phase 1: Critical Tier - CodeHealerAgent, CompositeGuardrailAgent
+Phase 1: Critical Tier - CodeHealerAgent, CodeEnforcerAgent
 """
 
 from __future__ import annotations

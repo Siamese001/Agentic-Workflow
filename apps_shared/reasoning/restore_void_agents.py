@@ -49,7 +49,6 @@ RESTORE_MAP: dict[str, str] = {
     "AutonomicMonitorAgent.py": "L6_observability/agents/",
     # Safety/validation agents -> L5
     "GenerativeGuardAgent.py": "L5_safety/guardrails/",
-    "GitSafetyHandlerAgent.py": "L5_safety/guardrails/",
     # Architecture/governance -> L5
     "ArchitectureGovernorAgent.py": "L5_safety/validators/",
     "AgentRegistryValidatorAgent.py": "L5_safety/validators/",

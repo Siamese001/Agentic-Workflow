@@ -31,7 +31,6 @@ def get_replacements() -> list[tuple[str, str]]:
     return [
         # PII_Sanitizer -> PII_Sanitizer
         (r"PII_Sanitizer", "PII_Sanitizer"),
-        (r"PIISanitizerAgent", "PIISanitizerAgent"),
         # pii -> pii
         (r"pii", "pii"),
         (r"PII", "PII"),
@@ -72,10 +71,6 @@ def rename_files_and_directories():
     """Rename files and directories with problematic names."""
     renames = [
         # Test files
-        (
-            "tests/unit/agentic_core/L5_safety/enforcement/test_PIISanitizerAgent.py",
-            "tests/unit/agentic_core/L5_safety/enforcement/test_PIISanitizerAgent.py",
-        ),
         (
             "tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py",
             "tests/unit/agentic_core/L5_safety/validators/test_ddd_alignment_agent.py",

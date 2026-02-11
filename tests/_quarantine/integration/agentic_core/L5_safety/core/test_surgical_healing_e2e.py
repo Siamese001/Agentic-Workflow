@@ -112,7 +112,7 @@ class MyClass:
 
 
 class TestE2ECriticalTierIntegration:
-    """E2E tests for Phase 1: Critical Tier (CodeHealerAgent, CompositeGuardrailAgent)."""
+    """E2E tests for Phase 1: Critical Tier (CodeHealerAgent, CodeEnforcerAgent)."""
 
     def test_code_healer_surgical_flow(self):
         """Test complete surgical flow for CodeHealerAgent patterns."""
@@ -158,7 +158,7 @@ def my_func():
             temp_path.unlink()
 
     def test_composite_guardrail_surgical_flow(self):
-        """Test complete surgical flow for CompositeGuardrailAgent patterns."""
+        """Test complete surgical flow for CodeEnforcerAgent patterns."""
         source = """
 class MyAgent:
     def unsafe_method(self, user_input):
@@ -169,7 +169,7 @@ class MyAgent:
             temp_path = Path(f.name)
 
         try:
-            adapter = SurgicalHealingAdapter(agent_name="CompositeGuardrailAgent")
+            adapter = SurgicalHealingAdapter(agent_name="CodeEnforcerAgent")
 
             detection_results = [
                 {
@@ -316,7 +316,7 @@ class TestE2ELowTierIntegration:
             "CheckpointManagerAgent",
             "CodeDeduplicationAgent",
             "CredentialScannerAgent",
-            "MCPGuardianAgent",
+            "CodeValidatorAgent",
             "NamingAgent",
             "NervousSystemAgent",
             "PineconeSovereignAgent",
@@ -462,7 +462,7 @@ class TestE2EAllAgentsCoverage:
         all_agents = [
             # Critical Tier (2 agents, 20 violations)
             "CodeHealerAgent",
-            "CompositeGuardrailAgent",
+            "CodeEnforcerAgent",
             # High Tier (3 agents, 18 violations)
             "ASTValidatorAgent",
             "FilesystemSSOTReconcilerAgent",
@@ -481,7 +481,7 @@ class TestE2EAllAgentsCoverage:
             "CheckpointManagerAgent",
             "CodeDeduplicationAgent",
             "CredentialScannerAgent",
-            "MCPGuardianAgent",
+            "CodeValidatorAgent",
             "NamingAgent",
             "NervousSystemAgent",
             "PineconeSovereignAgent",
@@ -528,7 +528,7 @@ class TestE2EAllAgentsCoverage:
         # Violation counts from remediation report
         violation_counts = {
             "CodeHealerAgent": 12,
-            "CompositeGuardrailAgent": 8,
+            "CodeEnforcerAgent": 8,
             "ASTValidatorAgent": 6,
             "FilesystemSSOTReconcilerAgent": 6,
             "StructureHealerAgent": 6,
@@ -544,7 +544,7 @@ class TestE2EAllAgentsCoverage:
             "CheckpointManagerAgent": 1,
             "CodeDeduplicationAgent": 2,
             "CredentialScannerAgent": 1,
-            "MCPGuardianAgent": 1,
+            "CodeValidatorAgent": 1,
             "NamingAgent": 1,
             "NervousSystemAgent": 1,
             "PineconeSovereignAgent": 2,

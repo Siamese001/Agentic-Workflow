@@ -69,11 +69,6 @@ MODIFICATIONS = [
         "from typing import Any\n\nfrom agentic_core",
     ),
     (
-        "agentic_core/L5_safety/reasoning/PromptRegistryAgent.py",
-        r"from typing import Any\n\nimport numpy as np\n\nfrom agentic_core",
-        "from typing import Any\n\nfrom agentic_core",
-    ),
-    (
         "apps_shared/validators/cache_entry_validator.py",
         r"from typing import Any\n\nimport numpy as np\nfrom pydantic",
         "from typing import Any\n\nfrom pydantic",
