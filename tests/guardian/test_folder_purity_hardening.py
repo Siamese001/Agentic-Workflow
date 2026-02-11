@@ -16,8 +16,9 @@ Coverage areas:
 6. Dual-tag conflict detection via _detect_filename_tag_conflicts()
 7. classify_file() folder-context resolution for dual-tag files
 8. Adapter/Strategy routing to enforcement/ across layers
-9. runtime/types purity (no non-type files)
-10. COMPOUND_SUFFIX_CONFLICTS config completeness
+9. reasoning/ folder purity: Agent-only enforcement with ratchet ceiling
+10. runtime/types purity (no non-type files)
+11. COMPOUND_SUFFIX_CONFLICTS config completeness
 
 Run with: pytest tests/guardian/test_folder_purity_hardening.py -v
 """
@@ -397,7 +398,102 @@ class TestEnforcementRouting:
 
 
 # ============================================================================
-# 9. runtime/types Purity
+# 9. reasoning/ Folder Purity — Agent-Only Enforcement
+# ============================================================================
+
+
+class TestReasoningFolderPurity:
+    """BLOCKING: reasoning/ folders under L0-L6 must ONLY contain Agent files.
+
+    Rule: Every .py file in agentic_core/L*/reasoning/ must be:
+    - PascalCase filename ending with Agent.py, OR
+    - __init__.py
+
+    Non-agent files (engines, managers, utils) are legacy violations tracked
+    via a non-growing debt ceiling (§29). New violations are BLOCKED.
+    """
+
+    # Ratchet ceiling: current count of non-Agent files in reasoning/.
+    # This number must NEVER increase. Decrease it as files are relocated.
+    REASONING_NON_AGENT_CEILING = 62
+
+    @staticmethod
+    def _is_compliant_agent_filename(name: str) -> bool:
+        """Check if filename matches PascalCase + Agent.py convention."""
+        if name == "__init__.py":
+            return True
+        stem = name.removesuffix(".py")
+        # PascalCase: starts uppercase, no underscores
+        return bool(re.match(r"^[A-Z][a-zA-Z0-9]*Agent$", stem))
+
+    def test_no_new_non_agent_files_in_reasoning(self):
+        """BLOCKING: Non-agent file count in reasoning/ must not exceed ceiling."""
+        violations = []
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir() or not layer_dir.name.startswith("L"):
+                continue
+            reasoning = layer_dir / "reasoning"
+            if not reasoning.is_dir():
+                continue
+            for f in sorted(reasoning.glob("*.py")):
+                if f.name == "__init__.py":
+                    continue
+                if not self._is_compliant_agent_filename(f.name):
+                    violations.append(str(f.relative_to(PROJECT_ROOT)))
+
+        count = len(violations)
+        ceiling = self.REASONING_NON_AGENT_CEILING
+
+        # §32: Print counts as governance signals
+        print(f"\n  reasoning/ non-agent files: count={count}, ceiling={ceiling}, "
+              f"delta={count - ceiling}")
+
+        if count > ceiling:
+            new_violations = violations[ceiling:]
+            detail = "\n".join(f"  - {v}" for v in new_violations[:20])
+            pytest.fail(
+                f"BLOCKING: reasoning/ non-agent file count ({count}) exceeds "
+                f"ceiling ({ceiling}). {count - ceiling} NEW non-agent file(s) "
+                f"added to reasoning/ — move them to the correct LCD folder "
+                f"(utils/, types/, enforcement/, scripts/):\n{detail}"
+            )
+
+    def test_agent_files_in_reasoning_are_pascalcase(self):
+        """BLOCKING: Every *Agent.py file in reasoning/ must be PascalCase."""
+        violations = []
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir() or not layer_dir.name.startswith("L"):
+                continue
+            reasoning = layer_dir / "reasoning"
+            if not reasoning.is_dir():
+                continue
+            for f in sorted(reasoning.glob("*Agent.py")):
+                stem = f.name.removesuffix(".py")
+                if not re.match(r"^[A-Z][a-zA-Z0-9]*$", stem):
+                    violations.append(str(f.relative_to(PROJECT_ROOT)))
+
+        if violations:
+            detail = "\n".join(f"  - {v}" for v in violations)
+            pytest.fail(
+                f"BLOCKING: {len(violations)} Agent files in reasoning/ "
+                f"are not PascalCase:\n{detail}"
+            )
+
+    def test_reasoning_folders_exist_per_layer(self):
+        """Every L0-L6 layer must have a reasoning/ folder."""
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir():
+                continue
+            if not re.match(r"^L\d+_", layer_dir.name):
+                continue
+            reasoning = layer_dir / "reasoning"
+            assert reasoning.is_dir(), (
+                f"{layer_dir.name}/ is missing a reasoning/ folder"
+            )
+
+
+# ============================================================================
+# 10. runtime/types Purity (renumbered from 9)
 # ============================================================================
 
 
@@ -446,7 +542,7 @@ class TestRuntimeTypesPurity:
 
 
 # ============================================================================
-# 10. FOLDER_PURITY_RULES Config Completeness
+# 11. FOLDER_PURITY_RULES Config Completeness (renumbered from 10)
 # ============================================================================
 
 
