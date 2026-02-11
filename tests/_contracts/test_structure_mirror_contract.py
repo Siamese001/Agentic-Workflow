@@ -283,8 +283,13 @@ def test_no_tests_in_non_canonical_locations():
     # Infrastructure / governance directories (always allowed, not mirror-scoped)
     INFRA_PREFIXES = (
         "tests/_contracts/",
+        "tests/contracts/",
         "tests/guardian/",
         "tests/_quarantine/",
+        "tests/ssot_equivalence/",
+        "tests/snapshots/",
+        "tests/helpers/",
+        "tests/support/",
     )
 
     # Canonical mirror roots
@@ -358,6 +363,179 @@ def test_no_tests_in_non_canonical_locations():
 
     if errors:
         pytest.fail(" | ".join(errors))
+
+
+# ── §29 Non-Growing Debt: Per-Module Mirror Enforcement ───────────────────────
+# Every non-__init__.py production module under agentic_core/ and apps_*/
+# MUST have a mirrored test file at the canonical path.
+# Modules listed in KNOWN_MISSING_DEBT are pre-existing gaps; no NEW gaps
+# may be introduced.  Debt ceiling must not grow.
+
+KNOWN_MISSING_DEBT: frozenset[str] = frozenset(
+    {
+        "agentic_core/L0_maintenance/enforcement/v15_execution_gateway.py",
+        "agentic_core/L0_maintenance/enforcement/v15_p3_contracts.py",
+        "agentic_core/L0_maintenance/enforcement/v15_p4_contracts.py",
+        "agentic_core/L0_maintenance/enforcement/v15_p5_contracts.py",
+        "agentic_core/L0_maintenance/enforcement/v15_p6_contracts.py",
+        "agentic_core/L0_maintenance/enforcement/v15_runtime_guard.py",
+        "agentic_core/L0_maintenance/legacy_agent_name_allowlist.py",
+        "agentic_core/L0_maintenance/reasoning/IntegrityGateExecutorAgent.py",
+        "agentic_core/L0_maintenance/reasoning/RootCustomsAgent.py",
+        "agentic_core/L0_maintenance/scripts/execute_ssot_entrypoint.py",
+        "agentic_core/L0_maintenance/scripts/l0_execute.py",
+        "agentic_core/L0_maintenance/scripts/run_guardian_architecture_governance.py",
+        "agentic_core/L0_maintenance/scripts/run_guardian_classification_compliance.py",
+        "agentic_core/L0_maintenance/scripts/run_guardian_drift_detection.py",
+        "agentic_core/L0_maintenance/scripts/run_guardian_hierarchy_compliance.py",
+        "agentic_core/L0_maintenance/scripts/run_guardian_location_alignment.py",
+        "agentic_core/L0_maintenance/types/integration_contract.py",
+        "agentic_core/L0_maintenance/types/v15_contracts.py",
+        "agentic_core/L0_maintenance/types/v15_p2_contracts.py",
+        "agentic_core/L0_maintenance/types/v15_p2_types.py",
+        "agentic_core/L0_maintenance/types/v15_p3_types.py",
+        "agentic_core/L0_maintenance/types/v15_p4_types.py",
+        "agentic_core/L0_maintenance/types/v15_p5_types.py",
+        "agentic_core/L0_maintenance/types/v15_p6_types.py",
+        "agentic_core/L0_maintenance/types/v15_types.py",
+        "agentic_core/L2_execution/healers/architecture_governance_healer.py",
+        "agentic_core/L2_execution/healers/classification_compliance_healer.py",
+        "agentic_core/L2_execution/healers/hierarchy_compliance_healer.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/healer_registry.py",
+        "agentic_core/L3_orchestration/reasoning/CoverageAgent.py",
+        "agentic_core/L3_orchestration/reasoning/DagEngineAgent.py",
+        "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+        "agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py",
+        "agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py",
+        "agentic_core/L3_orchestration/reasoning/StateManagementAgent.py",
+        "agentic_core/L4_state/reasoning/CachedStateLedgerAgent.py",
+        "agentic_core/L4_state/reasoning/CheckpointManagerAgent.py",
+        "agentic_core/L4_state/reasoning/GravityStateAgent.py",
+        "agentic_core/L4_state/reasoning/PineconeSovereignAgent.py",
+        "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py",
+        "agentic_core/L5_safety/utils/_fca_safety_gates.py",
+        "agentic_core/L5_safety/utils/cache_invalidation_utils.py",
+        "agentic_core/L6_observability/engines/PerformanceAnalystAgentSimple.py",
+        "agentic_core/mixins/_config_compat.py",
+        "agentic_core/mixins/event_emission_mixin.py",
+        "agentic_core/mixins/healer_agent_mixin.py",
+        "agentic_core/mixins/instructional_injection_mixin.py",
+        "agentic_core/mixins/state_validation_mixin.py",
+        "apps_shared/utils/ARCHIVE_FILE_ACCESS_DEPRECATED.py",
+    },
+)
+
+
+def _discover_all_production_modules() -> list[pathlib.Path]:
+    """Discover all non-__init__.py production modules under agentic_core/ and apps_*/."""
+    root = pathlib.Path(".")
+    exclude_dirs = {
+        ".venv",
+        "build",
+        "dist",
+        "__pycache__",
+        "*.egg-info",
+        "docs",
+        ".git",
+        ".nox",
+        "artifacts",
+        "archives",
+        "data",
+        "ops_scripts",
+        ".backup",
+    }
+    results: list[pathlib.Path] = []
+    for base_name in ("agentic_core", "apps_lic", "apps_rg", "apps_shared"):
+        base = root / base_name
+        if not base.exists():
+            continue
+        for py_file in base.rglob("*.py"):
+            if any(e in str(py_file) for e in exclude_dirs):
+                continue
+            if "tests" in py_file.parts:
+                continue
+            if py_file.name == "__init__.py":
+                continue
+            results.append(py_file)
+    return sorted(results)
+
+
+def _compute_mirror_path(module_path: pathlib.Path) -> pathlib.Path:
+    """Compute the canonical mirrored test path for a production module."""
+    parts = module_path.parts
+    if parts[0] == "agentic_core":
+        relative_parts = parts[1:]
+        return (
+            pathlib.Path("tests/agentic_core")
+            / pathlib.Path(*relative_parts).parent
+            / f"test_{module_path.stem}.py"
+        )
+    elif parts[0].startswith("apps_"):
+        relative_parts = parts[1:]
+        return (
+            pathlib.Path("tests")
+            / parts[0]
+            / pathlib.Path(*relative_parts).parent
+            / f"test_{module_path.stem}.py"
+        )
+    raise ValueError(f"Unexpected module root: {parts[0]}")
+
+
+def _find_missing_mirrors() -> dict[str, str]:
+    """Return {module_rel_path: expected_test_path} for modules without a mirrored test."""
+    test_root = pathlib.Path("tests")
+    existing_tests = {str(t).replace("\\", "/") for t in test_root.rglob("test_*.py")}
+    # Also check waived modules
+    waivers = load_waivers()
+
+    missing: dict[str, str] = {}
+    for mod in _discover_all_production_modules():
+        waived, _ = is_waived(mod, waivers)
+        if waived:
+            continue
+        expected = _compute_mirror_path(mod)
+        if str(expected).replace("\\", "/") not in existing_tests:
+            missing[str(mod).replace("\\", "/")] = str(expected).replace("\\", "/")
+    return missing
+
+
+def test_mirror_no_new_gaps():
+    """No new mirror gaps beyond known debt (§29 non-growing debt pattern).
+
+    Every non-__init__.py production module under agentic_core/ and apps_*/
+    must have a mirrored test file at the canonical path.  Modules in
+    KNOWN_MISSING_DEBT are pre-existing gaps; any NEW gap fails this test.
+    """
+    missing = _find_missing_mirrors()
+    new_gaps = set(missing.keys()) - KNOWN_MISSING_DEBT
+    if new_gaps:
+        details = "\n".join(f"  {mod} -> {missing[mod]}" for mod in sorted(new_gaps))
+        pytest.fail(
+            f"New production modules without mirrored tests ({len(new_gaps)}):\n{details}\n"
+            f"Either create the test file or add to KNOWN_MISSING_DEBT with justification.",
+        )
+
+
+def test_mirror_debt_ceiling():
+    """Mirror debt count must not exceed known ceiling (§29, §32)."""
+    missing = _find_missing_mirrors()
+    ceiling = len(KNOWN_MISSING_DEBT)
+    actual = len(missing)
+    assert actual <= ceiling, (
+        f"Mirror debt grew: actual={actual}, ceiling={ceiling}. "
+        f"New gaps: {sorted(set(missing.keys()) - KNOWN_MISSING_DEBT)}"
+    )
+
+
+def test_mirror_coverage_percentage():
+    """Mirror coverage must not drop below 95%."""
+    all_mods = _discover_all_production_modules()
+    missing = _find_missing_mirrors()
+    total = len(all_mods)
+    covered = total - len(missing)
+    pct = (covered / total * 100) if total > 0 else 100.0
+    assert pct >= 95.0, f"Mirror coverage dropped to {pct:.1f}% ({covered}/{total}). Minimum required: 95%."
 
 
 if __name__ == "__main__":
