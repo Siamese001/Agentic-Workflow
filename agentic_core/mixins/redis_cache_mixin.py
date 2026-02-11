@@ -117,7 +117,7 @@ class RedisCacheMixin:
             try:
                 from pathlib import Path
 
-                from agentic_core.L5_safety.validators.RedisSovereignAgent import (
+                from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
                     RedisSovereignAgent,
                 )
 

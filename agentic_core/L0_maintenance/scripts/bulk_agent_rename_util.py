@@ -89,7 +89,6 @@ RENAMES = {
     "MemoryLeakDetectorAgent": "MemoryLeakDetectorAgent",
     "PeerIntelligenceAuditorAgent": "PeerIntelligenceAuditorAgent",
     "ProactiveResourceManagerAgent": "ProactiveResourceManagerAgent",
-    "SovereignPineconeStoreAgent": "SovereignPineconeStoreAgent",
     "SovereignRedisOrchestrator": "SovereignRedisOrchestrator",
     "SovereigntyAuditorAgent": "SovereigntyAuditorAgent",
     "SprawlInspectorAgent": "SprawlInspectorAgent",

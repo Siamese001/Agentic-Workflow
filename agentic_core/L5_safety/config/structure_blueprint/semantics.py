@@ -930,12 +930,6 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "fingerprint": "cc6465bde4266c9f",
         },
         {
-            "name": "MemoryArchitectAgent",
-            "file": "agentic_core/L2_execution/reasoning/MemoryArchitectAgent.py",
-            "methods": 13,
-            "fingerprint": "b07bc5ecfbb20791",
-        },
-        {
             "name": "SovereignActionPlaneAgent",
             "file": "agentic_core/L2_execution/reasoning/SovereignActionPlaneAgent.py",
             "methods": 11,

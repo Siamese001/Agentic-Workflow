@@ -401,9 +401,9 @@ class TestRecursiveTerritoryEnforcement:
         layer = tmp_path / "agentic_core" / "L4_state"
         memory = layer / "memory"
         memory.mkdir(parents=True)
-        f = memory / "CartographerAgent.py"
+        f = memory / "ExampleStateAgent.py"
         f.write_text(
-            "class SovereignBaseAgent: pass\nclass CartographerAgent(SovereignBaseAgent):\n    def map_territory(self): pass\n",
+            "class SovereignBaseAgent: pass\nclass ExampleStateAgent(SovereignBaseAgent):\n    def map_territory(self): pass\n",
         )
 
         result = agent.enforce_kernel_structure(f, layer)
