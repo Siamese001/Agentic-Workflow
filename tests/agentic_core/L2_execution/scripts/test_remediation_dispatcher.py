@@ -1,0 +1,426 @@
+"""
+Tests for the L2 remediation dispatcher skeleton.
+
+Proves:
+1. Dispatcher writes combined_heal_result.json.
+2. Output validates via CombinedHealResult.validate().
+3. Results sorted by check_id; all status SKIPPED; notes == "no healer registered".
+4. approved_by includes only APPROVED tokens and is sorted.
+5. Unknown aggregate shape raises ValueError.
+6. created_utc is exactly the provided CLI value.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+    OUTPUT_FILENAME,
+    TOOL_ID,
+    extract_check_ids,
+    run_dispatcher,
+)
+from agentic_core.L2_execution.types.heal_contract import (
+    HealStatus,
+    check_schema_compatibility,
+)
+
+TIMESTAMP = "2026-01-01T00:00:00Z"
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
+def _write_guardian_aggregate(path: Path, check_ids: list[str]) -> Path:
+    """Write a minimal guardian aggregate JSON with given check_ids."""
+    data = {
+        "guardian_id": "combined",
+        "version": 2,
+        "status": "FAIL",
+        "summary": "test aggregate",
+        "checks": [
+            {
+                "check_id": cid,
+                "status": "FAIL",
+                "details": f"check {cid}",
+                "evidence": {},
+            }
+            for cid in check_ids
+        ],
+        "artifacts": [],
+        "metrics": {},
+        "remediation_hints": [],
+        "artifact_class": "aggregate",
+    }
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return path
+
+
+def _write_approval_bundle(path: Path) -> Path:
+    """Write an approval bundle with mixed decisions and out-of-order tokens."""
+    data = {
+        "contract_version": 1,
+        "records": [
+            {
+                "phase_name": "healing",
+                "guardian_id": None,
+                "check_ids": [],
+                "decision": "REJECTED",
+                "approver": "admin@example.com",
+                "rationale": "Not ready",
+                "token": "t1",
+                "created_utc": TIMESTAMP,
+            },
+            {
+                "phase_name": "discovery",
+                "guardian_id": None,
+                "check_ids": [],
+                "decision": "APPROVED",
+                "approver": "lead@example.com",
+                "rationale": None,
+                "token": "t2",
+                "created_utc": TIMESTAMP,
+            },
+        ],
+    }
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return path
+
+
+@pytest.fixture()
+def guardian_aggregate(tmp_path: Path) -> Path:
+    """Guardian aggregate with 3 check_ids in unsorted order."""
+    return _write_guardian_aggregate(
+        tmp_path / "combined_guardian_result.json",
+        ["guardian_hygiene", "guardian_drift_detection", "guardian_location_alignment"],
+    )
+
+
+@pytest.fixture()
+def approval_bundle(tmp_path: Path) -> Path:
+    return _write_approval_bundle(tmp_path / "approval_bundle.json")
+
+
+@pytest.fixture()
+def output_dir(tmp_path: Path) -> Path:
+    out = tmp_path / "output"
+    out.mkdir()
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Core dispatcher tests
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherOutput:
+    """Proves dispatcher writes valid, deterministic output."""
+
+    def test_writes_combined_heal_result(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert (output_dir / OUTPUT_FILENAME).exists()
+
+    def test_output_validates(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert result.validate() == []
+
+    def test_schema_compatibility(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        errors = check_schema_compatibility(result.to_dict())
+        assert errors == [], f"Schema errors: {errors}"
+
+    def test_output_json_parseable(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        data = json.loads((output_dir / OUTPUT_FILENAME).read_text(encoding="utf-8"))
+        assert data["tool_id"] == TOOL_ID
+
+    def test_created_utc_exact(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert result.created_utc == TIMESTAMP
+        data = json.loads((output_dir / OUTPUT_FILENAME).read_text(encoding="utf-8"))
+        assert data["created_utc"] == TIMESTAMP
+
+
+# ---------------------------------------------------------------------------
+# Sorting and status
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherSortingAndStatus:
+    """Proves results are sorted, all SKIPPED, with correct notes."""
+
+    def test_results_sorted_by_check_id(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        d = result.to_dict()
+        ids = [r["check_id"] for r in d["results"]]
+        assert ids == sorted(ids)
+
+    def test_all_statuses_skipped(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        for check in result.results:
+            assert check.status == HealStatus.SKIPPED
+
+    def test_all_notes_no_healer(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        for check in result.results:
+            assert check.notes == "no healer registered"
+
+    def test_all_changes_made_empty(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        for check in result.results:
+            assert check.changes_made == ()
+
+    def test_plan_name_default(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert result.plan_name == "LEGACY_MIRROR_PLAN"
+
+
+# ---------------------------------------------------------------------------
+# Approval bundle integration
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherApproval:
+    """Proves approval bundle is consumed correctly."""
+
+    def test_approved_tokens_included(
+        self,
+        guardian_aggregate: Path,
+        approval_bundle: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+            approval_bundle_path=approval_bundle,
+        )
+        assert "t2" in result.approved_by
+
+    def test_rejected_tokens_excluded(
+        self,
+        guardian_aggregate: Path,
+        approval_bundle: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+            approval_bundle_path=approval_bundle,
+        )
+        assert "t1" not in result.approved_by
+
+    def test_approved_by_sorted(
+        self,
+        tmp_path: Path,
+        output_dir: Path,
+    ) -> None:
+        # Create bundle with multiple approved tokens out of order
+        bundle_data = {
+            "contract_version": 1,
+            "records": [
+                {
+                    "phase_name": "healing",
+                    "guardian_id": None,
+                    "check_ids": [],
+                    "decision": "APPROVED",
+                    "approver": "a@x.com",
+                    "rationale": None,
+                    "token": "z_tok",
+                    "created_utc": TIMESTAMP,
+                },
+                {
+                    "phase_name": "discovery",
+                    "guardian_id": None,
+                    "check_ids": [],
+                    "decision": "APPROVED",
+                    "approver": "b@x.com",
+                    "rationale": None,
+                    "token": "a_tok",
+                    "created_utc": TIMESTAMP,
+                },
+            ],
+        }
+        bundle_path = tmp_path / "bundle.json"
+        bundle_path.write_text(json.dumps(bundle_data), encoding="utf-8")
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["check_a"],
+        )
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+            approval_bundle_path=bundle_path,
+        )
+        d = result.to_dict()
+        assert d["approved_by"] == ["a_tok", "z_tok"]
+
+    def test_no_approval_bundle_empty_approved_by(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        assert result.approved_by == ()
+
+
+# ---------------------------------------------------------------------------
+# Negative tests
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherNegative:
+    """Proves error handling for invalid inputs."""
+
+    def test_unknown_aggregate_shape_raises(self, tmp_path: Path) -> None:
+        bad_agg = tmp_path / "bad.json"
+        bad_agg.write_text(json.dumps({"not_checks": []}), encoding="utf-8")
+        with pytest.raises(ValueError, match="Unrecognised guardian aggregate shape"):
+            run_dispatcher(
+                guardian_result_path=bad_agg,
+                write_artifacts_dir=tmp_path / "out",
+                created_utc=TIMESTAMP,
+            )
+
+    def test_bad_check_item_raises(self, tmp_path: Path) -> None:
+        bad_agg = tmp_path / "bad2.json"
+        bad_agg.write_text(
+            json.dumps({"checks": ["not_a_dict"]}),
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="Unexpected check item shape"):
+            run_dispatcher(
+                guardian_result_path=bad_agg,
+                write_artifacts_dir=tmp_path / "out",
+                created_utc=TIMESTAMP,
+            )
+
+    def test_extract_check_ids_deduplicates(self) -> None:
+        data = {
+            "checks": [
+                {"check_id": "a", "status": "PASS", "details": "", "evidence": {}},
+                {"check_id": "a", "status": "FAIL", "details": "", "evidence": {}},
+                {"check_id": "b", "status": "PASS", "details": "", "evidence": {}},
+            ],
+        }
+        ids = extract_check_ids(data)
+        assert ids == ["a", "b"]
+
+
+# ---------------------------------------------------------------------------
+# No side effects
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherNoSideEffects:
+    """Proves only the output JSON is written."""
+
+    def test_only_output_json(
+        self,
+        guardian_aggregate: Path,
+        tmp_path: Path,
+    ) -> None:
+        out_dir = tmp_path / "clean_out"
+        out_dir.mkdir()
+        before = {str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file()}
+
+        run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=out_dir,
+            created_utc=TIMESTAMP,
+        )
+
+        after = {str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file()}
+        new_files = after - before
+        assert len(new_files) == 1
+        assert OUTPUT_FILENAME in new_files.pop()
