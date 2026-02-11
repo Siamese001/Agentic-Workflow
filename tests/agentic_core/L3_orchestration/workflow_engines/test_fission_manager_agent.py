@@ -32,7 +32,7 @@ class TestFissionManagerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.reasoning.fission_manager import (
+            from agentic_core.L3_orchestration.reasoning.FissionManagerAgent import (
                 FissionManagerAgent,
             )
 
@@ -77,7 +77,7 @@ class TestFissionManagerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.reasoning.fission_manager import (
+                from agentic_core.L3_orchestration.reasoning.FissionManagerAgent import (
                     FissionManagerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
