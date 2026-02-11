@@ -126,6 +126,7 @@ def run_all_guardians(
                     "status": result.status,
                     "check_count": len(result.checks),
                     "elapsed_ms": round(elapsed_ms, 1),
+                    "checks": [c.to_dict() for c in result.checks],
                 },
             )
 
