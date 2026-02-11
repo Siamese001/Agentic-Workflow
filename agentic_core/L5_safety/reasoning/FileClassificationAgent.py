@@ -1626,6 +1626,31 @@ class FileClassificationAgent(*BASE_CLASSES):
                             ),
                         }
 
+        # --- AGENT LAYER MISPLACEMENT DETECTION ---
+        # Exclude FileClassificationAgent itself — its code inherently contains
+        # signal keywords for ALL layers (they live in dict literals).
+        if (path.name.endswith("Agent.py")
+                and "base_agents" not in parts
+                and path.name != "FileClassificationAgent.py"):
+            suggestion = self.suggest_agent_layer(path)
+            if suggestion is not None:
+                return {
+                    "file": str(path),
+                    "violation": "AGENT_LAYER_MISPLACEMENT",
+                    "current_layer": suggestion["current_layer"],
+                    "suggested_layer": suggestion["suggested_layer"],
+                    "confidence": suggestion["confidence"],
+                    "evidence": suggestion["evidence"],
+                    "message": (
+                        f"'{path.name}' is in {suggestion['current_layer']} but "
+                        f"infrastructure imports and content signals suggest "
+                        f"{suggestion['suggested_layer']} "
+                        f"(confidence={suggestion['confidence']}, "
+                        f"score={suggestion['suggested_score']} vs {suggestion['current_score']}). "
+                        f"Evidence: {suggestion['evidence']}"
+                    ),
+                }
+
         return None
 
     def suggest_manager_layer(self, path: Path) -> str | None:
@@ -1667,6 +1692,157 @@ class FileClassificationAgent(*BASE_CLASSES):
         if l2_hits == max_hits:
             return "L2_execution"
         return None
+
+    def suggest_agent_layer(self, path: Path) -> dict[str, Any] | None:
+        """
+        Generalized layer-routing for ALL Agent files using AST-based import
+        analysis + content signals.  Supersedes suggest_manager_layer() which
+        only handled *Manager classes.
+
+        Two-pass detection:
+          Pass 1 — Infrastructure imports (high confidence):
+            Direct third-party imports (redis, pinecone, subprocess, …) and
+            cross-layer agentic_core imports strongly indicate purpose.
+          Pass 2 — Content keyword signals (medium confidence):
+            Keyword frequency in non-comment code lines.
+
+        Returns None if the agent appears correctly placed, or a dict:
+            {"current_layer", "suggested_layer", "confidence", "evidence"}
+        """
+        # FileClassificationAgent itself contains signal keywords for ALL layers
+        # in its classification dictionaries — always exclude from self-analysis.
+        if path.name == "FileClassificationAgent.py":
+            return None
+
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+            tree = ast.parse(content)
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            return None
+
+        parts = path.parts
+        current_layer: str | None = None
+        for p in parts:
+            if p.startswith("L") and "_" in p and len(p) > 1 and p[1].isdigit():
+                current_layer = p
+                break
+        if current_layer is None:
+            return None
+
+        # --- Pass 1: AST import scoring ---
+        infra_signals: dict[str, list[tuple[str, int]]] = {
+            "L4_state": [
+                ("redis", 5), ("pinecone", 5), ("chromadb", 5), ("faiss", 5),
+                ("sqlalchemy", 5), ("psycopg2", 5), ("pymongo", 5),
+            ],
+            "L1_cognition": [
+                ("google.generativeai", 4), ("openai", 4), ("langchain", 4),
+            ],
+            "L2_execution": [
+                ("subprocess", 3), ("requests", 2), ("aiohttp", 3), ("httpx", 3),
+            ],
+            "L6_observability": [
+                ("prometheus_client", 5), ("opentelemetry", 5),
+            ],
+        }
+        # Cross-layer agentic_core imports
+        cross_layer_weight = 3
+
+        import_scores: dict[str, int] = {}
+        import_evidence: dict[str, list[str]] = {}
+        for node in ast.walk(tree):
+            mod = None
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    mod = alias.name
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                mod = node.module
+            else:
+                continue
+            if mod is None:
+                continue
+            # Check infra signals
+            for layer, sigs in infra_signals.items():
+                for prefix, weight in sigs:
+                    if mod == prefix or mod.startswith(prefix + "."):
+                        import_scores[layer] = import_scores.get(layer, 0) + weight
+                        import_evidence.setdefault(layer, []).append(mod)
+            # Check cross-layer agentic_core imports
+            if mod.startswith("agentic_core."):
+                for layer_name in ("L0_maintenance", "L1_cognition", "L2_execution",
+                                   "L3_orchestration", "L4_state", "L5_safety",
+                                   "L6_observability"):
+                    if f"agentic_core.{layer_name}" in mod and layer_name != current_layer:
+                        import_scores[layer_name] = import_scores.get(layer_name, 0) + cross_layer_weight
+                        import_evidence.setdefault(layer_name, []).append(mod)
+
+        # --- Pass 2: Content keyword scoring ---
+        content_lower = content.lower()
+        content_signals: dict[str, tuple[str, ...]] = {
+            "L4_state": ("cache", "persist", "store", "redis", "pinecone",
+                         "embedding", "vector", "upsert", "ledger", "checkpoint"),
+            "L3_orchestration": ("workflow", "dag", "pipeline", "orchestrat",
+                                 "coordinator", "schedule"),
+            "L2_execution": ("subprocess", "execute_tool", "sandbox", "api_call"),
+            "L1_cognition": ("inference", "llm_generate", "prompt_template"),
+            "L6_observability": ("dashboard", "metric", "telemetry", "monitor"),
+        }
+        content_scores: dict[str, int] = {}
+        for layer, keywords in content_signals.items():
+            hits = sum(1 for kw in keywords if kw in content_lower)
+            if hits >= 2:
+                content_scores[layer] = hits
+
+        # --- Merge scores (imports weighted 2x) ---
+        merged: dict[str, int] = {}
+        for layer in set(list(import_scores.keys()) + list(content_scores.keys())):
+            merged[layer] = import_scores.get(layer, 0) * 2 + content_scores.get(layer, 0)
+
+        if not merged:
+            return None
+
+        best_layer = max(merged, key=merged.get)
+        best_score = merged[best_layer]
+        current_score = merged.get(current_layer, 0)
+
+        # Only flag if best layer beats current by a meaningful margin.
+        # Thresholds tuned to avoid false positives from single cross-layer
+        # imports (which score ~6-8) while catching true misplacements (≥16).
+        if best_layer == current_layer or best_score < 10 or (best_score - current_score) < 6:
+            return None
+
+        # Purpose-Over-Mechanism filter: agents in certain layers legitimately
+        # import from other layers to govern/validate/coordinate them.  Only
+        # suppress the suggestion when the agent's own-layer purpose signals
+        # DOMINATE the suggested-layer's content signals (ratio-based).
+        layer_purpose_keywords: dict[str, tuple[str, ...]] = {
+            "L5_safety": ("safety", "security", "governance", "guardrail",
+                          "sanitize", "compliance", "policy", "shield",
+                          "threat", "vulnerability"),
+            "L3_orchestration": ("orchestrat", "coordinator", "workflow", "dag",
+                                 "pipeline", "dispatch", "schedule", "cycle",
+                                 "phase", "mission"),
+        }
+        if current_layer in layer_purpose_keywords:
+            purpose_keywords = layer_purpose_keywords[current_layer]
+            purpose_hits = sum(1 for kw in purpose_keywords if kw in content_lower)
+            suggested_content_hits = sum(
+                1 for kw in content_signals.get(best_layer, ()) if kw in content_lower
+            )
+            # Suppress only if own-layer purpose keywords outnumber the suggested
+            # layer's content hits — meaning the file genuinely serves its current
+            # layer's purposes more than the suggested layer's domain.
+            if purpose_hits > suggested_content_hits:
+                return None  # Own-layer purpose dominates — cross-layer imports are intentional
+
+        return {
+            "current_layer": current_layer,
+            "suggested_layer": best_layer,
+            "confidence": "HIGH" if import_scores.get(best_layer, 0) >= 5 else "MEDIUM",
+            "current_score": current_score,
+            "suggested_score": best_score,
+            "evidence": import_evidence.get(best_layer, []),
+        }
 
     # guardian: allow-type-erasure
     def validate_single_suffix(self, filename: str) -> dict[str, Any] | None:
