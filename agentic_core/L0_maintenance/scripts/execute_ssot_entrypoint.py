@@ -52,6 +52,11 @@ Examples:
         help="Invoke the legacy healing pipeline (execute_ssot._legacy_main).",
     )
     parser.add_argument(
+        "--plan",
+        action="store_true",
+        help="Print the deterministic execution plan and exit. Requires --legacy.",
+    )
+    parser.add_argument(
         "--v15-enforcement",
         type=int,
         choices=(0, 1),
@@ -75,6 +80,15 @@ Examples:
             file=sys.stderr,
         )
         return 1
+
+    # [PLAN MODE] Pure introspection shortcut — no imports beyond plan data.
+    if pre_args.plan:
+        from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            print_execution_plan,
+        )
+
+        print_execution_plan()
+        return 0
 
     # Delegate to the legacy module
     from agentic_core.L0_maintenance.scripts.execute_ssot import (
