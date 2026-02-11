@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# FROZEN — superseded by Guardian pipeline. Do not extend. Zero-loss migration in progress.
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
