@@ -1,7 +1,7 @@
 # Phase 4C Archival Rationalization: Low-Priority Agent Analysis
 
-**Date:** 2026-01-31  
-**Status:** Comprehensive Analysis Complete  
+**Date:** 2026-01-31
+**Status:** Comprehensive Analysis Complete
 **Scope:** Phase 4C from ROBUST_NUCLEAR_AUDIT_REPORT_REFRESHED.md
 
 ## Executive Summary
@@ -23,7 +23,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ## Confirmed Archival Candidates (15 Agents)
 
 ### 1. BiasAuditorAgent
-**Location:** `agentic_core/runtime/shared_runtime/BiasAuditorAgent.py`  
+**Location:** `agentic_core/runtime/shared_runtime/BiasAuditorAgent.py`
 **Status:** ✅ ARCHIVE - Legacy Compatibility Wrapper
 
 **Rationalization:**
@@ -41,8 +41,8 @@ Agents are candidates for archival if they meet one or more of these criteria:
 
 ---
 
-### 2. BiasTypeAgent  
-**Location:** `agentic_core/runtime/shared_runtime/BiasTypeAgent.py`  
+### 2. BiasTypeAgent
+**Location:** `agentic_core/runtime/shared_runtime/BiasTypeAgent.py`
 **Status:** ✅ ARCHIVE - Legacy Type Definitions
 
 **Rationalization:**
@@ -60,7 +60,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ---
 
 ### 3. PerformanceAnalystAgent (Archived Import)
-**Location:** `agentic_core/L6_observability/agents/PerformanceAnalystAgent.py`  
+**Location:** `agentic_core/L6_observability/agents/PerformanceAnalystAgent.py`
 **Status:** ✅ ARCHIVE - Already Partially Archived
 
 **Rationalization:**
@@ -80,7 +80,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ---
 
 ### 4. L0MaintenanceBaseAgent (Stub)
-**Location:** `agentic_core/base_agents/L0MaintenanceBaseAgent.py`  
+**Location:** `agentic_core/base_agents/L0MaintenanceBaseAgent.py`
 **Status:** ✅ ARCHIVE - Marked as Stub in Audit
 
 **Rationalization:**
@@ -99,7 +99,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ---
 
 ### 5. Legacy Import Healer (Function)
-**Location:** Multiple files reference `create_legacy_import_healer()`  
+**Location:** Multiple files reference `create_legacy_import_healer()`
 **Status:** ✅ ARCHIVE - Legacy Compatibility Function
 
 **Rationalization:**
@@ -116,7 +116,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ---
 
 ### 6. SovereignPineconeStoreAgent (Adapter)
-**Location:** `agentic_core/L5_safety/validators/SovereignPineconeStoreAgent.py`  
+**Location:** `agentic_core/L5_safety/validators/SovereignPineconeStoreAgent.py`
 **Status:** ⚠️ CONDITIONAL ARCHIVE - Legacy Adapter
 
 **Rationalization:**
@@ -135,7 +135,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 ---
 
 ### 7. GovernanceAgent.enforce_depth_law() (Method)
-**Location:** `agentic_core/L5_safety/validators/GovernanceAgent.py`  
+**Location:** `agentic_core/L5_safety/validators/GovernanceAgent.py`
 **Status:** ✅ ARCHIVE METHOD - Deprecated
 
 **Rationalization:**
@@ -157,7 +157,7 @@ Agents are candidates for archival if they meet one or more of these criteria:
 These agents require business value assessment before archival:
 
 ### 8. ContextCuratorAgent
-**Location:** `agentic_core/L5_safety/validators/ContextCuratorAgent.py`  
+**Location:** `agentic_core/L5_safety/validators/ContextCuratorAgent.py`
 **Status:** ⚠️ ASSESS - Specialized Context Management
 
 **Rationalization:**
@@ -177,7 +177,7 @@ These agents require business value assessment before archival:
 ---
 
 ### 9. CognitiveDispositionAgent
-**Location:** `agentic_core/L5_safety/validators/CognitiveDispositionAgent.py`  
+**Location:** `agentic_core/L5_safety/validators/CognitiveDispositionAgent.py`
 **Status:** ⚠️ ASSESS - AI-Powered File Classification
 
 **Rationalization:**
@@ -198,7 +198,7 @@ These agents require business value assessment before archival:
 ---
 
 ### 10. FileClassificationAgent
-**Location:** `agentic_core/L5_safety/validators/FileClassificationAgent.py`  
+**Location:** `agentic_core/L5_safety/validators/FileClassificationAgent.py`
 **Status:** ⚠️ ASSESS - File Type Classification
 
 **Rationalization:**
@@ -303,10 +303,10 @@ def archive_agent(agent_file: Path, category: str):
     """Move agent to archives with metadata."""
     archive_dir = Path("archives/agents") / category
     archive_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Move file
     shutil.move(agent_file, archive_dir / agent_file.name)
-    
+
     # Create README
     readme = archive_dir / "README.md"
     readme.write_text(f"""

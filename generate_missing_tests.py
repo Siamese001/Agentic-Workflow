@@ -42,14 +42,14 @@ def test_{module_path.stem}_has_classes_or_functions():
     """Test that module defines classes or functions."""
     import {module_import}
     module_dict = {module_import}.__dict__
-    
+
     # Look for classes or functions (excluding imports)
     classes_or_functions = [
         name for name, obj in module_dict.items()
-        if not name.startswith('_') and 
+        if not name.startswith('_') and
            (callable(obj) or isinstance(obj, type))
     ]
-    
+
     # At least one class or function should exist
     assert len(classes_or_functions) > 0, f"No public classes or functions found in {module_import}"
 '''

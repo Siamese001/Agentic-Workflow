@@ -8,7 +8,7 @@ plugins: anyio-4.12.0, dash-3.3.0, hypothesis-6.148.7, langsmith-0.5.0, asyncio-
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collecting ... collected 1 item
 
-tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_global_import_crawl 
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_global_import_crawl
 === PHASE 2 MANDATORY: Global Import Crawl (apps_*/) ===
 FAILED
 
@@ -21,21 +21,21 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000016C9
         """
         MANDATORY TEST 1: Iterate every .py file in apps_*/.
         Attempt a dry-run import. Catch ModuleNotFoundError and ImportError.
-    
+
         Uses pkgutil.walk_packages combined with importlib.util.find_spec
         to detect Ghost Imports.
         """
         print("\n=== PHASE 2 MANDATORY: Global Import Crawl (apps_*/) ===")
-    
+
         # Get all Python files from apps_* directories
         target_dirs = ["apps_rg", "apps_lic", "apps_shared"]
         python_files = self._get_all_python_files(target_dirs)
-    
+
         ghost_imports: list[dict[str, Any]] = []
         module_not_found: list[dict[str, Any]] = []
         import_errors: list[dict[str, Any]] = []
         successful_imports = 0
-    
+
         for file_path in python_files:
             # Convert path to module name
             try:
@@ -43,7 +43,7 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000016C9
                 module_name = ".".join(rel_path.with_suffix("").parts)
             except ValueError:
                 continue
-    
+
             # Step 1: Use importlib.util.find_spec to check if module exists
             try:
                 spec = importlib.util.find_spec(module_name)
@@ -77,10 +77,10 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000016C9
             except Exception:
                 # Other errors (syntax, etc.) - tracked separately
                 continue
-    
+
             # Step 2: Attempt actual import with timeout
             success, error = _import_with_timeout(module_name, file_path, timeout_seconds=3.0)
-    
+
             if success:
                 successful_imports += 1
             elif error:
@@ -100,19 +100,19 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000016C9
                             "error": error,
                         }
                     )
-    
+
         # Report results
         total_issues = len(ghost_imports) + len(module_not_found) + len(import_errors)
-    
+
         print(f"\n  Files scanned: {len(python_files)}")
         print(f"  Successful imports: {successful_imports}")
         print(f"  Ghost imports: {len(ghost_imports)}")
         print(f"  ModuleNotFoundError: {len(module_not_found)}")
         print(f"  ImportError: {len(import_errors)}")
-    
+
         # Track as tech debt with threshold
         KNOWN_IMPORT_ISSUES = 50  # Allow up to 50 known issues
-    
+
         if total_issues > 0:
             if total_issues <= KNOWN_IMPORT_ISSUES:
                 print(f"\n[TECH DEBT] {total_issues} import issues (tracked, not blocking)")
@@ -120,25 +120,25 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x0000016C9
                 error_msg = (
                     f"IMPORT ISSUES EXCEED THRESHOLD ({total_issues} > {KNOWN_IMPORT_ISSUES}):\n"
                 )
-    
+
                 if ghost_imports:
                     error_msg += "\nGhost Imports:\n"
                     for gi in ghost_imports[:5]:
                         error_msg += f"  [X] {gi['file']}: {gi['error']}\n"
-    
+
                 if module_not_found:
                     error_msg += "\nModuleNotFoundError:\n"
                     for mnf in module_not_found[:5]:
                         error_msg += f"  [X] {mnf['file']}: {mnf['error']}\n"
-    
+
                 if import_errors:
                     error_msg += "\nImportError:\n"
                     for ie in import_errors[:5]:
                         error_msg += f"  [X] {ie['file']}: {ie['error']}\n"
-    
+
 >               raise AssertionError(error_msg)
 E               AssertionError: IMPORT ISSUES EXCEED THRESHOLD (95 > 50):
-E               
+E
 E               ModuleNotFoundError:
 E                 [X] apps_rg\domain\PromptTemplate.py: No module named 'apps_rg.domain.knowledge_base'
 E                 [X] apps_rg\domain\__init__.py: No module named 'apps_rg.domain.knowledge_base'

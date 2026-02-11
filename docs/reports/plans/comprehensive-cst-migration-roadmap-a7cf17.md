@@ -79,10 +79,10 @@ def heal_canon(self, file_path: Path):
 ```python
 class SurgicalWhitespaceFixer(cst.CSTTransformer):
     """Remove trailing whitespace while preserving formatting."""
-    
+
 class SurgicalBlankLineNormalizer(cst.CSTTransformer):
     """Normalize excessive blank lines while preserving structure."""
-    
+
 class SurgicalLineEndingFixer(cst.CSTTransformer):
     """Fix inconsistent line endings."""
 ```
@@ -119,7 +119,7 @@ def heal_structural(self, file_path: Path):
 ```python
 class SurgicalTypeHintInserter(cst.CSTTransformer):
     """Add missing type hints to function signatures."""
-    
+
 class SurgicalImportOrganizer(cst.CSTTransformer):
     """Organize imports and add typing imports."""
 ```
@@ -133,7 +133,7 @@ class SurgicalImportOrganizer(cst.CSTTransformer):
 ```python
 class SurgicalNamingFixer(cst.CSTTransformer):
     """Fix naming conventions in classes, functions, variables."""
-    
+
 class SurgicalImportRenamer(cst.CSTTransformer):
     """Update imports when renaming symbols."""
 ```
@@ -148,7 +148,7 @@ class SurgicalImportRenamer(cst.CSTTransformer):
 ```python
 class SurgicalFileMover:
     """Move files with automatic import fixing."""
-    
+
 class SurgicalHierarchyFixer(cst.CSTTransformer):
     """Fix module hierarchy violations."""
 ```
@@ -165,7 +165,7 @@ class SurgicalHierarchyFixer(cst.CSTTransformer):
 ```python
 class UnifiedCSTHealer:
     """Single entry point for all CST-based healing."""
-    
+
     def heal_all(self, file_path: Path, healing_config: HealingConfig):
         # Detect all violations
         # Create unified surgical context

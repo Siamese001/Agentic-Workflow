@@ -9,7 +9,7 @@ except ImportError as _err:
     ) from _err
 
 os.chdir(
-    r"C:\Git\Agentic-Workflow\agentic_core\L6_observability\dashboards"
+    r"C:\Git\Agentic-Workflow\agentic_core\L6_observability\dashboards",
 )  # guardian: allow-path_fragility
 
 

@@ -16,7 +16,7 @@ def test_test_hardened_anti_pattern_visitor_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.hardened_anti_pattern_visitor: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.hardened_anti_pattern_visitor: {e}",
         )
 
 

@@ -221,15 +221,15 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 @@ -50,6 +50,9 @@ import ast
  import logging
  from dataclasses import dataclass
- 
+
 +# [SSOT] Use shared complexity analyzer
 +from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 +
- 
+
  class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
      """
 @@ -644,19 +647,8 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
- 
+
      def _calculate_mccabe(self, node: ast.AST) -> int:
          """
 -        Calculate cyclomatic complexity for an AST node.
@@ -257,15 +257,15 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 @@ -25,6 +25,9 @@ import ast
  import os
  from typing import Any
- 
+
 +# [SSOT] Use shared complexity analyzer
 +from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 +
- 
+
  @dataclass
  class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin):
 @@ -168,17 +171,8 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
- 
+
      def _calculate_complexity(self, node: ast.AST) -> int:
          """
 -        Calculate cyclomatic complexity of a function.
@@ -296,7 +296,7 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 +++ b/agentic_core/L5_safety/policy_engine/structural_validator_agent_types.py
 @@ -27,6 +27,13 @@ from pathlib import Path
  from typing import Any
- 
+
  from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 +# [SSOT] Use shared layer gravity utilities
 +from agentic_core.L4_state.utils.layer_gravity import (
@@ -305,13 +305,13 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 +    extract_layer_from_path,
 +    extract_layer_from_module,
 +)
- 
- 
+
+
  class StructuralValidatorAgent(SovereignBaseAgent):
 @@ -84,22 +91,6 @@ class StructuralValidatorAgent(SovereignBaseAgent):
      Hardened with Atomic Writes for auto-remediation.
      """
- 
+
 -    # Layer hierarchy (lower number = lower layer = higher authority)
 -    LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 -
@@ -326,7 +326,7 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 -        "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
 -    }
 +    # [SSOT] Constants moved to agentic_core.L4_state.utils.layer_gravity
- 
+
      def _extract_layer(self, path: Path) -> str | None:
 -        path_str = str(path)
 -        for layer in self.LAYER_ORDER.keys():
@@ -334,7 +334,7 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 -                return layer
 -        return None
 +        return extract_layer_from_path(path)
- 
+
      def _extract_layer_from_module(self, module: str) -> str | None:
 -        for layer in self.LAYER_ORDER.keys():
 -            if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
@@ -406,21 +406,21 @@ This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4
 +
 +⚠️  DEPRECATED: This agent is now a facade only.
 +   Use LocationValidatorAgent for validation and LocationHealerAgent for healing.
- 
+
  Enforces root folder whitelists, depth restrictions, gravity leak prevention,
  and root-level protections. Acts as a facade delegating validation and healing
 @@ -15,6 +18,11 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
- 
- 
+
+
  class LocationAgent(SovereignBaseAgent):
 +    """
 +    DEPRECATED FACADE: Delegates to LocationValidatorAgent and LocationHealerAgent.
-+    
++
 +    Migration: Use LocationValidatorAgent for validation, LocationHealerAgent for healing.
 +    """
      """
      L5 sovereign territorial gatekeeper for file location compliance.
- 
+
 ```
 
 ### Subphase 4.2: Update Agent Discovery and Documentation

@@ -141,7 +141,7 @@ def main():
                 "module": str(module),
                 "expected_test": str(compute_expected_test_path(module)),
                 "status": status,
-            }
+            },
         )
 
     # 4) Generate integrity hash

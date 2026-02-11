@@ -233,7 +233,7 @@ def classify_file_by_content(self, path: Path) -> FileType:
     """Score file content to determine true type."""
     content = path.read_text()
     tree = ast.parse(content)
-    
+
     scores = {
         'TYPES': 0,
         'CONFIG': 0,
@@ -241,7 +241,7 @@ def classify_file_by_content(self, path: Path) -> FileType:
         'UTILITY': 0,
         'VALIDATOR': 0,
     }
-    
+
     for node in ast.walk(tree):
         # Type indicators
         if isinstance(node, ast.ClassDef):
@@ -255,21 +255,21 @@ def classify_file_by_content(self, path: Path) -> FileType:
                 scores['TYPES'] += 10
             if 'Protocol' in [b.id for b in node.bases if isinstance(b, ast.Name)]:
                 scores['TYPES'] += 15
-        
+
         # Config indicators
         if isinstance(node, ast.Assign):
             for target in node.targets:
                 if isinstance(target, ast.Name) and target.id.isupper():
                     scores['CONFIG'] += 5  # CONSTANT = value
-        
+
         # Utility indicators
         if isinstance(node, ast.FunctionDef) and not self._is_method(node):
             scores['UTILITY'] += 3
-        
+
         # Validator indicators
         if isinstance(node, ast.FunctionDef) and node.name.startswith(('validate_', 'check_')):
             scores['VALIDATOR'] += 5
-    
+
     # Winner takes all
     return max(scores, key=scores.get)
 ```
@@ -285,7 +285,7 @@ def validate_single_suffix(self, filename: str) -> None:
     """Reject files with multiple architectural suffixes."""
     stem = filename[:-3]  # Remove .py
     found_suffixes = [s for s in KNOWN_SUFFIXES if s in stem]
-    
+
     if len(found_suffixes) > 1:
         raise CompoundSuffixViolation(
             f"File '{filename}' has {len(found_suffixes)} suffixes: {found_suffixes}. "
@@ -301,24 +301,24 @@ Remove the "layer root only" restriction:
 def enforce_territory_recursive(self, path: Path) -> Optional[Path]:
     """Enforce correct territory for ALL files, not just layer root."""
     file_type = self.classify_file(path)
-    
+
     # Global rules (apply everywhere)
     if file_type == 'MIXIN':
         return Path('agentic_core/mixins') / path.name
-    
+
     # Layer rules
     layer_root = self.get_layer_root(path)
     if not layer_root:
         return None
-    
+
     correct_folder = TYPE_TO_FOLDER.get(file_type)
     if not correct_folder:
         return None
-    
+
     correct_path = layer_root / correct_folder / path.name
     if path != correct_path:
         return correct_path
-    
+
     return None
 ```
 
@@ -371,18 +371,18 @@ class ClassificationResult:
 def classify_file_with_confidence(self, path: Path) -> ClassificationResult:
     scores = self._compute_content_scores(path)
     total = sum(scores.values())
-    
+
     if total == 0:
         return ClassificationResult('UTILITY', 0.5, [], ['No classification signals found'])
-    
+
     winner = max(scores, key=scores.get)
     confidence = scores[winner] / total
-    
+
     warnings = []
     if confidence < 0.6:
         runner_up = sorted(scores, key=scores.get, reverse=True)[1]
         warnings.append(f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up} ({scores[runner_up]})")
-    
+
     return ClassificationResult(winner, confidence, self._get_signals(path), warnings)
 ```
 

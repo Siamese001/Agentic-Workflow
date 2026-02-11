@@ -49,7 +49,7 @@ Evaluate **only** capabilities enumerated in **§1–§15** (which are derived f
 | FAIL | Evidence contradicts invariant OR illegal state present | Explicit contradiction reference |
 
 Evidence Location format (mandatory in all tables):
-`path/to/file.py::ClassName.method_name (lines 123-456)` OR `path/to/file.py (commit abc1234)` 
+`path/to/file.py::ClassName.method_name (lines 123-456)` OR `path/to/file.py (commit abc1234)`
 
 ### 0.4 Status Vocabulary (Fixed)
 
@@ -652,8 +652,8 @@ Capabilities: 2, 3, 5, 6, 7, 8, 9, 11, 12, 13, 15
 
 ### Agent: <agent_name> (Layer <L#>)
 
-**Discovery Identity:** `<identity>` | **File:** `<file_path>` | **Integrity Hash:** `<integrity_hash>` 
-**SSOT Status:** MATCH / MISMATCH | **MRO Chain:** `<exact mro_chain>` 
+**Discovery Identity:** `<identity>` | **File:** `<file_path>` | **Integrity Hash:** `<integrity_hash>`
+**SSOT Status:** MATCH / MISMATCH | **MRO Chain:** `<exact mro_chain>`
 
 | ID   | Capability                              | Status          | Evidence Location                          | Gating Invariant Impact | SSOT Validated? |
 |------|-----------------------------------------|-----------------|--------------------------------------------|--------------------------|-----------------|

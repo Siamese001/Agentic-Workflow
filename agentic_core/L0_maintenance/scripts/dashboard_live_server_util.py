@@ -18,8 +18,7 @@ try:
     from livereload import Server
 except ImportError as _err:
     raise ImportError(
-        "livereload is required for this module. "
-        "Install with: pip install -e '.[infra]'"
+        "livereload is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 
 # Import SSOT for dashboard directory - NO HARDCODING

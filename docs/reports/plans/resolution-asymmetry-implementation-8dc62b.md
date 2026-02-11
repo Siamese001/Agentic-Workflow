@@ -25,7 +25,7 @@ The Resolution Asymmetry Audit identified 13 agents (7.6% of total) with critica
 - Metrics collection functional
 
 ### 0.2 Verification Gate Integration
-- **Duration**: 1 day  
+- **Duration**: 1 day
 - **Priority**: Critical
 - **Dependencies**: 0.1
 
@@ -110,7 +110,7 @@ class CampaignPlannerAgent(RGAgentBase, SovereignHealingMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Auto-initialize healing capabilities
-    
+
     def handle_context_validation_error(self, error, context):
         return self.handle_error_with_structured_recovery(
             error, "context_validation", context

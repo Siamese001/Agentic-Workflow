@@ -16,7 +16,7 @@ def test_test_repair_legacy_agents_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.repair_legacy_agents_util: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.repair_legacy_agents_util: {e}",
         )
 
 

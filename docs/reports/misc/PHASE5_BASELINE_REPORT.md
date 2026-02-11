@@ -1,7 +1,7 @@
 # Phase 5 Baseline Report: Test Coverage Expansion
 
-**Date:** 2026-01-31  
-**Status:** Baseline Assessment Complete  
+**Date:** 2026-01-31
+**Status:** Baseline Assessment Complete
 **Scope:** Phase 5 from ROBUST_NUCLEAR_AUDIT_REPORT_REFRESHED.md
 
 ## Executive Summary
@@ -15,8 +15,8 @@ Phase 5 aims to achieve **80%+ test coverage** across all layers with:
 
 ## Phase 5 Scope (From Audit Report)
 
-**Goal:** Achieve 80%+ test coverage across all layers  
-**Duration:** 2 Cascade chats (4-6 hours)  
+**Goal:** Achieve 80%+ test coverage across all layers
+**Duration:** 2 Cascade chats (4-6 hours)
 **Priority:** MEDIUM
 
 **Tasks:**

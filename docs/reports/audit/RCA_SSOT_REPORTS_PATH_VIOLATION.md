@@ -1,8 +1,8 @@
 # RCA: SSOT Reports Path Violation
 
-**Date:** 2026-02-06  
-**Severity:** Medium  
-**Status:** RESOLVED  
+**Date:** 2026-02-06
+**Severity:** Medium
+**Status:** RESOLVED
 
 ## Summary
 

@@ -16,7 +16,7 @@ def test_test_cleanup_duplicates_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.prompt_governance.scripts.cleanup_duplicates_util: {e}"
+            f"Cannot import module agentic_core.prompt_governance.scripts.cleanup_duplicates_util: {e}",
         )
 
 

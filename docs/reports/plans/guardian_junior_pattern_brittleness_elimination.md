@@ -12,7 +12,7 @@ Eliminated 4 junior-pattern brittleness issues: (1) removed line-number coupling
 
 **Problem**: Tests asserted exact `node.lineno` values, creating brittle fixtures that break when code changes.
 
-**Fix**: 
+**Fix**:
 - Replaced line number assertions with:
   - Violation count checks
   - Exception type validation
@@ -54,7 +54,7 @@ Eliminated 4 junior-pattern brittleness issues: (1) removed line-number coupling
 
 **Problem**: Contract gate scope could be silently widened via ignores or new test modules.
 
-**Fix**: 
+**Fix**:
 - Defined SSOT `CONTRACT_GATE_TEST_MODULES` tuple (13 modules)
 - Asserted all SSOT modules exist and are not ignored
 - Prevented silent addition of contract modules without SSOT update

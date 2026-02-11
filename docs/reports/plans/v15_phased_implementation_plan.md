@@ -2,7 +2,7 @@
 
 Phased plan to close 89 V15 target-state gaps (0% compliant → full compliance), prioritized P0–P4 by blast radius, dependency order, and safety criticality.  All hardening feedback from reconciliation review incorporated.
 
-**Source**: `docs/reports/plans/v15_gap_analysis.json`  
+**Source**: `docs/reports/plans/v15_gap_analysis.json`
 **Version**: 3.0 (A++ hardened)
 
 ---

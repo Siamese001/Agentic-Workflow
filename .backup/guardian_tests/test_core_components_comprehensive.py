@@ -44,7 +44,7 @@ def test_critical_files_exist():
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing_files.append(filepath)
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)
@@ -130,17 +130,17 @@ CRITICAL_FILES = [
 def test_critical_files_exist():
     missing_files = []
     existing_files = []
-    
+
     for filepath in CRITICAL_FILES:
         if Path(filepath).exists():
             existing_files.append(filepath)
         else:
             missing_files.append(filepath)
-    
+
     print(f"Total files: {len(CRITICAL_FILES)}")
     print(f"Found: {len(existing_files)}")
     print(f"Missing: {len(missing_files)}")
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)
@@ -198,14 +198,14 @@ def test_critical_files_exist():
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing_files.append(filepath)
-    
+
     # Clean up
     try:
         os.chmod(test_file, 0o644)
         test_file.unlink()
     except:
         pass
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)
@@ -257,13 +257,13 @@ def test_critical_files_exist():
         # Check if it's a file specifically
         if not path.exists() or not path.is_file():
             missing_files.append(filepath)
-    
+
     # Clean up
     try:
         temp_dir.rmdir()
     except:
         pass
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)
@@ -323,7 +323,7 @@ def test_critical_files_exist():
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing_files.append(filepath)
-    
+
     # Clean up
     try:
         target_file.unlink()
@@ -331,7 +331,7 @@ def test_critical_files_exist():
             Path("test_symlink.txt").unlink()
     except:
         pass
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)
@@ -381,17 +381,17 @@ CRITICAL_FILES.append("tests/guardian/test_core_components.py")
 def test_critical_files_exist():
     missing_files = []
     existing_files = []
-    
+
     for filepath in CRITICAL_FILES:
         if Path(filepath).exists():
             existing_files.append(filepath)
         else:
             missing_files.append(filepath)
-    
+
     print(f"Total files: {len(CRITICAL_FILES)}")
     print(f"Found: {len(existing_files)}")
     print(f"Missing: {len(missing_files)}")
-    
+
     if missing_files:
         print("VIOLATION: Critical files missing")
         sys.exit(1)

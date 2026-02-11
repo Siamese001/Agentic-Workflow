@@ -50,9 +50,8 @@ class TestRGSovereignSocket:
 
     def test_content_strategy_inheritance(self):
         """Verify ContentStrategyAgent connects to the bridge."""
-        from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
 
         assert issubclass(ContentStrategyAgent, RGAgentBase)
         agent = ContentStrategyAgent()

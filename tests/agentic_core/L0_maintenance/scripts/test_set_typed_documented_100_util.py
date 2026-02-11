@@ -16,7 +16,7 @@ def test_test_set_typed_documented_100_util_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.set_typed_documented_100_util: {e}"
+            f"Cannot import module agentic_core.L0_maintenance.scripts.set_typed_documented_100_util: {e}",
         )
 
 

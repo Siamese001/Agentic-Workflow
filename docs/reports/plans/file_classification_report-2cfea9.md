@@ -124,7 +124,7 @@ The following agent renames will require extensive import updates:
 # Before
 from agentic_core.base_agents.SovereignBase import SovereignBase
 
-# After  
+# After
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 ```
 

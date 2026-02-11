@@ -83,7 +83,7 @@ def test_{module_path.stem}_has_public_attributes():
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
         # Look for at least one callable
         callables = [name for name in public_attrs if callable(getattr(mod, name))]
-        
+
         if callables:
             # Test that first callable is callable
             assert callable(getattr(mod, callables[0]))

@@ -16,7 +16,7 @@ def test_test_rag_telemetry_collector_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L6_observability.enforcement.rag_telemetry_collector: {e}"
+            f"Cannot import module agentic_core.L6_observability.enforcement.rag_telemetry_collector: {e}",
         )
 
 

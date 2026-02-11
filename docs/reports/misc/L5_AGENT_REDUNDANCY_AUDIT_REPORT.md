@@ -1,7 +1,7 @@
 # L5 Agent Redundancy Audit Report
 
-**Generated:** 2026-02-02  
-**Scope:** `agentic_core/L5_safety/` (validators, guardrails, gravity, policy_engine, cognition)  
+**Generated:** 2026-02-02
+**Scope:** `agentic_core/L5_safety/` (validators, guardrails, gravity, policy_engine, cognition)
 **Auditor:** Cascade AI
 
 ---
@@ -361,15 +361,15 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 @@ -50,6 +50,9 @@ import ast
  import logging
  from dataclasses import dataclass
- 
+
 +# [SSOT] Use shared complexity analyzer
 +from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 +
- 
+
  class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
      """
 @@ -644,19 +647,8 @@ class GovernanceAgent(SubatomicTestingMixin, SovereignBaseAgent):
- 
+
      def _calculate_mccabe(self, node: ast.AST) -> int:
          """
 -        Calculate cyclomatic complexity for an AST node.
@@ -399,15 +399,15 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 @@ -25,6 +25,9 @@ import ast
  import os
  from typing import Any
- 
+
 +# [SSOT] Use shared complexity analyzer
 +from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 +
- 
+
  @dataclass
  class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerMixin):
 @@ -168,17 +171,8 @@ class StructuralEngineerAgent(SovereignBaseAgent, SubatomicTestingMixin, HealerM
- 
+
      def _calculate_complexity(self, node: ast.AST) -> int:
          """
 -        Calculate cyclomatic complexity of a function.
@@ -432,7 +432,7 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 +++ b/agentic_core/L5_safety/policy_engine/structural_validator_agent_types.py
 @@ -27,6 +27,13 @@ from pathlib import Path
  from typing import Any
- 
+
  from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 +# [SSOT] Use shared layer gravity utilities
 +from agentic_core.L4_state.utils.layer_gravity import (
@@ -441,13 +441,13 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 +    extract_layer_from_path,
 +    extract_layer_from_module,
 +)
- 
- 
+
+
  class StructuralValidatorAgent(SovereignBaseAgent):
 @@ -84,22 +91,6 @@ class StructuralValidatorAgent(SovereignBaseAgent):
      Hardened with Atomic Writes for auto-remediation.
      """
- 
+
 -    # Layer hierarchy (lower number = lower layer = higher authority)
 -    LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 -
@@ -462,7 +462,7 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 -        "L6": {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
 -    }
 +    # [SSOT] Constants moved to agentic_core.L4_state.utils.layer_gravity
- 
+
      def _extract_layer(self, path: Path) -> str | None:
 -        path_str = str(path)
 -        for layer in self.LAYER_ORDER.keys():
@@ -470,7 +470,7 @@ The following logic should be extracted to `agentic_core/L4_state/utils/`:
 -                return layer
 -        return None
 +        return extract_layer_from_path(path)
- 
+
      def _extract_layer_from_module(self, module: str) -> str | None:
 -        for layer in self.LAYER_ORDER.keys():
 -            if f".{layer}_" in module or module.startswith(f"{layer}_") or f"_{layer}_" in module:
@@ -667,7 +667,7 @@ class TestGovernanceAgentAfterRefactor:
     def test_complexity_check_still_works(self, tmp_path):
         """GovernanceAgent.check_complexity should still function."""
         from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
-        
+
         # Create test file with complex function
         test_file = tmp_path / "complex.py"
         test_file.write_text("""
@@ -679,10 +679,10 @@ def complex_func(x):
                     while i > 0:
                         i -= 1
 """)
-        
+
         agent = GovernanceAgent(root_dir=str(tmp_path))
         violations = agent.check_complexity(str(test_file))
-        
+
         # Should detect complexity violation
         assert len(violations) > 0
         assert any("complexity" in v.get("type", "").lower() for v in violations)
@@ -697,7 +697,7 @@ class TestStructuralValidatorAfterRefactor:
             StructuralValidatorAgent,
             StructureConfig,
         )
-        
+
         # Create test file with gravity violation
         l3_dir = tmp_path / "agentic_core" / "L3_orchestration"
         l3_dir.mkdir(parents=True)
@@ -705,11 +705,11 @@ class TestStructuralValidatorAfterRefactor:
         test_file.write_text("""
 from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
 """)
-        
+
         config = StructureConfig(project_root=tmp_path)
         agent = StructuralValidatorAgent(config=config)
         report = agent.validate_structure(test_file)
-        
+
         # Should detect gravity violation
         assert len(report.violations) > 0
         assert any(v.violation_type == "GRAVITY" for v in report.violations)
@@ -721,17 +721,17 @@ class TestLocationHealerDelegation:
     def test_hierarchy_delegates_file_relocation(self, tmp_path):
         """HierarchyAgent should delegate MISPLACED violations to LocationHealerAgent."""
         from agentic_core.L5_safety.validators.HierarchyagentStrategy import HierarchyAgent
-        
+
         agent = HierarchyAgent(project_root=tmp_path, healing_enabled=False)
-        
+
         violation = {
             "type": "MISPLACED",
             "file": str(tmp_path / "orphan.py"),
             "message": "File in wrong location",
         }
-        
+
         result = agent.heal(violation)
-        
+
         # Should delegate (healing disabled = skipped)
         assert result["status"] in ("skipped", "delegated")
 ```
@@ -752,18 +752,18 @@ class TestNoFunctionalityLoss:
         """All three depth validators should produce consistent results."""
         from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
         from agentic_core.L5_safety.validators.location_validator_agent import LocationValidatorAgent
-        
+
         # Create file at wrong depth
         deep_file = tmp_path / "agentic_core" / "L5_safety" / "validators" / "sub" / "deep.py"
         deep_file.parent.mkdir(parents=True, exist_ok=True)
         deep_file.write_text("# Too deep")
-        
+
         gov_agent = GovernanceAgent(root_dir=str(tmp_path))
         loc_agent = LocationValidatorAgent(project_root=tmp_path)
-        
+
         gov_result = gov_agent.check_depth_law(str(deep_file.relative_to(tmp_path)))
         loc_result = loc_agent.validate_file_location(deep_file)
-        
+
         # Both should detect depth violation
         if gov_result:
             assert "DEEP" in gov_result or "depth" in gov_result.lower()
@@ -777,14 +777,14 @@ class TestNoFunctionalityLoss:
             StructureConfig,
         )
         from agentic_core.L5_safety.gravity.GravityLeakRepairAgent import GravityLeakRepairAgent
-        
+
         # Both should identify L3 -> L5 as violation
         struct_agent = StructuralValidatorAgent(StructureConfig())
         gravity_agent = GravityLeakRepairAgent(project_root=tmp_path)
-        
+
         # Test the shared logic
         from agentic_core.L4_state.utils.layer_gravity import is_gravity_violation
-        
+
         assert is_gravity_violation("L3", "L5") is True
         assert is_gravity_violation("L5", "L3") is False
 ```
@@ -840,6 +840,6 @@ The L5 layer exhibits significant architectural redundancy that can be addressed
 2. **Consolidating file operations** into LocationHealerAgent as the single point of file mutation
 3. **Maintaining facade patterns** for backwards compatibility during migration
 
-**Estimated effort:** 4 weeks for full consolidation  
-**Risk level:** Medium (mitigated by comprehensive testing)  
+**Estimated effort:** 4 weeks for full consolidation
+**Risk level:** Medium (mitigated by comprehensive testing)
 **Expected benefit:** 40% reduction in L5 code duplication, clearer separation of concerns

@@ -10,7 +10,7 @@
 
 **By Design:** Pre-commit hooks run **ONLY on staged files**, not the entire repository.
 
-**Why:** 
+**Why:**
 - Fast feedback loop (seconds, not minutes)
 - Developers only fix what they're committing
 - Repository-wide issues are handled by Guardian tests/CI
@@ -23,7 +23,7 @@
 def validate_base_agent_location(file_path: str):
     """
     [CONSTITUTIONAL] Validate that base agents are in the correct location.
-    
+
     Rules:
     1. Core framework base agents (SovereignBaseAgent, layer base agents)
        MUST be in agentic_core/base_agents/
@@ -34,7 +34,7 @@ def validate_base_agent_location(file_path: str):
 
 **Purpose:** Prevents breaking the entire inheritance hierarchy by misplacing base agents.
 
-**Why Constitutional:** 
+**Why Constitutional:**
 - Base agents are the foundation of 200+ files
 - Misplacing them breaks imports across the entire codebase
 - This is a structural invariant that CANNOT be violated
@@ -82,8 +82,8 @@ repos:
 
 **The Error:**
 ```
-[CONSTITUTIONAL VIOLATION] Base agent 'test_SovereignBaseAgent.py' 
-must reside in agentic_core/base_agents/ or appropriate apps_* directory, 
+[CONSTITUTIONAL VIOLATION] Base agent 'test_SovereignBaseAgent.py'
+must reside in agentic_core/base_agents/ or appropriate apps_* directory,
 found in: tests/unit/agentic_core/base_agents/test_SovereignBaseAgent.py
 ```
 

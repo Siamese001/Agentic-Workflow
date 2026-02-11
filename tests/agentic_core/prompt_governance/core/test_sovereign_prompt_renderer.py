@@ -16,7 +16,7 @@ def test_test_sovereign_prompt_renderer_can_import():
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.prompt_governance.core.sovereign_prompt_renderer: {e}"
+            f"Cannot import module agentic_core.prompt_governance.core.sovereign_prompt_renderer: {e}",
         )
 
 

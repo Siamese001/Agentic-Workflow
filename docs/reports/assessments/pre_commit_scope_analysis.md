@@ -151,7 +151,7 @@ repos:
         entry: python scripts/validate_structure.py --constitutional-only
         language: python
         files: .*BaseAgent\.py$
-        
+
       - id: purge-cache
         name: Pycache Purge
         entry: python ops_scripts/maintenance/purge_cache.py --quiet

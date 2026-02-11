@@ -6,7 +6,7 @@ This plan optimizes the integration of FileClassificationAgent within execute_ss
 
 FileClassificationAgent is currently integrated in execute_ssot.py at:
 - **Line 2187**: Registered in agents dictionary as "file_classification"
-- **Line 2351-2367**: Executed in Phase 2.5 as "Sovereignty Enforcement" 
+- **Line 2351-2367**: Executed in Phase 2.5 as "Sovereignty Enforcement"
 - **Limited scope**: Only triggered when `pascal_proceed` is true based on location violations
 
 ## Issues Identified

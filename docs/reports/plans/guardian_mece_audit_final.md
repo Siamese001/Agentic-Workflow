@@ -745,7 +745,7 @@ Tests grouped by file with exact nodeids. Primary Axis codes:
 +++ b/tests/guardian/test_guardian_contract.py
 @@ -218,6 +218,18 @@ class TestSerializationRoundTrip:
          assert j1 == j2, "Same input must produce identical JSON"
- 
+
 +    def test_load_malformed_json_raises(self, tmp_path: Path):
 +        bad_file = tmp_path / "malformed.json"
 +        bad_file.write_text("{not valid json!!!", encoding="utf-8")
@@ -758,7 +758,7 @@ Tests grouped by file with exact nodeids. Primary Axis codes:
 +        with pytest.raises(KeyError, match="guardian_id"):
 +            load_guardian_result(incomplete)
 +
- 
+
  # ---------------------------------------------------------------------------
  # 5. Validation catches invalid data
 ```

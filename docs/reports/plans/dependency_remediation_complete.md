@@ -26,48 +26,48 @@
 
 ### Core (15 — REQUIRED)
 
-pydantic  
-google-genai  
-pinecone  
-redis  
-libcst  
-cryptography  
-aiofiles  
-jinja2  
-networkx  
-psutil  
-python-dotenv  
-PyYAML  
-tenacity  
-tqdm  
-watchdog  
+pydantic
+google-genai
+pinecone
+redis
+libcst
+cryptography
+aiofiles
+jinja2
+networkx
+psutil
+python-dotenv
+PyYAML
+tenacity
+tqdm
+watchdog
 
 ### Dev (6 — OPTIONAL, gated by flag)
 
-pytest  
-pytest-cov  
-pytest-asyncio  
-black  
-ruff  
-mypy  
+pytest
+pytest-cov
+pytest-asyncio
+black
+ruff
+mypy
 
 ### Infra (15 — OPTIONAL, guarded imports)
 
-numpy  
-chromadb  
-duckdb  
-rank-bm25  
-scikit-learn  
-pydantic-settings  
-beautifulsoup4  
-dash  
-fastapi  
-livereload  
-pandas  
-playwright  
-plotly  
-waitress  
-rich  
+numpy
+chromadb
+duckdb
+rank-bm25
+scikit-learn
+pydantic-settings
+beautifulsoup4
+dash
+fastapi
+livereload
+pandas
+playwright
+plotly
+waitress
+rich
 
 ---
 
@@ -100,7 +100,7 @@ The verifier (`docs/reports/plans/dependency_verify_imports.py`) operates with f
 
 ## Why the Split Was Necessary
 
-Previous implementation incorrectly lumped declared infra deps with undeclared third-party SDKs.  
+Previous implementation incorrectly lumped declared infra deps with undeclared third-party SDKs.
 Under `--all`, this forced installation of heavy or optional packages (torch, anthropic, FlagEmbedding).
 
 Now:
@@ -116,14 +116,14 @@ Now:
 
 Authoritative evidence stored in:
 
-`docs/reports/plans/dependency_gate_evidence_vFinal.md` 
+`docs/reports/plans/dependency_gate_evidence_vFinal.md`
 
 Environment:
 
 - Windows
 - Python 3.12.10
 - pip 26.0.1
-- `.venv_verify` 
+- `.venv_verify`
 
 ### Gates
 
@@ -142,9 +142,9 @@ Environment:
 
 Any references to:
 
-- `.venv_gate` 
-- `.venv_final` 
-- `.venv_lean` 
+- `.venv_gate`
+- `.venv_final`
+- `.venv_lean`
 - pip 25.x
 - core=13
 

@@ -24,7 +24,7 @@ The current 19 core deps include:
 - 13 that are truly baseline (pydantic, libcst, redis, etc.)
 - 6 that have hard imports but are in specialized modules
 
-**Recommendation:** 
+**Recommendation:**
 1. Keep all 19 in core for v1 (ensures baseline usability)
 2. Document the 6 as "core-but-optional" with a plan to refactor
 3. Add CI check to prevent NEW hard imports of infra packages

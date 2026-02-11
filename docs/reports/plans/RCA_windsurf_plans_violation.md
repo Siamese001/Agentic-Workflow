@@ -1,7 +1,7 @@
 # RCA: Why Plans Saved to `.windsurf` Instead of SSOT-Approved Folder
 
-**Date:** 2026-02-05  
-**Severity:** HIGH - SSOT Violation  
+**Date:** 2026-02-05
+**Severity:** HIGH - SSOT Violation
 **Status:** RESOLVED
 
 ## Executive Summary
@@ -14,7 +14,7 @@ Plans were being saved to `C:\Users\amita\.windsurf\plans\` (external to reposit
 
 **Issue:** The system planning guidance instructed:
 ```
-Save your plan as a markdown file in C:\Users\amita\.windsurf\plans for the user to review, 
+Save your plan as a markdown file in C:\Users\amita\.windsurf\plans for the user to review,
 with a suffix of -d851b4. Ex. "C:\Users\amita\.windsurf\plans/my-plan-d851b4.md"
 ```
 
@@ -117,7 +117,7 @@ c:\Git\Agentic-Workflow\           ← Repository root
 
 The system planning guidance should be updated to:
 ```
-Save your plan as a markdown file in docs/reports/plans/ for the user to review, 
+Save your plan as a markdown file in docs/reports/plans/ for the user to review,
 with a suffix of -d851b4. Ex. "docs/reports/plans/my-plan-d851b4.md"
 ```
 
@@ -136,10 +136,10 @@ def validate_file_in_ssot(file_path: Path) -> bool:
     """Validate file is in SSOT-approved location."""
     if file_path.is_absolute() and PROJECT_ROOT not in file_path.parents:
         return False  # File outside repository
-    
+
     rel_path = file_path.relative_to(PROJECT_ROOT)
     root = rel_path.parts[0]
-    
+
     return root in PROJECT_ROOT_WHITELIST
 ```
 
@@ -160,6 +160,6 @@ def validate_file_in_ssot(file_path: Path) -> bool:
 
 ## Status
 
-✅ **RESOLVED** - Plan moved to SSOT-compliant location  
-✅ **VERIFIED** - File now in `docs/reports/plans/` (version controlled)  
+✅ **RESOLVED** - Plan moved to SSOT-compliant location
+✅ **VERIFIED** - File now in `docs/reports/plans/` (version controlled)
 ⚠️ **ACTION REQUIRED** - Update system planning guidance to prevent recurrence

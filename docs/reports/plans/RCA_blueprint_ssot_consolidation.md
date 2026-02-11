@@ -1,7 +1,7 @@
 # RCA: Structure Blueprint SSOT Consolidation
 
-**Date**: 2026-02-08  
-**Severity**: Architectural (SSOT Violation)  
+**Date**: 2026-02-08
+**Severity**: Architectural (SSOT Violation)
 **Status**: RESOLVED
 
 ## Problem Statement

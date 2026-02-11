@@ -75,7 +75,9 @@ def compute_expected_test_path(module_path: pathlib.Path) -> pathlib.Path:
 
 
 def check_test_status(
-    module_path: pathlib.Path, expected_test_path: pathlib.Path, existing_tests: list[pathlib.Path]
+    module_path: pathlib.Path,
+    expected_test_path: pathlib.Path,
+    existing_tests: list[pathlib.Path],
 ) -> tuple[str, pathlib.Path]:
     """Check test status for a module."""
     existing_test_paths = {t for t in existing_tests}

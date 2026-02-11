@@ -199,5 +199,5 @@ After configuration, restart Windsurf to load the MCP servers. You can then:
 
 ---
 
-**Last Updated**: 2026-02-03  
+**Last Updated**: 2026-02-03
 **Configuration File**: `C:\Users\amita\AppData\Roaming\Windsurf\User\settings.json`

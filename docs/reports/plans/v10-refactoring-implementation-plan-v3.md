@@ -562,7 +562,7 @@ If ANY batch fails:
 git diff HEAD -- <file_path>
 pytest tests/unit/<layer>/<agent_test>.py -v
 
-# 2. After modification  
+# 2. After modification
 pytest tests/unit/<layer>/<agent_test>.py -v
 pytest tests/guardian/test_mro_mixin_order.py -k "<AgentName>"
 pytest tests/guardian/test_ssot_compliance.py
@@ -646,24 +646,24 @@ def get_mro_class_names(agent_class: Type) -> List[str]:
 def check_mixin_order(agent_class: Type) -> tuple[bool, str]:
     """
     Check if safety mixins precede base classes in MRO.
-    
+
     Returns:
         (is_valid, error_message)
     """
     mro_names = get_mro_class_names(agent_class)
-    
+
     for mixin in SAFETY_MIXINS:
         if mixin not in mro_names:
             continue  # Mixin not used, skip
-            
+
         mixin_index = mro_names.index(mixin)
-        
+
         for base in BASE_AGENT_CLASSES:
             if base not in mro_names:
                 continue  # Base not used, skip
-                
+
             base_index = mro_names.index(base)
-            
+
             if mixin_index > base_index:
                 return (
                     False,
@@ -671,32 +671,32 @@ def check_mixin_order(agent_class: Type) -> tuple[bool, str]:
                     f"(index {mixin_index}) AFTER {base} (index {base_index}). "
                     f"Safety mixins MUST come BEFORE base classes."
                 )
-    
+
     return (True, "")
 
 
 class TestMROMixinOrder:
     """Guardian test for MRO mixin ordering."""
-    
+
     @pytest.fixture(scope="class")
     def all_agents(self):
         """Discover all agents in the codebase."""
         return discover_all_agents()
-    
+
     def test_all_agents_have_correct_mro_order(self, all_agents):
         """
         COMMIT-BLOCKING TEST.
-        
+
         Verifies that ALL agents with safety mixins have them
         positioned BEFORE base agent classes in the inheritance list.
         """
         violations = []
-        
+
         for agent_class in all_agents:
             is_valid, error_msg = check_mixin_order(agent_class)
             if not is_valid:
                 violations.append(error_msg)
-        
+
         if violations:
             violation_report = "\n".join(violations)
             pytest.fail(
@@ -708,32 +708,32 @@ class TestMROMixinOrder:
                 f"  RIGHT: class MyAgent(AtomicExecutionMixin, L5SafetyBase)\n\n"
                 f"This commit is BLOCKED until all violations are fixed."
             )
-    
+
     @pytest.mark.parametrize("mixin_name", SAFETY_MIXINS)
     def test_specific_mixin_ordering(self, all_agents, mixin_name):
         """Test each safety mixin individually for better error reporting."""
         violations = []
-        
+
         for agent_class in all_agents:
             mro_names = get_mro_class_names(agent_class)
-            
+
             if mixin_name not in mro_names:
                 continue
-                
+
             mixin_index = mro_names.index(mixin_name)
-            
+
             for base in BASE_AGENT_CLASSES:
                 if base not in mro_names:
                     continue
-                    
+
                 base_index = mro_names.index(base)
-                
+
                 if mixin_index > base_index:
                     violations.append(
                         f"{agent_class.__name__}: {mixin_name} @ {mixin_index}, "
                         f"{base} @ {base_index}"
                     )
-        
+
         if violations:
             pytest.fail(
                 f"{mixin_name} ordering violations:\n" + "\n".join(violations)
@@ -829,17 +829,17 @@ VOLATILE_FIELDS = [
 
 class DeterministicUUIDGenerator:
     """Generates UUIDs in a deterministic sequence."""
-    
+
     def __init__(self):
         self.index = 0
-    
+
     def __call__(self) -> uuid.UUID:
         if self.index >= len(UUID_SEQUENCE):
             self.index = 0  # Wrap around
         result = uuid.UUID(UUID_SEQUENCE[self.index])
         self.index += 1
         return result
-    
+
     def reset(self):
         self.index = 0
 
@@ -847,17 +847,17 @@ class DeterministicUUIDGenerator:
 def strip_volatile_fields(obj: Any, fields: list = None) -> Any:
     """
     Recursively strip volatile fields from a dictionary or list.
-    
+
     Args:
         obj: The object to strip fields from
         fields: List of field names to strip (defaults to VOLATILE_FIELDS)
-    
+
     Returns:
         A copy of the object with volatile fields removed
     """
     if fields is None:
         fields = VOLATILE_FIELDS
-    
+
     if isinstance(obj, dict):
         return {
             k: strip_volatile_fields(v, fields)
@@ -874,24 +874,24 @@ def strip_volatile_fields(obj: Any, fields: list = None) -> Any:
 def deterministic_harness():
     """
     Pytest fixture that provides a deterministic test environment.
-    
+
     Usage:
         def test_my_agent(deterministic_harness):
             with deterministic_harness:
                 result = my_agent.execute(input)
                 # result will have frozen timestamps and deterministic UUIDs
-    
+
     The harness:
     1. Freezes datetime.utcnow() to 2026-01-01T00:00:00Z
     2. Seeds uuid.uuid4() to return deterministic sequence
     3. Provides strip_volatile_fields() for output comparison
     """
-    
+
     class DeterministicContext:
         def __init__(self):
             self.uuid_generator = DeterministicUUIDGenerator()
             self.patches = []
-        
+
         def __enter__(self):
             # Freeze time
             time_patch = patch('datetime.datetime')
@@ -900,7 +900,7 @@ def deterministic_harness():
             mock_datetime.now.return_value = FROZEN_TIMESTAMP
             mock_datetime.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
             self.patches.append(time_patch)
-            
+
             # Also patch common time modules
             for module in [
                 'agentic_core.utils.datetime',
@@ -914,31 +914,31 @@ def deterministic_harness():
                     self.patches.append(p)
                 except ModuleNotFoundError:
                     pass
-            
+
             # Seed UUID
             uuid_patch = patch('uuid.uuid4', self.uuid_generator)
             uuid_patch.start()
             self.patches.append(uuid_patch)
-            
+
             return self
-        
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             for p in self.patches:
                 p.stop()
             self.uuid_generator.reset()
-        
+
         def strip_volatile(self, obj: Any) -> Any:
             """Strip volatile fields from output for comparison."""
             return strip_volatile_fields(obj)
-        
+
         @property
         def frozen_timestamp(self) -> datetime:
             return FROZEN_TIMESTAMP
-        
+
         @property
         def frozen_timestamp_iso(self) -> str:
             return FROZEN_TIMESTAMP_ISO
-    
+
     return DeterministicContext()
 
 
@@ -946,7 +946,7 @@ def deterministic_harness():
 def golden_snapshot_path(request, tmp_path):
     """
     Fixture that provides the path to the golden snapshot file.
-    
+
     Uses the test name to determine the snapshot filename.
     """
     test_name = request.node.name
@@ -970,9 +970,9 @@ from agentic_core.L3_orchestration.workflow_engines.DomainPlannerAgent import (
 
 class TestDomainPlannerGolden:
     """Golden output tests for DomainPlannerAgent."""
-    
+
     GOLDEN_PATH = Path("tests/snapshots/golden_DomainPlannerAgent.json")
-    
+
     @pytest.fixture
     def standard_input(self):
         """Standard test input for reproducibility."""
@@ -980,19 +980,19 @@ class TestDomainPlannerGolden:
             "task": "Plan repository healing",
             "context": {"violations": 5, "layer": "L5"}
         }
-    
+
     def test_capture_golden(self, deterministic_harness, standard_input):
         """Capture golden output (run once, then skip)."""
         if self.GOLDEN_PATH.exists():
             pytest.skip("Golden snapshot already exists")
-        
+
         with deterministic_harness:
             agent = DomainPlannerAgent()
             result = agent.execute(standard_input)
-            
+
             # Strip volatile fields before saving
             clean_result = deterministic_harness.strip_volatile(result)
-            
+
             golden = {
                 "agent": "DomainPlannerAgent",
                 "input": standard_input,
@@ -1003,24 +1003,24 @@ class TestDomainPlannerGolden:
                     "harness_version": "3.0"
                 }
             }
-            
+
             self.GOLDEN_PATH.parent.mkdir(parents=True, exist_ok=True)
             self.GOLDEN_PATH.write_text(json.dumps(golden, indent=2))
-    
+
     def test_verify_golden(self, deterministic_harness, standard_input):
         """Verify output matches golden snapshot."""
         if not self.GOLDEN_PATH.exists():
             pytest.fail(f"Golden snapshot not found: {self.GOLDEN_PATH}")
-        
+
         golden = json.loads(self.GOLDEN_PATH.read_text())
-        
+
         with deterministic_harness:
             agent = DomainPlannerAgent()
             result = agent.execute(standard_input)
-            
+
             # Strip volatile fields before comparison
             clean_result = deterministic_harness.strip_volatile(result)
-            
+
             assert clean_result == golden["output"], (
                 f"Output mismatch!\n"
                 f"Expected: {json.dumps(golden['output'], indent=2)}\n"
@@ -1058,15 +1058,15 @@ from tests.behavioral.conftest import deterministic_harness
 
 class TestLatencyBudget:
     """Latency budget tests for agents with multiple mixins."""
-    
+
     # Latency thresholds (in milliseconds)
     THRESHOLD_1_MIXIN = 20
     THRESHOLD_2_MIXINS = 35
     THRESHOLD_3_PLUS_MIXINS = 50
-    
+
     # Number of iterations for averaging
     ITERATIONS = 10
-    
+
     def get_mixin_count(self, agent_class: Type) -> int:
         """Count the number of V10 mixins in agent's MRO."""
         mixin_names = [
@@ -1079,61 +1079,61 @@ class TestLatencyBudget:
         ]
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
         return sum(1 for m in mixin_names if m in mro_names)
-    
+
     def measure_execution_time(
-        self, 
-        agent_class: Type, 
+        self,
+        agent_class: Type,
         test_input: dict,
         deterministic_harness
     ) -> float:
         """
         Measure average execution time over multiple iterations.
-        
+
         Uses deterministic harness to eliminate non-deterministic variance.
         """
         times = []
-        
+
         with deterministic_harness:
             agent = agent_class()
-            
+
             # Warm-up run (not counted)
             agent.execute(test_input)
-            
+
             # Measured runs
             for _ in range(self.ITERATIONS):
                 start = time.perf_counter()
                 agent.execute(test_input)
                 elapsed = (time.perf_counter() - start) * 1000  # Convert to ms
                 times.append(elapsed)
-        
+
         # Return average, excluding outliers
         times.sort()
         trimmed = times[1:-1]  # Remove fastest and slowest
         return sum(trimmed) / len(trimmed) if trimmed else times[0]
-    
+
     def test_agent_latency_budget(
-        self, 
+        self,
         agent_class: Type,
         test_input: dict,
         deterministic_harness
     ):
         """
         Verify mixin overhead is within budget.
-        
+
         Thresholds:
         - 1 mixin: < 20ms
         - 2 mixins: < 35ms
         - 3+ mixins: < 50ms (HARD FAIL)
         """
         mixin_count = self.get_mixin_count(agent_class)
-        
+
         if mixin_count == 0:
             pytest.skip("No mixins to test")
-        
+
         avg_time = self.measure_execution_time(
             agent_class, test_input, deterministic_harness
         )
-        
+
         # Determine threshold
         if mixin_count >= 3:
             threshold = self.THRESHOLD_3_PLUS_MIXINS
@@ -1144,7 +1144,7 @@ class TestLatencyBudget:
         else:
             threshold = self.THRESHOLD_1_MIXIN
             severity = "WARNING"
-        
+
         if avg_time > threshold:
             msg = (
                 f"LATENCY BUDGET {severity}: {agent_class.__name__}\n"
@@ -1152,7 +1152,7 @@ class TestLatencyBudget:
                 f"  Average time: {avg_time:.2f}ms\n"
                 f"  Threshold: {threshold}ms\n"
             )
-            
+
             if severity == "FAIL":
                 pytest.fail(msg + "  Action: Optimize or remove mixin")
             else:
@@ -1425,10 +1425,10 @@ git log wave-X-start..HEAD --oneline > docs/reports/wave-X-commits.txt
 
 ---
 
-**Plan Version**: 3.0  
-**Created**: 2026-02-03  
-**Updated**: 2026-02-03 (v3.0 - Zero-Flake Hardening)  
-**Based On**: `docs/reports/PHASE_1_AUDIT_REPORT.md` + Grok Risk Assessment + Flaky Test Analysis  
+**Plan Version**: 3.0
+**Created**: 2026-02-03
+**Updated**: 2026-02-03 (v3.0 - Zero-Flake Hardening)
+**Based On**: `docs/reports/PHASE_1_AUDIT_REPORT.md` + Grok Risk Assessment + Flaky Test Analysis
 **Branch**: `healing-resolution-dev-2`
 
 ---

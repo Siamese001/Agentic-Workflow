@@ -15,13 +15,13 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 class TestAgent(SovereignBaseAgent):
     def __init__(self):
         pass
-    
+
     def run(self):
         pass
-    
+
     def heal_repository(self):
         pass
-    
+
     def test_self(self):
         pass
 """

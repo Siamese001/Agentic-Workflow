@@ -13,7 +13,7 @@ The Resolution Asymmetry Remediation Plan was saved to `C:\Users\amita\.windsurf
 ### 2. SSOT Violation
 According to `agentic_core/utils/report_location_validator_types.py`:
 - **SSOT_REPORTS_DIR**: `docs/reports/`
-- **Approved Locations**: 
+- **Approved Locations**:
   - `docs/reports`
   - `docs/reports/MCP`
   - `logs/compliance_reports`

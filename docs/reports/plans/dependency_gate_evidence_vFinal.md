@@ -7,14 +7,14 @@
 - Windows
 - Python 3.12.10
 - pip 26.0.1
-- Clean venv: `.venv_verify` 
+- Clean venv: `.venv_verify`
 
 All FINAL gate results in this document originate from `.venv_verify`.
 
 Any references to:
-- `.venv_gate` 
-- `.venv_final` 
-- `.venv_lean` 
+- `.venv_gate`
+- `.venv_final`
+- `.venv_lean`
 - pip 25.x
 - core=13
 
@@ -152,8 +152,8 @@ Exit code: 0
 
 ## HISTORICAL — .venv_final (Obsolete)
 
-> This environment predates final SSOT reconciliation.  
-> Uses pip 25.x and earlier core counts.  
+> This environment predates final SSOT reconciliation.
+> Uses pip 25.x and earlier core counts.
 > Not authoritative.
 
 Legacy output retained for audit trail only.
@@ -162,7 +162,7 @@ Legacy output retained for audit trail only.
 
 ## HISTORICAL — .venv_lean (Supporting Only)
 
-> Used to validate guardrail non-fire behavior.  
+> Used to validate guardrail non-fire behavior.
 > Not a canonical final environment.
 
 ```text
@@ -177,8 +177,8 @@ Exit code: 0
 # Verifier Semantics Confirmation
 
 - `core` required in all modes
-- `dev` required under `--require-dev` or `--all` 
-- `infra` required under `--require-infra` or `--all` 
+- `dev` required under `--require-dev` or `--all`
+- `infra` required under `--require-infra` or `--all`
 - `external` NEVER blocking
 - `sdks` NEVER blocking
 
@@ -196,7 +196,7 @@ Invariant:
 - external = informational only
 - sdks = informational only
 - pip = 26.0.1
-- Environment = `.venv_verify` 
+- Environment = `.venv_verify`
 - All gates exit 0
 
 ---

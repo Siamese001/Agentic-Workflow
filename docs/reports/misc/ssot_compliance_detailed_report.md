@@ -1,11 +1,11 @@
 # SSOT Compliance Detailed Report
 
-**Generated:** 2026-02-02T10:30:29.526821  
-**Repository:** C:\Git\Agentic-Workflow  
-**Total Files:** 6,089  
-**Compliant Files:** 4,140  
-**Compliance Rate:** 67.99%  
-**Total Violations:** 1,949  
+**Generated:** 2026-02-02T10:30:29.526821
+**Repository:** C:\Git\Agentic-Workflow
+**Total Files:** 6,089
+**Compliant Files:** 4,140
+**Compliance Rate:** 67.99%
+**Total Violations:** 1,949
 
 ---
 
@@ -25,7 +25,7 @@ The repository shows significant non-compliance with the approved SSOT hierarchy
 
 ### 1. SCRIPT Category Violations (498 files)
 
-**Expected Naming:** `snake_case.py` (Note: All files in scripts/ and ops_scripts/ already follow this convention)  
+**Expected Naming:** `snake_case.py` (Note: All files in scripts/ and ops_scripts/ already follow this convention)
 **Expected Directory:** `scripts/` or `ops_scripts/`
 
 #### Critical Root-Level Violations
@@ -117,7 +117,7 @@ class EmbeddingConfig:
 # Current class name could remain or be updated:
 class LocationAgent:  # or LocationValidator
     """Validates file locations in the hierarchy."""
-    
+
 # File should be renamed to: location_validator.py
 ```
 
@@ -221,7 +221,7 @@ def test_script_naming_compliance():
     """Test that SCRIPT files use snake_case naming."""
     agent = FileClassificationAgent(dry_run=True)
     violations = []
-    
+
     for file_path in get_all_python_files():
         classification = agent.classify_file(file_path)
         if classification == "SCRIPT":
@@ -229,7 +229,7 @@ def test_script_naming_compliance():
             # Check if filename is snake_case
             if filename != filename.lower() or '_' not in filename:
                 violations.append(str(file_path))
-    
+
     assert not violations, f"SCRIPT naming violations: {violations}"
 ```
 
@@ -239,14 +239,14 @@ def test_types_naming_compliance():
     """Test that TYPES files end with _types.py."""
     agent = FileClassificationAgent(dry_run=True)
     violations = []
-    
+
     for file_path in get_all_python_files():
         classification = agent.classify_file(file_path)
         if classification == "TYPES":
             filename = file_path.name
             if not filename.endswith("_types.py"):
                 violations.append(str(file_path))
-    
+
     assert not violations, f"TYPES naming violations: {violations}"
 ```
 
@@ -256,14 +256,14 @@ def test_validator_naming_compliance():
     """Test that VALIDATOR files end with _validator.py."""
     agent = FileClassificationAgent(dry_run=True)
     violations = []
-    
+
     for file_path in get_all_python_files():
         classification = agent.classify_file(file_path)
         if classification == "VALIDATOR":
             filename = file_path.name
             if not filename.endswith("_validator.py"):
                 violations.append(str(file_path))
-    
+
     assert not violations, f"VALIDATOR naming violations: {violations}"
 ```
 
@@ -277,17 +277,17 @@ def test_directory_placement_compliance():
         "CONFIG": ["config/"],
         "VALIDATOR": ["validators/"]
     }
-    
+
     agent = FileClassificationAgent(dry_run=True)
     violations = []
-    
+
     for file_path in get_all_python_files():
         classification = agent.classify_file(file_path)
         if classification in expected_dirs:
             path_str = str(file_path)
             if not any(dir in path_str for dir in expected_dirs[classification]):
                 violations.append(f"{classification}: {path_str}")
-    
+
     assert not violations, f"Directory placement violations: {violations}"
 ```
 
@@ -340,7 +340,7 @@ def remediate_file(file_path: Path, classification: str, dry_run: bool = True):
         "CONFIG": lambda n: n.lower().replace('.py', '_config.py'),
         "TEST": lambda n: f"test_{n}" if not n.startswith('test_') else n
     }
-    
+
     rule = rules.get(classification)
     if rule:
         new_name = rule(file_path.name)
@@ -356,11 +356,11 @@ def main():
     parser = argparse.ArgumentParser(description="Remediate SSOT compliance violations")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
     args = parser.parse_args()
-    
+
     # Load compliance report and remediate
     with open("ssot_compliance_report.json") as f:
         report = json.load(f)
-    
+
     for violation in report["violations"]:
         file_path = Path(violation["path"])
         remediate_file(file_path, violation["classification"], args.dry_run)
