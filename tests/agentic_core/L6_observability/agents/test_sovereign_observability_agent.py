@@ -27,7 +27,7 @@ class TestSovereignObservabilityAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L6_observability.reasoning.SovereignObservabilityAgent import (
+            from tests.support.l6_observability.SovereignObservabilityAgent import (
                 SovereignObservabilityAgent,
             )
 
@@ -56,7 +56,7 @@ class TestSovereignObservabilityAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.reasoning.SovereignObservabilityAgent import (
+                from tests.support.l6_observability.SovereignObservabilityAgent import (
                     SovereignObservabilityAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

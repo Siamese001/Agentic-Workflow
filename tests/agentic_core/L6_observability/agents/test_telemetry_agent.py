@@ -34,7 +34,7 @@ class TestTelemetryAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L6_observability.reasoning.TelemetryAgent import TelemetryAgent
+            from tests.support.l6_observability.TelemetryAgent import TelemetryAgent
 
             return TelemetryAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -91,7 +91,7 @@ class TestTelemetryAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.reasoning.TelemetryAgent import (
+                from tests.support.l6_observability.TelemetryAgent import (
                     TelemetryAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError, TypeError):
