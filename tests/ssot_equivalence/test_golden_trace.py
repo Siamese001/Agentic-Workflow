@@ -590,6 +590,143 @@ class TestDispatcherDryRunTrace:
         )
 
 
+# ── Test: sub-check healer reachability via full subprocess path ──
+
+
+class TestSubCheckReachabilityGolden:
+    """Prove sub-check healer is reachable through guardian→dispatcher subprocess.
+
+    Takes real guardian output, enriches one roll-up check with sub-check
+    evidence (simulating what run_all_guardians will produce once wired),
+    then runs dispatcher dry-run via subprocess and asserts sub-check ids
+    appear in the combined_heal_result.
+    """
+
+    @pytest.fixture()
+    def enriched_heal_result(self, tmp_path: Path) -> tuple[Path, dict]:
+        """Run guardians, enrich aggregate with sub-checks, run dispatcher."""
+        guardian_dir = tmp_path / "guardian_artifacts"
+        _, agg_path = _run_guardians_subprocess(guardian_dir)
+        assert agg_path is not None, "Guardians did not produce aggregate"
+
+        # Enrich: inject sub-check evidence into classification_compliance
+        agg_data = json.loads(agg_path.read_text(encoding="utf-8"))
+        for check in agg_data.get("checks", []):
+            if check.get("check_id") == "guardian_classification_compliance":
+                check["evidence"] = {
+                    "guardian_id": "classification_compliance",
+                    "status": check.get("status", "FAIL"),
+                    "checks": [
+                        {
+                            "check_id": "naming_compliance",
+                            "status": "FAIL",
+                            "details": "golden-trace synthetic sub-check",
+                            "evidence": {
+                                "violation_count": 1,
+                                "violations": [
+                                    {"path": "fake_agent_types.py", "suffixes": ["agent", "types"]},
+                                ],
+                            },
+                        },
+                        {
+                            "check_id": "territory_compliance",
+                            "status": "PASS",
+                            "details": "golden-trace synthetic sub-check",
+                            "evidence": {"violation_count": 0, "violations": []},
+                        },
+                    ],
+                }
+                break
+        else:
+            pytest.skip("guardian_classification_compliance not in aggregate")
+
+        enriched_path = tmp_path / "enriched_aggregate.json"
+        enriched_path.write_text(
+            json.dumps(agg_data, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+
+        dispatcher_dir = tmp_path / "dispatcher_artifacts"
+        capture = _run_dispatcher_dry_run(enriched_path, dispatcher_dir)
+        heal_path = dispatcher_dir / "combined_heal_result.json"
+        return heal_path, capture
+
+    def test_dispatcher_returns_zero(
+        self,
+        enriched_heal_result: tuple[Path, dict],
+    ) -> None:
+        _, capture = enriched_heal_result
+        assert capture["returncode"] == 0, f"Dispatcher rc={capture['returncode']}:\n{capture['stderr_head']}"
+
+    def test_naming_compliance_present(
+        self,
+        enriched_heal_result: tuple[Path, dict],
+    ) -> None:
+        heal_path, _ = enriched_heal_result
+        assert heal_path.is_file()
+        data = json.loads(heal_path.read_text(encoding="utf-8"))
+        check_ids = [r["check_id"] for r in data.get("results", [])]
+        assert "naming_compliance" in check_ids, f"naming_compliance not in results: {check_ids}"
+
+    def test_territory_compliance_present(
+        self,
+        enriched_heal_result: tuple[Path, dict],
+    ) -> None:
+        heal_path, _ = enriched_heal_result
+        data = json.loads(heal_path.read_text(encoding="utf-8"))
+        check_ids = [r["check_id"] for r in data.get("results", [])]
+        assert "territory_compliance" in check_ids, f"territory_compliance not in results: {check_ids}"
+
+    def test_sub_checks_skipped_in_dry_run(
+        self,
+        enriched_heal_result: tuple[Path, dict],
+    ) -> None:
+        heal_path, _ = enriched_heal_result
+        data = json.loads(heal_path.read_text(encoding="utf-8"))
+        for result in data.get("results", []):
+            if result["check_id"] in ("naming_compliance", "territory_compliance"):
+                assert result["status"] == "SKIPPED", (
+                    f"{result['check_id']} status={result['status']}, expected SKIPPED"
+                )
+
+    def test_no_repo_mutation(self, tmp_path: Path) -> None:
+        porcelain_before = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        ).stdout
+
+        guardian_dir = tmp_path / "guardian_artifacts"
+        _, agg_path = _run_guardians_subprocess(guardian_dir)
+        if agg_path is not None:
+            agg_data = json.loads(agg_path.read_text(encoding="utf-8"))
+            for check in agg_data.get("checks", []):
+                if check.get("check_id") == "guardian_classification_compliance":
+                    check["evidence"] = {
+                        "checks": [
+                            {
+                                "check_id": "naming_compliance",
+                                "status": "FAIL",
+                                "details": "test",
+                                "evidence": {},
+                            },
+                        ],
+                    }
+                    break
+            enriched = tmp_path / "enriched.json"
+            enriched.write_text(json.dumps(agg_data), encoding="utf-8")
+            _run_dispatcher_dry_run(enriched, tmp_path / "disp_out")
+
+        porcelain_after = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        ).stdout
+        assert porcelain_before == porcelain_after
+
+
 # ── Test: golden snapshot file deterministic assertions ───────────
 
 
