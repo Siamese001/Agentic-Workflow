@@ -18,14 +18,22 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+    NOTE_MAPPED,
+    NOTE_UNMAPPED,
     OUTPUT_FILENAME,
     TOOL_ID,
+    classify_check_ids,
     extract_check_ids,
     run_dispatcher,
+    validate_phase_names,
 )
 from agentic_core.L2_execution.types.heal_contract import (
     HealStatus,
     check_schema_compatibility,
+)
+from agentic_core.L2_execution.types.l2_phase_spec import (
+    L2ExecutionPlan,
+    PhaseSpec,
 )
 
 TIMESTAMP = "2026-01-01T00:00:00Z"
@@ -220,7 +228,7 @@ class TestDispatcherSortingAndStatus:
         for check in result.results:
             assert check.status == HealStatus.SKIPPED
 
-    def test_all_notes_no_healer(
+    def test_mapped_notes(
         self,
         guardian_aggregate: Path,
         output_dir: Path,
@@ -230,8 +238,10 @@ class TestDispatcherSortingAndStatus:
             write_artifacts_dir=output_dir,
             created_utc=TIMESTAMP,
         )
-        for check in result.results:
-            assert check.notes == "no healer registered"
+        notes_by_id = {c.check_id: c.notes for c in result.results}
+        assert notes_by_id["guardian_drift_detection"] == NOTE_MAPPED
+        assert notes_by_id["guardian_location_alignment"] == NOTE_MAPPED
+        assert notes_by_id["guardian_hygiene"] == NOTE_UNMAPPED
 
     def test_all_changes_made_empty(
         self,
@@ -395,6 +405,135 @@ class TestDispatcherNegative:
         }
         ids = extract_check_ids(data)
         assert ids == ["a", "b"]
+
+
+# ---------------------------------------------------------------------------
+# PhaseSpec validation
+# ---------------------------------------------------------------------------
+
+
+class TestPhaseSpecValidation:
+    """Proves PhaseSpec name integrity is enforced."""
+
+    def test_valid_plan_passes(self) -> None:
+        from agentic_core.L2_execution.types.l2_phase_spec import LEGACY_MIRROR_PLAN
+
+        validate_phase_names(LEGACY_MIRROR_PLAN)
+
+    def test_wrong_names_raises(self) -> None:
+        bad_plan = L2ExecutionPlan(
+            phases=(
+                PhaseSpec(name="wrong_phase_1"),
+                PhaseSpec(name="wrong_phase_2"),
+            ),
+        )
+        with pytest.raises(ValueError, match="PhaseSpec name integrity violation"):
+            validate_phase_names(bad_plan)
+
+    def test_wrong_order_raises(self) -> None:
+        bad_plan = L2ExecutionPlan(
+            phases=(
+                PhaseSpec(name="discovery"),
+                PhaseSpec(name="pre_audit"),
+                PhaseSpec(name="reconciliation"),
+                PhaseSpec(name="alignment"),
+                PhaseSpec(name="arch_validation"),
+                PhaseSpec(name="healing"),
+                PhaseSpec(name="certification"),
+            ),
+        )
+        with pytest.raises(ValueError, match="PhaseSpec name integrity violation"):
+            validate_phase_names(bad_plan)
+
+    def test_missing_phase_raises(self) -> None:
+        bad_plan = L2ExecutionPlan(
+            phases=(
+                PhaseSpec(name="pre_audit"),
+                PhaseSpec(name="discovery"),
+            ),
+        )
+        with pytest.raises(ValueError, match="PhaseSpec name integrity violation"):
+            validate_phase_names(bad_plan)
+
+
+# ---------------------------------------------------------------------------
+# Phase mapping classification
+# ---------------------------------------------------------------------------
+
+
+class TestClassifyCheckIds:
+    """Proves check_id classification into mapped/unmapped."""
+
+    def test_mapped_ids(self) -> None:
+        mapped, unmapped = classify_check_ids(
+            ["guardian_drift_detection", "guardian_location_alignment", "guardian_hygiene"],
+        )
+        assert "guardian_drift_detection" in mapped
+        assert "guardian_location_alignment" in mapped
+        assert "guardian_hygiene" in unmapped
+
+    def test_all_unmapped(self) -> None:
+        mapped, unmapped = classify_check_ids(["guardian_foo", "guardian_bar"])
+        assert mapped == set()
+        assert unmapped == {"guardian_foo", "guardian_bar"}
+
+    def test_empty_input(self) -> None:
+        mapped, unmapped = classify_check_ids([])
+        assert mapped == set()
+        assert unmapped == set()
+
+    def test_prefix_matching(self) -> None:
+        mapped, unmapped = classify_check_ids(
+            ["guardian_drift_detection_extra"],
+        )
+        assert "guardian_drift_detection_extra" in mapped
+
+
+# ---------------------------------------------------------------------------
+# Deterministic result set
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherResultSetUnchanged:
+    """Proves same check_ids in output for same input."""
+
+    def test_same_check_ids_as_input(
+        self,
+        guardian_aggregate: Path,
+        output_dir: Path,
+    ) -> None:
+        result = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=output_dir,
+            created_utc=TIMESTAMP,
+        )
+        output_ids = sorted(c.check_id for c in result.results)
+        assert output_ids == [
+            "guardian_drift_detection",
+            "guardian_hygiene",
+            "guardian_location_alignment",
+        ]
+
+    def test_idempotent_runs(
+        self,
+        guardian_aggregate: Path,
+        tmp_path: Path,
+    ) -> None:
+        out1 = tmp_path / "out1"
+        out1.mkdir()
+        out2 = tmp_path / "out2"
+        out2.mkdir()
+        r1 = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=out1,
+            created_utc=TIMESTAMP,
+        )
+        r2 = run_dispatcher(
+            guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=out2,
+            created_utc=TIMESTAMP,
+        )
+        assert r1.to_dict() == r2.to_dict()
 
 
 # ---------------------------------------------------------------------------

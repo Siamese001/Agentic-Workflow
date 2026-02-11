@@ -27,6 +27,10 @@ from agentic_core.L2_execution.types.heal_contract import (
     HealCheckResult,
     HealStatus,
 )
+from agentic_core.L2_execution.types.l2_phase_spec import (
+    LEGACY_MIRROR_PLAN,
+    L2ExecutionPlan,
+)
 from agentic_core.L3_orchestration.types.approval_contract import (
     ApprovalBundle,
     ApprovalDecision,
@@ -35,6 +39,80 @@ from agentic_core.L3_orchestration.types.approval_contract import (
 
 TOOL_ID = "remediation_dispatcher"
 OUTPUT_FILENAME = "combined_heal_result.json"
+
+# ---------------------------------------------------------------------------
+# Canonical phase names and phase-to-check_id mapping
+# ---------------------------------------------------------------------------
+
+EXPECTED_PHASE_NAMES: tuple[str, ...] = (
+    "pre_audit",
+    "discovery",
+    "reconciliation",
+    "alignment",
+    "arch_validation",
+    "healing",
+    "certification",
+)
+
+# Explicit mapping: phase_name -> tuple of check_id prefixes.
+# A guardian check_id is "mapped" to a phase if it startswith any prefix.
+# Empty tuple = no guardians mapped yet (structure-only phase).
+PHASE_CHECK_ID_PREFIXES: dict[str, tuple[str, ...]] = {
+    "pre_audit": ("guardian_drift_detection",),
+    "discovery": ("guardian_location_alignment",),
+    "reconciliation": (),
+    "alignment": (),
+    "arch_validation": (),
+    "healing": (),
+    "certification": (),
+}
+
+NOTE_MAPPED = "no healer registered"
+NOTE_UNMAPPED = "unmapped to phase; no healer registered"
+
+
+# ---------------------------------------------------------------------------
+# PhaseSpec validation
+# ---------------------------------------------------------------------------
+
+
+def validate_phase_names(plan: L2ExecutionPlan) -> None:
+    """Validate that plan phase names exactly match the expected canonical list.
+
+    Raises ValueError if names differ in count, order, or content.
+    """
+    actual = tuple(p.name for p in plan.phases)
+    if actual != EXPECTED_PHASE_NAMES:
+        raise ValueError(
+            f"PhaseSpec name integrity violation: expected {list(EXPECTED_PHASE_NAMES)}, got {list(actual)}",
+        )
+
+
+def classify_check_ids(
+    check_ids: list[str],
+    phase_prefixes: dict[str, tuple[str, ...]] | None = None,
+) -> tuple[set[str], set[str]]:
+    """Classify check_ids into mapped and unmapped sets.
+
+    A check_id is "mapped" if it startswith any prefix in any phase mapping.
+
+    Returns (mapped, unmapped) sets.
+    """
+    if phase_prefixes is None:
+        phase_prefixes = PHASE_CHECK_ID_PREFIXES
+
+    all_prefixes: list[str] = []
+    for prefixes in phase_prefixes.values():
+        all_prefixes.extend(prefixes)
+
+    mapped: set[str] = set()
+    unmapped: set[str] = set()
+    for cid in check_ids:
+        if any(cid.startswith(prefix) for prefix in all_prefixes):
+            mapped.add(cid)
+        else:
+            unmapped.add(cid)
+    return mapped, unmapped
 
 
 # ---------------------------------------------------------------------------
@@ -106,33 +184,66 @@ def run_dispatcher(
     plan_name: str = "LEGACY_MIRROR_PLAN",
     approval_bundle_path: Path | None = None,
 ) -> CombinedHealResult:
-    """Execute the dispatcher skeleton.
+    """Execute the dispatcher interpreting LEGACY_MIRROR_PLAN PhaseSpec.
 
-    1. Loads the guardian aggregate and extracts check_ids.
-    2. Optionally loads an ApprovalBundle for approved_by tokens.
-    3. Produces a CombinedHealResult with all checks SKIPPED.
-    4. Validates and writes the result to the output directory.
+    1. Validates PhaseSpec name integrity.
+    2. Loads the guardian aggregate and extracts check_ids.
+    3. Classifies check_ids as mapped or unmapped via phase prefix mapping.
+    4. Iterates phases in order (approval gating + rerun hooks as no-ops).
+    5. Produces a CombinedHealResult with all checks SKIPPED.
+    6. Validates and writes the result to the output directory.
 
     Returns the CombinedHealResult.
     """
-    # 1. Load guardian aggregate
+    # 1. Validate PhaseSpec integrity
+    validate_phase_names(LEGACY_MIRROR_PLAN)
+
+    # 2. Load guardian aggregate
     guardian_data = json.loads(guardian_result_path.read_text(encoding="utf-8"))
     check_ids = extract_check_ids(guardian_data)
 
-    # 2. Build SKIPPED heal results for every check_id
+    # 3. Classify check_ids
+    mapped_ids, unmapped_ids = classify_check_ids(check_ids)
+
+    # 4. Iterate phases in PhaseSpec order
     heal_checks: list[HealCheckResult] = []
-    for cid in check_ids:
+    for phase in LEGACY_MIRROR_PLAN.phases:
+        # --- Approval gating hook (no-op: no phase has approval_required=True) ---
+        if phase.approval_required:
+            pass  # Future: block until approval token present
+
+        # Select check_ids for this phase
+        prefixes = PHASE_CHECK_ID_PREFIXES.get(phase.name, ())
+        phase_cids = sorted(cid for cid in check_ids if any(cid.startswith(p) for p in prefixes))
+
+        for cid in phase_cids:
+            heal_checks.append(
+                HealCheckResult(
+                    check_id=cid,
+                    status=HealStatus.SKIPPED,
+                    changes_made=(),
+                    rollback_info=None,
+                    notes=NOTE_MAPPED,
+                ),
+            )
+
+        # --- Rerun guardians hook (no-op: no phase has rerun_guardians) ---
+        if phase.rerun_guardians:
+            pass  # Future: re-run specified guardians after healing
+
+    # 5. Add unmapped check_ids (coverage preservation)
+    for cid in sorted(unmapped_ids):
         heal_checks.append(
             HealCheckResult(
                 check_id=cid,
                 status=HealStatus.SKIPPED,
                 changes_made=(),
                 rollback_info=None,
-                notes="no healer registered",
+                notes=NOTE_UNMAPPED,
             ),
         )
 
-    # 3. Load optional approval bundle
+    # 6. Load optional approval bundle
     approved_tokens: list[str] = []
     if approval_bundle_path is not None:
         bundle = load_approval_bundle(approval_bundle_path)
@@ -141,7 +252,7 @@ def run_dispatcher(
                 approved_tokens.append(record.token)
     approved_tokens = sorted(set(approved_tokens))
 
-    # 4. Build CombinedHealResult
+    # 7. Build CombinedHealResult
     result = CombinedHealResult(
         tool_id=TOOL_ID,
         plan_name=plan_name,
@@ -150,12 +261,12 @@ def run_dispatcher(
         created_utc=created_utc,
     )
 
-    # 5. Validate before writing
+    # 8. Validate before writing
     errors = result.validate()
     if errors:
         raise ValueError(f"CombinedHealResult validation failed: {errors}")
 
-    # 6. Write artifact
+    # 9. Write artifact
     write_artifacts_dir.mkdir(parents=True, exist_ok=True)
     out_path = write_artifacts_dir / OUTPUT_FILENAME
     out_path.write_text(result.to_json(), encoding="utf-8")
