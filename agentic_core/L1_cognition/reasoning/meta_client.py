@@ -138,7 +138,7 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L5_safety.reasoning.PineconeSovereignAgent import (
+            from agentic_core.L4_state.memory.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
 
