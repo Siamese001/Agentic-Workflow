@@ -1,4 +1,25 @@
 {
+  "dispatcher_dry_run": {
+    "combined_heal_result": {
+      "exists": true,
+      "sha256": "29a0f88685ad9dd2afcb89d4200a2c2cba21fd2bc05720a267c0fe5441ac5915"
+    },
+    "command": [
+      "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "-m",
+      "agentic_core.L2_execution.scripts.remediation_dispatcher",
+      "--guardian-result",
+      "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-285\\test_plan_mode_golden_snapshot0\\guardian_artifacts\\combined_guardian_result.json",
+      "--write-artifacts",
+      "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-285\\test_plan_mode_golden_snapshot0\\dispatcher_artifacts",
+      "--created-utc",
+      "2000-01-01T00:00:00Z"
+    ],
+    "created_utc": "2000-01-01T00:00:00Z",
+    "returncode": 0,
+    "stderr_head": "",
+    "stdout_head": "{\n  \"contract_version\": 1,\n  \"tool_id\": \"remediation_dispatcher\",\n  \"plan_name\": \"LEGACY_MIRROR_PLAN\",\n  \"results\": [\n    {\n      \"check_id\": \"guardian_drift_detection\",\n      \"status\": \"SKIPPED\",\n      \"changes_made\": [],\n      \"rollback_info\": null,\n      \"notes\": \"dry-run healer planned actions\"\n    },\n    {\n      \"check_id\": \"guardian_hygiene\",\n      \"status\": \"SKIPPED\",\n      \"changes_made\": [],\n      \"rollback_info\": null,\n      \"notes\": \"unmapped to phase; no healer registered\"\n    },\n    {\n      \"check_id\": \"guardian_location_alignment\",\n      \"status\": \"SKIPPED\",\n      \"changes_made\": [],\n      \"rollback_info\": null,\n      \"notes\": \"no healer registered\"\n    },\n    {\n      \"check_id\": \"guardian_manifest_integrity\",\n      \"status\": \"SKIPPED\",\n      \"changes_made\": [],\n      \"rollback_info\": null,\n      \"notes\": \"unmapped to phase; no healer registered\"\n    }\n  ],\n  \"approved_by\": [],\n  \"created_utc\": \"2000-01-01T00:00:00Z\"\n}\n"
+  },
   "legacy": {
     "artifacts_after": [],
     "command": [
