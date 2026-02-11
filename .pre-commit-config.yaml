@@ -80,7 +80,8 @@ repos:
         language: system
         types: [python]
         require_serial: true
-        exclude: ops_scripts/ci/check_anti_patterns\.py
+        # Relocated legacy test-only agent fixtures; production gates enforce 0 L6 *Agent.py.
+        exclude: (ops_scripts/ci/check_anti_patterns\.py|tests/support/l6_observability/.*)
 
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
