@@ -2,13 +2,19 @@
 
 Produces docs/specs/execute_ssot_inventory.json with deterministic symbol inventory.
 Also inventories execute_ssot_entrypoint.py.
+
+Usage:
+  python docs/specs/_generate_inventory.py                        # default: both files → docs/specs/execute_ssot_inventory.json
+  python docs/specs/_generate_inventory.py --input FILE --output FILE  # single-file repro mode
 """
 
 from __future__ import annotations
 
+import argparse
 import ast
 import json
 import re
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -188,29 +194,60 @@ def inventory_file(filepath: Path, prefix: str = "") -> list[dict]:
     return entries
 
 
-def main() -> None:
-    ssot_file = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
-    entrypoint_file = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        description="AST-based inventory generator for execute_ssot legacy files.",
+    )
+    p.add_argument(
+        "--input",
+        type=Path,
+        default=None,
+        help="Single .py file to inventory (repro mode). Omit for default two-file scan.",
+    )
+    p.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Output JSON path. Defaults to docs/specs/execute_ssot_inventory.json.",
+    )
+    return p
 
-    inventory: list[dict] = []
 
-    # Inventory execute_ssot.py
-    inventory.extend(inventory_file(ssot_file, prefix="execute_ssot."))
+def main(argv: list[str] | None = None) -> None:
+    args = _build_parser().parse_args(argv)
 
-    # Inventory execute_ssot_entrypoint.py
-    inventory.extend(inventory_file(entrypoint_file, prefix="execute_ssot_entrypoint."))
+    if args.input is not None:
+        # Single-file repro mode
+        input_path = Path(args.input).resolve()
+        if not input_path.exists():
+            print(f"ERROR: {input_path} not found", file=sys.stderr)
+            sys.exit(1)
+        prefix = input_path.stem + "."
+        inventory = inventory_file(input_path, prefix=prefix)
+        inventory.sort(key=lambda e: (e["qualname"].split(".")[0], e["lineno"]))
+    else:
+        # Default: both legacy files
+        ssot_file = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
+        entrypoint_file = (
+            REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
+        )
+        inventory: list[dict] = []
+        inventory.extend(inventory_file(ssot_file, prefix="execute_ssot."))
+        inventory.extend(inventory_file(entrypoint_file, prefix="execute_ssot_entrypoint."))
+        inventory.sort(key=lambda e: (e["qualname"].split(".")[0], e["lineno"]))
 
-    # Sort by file then line number for determinism
-    inventory.sort(key=lambda e: (e["qualname"].split(".")[0], e["lineno"]))
-
-    out_path = REPO_ROOT / "docs" / "specs" / "execute_ssot_inventory.json"
+    out_path = (
+        Path(args.output).resolve()
+        if args.output
+        else REPO_ROOT / "docs" / "specs" / "execute_ssot_inventory.json"
+    )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(
         json.dumps(inventory, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
-    print(f"Wrote {len(inventory)} entries to {out_path.relative_to(REPO_ROOT)}")
+    print(f"Wrote {len(inventory)} entries to {out_path}")
 
 
 if __name__ == "__main__":

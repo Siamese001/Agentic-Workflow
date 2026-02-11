@@ -166,6 +166,27 @@ def test_bucket_map_no_duplicate_qualnames():
     assert not dupes, f"Duplicate qualnames: {sorted(set(dupes))}"
 
 
+def test_allowed_delta_entries_have_notes():
+    """Every ALLOWED_DELTA entry must have a non-empty notes field."""
+    data = _load_json(BUCKET_MAP_PATH)
+    for entry in data:
+        if entry["parity_requirement"] == "ALLOWED_DELTA":
+            notes = entry.get("notes", "")
+            assert notes and notes.strip(), f"{entry['qualname']}: ALLOWED_DELTA entry missing notes"
+
+
+def test_allowed_delta_notes_max_10_words():
+    """ALLOWED_DELTA notes must be <= 10 words."""
+    data = _load_json(BUCKET_MAP_PATH)
+    for entry in data:
+        if entry["parity_requirement"] == "ALLOWED_DELTA":
+            word_count = len(entry["notes"].split())
+            assert word_count <= 10, (
+                f"{entry['qualname']}: ALLOWED_DELTA notes has {word_count} words "
+                f"(max 10): {entry['notes']!r}"
+            )
+
+
 # ── Cross-reference tests ────────────────────────────────────────
 
 
