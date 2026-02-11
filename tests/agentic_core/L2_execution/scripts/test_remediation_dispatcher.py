@@ -45,8 +45,13 @@ TIMESTAMP = "2026-01-01T00:00:00Z"
 # ---------------------------------------------------------------------------
 
 
-def _write_guardian_aggregate(path: Path, check_ids: list[str]) -> Path:
+def _write_guardian_aggregate(
+    path: Path,
+    check_ids: list[str],
+    evidence_overrides: dict[str, dict] | None = None,
+) -> Path:
     """Write a minimal guardian aggregate JSON with given check_ids."""
+    overrides = evidence_overrides or {}
     data = {
         "guardian_id": "combined",
         "version": 2,
@@ -57,7 +62,7 @@ def _write_guardian_aggregate(path: Path, check_ids: list[str]) -> Path:
                 "check_id": cid,
                 "status": "FAIL",
                 "details": f"check {cid}",
-                "evidence": {},
+                "evidence": overrides.get(cid, {}),
             }
             for cid in check_ids
         ],
@@ -241,11 +246,11 @@ class TestDispatcherSortingAndStatus:
             created_utc=TIMESTAMP,
         )
         notes_by_id = {c.check_id: c.notes for c in result.results}
-        assert notes_by_id["guardian_drift_detection"] == NOTE_MAPPED
+        assert notes_by_id["guardian_drift_detection"] == "dry-run healer planned actions"
         assert notes_by_id["guardian_location_alignment"] == NOTE_MAPPED
         assert notes_by_id["guardian_hygiene"] == NOTE_UNMAPPED
 
-    def test_all_changes_made_empty(
+    def test_non_healer_changes_made_empty(
         self,
         guardian_aggregate: Path,
         output_dir: Path,
@@ -256,7 +261,8 @@ class TestDispatcherSortingAndStatus:
             created_utc=TIMESTAMP,
         )
         for check in result.results:
-            assert check.changes_made == ()
+            if check.check_id != "guardian_drift_detection":
+                assert check.changes_made == ()
 
     def test_plan_name_default(
         self,
@@ -751,6 +757,125 @@ class TestDispatcherResultSetUnchanged:
 
 
 # ---------------------------------------------------------------------------
+# Healer wiring in dispatcher
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherHealerWiring:
+    """Proves dispatcher calls registered healers and records results."""
+
+    def test_drift_healer_invoked_with_evidence(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection", "guardian_hygiene"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["z_bad", "a_bad"],
+                    "archived_files_at_root": ["old.bak"],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        drift_result = next(c for c in result.results if c.check_id == "guardian_drift_detection")
+        assert drift_result.notes == "dry-run healer planned actions"
+        assert len(drift_result.changes_made) > 0
+        assert drift_result.changes_made == tuple(sorted(drift_result.changes_made))
+
+    def test_drift_healer_planned_actions_content(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["tmp"],
+                    "duplicate_folders": ["utils_copy"],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        drift_result = next(c for c in result.results if c.check_id == "guardian_drift_detection")
+        assert "would_remove_root_folder:tmp" in drift_result.changes_made
+        assert "would_resolve_duplicate_folder:utils_copy" in drift_result.changes_made
+
+    def test_unmapped_checks_unchanged_with_healer(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection", "guardian_hygiene"],
+            evidence_overrides={
+                "guardian_drift_detection": {"forbidden_folders": ["x"]},
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        hygiene_result = next(c for c in result.results if c.check_id == "guardian_hygiene")
+        assert hygiene_result.notes == NOTE_UNMAPPED
+        assert hygiene_result.changes_made == ()
+
+    def test_healer_with_empty_evidence_still_skipped(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        drift_result = next(c for c in result.results if c.check_id == "guardian_drift_detection")
+        assert drift_result.status == HealStatus.SKIPPED
+        assert drift_result.changes_made == ()
+        assert drift_result.notes == "dry-run healer planned actions"
+
+    def test_approval_gating_still_enforced_with_healer(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_architecture_governance"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(ApprovalGatingError, match="healing"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+            )
+
+
+# ---------------------------------------------------------------------------
 # No side effects
 # ---------------------------------------------------------------------------
 
@@ -769,6 +894,34 @@ class TestDispatcherNoSideEffects:
 
         run_dispatcher(
             guardian_result_path=guardian_aggregate,
+            write_artifacts_dir=out_dir,
+            created_utc=TIMESTAMP,
+        )
+
+        after = {str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file()}
+        new_files = after - before
+        assert len(new_files) == 1
+        assert OUTPUT_FILENAME in new_files.pop()
+
+    def test_healer_no_filesystem_mutations(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["should_not_be_deleted"],
+                },
+            },
+        )
+        out_dir = tmp_path / "clean_out"
+        out_dir.mkdir()
+        before = {str(f.relative_to(tmp_path)) for f in tmp_path.rglob("*") if f.is_file()}
+
+        run_dispatcher(
+            guardian_result_path=agg,
             write_artifacts_dir=out_dir,
             created_utc=TIMESTAMP,
         )

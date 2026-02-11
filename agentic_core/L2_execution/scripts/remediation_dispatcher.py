@@ -27,6 +27,7 @@ from agentic_core.L2_execution.types.heal_contract import (
     HealCheckResult,
     HealStatus,
 )
+from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
 from agentic_core.L2_execution.types.l2_phase_spec import (
     LEGACY_MIRROR_PLAN,
     L2ExecutionPlan,
@@ -175,6 +176,20 @@ def extract_check_ids(guardian_aggregate: dict[str, Any]) -> list[str]:
     )
 
 
+def extract_checks_by_id(guardian_aggregate: dict[str, Any]) -> dict[str, dict]:
+    """Build a lookup from check_id to full check dict.
+
+    For duplicate check_ids, the first occurrence wins.
+    """
+    result: dict[str, dict] = {}
+    for item in guardian_aggregate.get("checks", []):
+        if isinstance(item, dict) and "check_id" in item:
+            cid = item["check_id"]
+            if cid not in result:
+                result[cid] = item
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Approval bundle parsing
 # ---------------------------------------------------------------------------
@@ -199,6 +214,31 @@ def load_approval_bundle(path: Path) -> ApprovalBundle:
             ),
         )
     return ApprovalBundle(records=tuple(records))
+
+
+# ---------------------------------------------------------------------------
+# Healer invocation
+# ---------------------------------------------------------------------------
+
+
+def _invoke_healer(check_id: str, check_dict: dict) -> HealCheckResult:
+    """Invoke a registered healer safely, converting errors to FAILED results.
+
+    Returns the healer's HealCheckResult on success, or a FAILED result
+    containing the exception class name on error.
+    """
+    healer_fn = HEALER_REGISTRY[check_id]
+    try:
+        return healer_fn(check_dict)
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        return HealCheckResult(
+            check_id=check_id,
+            status=HealStatus.FAILED,
+            changes_made=(),
+            rollback_info=None,
+            notes=f"healer error: {type(exc).__name__}: {exc}",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -232,6 +272,7 @@ def run_dispatcher(
     # 2. Load guardian aggregate
     guardian_data = json.loads(guardian_result_path.read_text(encoding="utf-8"))
     check_ids = extract_check_ids(guardian_data)
+    checks_by_id = extract_checks_by_id(guardian_data)
 
     # 3. Load optional approval bundle (before phase iteration for gating)
     bundle: ApprovalBundle | None = None
@@ -266,15 +307,19 @@ def run_dispatcher(
                 )
 
         for cid in phase_cids:
-            heal_checks.append(
-                HealCheckResult(
-                    check_id=cid,
-                    status=HealStatus.SKIPPED,
-                    changes_made=(),
-                    rollback_info=None,
-                    notes=NOTE_MAPPED,
-                ),
-            )
+            if cid in HEALER_REGISTRY:
+                check_dict = checks_by_id.get(cid, {"check_id": cid})
+                heal_checks.append(_invoke_healer(cid, check_dict))
+            else:
+                heal_checks.append(
+                    HealCheckResult(
+                        check_id=cid,
+                        status=HealStatus.SKIPPED,
+                        changes_made=(),
+                        rollback_info=None,
+                        notes=NOTE_MAPPED,
+                    ),
+                )
 
         # --- Rerun guardians hook (no-op: no phase has rerun_guardians) ---
         if phase.rerun_guardians:
