@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# FROZEN — superseded by Guardian pipeline. Do not extend. Zero-loss migration in progress.
+# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
+# Do not extend. Use: python -m agentic_core.L0_maintenance.scripts.l0_execute
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
