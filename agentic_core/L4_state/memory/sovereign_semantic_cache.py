@@ -33,13 +33,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
         self,
         mission_id: str,
         engine=None,
-        SovereignPineconeStoreAgent: PineconeSovereignAgent | None = None,
+        pinecone_agent: PineconeSovereignAgent | None = None,
     ):
         super().__init__()
         self.mission_id = mission_id
         self._mcp_audit("init", payload={"mission_id": mission_id})
         self.engine = engine
-        self.pinecone = SovereignPineconeStoreAgent or PineconeSovereignAgent(Path("."))
+        self.pinecone = pinecone_agent or PineconeSovereignAgent(Path("."))
         self.index_name = "canon-semantic-v1"
         self.namespace = "canon-files"
         try:

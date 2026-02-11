@@ -31,13 +31,13 @@ except ImportError as _err:
         "numpy is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 from agentic_core.config.agent_defaults import AgentDefaults
-from agentic_core.L4_state.memory.redis_sovereign_agent import (
-    RedisSovereignAgent,
-)
 from pinecone import Pinecone
 
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.core.env_loader import get_env
+from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
+    RedisSovereignAgent,
+)
 
 Logger = logging.getLogger(__name__)
 

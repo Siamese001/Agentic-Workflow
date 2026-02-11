@@ -122,12 +122,12 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L5_safety.validators.RedisSovereignAgent import (
-                get_redis_sovereign,
+            from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
+                RedisSovereignAgent,
             )
 
-            RedisSovereignAgent = get_redis_sovereign(Path.cwd())
-            self._redis_client = RedisSovereignAgent.get_client()
+            redis_agent = RedisSovereignAgent(Path.cwd())
+            self._redis_client = redis_agent.get_client()
             Logger.info("[MetaLearningClient] Redis connection established")
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Redis unavailable, using local cache: {e}")
@@ -138,17 +138,17 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L5_safety.validators.PineconeSovereignAgent import (
+            from agentic_core.L5_safety.reasoning.PineconeSovereignAgent import (
                 PineconeSovereignAgent,
             )
 
-            SovereignPineconeStoreAgent = PineconeSovereignAgent(Path.cwd())
-            if SovereignPineconeStoreAgent.status == "ONLINE":
-                self._pinecone_client = SovereignPineconeStoreAgent.pc
-                self._pinecone_index = SovereignPineconeStoreAgent.index
+            pinecone_agent = PineconeSovereignAgent(Path.cwd())
+            if pinecone_agent.status == "ONLINE":
+                self._pinecone_client = pinecone_agent.pc
+                self._pinecone_index = pinecone_agent.index
                 Logger.info("[MetaLearningClient] Pinecone connection established")
             else:
-                Logger.warning(f"[MetaLearningClient] Pinecone status: {SovereignPineconeStoreAgent.status}")
+                Logger.warning(f"[MetaLearningClient] Pinecone status: {pinecone_agent.status}")
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Pinecone unavailable: {e}")
             self._pinecone_client = None

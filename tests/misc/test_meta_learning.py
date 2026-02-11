@@ -68,11 +68,11 @@ class TestMetaLearningPatternRecall:
         )
 
         # Setup mocks
-        mock_SovereignPineconeStoreAgent = MagicMock()
-        mock_SovereignPineconeStoreAgent.status = "ONLINE"
-        mock_SovereignPineconeStoreAgent.pc = MagicMock()
-        mock_SovereignPineconeStoreAgent.index = MagicMock()
-        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
+        mock_pinecone_agent = MagicMock()
+        mock_pinecone_agent.status = "ONLINE"
+        mock_pinecone_agent.pc = MagicMock()
+        mock_pinecone_agent.index = MagicMock()
+        mock_pinecone.return_value = mock_pinecone_agent
 
         # Mock Pinecone query response with high similarity
         mock_match = MagicMock()
@@ -80,7 +80,7 @@ class TestMetaLearningPatternRecall:
         mock_match.metadata = TEST_PATTERN
         mock_match.values = [0.1, 0.2, 0.3]  # Mock embedding
 
-        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
+        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
 
         # Mock Redis
         mock_RedisSovereignAgent = MagicMock()
@@ -99,8 +99,8 @@ class TestMetaLearningPatternRecall:
         assert patterns[0].similarity_score == 0.92
 
         # Verify Pinecone was called with correct namespace
-        mock_SovereignPineconeStoreAgent.index.query.assert_called_once()
-        call_args = mock_SovereignPineconeStoreAgent.index.query.call_args
+        mock_pinecone_agent.index.query.assert_called_once()
+        call_args = mock_pinecone_agent.index.query.call_args
         assert call_args[1]["namespace"] == "healing_patterns_agentic_core"
         assert call_args[1]["top_k"] == 3
 
@@ -112,18 +112,18 @@ class TestMetaLearningPatternRecall:
         )
 
         # Setup mock with low similarity
-        mock_SovereignPineconeStoreAgent = MagicMock()
-        mock_SovereignPineconeStoreAgent.status = "ONLINE"
-        mock_SovereignPineconeStoreAgent.pc = MagicMock()
-        mock_SovereignPineconeStoreAgent.index = MagicMock()
-        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
+        mock_pinecone_agent = MagicMock()
+        mock_pinecone_agent.status = "ONLINE"
+        mock_pinecone_agent.pc = MagicMock()
+        mock_pinecone_agent.index = MagicMock()
+        mock_pinecone.return_value = mock_pinecone_agent
 
         # Mock Pinecone query response with low similarity
         mock_match = MagicMock()
         mock_match.score = 0.78  # Below 0.85 threshold
         mock_match.metadata = TEST_PATTERN
 
-        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
+        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
 
         # Test pattern recall
         client = MetaLearningClient()
@@ -133,7 +133,7 @@ class TestMetaLearningPatternRecall:
         assert len(patterns) == 0
 
         # Verify query was still made
-        mock_SovereignPineconeStoreAgent.index.query.assert_called_once()
+        mock_pinecone_agent.index.query.assert_called_once()
 
     @pytest.mark.skip(reason="Mock paths require refactoring - covered by phase tests")
     def test_domain_specific_thresholds(self, mock_pinecone=None):
@@ -143,18 +143,18 @@ class TestMetaLearningPatternRecall:
         )
 
         # Setup mock
-        mock_SovereignPineconeStoreAgent = MagicMock()
-        mock_SovereignPineconeStoreAgent.status = "ONLINE"
-        mock_SovereignPineconeStoreAgent.pc = MagicMock()
-        mock_SovereignPineconeStoreAgent.index = MagicMock()
-        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
+        mock_pinecone_agent = MagicMock()
+        mock_pinecone_agent.status = "ONLINE"
+        mock_pinecone_agent.pc = MagicMock()
+        mock_pinecone_agent.index = MagicMock()
+        mock_pinecone.return_value = mock_pinecone_agent
 
         # Mock pattern with similarity between thresholds
         mock_match = MagicMock()
         mock_match.score = 0.88  # Above agentic_core (0.85) but below apps_lic (0.92)
         mock_match.metadata = {**TEST_PATTERN, "domain": "apps_lic"}
 
-        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
+        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
 
         client = MetaLearningClient()
 
@@ -413,11 +413,11 @@ class TestIntegrationScenarios:
         )
 
         # Setup mocks
-        mock_SovereignPineconeStoreAgent = MagicMock()
-        mock_SovereignPineconeStoreAgent.status = "ONLINE"
-        mock_SovereignPineconeStoreAgent.pc = MagicMock()
-        mock_SovereignPineconeStoreAgent.index = MagicMock()
-        mock_pinecone.return_value = mock_SovereignPineconeStoreAgent
+        mock_pinecone_agent = MagicMock()
+        mock_pinecone_agent.status = "ONLINE"
+        mock_pinecone_agent.pc = MagicMock()
+        mock_pinecone_agent.index = MagicMock()
+        mock_pinecone.return_value = mock_pinecone_agent
 
         mock_RedisSovereignAgent = MagicMock()
         mock_redis_client = MagicMock()
@@ -425,7 +425,7 @@ class TestIntegrationScenarios:
         mock_redis.return_value = mock_RedisSovereignAgent
 
         # Mock no existing patterns (first time healing)
-        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = []
+        mock_pinecone_agent.index.query.return_value.matches = []
         mock_redis_client.get.return_value = None
 
         client = MetaLearningClient()
@@ -458,7 +458,7 @@ class TestIntegrationScenarios:
             "healing_strategy": healing_result,
             "domain": "agentic_core",
         }
-        mock_SovereignPineconeStoreAgent.index.query.return_value.matches = [mock_match]
+        mock_pinecone_agent.index.query.return_value.matches = [mock_match]
 
         # Step 6: Retrieve pattern for similar violation
         patterns = client.retrieve_healing_patterns(TEST_VIOLATION)

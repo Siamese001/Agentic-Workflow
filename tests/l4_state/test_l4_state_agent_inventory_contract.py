@@ -42,7 +42,7 @@ UNREACHABLE_ALLOWLIST: dict[str, str] = {
     "RedisSovereignAgent": (
         "Reachable via sub_atomic_registry.py:34 (included in entrypoint list); "
         "also imported by PineconeSovereignAgent and PolicyNeuralAutoImmuneAgent "
-        "via broken L4_state.memory.redis_sovereign_agent path (tracked as broken-wiring)"
+        "via L4_state.reasoning.RedisSovereignAgent (wiring fixed in Phase 5)"
     ),
 }
 
@@ -127,9 +127,26 @@ def _get_entrypoint_imported_names():
 
 
 class TestL4AgentNamingContract:
-    """Every *Agent.py file must contain exactly one Agent ClassDef (or be shimmed)."""
+    """Every *Agent.py file must contain exactly one top-level ClassDef ending with Agent."""
+
+    def test_agent_files_have_exactly_one_classdef(self):
+        """Fail if any *Agent.py has 0 or >1 top-level ClassDef (unless shimmed)."""
+        failures = []
+        for filepath in _get_agent_files():
+            filename = os.path.basename(filepath)
+            if filename in SHIM_ALLOWLIST:
+                continue
+            classes = _parse_top_level_classes(filepath)
+            if len(classes) == 0:
+                failures.append(f"{filename}: 0 ClassDefs (empty or syntax error)")
+            elif len(classes) > 1:
+                failures.append(
+                    f"{filename}: {len(classes)} ClassDefs ({', '.join(classes)}); expected exactly 1",
+                )
+        assert not failures, "L4 Agent files violating exactly-one-ClassDef rule:\n" + "\n".join(failures)
 
     def test_agent_files_have_agent_classdef(self):
+        """Fail if the single ClassDef does not end with a recognized agent suffix."""
         failures = []
         for filepath in _get_agent_files():
             filename = os.path.basename(filepath)
