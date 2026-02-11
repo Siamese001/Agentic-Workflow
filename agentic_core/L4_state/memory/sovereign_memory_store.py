@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.memory.PineconeSovereignAgent import PineconeSovereignAgent
+from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

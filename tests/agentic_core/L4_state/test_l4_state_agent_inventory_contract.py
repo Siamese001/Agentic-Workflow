@@ -47,7 +47,7 @@ UNREACHABLE_ALLOWLIST: dict[str, str] = {
     "PineconeSovereignAgent": (
         "Reachable via sub_atomic_registry.py:30 (included in entrypoint list); "
         "also imported by meta_client.py, sovereign_memory_store.py, "
-        "sovereign_semantic_cache.py via L4_state.memory.PineconeSovereignAgent. "
+        "sovereign_semantic_cache.py via L4_state.reasoning.PineconeSovereignAgent. "
         "Relocated from L5_safety/reasoning/ per RCA layer misplacement detection."
     ),
 }

@@ -1007,7 +1007,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "PineconeSovereignAgent",
-            "file": "agentic_core/L4_state/memory/PineconeSovereignAgent.py",
+            "file": "agentic_core/L4_state/reasoning/PineconeSovereignAgent.py",
             "methods": 12,
             "fingerprint": "4dd0d1e4b0e3e220",
         },
