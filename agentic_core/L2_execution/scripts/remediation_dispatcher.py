@@ -63,12 +63,22 @@ PHASE_CHECK_ID_PREFIXES: dict[str, tuple[str, ...]] = {
     "reconciliation": (),
     "alignment": (),
     "arch_validation": (),
-    "healing": (),
+    "healing": ("guardian_architecture_governance",),
     "certification": (),
 }
 
 NOTE_MAPPED = "no healer registered"
 NOTE_UNMAPPED = "unmapped to phase; no healer registered"
+
+# Dispatcher-local override: which phases require L3 approval.
+# Does NOT modify LEGACY_MIRROR_PLAN; evaluated at dispatch time.
+PHASE_APPROVAL_REQUIRED_OVERRIDES: dict[str, bool] = {
+    "healing": True,
+}
+
+
+class ApprovalGatingError(Exception):
+    """Raised when a phase requires approval but none was provided."""
 
 
 # ---------------------------------------------------------------------------
@@ -86,6 +96,25 @@ def validate_phase_names(plan: L2ExecutionPlan) -> None:
         raise ValueError(
             f"PhaseSpec name integrity violation: expected {list(EXPECTED_PHASE_NAMES)}, got {list(actual)}",
         )
+
+
+def approvals_satisfy_phase(
+    bundle: ApprovalBundle | None,
+    phase_name: str,
+) -> bool:
+    """Check whether the approval bundle satisfies gating for a phase.
+
+    Returns True iff bundle contains at least one record where:
+    - record.phase_name == phase_name
+    - record.decision == APPROVED
+    - record.token is non-empty
+    """
+    if bundle is None:
+        return False
+    for record in bundle.records:
+        if record.phase_name == phase_name and record.decision == ApprovalDecision.APPROVED and record.token:
+            return True
+    return False
 
 
 def classify_check_ids(
@@ -188,12 +217,14 @@ def run_dispatcher(
 
     1. Validates PhaseSpec name integrity.
     2. Loads the guardian aggregate and extracts check_ids.
-    3. Classifies check_ids as mapped or unmapped via phase prefix mapping.
-    4. Iterates phases in order (approval gating + rerun hooks as no-ops).
-    5. Produces a CombinedHealResult with all checks SKIPPED.
-    6. Validates and writes the result to the output directory.
+    3. Loads optional ApprovalBundle (needed before phase iteration for gating).
+    4. Classifies check_ids as mapped or unmapped via phase prefix mapping.
+    5. Iterates phases in order, enforcing approval gating.
+    6. Produces a CombinedHealResult with all checks SKIPPED.
+    7. Validates and writes the result to the output directory.
 
     Returns the CombinedHealResult.
+    Raises ApprovalGatingError if a phase requires approval and none is provided.
     """
     # 1. Validate PhaseSpec integrity
     validate_phase_names(LEGACY_MIRROR_PLAN)
@@ -202,19 +233,37 @@ def run_dispatcher(
     guardian_data = json.loads(guardian_result_path.read_text(encoding="utf-8"))
     check_ids = extract_check_ids(guardian_data)
 
-    # 3. Classify check_ids
+    # 3. Load optional approval bundle (before phase iteration for gating)
+    bundle: ApprovalBundle | None = None
+    approved_tokens: list[str] = []
+    if approval_bundle_path is not None:
+        bundle = load_approval_bundle(approval_bundle_path)
+        for record in bundle.records:
+            if record.decision == ApprovalDecision.APPROVED:
+                approved_tokens.append(record.token)
+    approved_tokens = sorted(set(approved_tokens))
+
+    # 4. Classify check_ids
     mapped_ids, unmapped_ids = classify_check_ids(check_ids)
 
-    # 4. Iterate phases in PhaseSpec order
+    # 5. Iterate phases in PhaseSpec order
     heal_checks: list[HealCheckResult] = []
     for phase in LEGACY_MIRROR_PLAN.phases:
-        # --- Approval gating hook (no-op: no phase has approval_required=True) ---
-        if phase.approval_required:
-            pass  # Future: block until approval token present
-
         # Select check_ids for this phase
         prefixes = PHASE_CHECK_ID_PREFIXES.get(phase.name, ())
         phase_cids = sorted(cid for cid in check_ids if any(cid.startswith(p) for p in prefixes))
+
+        # --- Approval gating enforcement ---
+        phase_requires_approval = PHASE_APPROVAL_REQUIRED_OVERRIDES.get(
+            phase.name,
+            phase.approval_required,
+        )
+        if phase_requires_approval and phase_cids:
+            if not approvals_satisfy_phase(bundle, phase.name):
+                raise ApprovalGatingError(
+                    f"Phase '{phase.name}' requires L3 approval but no matching "
+                    f"APPROVED record found in ApprovalBundle for phase_name='{phase.name}'",
+                )
 
         for cid in phase_cids:
             heal_checks.append(
@@ -231,7 +280,7 @@ def run_dispatcher(
         if phase.rerun_guardians:
             pass  # Future: re-run specified guardians after healing
 
-    # 5. Add unmapped check_ids (coverage preservation)
+    # 6. Add unmapped check_ids (coverage preservation)
     for cid in sorted(unmapped_ids):
         heal_checks.append(
             HealCheckResult(
@@ -242,15 +291,6 @@ def run_dispatcher(
                 notes=NOTE_UNMAPPED,
             ),
         )
-
-    # 6. Load optional approval bundle
-    approved_tokens: list[str] = []
-    if approval_bundle_path is not None:
-        bundle = load_approval_bundle(approval_bundle_path)
-        for record in bundle.records:
-            if record.decision == ApprovalDecision.APPROVED:
-                approved_tokens.append(record.token)
-    approved_tokens = sorted(set(approved_tokens))
 
     # 7. Build CombinedHealResult
     result = CombinedHealResult(
@@ -313,13 +353,17 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    result = run_dispatcher(
-        guardian_result_path=Path(args.guardian_result),
-        write_artifacts_dir=Path(args.write_artifacts),
-        created_utc=args.created_utc,
-        plan_name=args.plan_name,
-        approval_bundle_path=Path(args.approval_bundle) if args.approval_bundle else None,
-    )
+    try:
+        result = run_dispatcher(
+            guardian_result_path=Path(args.guardian_result),
+            write_artifacts_dir=Path(args.write_artifacts),
+            created_utc=args.created_utc,
+            plan_name=args.plan_name,
+            approval_bundle_path=Path(args.approval_bundle) if args.approval_bundle else None,
+        )
+    except ApprovalGatingError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
     print(result.to_json())
     return 0
