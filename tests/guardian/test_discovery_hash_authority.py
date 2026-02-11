@@ -5,11 +5,16 @@ Invariants enforced:
   1. Exactly ONE canonical hash constant for forensic_discovery_prep.py
      exported from structure_blueprint (no KNOWN_GOOD_HASHES or secondary dict).
   2. The canonical value equals the SHA-256 of the on-disk script.
+  3. Default discovery output conforms to v5.4 strict schema.
+  4. --legacy-schema flag produces the legacy key structure.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -86,3 +91,99 @@ class TestDiscoveryHashAuthority:
         assert not FORENSIC_DISCOVERY_SCRIPT.startswith("/"), (
             f"FAIL: absolute path in FORENSIC_DISCOVERY_SCRIPT: {FORENSIC_DISCOVERY_SCRIPT}"
         )
+
+
+def _run_discovery(project_root: Path, *extra_args: str) -> dict:
+    """Run forensic_discovery_prep.py and return parsed JSON output."""
+    script = project_root / FORENSIC_DISCOVERY_SCRIPT
+    result = subprocess.run(
+        [sys.executable, str(script), *extra_args],
+        capture_output=True,
+        text=True,
+        cwd=str(project_root),
+        env={**__import__("os").environ, "PYTHONPATH": str(project_root)},
+        timeout=120,
+    )
+    assert result.returncode == 0, (
+        f"FAIL: discovery script exited {result.returncode}\nstderr: {result.stderr}"
+    )
+    return json.loads(result.stdout)
+
+
+class TestDiscoveryV54Schema:
+    """Ensure default discovery output conforms to v5.4 strict schema."""
+
+    def test_v54_top_level_keys(self, project_root: Path) -> None:
+        """Default output must have top-level keys: meta, ssot_validation, agents."""
+        data = _run_discovery(project_root)
+        required = {"meta", "ssot_validation", "agents"}
+        assert required.issubset(data.keys()), (
+            f"FAIL: Missing top-level keys. Required: {required}. Got: {set(data.keys())}"
+        )
+
+    def test_v54_meta_keys(self, project_root: Path) -> None:
+        """meta must contain timestamp, root_path, git_hash."""
+        data = _run_discovery(project_root)
+        meta = data["meta"]
+        for key in ("timestamp", "root_path", "git_hash"):
+            assert key in meta, f"FAIL: meta missing required key '{key}'"
+
+    def test_v54_ssot_validation_keys(self, project_root: Path) -> None:
+        """ssot_validation must contain blueprint_hash and status."""
+        data = _run_discovery(project_root)
+        sv = data["ssot_validation"]
+        assert "blueprint_hash" in sv, "FAIL: ssot_validation missing 'blueprint_hash'"
+        assert "status" in sv, "FAIL: ssot_validation missing 'status'"
+
+    def test_v54_ssot_validation_match(self, project_root: Path) -> None:
+        """ssot_validation.status must be MATCH when hash is correct."""
+        data = _run_discovery(project_root)
+        assert data["ssot_validation"]["status"] == "MATCH", (
+            f"FAIL: ssot_validation.status is '{data['ssot_validation']['status']}', expected 'MATCH'"
+        )
+
+    def test_v54_agent_keys(self, project_root: Path) -> None:
+        """Each agent must have all v5.4 required keys including mixins."""
+        data = _run_discovery(project_root)
+        agents = data["agents"]
+        assert len(agents) > 0, "FAIL: agents list is empty"
+        required = {
+            "identity",
+            "layer",
+            "status",
+            "file_path",
+            "class_name",
+            "mro_chain",
+            "mixins",
+            "detected_methods",
+            "integrity_hash",
+        }
+        for i, agent in enumerate(agents[:5]):
+            missing = required - set(agent.keys())
+            assert not missing, f"FAIL: agents[{i}] missing keys: {missing}"
+
+    def test_v54_mixins_is_list(self, project_root: Path) -> None:
+        """agents[*].mixins must be a list."""
+        data = _run_discovery(project_root)
+        for i, agent in enumerate(data["agents"][:5]):
+            assert isinstance(agent["mixins"], list), (
+                f"FAIL: agents[{i}].mixins is {type(agent['mixins']).__name__}, expected list"
+            )
+
+
+class TestDiscoveryLegacySchema:
+    """Ensure --legacy-schema produces the prior key structure."""
+
+    def test_legacy_top_level_keys(self, project_root: Path) -> None:
+        """--legacy-schema must produce audit_meta and environment_under_test."""
+        data = _run_discovery(project_root, "--legacy-schema")
+        required = {"audit_meta", "environment_under_test"}
+        assert required.issubset(data.keys()), (
+            f"FAIL: Legacy output missing keys. Required: {required}. Got: {set(data.keys())}"
+        )
+
+    def test_legacy_no_v54_keys(self, project_root: Path) -> None:
+        """--legacy-schema must NOT produce v5.4-only keys at top level."""
+        data = _run_discovery(project_root, "--legacy-schema")
+        for key in ("meta", "ssot_validation", "agents"):
+            assert key not in data, f"FAIL: Legacy output unexpectedly contains v5.4 key '{key}'"
