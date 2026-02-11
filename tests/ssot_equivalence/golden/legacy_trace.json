@@ -1,0 +1,2547 @@
+{
+  "legacy": {
+    "artifacts_after": [],
+    "command": [
+      "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "-m",
+      "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+      "--legacy",
+      "--plan"
+    ],
+    "returncode": 0,
+    "stderr_head": "",
+    "stdout_head": "PHASE 1: Discovery\n  - reconciler.detect_root_drift\n    # filesystem SSOT drift detection\n  - location.run\n    # location validation (confidence gated heal)\n  - file_classification.run (validate_only=True, dry_run=True)\n    # file classification early detection\n\nPHASE 2: Reconciliation\n  - reconciler.heal\n    # drift reconciliation (confidence gated)\n\nPHASE 2.5: Structural Alignment & Sovereignty\n  - hierarchy.heal_hierarchy\n    # hierarchy alignment (confidence gated)\n  - file_classification.heal_repository\n    # sovereignty purge (confidence gated, not dry_run, not validate)\n\nPHASE 3: Architectural Validation\n  - arch_governor.comprehensive_territory_audit\n    # territory audit\n  - system_architect.validate_core_architecture\n    # architecture validation\n\nPHASE 4: Healing\n  - arch_governor.generate_healing_plan\n    # healing plan generation\n  - arch_governor.execute_healing_plan\n    # healing plan execution\n\nPHASE 4.5: Additional Agents\n  - conversational_repair.scan_violations\n    # conversational repair scan\n  - root_hygiene.scan_root_violations\n    # root hygiene scan (if registered)\n\nPHASE 5: Certification\n  - *.aggregate\n    # final aggregation and certification\n\n",
+    "tree_after": [
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.dockerignore",
+        "sha256": "8fbdfb5df37423a3ccb0692fb6f0d3ca2e8be7c2f6eae73dcd54336ce4446939"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.gitattributes",
+        "sha256": "563bf9e99d1492335ef5a3e4490c0d36f936153c7fcbe3048bc1cfa16c198a46"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.secrets.baseline",
+        "sha256": "63b028e9e91d63cbb9e2c73df6e6e152c8b514e33c9532361090ae28694271b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/Agentic.code-workspace",
+        "sha256": "19c26732f1b038c8bdbf574a7e308e3c7e7756f333872e8be1f18fe5144b7e2b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/README_SSOT_TESTING.md",
+        "sha256": "d84b250eea9d30caa3ee5b827b1fc691a755dea28b4b3667d6e532ac877486fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/README_STOPPABLE_SERVERS.md",
+        "sha256": "053ee970d6bc8132a850028f75e0bcdfeb065020ea1f48d194fa149ebb1ebe7d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/__init__.py",
+        "sha256": "e58753c304283fa99a141fbf695d7625fe5c64930ba147ae9f3fa96f55d6295d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/action_capability.py",
+        "sha256": "768593f1514f427cccad8375d4e516a8762f7d23e552f0c5754bf4644475f179"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_agent_suffix_plan_util.py",
+        "sha256": "ba5553f425c2339e68a6b3b733d735c25f4a5e490cd62eff08b04fa4d2793e6b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_dataclass_to_agents_util.py",
+        "sha256": "5a3c58b8877fbad4fdd5bb7424fb4c26588c406bb1c2b226ed78b09c9863238c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_safe_util.py",
+        "sha256": "a4db972949ddc2154dd637fa5d1224953ac74d41d6ff7b75285121947c333296"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_testing_to_agents_util.py",
+        "sha256": "5e2c9393ab03462620fe7f487cdef10dedbcb02803254500fbbace1633418158"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_tests_util.py",
+        "sha256": "ae40d0f98d9630494359119f57e3e9121fc418bf7566be6c7cfc8d9af390d29b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_analysis_config.py",
+        "sha256": "841211c3c51d4a28cceafdf7c860386e82533d58fde3a8ad9c21969d5a5a8fa2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_capability_supplement_util.py",
+        "sha256": "bef4525c75048bb3199506503857b71d42c095bf8b3c02e203c61bdac6c6abf1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_validation_util.py",
+        "sha256": "aaf46b2e449a1e6e0b15da670bc91690199663f9c405a35e91635fd782920afc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/aggressive_dedup_util.py",
+        "sha256": "3f2a189859aa750287df1a32a2967bc924516c9bc55c68131280de329345b643"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/align_tests_structure_util.py",
+        "sha256": "20e4cf61502dc42e3c849a29b3325153f663f7302a583ace9c340f3e8a538979"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_agent_count_waterfall_util.py",
+        "sha256": "4ee71ca8b08363b7b1c5e3152ceb9b6d6c3cf4dea51d8c3fcc9ff08b7f0215e6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_app_files_util.py",
+        "sha256": "2a5c19006f796049eb787919884d229da494db8d29ccf4fc8d0a08e602df0bc4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_archive_util.py",
+        "sha256": "434c8af6ab3874bbeb27f0d5f72e2dd35a8ca63af3cc980760997cf986c679a5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_extract.py",
+        "sha256": "5f17d196f46643783df8d9cc48dcf665176e5502c4f7a96396ceadffe24b7560"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/archive_duplicate_tests_util.py",
+        "sha256": "3d792d84048a29246b8151e9bb22fd22a8b9e429005e9895cb9622b97d3b2090"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/archive_duplicates_util.py",
+        "sha256": "8ab8d2a5cab23984183fb4f325b2daa1175e436090d7c8cb4775e315e05a5127"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ast_layer_stats_util.py",
+        "sha256": "2f9ba3783dfd0d98dd45bb21644a0e433fc14c94079792b691a4e0eeb09584b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_all_agents_mro_util.py",
+        "sha256": "9c2b6335b6837e11c26c4e8bcfebfe6cc4ffc2183927388745363ba896ea4dbf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_code_quality_metrics_util.py",
+        "sha256": "45dae0c00f774664ed132419b28e2f9b3f45f2c3bac108e37d345c43a2ac9fba"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_complexity_health_util.py",
+        "sha256": "ff9e686a03c17682757b775d21a1d4234abfa78a278affedf778c9fdc8e71498"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_naming_util.py",
+        "sha256": "f3830be9dad402754f19fa65883df5adf7ebdccc88f378b6c3f35f2652ca2f60"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_flow_util.py",
+        "sha256": "8510104686b664b3bd64b92e8c482fb6d568fc0fca5a0b106b584a3ffd82996c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_util.py",
+        "sha256": "112ebd8c7fc325725850c0ab938b0c408385ddf1ca344739e61143b3f18d4f31"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_live_runtime_consolidation_util.py",
+        "sha256": "756c0d53fdc596bbfb1f99d17369472ea23c9d5c1868984bb7c621fa7540364a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_residual_rglob_util.py",
+        "sha256": "7245fd588c0466338f879f0e62671d4fdc388247b3c86482a1add881298fe5a7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_status.py",
+        "sha256": "395008b72b32275a4d96e1f9aab72e16bcc787e99b522351cd1a70349c7d471a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_table_validation_parity_util.py",
+        "sha256": "430c5fde7f43cd81ae071355de5c6c8d1d64f594856589b0b5dbb5bf22bb0f5c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/auto_remediate_signatures_util.py",
+        "sha256": "f2d13d2275ac87a6fb7c2da8ed5d9275a9ec7e55e1c534d33eff9d14dd291195"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/base_tool.py",
+        "sha256": "bfcba923fe5ba100beb5192de3ad8c0ce584dca4b3835c988762f207d64e9a38"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/base_tool_script_v2.py",
+        "sha256": "ba1156a41aa89f83c2e688ec8546c8d71137f5b5c3b50a50f9b1b328274a430d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bloat_analysis_util.py",
+        "sha256": "252086b1c56f347655ce205ef1905c61e536b6fb0f9b0763558f5ac98aa9e5e6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/budget_auditor_util.py",
+        "sha256": "97f4e32b471a5b934c6be69eb3bfef427ee04fa059edd2b2da5512c1e39cbf24"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_agent_rename_util.py",
+        "sha256": "fcedb823e53f1163e8a51db0c311ba81cfcb39fb1a2dccedfa4c743402e3d680"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_hierarchy_heal_util.py",
+        "sha256": "3d0fe44151ee8cb8efe2392487ffbe749fa9de9e0654d70838335599d18b9b23"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_mcp_harden_util.py",
+        "sha256": "07d884d4f1aeb4b39332e24fc4f9f4ad731b8ff1a2daa68837e5d1e9429407f1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/c_c_measurement.py",
+        "sha256": "ac729c74d7f6fe17111731b8974681afd3bbcd9e090c6132fef8f5d33efbdd9c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_data_access_get_info_request_init_util.py",
+        "sha256": "4c97ea91791ec3f290996c6cd1ee4e6e3113be244b6b39fdae437287ee423633"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_data_access_init_util.py",
+        "sha256": "c24b9a154ac12ddbd165f90170cf0eeabdb70bd2b5d5714f2bc0c39c5fd58c77"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_init_util.py",
+        "sha256": "e49f349c9775a93081872cd650d25b81e9e334ec08ebc76f9c99cd7d8f894bbe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/call_personalization_api_util.py",
+        "sha256": "54e61b86a8fc42251c11cdbb44e7befb8cf18d9f9dd1a9363661ca825f533327"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/callable_report.py",
+        "sha256": "cfa87314250320fb17610ad2dffad6dd28caff73a0af692133429379abf6f20c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/canon-eternal.yml",
+        "sha256": "981892849d536062b9df4e9a45f77100001ae484cb6d282bc711af70aa63584c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_duplicate_filenames_util.py",
+        "sha256": "d60fd4214a0dea8dd876c2cec7f49fcfeb3fd43c76f4688385e76272d3a4c27c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_from_utils_duplicates_util.py",
+        "sha256": "70e84d4cf5eedd7569e87373eae33b77114f7b081e2fda5557cae67f6b957d82"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_protected_files_util.py",
+        "sha256": "4512ec724eb3adae4e1b5fe187372ae3872fc4c646d5a93098705c95b021abbb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_rglob_usage_util.py",
+        "sha256": "1e955086610588a3e208ca77246b4c86e9578de52406291341f66eaa4f58c18c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_sovereign_base_util.py",
+        "sha256": "e358011e26adce7ca00ab813f5449eacef35874fa652bd879d0a779b4c21da2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_syntax_util.py",
+        "sha256": "917a5a989c1884dd8bde0ea8af6e5ed39599fa072a6d73cc9278cec211c3ed45"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/chunk_type.py",
+        "sha256": "6702c74cc1cb2d7a6091928b2ce11aa24e5de30f490ccfe861e288ada056d2c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/class_info.py",
+        "sha256": "4c9e307bc360e83c1054f9a79a6c88572ef684dfb94a57646689e3dd73823608"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/clean_dashboard_html_util.py",
+        "sha256": "deaa03f8568d71d2f030fb477b66694658e009768767da06e0e156a6ca7500a5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cleanup_duplicate_files.sh",
+        "sha256": "ec244ce970c780f21e91dfff867bafc1724517bcd57df451e8e9062c0931c68a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/code_entity.py",
+        "sha256": "89fa04e17819ee0a9fb4783d128f8bc944147c5b69ce4600bf898bddb69afbde"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/collision_resolver.py",
+        "sha256": "53a61c5669ba5eeea428cee9e6dd85723452d425f317c7e5043e57d79dd4b01a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/colors.py",
+        "sha256": "6006fbf89084248dd73ade008b57d988ccb80e75409c7ea2c3ff4234d3190a4e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_archive_to_current_util.py",
+        "sha256": "df064d21714149726d702a6e9061b75101618d0a2424ba9453bf6ac495a29c36"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_autonomy_guardian_files_util.py",
+        "sha256": "98cb7e36bca86a6f78d79ce64e183bd36dbdefc6f28c8cb2e30528c757549d41"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_dashboard_data_util.py",
+        "sha256": "6e5a0fd3a3119fd677b6e02eb05248515341111baa056b32cdb8c23938eee8e7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_ui_components_util.py",
+        "sha256": "941b434c57c6b435f3a823ca0e3a31daf6970b8ff1f503d51d11a20a66cfcccb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complete_terminal_alignment_util.py",
+        "sha256": "1afb2364944d9faf7b40cc15df58f4bf7612eca372e01e9b54efd617097f29d9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complexity.py",
+        "sha256": "9c7350fc8632ff3ccc949404b634b763d31a523bd6a7f2017ee4c54594b4bcfb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complexity_reducer.py",
+        "sha256": "72f38cf026eebf7ec866d178a7a9f903d4a2771a01915943ccd1f0f7f6c0a91f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compliance_gate_util.py",
+        "sha256": "c633afc3df374ffffdb227ed5c78c32ee45f4ff67b2dc6a1730ed316d2e749c0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/comprehensive_agent_audit_util.py",
+        "sha256": "cb9959449522a0d94c20fd8e54e73196c4997b09889ba9008581ed64efabedcc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/comprehensive_archive_check_util.py",
+        "sha256": "d25fea286cf49baaab42243b29da2ccfcd9460c7795cc7fd4f5773413dd657ed"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/core_synthesis_executor.py",
+        "sha256": "b47d5b455234b5b4fe500b9a2dfe37cfd42b3c4b7860d454732cbe1908b7ebcf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/count_territories_util.py",
+        "sha256": "6d77bc5210967ec258f7b5d219e413b141a9e237cc309ff71f5a84ec15c06f26"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/coverage.py",
+        "sha256": "2aee00ec6374daad1b80388a0c15aab641a0ca63492c7790d72f26a3d03f760f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_live_server_util.py",
+        "sha256": "d8976375a439ca744578894b6379d42e599fc788d0a5a86b80e3c39a06adacb5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_qa_deep_audit_util.py",
+        "sha256": "59ffa664284d3646c7b8584f4fb05fd337ed6378e46382ee300ab4ea619ad37c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_ssot_definitions_util.py",
+        "sha256": "e2135f6344ad40b4faf5082f376f32d4c249d1775edb1f0dd43d32a2f08a0359"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_style_report_util.py",
+        "sha256": "773180716c3092b82a830a5ebeeb8a23745b474b438674fd4841bbd754d70955"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_verifier.py",
+        "sha256": "bb1957d2b9d273401ea7895b1cb1b8e23746c1b0b1a1ea4ca40000ab79bcb0e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debris_hunter.py",
+        "sha256": "0b80742567a79aaf598bfc6142734e32d6f1961fa5cbf9c42ae248d3894cdb49"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_dashboard_rendering_util.py",
+        "sha256": "286dc5830d686da2ec9b928259c3bc608e6a2d96ff12da5cb8513259b574fdd7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_drilldown_util.py",
+        "sha256": "d817cc109a92fe1a25312bfe08242b3a5e860f1441f58bfcd0f97c7276bbbf33"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_invocation_pipeline_util.py",
+        "sha256": "396b763379c61ada5a9ad299ca9947f7ba6b39fa51d215e78fddd81bdd6b5925"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_target_mismatch_util.py",
+        "sha256": "f3262aa278be3a4462ca3805c0c3ec8fc43f25304fd9544850379fa579529e5c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/deep_deprecation_audit_v2_util.py",
+        "sha256": "99bff205b01e369119724dd5ebc96b6bec2d3a507042beb4bf02c3f0d7ac2f8a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/delete_duplicates_util.py",
+        "sha256": "dbbe835ac9c73be68d3339ffd26d947062e4e4418d64640426929915de658112"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/demo_cli_functionality_util.py",
+        "sha256": "09ae3ff84932721e0b8c51ca7ccaaee0cb6c03da1e328444992254318b5ff409"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/detailed_territory_report_util.py",
+        "sha256": "02bd4a34260239dc7442e9e5f5271fea3bd6f97750fefff037c2764e74738bb6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/detailed_territory_subterritory_report_util.py",
+        "sha256": "52f7a029492076d7bd741a8bcdb78da1cb1194c0e30e16119c6f6d67e449e505"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_dashboard_live_util.py",
+        "sha256": "4f3b94f6447a98543a90576b719eb88e05ddcdb850506687fbf0800bddba73d9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_syntax_util.py",
+        "sha256": "ea4d89ccc8b5ca00d1be51b7d8f3d8648773df5d7aa9849998bd8b77f55e2a9f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_user_dashboard_view_util.py",
+        "sha256": "ff7a5318c09160bac1c743a6167fc9a157a8f0413399ca4f1b9938c9c19516c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/disposition.py",
+        "sha256": "8bbde606e993ebd2a473f268ff807552650534991fc8a82de16f71bf9e2f9bdc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/drift.py",
+        "sha256": "b87308c75297998e11b6d6854d9db42282846a8040ed6c60e68e32d847e2cc86"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/emoji_fixer.py",
+        "sha256": "362fda6020c972044abe1171668c3dd5865a5a469f697a1adf1271644802092b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/enforce_dashboard_freshness_util.py",
+        "sha256": "c5658d7bc1437cd5bd711c45659897c139703db5949d3a9b9267cec5ddea37ac"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/entrypoint.sh",
+        "sha256": "fdf637066dc6dc46f9d6d0ffddbdf2efedaafb4f22614fcda1d60919246f16e0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/error_handler.py",
+        "sha256": "97b5e9ce75251f90a8803f24eaf99e03db30a1ed0eda58efa4dccbd86676ccc5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_cleanup.sh",
+        "sha256": "ad7e7740ba743a39d8a08bca0c65be89c1db52c2b87aac3c1fe117fd02781ecb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_migration.ps1",
+        "sha256": "a80cd8ad04081e7e454fb13c48aca905aa4fa9b0c161c2fb73b75e4911d3e6ef"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_safe_deletion_util.py",
+        "sha256": "16345550908d53c14117645aa5990d2fac26a3bba9fb16165ff4868e75fc570a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_ssot.py",
+        "sha256": "63f1ba9d8f3c33357a8e7d1071ae4ac91fc00f19fa6fa452c513b2603589fcab"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_ssot_entrypoint.py",
+        "sha256": "160152039d3e4bbb02c15800f0276c52b4d9024b1af4888b20fd00fb72285d0a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execution.py",
+        "sha256": "0880557525186c69daa72239f5c85ad1b2e9ff306c8b086ad8a0b2a19cd7c038"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execution_context.py",
+        "sha256": "4d849bc6fde3a61333a903b48eaebb4180dda665a21abf63977c732e038432bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
+        "sha256": "b854b3bc4852f3cfb58d80e259dcd1b3411bae62cca096b9b6dcf279447955b3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_dashboard_errors_util.py",
+        "sha256": "a4a2c1209f8a598ac2c88211ff885d6e09c18b40a2119c5e61db943df024e3fe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_layer_stats_util.py",
+        "sha256": "5d0129ed81e614466179118d98f2a590999b5249b6fbe9878b6142337d59b6e5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_net.py",
+        "sha256": "0eac4f184794e42c28e1a19b41521d70ecc785eeb556db9c9e783b802cb8b8d0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_unique_content_util.py",
+        "sha256": "652fb5ee831788c6027ad045469ec23a44d50b79343d3dab3d7b0b401e19b222"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/file_analysis.py",
+        "sha256": "dfa40a66f71a76ff34da4ab7a8cf1453e791762a228f1d2b98575471b6f83d88"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_safe_util.py",
+        "sha256": "b84720b7f78b834d694ca2a558678a385139e3e4965875154294c999dbc9c5b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_simple_util.py",
+        "sha256": "fc0e337c4f6e79d14a32484699c499afbe69d1759bc609e502a624941ad5d90e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_util.py",
+        "sha256": "055b63278b136f42eafc0c3eaddd224d8f3798ede135f4d89443a769f4f0f6f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_cleanup.sh",
+        "sha256": "c12bbd1acc274b76a18c04f2658152aa4bee941137ca73a74827fcb1e5c3d287"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_sovereign_structure_util.py",
+        "sha256": "2cc7693410a2b22717e1915265fb480c460c98f03ac899a23a592b3559c4550e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_agents_in_low_heal_territories_util.py",
+        "sha256": "7a662689843a36ab8b8d28e05dd75aad6e68197588f9f79038403687a1566e6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_and_fix_all_missing_heal_util.py",
+        "sha256": "d1b5e93fff387141d9dddffed9d96c9d02d9d48ac69199c5d653065e5ff179da"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_and_fix_missing_heal_util.py",
+        "sha256": "1947287280ba436369e1d1a35c96f04c9cf155a11f0a809aefe63dc85a7c5dbd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_base_class_agents_util.py",
+        "sha256": "7ee90b50e77862b80b7b64cea12fa18649c2693986d69f7199c7768d748e8e46"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_corrupted_files_util.py",
+        "sha256": "540517a6e2cc2a035884a56824e12230407b1a0aa37da21c1a8110b603e1b454"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_infrastructure_target_issue_util.py",
+        "sha256": "4a65c72c3b467a143603e3365688467168b1d4620ee1aa67fd8ea7331b448fcd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_low_heal_territories_util.py",
+        "sha256": "c65bac3cd997cce56f64a0682760a5a1ae528e4a4b356b661a181a91709555dd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_low_typed_documented_util.py",
+        "sha256": "123333de67fd0fc115015c6c31805a1d3226035d3ead5183a063dd52c2413b08"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_agents_util.py",
+        "sha256": "02b56a26391834605b7c341d6fbcd88dbb32051b51913049ee964cfc97debe7d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_invocation_util.py",
+        "sha256": "0ceb975e9d9acc86ca9c87b0075b69e41cc0fe8fedbd3bd59edf9ce1afab0ac0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_invocations_util.py",
+        "sha256": "c52f459145feb15708f3e186a104c7759e801e32d0d5ce06ea05b892eedc2c19"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_non_hardened_l0_util.py",
+        "sha256": "d90c8cb54173840e0282c670783b41ab1e20d0f1a7ff108fd492ab0b39745208"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_open_heal_invocations_util.py",
+        "sha256": "2ed422bc8d8ca4b93fb395faa6975a5dbd1eb0647e8799859a95895f1857aba3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        "sha256": "f3b589213ded858506277680166788245207136729ceecd07508749f7f9b7a53"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_remaining_missing_heal_util.py",
+        "sha256": "eb3d013ebed698e81317cc2a25c45373d17d647db0fa1069ead855e8beda3eae"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fission_executor_util.py",
+        "sha256": "4dee16be6db0474c952bab4d1c5cc4272a719a7ba796e1592c513c2834d3223e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_imports_comprehensive_util.py",
+        "sha256": "3b24e221df9a0d3601397190e95c737bd6daad71ccd5219e878c8955e100049c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_indentation.ps1",
+        "sha256": "20e6c2b371393278b6ff839473b5cb2f8cb92175daaae2d3781032551cc1a6c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_invocations_util.py",
+        "sha256": "1d98e78c79ab47cb2a6c3292759b8d9ec8010f5b06db5d9b9ff67a382ca0c942"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_apps_lic_engines_util.py",
+        "sha256": "56f0117bbb472ce39dfc7bc37dcc4381b3ca23a13fc16df3b46be9f2b6e8a92a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_heal_schema_violations_util.py",
+        "sha256": "5eed681805db4d78d5a84ce6e49664d95aaa1108c9d3b4b42f5fcc2b2ea867f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_healer_mixin_imports_util.py",
+        "sha256": "c3672a6efcdce03d9b80fe1e1e7d9271117b3a6b736bdaa688a7d599297a3fe4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_imports_emergency_util.py",
+        "sha256": "1d22ad2dd4d2575ce2388b01eecd1f6360a5ff6dc1417180fb9fe7cf9d303132"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_indentation.ps1",
+        "sha256": "c8bdc8140d9095589d016e3aa0c62206f2fa7da761662aa6aefaec703c34014b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_legacy_agents_for_certification_util.py",
+        "sha256": "1bcaf574300043639a51318e992c4329624a7d02f216d3c172b40ff4a07edc5d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_missing_imports_util.py",
+        "sha256": "24fe1bdfb795aaf89ab6dbb397525bcd87002649b67a5d1e8f3467e8b2cb93a9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_missing_invocation_util.py",
+        "sha256": "002062ccf2171b8b5f3b64dc8546dec845786fb5268577d099752c9465a2d07c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_remaining_imports_util.py",
+        "sha256": "d1a16785b690345c77133dfa282ff052ec509f1fd735f3ec45f033e1f1b3fb2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_root_scripts_util.py",
+        "sha256": "258336c4e804f204c1d40f980d4444bf6ac5d052f5349bcb5d5b92cb62d22d6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/flatten_scripts_directory_util.py",
+        "sha256": "c63ef242fb9d6d563f7daa6b41d82abe19421d8ad6542e7bd9f1a38d5b63905e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py",
+        "sha256": "7831ad47a8e238085df41f4dfec57450c2af943f141762ab635a33ee23250319"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/forward_rolling_facade.py",
+        "sha256": "a1cc1e512439e2914e8990cbd784f5382e1a5516a258688f6ac4ae005956f5b0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/full_agent_capability_audit_util.py",
+        "sha256": "ca55fbff9f1ee9a2e3ab4e4aa2da6cb42847616be36b4983b3476c0d6d3682d3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        "sha256": "f68d7b0479da3c516e0b3597b35cb4a5dbf2f6b050ffa12ddfafa0b95e5ffdb4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/function_tool.py",
+        "sha256": "8ab93c7d6ea889a3d253f4f9632163c834208f9c1e1bde67fd3d31c425423063"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/gatekeeper_lock_util.py",
+        "sha256": "68142f50a1e93595f8962ab372b145665fe4da136933d69f4a10d2e03b9a581c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_duplicates_table_util.py",
+        "sha256": "1ba7c8e8bbc24309d74bbab5fc7776bbb2515a2f45e5556a378da533df4ef086"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_report_util.py",
+        "sha256": "f8059b7278359d81bbe42b6c4840e078e0010374108c0777b5010548a5aafe48"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_table_simple_util.py",
+        "sha256": "f04ac4fec9ae4d12b028a80b3f68ee9d318a3c83f6ed9e0c634750030dd05863"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_tests_util.py",
+        "sha256": "7f0ff562a822ac1d432b2e85b137227a4565872986bb36e3a0fd6e14ac5df2d5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_all_agent_tests_util.py",
+        "sha256": "1e6533d6714d292ac1b59fd21c3059e636431024c8afab91efefa7158e447dc0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_blueprint_metrics_util.py",
+        "sha256": "91186013965d2b0f3b5953aa7f6b9915601976f686856af5e64191a0390857c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py",
+        "sha256": "095d19c22efd7906c8e4d614e5d7ad15599da832b557a14fdc0efbbac11b4541"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_hooks_util.py",
+        "sha256": "4c21a57c290cca136984e2895f1d8fe29d6513cc945bbabf4a3bf4806752c15f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_layer_report_util.py",
+        "sha256": "44380e44b7f7cadc0e43cea721c79be049cb13455372bc1bd63933c0fe4d8287"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_missing_tests_util.py",
+        "sha256": "4ce967e8fa4b48219ef95ddec16a84431ba4a5dee415298c1659bea3985733ec"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_structural_changes_report_util.py",
+        "sha256": "730661d2a70b5ad722e5c6a69ff29ae5e75637891907186bf26b6924027cd66c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_subject_line.py",
+        "sha256": "c45f8874d734d216740e9c77a5dee5a2d5fc54d29b1cc8381f5187110ba5d1b3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_summary_section.py",
+        "sha256": "335d1eb50ba19cb4bedd3abc96af46113b6bd790103cb09a5f9cb4d1e28775d0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_syntax_report_util.py",
+        "sha256": "0b5fb08e5c51a545c8b092c4ee8f2baac16adab03d90d8f8907edc7d3d34e7c5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/golden-state-validation.yml",
+        "sha256": "6e31fd3221131ec7c157636dda4e7dafdc71cbcb47d2375af1b4cfddcc18cda8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/handler.py",
+        "sha256": "1cf3532e6057bf22eaadb6acf9ab2bc201033ab6288eddae59f17c34a9947ecc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/hardened_anti_pattern_visitor.py",
+        "sha256": "946a3819838cc82aca92e40b41ac99ec91a1b99029134e18d6ea73fd27a67229"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/hardened_orchestrator_wrapper_util.py",
+        "sha256": "f6dee0d677d269f92fc67919fe8c208f051098f1e7b5c20d864ceda86df00803"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/heal_schema_visitor.py",
+        "sha256": "e5a8f3666cb23b406f70445c1917ddcbb3b7a2a3655512336cc0b1aea25b5b79"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/identify_agents_without_tests_util.py",
+        "sha256": "821c34cbb939395cea64f7ee525cfe4d8a397222215142d2ce09c6587f297200"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/identify_low_quality_agents_util.py",
+        "sha256": "aeda0543c40c7948e958f82dec2512fe3885df60670621d2784c238975657a6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/inspect_dashboard_browser_util.py",
+        "sha256": "71a22621fc8ab2a11efa784e1025d03f335c8c72dc76ae99d869d811bfdfdef3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_agentic_sdks.sh",
+        "sha256": "46cff2cff900d58fc94ce544493ecf3f0a9e921c5c857b669c70d0b65c2f53b7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_all_mcps.ps1",
+        "sha256": "95d7541ece7ccdecf6b87367245210aefbfa14e49b237a5e3e59ac82435355e5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_mcp_servers.sh",
+        "sha256": "a9ec80f9ec7e44e6c333a8e007ecab9f9726b0e27e4b99bf6bf2340602847355"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/investigate_overlaps_util.py",
+        "sha256": "fccdee3785f38e33cca749c15a72a124fc351ee6cb7121b21224bada66fed523"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/investigate_sovereign_base_util.py",
+        "sha256": "542d348d190bdea0a91ff25d689ccb24c7c5f5b835072d8d335be5c66023739b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/layer_summary_util.py",
+        "sha256": "31c3bff84ca71e816890f133942e20740917abb2eaa0c84d130b7914ed08de47"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/list_layer_agents_util.py",
+        "sha256": "c182668a9de280b0b79c05d248d7ff5ffef9ec044375449c1a23ab77af4e331b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_data_access_init_util.py",
+        "sha256": "eb8d25a6086f71f9d3c257360ee2b72a2fdcc02e77a8631f9c0980f221eb18a7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_init_util.py",
+        "sha256": "44f404097b2ee8af8b33beb8967ccc2822e1ed1d098b25f12d736bed8174926f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_synthesis_init_util.py",
+        "sha256": "4e33f642a76992a96f066a076785c731835a8135a9ea30943724ceeb360cfaa7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_synthesis_pick_best_refinement_init_util.py",
+        "sha256": "f0bf9f6e73b344fe724cf0de21393077eb16205b603b4e7013d0e3db3d826e8b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_validation_init_util.py",
+        "sha256": "58ed601336935883c167f808250557ba30966b6254b22852c7375cd2876a1712"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/maintenance_generate_hooks_util.py",
+        "sha256": "8c042bc76f51b23fbb360b1dbb34a1112358377e8214693b28aadf9856fcec9c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/merge_init_util.py",
+        "sha256": "19fdc6668b409178dedfb5df8cb7709be6a466dc94eca0a0535bb987aa2649f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/migrate_imports_util.py",
+        "sha256": "6fb7b82366c68703cac8848ce4cd15d0b8d567448f00e34036fb19c73d19e0f1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/migrate_unified_to_high_signal_util.py",
+        "sha256": "e1dce816e9492c8aea60ed9bd5b4964fcf0bc2fae0a47599b309d35833412401"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/mock_subatomic_hop.py",
+        "sha256": "d3a6c9f85c708b06a82fb434d5df65502554eb5833cc4c5aa7fae01eae6b250b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
+        "sha256": "78b17eebe34843064345602a6e8d3d7814083916e117c0516a2fa6d0b5aac278"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pinecone_assistant_util.py",
+        "sha256": "ee5d89cfa0b97349be4da17a4d18b0c72830ac6d145e937dae9d8cecb6d3fae5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pinecone_populator.py",
+        "sha256": "39ba44c81782e8e9e2508868754e4cbe03df82d90791ddc44f3b1e848309424e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_data_access_get_info_request_init_util.py",
+        "sha256": "1942c0033016d6fec9de6ce9071ec04c947573df9b1c9436315b23dc53ba4580"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_data_access_init_util.py",
+        "sha256": "c132250c66c1fb149325b38bb760ec28e29cda2bf9e3cddad516f695c9fbe2c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_init_util.py",
+        "sha256": "432290996a463cb6eac109fd596b3aea1f9c557edcd1af766f1d3bf256ddcfd0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/playwright_verify_total_row_util.py",
+        "sha256": "4bc8ecd21d60b3c71a792a4181c0eeb320d1a2cae7aa7eedf26372a55fc7a4b4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/populate_ssot_folders_util.py",
+        "sha256": "7c2c1adf933ecc7658ce69111725daebb968ba9848a99f73aa66f249359a47fd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/prove_violation_detection_util.py",
+        "sha256": "d6294d147dae46413304c48115bec4a6edd33ad34af503d47897791eea93321a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pytest.ini",
+        "sha256": "076597e21c38e5e43d89240baff226bd50e1c337d88e13110fd4c34f2d2601b7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/query_runtime_util.py",
+        "sha256": "0759096343488cf5498b7e09d2119d38cc85b46fbed187457f4f012e1d3f7a8c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/quick_cleanup.sh",
+        "sha256": "bb941c460b98be4ea1a845c6a04943b879af7b6bbddd353b230fc629fcee7d15"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/quick_scan_util.py",
+        "sha256": "896a28566d985e221182434ef5c440bf4e1ba5cc0eccf07bb392cf658d32b363"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_agent_count_analysis_util.py",
+        "sha256": "0dabb83a6871192c18dda9ad937873eaace9e69964339b72904dbd79ae245392"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_dashboard_row_collapse_util.py",
+        "sha256": "26029a6c028b9a8004d4e8f451ffe9e57168c74cd0fbc441c16a21b8aa4f9e5b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_table_rendering_util.py",
+        "sha256": "df719eb5a1603adf1b71037d497ee0e1df0a83fb1f42ce54d663bff9b0c43029"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/reasoning.py",
+        "sha256": "4dbdf83a68e42a8beba8740afffcfcb4c0a5f2649dc2065ae3a43516a4339056"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/recalculate_code_quality_scores_util.py",
+        "sha256": "3b634c4a32995974786c7cd4086a77780b089517feb077160c270202d4229b2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/recalculate_health_scores_util.py",
+        "sha256": "07e14a5b10fb70863bf4144829d2581259b1d7d4b9e43bffd64cb36ba0f6ff5a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/reduce_complexity_top5_util.py",
+        "sha256": "118408b35a4f56ec22da3f55f43785f1edc6c83684c8063e6258b1d5ae119fe9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_l0_gravity_imports_util.py",
+        "sha256": "8ebc5ad526999f9fc35317a3a13431924a3f06b9ea2ca2737144e23878ab1455"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_l1_mcp_imports_util.py",
+        "sha256": "df1ec54779fb9b95f8dab5372f47200d9853bed71daa66ab20dd5e667b7994bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_legacy_base_imports_util.py",
+        "sha256": "1253185bbcf83dc55d57d872e11b8d3dd05c532b244ff0d9d2269121ada768ba"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_mcp_imports_util.py",
+        "sha256": "43f9f9bcd8e6eca14c011e90893e73a857d32b56c7f54ae3bc405805ff3ea077"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_full_util.py",
+        "sha256": "30a3000b7539134c302037c19c7a2b52105f9da6d6f6754a1ba5c01866708d65"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_util.py",
+        "sha256": "f01676d6b9a0a980988918cd4123fa14809bb34d3df4c1547ba4c7f05a834237"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_duplicate_lines_util.py",
+        "sha256": "d7ea6b363148c203580db0f8a6ec8c96d9beba6ea7ccffbea9bfdab1146d9e7b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_duplicate_suffixes_util.py",
+        "sha256": "5abfafba58e06dc3bf1b190c43d8326bb2242a75107fa1de43ddce1919df8853"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_empty_dirs.ps1",
+        "sha256": "baefee3c9dc75ebeb5f0cc9492f808c0dfd8ebaa4c679e8091d7befb88c6ae0e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rename_to_agent_suffix_util.py",
+        "sha256": "11f00636f3f79c3d9900dcc527e8af6907748f9b4c601d7302c212459f25ae83"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rename_unified_agents_util.py",
+        "sha256": "a1723dc66db2698a71b66959dfceed18c01d871a42e319b775cd9547a544bd5e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/repair_legacy_agents_util.py",
+        "sha256": "44ead2b3e606211abdb61c79d67ccc02a8a766853af122cd8b26480612e6c215"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rescue_reviewer.py",
+        "sha256": "47a1bda17fc91efd9c36bf992e41f046545ba2416bb8dad61339bd3fcdf5ef29"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/restore_unique_archives_util.py",
+        "sha256": "d1f36905b74f9abed0dd55f91e21c23c8eb014cdeb68c43a3988e89bd084c876"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/revert_cognitive_moves_util.py",
+        "sha256": "f98cada4836b577939bf15a727806942792188baccb63dd663610694bb49cb53"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/root_hygiene_util.py",
+        "sha256": "106c49baf147cc0a2ae068a018dcf369473c520a440062381912275042c4e0ec"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_all_guardians.py",
+        "sha256": "264afe4ec2cc6010facae5e77d01eb8ed0cdf8163bb34538b7c9592ecac1b625"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_contract_integrity.py",
+        "sha256": "c7328879603664ece2d8b7ff93a211628011bebe8779ccfe5ed5c1f073470d07"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_hygiene.py",
+        "sha256": "e9e8ac0c08df1e67b9e9895d08504c7283bc0b2d152a2e3f158f66f45a788fa9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_manifest.py",
+        "sha256": "6cd09997ef3f59a1539d81b21693c595a713706b51e9a4b17cd2a37f28e1ed0c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hierarchy_agent_dry_run_util.py",
+        "sha256": "da0595ac22367fd88a43b1d7ccd528f9413764d4d11e596e92fcc3da9a212f56"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hierarchy_healer_dry_run_util.py",
+        "sha256": "cf1af44772d1922300bf1c4edbab9a2945b7ef0cef644f9198769a29fc36f6dc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hygiene_guardian_util.py",
+        "sha256": "0e419f566cc5100dcfc2f6a0bee222e55ef768da3af2bee11e3a4a405b74e3f5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hygiene_naming_audit_util.py",
+        "sha256": "f227e7bed93c9b8c4a252a290223952933630feb0e4fcfaa5e006f122ead72e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_naming_law_check_util.py",
+        "sha256": "0eb7f698849e12e5b87efb2052ad8eac01d27fe099e311a3657056d454b354fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_naming_scan_util.py",
+        "sha256": "04bfbcf1eee8a4b12edbca556df3ff431b0999cb165c10e105d133b39eab599d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_sovereign_compliance_audit_util.py",
+        "sha256": "75656f8fdc6876bd8be4dbd9ba5f207fd2cbe4b4dfcf3377d586d22a369bb937"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_ssot_tests.ps1",
+        "sha256": "03889154eacde58427a50b287e0228c0074b3e44d890f015de92c37f9008ed3a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_ssot_tests.sh",
+        "sha256": "28a46de424577c6150ca73e328ac71bf26e87f16734d01a797c592fa3c054dc6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/runtime_shared_data_layer_example_util.py",
+        "sha256": "a2bb912f6acabffcd408cff103f8c4ee660ae0c0ec589e346595f2ef00ba8358"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scan_duplicates_util.py",
+        "sha256": "545d1dbf18827252b61a5a3f9abad22b474a4dbc50cfddeefdffd3712ce641bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scan_testing_compliance_util.py",
+        "sha256": "7b8d9550af9d2f628ed790ba71732bdca41885ee559573e114432397143b11fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scour_and_seal_legacy_util.py",
+        "sha256": "ea963d664ec477a3bbc38eb4e1508b6a44a2cdf6ef758e02d6860f8cc5151de3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_all_agents_tested_util.py",
+        "sha256": "7a393889ae30a1e33457390510e9363151fab884357351e69d53f1e1cf7e6f66"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_all_invocations_yes_util.py",
+        "sha256": "4818cd70afeb166fba2d50e0a1a9980a15255c2bd2d898ecf87ad09a73cdcf57"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_schema_strictness_100_util.py",
+        "sha256": "917c27efaf9af74f3dda6fb6338c7048f5e6ff227afed0fc7952eaaeb7f3d734"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_typed_documented_100_util.py",
+        "sha256": "c2a63d743541e40ac589f23c0bdbe975b16fa775ded6b0a1a39b859d13bcd888"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/show_manual_review_files_util.py",
+        "sha256": "c96def0522fc1bad0e3bb717bd86a8acc14c1da3589d58a7cff4df54e6f8cd56"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/silo_mover.py",
+        "sha256": "1dafbf6cf86dfd83c3d0b0e07f828ed71cf8c4cb19414973c2df3a807546fc11"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/simple_dashboard_test.html",
+        "sha256": "1ce3bac05fcdf91473d0eb7fd334ac4232bf0dd297c64d52d21d6be516544a26"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/simulate_sovereign_workflow_util.py",
+        "sha256": "a8dc8254b2f6719dce1b42b009563aa0eeac5414b156a08b5d496985734bd183"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/smart_discovery_util.py",
+        "sha256": "2e9a8f472f29a7e5b8c1962888d9f0d4d01e18997c570e3698199e7e57adc4ab"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/smoke test content",
+        "sha256": "8d555a55ed9c9eff1c75f08fa5d4cfbf9ed74f3ba3e040d884a180aa024fdc5f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_lockdown_check_util.py",
+        "sha256": "97d22ad9ae4478bd5f3a1bce921d6a1c34d56f3a5f5013f3100352a1dc0ae97d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_mission_control_util.py",
+        "sha256": "93aac38214d6a2d9137d16ad9062fd12e24fcbc70fd923680a8d204df2ac689d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_model_visitor.py",
+        "sha256": "9bae4734f1e2bd21b3e9bd4475e82403a66551bb926a1f74be1b276e8cad9b70"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_pdf_parser.py",
+        "sha256": "5f8965d8e2285f4c4920a62bdd23578bd661f7c1b26e9216aec94914d10a1dc1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_precommit_no_hardcoded_util.py",
+        "sha256": "dd5b51c7b9c03725f74ca354c7ab83eca94f6f56a30f8a34bcde3bc121ffbbbb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_precommit_no_raw_prompts_util.py",
+        "sha256": "494af65c98c7a452b6f1de1d29db4979566c2e9a2379ba6e2b62cd5e81f5f03a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereignty_auditor.py",
+        "sha256": "2da41db799f5b8325ab57121f9c217fa0462562364ede9abff15d925d6ef0817"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_archive_refactor_util.py",
+        "sha256": "d6f9c2a9ff31ebc642affb77259b0d016b0e4376337d87ca26760bd1112e97e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_audit_util.py",
+        "sha256": "1bbbfa591a8bcfcf9c3cc32efbad8806c596828dfd6855f764ff6fd6f6faf773"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_cli.py",
+        "sha256": "3563709f4e124c3efe740e7ba15694525856d6d6e8d79da61d31243aeb2a3f4e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_consolidation_analyzer.py",
+        "sha256": "c6b070da7c1b0280bd156833f92c7e3d24859459279e7fb6e18dbda6f28e68d6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/standardize_base_agent_names_util.py",
+        "sha256": "3e0b77e70c726fd2bda72eb623db1bd784fd6739a8f6a6bef71cf13da32fccd9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start.sh",
+        "sha256": "c9471c7fe57813005551aad479ee5fd81b90cbd5fc07c74a3d4a5f906475106a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start_dashboard_server_util.py",
+        "sha256": "7dc3ce31b4afe9d369417a0b85e24a4237437fa3bff56a19184b6f29a8f5b824"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start_runtime_api_util.py",
+        "sha256": "ebd315e82e4c8ea4058f6c3f054efb7979ed26f183b99e739f8dfc3782769e96"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/suggest_variant_renames_util.py",
+        "sha256": "555fa6c63a6e8e649171c287cc2b6dfd69b3d25b143d0a18a759e3a41f5399f3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/swarm_scheduler.py",
+        "sha256": "ac2c52d1fcc9c9729f46b9235941826230b1877de5e32efdcc0ff7c68e3d45c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sync_dashboard_agent_count_util.py",
+        "sha256": "0be0bc97dae056722a79274cf5c103c88a34de6e632ffead4efbeba8e940e511"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sync_mcp_util.py",
+        "sha256": "5381ede6cb4194b3ec6e445b50ad7b3d275e28b7a03a61766776395db7654819"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/syntax_healer.py",
+        "sha256": "46b8d05147621e7b3cd0cac1ad083a1273d395d05c79ee3763ed1fbef58baeb3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/syntax_scar_repairer.py",
+        "sha256": "e5becd94845b362d74af0cc6f7aa7260fad78d62d2b256faf8c8183e95b02dbf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/terminal_alignment_final_util.py",
+        "sha256": "d8ad87a16508a6169ab5d0c178795e66f9ccae3327d2f0dce82df4b7bfb25490"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/territory_ssot_definitions_util.py",
+        "sha256": "9581f732ff664db4874edd95d2bd9cefb7e1623ba9a743dc0c0cedbec80e20ac"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/test_dashboard_browser.html",
+        "sha256": "f69824fe5a08f39db9fb6481b96fc2c2a8b94409786d4faa094708867b774f4c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/test_dashboard_browser_console.html",
+        "sha256": "384bd2a20342eb852f2ddfab2de2d32293db59100e53761f3c77debf67ee3b78"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/toolbox_util.py",
+        "sha256": "098859f02ece3a79586f80d89ed6eeabd121c13b50397aa9eda434ef58730e70"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_add_docstrings_util.py",
+        "sha256": "9fa4340c9b2a0d32f109240786c55e115d80a2150ce9dea5994fe71bd9ea8dc4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_auto_init_py_util.py",
+        "sha256": "3d854e4edd9d8ab6b67aa2de78587a0a891a98b61531887da24b4a350665350b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_auto_ruff_path_util.py",
+        "sha256": "60ad233c1506849adc09c079fee3e250160de4f74eeb7c830797622455736bbd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_enforce_verb_noun_util.py",
+        "sha256": "5831c48c300a3d97bca32b35ea85995353028d9f8e285907943808c7000ea82a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/trace_dashboard_generation_util.py",
+        "sha256": "c511b89ecb69bc6041d93ef55a761d037738ef83ec580e0030dd92e004edc7df"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/trace_drilldown_util.py",
+        "sha256": "8d89ab2e34a6ae319c290ae50b7ab6f943d21dd6a5290e200eea3205389d0d3a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/undo_core_moves_util.py",
+        "sha256": "ce89ca48768e5e2ae6bec32a05e99114a8e9f033bf61b9ec191068e35d295de1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/update_mcp_metadata_util.py",
+        "sha256": "a0241713f48a44a8e3686b91d4ea20d3e6b8ff4e238b0ae63c065502f07c09e9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_base_agents_util.py",
+        "sha256": "c4acd118a276023d956ab181ecb232d1e03da12ccefdfce2e7363d46272067a1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_dashboard_changes_util.py",
+        "sha256": "3bb95d9414154ee00e0a8a30cca4e28bab0fdbd34896cbf69e915bd5eee06b92"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_dashboard_totals_util.py",
+        "sha256": "f4e416f4d274f9156154ec853ab953c2c10d297c7499766228ff1208a9db3061"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_drilldown_util.py",
+        "sha256": "c0daa2737a16824b8f402bb90d7db99b23cbb43a36ac64418961d474479ab01a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_sovereign_structure_util.py",
+        "sha256": "de08dc6d89b4079a7350843474fd694a23bd54cf3c1fe8ab3fc7a1a8fe546752"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_table2_data_util.py",
+        "sha256": "ed0011c86a3623e8f32f23f20845f818363d15cfeb0badaf570107ca0280d205"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify-docker-build.sh",
+        "sha256": "944e5f3b5abb09bf2df8b8a412f3828a223a517380c9f193954cc127b7cd912c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_agent_status_util.py",
+        "sha256": "33b605f3574942d0b9d988bcfd7531f148520626c6af7e5a6f4cf0e28a3bee1b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_all_checkpoint_files_util.py",
+        "sha256": "6aa9c27b7ba2ff436d0ad556a151c444b23e1219aa24c045b4a0c077ef963396"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_base_agent_names_util.py",
+        "sha256": "441b14ff38637f40b820234a7d74a8df78cd80368ddbb25e227a2df6a1f27047"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_heal_invocation_util.py",
+        "sha256": "68fa1bd82cf2aa5664d7291aa16751949ade2b51854c19b33442258c40a3102e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_healing_metrics_util.py",
+        "sha256": "af9d04c0a6823c85cfc38d40e8a79b66565e09a37b1c9509bc0a82539a2cc321"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_health_calculation_util.py",
+        "sha256": "27638bd1d3d52ad8115130f43756494c7cdc81f4a026400ce88721e0ae2505c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_intentional_variants_util.py",
+        "sha256": "7f4920b1df69aed7844e0ba979f71cfcf9316d0eab93b6ac88bac66fee955bd5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_l2_fix_util.py",
+        "sha256": "b69eaabfd1811a35adf64eaf4aab0c6118d62359ed924d70e4f3d2a4169bff1a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_manifest_cleanliness_util.py",
+        "sha256": "9f513234f441251cd51facd84f7e85aeef23456755a53e0f015db76e474c5985"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_manifest_util.py",
+        "sha256": "503c2fd376e71a7478452c7b2eef1c4b2329138e41968e245bcc40a87028131b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_mro_util.py",
+        "sha256": "d6603666de239edb82b0d0fe608ccb698ff1f7b70b40667db7086c31756945f4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_refactor_integrity_util.py",
+        "sha256": "ae81930cb3d2a5e7c2adfc068ec356ac09921ce6cb11b21be1e5cbaf908ca3ca"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_row_order_util.py",
+        "sha256": "284ced43469c85fe364482a57700a804e46714774cdb901568ee18981a90ffcf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_territory_counts_util.py",
+        "sha256": "89730f44a3146831644408414cd54731b4a4ed7607f8119ce1f5b1944332babe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/windsurf.code-workspace",
+        "sha256": "feaacf13c54a53fdde2abf44a18c6d25f70e774eca22da3a5a767ad5ba2030b8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py",
+        "sha256": "cbac5f20333f34d337ddda84095b674ca2829a6f3848bdb3c3cd3c19bf1ae69b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/workflow_review_pending_merge_util.py",
+        "sha256": "677bef10e86b0f547159e5fd24cdfbb26d052feba4724c20997cced91f40f1f9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/workflow_track_changes_util.py",
+        "sha256": "6e8ec673c96c5aa4059778eb9651350151af6fcca0b10b1fd7a477d5938c7713"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/zombie_vaccinator.py",
+        "sha256": "58e3b184dc2eac99468440ca4103aca109ccd99027165a3da7b607ceb2f3f894"
+      }
+    ],
+    "tree_before": [
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.dockerignore",
+        "sha256": "8fbdfb5df37423a3ccb0692fb6f0d3ca2e8be7c2f6eae73dcd54336ce4446939"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.gitattributes",
+        "sha256": "563bf9e99d1492335ef5a3e4490c0d36f936153c7fcbe3048bc1cfa16c198a46"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/.secrets.baseline",
+        "sha256": "63b028e9e91d63cbb9e2c73df6e6e152c8b514e33c9532361090ae28694271b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/Agentic.code-workspace",
+        "sha256": "19c26732f1b038c8bdbf574a7e308e3c7e7756f333872e8be1f18fe5144b7e2b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/README_SSOT_TESTING.md",
+        "sha256": "d84b250eea9d30caa3ee5b827b1fc691a755dea28b4b3667d6e532ac877486fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/README_STOPPABLE_SERVERS.md",
+        "sha256": "053ee970d6bc8132a850028f75e0bcdfeb065020ea1f48d194fa149ebb1ebe7d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/__init__.py",
+        "sha256": "e58753c304283fa99a141fbf695d7625fe5c64930ba147ae9f3fa96f55d6295d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/action_capability.py",
+        "sha256": "768593f1514f427cccad8375d4e516a8762f7d23e552f0c5754bf4644475f179"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_agent_suffix_plan_util.py",
+        "sha256": "ba5553f425c2339e68a6b3b733d735c25f4a5e490cd62eff08b04fa4d2793e6b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_dataclass_to_agents_util.py",
+        "sha256": "5a3c58b8877fbad4fdd5bb7424fb4c26588c406bb1c2b226ed78b09c9863238c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_safe_util.py",
+        "sha256": "a4db972949ddc2154dd637fa5d1224953ac74d41d6ff7b75285121947c333296"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_testing_to_agents_util.py",
+        "sha256": "5e2c9393ab03462620fe7f487cdef10dedbcb02803254500fbbace1633418158"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/add_subatomic_tests_util.py",
+        "sha256": "ae40d0f98d9630494359119f57e3e9121fc418bf7566be6c7cfc8d9af390d29b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_analysis_config.py",
+        "sha256": "841211c3c51d4a28cceafdf7c860386e82533d58fde3a8ad9c21969d5a5a8fa2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_capability_supplement_util.py",
+        "sha256": "bef4525c75048bb3199506503857b71d42c095bf8b3c02e203c61bdac6c6abf1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/agent_validation_util.py",
+        "sha256": "aaf46b2e449a1e6e0b15da670bc91690199663f9c405a35e91635fd782920afc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/aggressive_dedup_util.py",
+        "sha256": "3f2a189859aa750287df1a32a2967bc924516c9bc55c68131280de329345b643"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/align_tests_structure_util.py",
+        "sha256": "20e4cf61502dc42e3c849a29b3325153f663f7302a583ace9c340f3e8a538979"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_agent_count_waterfall_util.py",
+        "sha256": "4ee71ca8b08363b7b1c5e3152ceb9b6d6c3cf4dea51d8c3fcc9ff08b7f0215e6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_app_files_util.py",
+        "sha256": "2a5c19006f796049eb787919884d229da494db8d29ccf4fc8d0a08e602df0bc4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_archive_util.py",
+        "sha256": "434c8af6ab3874bbeb27f0d5f72e2dd35a8ca63af3cc980760997cf986c679a5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/analyze_extract.py",
+        "sha256": "5f17d196f46643783df8d9cc48dcf665176e5502c4f7a96396ceadffe24b7560"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/archive_duplicate_tests_util.py",
+        "sha256": "3d792d84048a29246b8151e9bb22fd22a8b9e429005e9895cb9622b97d3b2090"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/archive_duplicates_util.py",
+        "sha256": "8ab8d2a5cab23984183fb4f325b2daa1175e436090d7c8cb4775e315e05a5127"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ast_layer_stats_util.py",
+        "sha256": "2f9ba3783dfd0d98dd45bb21644a0e433fc14c94079792b691a4e0eeb09584b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_all_agents_mro_util.py",
+        "sha256": "9c2b6335b6837e11c26c4e8bcfebfe6cc4ffc2183927388745363ba896ea4dbf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_code_quality_metrics_util.py",
+        "sha256": "45dae0c00f774664ed132419b28e2f9b3f45f2c3bac108e37d345c43a2ac9fba"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_complexity_health_util.py",
+        "sha256": "ff9e686a03c17682757b775d21a1d4234abfa78a278affedf778c9fdc8e71498"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_naming_util.py",
+        "sha256": "f3830be9dad402754f19fa65883df5adf7ebdccc88f378b6c3f35f2652ca2f60"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_flow_util.py",
+        "sha256": "8510104686b664b3bd64b92e8c482fb6d568fc0fca5a0b106b584a3ffd82996c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_util.py",
+        "sha256": "112ebd8c7fc325725850c0ab938b0c408385ddf1ca344739e61143b3f18d4f31"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_live_runtime_consolidation_util.py",
+        "sha256": "756c0d53fdc596bbfb1f99d17369472ea23c9d5c1868984bb7c621fa7540364a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_residual_rglob_util.py",
+        "sha256": "7245fd588c0466338f879f0e62671d4fdc388247b3c86482a1add881298fe5a7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_status.py",
+        "sha256": "395008b72b32275a4d96e1f9aab72e16bcc787e99b522351cd1a70349c7d471a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/audit_table_validation_parity_util.py",
+        "sha256": "430c5fde7f43cd81ae071355de5c6c8d1d64f594856589b0b5dbb5bf22bb0f5c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/auto_remediate_signatures_util.py",
+        "sha256": "f2d13d2275ac87a6fb7c2da8ed5d9275a9ec7e55e1c534d33eff9d14dd291195"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/base_tool.py",
+        "sha256": "bfcba923fe5ba100beb5192de3ad8c0ce584dca4b3835c988762f207d64e9a38"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/base_tool_script_v2.py",
+        "sha256": "ba1156a41aa89f83c2e688ec8546c8d71137f5b5c3b50a50f9b1b328274a430d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bloat_analysis_util.py",
+        "sha256": "252086b1c56f347655ce205ef1905c61e536b6fb0f9b0763558f5ac98aa9e5e6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/budget_auditor_util.py",
+        "sha256": "97f4e32b471a5b934c6be69eb3bfef427ee04fa059edd2b2da5512c1e39cbf24"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_agent_rename_util.py",
+        "sha256": "fcedb823e53f1163e8a51db0c311ba81cfcb39fb1a2dccedfa4c743402e3d680"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_hierarchy_heal_util.py",
+        "sha256": "3d0fe44151ee8cb8efe2392487ffbe749fa9de9e0654d70838335599d18b9b23"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/bulk_mcp_harden_util.py",
+        "sha256": "07d884d4f1aeb4b39332e24fc4f9f4ad731b8ff1a2daa68837e5d1e9429407f1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/c_c_measurement.py",
+        "sha256": "ac729c74d7f6fe17111731b8974681afd3bbcd9e090c6132fef8f5d33efbdd9c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_data_access_get_info_request_init_util.py",
+        "sha256": "4c97ea91791ec3f290996c6cd1ee4e6e3113be244b6b39fdae437287ee423633"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_data_access_init_util.py",
+        "sha256": "c24b9a154ac12ddbd165f90170cf0eeabdb70bd2b5d5714f2bc0c39c5fd58c77"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cache_init_util.py",
+        "sha256": "e49f349c9775a93081872cd650d25b81e9e334ec08ebc76f9c99cd7d8f894bbe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/call_personalization_api_util.py",
+        "sha256": "54e61b86a8fc42251c11cdbb44e7befb8cf18d9f9dd1a9363661ca825f533327"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/callable_report.py",
+        "sha256": "cfa87314250320fb17610ad2dffad6dd28caff73a0af692133429379abf6f20c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/canon-eternal.yml",
+        "sha256": "981892849d536062b9df4e9a45f77100001ae484cb6d282bc711af70aa63584c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_duplicate_filenames_util.py",
+        "sha256": "d60fd4214a0dea8dd876c2cec7f49fcfeb3fd43c76f4688385e76272d3a4c27c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_from_utils_duplicates_util.py",
+        "sha256": "70e84d4cf5eedd7569e87373eae33b77114f7b081e2fda5557cae67f6b957d82"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_protected_files_util.py",
+        "sha256": "4512ec724eb3adae4e1b5fe187372ae3872fc4c646d5a93098705c95b021abbb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_rglob_usage_util.py",
+        "sha256": "1e955086610588a3e208ca77246b4c86e9578de52406291341f66eaa4f58c18c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_sovereign_base_util.py",
+        "sha256": "e358011e26adce7ca00ab813f5449eacef35874fa652bd879d0a779b4c21da2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/check_syntax_util.py",
+        "sha256": "917a5a989c1884dd8bde0ea8af6e5ed39599fa072a6d73cc9278cec211c3ed45"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/chunk_type.py",
+        "sha256": "6702c74cc1cb2d7a6091928b2ce11aa24e5de30f490ccfe861e288ada056d2c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/class_info.py",
+        "sha256": "4c9e307bc360e83c1054f9a79a6c88572ef684dfb94a57646689e3dd73823608"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/clean_dashboard_html_util.py",
+        "sha256": "deaa03f8568d71d2f030fb477b66694658e009768767da06e0e156a6ca7500a5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/cleanup_duplicate_files.sh",
+        "sha256": "ec244ce970c780f21e91dfff867bafc1724517bcd57df451e8e9062c0931c68a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/code_entity.py",
+        "sha256": "89fa04e17819ee0a9fb4783d128f8bc944147c5b69ce4600bf898bddb69afbde"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/collision_resolver.py",
+        "sha256": "53a61c5669ba5eeea428cee9e6dd85723452d425f317c7e5043e57d79dd4b01a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/colors.py",
+        "sha256": "6006fbf89084248dd73ade008b57d988ccb80e75409c7ea2c3ff4234d3190a4e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_archive_to_current_util.py",
+        "sha256": "df064d21714149726d702a6e9061b75101618d0a2424ba9453bf6ac495a29c36"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_autonomy_guardian_files_util.py",
+        "sha256": "98cb7e36bca86a6f78d79ce64e183bd36dbdefc6f28c8cb2e30528c757549d41"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_dashboard_data_util.py",
+        "sha256": "6e5a0fd3a3119fd677b6e02eb05248515341111baa056b32cdb8c23938eee8e7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compare_ui_components_util.py",
+        "sha256": "941b434c57c6b435f3a823ca0e3a31daf6970b8ff1f503d51d11a20a66cfcccb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complete_terminal_alignment_util.py",
+        "sha256": "1afb2364944d9faf7b40cc15df58f4bf7612eca372e01e9b54efd617097f29d9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complexity.py",
+        "sha256": "9c7350fc8632ff3ccc949404b634b763d31a523bd6a7f2017ee4c54594b4bcfb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/complexity_reducer.py",
+        "sha256": "72f38cf026eebf7ec866d178a7a9f903d4a2771a01915943ccd1f0f7f6c0a91f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/compliance_gate_util.py",
+        "sha256": "c633afc3df374ffffdb227ed5c78c32ee45f4ff67b2dc6a1730ed316d2e749c0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/comprehensive_agent_audit_util.py",
+        "sha256": "cb9959449522a0d94c20fd8e54e73196c4997b09889ba9008581ed64efabedcc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/comprehensive_archive_check_util.py",
+        "sha256": "d25fea286cf49baaab42243b29da2ccfcd9460c7795cc7fd4f5773413dd657ed"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/core_synthesis_executor.py",
+        "sha256": "b47d5b455234b5b4fe500b9a2dfe37cfd42b3c4b7860d454732cbe1908b7ebcf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/count_territories_util.py",
+        "sha256": "6d77bc5210967ec258f7b5d219e413b141a9e237cc309ff71f5a84ec15c06f26"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/coverage.py",
+        "sha256": "2aee00ec6374daad1b80388a0c15aab641a0ca63492c7790d72f26a3d03f760f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_live_server_util.py",
+        "sha256": "d8976375a439ca744578894b6379d42e599fc788d0a5a86b80e3c39a06adacb5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_qa_deep_audit_util.py",
+        "sha256": "59ffa664284d3646c7b8584f4fb05fd337ed6378e46382ee300ab4ea619ad37c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_ssot_definitions_util.py",
+        "sha256": "e2135f6344ad40b4faf5082f376f32d4c249d1775edb1f0dd43d32a2f08a0359"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_style_report_util.py",
+        "sha256": "773180716c3092b82a830a5ebeeb8a23745b474b438674fd4841bbd754d70955"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/dashboard_verifier.py",
+        "sha256": "bb1957d2b9d273401ea7895b1cb1b8e23746c1b0b1a1ea4ca40000ab79bcb0e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debris_hunter.py",
+        "sha256": "0b80742567a79aaf598bfc6142734e32d6f1961fa5cbf9c42ae248d3894cdb49"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_dashboard_rendering_util.py",
+        "sha256": "286dc5830d686da2ec9b928259c3bc608e6a2d96ff12da5cb8513259b574fdd7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_drilldown_util.py",
+        "sha256": "d817cc109a92fe1a25312bfe08242b3a5e860f1441f58bfcd0f97c7276bbbf33"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_invocation_pipeline_util.py",
+        "sha256": "396b763379c61ada5a9ad299ca9947f7ba6b39fa51d215e78fddd81bdd6b5925"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/debug_target_mismatch_util.py",
+        "sha256": "f3262aa278be3a4462ca3805c0c3ec8fc43f25304fd9544850379fa579529e5c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/deep_deprecation_audit_v2_util.py",
+        "sha256": "99bff205b01e369119724dd5ebc96b6bec2d3a507042beb4bf02c3f0d7ac2f8a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/delete_duplicates_util.py",
+        "sha256": "dbbe835ac9c73be68d3339ffd26d947062e4e4418d64640426929915de658112"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/demo_cli_functionality_util.py",
+        "sha256": "09ae3ff84932721e0b8c51ca7ccaaee0cb6c03da1e328444992254318b5ff409"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/detailed_territory_report_util.py",
+        "sha256": "02bd4a34260239dc7442e9e5f5271fea3bd6f97750fefff037c2764e74738bb6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/detailed_territory_subterritory_report_util.py",
+        "sha256": "52f7a029492076d7bd741a8bcdb78da1cb1194c0e30e16119c6f6d67e449e505"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_dashboard_live_util.py",
+        "sha256": "4f3b94f6447a98543a90576b719eb88e05ddcdb850506687fbf0800bddba73d9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_syntax_util.py",
+        "sha256": "ea4d89ccc8b5ca00d1be51b7d8f3d8648773df5d7aa9849998bd8b77f55e2a9f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/diagnose_user_dashboard_view_util.py",
+        "sha256": "ff7a5318c09160bac1c743a6167fc9a157a8f0413399ca4f1b9938c9c19516c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/disposition.py",
+        "sha256": "8bbde606e993ebd2a473f268ff807552650534991fc8a82de16f71bf9e2f9bdc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/drift.py",
+        "sha256": "b87308c75297998e11b6d6854d9db42282846a8040ed6c60e68e32d847e2cc86"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/emoji_fixer.py",
+        "sha256": "362fda6020c972044abe1171668c3dd5865a5a469f697a1adf1271644802092b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/enforce_dashboard_freshness_util.py",
+        "sha256": "c5658d7bc1437cd5bd711c45659897c139703db5949d3a9b9267cec5ddea37ac"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/entrypoint.sh",
+        "sha256": "fdf637066dc6dc46f9d6d0ffddbdf2efedaafb4f22614fcda1d60919246f16e0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/error_handler.py",
+        "sha256": "97b5e9ce75251f90a8803f24eaf99e03db30a1ed0eda58efa4dccbd86676ccc5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_cleanup.sh",
+        "sha256": "ad7e7740ba743a39d8a08bca0c65be89c1db52c2b87aac3c1fe117fd02781ecb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_migration.ps1",
+        "sha256": "a80cd8ad04081e7e454fb13c48aca905aa4fa9b0c161c2fb73b75e4911d3e6ef"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_safe_deletion_util.py",
+        "sha256": "16345550908d53c14117645aa5990d2fac26a3bba9fb16165ff4868e75fc570a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_ssot.py",
+        "sha256": "63f1ba9d8f3c33357a8e7d1071ae4ac91fc00f19fa6fa452c513b2603589fcab"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execute_ssot_entrypoint.py",
+        "sha256": "160152039d3e4bbb02c15800f0276c52b4d9024b1af4888b20fd00fb72285d0a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execution.py",
+        "sha256": "0880557525186c69daa72239f5c85ad1b2e9ff306c8b086ad8a0b2a19cd7c038"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/execution_context.py",
+        "sha256": "4d849bc6fde3a61333a903b48eaebb4180dda665a21abf63977c732e038432bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
+        "sha256": "b854b3bc4852f3cfb58d80e259dcd1b3411bae62cca096b9b6dcf279447955b3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_dashboard_errors_util.py",
+        "sha256": "a4a2c1209f8a598ac2c88211ff885d6e09c18b40a2119c5e61db943df024e3fe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_layer_stats_util.py",
+        "sha256": "5d0129ed81e614466179118d98f2a590999b5249b6fbe9878b6142337d59b6e5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_net.py",
+        "sha256": "0eac4f184794e42c28e1a19b41521d70ecc785eeb556db9c9e783b802cb8b8d0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/extract_unique_content_util.py",
+        "sha256": "652fb5ee831788c6027ad045469ec23a44d50b79343d3dab3d7b0b401e19b222"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/file_analysis.py",
+        "sha256": "dfa40a66f71a76ff34da4ab7a8cf1453e791762a228f1d2b98575471b6f83d88"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_safe_util.py",
+        "sha256": "b84720b7f78b834d694ca2a558678a385139e3e4965875154294c999dbc9c5b5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_simple_util.py",
+        "sha256": "fc0e337c4f6e79d14a32484699c499afbe69d1759bc609e502a624941ad5d90e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_architecture_util.py",
+        "sha256": "055b63278b136f42eafc0c3eaddd224d8f3798ede135f4d89443a769f4f0f6f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_cleanup.sh",
+        "sha256": "c12bbd1acc274b76a18c04f2658152aa4bee941137ca73a74827fcb1e5c3d287"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/finalize_sovereign_structure_util.py",
+        "sha256": "2cc7693410a2b22717e1915265fb480c460c98f03ac899a23a592b3559c4550e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_agents_in_low_heal_territories_util.py",
+        "sha256": "7a662689843a36ab8b8d28e05dd75aad6e68197588f9f79038403687a1566e6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_and_fix_all_missing_heal_util.py",
+        "sha256": "d1b5e93fff387141d9dddffed9d96c9d02d9d48ac69199c5d653065e5ff179da"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_and_fix_missing_heal_util.py",
+        "sha256": "1947287280ba436369e1d1a35c96f04c9cf155a11f0a809aefe63dc85a7c5dbd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_base_class_agents_util.py",
+        "sha256": "7ee90b50e77862b80b7b64cea12fa18649c2693986d69f7199c7768d748e8e46"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_corrupted_files_util.py",
+        "sha256": "540517a6e2cc2a035884a56824e12230407b1a0aa37da21c1a8110b603e1b454"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_infrastructure_target_issue_util.py",
+        "sha256": "4a65c72c3b467a143603e3365688467168b1d4620ee1aa67fd8ea7331b448fcd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_low_heal_territories_util.py",
+        "sha256": "c65bac3cd997cce56f64a0682760a5a1ae528e4a4b356b661a181a91709555dd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_low_typed_documented_util.py",
+        "sha256": "123333de67fd0fc115015c6c31805a1d3226035d3ead5183a063dd52c2413b08"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_agents_util.py",
+        "sha256": "02b56a26391834605b7c341d6fbcd88dbb32051b51913049ee964cfc97debe7d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_invocation_util.py",
+        "sha256": "0ceb975e9d9acc86ca9c87b0075b69e41cc0fe8fedbd3bd59edf9ce1afab0ac0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_missing_invocations_util.py",
+        "sha256": "c52f459145feb15708f3e186a104c7759e801e32d0d5ce06ea05b892eedc2c19"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_non_hardened_l0_util.py",
+        "sha256": "d90c8cb54173840e0282c670783b41ab1e20d0f1a7ff108fd492ab0b39745208"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_open_heal_invocations_util.py",
+        "sha256": "2ed422bc8d8ca4b93fb395faa6975a5dbd1eb0647e8799859a95895f1857aba3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        "sha256": "f3b589213ded858506277680166788245207136729ceecd07508749f7f9b7a53"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/find_remaining_missing_heal_util.py",
+        "sha256": "eb3d013ebed698e81317cc2a25c45373d17d647db0fa1069ead855e8beda3eae"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fission_executor_util.py",
+        "sha256": "4dee16be6db0474c952bab4d1c5cc4272a719a7ba796e1592c513c2834d3223e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_imports_comprehensive_util.py",
+        "sha256": "3b24e221df9a0d3601397190e95c737bd6daad71ccd5219e878c8955e100049c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_indentation.ps1",
+        "sha256": "20e6c2b371393278b6ff839473b5cb2f8cb92175daaae2d3781032551cc1a6c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_all_invocations_util.py",
+        "sha256": "1d98e78c79ab47cb2a6c3292759b8d9ec8010f5b06db5d9b9ff67a382ca0c942"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_apps_lic_engines_util.py",
+        "sha256": "56f0117bbb472ce39dfc7bc37dcc4381b3ca23a13fc16df3b46be9f2b6e8a92a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_heal_schema_violations_util.py",
+        "sha256": "5eed681805db4d78d5a84ce6e49664d95aaa1108c9d3b4b42f5fcc2b2ea867f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_healer_mixin_imports_util.py",
+        "sha256": "c3672a6efcdce03d9b80fe1e1e7d9271117b3a6b736bdaa688a7d599297a3fe4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_imports_emergency_util.py",
+        "sha256": "1d22ad2dd4d2575ce2388b01eecd1f6360a5ff6dc1417180fb9fe7cf9d303132"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_indentation.ps1",
+        "sha256": "c8bdc8140d9095589d016e3aa0c62206f2fa7da761662aa6aefaec703c34014b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_legacy_agents_for_certification_util.py",
+        "sha256": "1bcaf574300043639a51318e992c4329624a7d02f216d3c172b40ff4a07edc5d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_missing_imports_util.py",
+        "sha256": "24fe1bdfb795aaf89ab6dbb397525bcd87002649b67a5d1e8f3467e8b2cb93a9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_missing_invocation_util.py",
+        "sha256": "002062ccf2171b8b5f3b64dc8546dec845786fb5268577d099752c9465a2d07c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_remaining_imports_util.py",
+        "sha256": "d1a16785b690345c77133dfa282ff052ec509f1fd735f3ec45f033e1f1b3fb2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/fix_root_scripts_util.py",
+        "sha256": "258336c4e804f204c1d40f980d4444bf6ac5d052f5349bcb5d5b92cb62d22d6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/flatten_scripts_directory_util.py",
+        "sha256": "c63ef242fb9d6d563f7daa6b41d82abe19421d8ad6542e7bd9f1a38d5b63905e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py",
+        "sha256": "7831ad47a8e238085df41f4dfec57450c2af943f141762ab635a33ee23250319"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/forward_rolling_facade.py",
+        "sha256": "a1cc1e512439e2914e8990cbd784f5382e1a5516a258688f6ac4ae005956f5b0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/full_agent_capability_audit_util.py",
+        "sha256": "ca55fbff9f1ee9a2e3ab4e4aa2da6cb42847616be36b4983b3476c0d6d3682d3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        "sha256": "f68d7b0479da3c516e0b3597b35cb4a5dbf2f6b050ffa12ddfafa0b95e5ffdb4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/function_tool.py",
+        "sha256": "8ab93c7d6ea889a3d253f4f9632163c834208f9c1e1bde67fd3d31c425423063"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/gatekeeper_lock_util.py",
+        "sha256": "68142f50a1e93595f8962ab372b145665fe4da136933d69f4a10d2e03b9a581c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_duplicates_table_util.py",
+        "sha256": "1ba7c8e8bbc24309d74bbab5fc7776bbb2515a2f45e5556a378da533df4ef086"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_report_util.py",
+        "sha256": "f8059b7278359d81bbe42b6c4840e078e0010374108c0777b5010548a5aafe48"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_table_simple_util.py",
+        "sha256": "f04ac4fec9ae4d12b028a80b3f68ee9d318a3c83f6ed9e0c634750030dd05863"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_agent_tests_util.py",
+        "sha256": "7f0ff562a822ac1d432b2e85b137227a4565872986bb36e3a0fd6e14ac5df2d5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_all_agent_tests_util.py",
+        "sha256": "1e6533d6714d292ac1b59fd21c3059e636431024c8afab91efefa7158e447dc0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_blueprint_metrics_util.py",
+        "sha256": "91186013965d2b0f3b5953aa7f6b9915601976f686856af5e64191a0390857c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py",
+        "sha256": "095d19c22efd7906c8e4d614e5d7ad15599da832b557a14fdc0efbbac11b4541"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_hooks_util.py",
+        "sha256": "4c21a57c290cca136984e2895f1d8fe29d6513cc945bbabf4a3bf4806752c15f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_layer_report_util.py",
+        "sha256": "44380e44b7f7cadc0e43cea721c79be049cb13455372bc1bd63933c0fe4d8287"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_missing_tests_util.py",
+        "sha256": "4ce967e8fa4b48219ef95ddec16a84431ba4a5dee415298c1659bea3985733ec"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_structural_changes_report_util.py",
+        "sha256": "730661d2a70b5ad722e5c6a69ff29ae5e75637891907186bf26b6924027cd66c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_subject_line.py",
+        "sha256": "c45f8874d734d216740e9c77a5dee5a2d5fc54d29b1cc8381f5187110ba5d1b3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_summary_section.py",
+        "sha256": "335d1eb50ba19cb4bedd3abc96af46113b6bd790103cb09a5f9cb4d1e28775d0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/generate_syntax_report_util.py",
+        "sha256": "0b5fb08e5c51a545c8b092c4ee8f2baac16adab03d90d8f8907edc7d3d34e7c5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/golden-state-validation.yml",
+        "sha256": "6e31fd3221131ec7c157636dda4e7dafdc71cbcb47d2375af1b4cfddcc18cda8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/handler.py",
+        "sha256": "1cf3532e6057bf22eaadb6acf9ab2bc201033ab6288eddae59f17c34a9947ecc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/hardened_anti_pattern_visitor.py",
+        "sha256": "946a3819838cc82aca92e40b41ac99ec91a1b99029134e18d6ea73fd27a67229"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/hardened_orchestrator_wrapper_util.py",
+        "sha256": "f6dee0d677d269f92fc67919fe8c208f051098f1e7b5c20d864ceda86df00803"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/heal_schema_visitor.py",
+        "sha256": "e5a8f3666cb23b406f70445c1917ddcbb3b7a2a3655512336cc0b1aea25b5b79"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/identify_agents_without_tests_util.py",
+        "sha256": "821c34cbb939395cea64f7ee525cfe4d8a397222215142d2ce09c6587f297200"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/identify_low_quality_agents_util.py",
+        "sha256": "aeda0543c40c7948e958f82dec2512fe3885df60670621d2784c238975657a6e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/inspect_dashboard_browser_util.py",
+        "sha256": "71a22621fc8ab2a11efa784e1025d03f335c8c72dc76ae99d869d811bfdfdef3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_agentic_sdks.sh",
+        "sha256": "46cff2cff900d58fc94ce544493ecf3f0a9e921c5c857b669c70d0b65c2f53b7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_all_mcps.ps1",
+        "sha256": "95d7541ece7ccdecf6b87367245210aefbfa14e49b237a5e3e59ac82435355e5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/install_mcp_servers.sh",
+        "sha256": "a9ec80f9ec7e44e6c333a8e007ecab9f9726b0e27e4b99bf6bf2340602847355"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/investigate_overlaps_util.py",
+        "sha256": "fccdee3785f38e33cca749c15a72a124fc351ee6cb7121b21224bada66fed523"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/investigate_sovereign_base_util.py",
+        "sha256": "542d348d190bdea0a91ff25d689ccb24c7c5f5b835072d8d335be5c66023739b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/layer_summary_util.py",
+        "sha256": "31c3bff84ca71e816890f133942e20740917abb2eaa0c84d130b7914ed08de47"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/list_layer_agents_util.py",
+        "sha256": "c182668a9de280b0b79c05d248d7ff5ffef9ec044375449c1a23ab77af4e331b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_data_access_init_util.py",
+        "sha256": "eb8d25a6086f71f9d3c257360ee2b72a2fdcc02e77a8631f9c0980f221eb18a7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_init_util.py",
+        "sha256": "44f404097b2ee8af8b33beb8967ccc2822e1ed1d098b25f12d736bed8174926f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_synthesis_init_util.py",
+        "sha256": "4e33f642a76992a96f066a076785c731835a8135a9ea30943724ceeb360cfaa7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_synthesis_pick_best_refinement_init_util.py",
+        "sha256": "f0bf9f6e73b344fe724cf0de21393077eb16205b603b4e7013d0e3db3d826e8b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/logic_validation_init_util.py",
+        "sha256": "58ed601336935883c167f808250557ba30966b6254b22852c7375cd2876a1712"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/maintenance_generate_hooks_util.py",
+        "sha256": "8c042bc76f51b23fbb360b1dbb34a1112358377e8214693b28aadf9856fcec9c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/merge_init_util.py",
+        "sha256": "19fdc6668b409178dedfb5df8cb7709be6a466dc94eca0a0535bb987aa2649f2"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/migrate_imports_util.py",
+        "sha256": "6fb7b82366c68703cac8848ce4cd15d0b8d567448f00e34036fb19c73d19e0f1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/migrate_unified_to_high_signal_util.py",
+        "sha256": "e1dce816e9492c8aea60ed9bd5b4964fcf0bc2fae0a47599b309d35833412401"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/mock_subatomic_hop.py",
+        "sha256": "d3a6c9f85c708b06a82fb434d5df65502554eb5833cc4c5aa7fae01eae6b250b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
+        "sha256": "78b17eebe34843064345602a6e8d3d7814083916e117c0516a2fa6d0b5aac278"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pinecone_assistant_util.py",
+        "sha256": "ee5d89cfa0b97349be4da17a4d18b0c72830ac6d145e937dae9d8cecb6d3fae5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pinecone_populator.py",
+        "sha256": "39ba44c81782e8e9e2508868754e4cbe03df82d90791ddc44f3b1e848309424e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_data_access_get_info_request_init_util.py",
+        "sha256": "1942c0033016d6fec9de6ce9071ec04c947573df9b1c9436315b23dc53ba4580"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_data_access_init_util.py",
+        "sha256": "c132250c66c1fb149325b38bb760ec28e29cda2bf9e3cddad516f695c9fbe2c8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pipeline_init_util.py",
+        "sha256": "432290996a463cb6eac109fd596b3aea1f9c557edcd1af766f1d3bf256ddcfd0"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/playwright_verify_total_row_util.py",
+        "sha256": "4bc8ecd21d60b3c71a792a4181c0eeb320d1a2cae7aa7eedf26372a55fc7a4b4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/populate_ssot_folders_util.py",
+        "sha256": "7c2c1adf933ecc7658ce69111725daebb968ba9848a99f73aa66f249359a47fd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/prove_violation_detection_util.py",
+        "sha256": "d6294d147dae46413304c48115bec4a6edd33ad34af503d47897791eea93321a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/pytest.ini",
+        "sha256": "076597e21c38e5e43d89240baff226bd50e1c337d88e13110fd4c34f2d2601b7"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/query_runtime_util.py",
+        "sha256": "0759096343488cf5498b7e09d2119d38cc85b46fbed187457f4f012e1d3f7a8c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/quick_cleanup.sh",
+        "sha256": "bb941c460b98be4ea1a845c6a04943b879af7b6bbddd353b230fc629fcee7d15"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/quick_scan_util.py",
+        "sha256": "896a28566d985e221182434ef5c440bf4e1ba5cc0eccf07bb392cf658d32b363"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_agent_count_analysis_util.py",
+        "sha256": "0dabb83a6871192c18dda9ad937873eaace9e69964339b72904dbd79ae245392"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_dashboard_row_collapse_util.py",
+        "sha256": "26029a6c028b9a8004d4e8f451ffe9e57168c74cd0fbc441c16a21b8aa4f9e5b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rca_table_rendering_util.py",
+        "sha256": "df719eb5a1603adf1b71037d497ee0e1df0a83fb1f42ce54d663bff9b0c43029"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/reasoning.py",
+        "sha256": "4dbdf83a68e42a8beba8740afffcfcb4c0a5f2649dc2065ae3a43516a4339056"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/recalculate_code_quality_scores_util.py",
+        "sha256": "3b634c4a32995974786c7cd4086a77780b089517feb077160c270202d4229b2a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/recalculate_health_scores_util.py",
+        "sha256": "07e14a5b10fb70863bf4144829d2581259b1d7d4b9e43bffd64cb36ba0f6ff5a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/reduce_complexity_top5_util.py",
+        "sha256": "118408b35a4f56ec22da3f55f43785f1edc6c83684c8063e6258b1d5ae119fe9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_l0_gravity_imports_util.py",
+        "sha256": "8ebc5ad526999f9fc35317a3a13431924a3f06b9ea2ca2737144e23878ab1455"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_l1_mcp_imports_util.py",
+        "sha256": "df1ec54779fb9b95f8dab5372f47200d9853bed71daa66ab20dd5e667b7994bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_legacy_base_imports_util.py",
+        "sha256": "1253185bbcf83dc55d57d872e11b8d3dd05c532b244ff0d9d2269121ada768ba"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/refactor_mcp_imports_util.py",
+        "sha256": "43f9f9bcd8e6eca14c011e90893e73a857d32b56c7f54ae3bc405805ff3ea077"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_full_util.py",
+        "sha256": "30a3000b7539134c302037c19c7a2b52105f9da6d6f6754a1ba5c01866708d65"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_util.py",
+        "sha256": "f01676d6b9a0a980988918cd4123fa14809bb34d3df4c1547ba4c7f05a834237"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_duplicate_lines_util.py",
+        "sha256": "d7ea6b363148c203580db0f8a6ec8c96d9beba6ea7ccffbea9bfdab1146d9e7b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_duplicate_suffixes_util.py",
+        "sha256": "5abfafba58e06dc3bf1b190c43d8326bb2242a75107fa1de43ddce1919df8853"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/remove_empty_dirs.ps1",
+        "sha256": "baefee3c9dc75ebeb5f0cc9492f808c0dfd8ebaa4c679e8091d7befb88c6ae0e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rename_to_agent_suffix_util.py",
+        "sha256": "11f00636f3f79c3d9900dcc527e8af6907748f9b4c601d7302c212459f25ae83"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rename_unified_agents_util.py",
+        "sha256": "a1723dc66db2698a71b66959dfceed18c01d871a42e319b775cd9547a544bd5e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/repair_legacy_agents_util.py",
+        "sha256": "44ead2b3e606211abdb61c79d67ccc02a8a766853af122cd8b26480612e6c215"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/rescue_reviewer.py",
+        "sha256": "47a1bda17fc91efd9c36bf992e41f046545ba2416bb8dad61339bd3fcdf5ef29"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/restore_unique_archives_util.py",
+        "sha256": "d1f36905b74f9abed0dd55f91e21c23c8eb014cdeb68c43a3988e89bd084c876"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/revert_cognitive_moves_util.py",
+        "sha256": "f98cada4836b577939bf15a727806942792188baccb63dd663610694bb49cb53"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/root_hygiene_util.py",
+        "sha256": "106c49baf147cc0a2ae068a018dcf369473c520a440062381912275042c4e0ec"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_all_guardians.py",
+        "sha256": "264afe4ec2cc6010facae5e77d01eb8ed0cdf8163bb34538b7c9592ecac1b625"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_contract_integrity.py",
+        "sha256": "c7328879603664ece2d8b7ff93a211628011bebe8779ccfe5ed5c1f073470d07"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_hygiene.py",
+        "sha256": "e9e8ac0c08df1e67b9e9895d08504c7283bc0b2d152a2e3f158f66f45a788fa9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_manifest.py",
+        "sha256": "6cd09997ef3f59a1539d81b21693c595a713706b51e9a4b17cd2a37f28e1ed0c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hierarchy_agent_dry_run_util.py",
+        "sha256": "da0595ac22367fd88a43b1d7ccd528f9413764d4d11e596e92fcc3da9a212f56"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hierarchy_healer_dry_run_util.py",
+        "sha256": "cf1af44772d1922300bf1c4edbab9a2945b7ef0cef644f9198769a29fc36f6dc"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hygiene_guardian_util.py",
+        "sha256": "0e419f566cc5100dcfc2f6a0bee222e55ef768da3af2bee11e3a4a405b74e3f5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_hygiene_naming_audit_util.py",
+        "sha256": "f227e7bed93c9b8c4a252a290223952933630feb0e4fcfaa5e006f122ead72e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_naming_law_check_util.py",
+        "sha256": "0eb7f698849e12e5b87efb2052ad8eac01d27fe099e311a3657056d454b354fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_naming_scan_util.py",
+        "sha256": "04bfbcf1eee8a4b12edbca556df3ff431b0999cb165c10e105d133b39eab599d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_sovereign_compliance_audit_util.py",
+        "sha256": "75656f8fdc6876bd8be4dbd9ba5f207fd2cbe4b4dfcf3377d586d22a369bb937"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_ssot_tests.ps1",
+        "sha256": "03889154eacde58427a50b287e0228c0074b3e44d890f015de92c37f9008ed3a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_ssot_tests.sh",
+        "sha256": "28a46de424577c6150ca73e328ac71bf26e87f16734d01a797c592fa3c054dc6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/runtime_shared_data_layer_example_util.py",
+        "sha256": "a2bb912f6acabffcd408cff103f8c4ee660ae0c0ec589e346595f2ef00ba8358"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scan_duplicates_util.py",
+        "sha256": "545d1dbf18827252b61a5a3f9abad22b474a4dbc50cfddeefdffd3712ce641bf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scan_testing_compliance_util.py",
+        "sha256": "7b8d9550af9d2f628ed790ba71732bdca41885ee559573e114432397143b11fb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/scour_and_seal_legacy_util.py",
+        "sha256": "ea963d664ec477a3bbc38eb4e1508b6a44a2cdf6ef758e02d6860f8cc5151de3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_all_agents_tested_util.py",
+        "sha256": "7a393889ae30a1e33457390510e9363151fab884357351e69d53f1e1cf7e6f66"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_all_invocations_yes_util.py",
+        "sha256": "4818cd70afeb166fba2d50e0a1a9980a15255c2bd2d898ecf87ad09a73cdcf57"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_schema_strictness_100_util.py",
+        "sha256": "917c27efaf9af74f3dda6fb6338c7048f5e6ff227afed0fc7952eaaeb7f3d734"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/set_typed_documented_100_util.py",
+        "sha256": "c2a63d743541e40ac589f23c0bdbe975b16fa775ded6b0a1a39b859d13bcd888"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/show_manual_review_files_util.py",
+        "sha256": "c96def0522fc1bad0e3bb717bd86a8acc14c1da3589d58a7cff4df54e6f8cd56"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/silo_mover.py",
+        "sha256": "1dafbf6cf86dfd83c3d0b0e07f828ed71cf8c4cb19414973c2df3a807546fc11"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/simple_dashboard_test.html",
+        "sha256": "1ce3bac05fcdf91473d0eb7fd334ac4232bf0dd297c64d52d21d6be516544a26"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/simulate_sovereign_workflow_util.py",
+        "sha256": "a8dc8254b2f6719dce1b42b009563aa0eeac5414b156a08b5d496985734bd183"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/smart_discovery_util.py",
+        "sha256": "2e9a8f472f29a7e5b8c1962888d9f0d4d01e18997c570e3698199e7e57adc4ab"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/smoke test content",
+        "sha256": "8d555a55ed9c9eff1c75f08fa5d4cfbf9ed74f3ba3e040d884a180aa024fdc5f"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_lockdown_check_util.py",
+        "sha256": "97d22ad9ae4478bd5f3a1bce921d6a1c34d56f3a5f5013f3100352a1dc0ae97d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_mission_control_util.py",
+        "sha256": "93aac38214d6a2d9137d16ad9062fd12e24fcbc70fd923680a8d204df2ac689d"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_model_visitor.py",
+        "sha256": "9bae4734f1e2bd21b3e9bd4475e82403a66551bb926a1f74be1b276e8cad9b70"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_pdf_parser.py",
+        "sha256": "5f8965d8e2285f4c4920a62bdd23578bd661f7c1b26e9216aec94914d10a1dc1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_precommit_no_hardcoded_util.py",
+        "sha256": "dd5b51c7b9c03725f74ca354c7ab83eca94f6f56a30f8a34bcde3bc121ffbbbb"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereign_precommit_no_raw_prompts_util.py",
+        "sha256": "494af65c98c7a452b6f1de1d29db4979566c2e9a2379ba6e2b62cd5e81f5f03a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sovereignty_auditor.py",
+        "sha256": "2da41db799f5b8325ab57121f9c217fa0462562364ede9abff15d925d6ef0817"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_archive_refactor_util.py",
+        "sha256": "d6f9c2a9ff31ebc642affb77259b0d016b0e4376337d87ca26760bd1112e97e4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_audit_util.py",
+        "sha256": "1bbbfa591a8bcfcf9c3cc32efbad8806c596828dfd6855f764ff6fd6f6faf773"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_cli.py",
+        "sha256": "3563709f4e124c3efe740e7ba15694525856d6d6e8d79da61d31243aeb2a3f4e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/ssot_consolidation_analyzer.py",
+        "sha256": "c6b070da7c1b0280bd156833f92c7e3d24859459279e7fb6e18dbda6f28e68d6"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/standardize_base_agent_names_util.py",
+        "sha256": "3e0b77e70c726fd2bda72eb623db1bd784fd6739a8f6a6bef71cf13da32fccd9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start.sh",
+        "sha256": "c9471c7fe57813005551aad479ee5fd81b90cbd5fc07c74a3d4a5f906475106a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start_dashboard_server_util.py",
+        "sha256": "7dc3ce31b4afe9d369417a0b85e24a4237437fa3bff56a19184b6f29a8f5b824"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/start_runtime_api_util.py",
+        "sha256": "ebd315e82e4c8ea4058f6c3f054efb7979ed26f183b99e739f8dfc3782769e96"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/suggest_variant_renames_util.py",
+        "sha256": "555fa6c63a6e8e649171c287cc2b6dfd69b3d25b143d0a18a759e3a41f5399f3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/swarm_scheduler.py",
+        "sha256": "ac2c52d1fcc9c9729f46b9235941826230b1877de5e32efdcc0ff7c68e3d45c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sync_dashboard_agent_count_util.py",
+        "sha256": "0be0bc97dae056722a79274cf5c103c88a34de6e632ffead4efbeba8e940e511"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/sync_mcp_util.py",
+        "sha256": "5381ede6cb4194b3ec6e445b50ad7b3d275e28b7a03a61766776395db7654819"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/syntax_healer.py",
+        "sha256": "46b8d05147621e7b3cd0cac1ad083a1273d395d05c79ee3763ed1fbef58baeb3"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/syntax_scar_repairer.py",
+        "sha256": "e5becd94845b362d74af0cc6f7aa7260fad78d62d2b256faf8c8183e95b02dbf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/terminal_alignment_final_util.py",
+        "sha256": "d8ad87a16508a6169ab5d0c178795e66f9ccae3327d2f0dce82df4b7bfb25490"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/territory_ssot_definitions_util.py",
+        "sha256": "9581f732ff664db4874edd95d2bd9cefb7e1623ba9a743dc0c0cedbec80e20ac"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/test_dashboard_browser.html",
+        "sha256": "f69824fe5a08f39db9fb6481b96fc2c2a8b94409786d4faa094708867b774f4c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/test_dashboard_browser_console.html",
+        "sha256": "384bd2a20342eb852f2ddfab2de2d32293db59100e53761f3c77debf67ee3b78"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/toolbox_util.py",
+        "sha256": "098859f02ece3a79586f80d89ed6eeabd121c13b50397aa9eda434ef58730e70"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_add_docstrings_util.py",
+        "sha256": "9fa4340c9b2a0d32f109240786c55e115d80a2150ce9dea5994fe71bd9ea8dc4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_auto_init_py_util.py",
+        "sha256": "3d854e4edd9d8ab6b67aa2de78587a0a891a98b61531887da24b4a350665350b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_auto_ruff_path_util.py",
+        "sha256": "60ad233c1506849adc09c079fee3e250160de4f74eeb7c830797622455736bbd"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/tooling_enforce_verb_noun_util.py",
+        "sha256": "5831c48c300a3d97bca32b35ea85995353028d9f8e285907943808c7000ea82a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/trace_dashboard_generation_util.py",
+        "sha256": "c511b89ecb69bc6041d93ef55a761d037738ef83ec580e0030dd92e004edc7df"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/trace_drilldown_util.py",
+        "sha256": "8d89ab2e34a6ae319c290ae50b7ab6f943d21dd6a5290e200eea3205389d0d3a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/undo_core_moves_util.py",
+        "sha256": "ce89ca48768e5e2ae6bec32a05e99114a8e9f033bf61b9ec191068e35d295de1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/update_mcp_metadata_util.py",
+        "sha256": "a0241713f48a44a8e3686b91d4ea20d3e6b8ff4e238b0ae63c065502f07c09e9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_base_agents_util.py",
+        "sha256": "c4acd118a276023d956ab181ecb232d1e03da12ccefdfce2e7363d46272067a1"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_dashboard_changes_util.py",
+        "sha256": "3bb95d9414154ee00e0a8a30cca4e28bab0fdbd34896cbf69e915bd5eee06b92"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_dashboard_totals_util.py",
+        "sha256": "f4e416f4d274f9156154ec853ab953c2c10d297c7499766228ff1208a9db3061"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_drilldown_util.py",
+        "sha256": "c0daa2737a16824b8f402bb90d7db99b23cbb43a36ac64418961d474479ab01a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_sovereign_structure_util.py",
+        "sha256": "de08dc6d89b4079a7350843474fd694a23bd54cf3c1fe8ab3fc7a1a8fe546752"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/validate_table2_data_util.py",
+        "sha256": "ed0011c86a3623e8f32f23f20845f818363d15cfeb0badaf570107ca0280d205"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify-docker-build.sh",
+        "sha256": "944e5f3b5abb09bf2df8b8a412f3828a223a517380c9f193954cc127b7cd912c"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_agent_status_util.py",
+        "sha256": "33b605f3574942d0b9d988bcfd7531f148520626c6af7e5a6f4cf0e28a3bee1b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_all_checkpoint_files_util.py",
+        "sha256": "6aa9c27b7ba2ff436d0ad556a151c444b23e1219aa24c045b4a0c077ef963396"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_base_agent_names_util.py",
+        "sha256": "441b14ff38637f40b820234a7d74a8df78cd80368ddbb25e227a2df6a1f27047"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_heal_invocation_util.py",
+        "sha256": "68fa1bd82cf2aa5664d7291aa16751949ade2b51854c19b33442258c40a3102e"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_healing_metrics_util.py",
+        "sha256": "af9d04c0a6823c85cfc38d40e8a79b66565e09a37b1c9509bc0a82539a2cc321"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_health_calculation_util.py",
+        "sha256": "27638bd1d3d52ad8115130f43756494c7cdc81f4a026400ce88721e0ae2505c4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_intentional_variants_util.py",
+        "sha256": "7f4920b1df69aed7844e0ba979f71cfcf9316d0eab93b6ac88bac66fee955bd5"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_l2_fix_util.py",
+        "sha256": "b69eaabfd1811a35adf64eaf4aab0c6118d62359ed924d70e4f3d2a4169bff1a"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_manifest_cleanliness_util.py",
+        "sha256": "9f513234f441251cd51facd84f7e85aeef23456755a53e0f015db76e474c5985"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_manifest_util.py",
+        "sha256": "503c2fd376e71a7478452c7b2eef1c4b2329138e41968e245bcc40a87028131b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_mro_util.py",
+        "sha256": "d6603666de239edb82b0d0fe608ccb698ff1f7b70b40667db7086c31756945f4"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_refactor_integrity_util.py",
+        "sha256": "ae81930cb3d2a5e7c2adfc068ec356ac09921ce6cb11b21be1e5cbaf908ca3ca"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_row_order_util.py",
+        "sha256": "284ced43469c85fe364482a57700a804e46714774cdb901568ee18981a90ffcf"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/verify_territory_counts_util.py",
+        "sha256": "89730f44a3146831644408414cd54731b4a4ed7607f8119ce1f5b1944332babe"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/windsurf.code-workspace",
+        "sha256": "feaacf13c54a53fdde2abf44a18c6d25f70e774eca22da3a5a767ad5ba2030b8"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py",
+        "sha256": "cbac5f20333f34d337ddda84095b674ca2829a6f3848bdb3c3cd3c19bf1ae69b"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/workflow_review_pending_merge_util.py",
+        "sha256": "677bef10e86b0f547159e5fd24cdfbb26d052feba4724c20997cced91f40f1f9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/workflow_track_changes_util.py",
+        "sha256": "6e8ec673c96c5aa4059778eb9651350151af6fcca0b10b1fd7a477d5938c7713"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/zombie_vaccinator.py",
+        "sha256": "58e3b184dc2eac99468440ca4103aca109ccd99027165a3da7b607ceb2f3f894"
+      }
+    ]
+  }
+}
