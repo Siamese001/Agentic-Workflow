@@ -27,9 +27,9 @@ except (ImportError, AttributeError):
 
 from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
 
-# Import instructional injection patterns for all agents
+# Import instructional injection patterns from canonical mixin location
 try:
-    from agentic_core.base_agents.InjectionLayer import (
+    from agentic_core.mixins.instructional_injection_mixin import (
         InstructionalInjectionMixin,
     )
 except ImportError:
