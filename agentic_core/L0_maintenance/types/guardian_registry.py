@@ -78,6 +78,14 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
                 enabled_by_default=True,
             ),
             GuardianSpec(
+                guardian_id="drift_detection",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_drift_detection",
+                entrypoint_fn="run_drift_detection_guardian",
+                check_ids=("root_drift",),
+                tier="fast",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
                 guardian_id="contract_integrity",
                 entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity",
                 entrypoint_fn="run_contract_integrity_guardian",
