@@ -26,6 +26,7 @@ __pycache__/
 *.pyc
 .mypy_cache/
 .pytest_cache/
+.pytest_tmp/
 .ruff_cache/
 
 # Virtual environments
