@@ -54,7 +54,7 @@ MODIFICATIONS = [
         "from typing import Any\n\nLogger",
     ),
     (
-        "agentic_core/L3_orchestration/reasoning/coverage_engine.py",
+        "agentic_core/L3_orchestration/reasoning/CoverageAgent.py",
         r"from typing import Any\n\nimport numpy as np\nfrom agentic_core",
         "from typing import Any\n\nfrom agentic_core",
     ),

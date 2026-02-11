@@ -30,7 +30,7 @@ class TestDomainPlannerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
+            from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (
                 DomainPlannerAgent,
             )
 
@@ -77,7 +77,7 @@ class TestDomainPlannerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
+                from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (
                     DomainPlannerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

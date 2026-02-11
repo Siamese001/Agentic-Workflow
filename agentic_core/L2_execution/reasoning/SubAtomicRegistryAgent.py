@@ -59,10 +59,10 @@ def _get_UnifiedAgent_mapping() -> dict[str, type]:
     from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
         ASTValidatorAgent,
     )
-    from agentic_core.L3_orchestration.reasoning.state_management_engine import (
+    from agentic_core.L3_orchestration.reasoning.StateManagementAgent import (
         StateManagementAgent,
     )
-    from agentic_core.L4_state.reasoning.checkpoint_manager import (
+    from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
         CheckpointManagerAgent,
     )
     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent

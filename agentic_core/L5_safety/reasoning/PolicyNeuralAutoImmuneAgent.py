@@ -24,7 +24,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
     RedisSovereignAgent,
 )
-from agentic_core.L5_safety.reasoning.neural_autoimmune_agent import NeuralAutoImmuneAgent
+from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 
