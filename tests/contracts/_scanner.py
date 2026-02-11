@@ -207,6 +207,51 @@ def is_stub_body(body: list[ast.stmt]) -> bool:
     return False
 
 
+def is_super_only_delegation(body: list[ast.stmt]) -> bool:
+    """Check if body is only ``return super().method(...)`` with no real logic.
+
+    This catches the pattern where an agent defines execute() but merely
+    delegates to the base class, adding zero domain logic.  Such a body
+    passes ``is_stub_body`` (which looks for pass/…/raise/docstring-only)
+    but is semantically equivalent to a stub because
+    SovereignBaseAgent.execute raises NotImplementedError.
+    """
+    # Strip docstrings
+    real_stmts: list[ast.stmt] = [
+        s
+        for s in body
+        if not (
+            isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant) and isinstance(s.value.value, str)
+        )
+    ]
+    if len(real_stmts) != 1:
+        return False
+    stmt = real_stmts[0]
+    # Must be a bare ``return <call>``
+    if not isinstance(stmt, ast.Return) or stmt.value is None:
+        return False
+    call = stmt.value
+    if not isinstance(call, ast.Call):
+        return False
+    func = call.func
+    if not isinstance(func, ast.Attribute):
+        return False
+    # The value of the attribute must be ``super()``
+    if not isinstance(func.value, ast.Call):
+        return False
+    super_call = func.value
+    if isinstance(super_call.func, ast.Name) and super_call.func.id == "super":
+        return True
+    return False
+
+
+# ── Artifact-specific dict-key sets ───────────────────────────────────────────
+# Strict keys that unambiguously signal artifact production.
+# "results" and "output" are intentionally excluded — they are generic
+# return-dict keys that do NOT prove artifact emission.
+ARTIFACT_DICT_KEYS_STRICT = frozenset({"artifacts", "artifact"})
+
+
 def get_all_imports(tree: ast.Module) -> list[tuple[str, int]]:
     """Return (module_name, lineno) for all imports in the module."""
     results: list[tuple[str, int]] = []

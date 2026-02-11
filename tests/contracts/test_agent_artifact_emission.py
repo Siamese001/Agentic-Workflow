@@ -22,6 +22,7 @@ import pytest
 from tests.contracts._scanner import (
     ARTIFACT_CALL_NAMES,
     ARTIFACT_CLASS_NAMES,
+    ARTIFACT_DICT_KEYS_STRICT,
     ast_contains_call,
     ast_contains_name,
     check_exemption,
@@ -76,7 +77,7 @@ def _check_artifact_emission(filepath: Path, tree: ast.Module) -> list[str]:
                     if (
                         isinstance(key, ast.Constant)
                         and isinstance(key.value, str)
-                        and key.value in ("artifacts", "artifact", "results", "output")
+                        and key.value in ARTIFACT_DICT_KEYS_STRICT
                     ):
                         has_artifact = True
                         break
