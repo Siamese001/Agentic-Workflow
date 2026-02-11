@@ -27,7 +27,7 @@ def test_l6_observability_imports_no_mro_error():
         "tests.support.l6_observability.MetricsAgent",
         "tests.support.l6_observability.ReportingAgent",
         "tests.support.l6_observability.AutonomicMonitorAgent",
-        "agentic_core.L6_observability.reasoning.SovereignHealthMonitor",
+        "agentic_core.L6_observability.engines.SovereignHealthMonitor",
         "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
     ]
 

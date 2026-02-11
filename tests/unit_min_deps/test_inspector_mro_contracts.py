@@ -20,11 +20,11 @@ INSPECTOR_SPECS = [
         "DagRuntimeInspectorAgent",
     ),
     (
-        "agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent",
+        "archives.deprecated.TokenBudgetInspectorAgent",
         "TokenBudgetInspectorAgent",
     ),
     (
-        "agentic_core.L5_safety.reasoning.SignatureVerifierAgent",
+        "archives.deprecated.SignatureVerifierAgent",
         "SignatureVerifierAgent",
     ),
 ]
