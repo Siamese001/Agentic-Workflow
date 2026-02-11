@@ -87,6 +87,11 @@ NOTE_UNMAPPED = "unmapped to phase; no healer registered"
 # Does NOT modify LEGACY_MIRROR_PLAN; evaluated at dispatch time.
 PHASE_APPROVAL_REQUIRED_OVERRIDES: dict[str, bool] = {}
 
+# Mutation-dependent approval policy: when True, apply mode with at least one
+# planned healer invocation requires an L3 approval bundle satisfying
+# phase_name="healing".  Dry-run and apply-with-zero-healers are exempt.
+APPROVAL_REQUIRED_FOR_APPLY: bool = True
+
 
 SANDBOX_SENTINEL = ".ssot_sandbox"
 
@@ -418,6 +423,17 @@ def run_dispatcher(
             if record.decision == ApprovalDecision.APPROVED:
                 approved_tokens.append(record.token)
     approved_tokens = sorted(set(approved_tokens))
+
+    # 4b. Mutation-dependent approval gate
+    #     Fires only when: apply=True AND worklist has >=1 healer invocation.
+    #     Independent of phase name mapping.
+    if apply and all_healable_ids and APPROVAL_REQUIRED_FOR_APPLY:
+        if not approvals_satisfy_phase(bundle, "healing"):
+            raise ApprovalGatingError(
+                "Apply mode with planned healer invocations requires L3 approval. "
+                "Provide an ApprovalBundle with phase_name='healing' and "
+                "decision=APPROVED.",
+            )
 
     # 5. Classify check_ids (both roll-up and healable sub-check ids)
     all_routable_ids = sorted(set(check_ids) | all_healable_ids)
