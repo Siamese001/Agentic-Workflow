@@ -38,12 +38,39 @@ pytestmark = pytest.mark.guardian
 
 @pytest.fixture
 def clean_repo(tmp_path: Path) -> Path:
-    """Minimal sandboxed repo."""
-    for folder in ("agentic_core", "apps_shared", "tests"):
-        d = tmp_path / folder
-        d.mkdir()
-        (d / "__init__.py").write_text("", encoding="utf-8")
-        (d / "real_module.py").write_text("x = 1\n", encoding="utf-8")
+    """Minimal sandboxed repo with full SOVEREIGN_TERRITORIES structure."""
+    from agentic_core.L0_maintenance.scripts.run_guardian_hierarchy_compliance import (
+        _get_l3_subfolders,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
+        SOVEREIGN_TERRITORIES,
+    )
+
+    # Build complete hierarchy from SOVEREIGN_TERRITORIES.
+    # Each dir gets __init__.py + README.md to avoid init_only_folders
+    # without triggering classification/location violations from .py stubs.
+    for root_name, root_def in SOVEREIGN_TERRITORIES.items():
+        root_dir = tmp_path / root_name
+        root_dir.mkdir(exist_ok=True)
+        (root_dir / "__init__.py").write_text("", encoding="utf-8")
+        (root_dir / "README.md").write_text("stub", encoding="utf-8")
+
+        if not hasattr(root_def, "get"):
+            continue
+        l2_subs = root_def.get("subfolders", {})
+        if not hasattr(l2_subs, "keys"):
+            continue
+        for l2_name in l2_subs.keys():
+            l2_dir = root_dir / l2_name
+            l2_dir.mkdir(exist_ok=True)
+            (l2_dir / "__init__.py").write_text("", encoding="utf-8")
+            (l2_dir / "README.md").write_text("stub", encoding="utf-8")
+            l2_def = l2_subs.get(l2_name, {})
+            for l3_name in _get_l3_subfolders(l2_def):
+                l3_dir = l2_dir / l3_name
+                l3_dir.mkdir(exist_ok=True)
+                (l3_dir / "__init__.py").write_text("", encoding="utf-8")
+                (l3_dir / "README.md").write_text("stub", encoding="utf-8")
     return tmp_path
 
 
