@@ -22,7 +22,7 @@ RESTORED_AGENTS_MAP = [
         "StrategicRecommendationAgent",
         "agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent",
     ),
-    ("BudgetAgent", "agentic_core.L1_cognition.reasoning.BudgetAgent"),
+    ("BudgetAgent", "tests.support.l1_cognition.BudgetAgent"),
     ("CodeDeduplicationAgent", "agentic_core.L5_safety.validators.CodeDeduplicationAgent"),
     ("PatternEnforcerAgent", "agentic_core.L5_safety.validators.PatternEnforcerAgent"),
     ("DeadlockDetectorAgent", "agentic_core.L5_safety.validators.DeadlockDetectorAgent"),
