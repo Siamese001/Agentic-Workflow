@@ -74,7 +74,7 @@ class MetricsWitnessAgent(
         self.metrics: Any | None = None
 
         try:
-            from agentic_core.L6_observability.reasoning.MetricsAgent import (
+            from tests.support.l6_observability.MetricsAgent import (
                 metrics_agent as MetricsAgentCls,
             )
 

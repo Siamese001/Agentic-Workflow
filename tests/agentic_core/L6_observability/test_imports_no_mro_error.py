@@ -19,22 +19,16 @@ def test_l6_observability_imports_no_mro_error():
 
     # List of L6 observability modules that previously had MRO issues
     modules_to_test = [
-        "agentic_core.L6_observability.reasoning.TelemetryAgent",
+        "tests.support.l6_observability.TelemetryAgent",
         "agentic_core.L6_observability.reasoning.BenchmarkingAgent",
-        "agentic_core.L6_observability.reasoning.StrategicObservationAgent",
-        "agentic_core.L6_observability.reasoning.SovereignObservabilityAgent",
-        "agentic_core.L6_observability.reasoning.RuntimeTelemetryAgent",
-        "agentic_core.L6_observability.reasoning.TracingAgent",
-        "agentic_core.L6_observability.reasoning.TrackObservabilityCostAgent",
-        "agentic_core.L6_observability.reasoning.PerformanceAnalystAgent",
-        "agentic_core.L6_observability.reasoning.MetricsAgent",
-        "agentic_core.L6_observability.reasoning.ReportingAgent",
-        "agentic_core.L6_observability.reasoning.DeadlockDetectorAgent",
-        "agentic_core.L6_observability.reasoning.DebateSynthesisAgent",
-        "agentic_core.L6_observability.reasoning.AutonomicMonitorAgent",
+        "tests.support.l6_observability.SovereignObservabilityAgent",
+        "tests.support.l6_observability.TracingAgent",
+        "tests.support.l6_observability.PerformanceAnalystAgent",
+        "tests.support.l6_observability.MetricsAgent",
+        "tests.support.l6_observability.ReportingAgent",
+        "tests.support.l6_observability.AutonomicMonitorAgent",
         "agentic_core.L6_observability.reasoning.SovereignHealthMonitor",
         "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.CoordinateObservabilityOperationsAgent",
     ]
 
     for module_name in modules_to_test:

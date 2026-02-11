@@ -30,11 +30,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {
@@ -48,7 +49,7 @@ SCOPE_SUMMARY_EXCLUSIONS = {
 
 # Optional import: MetricsAgent from sibling territory
 try:
-    from agentic_core.L6_observability.reasoning.MetricsAgent import metrics_agent as MetricsAgent
+    from tests.support.l6_observability.MetricsAgent import metrics_agent as MetricsAgent
 
     METRICS_AGENT_AVAILABLE = True
 except ImportError:  # MetricsAgent not implemented yet or optional

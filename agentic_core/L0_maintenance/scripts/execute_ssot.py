@@ -2410,8 +2410,8 @@ Examples:
         from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
-        from agentic_core.L6_observability.reasoning.DebateSynthesisAgent import (
-            DebateSynthesisAgent,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
+            ObservabilityProbeExecutor as DebateSynthesisAgent,
         )
         # Note: NamingAgent is a dependency for FileClassificationAgent, checked during instantiation
 

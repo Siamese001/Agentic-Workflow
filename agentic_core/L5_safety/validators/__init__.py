@@ -17,7 +17,6 @@ __all__ = [
     "FilesystemAgent",
     "CodeDeduplicationAgent",
     "PatternEnforcerAgent",
-    "DeadlockDetectorAgent",
     "IntegrityGateExecutorAgent",
     "TypeMechanicAgent",
     "DocumentationAgent",

@@ -176,11 +176,6 @@ class TestAliasResolution:
         ),
         ("apps_rg/reasoning/ATSCompatibilityAgent.py", "ATSCompatibilityAgent", "RGValidationExecutor"),
         ("apps_lic/engines/CampaignBalanceAgent.py", "CampaignBalanceAgent", "LICValidationExecutor"),
-        (
-            "agentic_core/L6_observability/reasoning/TrackObservabilityCostAgent.py",
-            "TrackObservabilityCostAgent",
-            "ObservabilityProbeExecutor",
-        ),
         ("apps_rg/reasoning/ContentStrategyAgent.py", "ContentStrategyAgent", "RGStrategyExecutor"),
         ("apps_lic/engines/Hop1ProfileAnalysisAgent.py", "HOP1ProfileAnalysisAgent", "HOPPipelineExecutor"),
     ]
