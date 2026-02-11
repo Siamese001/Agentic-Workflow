@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# FROZEN — superseded by Guardian pipeline. Do not extend. Zero-loss migration in progress.
 """
 V15-Native Entrypoint for execute_ssot.
 
