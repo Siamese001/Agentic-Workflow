@@ -32,7 +32,7 @@ class TestSovereignRedisOrchestratorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestratorAgent import (
+            from agentic_core.L3_orchestration.engines.sovereign_redis_orchestratorAgent import (
                 SovereignRedisOrchestratorAgent,
             )
 
@@ -91,7 +91,7 @@ class TestSovereignRedisOrchestratorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L3_orchestration.reasoning.sovereign_redis_orchestratorAgent import (
+                from agentic_core.L3_orchestration.engines.sovereign_redis_orchestratorAgent import (
                     SovereignRedisOrchestratorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

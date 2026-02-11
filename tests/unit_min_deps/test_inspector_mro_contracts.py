@@ -16,7 +16,7 @@ pytestmark = pytest.mark.unit_min_deps
 
 INSPECTOR_SPECS = [
     (
-        "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
+        "agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent",
         "DagRuntimeInspectorAgent",
     ),
     (
