@@ -94,6 +94,14 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
                 enabled_by_default=True,
             ),
             GuardianSpec(
+                guardian_id="classification_compliance",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_classification_compliance",
+                entrypoint_fn="run_classification_compliance_guardian",
+                check_ids=("naming_compliance", "territory_compliance"),
+                tier="slow",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
                 guardian_id="contract_integrity",
                 entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity",
                 entrypoint_fn="run_contract_integrity_guardian",
