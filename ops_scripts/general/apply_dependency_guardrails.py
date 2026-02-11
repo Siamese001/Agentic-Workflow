@@ -64,7 +64,7 @@ MODIFICATIONS = [
         "from typing import Any\n\ntry:",
     ),
     (
-        "agentic_core/L5_safety/reasoning/PineconeSovereignAgent.py",
+        "agentic_core/L4_state/memory/PineconeSovereignAgent.py",
         r"from typing import Any\n\nimport numpy as np\nfrom agentic_core",
         "from typing import Any\n\nfrom agentic_core",
     ),

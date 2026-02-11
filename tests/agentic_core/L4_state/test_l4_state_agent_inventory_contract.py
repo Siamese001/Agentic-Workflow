@@ -40,15 +40,21 @@ SHIM_ALLOWLIST: set[str] = set()
 # explicitly kept with justification. Each entry: class_name -> reason.
 UNREACHABLE_ALLOWLIST: dict[str, str] = {
     "RedisSovereignAgent": (
-        "Reachable via sub_atomic_registry.py:34 (included in entrypoint list); "
+        "Reachable via sub_atomic_registry.py:35 (included in entrypoint list); "
         "also imported by PineconeSovereignAgent and PolicyNeuralAutoImmuneAgent "
         "via L4_state.reasoning.RedisSovereignAgent (wiring fixed in Phase 5)"
+    ),
+    "PineconeSovereignAgent": (
+        "Reachable via sub_atomic_registry.py:30 (included in entrypoint list); "
+        "also imported by meta_client.py, sovereign_memory_store.py, "
+        "sovereign_semantic_cache.py via L4_state.memory.PineconeSovereignAgent. "
+        "Relocated from L5_safety/reasoning/ per RCA layer misplacement detection."
     ),
 }
 
 # Budget: the maximum allowed count of *Agent.py files under L4_state/**
-# Baseline after cleanup: 1 (RedisSovereignAgent.py)
-AGENT_FILE_BUDGET = 1
+# Baseline: 2 (RedisSovereignAgent.py + PineconeSovereignAgent.py)
+AGENT_FILE_BUDGET = 2
 
 
 # ---------------------------------------------------------------------------

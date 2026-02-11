@@ -109,7 +109,6 @@ UNREACHABLE_ALLOWLIST = {
     # --- Agents reachable via non-listed entrypoints (orchestrator_engine, sub_atomic_registry) ---
     "ConstitutionalOverseer": "Reachable via orchestrator_engine.py (not in strict entrypoint list)",
     "CredentialScannerAgent": "Reachable via orchestrator_engine.py:404 (not in strict entrypoint list)",
-    "PineconeSovereignAgent": "Reachable via sub_atomic_registry.py:31+311 (not in strict entrypoint list)",
     # --- Facade agents (delegate to other agents) ---
     "ConstitutionalOverseerAgent": "Facade: defined in SafetyInspectorAgent.py, not a standalone file",
     # --- Agents in non-standard filenames ---
@@ -118,8 +117,8 @@ UNREACHABLE_ALLOWLIST = {
 }
 
 # Budget: the maximum allowed count of *Agent.py files in reasoning/
-# Baseline after this cleanup: 84 (87 original - 2 deleted - 1 renamed)
-AGENT_FILE_BUDGET = 84
+# Baseline: 83 (84 - 1 PineconeSovereignAgent relocated to L4_state)
+AGENT_FILE_BUDGET = 83
 
 
 # ---------------------------------------------------------------------------
