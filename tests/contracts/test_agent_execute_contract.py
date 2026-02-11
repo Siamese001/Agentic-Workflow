@@ -23,6 +23,7 @@ from tests.contracts._scanner import (
     find_method,
     get_top_level_classes,
     is_stub_body,
+    is_super_only_delegation,
     parse_file_ast,
     rel,
 )
@@ -63,6 +64,8 @@ def _check_execute_contract(filepath: Path, tree: ast.Module) -> list[str]:
     # 3-4. Body must not be a stub and must have executable statements
     if is_stub_body(execute_method.body):
         issues.append("execute_body_is_stub")
+    elif is_super_only_delegation(execute_method.body):
+        issues.append("execute_body_is_super_only_delegation")
 
     return issues
 
