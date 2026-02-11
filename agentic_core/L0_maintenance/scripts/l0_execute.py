@@ -238,10 +238,11 @@ Modes:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
+    guardian = result.get("guardian_result", {})
+
     if args.format == "json":
         print(json.dumps(result, indent=2))
     else:
-        guardian = result.get("guardian_result", {})
         print(f"L0 Pipeline | Mode: {result['mode']} | Status: {guardian.get('status', '?')}")
         print(f"Guardian Summary: {guardian.get('summary', 'N/A')}")
         for check in guardian.get("checks", []):
