@@ -21,8 +21,10 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     NOTE_MAPPED,
     NOTE_UNMAPPED,
     OUTPUT_FILENAME,
+    SANDBOX_SENTINEL,
     TOOL_ID,
     ApprovalGatingError,
+    MutationGuardError,
     approvals_satisfy_phase,
     classify_check_ids,
     extract_check_ids,
@@ -873,6 +875,187 @@ class TestDispatcherHealerWiring:
                 write_artifacts_dir=out,
                 created_utc=TIMESTAMP,
             )
+
+
+# ---------------------------------------------------------------------------
+# Mutation guard + apply mode
+# ---------------------------------------------------------------------------
+
+
+class TestDispatcherMutationGuard:
+    """Proves mutation guard blocks apply without sandbox or override."""
+
+    def test_apply_without_repo_root_raises(self, tmp_path: Path) -> None:
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(MutationGuardError, match="--repo-root"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+                apply=True,
+            )
+
+    def test_apply_without_sandbox_raises(self, tmp_path: Path) -> None:
+        repo = tmp_path / "real_repo"
+        repo.mkdir()
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(MutationGuardError, match="not a sandbox"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+                apply=True,
+                repo_root=repo,
+            )
+
+    def test_apply_with_sandbox_sentinel_succeeds(self, tmp_path: Path) -> None:
+        repo = tmp_path / "sandbox_repo"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+        )
+        assert result is not None
+
+    def test_apply_with_override_succeeds(self, tmp_path: Path) -> None:
+        repo = tmp_path / "real_repo"
+        repo.mkdir()
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+            allow_repo_mutation=True,
+        )
+        assert result is not None
+
+
+class TestDispatcherApplyMode:
+    """Proves apply mode performs mutations in sandbox and is idempotent."""
+
+    def test_apply_mutates_sandbox(self, tmp_path: Path) -> None:
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        (repo / "empty_bad").mkdir()
+        (repo / "old.bak").write_text("x", encoding="utf-8")
+
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["empty_bad"],
+                    "archived_files_at_root": ["old.bak"],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+        )
+        drift = next(c for c in result.results if c.check_id == "guardian_drift_detection")
+        assert not (repo / "empty_bad").exists()
+        assert not (repo / "old.bak").exists()
+        assert "removed_root_folder:empty_bad" in drift.changes_made
+        assert "removed_archived_file:old.bak" in drift.changes_made
+        assert drift.status == HealStatus.HEALED
+
+    def test_apply_idempotent_second_run(self, tmp_path: Path) -> None:
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        (repo / "empty_bad").mkdir()
+
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["empty_bad"],
+                },
+            },
+        )
+        out1 = tmp_path / "out1"
+        out1.mkdir()
+        r1 = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out1,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+        )
+        d1 = next(c for c in r1.results if c.check_id == "guardian_drift_detection")
+        assert len(d1.changes_made) == 1
+
+        out2 = tmp_path / "out2"
+        out2.mkdir()
+        r2 = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out2,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+        )
+        d2 = next(c for c in r2.results if c.check_id == "guardian_drift_detection")
+        assert d2.changes_made == ()
+        assert d2.notes == "healed: nothing to do"
+
+    def test_dry_run_default_no_mutation(self, tmp_path: Path) -> None:
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        (repo / "empty_bad").mkdir()
+
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {
+                    "forbidden_folders": ["empty_bad"],
+                },
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        assert (repo / "empty_bad").exists()
 
 
 # ---------------------------------------------------------------------------
