@@ -79,6 +79,27 @@ def _write_guardian_aggregate(
     return path
 
 
+def _write_healing_approval(path: Path, token: str = "t-heal") -> Path:  # noqa: S107
+    """Write an approval bundle with a single APPROVED record for healing."""
+    data = {
+        "contract_version": 1,
+        "records": [
+            {
+                "phase_name": "healing",
+                "guardian_id": None,
+                "check_ids": [],
+                "decision": "APPROVED",
+                "approver": "auto@test",
+                "rationale": None,
+                "token": token,
+                "created_utc": TIMESTAMP,
+            },
+        ],
+    }
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return path
+
+
 def _write_approval_bundle(path: Path) -> Path:
     """Write an approval bundle with mixed decisions and out-of-order tokens."""
     data = {
@@ -948,6 +969,7 @@ class TestDispatcherMutationGuard:
             tmp_path / "agg.json",
             ["guardian_drift_detection"],
         )
+        bundle = _write_healing_approval(tmp_path / "heal_bundle.json")
         out = tmp_path / "out"
         out.mkdir()
         result = run_dispatcher(
@@ -956,6 +978,7 @@ class TestDispatcherMutationGuard:
             created_utc=TIMESTAMP,
             apply=True,
             repo_root=repo,
+            approval_bundle_path=bundle,
         )
         assert result is not None
 
@@ -966,6 +989,7 @@ class TestDispatcherMutationGuard:
             tmp_path / "agg.json",
             ["guardian_drift_detection"],
         )
+        bundle = _write_healing_approval(tmp_path / "heal_bundle.json")
         out = tmp_path / "out"
         out.mkdir()
         result = run_dispatcher(
@@ -975,6 +999,7 @@ class TestDispatcherMutationGuard:
             apply=True,
             repo_root=repo,
             allow_repo_mutation=True,
+            approval_bundle_path=bundle,
         )
         assert result is not None
 
@@ -999,6 +1024,7 @@ class TestDispatcherApplyMode:
                 },
             },
         )
+        bundle = _write_healing_approval(tmp_path / "heal_bundle.json")
         out = tmp_path / "out"
         out.mkdir()
         result = run_dispatcher(
@@ -1007,6 +1033,7 @@ class TestDispatcherApplyMode:
             created_utc=TIMESTAMP,
             apply=True,
             repo_root=repo,
+            approval_bundle_path=bundle,
         )
         drift = next(c for c in result.results if c.check_id == "guardian_drift_detection")
         assert not (repo / "empty_bad").exists()
@@ -1030,6 +1057,7 @@ class TestDispatcherApplyMode:
                 },
             },
         )
+        bundle = _write_healing_approval(tmp_path / "heal_bundle.json")
         out1 = tmp_path / "out1"
         out1.mkdir()
         r1 = run_dispatcher(
@@ -1038,6 +1066,7 @@ class TestDispatcherApplyMode:
             created_utc=TIMESTAMP,
             apply=True,
             repo_root=repo,
+            approval_bundle_path=bundle,
         )
         d1 = next(c for c in r1.results if c.check_id == "guardian_drift_detection")
         assert len(d1.changes_made) == 1
@@ -1050,6 +1079,7 @@ class TestDispatcherApplyMode:
             created_utc=TIMESTAMP,
             apply=True,
             repo_root=repo,
+            approval_bundle_path=bundle,
         )
         d2 = next(c for c in r2.results if c.check_id == "guardian_drift_detection")
         assert d2.changes_made == ()
@@ -1574,3 +1604,98 @@ class TestSubCheckHealerReachability:
         )
         ids = [c.check_id for c in result.results]
         assert ids == sorted(ids)
+
+
+# ---------------------------------------------------------------------------
+# Mutation-dependent approval gating (APPROVAL_REQUIRED_FOR_APPLY)
+# ---------------------------------------------------------------------------
+
+
+class TestMutationDependentApproval:
+    """Proves approval is required only when apply=True AND healers are reachable."""
+
+    def test_apply_healer_reachable_no_approval_raises(self, tmp_path: Path) -> None:
+        """apply + healer reachable + no approval => ApprovalGatingError."""
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {"forbidden_folders": ["bad"]},
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        with pytest.raises(ApprovalGatingError, match="Apply mode with planned healer"):
+            run_dispatcher(
+                guardian_result_path=agg,
+                write_artifacts_dir=out,
+                created_utc=TIMESTAMP,
+                apply=True,
+                repo_root=repo,
+            )
+
+    def test_apply_healer_reachable_approved_succeeds(self, tmp_path: Path) -> None:
+        """apply + healer reachable + APPROVED => rc=0."""
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {"forbidden_folders": ["bad"]},
+            },
+        )
+        bundle = _write_healing_approval(tmp_path / "heal_bundle.json")
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+            approval_bundle_path=bundle,
+        )
+        assert result.validate() == []
+
+    def test_apply_no_healers_no_approval_succeeds(self, tmp_path: Path) -> None:
+        """apply + no healers => rc=0 without approval."""
+        repo = tmp_path / "sandbox"
+        repo.mkdir()
+        (repo / SANDBOX_SENTINEL).write_text("", encoding="utf-8")
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_hygiene"],
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+            apply=True,
+            repo_root=repo,
+        )
+        assert result.validate() == []
+
+    def test_dry_run_healer_reachable_no_approval_succeeds(self, tmp_path: Path) -> None:
+        """dry-run + healer reachable => rc=0 without approval."""
+        agg = _write_guardian_aggregate(
+            tmp_path / "agg.json",
+            ["guardian_drift_detection"],
+            evidence_overrides={
+                "guardian_drift_detection": {"forbidden_folders": ["bad"]},
+            },
+        )
+        out = tmp_path / "out"
+        out.mkdir()
+        result = run_dispatcher(
+            guardian_result_path=agg,
+            write_artifacts_dir=out,
+            created_utc=TIMESTAMP,
+        )
+        assert result.validate() == []
