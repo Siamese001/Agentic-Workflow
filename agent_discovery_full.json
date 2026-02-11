@@ -356,33 +356,9 @@
       "exists": true
     },
     {
-      "file": "agentic_core\\L4_state\\reasoning\\CartographerAgent.py",
-      "module": "agentic_core\\L4_state\\reasoning\\CartographerAgent",
-      "class_name": "CartographerAgent",
-      "layer": "L4_state",
-      "fca_type": "AGENT",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent.py",
-      "module": "agentic_core\\L4_state\\reasoning\\MemoryArchitectAgent",
-      "class_name": "MemoryArchitectAgent",
-      "layer": "L4_state",
-      "fca_type": "AGENT",
-      "exists": true
-    },
-    {
       "file": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent.py",
       "module": "agentic_core\\L4_state\\reasoning\\RedisSovereignAgent",
       "class_name": "RedisSovereignAgent",
-      "layer": "L4_state",
-      "fca_type": "AGENT",
-      "exists": true
-    },
-    {
-      "file": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent.py",
-      "module": "agentic_core\\L4_state\\reasoning\\SovereignPineconeStoreAgent",
-      "class_name": "SovereignPineconeStoreAgent",
       "layer": "L4_state",
       "fca_type": "AGENT",
       "exists": true
