@@ -1030,12 +1030,6 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "fingerprint": "895c1f48e33df32e",
         },
         {
-            "name": "SovereignPineconeStoreAgent",
-            "file": "agentic_core/L4_state/memory/SovereignPineconeStoreAgent.py",
-            "methods": 10,
-            "fingerprint": "f441583d3a2a4cd2",
-        },
-        {
             "name": "SubAtomicRegistryAgent",
             "file": "agentic_core/L4_state/memory/SubAtomicRegistryAgent.py",
             "methods": 7,
