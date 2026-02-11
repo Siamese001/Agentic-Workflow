@@ -25,18 +25,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-# PHASE 1.1: Guardrails Integration
-from agentic_core.L1_cognition.reasoning.guardrails import (
-    MetaLearningGuardrails,
-    get_guardrails,
-)
-from agentic_core.L1_cognition.reasoning.meta_client import (
+from agentic_core.L1_cognition.engines.meta_client import (
     MetaLearningClient,
     get_meta_learning_client,
 )
 
 # PHASE 2.1: MetaLearningClient Integration
 from agentic_core.L1_cognition.types.client_types import HealingPattern
+
+# PHASE 1.1: Guardrails Integration
+from agentic_core.L1_cognition.utils.guardrails import (
+    MetaLearningGuardrails,
+    get_guardrails,
+)
 
 # CORE SOCKETING: Align with Phase 2A Unified Base Class
 from apps_shared.utils.AppBase import AppBase

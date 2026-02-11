@@ -176,15 +176,30 @@ class TestFCALayerAlignment:
     def test_agent_outside_reasoning_flagged(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
+        # WAVE 2.1: Agent detection now uses AST lineage — must inherit from
+        # a known agent base class to be confirmed as AGENT_OUTSIDE_REASONING.
         p = _make_py(
             tmp_path,
             "agentic_core/L5_safety/types/bad_agent_types.py",
-            "class SomeDetectorAgent:\n    pass",
+            "class SomeDetectorAgent(SovereignBaseAgent):\n    pass",
         )
         result = fca.validate_layer_alignment(p)
         assert result is not None
         assert result["violation"] == "AGENT_OUTSIDE_REASONING"
-        assert "SomeDetectorAgent" in result["agent_classes"]
+
+    def test_agent_uncertain_lineage_flagged(self, tmp_path):
+        fca_cls = _get_fca()
+        fca = fca_cls(project_root=tmp_path)
+        # WAVE 2.1: Agent-like name with no confirmed base => UNCERTAIN
+        p = _make_py(
+            tmp_path,
+            "agentic_core/L5_safety/types/ambiguous_agent.py",
+            "class SomeDetectorAgent(SomeRandomMixin):\n    pass",
+        )
+        result = fca.validate_layer_alignment(p)
+        assert result is not None
+        assert result["violation"] == "AGENT_DETECTION_UNCERTAIN"
+        assert result["executable"] is False
 
     def test_agent_in_reasoning_not_flagged(self, tmp_path):
         fca_cls = _get_fca()

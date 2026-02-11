@@ -1,0 +1,44 @@
+{
+  "files_analyzed": 1040,
+  "compliant": 467,
+  "audit_findings": 671,
+  "layer_violations": 168,
+  "findings_by_tag": {
+    "DETECT": 503,
+    "FOLDER_PURITY": 76,
+    "CROSS_LAYER": 2,
+    "FOLDER_SUFFIX": 14,
+    "TERRITORY": 59,
+    "PASSIVE_AGENT_NAMING": 8,
+    "FORBIDDEN": 4,
+    "DUAL-TAG": 4,
+    "COMPOUND_SUFFIX": 1
+  },
+  "layer_violation_counts": {
+    "CONFIG_SUFFIX_MISSING": 19,
+    "NESTED_LCD_SUBTREE": 37,
+    "AGENT_LAYER_MISPLACEMENT": 4,
+    "NON_AGENT_IN_REASONING": 62,
+    "OBSERVABILITY_OUTSIDE_L6": 35,
+    "AGENT_OUTSIDE_REASONING": 1,
+    "L5_SUBPROCESS_NOT_ALLOWED": 9,
+    "L6_SUBPROCESS_NOT_ALLOWED": 1
+  },
+  "violation_type_counts": {
+    "AGENT": 12,
+    "CLASS": 107,
+    "UTILITY": 51,
+    "PROTOCOL": 5,
+    "SCRIPT": 147,
+    "TYPES": 27,
+    "ORCHESTRATOR": 12,
+    "VALIDATOR": 65,
+    "FACTORY": 2,
+    "CONFIG": 34,
+    "ADAPTER": 3,
+    "STRATEGY": 15,
+    "EXCEPTION": 12,
+    "SERVICE": 8,
+    "null": 3
+  }
+}

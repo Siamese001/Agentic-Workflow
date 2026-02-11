@@ -146,7 +146,7 @@ class SovereignRagOrchestrator(AtomicExecutionMixin, SovereignBaseAgent, IRagPro
         def _parse_critique(raw) -> Any:
             """Parse critique."""
             try:
-                from agentic_core.L1_cognition.reasoning.query_planner import query_planner
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
 
                 planner_helper = query_planner()
                 cleaned = planner_helper._clean_json_response(raw)
