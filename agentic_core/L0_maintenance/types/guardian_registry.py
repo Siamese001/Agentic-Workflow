@@ -54,6 +54,14 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
     sorted(
         [
             GuardianSpec(
+                guardian_id="location_alignment",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_location_alignment",
+                entrypoint_fn="run_location_alignment_guardian",
+                check_ids=("misplaced_files", "missing_directories"),
+                tier="slow",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
                 guardian_id="hygiene",
                 entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_hygiene",
                 entrypoint_fn="run_hygiene_guardian",

@@ -945,6 +945,10 @@
         "sha256": "e9e8ac0c08df1e67b9e9895d08504c7283bc0b2d152a2e3f158f66f45a788fa9"
       },
       {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_location_alignment.py",
+        "sha256": "0cd2f2fcc07bf6dc1d66b5491b66785e6fe0ea960bf8a759b9393a458bf4afc7"
+      },
+      {
         "path": "agentic_core/L0_maintenance/scripts/run_guardian_manifest.py",
         "sha256": "6cd09997ef3f59a1539d81b21693c595a713706b51e9a4b17cd2a37f28e1ed0c"
       },
@@ -2213,6 +2217,10 @@
       {
         "path": "agentic_core/L0_maintenance/scripts/run_guardian_hygiene.py",
         "sha256": "e9e8ac0c08df1e67b9e9895d08504c7283bc0b2d152a2e3f158f66f45a788fa9"
+      },
+      {
+        "path": "agentic_core/L0_maintenance/scripts/run_guardian_location_alignment.py",
+        "sha256": "0cd2f2fcc07bf6dc1d66b5491b66785e6fe0ea960bf8a759b9393a458bf4afc7"
       },
       {
         "path": "agentic_core/L0_maintenance/scripts/run_guardian_manifest.py",
