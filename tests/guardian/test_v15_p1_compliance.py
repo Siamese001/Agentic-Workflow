@@ -683,9 +683,11 @@ class TestP1CriticalDWiring:
             text=True,
             cwd=self.project_root,
             env=env,
+            encoding="utf-8",
+            errors="replace",
         )
 
-        return result.returncode, result.stdout + result.stderr
+        return result.returncode, (result.stdout or "") + (result.stderr or "")
 
     def test_v15_enforcement_flag_exists(self):
         """V15_ENFORCEMENT environment variable must be recognized."""
