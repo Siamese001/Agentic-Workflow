@@ -16,6 +16,7 @@ Renamed from OrchestrationHandshake for consistent Agent suffix pattern (Jan 6, 
 """
 import hashlib
 import json
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -24,9 +25,14 @@ from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrc
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    V15HardFailAbort,
     is_v15_enforced,
 )
-from agentic_core.L0_maintenance.types.v15_types import RoutePath
+from agentic_core.L0_maintenance.types.v15_types import (
+    RouteDecisionArtifact,
+    RoutePath,
+    RoutingRationale,
+)
 from agentic_core.runtime.config.contextual_router_config import (
     RoutingRequest,
     get_router,
@@ -107,6 +113,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
 
         # §3.1 — V15 routing enforcement at orchestration boundary
         routing_result = None
+        route_artifact_dict = None
         if is_v15_enforced():
             request_id = hashlib.sha256(Task.encode()).hexdigest()[:16]
             routing_request = RoutingRequest(
@@ -115,6 +122,35 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                 agent_name=best["agent_class"],
             )
             routing_result = get_router().route(routing_request)
+
+            # §3.1 — Emit RouteDecisionArtifact (fail-closed under V15)
+            _RISK_SCORES = {"low": 0.0, "medium": 0.5, "high": 1.0}
+            _ROUTE_TO_RATIONALE = {
+                RoutePath.LOW_RISK_BYPASS: RoutingRationale.LOW_RISK_BYPASS,
+                RoutePath.STANDARD_VALIDATION: RoutingRationale.STANDARD_VALIDATION,
+                RoutePath.HUMAN_ESCALATION: RoutingRationale.HUMAN_ESCALATION,
+                RoutePath.POLICY_CHALLENGE_LOOP: RoutingRationale.POLICY_CHALLENGE,
+                RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW: RoutingRationale.CIRCUIT_BREAKER_OPEN,
+            }
+            try:
+                route_artifact = RouteDecisionArtifact(
+                    trace_id=request_id,
+                    timestamp=routing_request.timestamp.isoformat(),
+                    route_path=routing_result.decision,
+                    risk_score=_RISK_SCORES.get(
+                        routing_result.risk_level.value,
+                        1.0,
+                    ),
+                    budget_est=0.0,
+                    rationale_enum=_ROUTE_TO_RATIONALE[routing_result.decision],
+                    policy_config_hash="",
+                )
+                route_artifact_dict = asdict(route_artifact)
+            except Exception as exc:
+                raise V15HardFailAbort(
+                    "§3.1 RouteDecisionArtifact emission failed",
+                ) from exc
+
             if routing_result.decision in (
                 RoutePath.HUMAN_ESCALATION,
                 RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW,
@@ -124,6 +160,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                     "route_path": routing_result.decision.value,
                     "reason": routing_result.reason,
                     "delegated_to": f"{best['agent_class']}.{best['method']}",
+                    "route_decision_artifact": route_artifact_dict,
                 }
 
         try:
@@ -135,6 +172,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                 "confidence": best["confidence"],
                 "result_summary": str(result)[:500] if result else "None",
                 "route_path": routing_result.decision.value if routing_result else None,
+                "route_decision_artifact": route_artifact_dict,
             }
             self.cache_routing_decision(Task, audit)
             return audit
