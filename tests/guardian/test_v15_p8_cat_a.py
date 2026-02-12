@@ -28,7 +28,7 @@ class TestStructuralManifestConstruction:
     """Verify each Cat-A target has _v15_build_operation_manifest and constructs SurgicalManifest."""
 
     TARGET_FILES = [
-        PROJECT_ROOT / "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py",
+        PROJECT_ROOT / "agentic_core/L3_orchestration/engines/orchestrator_engine.py",
         PROJECT_ROOT / "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
         PROJECT_ROOT / "agentic_core/runtime/config/security_level_config.py",
     ]
@@ -284,7 +284,7 @@ class TestFlowCorrectness:
 
     def test_orchestrator_engine_target_layer_is_l3(self):
         """orchestrator_engine manifest targets L3 — conditional flows use AGGREGATE."""
-        source = (PROJECT_ROOT / "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py").read_text(
+        source = (PROJECT_ROOT / "agentic_core/L3_orchestration/engines/orchestrator_engine.py").read_text(
             encoding="utf-8",
         )
         assert 'target_layer: str = "L3"' in source

@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-PINNED_DISCOVERY_HASH = "f09ec166b82746f6d62cf1c7e9215de70ec29534f784bee95d13798b04da4fd4"
+PINNED_DISCOVERY_HASH = "7727c2d167460004aa615cbce76abe687b3008aa553beb54a937d39bcf2cbcd8"
 
 V15_TEST_SUITES = [
     "test_v15_p1_compliance.py",

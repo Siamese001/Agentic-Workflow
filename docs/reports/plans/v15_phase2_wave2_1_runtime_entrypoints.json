@@ -7,7 +7,7 @@
     {
       "id": "A.run_mission.orchestrator_engine",
       "category": "A",
-      "path": "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py",
+      "path": "agentic_core/L3_orchestration/engines/orchestrator_engine.py",
       "symbol": "OrchestratorEngine.run_mission",
       "signature": "(self, agents: list[str], dry_run: bool = True, execute: bool = False, context: ExecutionContext | None = None) -> MissionResult",
       "initiates_side_effects": true,
@@ -21,7 +21,7 @@
     {
       "id": "A.run_agent.orchestrator_engine",
       "category": "A",
-      "path": "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py",
+      "path": "agentic_core/L3_orchestration/engines/orchestrator_engine.py",
       "symbol": "OrchestratorEngine.run_agent",
       "signature": "(self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None) -> AgentResult",
       "initiates_side_effects": true,
@@ -35,7 +35,7 @@
     {
       "id": "A.execute.orchestrator_engine",
       "category": "A",
-      "path": "agentic_core/L3_orchestration/reasoning/orchestrator_engine.py",
+      "path": "agentic_core/L3_orchestration/engines/orchestrator_engine.py",
       "symbol": "OrchestratorEngine.execute",
       "signature": "async (self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult",
       "initiates_side_effects": true,
@@ -91,7 +91,7 @@
     {
       "id": "A.execute.decomposition_orchestrator",
       "category": "A",
-      "path": "agentic_core/L3_orchestration/reasoning/decomposition_orchestrator.py",
+      "path": "agentic_core/L3_orchestration/engines/decomposition_orchestrator.py",
       "symbol": "DecompositionOrchestrator.execute",
       "signature": "(self, plan: MissionPlan, dry_run: bool = True) -> dict[str, Any]",
       "initiates_side_effects": true,
@@ -251,7 +251,7 @@
       "initiates_side_effects": true,
       "side_effect_types": ["state_mutation", "schedule"],
       "calls_heal": false,
-      "already_v15_enforced": false,
+      "already_v15_enforced": true,
       "enforcement_boundary": "on_modified",
       "bypass_risk": "MEDIUM",
       "notes": "Filesystem event handler for watchdog. Triggers surgical validation on file modification events."
@@ -406,7 +406,7 @@
       "D": 4,
       "E": 6
     },
-    "already_v15_enforced": 4,
+    "already_v15_enforced": 5,
     "bypass_risk_high": 13
   }
 }

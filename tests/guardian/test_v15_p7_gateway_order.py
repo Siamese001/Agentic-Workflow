@@ -17,6 +17,7 @@ import pytest
 from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
     V15ExecutionGateway,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import V15HardFailAbort
 from agentic_core.L0_maintenance.types.v15_contracts import (
     PipeOrderEnforcer,
     PipeOrderViolation,
@@ -106,5 +107,5 @@ class TestGatewayPipeOrder:
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()
         gw._pipe_advance(pipe, "schema_validation", "test-trace")
-        with pytest.raises(PipeOrderViolation):
+        with pytest.raises(V15HardFailAbort):
             gw._pipe_advance(pipe, "commit", "test-trace")
