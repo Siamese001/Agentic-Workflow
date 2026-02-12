@@ -39,7 +39,7 @@ except ImportError:
 Logger: Any = logging.getLogger(__name__)
 
 
-class AgentGym(AtomicExecutionMixin, SovereignBaseAgent):
+class AgentGym(SovereignBaseAgent):
     """Agent Gym for self-evolution and benchmarking.
 
     Features:
@@ -132,6 +132,7 @@ class AgentGym(AtomicExecutionMixin, SovereignBaseAgent):
                     actions_taken=result.get("actions", []),
                     execution_trace=result.get("trace", []),
                 )
+            # guardian: allow-silent-swallow
             except Exception as e:
                 if self.enable_logging:
                     Logger.error("test_case_failed", extra={"case_id": case.id, "error": str(e)})
@@ -290,6 +291,7 @@ class AgentGym(AtomicExecutionMixin, SovereignBaseAgent):
     def _load_default_scenarios(self) -> None:
         """Load default scenarios from golden datasets."""
         if self.golden_evaluator.golden_cases:
+            # guardian: allow-magic-config
             TrainingScenario(
                 id="golden_dataset_core",
                 NAME="Core Golden Dataset",

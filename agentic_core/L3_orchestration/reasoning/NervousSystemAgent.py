@@ -25,7 +25,7 @@ from typing import Any
 
 
 @dataclass
-class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class NervousSystemAgent(SovereignBaseAgent):
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:

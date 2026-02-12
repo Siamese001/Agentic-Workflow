@@ -10,7 +10,6 @@ import os
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ class AgentPlan:
         return {"status": "skipped", "reason": "data_structure", "handler": "AgentPlan"}
 
 
-class StructuredEngineAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class StructuredEngineAgent(SovereignBaseAgent):
     """
     L2 Execution: Structured LLM output engine.
     """

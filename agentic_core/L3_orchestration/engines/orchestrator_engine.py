@@ -152,7 +152,7 @@ class OrchestratorMode(str, Enum):
     UNIFIED = "unified"
 
 
-class Orchestrator(AtomicExecutionMixin, SovereignBaseAgent):
+class Orchestrator(SovereignBaseAgent):
     """
     The Central Nervous System for Agentic Workflow.
 
