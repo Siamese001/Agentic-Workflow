@@ -142,6 +142,9 @@ class SubatomicHopAgent(SovereignBaseAgent):
         from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
             generate_trace_id,
         )
+        from agentic_core.L0_maintenance.types.v15_p2_contracts import (
+            require_manifest_hash_ok,
+        )
         from agentic_core.L0_maintenance.types.v15_p2_types import (
             FixConstraint,
             SurgicalManifest,
@@ -157,7 +160,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
         trace_id = generate_trace_id(_hex8)
 
         ast_snippet = f"{self.__class__.__name__}.{operation}()"
-        return SurgicalManifest(
+        manifest = SurgicalManifest(
             schema_version="1.0.0",
             correlation_id=trace_id,
             node_id=self.__class__.__name__,
@@ -169,6 +172,8 @@ class SubatomicHopAgent(SovereignBaseAgent):
             change_history=(),
             provenance_chain=(trace_id,),
         )
+        require_manifest_hash_ok(manifest)
+        return manifest
 
     @v15_runtime_guard("B.run.SubatomicHopAgent")
     # guardian: allow-type-erasure

@@ -134,6 +134,9 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
     from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
         generate_trace_id,
     )
+    from agentic_core.L0_maintenance.types.v15_p2_contracts import (
+        require_manifest_hash_ok,
+    )
     from agentic_core.L0_maintenance.types.v15_p2_types import (
         FixConstraint,
         SurgicalManifest,
@@ -143,7 +146,7 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
     trace_id = generate_trace_id(_hex8)
 
     ast_snippet = f"mission_runner.{mode_name}()"
-    return SurgicalManifest(
+    manifest = SurgicalManifest(
         schema_version="1.0.0",
         correlation_id=trace_id,
         node_id="MissionRunner",
@@ -155,6 +158,8 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
         change_history=(),
         provenance_chain=(trace_id,),
     )
+    require_manifest_hash_ok(manifest)
+    return manifest
 
 
 def _v15_gateway_audit(manifest, trace_id: str) -> None:
