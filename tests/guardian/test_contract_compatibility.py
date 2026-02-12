@@ -61,7 +61,15 @@ class TestSchemaSnapshot:
         "metrics",
         "remediation_hints",
     }
-    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id", "index", "artifact_class"}
+    EXPECTED_OPTIONAL_KEYS = {
+        "timestamp",
+        "correlation_id",
+        "index",
+        "artifact_class",
+        "v15_trace_id",
+        "v15_signature",
+        "v15_commit_hash",
+    }
 
     def test_snapshot_has_all_required_keys(self):
         assert self.EXPECTED_REQUIRED_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
@@ -180,8 +188,8 @@ class TestVersionBump:
 
     def test_snapshot_key_count_is_locked(self):
         """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 12, (
-            f"Schema key count changed from 12 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
+        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 15, (
+            f"Schema key count changed from 15 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
             f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
         )
 
@@ -461,7 +469,7 @@ class TestSchemaBoundsConstantsLocked:
     def test_max_evidence_depth_value(self):
         from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
-        assert MAX_EVIDENCE_DEPTH == 3
+        assert MAX_EVIDENCE_DEPTH == 4
 
 
 class TestEvidenceDepthEnforcement:
@@ -549,7 +557,7 @@ class TestAggregateOnlyIndexEnforcement:
 
         d = GuardianResult(
             guardian_id=AGGREGATE_GUARDIAN_ID,
-            artifact_class=ArtifactClass.AGGREGATE.value,
+            artifact_class=ArtifactClass.AGGREGATE,
         ).to_dict()
         d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
         errors = validate_against_json_schema(d)

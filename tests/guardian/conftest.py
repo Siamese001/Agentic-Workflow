@@ -241,7 +241,7 @@ def guardian_performance_baseline():
     return {
         "max_test_time_seconds": 30,
         "max_memory_mb": 100,
-        "max_agents_to_scan": 300,
+        "max_agents_to_scan": 800,
     }
 
 

@@ -91,7 +91,7 @@ def run_all_guardians(
         version=CONTRACT_VERSION,
         timestamp=timestamp,
         correlation_id=correlation_id,
-        artifact_class=ArtifactClass.AGGREGATE.value,
+        artifact_class=ArtifactClass.AGGREGATE,
     )
 
     per_guardian_results: list[dict[str, Any]] = []

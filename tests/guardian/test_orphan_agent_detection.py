@@ -145,10 +145,20 @@ class OrphanAgentDetector:
             raise FileNotFoundError(f"agent_discovery_full.json not found at {discovery_path}")
 
         with open(discovery_path, encoding="utf-8") as f:
-            self.agents = json.load(f)
+            data = json.load(f)
+
+        # Support both v54 schema (dict with "agents" key) and legacy (flat list)
+        if isinstance(data, dict) and "agents" in data:
+            self.agents = data["agents"]
+        elif isinstance(data, list):
+            self.agents = data
+        else:
+            self.agents = []
 
         self.agent_classes = {agent["class_name"] for agent in self.agents}
-        self.agent_files = {agent["class_name"]: agent["path"] for agent in self.agents}
+        self.agent_files = {
+            agent["class_name"]: agent.get("file", agent.get("path", "")) for agent in self.agents
+        }
 
         return self.agents
 
@@ -224,7 +234,7 @@ class OrphanAgentDetector:
                 continue
 
             # Get agent's own file path (normalized)
-            own_file = agent["path"].replace("\\", "/")
+            own_file = agent.get("file", agent.get("path", "")).replace("\\", "/")
 
             # Get all references excluding own file
             refs = self.all_references.get(class_name, set())
@@ -249,7 +259,7 @@ class OrphanAgentDetector:
                     class_name=class_name,
                     file_path=own_file,
                     layer=agent.get("layer", "Unknown"),
-                    territory=agent.get("territory", "Unknown"),
+                    territory=agent.get("territory", agent.get("layer", "Unknown")),
                     loc=agent.get("loc", 0),
                     references=list(non_self_refs),
                     imports=list(self.all_imports.get(class_name, set())),
@@ -344,7 +354,7 @@ class OrphanAgentDetector:
         same_territory = [
             a["class_name"]
             for a in self.agents
-            if a["territory"] == orphan.territory
+            if a.get("territory", a.get("layer", "Unknown")) == orphan.territory
             and a["class_name"] != orphan.class_name
             and a["class_name"] not in [o.class_name for o in self.orphans]
         ]

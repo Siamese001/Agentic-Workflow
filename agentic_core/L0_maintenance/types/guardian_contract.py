@@ -249,6 +249,9 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
             "type": "string",
             "enum": ["individual", "aggregate"],
         },
+        "v15_trace_id": {"type": ["string", "null"]},
+        "v15_signature": {"type": ["string", "null"]},
+        "v15_commit_hash": {"type": ["string", "null"]},
     },
 }
 
@@ -316,7 +319,7 @@ def get_artifact_filename(
 # Payload size bounds (Phase 2b: schema bounds enforcement)
 MAX_METRICS_PROPERTIES: int = 50
 MAX_EVIDENCE_PROPERTIES: int = 30
-MAX_EVIDENCE_DEPTH: int = 3  # Nesting depth for evidence values
+MAX_EVIDENCE_DEPTH: int = 4  # Nesting depth for evidence values (4 required for aggregate sub-checks)
 MAX_PAYLOAD_BYTES: int = 512 * 1024  # 512 KB total serialized payload
 MAX_STRING_VALUE_LENGTH: int = 500  # Max length for string values in metrics
 
