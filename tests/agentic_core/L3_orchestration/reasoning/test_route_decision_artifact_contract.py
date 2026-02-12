@@ -319,3 +319,73 @@ class TestRouteDecisionArtifactContract:
         assert artifact["risk_score"] == 0.0
         assert artifact["budget_est"] == 0.0
         assert artifact["policy_config_hash"] == ""
+
+
+class TestDurableEmission:
+    """Assert TelemetryEmitter.emit_route_decision is called as durable sink."""
+
+    def test_emit_route_decision_called_once_with_all_keys(self):
+        """emit_route_decision called exactly once; payload has all artifact keys."""
+        seam = _import_seam()
+        agent = _build_agent(seam)
+        _stub_discover(agent)
+        _stub_invoke(agent)
+
+        stub_result = _make_routing_result(RoutePath.STANDARD_VALIDATION, "medium")
+        fake_router = MagicMock()
+        fake_router.route.return_value = stub_result
+
+        captured = []
+
+        def _capture_emit(artifact):
+            from dataclasses import asdict
+
+            captured.append(asdict(artifact))
+
+        with (
+            patch.object(seam, "is_v15_enforced", return_value=True),
+            patch.object(seam, "get_router", return_value=fake_router),
+            patch.object(
+                seam.TelemetryEmitter,
+                "emit_route_decision",
+                side_effect=_capture_emit,
+            ),
+        ):
+            out = agent.delegate_task("durable emission test")
+
+        assert out["status"] == "success"
+        assert len(captured) == 1, f"Expected 1 emission, got {len(captured)}"
+        assert set(captured[0].keys()) == REQUIRED_KEYS
+
+    def test_emit_route_decision_called_on_blocked_path(self):
+        """Emission fires even when route is blocked (HUMAN_ESCALATION)."""
+        seam = _import_seam()
+        agent = _build_agent(seam)
+        _stub_discover(agent)
+        _stub_invoke(agent)
+
+        stub_result = _make_routing_result(RoutePath.HUMAN_ESCALATION, "high")
+        fake_router = MagicMock()
+        fake_router.route.return_value = stub_result
+
+        captured = []
+
+        def _capture_emit(artifact):
+            from dataclasses import asdict
+
+            captured.append(asdict(artifact))
+
+        with (
+            patch.object(seam, "is_v15_enforced", return_value=True),
+            patch.object(seam, "get_router", return_value=fake_router),
+            patch.object(
+                seam.TelemetryEmitter,
+                "emit_route_decision",
+                side_effect=_capture_emit,
+            ),
+        ):
+            out = agent.delegate_task("blocked emission test")
+
+        assert out["status"] == "route_blocked"
+        assert len(captured) == 1
+        assert captured[0]["route_path"] == RoutePath.HUMAN_ESCALATION
