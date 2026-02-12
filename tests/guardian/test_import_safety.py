@@ -210,28 +210,61 @@ class TestImportSafety:
         BLOCKING: Detect circular dependencies using AST analysis.
 
         Scans ALL source directories for circular import patterns.
+        Uses exact module-name matching with __init__ canonicalization.
         """
 
+        def _canonicalize(module: str) -> str:
+            """Treat package and its __init__ as the same node."""
+            if module.endswith(".__init__"):
+                return module[: -len(".__init__")]
+            return module
+
+        def _is_type_checking_guard(node: ast.If) -> bool:
+            """Detect `if TYPE_CHECKING:` guards."""
+            test = node.test
+            if isinstance(test, ast.Name) and test.id == "TYPE_CHECKING":
+                return True
+            if isinstance(test, ast.Attribute) and test.attr == "TYPE_CHECKING":
+                return True
+            return False
+
+        def _walk_top_level(stmts: list, imports: set[str]) -> None:
+            """Collect imports from module-scope statements only.
+
+            Recurses into top-level if/try but NOT into FunctionDef,
+            AsyncFunctionDef, or ClassDef (those are deferred scopes).
+            """
+            for stmt in stmts:
+                if isinstance(stmt, ast.Import):
+                    for alias in stmt.names:
+                        imports.add(alias.name)
+                elif isinstance(stmt, ast.ImportFrom):
+                    if stmt.module:
+                        imports.add(stmt.module)
+                        for alias in stmt.names:
+                            imports.add(f"{stmt.module}.{alias.name}")
+                elif isinstance(stmt, ast.If):
+                    if _is_type_checking_guard(stmt):
+                        continue
+                    _walk_top_level(stmt.body, imports)
+                    _walk_top_level(stmt.orelse, imports)
+                elif isinstance(stmt, ast.Try):
+                    _walk_top_level(stmt.body, imports)
+                    for handler in stmt.handlers:
+                        _walk_top_level(handler.body, imports)
+                    _walk_top_level(stmt.orelse, imports)
+                    _walk_top_level(stmt.finalbody, imports)
+
         def extract_imports(file_path: Path) -> set[str]:
-            """Extract import targets from a Python file"""
-            imports = set()
+            """Extract module-scope import targets (deferred imports excluded)."""
+            imports: set[str] = set()
             try:
                 content = file_path.read_text(encoding="utf-8")
                 tree = ast.parse(content)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Import):
-                        for alias in node.names:
-                            imports.add(alias.name)
-                    elif isinstance(node, ast.ImportFrom):
-                        if node.module:
-                            imports.add(node.module)
+                _walk_top_level(tree.body, imports)
             except Exception:
                 pass
             return imports
-
-        # Build import graph for ALL source files
-        all_files = self.get_all_python_files()
-        import_graph: dict[str, set[str]] = {}
 
         # Project-local prefixes to track
         project_prefixes = (
@@ -242,29 +275,53 @@ class TestImportSafety:
             "ops_scripts.",
         )
 
+        # Pass 1: collect all canonical module names from files
+        all_files = self.get_all_python_files()
+        known_modules: set[str] = set()
+        file_to_module: dict[Path, str] = {}
+
         for file_path in all_files:
             rel_path = file_path.relative_to(PROJECT_ROOT)
-            module_name = str(rel_path.with_suffix("")).replace(os.sep, ".")
-            imports = extract_imports(file_path)
+            raw = str(rel_path.with_suffix("")).replace(os.sep, ".")
+            canon = _canonicalize(raw)
+            known_modules.add(canon)
+            file_to_module[file_path] = canon
 
-            # Filter to only imports within our project
-            project_imports = {imp for imp in imports if imp.startswith(project_prefixes)}
-            import_graph[module_name] = project_imports
+        # Pass 2: build import graph with exact resolution
+        import_graph: dict[str, set[str]] = {}
 
-        # Detect circular dependencies (direct A->B->A cycles)
-        circular_deps = []
-        checked_pairs = set()
+        for file_path in all_files:
+            module_name = file_to_module[file_path]
+            raw_imports = extract_imports(file_path)
 
-        for module_a, imports_a in import_graph.items():
-            for import_b in imports_a:
-                for module_b, imports_b in import_graph.items():
-                    if module_b.endswith(import_b.replace(".", os.sep)) or import_b in module_b:
-                        for import_back in imports_b:
-                            if module_a.endswith(import_back.replace(".", os.sep)) or import_back in module_a:
-                                pair = tuple(sorted([module_a, module_b]))
-                                if pair not in checked_pairs:
-                                    checked_pairs.add(pair)
-                                    circular_deps.append((module_a, module_b))
+            resolved: set[str] = set()
+            for imp in raw_imports:
+                if not imp.startswith(project_prefixes):
+                    continue
+                canon_imp = _canonicalize(imp)
+                # Exact match only — drop self-edges
+                if canon_imp in known_modules and canon_imp != module_name:
+                    resolved.add(canon_imp)
+
+            # Merge edges when __init__ collapses into package
+            if module_name in import_graph:
+                import_graph[module_name] |= resolved
+            else:
+                import_graph[module_name] = resolved
+
+        # Detect direct A→B→A cycles (SCC size >= 2)
+        circular_deps: list[tuple[str, str]] = []
+        checked_pairs: set[tuple[str, str]] = set()
+
+        for module_a in sorted(import_graph):
+            for module_b in sorted(import_graph[module_a]):
+                if module_b in import_graph and module_a in import_graph[module_b]:
+                    pair = tuple(sorted([module_a, module_b]))
+                    if pair not in checked_pairs:
+                        checked_pairs.add(pair)
+                        circular_deps.append(pair)
+
+        circular_deps.sort()
 
         # Report circular dependencies
         for dep_a, dep_b in circular_deps:
@@ -272,14 +329,14 @@ class TestImportSafety:
                 code=ViolationCode.IMPORT_CIRCULAR,
                 file=dep_a,
                 line=1,
-                message=f"Circular dependency: {Path(dep_a).name} <-> {Path(dep_b).name}",
+                message=f"Circular dependency: {dep_a} <-> {dep_b}",
                 fix_action=FixAction.BREAK_CYCLE,
             )
 
         if circular_deps:
             pytest.fail(
                 f"BLOCKING: {len(circular_deps)} circular dependencies detected:\n"
-                + "\n".join(f"  - {Path(a).name} <-> {Path(b).name}" for a, b in circular_deps[:10]),
+                + "\n".join(f"  - {a} <-> {b}" for a, b in circular_deps[:10]),
             )
 
     @pytest.mark.skip(
