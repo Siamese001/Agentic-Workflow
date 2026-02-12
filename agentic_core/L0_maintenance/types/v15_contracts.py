@@ -578,6 +578,17 @@ class TelemetryEmitter:
             },
         )
 
+    def emit_typed_artifact(self, type_label: str, artifact: Any) -> None:
+        """Emit telemetry for any typed dataclass artifact (§Wave2.1 generic sink)."""
+        from dataclasses import asdict
+
+        self._events.append(
+            {
+                "type": type_label,
+                "payload": asdict(artifact),
+            },
+        )
+
     def flush_to_artifacts_dir(self, artifacts_dir: Any) -> Any:
         """Persist all buffered events as NDJSON to *artifacts_dir*.
 

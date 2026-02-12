@@ -34,6 +34,9 @@ from agentic_core.L0_maintenance.types.v15_types import (
     RoutePath,
     RoutingRationale,
 )
+from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
+    build_l3_route_decision_artifact,
+)
 from agentic_core.runtime.config.contextual_router_config import (
     RoutingRequest,
     get_router,
@@ -112,6 +115,23 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
             f"   [HANDSHAKE] {self.requesting_agent} -> {best['agent_class']}.{best['method']} ({best['confidence']:.2f})",
         )
 
+        # §Wave2.1 — L3 Route Decision Artifact emission at routing boundary
+        _l3_trace_id = hashlib.sha256(Task.encode()).hexdigest()[:16]
+        l3_artifact = build_l3_route_decision_artifact(
+            trace_id=_l3_trace_id,
+            chosen=best,
+            candidates=capable,
+        )
+        l3_artifact_dict = asdict(l3_artifact)
+        try:
+            _l3_emitter = TelemetryEmitter()
+            _l3_emitter.emit_typed_artifact("L3_ROUTE_DECISION", l3_artifact)
+            _l3_log_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+            _l3_emitter.flush_to_artifacts_dir(_l3_log_dir)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass  # §Wave2.1: emission failure must not block routing
+
         # §3.1 — V15 routing enforcement at orchestration boundary
         routing_result = None
         route_artifact_dict = None
@@ -170,6 +190,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                     "reason": routing_result.reason,
                     "delegated_to": f"{best['agent_class']}.{best['method']}",
                     "route_decision_artifact": route_artifact_dict,
+                    "l3_route_decision_artifact": l3_artifact_dict,
                 }
 
         try:
@@ -182,11 +203,16 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                 "result_summary": str(result)[:500] if result else "None",
                 "route_path": routing_result.decision.value if routing_result else None,
                 "route_decision_artifact": route_artifact_dict,
+                "l3_route_decision_artifact": l3_artifact_dict,
             }
             self.cache_routing_decision(Task, audit)
             return audit
         except Exception as e:
-            return {"status": "delegation_failed", "error": str(e)}
+            return {
+                "status": "delegation_failed",
+                "error": str(e),
+                "l3_route_decision_artifact": l3_artifact_dict,
+            }
 
     def execute_mission(self, steps: list[dict]) -> list[dict]:
         """
