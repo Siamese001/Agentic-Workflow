@@ -24,6 +24,7 @@ from agentic_core.L0_maintenance.types.v15_types import (
     EvacuationProtocol,
     IncidentArtifact,
     ResultArtifact,
+    RouteDecisionArtifact,
     TokenCapArtifact,
     TokenGateResult,
     VigilanceTier,
@@ -534,6 +535,17 @@ class TelemetryEmitter:
                 "type": "RESULT",
                 "trace_id": result.trace_id,
                 "outcome": result.execution_outcome,
+            },
+        )
+
+    def emit_route_decision(self, artifact: RouteDecisionArtifact) -> None:
+        """Emit telemetry for ROUTE_DECISION artifact (§3.1 durable sink)."""
+        from dataclasses import asdict
+
+        self._events.append(
+            {
+                "type": "ROUTE_DECISION",
+                "payload": asdict(artifact),
             },
         )
 

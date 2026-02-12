@@ -28,6 +28,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     V15HardFailAbort,
     is_v15_enforced,
 )
+from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
 from agentic_core.L0_maintenance.types.v15_types import (
     RouteDecisionArtifact,
     RoutePath,
@@ -146,6 +147,15 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                 raise V15HardFailAbort(
                     "§3.1 RouteDecisionArtifact construction failed at routing boundary",
                 ) from exc
+
+            # §3.1 — Durable emission to TelemetryEmitter sink
+            try:
+                TelemetryEmitter().emit_route_decision(route_artifact)
+            except Exception as exc:
+                if is_v15_enforced():
+                    raise V15HardFailAbort(
+                        "§3.1 RouteDecisionArtifact durable emission failed",
+                    ) from exc
 
             if routing_result.decision in (
                 RoutePath.HUMAN_ESCALATION,
