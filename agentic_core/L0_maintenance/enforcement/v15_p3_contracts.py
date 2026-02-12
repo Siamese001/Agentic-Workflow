@@ -9,15 +9,22 @@ Contract version: 1.0.0
 
 from __future__ import annotations
 
+import logging
 import secrets
+import uuid
+from datetime import datetime, timezone
 from typing import Any
 
 from agentic_core.L0_maintenance.types.v15_p3_types import (
     EvidencePack,
     ExceptionScope,
     PolicyExceptionArtifact,
+    PolicySnapshot,
     PolicyUpdateProposal,
+    RouteDecisionRef,
 )
+
+_log = logging.getLogger(__name__)
 
 # =============================================================================
 # §3.4 — build_evidence_pack
@@ -62,6 +69,46 @@ def validate_evidence_pack(pack: Any) -> EvidencePack:
         raise EvidencePackError(
             f"FAIL (P3): Expected EvidencePack, got {type(pack).__name__}",
         )
+    return pack
+
+
+def build_hil_evidence_pack(
+    trace_id: str,
+    escalation_reason: str,
+    route_decision_ref: RouteDecisionRef,
+    policy_snapshot_data: PolicySnapshot,
+    risk_score: float = 0.8,
+    action_trace: tuple[str, ...] = (),
+    policy_evals: tuple[str, ...] = (),
+    guardian_results: tuple[str, ...] = (),
+    ssot_hash: str = "",
+    attachments: tuple[str, ...] = (),
+) -> EvidencePack:
+    """§Wave2.2 — Build a full EvidencePack for HIL escalation.
+
+    Fail-closed: any invalid field raises EvidencePackError.
+    """
+    try:
+        pack = EvidencePack(
+            trace_id=trace_id,
+            action_trace=action_trace,
+            policy_evals=policy_evals,
+            risk_score=risk_score,
+            budget_breach_data={},
+            boundary_snapshot_hash=ssot_hash or "n/a",
+            evidence_id=str(uuid.uuid4()),
+            timestamp_utc=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            escalation_reason=escalation_reason,
+            route_decision_ref=route_decision_ref,
+            guardian_results=guardian_results,
+            policy_snapshot_data=policy_snapshot_data,
+            ssot_hash=ssot_hash,
+            attachments=attachments,
+        )
+    except (ValueError, TypeError) as exc:
+        raise EvidencePackError(
+            f"FAIL (P3/Wave2.2): HIL EvidencePack construction failed: {exc}",
+        ) from exc
     return pack
 
 
@@ -172,6 +219,7 @@ __all__ = [
     "PolicyExceptionError",
     "PolicyUpdateError",
     "build_evidence_pack",
+    "build_hil_evidence_pack",
     "emit_policy_exception",
     "propose_policy_update",
     "validate_evidence_pack",

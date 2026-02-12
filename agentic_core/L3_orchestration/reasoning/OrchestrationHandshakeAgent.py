@@ -24,11 +24,18 @@ from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrc
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.L0_maintenance.enforcement.v15_p3_contracts import (
+    build_hil_evidence_pack,
+)
 from agentic_core.L0_maintenance.types.guardian_contract import (
     V15HardFailAbort,
     is_v15_enforced,
 )
 from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+from agentic_core.L0_maintenance.types.v15_p3_types import (
+    PolicySnapshot,
+    RouteDecisionRef,
+)
 from agentic_core.L0_maintenance.types.v15_types import (
     RouteDecisionArtifact,
     RoutePath,
@@ -180,10 +187,55 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                         "§3.1 RouteDecisionArtifact durable emission failed",
                     ) from exc
 
-            if routing_result.decision in (
-                RoutePath.HUMAN_ESCALATION,
-                RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW,
-            ):
+            if routing_result.decision == RoutePath.HUMAN_ESCALATION:
+                # §Wave2.2 — Emit EvidencePack at HIL escalation boundary
+                _hil_pack_dict = None
+                try:
+                    _hil_ref = RouteDecisionRef(
+                        trace_id=request_id,
+                        decision=routing_result.decision.value,
+                        agent_name=best["agent_class"],
+                        reason=routing_result.reason or "",
+                    )
+                    _hil_snap = PolicySnapshot(
+                        security_level="enforced",
+                        risk_tier=str(getattr(routing_result, "risk_level", "HIGH")),
+                        laws_applied=(),
+                        policy_hash="",
+                    )
+                    _hil_pack = build_hil_evidence_pack(
+                        trace_id=request_id,
+                        escalation_reason=routing_result.reason or "HUMAN_ESCALATION",
+                        route_decision_ref=_hil_ref,
+                        policy_snapshot_data=_hil_snap,
+                        risk_score=0.8,
+                        action_trace=(f"delegate_task({Task[:50]})",),
+                        policy_evals=(routing_result.decision.value,),
+                    )
+                    _hil_pack_dict = asdict(_hil_pack)
+                    _hil_emitter = TelemetryEmitter()
+                    _hil_emitter.emit_typed_artifact("HIL_EVIDENCE_PACK", _hil_pack)
+                    _hil_log_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+                    _hil_emitter.flush_to_artifacts_dir(_hil_log_dir)
+                # guardian: allow-silent-swallow
+                except Exception as _hil_exc:
+                    import logging as _hil_logging
+
+                    _hil_logging.getLogger(__name__).error(
+                        "§Wave2.2 EvidencePack emission failed at HIL boundary: %s",
+                        _hil_exc,
+                    )
+                return {
+                    "status": "route_blocked",
+                    "route_path": routing_result.decision.value,
+                    "reason": routing_result.reason,
+                    "delegated_to": f"{best['agent_class']}.{best['method']}",
+                    "route_decision_artifact": route_artifact_dict,
+                    "l3_route_decision_artifact": l3_artifact_dict,
+                    "hil_evidence_pack": _hil_pack_dict,
+                }
+
+            if routing_result.decision == RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW:
                 return {
                     "status": "route_blocked",
                     "route_path": routing_result.decision.value,

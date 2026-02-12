@@ -163,10 +163,18 @@ def _install_module_stubs():
             "CoreOrchestrationAgent": _stub_cls,
         },
     )
+    from datetime import datetime, timezone
+
+    class _RoutingRequestStub:
+        def __init__(self, *a, **k):
+            self.timestamp = datetime.now(timezone.utc)
+            for key, val in k.items():
+                setattr(self, key, val)
+
     _make_stub(
         "agentic_core.runtime.config.contextual_router_config",
         {
-            "RoutingRequest": _stub_cls,
+            "RoutingRequest": _RoutingRequestStub,
             "get_router": MagicMock(return_value=MagicMock()),
         },
     )
