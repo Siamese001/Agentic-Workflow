@@ -76,6 +76,16 @@ def validate_manifest_emission(manifest: Any) -> SurgicalManifest:
     return manifest
 
 
+def require_manifest_hash_ok(manifest: SurgicalManifest) -> None:
+    """§1.6 — Fail-closed: verify manifest_hash matches ast_snippet SHA-256.
+
+    Call immediately after SurgicalManifest construction, before return.
+    Raises ValueError on mismatch.
+    """
+    if not manifest.verify_hash():
+        raise ValueError("SurgicalManifest integrity hash mismatch")
+
+
 # =============================================================================
 # §1.4 — Deterministic AST serialization
 # =============================================================================
@@ -302,6 +312,7 @@ __all__ = [
     "dedupe_sha256",
     "enforce_episodic_query_before_planning",
     "knowledge_supervisor_check",
+    "require_manifest_hash_ok",
     "validate_execution_input",
     "validate_manifest_emission",
     "verify_ast_determinism",
