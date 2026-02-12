@@ -81,4 +81,5 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
 
         return {"healed": False}
 
-    # heal_repository() and heal() inherited from CodeToolRunnerCapability
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

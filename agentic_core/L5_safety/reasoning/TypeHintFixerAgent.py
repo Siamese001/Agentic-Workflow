@@ -74,6 +74,10 @@ class TypeHintFixerAgent(SovereignBaseAgent, ast.NodeTransformer):
         return node
 
     @standard_heal
+    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

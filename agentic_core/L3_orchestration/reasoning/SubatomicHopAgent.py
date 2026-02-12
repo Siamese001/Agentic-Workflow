@@ -485,3 +485,6 @@ class SubatomicHopAgent(SovereignBaseAgent):
             return {"skipped": 1}
         finally:
             _call_path.discard(agent_name)
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

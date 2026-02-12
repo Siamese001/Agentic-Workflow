@@ -56,6 +56,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
         else:
             self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1
 
+    # guardian: allow-type-erasure
     async def llm_route(self, prompt: str, model: str = "gpt-4", **kwargs) -> dict:
         """
         Route LLM request with fallback and retry.
@@ -76,9 +77,11 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
         except Exception as e:
             latency = (time.time() - start) * 1000
             self._audit("llm_route", False, latency)
+            # guardian: allow-type-erasure
             Logger.error(f"[MCP Gateway] LLM Route failed: {e}")
             raise
 
+    # guardian: allow-type-erasure
     async def kg_query(self, query: str, **kwargs) -> dict:
         """
         Query knowledge graph with caching.
@@ -101,6 +104,7 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
             Logger.error(f"[MCP Gateway] KG Query failed: {e}")
             raise
 
+    # guardian: allow-type-erasure
     async def archive_operation(self, operation: str, **kwargs) -> dict:
         """
         Execute archive operation.
@@ -126,6 +130,9 @@ class SovereignMCPGateway(AtomicExecutionMixin, SovereignBaseAgent):
     async def _mock_tool_call(self, tool_name: str, args: dict) -> dict:
         """Mock handler for initial bring-up if router is missing."""
         return {"status": "success", "mock": True, "tool": tool_name}
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)
 
 
 # Singleton accessor

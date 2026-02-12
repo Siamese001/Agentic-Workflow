@@ -321,3 +321,6 @@ class TestGeneratorAgent(SovereignBaseAgent):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

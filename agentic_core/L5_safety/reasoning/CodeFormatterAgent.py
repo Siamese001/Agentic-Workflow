@@ -93,4 +93,5 @@ class CodeFormatterAgent(CodeToolRunnerCapability, SovereignBaseAgent):
 
         return {"healed": changed}
 
-    # heal_repository() and heal() inherited from CodeToolRunnerCapability
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

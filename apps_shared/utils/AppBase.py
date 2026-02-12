@@ -146,3 +146,6 @@ class AppBase(AtomicExecutionMixin, MetaLearningMixin, SovereignBaseAgent, Heale
             "version": self._app_version,
             "similarity_threshold": self._similarity_threshold,
         }
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

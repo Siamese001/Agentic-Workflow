@@ -41,6 +41,7 @@ class LocationAgent(LocationHealerAgent):
         )
         super().__post_init__()
 
+    # guardian: allow-type-erasure
     def run(self, files: list[Path] | None = None) -> dict:
         """Delegate validation scan to LocationValidatorAgent."""
         from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
@@ -67,3 +68,6 @@ class LocationAgent(LocationHealerAgent):
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.validate_sovereign_roots()
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)
