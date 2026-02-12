@@ -23,12 +23,36 @@ from enum import Enum
 
 
 @dataclass(frozen=True)
+class RouteDecisionRef:
+    """§Wave2.2 — Essential subset of a RouteDecisionArtifact for cross-layer linking."""
+
+    trace_id: str
+    decision: str
+    agent_name: str
+    reason: str
+
+
+@dataclass(frozen=True)
+class PolicySnapshot:
+    """§Wave2.2 — Policy state at the time of escalation."""
+
+    security_level: str
+    risk_tier: str
+    laws_applied: tuple[str, ...]
+    policy_hash: str
+
+
+@dataclass(frozen=True)
 class EvidencePack:
     """§3.4 — Structured evidence for human escalation.
 
     Generated when a routing decision reaches HUMAN_REVIEW.
     Contains the full action trace, policy evaluations, risk score,
     budget breach data, and an immutable boundary snapshot hash.
+
+    Wave 2.2 extension: evidence_id, timestamp_utc, escalation_reason,
+    route_decision_ref, guardian_results, policy_snapshot_data, ssot_hash,
+    attachments — all optional (defaults) to preserve backward compat.
     """
 
     trace_id: str
@@ -37,6 +61,15 @@ class EvidencePack:
     risk_score: float
     budget_breach_data: dict[str, object]
     boundary_snapshot_hash: str
+    # §Wave2.2 — HIL escalation extended fields
+    evidence_id: str = ""
+    timestamp_utc: str = ""
+    escalation_reason: str = ""
+    route_decision_ref: RouteDecisionRef | None = None
+    guardian_results: tuple[str, ...] = ()
+    policy_snapshot_data: PolicySnapshot | None = None
+    ssot_hash: str = ""
+    attachments: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -162,6 +195,8 @@ __all__ = [
     "EvidencePack",
     "ExceptionScope",
     "PolicyExceptionArtifact",
+    "PolicySnapshot",
     "PolicyUpdateProposal",
     "ProposalStatus",
+    "RouteDecisionRef",
 ]
