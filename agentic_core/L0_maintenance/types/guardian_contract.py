@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import uuid
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path, PurePosixPath
@@ -907,3 +908,79 @@ def load_guardian_result(path: Path | str) -> GuardianResult:
         v15_signature=data.get("v15_signature"),
         v15_commit_hash=data.get("v15_commit_hash"),
     )
+
+
+# ---------------------------------------------------------------------------
+# V15 Signing Helpers — §7 signed-guardian-output
+# ---------------------------------------------------------------------------
+
+GUARDIAN_SIGNING_KEY_ID = "guardian-signing-key"
+
+
+def get_default_signing_enclave() -> Any:
+    """Return a SignatureEnclave for guardian result signing.
+
+    When V15_TEST_SIGNING=1: returns a DeterministicTestEnclave with a
+    fixed HMAC key (deterministic, no network, no wall-clock).
+    When enforced but V15_TEST_SIGNING is unset: raises V15EnforcementError
+    (no production enclave available yet — fail-closed).
+    When not enforced: returns None.
+    """
+    from agentic_core.L0_maintenance.types.v15_p5_types import (
+        DeterministicTestEnclave,
+        KeyRecord,
+        KeyStatus,
+        SigningAlgorithm,
+        TrustRoot,
+    )
+
+    if os.environ.get("V15_TEST_SIGNING", "").strip() == "1":
+        trust_root = TrustRoot(
+            keys=(
+                KeyRecord(
+                    key_id=GUARDIAN_SIGNING_KEY_ID,
+                    public_key=b"guardian-deterministic-signing-secret",
+                    created_tick=0,
+                    status=KeyStatus.ACTIVE,
+                    algorithm=SigningAlgorithm.HMAC_SHA256,
+                ),
+            ),
+        )
+        return DeterministicTestEnclave(trust_root)
+
+    if is_v15_enforced():
+        raise V15EnforcementError(
+            "V15 enforcement requires a signing enclave. "
+            "Set V15_TEST_SIGNING=1 for deterministic test signing, "
+            "or provide a production SignatureEnclave.",
+        )
+    return None
+
+
+def maybe_sign_result(
+    result: GuardianResult,
+    *,
+    commit_hash: str = "",
+) -> GuardianResult:
+    """Sign a GuardianResult when V15 enforcement is active.
+
+    When enforced: assigns v15_trace_id (if missing), calls result.sign()
+    via get_default_signing_enclave(). Returns the mutated result.
+    When not enforced: returns result unchanged (unsigned allowed).
+
+    Args:
+        result: The GuardianResult to potentially sign.
+        commit_hash: Git commit hash for the signing context.
+
+    Returns:
+        The (potentially signed) GuardianResult.
+    """
+    if not is_v15_enforced():
+        return result
+
+    if not result.v15_trace_id:
+        result.v15_trace_id = str(uuid.uuid4())
+
+    enclave = get_default_signing_enclave()
+    result.sign(enclave, GUARDIAN_SIGNING_KEY_ID, commit_hash or "HEAD")
+    return result
