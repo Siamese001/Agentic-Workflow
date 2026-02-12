@@ -179,8 +179,13 @@ class TestStatusPromotion:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("_disable_v15")
 class TestSerializationRoundTrip:
     """Verify to_json → load_guardian_result produces identical data."""
+
+    @pytest.fixture(autouse=True)
+    def _disable_v15(self, monkeypatch):
+        monkeypatch.setenv("V15_ENFORCEMENT", "0")
 
     def test_round_trip_passing(self, passing_result: GuardianResult, tmp_path: Path):
         out = write_guardian_result(passing_result, tmp_path)

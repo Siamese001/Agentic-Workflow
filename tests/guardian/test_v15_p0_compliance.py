@@ -35,7 +35,7 @@ def _set_v15_enforcement(enabled: bool, monkeypatch):
     if enabled:
         monkeypatch.setenv("V15_ENFORCEMENT", "true")
     else:
-        monkeypatch.delenv("V15_ENFORCEMENT", raising=False)
+        monkeypatch.setenv("V15_ENFORCEMENT", "0")
 
 
 # ===========================================================================

@@ -66,8 +66,14 @@ class TestModeDetection:
         assert not is_v15_soft_fail()
 
     @patch.dict(os.environ, {}, clear=True)
-    def test_unset_defaults_to_off(self):
+    def test_unset_defaults_to_on(self):
         os.environ.pop("V15_ENFORCEMENT", None)
+        assert is_v15_enforced()
+        assert not is_v15_hard_fail()
+        assert not is_v15_soft_fail()
+
+    @patch.dict(os.environ, {"V15_ENFORCEMENT": "0"})
+    def test_explicit_off(self):
         assert not is_v15_enforced()
         assert not is_v15_hard_fail()
         assert not is_v15_soft_fail()

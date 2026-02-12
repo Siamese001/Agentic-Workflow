@@ -1,12 +1,14 @@
 """V15 P8.2c — Enforcement Mode Transition Safety Matrix.
 
 Proves the exactly-one rule for every valid/invalid V15_ENFORCEMENT value:
-- OFF:       enforced=False, soft=False, hard=False
+- UNSET:     enforced=True (fail-closed default), soft=False, hard=False (log mode)
+- OFF:       enforced=False, soft=False, hard=False  (explicit opt-out only)
 - LOG_ONLY:  enforced=True,  soft=False, hard=False
 - SOFT_FAIL: enforced=True,  soft=True,  hard=False
 - HARD_FAIL: enforced=True,  soft=False, hard=True
+- INVALID:   ValueError raised (deterministic misconfig rejection)
 
-Covers case variants, whitespace, synonyms, and garbage inputs.
+Covers case variants, whitespace, synonyms, and invalid inputs.
 """
 
 from __future__ import annotations
@@ -24,9 +26,11 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
 # ===========================================================================
 
 # (env_value, expected_enforced, expected_soft, expected_hard, label)
+DEFAULT_ON_CASES = [
+    (None, True, False, False, "unset_default_on"),
+]
+
 OFF_CASES = [
-    (None, False, False, False, "unset"),
-    ("", False, False, False, "empty"),
     ("0", False, False, False, "zero"),
     ("false", False, False, False, "false_lower"),
     ("FALSE", False, False, False, "false_upper"),
@@ -34,14 +38,14 @@ OFF_CASES = [
     ("OFF", False, False, False, "off_upper"),
     ("no", False, False, False, "no_lower"),
     ("NO", False, False, False, "no_upper"),
-    ("garbage", False, False, False, "garbage"),
-    ("2", False, False, False, "two"),
 ]
 
 LOG_CASES = [
     ("log", True, False, False, "log_lower"),
     ("LOG", True, False, False, "log_upper"),
     ("Log", True, False, False, "log_title"),
+    ("on", True, False, False, "on_lower"),
+    ("ON", True, False, False, "on_upper"),
 ]
 
 SOFT_CASES = [
@@ -68,9 +72,20 @@ WHITESPACE_CASES = [
     (" 1 ", True, False, True, "one_padded"),
     ("\tsoft\t", True, True, False, "soft_tabbed"),
     ("\nlog\n", True, False, False, "log_newline"),
+    (" 0 ", False, False, False, "zero_padded"),
+    (" off ", False, False, False, "off_padded"),
 ]
 
-ALL_CASES = OFF_CASES + LOG_CASES + SOFT_CASES + HARD_CASES + WHITESPACE_CASES
+# Invalid values — must raise ValueError (deterministic misconfig rejection)
+INVALID_CASES = [
+    ("", "empty"),
+    ("garbage", "garbage"),
+    ("2", "two"),
+    ("enabled", "enabled"),
+    ("disable", "disable"),
+]
+
+ALL_CASES = DEFAULT_ON_CASES + OFF_CASES + LOG_CASES + SOFT_CASES + HARD_CASES + WHITESPACE_CASES
 
 
 def _set_env(monkeypatch, value):
@@ -178,8 +193,39 @@ class TestMutualExclusion:
 class TestDeterminism:
     """Same input must always produce same output."""
 
-    @pytest.mark.parametrize("env_val", ["log", "soft", "1", "0", ""])
+    @pytest.mark.parametrize("env_val", ["log", "soft", "1", "0", "off"])
     def test_idempotent_across_calls(self, monkeypatch, env_val):
         monkeypatch.setenv("V15_ENFORCEMENT", env_val)
         results = [(is_v15_enforced(), is_v15_soft_fail(), is_v15_hard_fail()) for _ in range(10)]
         assert len(set(results)) == 1, f"Non-deterministic for '{env_val}': {set(results)}"
+
+    def test_idempotent_unset(self, monkeypatch):
+        monkeypatch.delenv("V15_ENFORCEMENT", raising=False)
+        results = [(is_v15_enforced(), is_v15_soft_fail(), is_v15_hard_fail()) for _ in range(10)]
+        assert len(set(results)) == 1, f"Non-deterministic for unset: {set(results)}"
+
+    @pytest.mark.parametrize("env_val", ["garbage", "", "2"])
+    def test_idempotent_invalid_raises(self, monkeypatch, env_val):
+        monkeypatch.setenv("V15_ENFORCEMENT", env_val)
+        for _ in range(5):
+            with pytest.raises(ValueError):
+                is_v15_enforced()
+
+
+# ===========================================================================
+# E) Invalid Value Rejection
+# ===========================================================================
+
+
+class TestInvalidValueRejection:
+    """Unrecognized V15_ENFORCEMENT values must raise ValueError."""
+
+    @pytest.mark.parametrize(
+        "env_val, label",
+        INVALID_CASES,
+        ids=[c[1] for c in INVALID_CASES],
+    )
+    def test_invalid_value_raises_valueerror(self, monkeypatch, env_val, label):
+        monkeypatch.setenv("V15_ENFORCEMENT", env_val)
+        with pytest.raises(ValueError, match="not a recognized value"):
+            is_v15_enforced()

@@ -170,6 +170,21 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     GuardianReportBuilder.reset()
 
 
+@pytest.fixture(autouse=True)
+def _v15_default_off(monkeypatch):
+    """Default V15 enforcement OFF for guardian tests.
+
+    Most guardian tests validate structural/schema properties and do not
+    exercise V15 enforcement semantics.  With the fail-closed default
+    (is_v15_enforced() == True when env var is absent), unsigned
+    GuardianResult.to_json() calls would raise V15EnforcementError.
+
+    Tests that *do* exercise V15 semantics override this via
+    ``monkeypatch.setenv`` or ``@patch.dict``.
+    """
+    monkeypatch.setenv("V15_ENFORCEMENT", "0")
+
+
 @pytest.fixture(scope="session", autouse=True)
 def guardian_session_marker():
     """
