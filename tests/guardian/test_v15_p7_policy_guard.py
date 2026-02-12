@@ -17,6 +17,7 @@ import pytest
 from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
     V15ExecutionGateway,
 )
+from agentic_core.L0_maintenance.types.guardian_contract import V15HardFailAbort
 from agentic_core.L0_maintenance.types.v15_contracts import (
     PolicyConfigGuard,
     PolicyMutationIncident,
@@ -112,5 +113,7 @@ class TestGatewayPolicyGuard:
         original = {"key": "original"}
         guard = PolicyConfigGuard(policy_config=original, wave_id="test-wave")
         mutated = {"key": "mutated"}
-        with pytest.raises(PolicyMutationIncident):
+        with pytest.raises(V15HardFailAbort) as exc_info:
             gw._policy_check(guard, mutated, "test-trace")
+        # Original PolicyMutationIncident is chained via __cause__
+        assert isinstance(exc_info.value.__cause__, PolicyMutationIncident)
