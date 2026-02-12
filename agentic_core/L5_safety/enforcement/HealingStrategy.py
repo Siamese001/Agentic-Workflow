@@ -310,7 +310,7 @@ class HealingStrategy:
             enforce_route_decision_presence,
         )
 
-        audit_payload = kwargs.pop("route_decision_artifact", None)
+        audit_payload = kwargs.get("route_decision_artifact")
         enforce_route_decision_presence(audit_payload)
 
         start_time = datetime.now()
