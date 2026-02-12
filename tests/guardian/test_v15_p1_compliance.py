@@ -1091,3 +1091,58 @@ class TestP1CriticalDWiring:
 
         assert rc != 0, "P1 gate runner should fail with synthetic fail"
         assert "FAILED" in output, "Should show failure message"
+
+
+# =========================================================================
+# P2.2-W1: enforce_route_decision_presence — downstream V15 gate
+# =========================================================================
+
+
+class TestEnforceRouteDecisionPresence:
+    """Under V15, downstream validation must have a RouteDecisionArtifact."""
+
+    def test_v15_enforced_none_payload_raises(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import (
+            V15HardFailAbort,
+        )
+        from agentic_core.L0_maintenance.types.v15_contracts import (
+            enforce_route_decision_presence,
+        )
+
+        with patch.dict(os.environ, {"V15_ENFORCEMENT": "1"}):
+            with pytest.raises(V15HardFailAbort, match="audit payload is None"):
+                enforce_route_decision_presence(None)
+
+    def test_v15_enforced_missing_key_raises(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import (
+            V15HardFailAbort,
+        )
+        from agentic_core.L0_maintenance.types.v15_contracts import (
+            enforce_route_decision_presence,
+        )
+
+        with patch.dict(os.environ, {"V15_ENFORCEMENT": "1"}):
+            with pytest.raises(V15HardFailAbort, match="absent or None"):
+                enforce_route_decision_presence({"status": "success"})
+
+    def test_v15_enforced_valid_artifact_passes(self):
+        from agentic_core.L0_maintenance.types.v15_contracts import (
+            enforce_route_decision_presence,
+        )
+
+        payload = {
+            "route_decision_artifact": {
+                "trace_id": "t1",
+                "route_path": "STANDARD_VALIDATION",
+            },
+        }
+        with patch.dict(os.environ, {"V15_ENFORCEMENT": "1"}):
+            enforce_route_decision_presence(payload)
+
+    def test_non_v15_none_payload_passes(self):
+        from agentic_core.L0_maintenance.types.v15_contracts import (
+            enforce_route_decision_presence,
+        )
+
+        with patch.dict(os.environ, {"V15_ENFORCEMENT": "0"}):
+            enforce_route_decision_presence(None)

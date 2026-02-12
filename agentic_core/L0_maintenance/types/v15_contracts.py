@@ -248,6 +248,35 @@ class ArtifactAbsenceFailure(Exception):
         )
 
 
+def enforce_route_decision_presence(
+    audit_payload: dict[str, Any] | None,
+) -> None:
+    """§3.1 — Under V15, downstream validation requires a RouteDecisionArtifact.
+
+    Fail-closed: if V15 is enforced and the artifact is missing or None,
+    raise V15HardFailAbort.  Non-V15 behaviour is unchanged (no-op).
+    """
+    from agentic_core.L0_maintenance.types.guardian_contract import (
+        V15HardFailAbort,
+        is_v15_enforced,
+    )
+
+    if not is_v15_enforced():
+        return
+
+    if audit_payload is None:
+        raise V15HardFailAbort(
+            "Missing RouteDecisionArtifact under V15: audit payload is None",
+        )
+
+    artifact = audit_payload.get("route_decision_artifact")
+    if artifact is None:
+        raise V15HardFailAbort(
+            "Missing RouteDecisionArtifact under V15: "
+            "'route_decision_artifact' key absent or None in audit payload",
+        )
+
+
 # =============================================================================
 # §7.6 — Meta-Guardian ≥95% invariant coverage in CI
 # =============================================================================
@@ -610,6 +639,7 @@ __all__ = [
     "TieredVigilanceMonitor",
     "aggregate_gate_check",
     "enforce_artifact_presence",
+    "enforce_route_decision_presence",
     "meta_guardian_check",
     "static_policy_alignment_check",
     "validate_result_emission",
