@@ -89,6 +89,7 @@ class ForensicAgentRecord:
     parse_error: str = ""
     # Convenience booleans for audit matrix
     has_heal: bool = False
+    is_sovereign: bool = False
 
 
 OUTPUT_SCHEMA_VERSION = "1.3.0"
@@ -124,6 +125,79 @@ def extract_precise_mro(node: ast.ClassDef) -> list[str]:
         else:
             bases.append(safe_unparse(base))
     return bases
+
+
+def build_class_bases_map(project_root: Path) -> dict[str, list[str]]:
+    """Build repo-wide mapping of class_name → direct base class names from AST.
+
+    Scans all .py files under known source roots to enable full MRO resolution.
+    On name collision, first-seen definition wins (deterministic via sorted paths).
+    Handles starred bases (e.g. ``class Foo(*BASE_CLASSES)``) by resolving
+    module-level tuple assignments in the same file.
+    """
+    class_map: dict[str, list[str]] = {}
+    scan_roots = [
+        project_root / "agentic_core",
+        project_root / "apps_lic",
+        project_root / "apps_rg",
+        project_root / "apps_shared",
+    ]
+    for root in scan_roots:
+        if not root.exists():
+            continue
+        for py_file in sorted(root.rglob("*.py")):
+            try:
+                content = py_file.read_text(encoding="utf-8", errors="replace")
+                tree = ast.parse(content)
+
+                # Collect tuple assignments for starred-base resolution
+                # (walks full AST to catch assignments inside try/except blocks)
+                module_tuples: dict[str, list[str]] = {}
+                for stmt in ast.walk(tree):
+                    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+                        tgt = stmt.targets[0]
+                        if isinstance(tgt, ast.Name) and isinstance(stmt.value, ast.Tuple):
+                            elts = [e.id for e in stmt.value.elts if isinstance(e, ast.Name)]
+                            if elts and tgt.id not in module_tuples:
+                                module_tuples[tgt.id] = elts
+
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef) and node.name not in class_map:
+                        raw_bases = extract_precise_mro(node)
+                        resolved: list[str] = []
+                        for b in raw_bases:
+                            if b.startswith("*") and b[1:] in module_tuples:
+                                resolved.extend(module_tuples[b[1:]])
+                            else:
+                                resolved.append(b)
+                        class_map[node.name] = resolved
+            # guardian: allow-silent-swallow
+            except (SyntaxError, Exception):  # noqa: BLE001
+                continue
+    return class_map
+
+
+def resolve_full_mro(
+    direct_bases: list[str],
+    class_map: dict[str, list[str]],
+    _seen: set[str] | None = None,
+) -> list[str]:
+    """Recursively expand direct bases into a full transitive MRO chain.
+
+    Returns a flat list of all ancestor class names (deduplicated, depth-first).
+    """
+    if _seen is None:
+        _seen = set()
+    result: list[str] = []
+    for base in direct_bases:
+        simple = base.rsplit(".", 1)[-1] if "." in base else base
+        if simple in _seen:
+            continue
+        _seen.add(simple)
+        result.append(simple)
+        if simple in class_map:
+            result.extend(resolve_full_mro(class_map[simple], class_map, _seen))
+    return result
 
 
 def stub_sentinel_detected(content: str) -> bool:
@@ -298,6 +372,7 @@ def _to_v54_schema(legacy: dict, project_root: Path) -> dict:
                 "mixins": _derive_mixins(mro_chain),
                 "detected_methods": agent.get("methods_detected", []),
                 "integrity_hash": agent.get("file_sha256", ""),
+                "is_sovereign": agent.get("is_sovereign", False),
             },
         )
     return v54
@@ -305,6 +380,9 @@ def _to_v54_schema(legacy: dict, project_root: Path) -> dict:
 
 def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool = False) -> int:
     project_root = get_validated_project_root()
+
+    # 0. Build repo-wide class→bases map for full MRO resolution
+    class_bases_map = build_class_bases_map(project_root)
 
     # 1. Load the Candidate List from SSOT
     raw_candidates = load_agent_discovery(project_root, force_reload=True)
@@ -367,6 +445,14 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
             continue
 
         record = forensic_inspect(name, layer, full_path)
+
+        # Enrich with full transitive MRO and sovereign classification.
+        # Prefer class_bases_map (starred bases already resolved) over raw AST.
+        direct_bases = class_bases_map.get(record.class_name, record.mro_signature)
+        if direct_bases:
+            full_chain = resolve_full_mro(direct_bases, class_bases_map)
+            record.mro_signature = full_chain
+            record.is_sovereign = "SovereignBaseAgent" in full_chain
 
         if record.status == "ACTIVE":
             manifest["environment_under_test"].append(asdict(record))

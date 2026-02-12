@@ -1490,14 +1490,6 @@
       "layer": "knowledge",
       "fca_type": "AGENT",
       "exists": true
-    },
-    {
-      "file": "agentic_core\\runtime\\utils\\discovery_util.py",
-      "module": "agentic_core\\runtime\\utils\\discovery_util",
-      "class_name": "DiscoveredAgent",
-      "layer": "runtime",
-      "fca_type": "AGENT",
-      "exists": true
     }
   ]
 }
