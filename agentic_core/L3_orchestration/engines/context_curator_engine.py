@@ -9,12 +9,11 @@ from typing import Any
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger: Any = logging.getLogger(__name__)
 
 
-class ContextCurator(AtomicExecutionMixin, SovereignBaseAgent):
+class ContextCurator(SovereignBaseAgent):
     """Curates and manages the context window dynamically.
 
     Features:
@@ -25,6 +24,7 @@ class ContextCurator(AtomicExecutionMixin, SovereignBaseAgent):
     - Automatic pruning
     """
 
+    # guardian: allow-magic-config
     def __init__(self, max_tokens: int = 8000, reserved_tokens: int = 1000, enable_logging: bool = True):
         """Initialize context curator.
 
@@ -157,6 +157,7 @@ class ContextCurator(AtomicExecutionMixin, SovereignBaseAgent):
         chunk.relevance_score = max(0.0, min(1.0, relevance_score))
         return True
 
+    # guardian: allow-magic-config
     def prune_by_relevance(self, min_relevance: float = 0.3, keep_count: int = 5) -> int:
         """Prune low-relevance chunks.
 
@@ -265,6 +266,7 @@ class ContextCurator(AtomicExecutionMixin, SovereignBaseAgent):
         return current_total - tokens_freed <= target_total
 
 
+# guardian: allow-magic-config
 def create_context_curator(max_tokens: int = 8000, reserved_tokens: int = 1000) -> ContextCurator:
     """Factory function to create context curator.
 

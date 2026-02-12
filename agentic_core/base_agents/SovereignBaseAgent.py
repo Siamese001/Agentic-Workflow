@@ -48,6 +48,7 @@ from agentic_core.L0_maintenance.utils.core_integrity_util import (
     emergency_shutdown,
 )
 from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
 
 # [PHASE 9] Global Architecture Injection
@@ -71,6 +72,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SovereignBaseAgent(
+    AtomicExecutionMixin,
     infrastructure_mixin,
     SubatomicTestingMixin,
     ConfigMixin,

@@ -27,6 +27,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
 )
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class DuplicateFile:
 
 
 @dataclass
-class DuplicateCodeDetectorAgent(SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
     """L5 Safety agent that detects duplicate files and code blocks.
 
     This batch agent detects exact duplicate files and code blocks across the
