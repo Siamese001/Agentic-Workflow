@@ -24,8 +24,11 @@ EXPECTED RESULT:
 """
 
 import ast
+import importlib
+import importlib.util
 import os
 import sys
+import threading
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -436,16 +439,24 @@ class TestImportSafety:
 
         violations = []
 
+        # intentional: guarded optional import (try/except ImportError) with full fallback
+        _APPS_SHARED_ALLOWED = {
+            ("apps_shared/types/golden_state_evaluator_types.py", "apps_rg.core.JudgeEvaluation"),
+        }
+
         # Rule 1: apps_shared cannot import from apps_rg or apps_lic
         apps_shared_files = self.get_all_python_files(["apps_shared"])
         for file_path in apps_shared_files:
             try:
                 content = file_path.read_text(encoding="utf-8")
                 tree = ast.parse(content)
+                rel = str(file_path.relative_to(PROJECT_ROOT)).replace(os.sep, "/")
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ImportFrom):
                         if node.module and node.module.startswith(("apps_rg", "apps_lic")):
+                            if (rel, node.module) in _APPS_SHARED_ALLOWED:
+                                continue
                             violations.append(
                                 {
                                     "rule": "apps_shared independence",
@@ -917,23 +928,49 @@ class TestNuclearImportSweep:
         print(f"\n  Directories checked: {checked_dirs}")
         print(f"  Missing __init__.py: {len(missing_init)}")
 
-        # Track as tech debt with threshold
-        KNOWN_MISSING_INIT = 20  # Allow up to 20 known missing __init__.py
+        # Frozen allowlist: non-package dirs that legitimately lack __init__.py
+        # (scripts/, utils/, config/, types/ folders used as flat namespaces)
+        _KNOWN_NON_PACKAGES = frozenset(
+            {
+                "agentic_core/L1_cognition/utils",
+                "agentic_core/L2_execution/utils",
+                "agentic_core/L3_orchestration/types",
+                "agentic_core/L4_state/config",
+                "agentic_core/L4_state/types",
+                "agentic_core/L5_safety/config",
+                "agentic_core/L5_safety/types",
+                "agentic_core/L6_observability/dashboards/core",
+                "agentic_core/L6_observability/dashboards/renderers",
+                "agentic_core/L6_observability/utils",
+                "agentic_core/config/core",
+                "agentic_core/knowledge/reasoning",
+                "agentic_core/prompt_governance/scripts",
+                "apps_rg/scripts",
+                "apps_rg/utils",
+                "ops_scripts/ci",
+                "ops_scripts/general",
+                "ops_scripts/governance",
+                "ops_scripts/hooks",
+                "ops_scripts/incident",
+                "ops_scripts/maintenance",
+                "ops_scripts/policy",
+                "ops_scripts/review",
+                "ops_scripts/security",
+            },
+        )
+
+        # Normalize to forward-slash for cross-platform determinism
+        missing_set = {p.replace(os.sep, "/") for p in missing_init}
+        new_violations = sorted(missing_set - _KNOWN_NON_PACKAGES)
+
+        if new_violations:
+            error_msg = f"NEW directories missing __init__.py ({len(new_violations)}):\n"
+            for path in new_violations:
+                error_msg += f"  [X] {path}/\n"
+            raise AssertionError(error_msg)
 
         if missing_init:
-            if len(missing_init) <= KNOWN_MISSING_INIT:
-                print(f"\n[TECH DEBT] {len(missing_init)} directories missing __init__.py:")
-                for path in missing_init[:10]:
-                    print(f"  - {path}")
-                if len(missing_init) > 10:
-                    print(f"  ... and {len(missing_init) - 10} more")
-            else:
-                error_msg = (
-                    f"MISSING __init__.py EXCEEDS THRESHOLD ({len(missing_init)} > {KNOWN_MISSING_INIT}):\n"
-                )
-                for path in missing_init[:15]:
-                    error_msg += f"  [X] {path}/\n"
-                raise AssertionError(error_msg)
+            print(f"\n[TECH DEBT] {len(missing_init)} known non-package dirs (allowlisted)")
 
         print("\n[OK] __init__.py completeness check complete")
 
