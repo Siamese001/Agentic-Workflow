@@ -2,13 +2,15 @@
 Agentic Core Discovery Module
 
 This module provides the core discovery functionality for the Agentic Workflow system.
-It includes the DiscoveredAgent dataclass and AgentRegistry class for finding and
+It includes the DiscoveredAgentRecord dataclass and AgentRegistry class for finding and
 cataloging agents across the entire ecosystem.
 """
 
 import ast
 import logging
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from agentic_core.core.classification_kernel import is_agent_file
 from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -16,7 +18,16 @@ from agentic_core.utils.ssot_discovery_validator import get_python_files
 logger = logging.getLogger(__name__)
 
 
-# RETIRED: DiscoveredAgent removed from active agent pool (2026-02-08)
+@dataclass
+class DiscoveredAgentRecord:
+    """Lightweight record for a discovered agent (replaces retired DiscoveredAgent)."""
+
+    name: str = ""
+    layer: str = ""
+    instance: Any = None
+    class_ref: Any = None
+    file_path: Path | None = None
+    module_path: str = ""
 
 
 class AgentRegistry:
@@ -26,9 +37,9 @@ class AgentRegistry:
 
     def __init__(self, project_root: Path | None = None):
         self.project_root = project_root or Path(__file__).parent.parent.parent.parent
-        self.discovered_agents: list[DiscoveredAgent] = []
+        self.discovered_agents: list[DiscoveredAgentRecord] = []
 
-    def discover_all(self) -> list[DiscoveredAgent]:
+    def discover_all(self) -> list[DiscoveredAgentRecord]:
         """
         Discovers all agents in the ecosystem.
 
@@ -52,7 +63,7 @@ class AgentRegistry:
         logger.info(f"Discovered {len(agents)} agents across {len(python_files)} files")
         return agents
 
-    def _scan_file_for_agents(self, file_path: Path) -> list[DiscoveredAgent]:
+    def _scan_file_for_agents(self, file_path: Path) -> list[DiscoveredAgentRecord]:
         """
         Scans a single Python file for agent classes.
 
@@ -111,7 +122,7 @@ class AgentRegistry:
             except Exception:
                 instance = Mock()
 
-            agent = DiscoveredAgent(
+            agent = DiscoveredAgentRecord(
                 name=primary.name,
                 layer=layer,
                 instance=instance,

@@ -167,7 +167,7 @@ RUNTIME_STATE_JSON: str = "runtime_state.json"
 # Forensic discovery script integrity — canonical SHA-256 of the corrected script.
 # Verified by the audit precondition step before any analysis begins.
 FORENSIC_DISCOVERY_SCRIPT: str = "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py"
-FORENSIC_DISCOVERY_INTEGRITY_HASH: str = "375928764e5915ba19738b36d5000cbf8c1d35f1b06d6fc0ad60077ad3d806e4"
+FORENSIC_DISCOVERY_INTEGRITY_HASH: str = "e140d970cd529e7f8ca52ef47735113ebcea0cbc94d93f36a93e2a4aeeac093a"
 
 OPS_SCRIPTS_DIR: str = "ops_scripts"
 TESTS_DIR: str = "tests"
