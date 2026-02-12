@@ -148,9 +148,12 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                     "§3.1 RouteDecisionArtifact construction failed at routing boundary",
                 ) from exc
 
-            # §3.1 — Durable emission to TelemetryEmitter sink
+            # §3.1 — Durable emission to TelemetryEmitter sink + flush to artifacts
             try:
-                TelemetryEmitter().emit_route_decision(route_artifact)
+                _emitter = TelemetryEmitter()
+                _emitter.emit_route_decision(route_artifact)
+                _artifacts_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+                _emitter.flush_to_artifacts_dir(_artifacts_dir)
             except Exception as exc:
                 if is_v15_enforced():
                     raise V15HardFailAbort(

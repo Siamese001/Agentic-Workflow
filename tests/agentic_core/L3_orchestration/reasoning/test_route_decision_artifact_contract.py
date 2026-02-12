@@ -20,6 +20,7 @@ import pytest
 from agentic_core.L0_maintenance.types.v15_types import (
     RouteDecisionArtifact,
     RoutePath,
+    RoutingRationale,
 )
 
 # Required keys are the field names of RouteDecisionArtifact
@@ -389,3 +390,45 @@ class TestDurableEmission:
         assert out["status"] == "route_blocked"
         assert len(captured) == 1
         assert captured[0]["route_path"] == RoutePath.HUMAN_ESCALATION
+
+
+class TestFlushDurability:
+    """Assert TelemetryEmitter.flush_to_artifacts_dir persists events to disk."""
+
+    def test_flush_writes_ndjson_with_route_decision(self, tmp_path):
+        """flush_to_artifacts_dir writes NDJSON containing ROUTE_DECISION payload."""
+        import json
+
+        from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+
+        artifact = RouteDecisionArtifact(
+            trace_id="flush-test-trace",
+            timestamp="2026-02-12T00:00:00Z",
+            route_path=RoutePath.STANDARD_VALIDATION,
+            risk_score=0.0,
+            budget_est=0.0,
+            rationale_enum=RoutingRationale.STANDARD_VALIDATION,
+            policy_config_hash="",
+        )
+
+        emitter = TelemetryEmitter()
+        emitter.emit_route_decision(artifact)
+        out_path = emitter.flush_to_artifacts_dir(tmp_path)
+
+        assert out_path is not None
+        assert out_path.exists()
+
+        lines = out_path.read_text(encoding="utf-8").strip().splitlines()
+        assert len(lines) == 1
+
+        event = json.loads(lines[0])
+        assert event["type"] == "ROUTE_DECISION"
+        assert set(event["payload"].keys()) == REQUIRED_KEYS
+        assert event["payload"]["trace_id"] == "flush-test-trace"
+
+    def test_flush_returns_none_when_no_events(self, tmp_path):
+        """flush_to_artifacts_dir returns None if no events buffered."""
+        from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+
+        emitter = TelemetryEmitter()
+        assert emitter.flush_to_artifacts_dir(tmp_path) is None
