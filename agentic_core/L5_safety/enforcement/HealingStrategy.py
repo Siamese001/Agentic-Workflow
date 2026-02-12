@@ -299,10 +299,20 @@ class HealingStrategy:
             dry_run: If True, only report violations
             execute: If True, apply fixes
             **kwargs: Additional agent-specific parameters
+                route_decision_artifact: audit payload dict from L3 routing
+                    (required under V15; ignored otherwise)
 
         Returns:
             Dictionary with execution results
         """
+        # §3.1 — Under V15, require RouteDecisionArtifact before healing
+        from agentic_core.L0_maintenance.types.v15_contracts import (
+            enforce_route_decision_presence,
+        )
+
+        audit_payload = kwargs.pop("route_decision_artifact", None)
+        enforce_route_decision_presence(audit_payload)
+
         start_time = datetime.now()
 
         try:
