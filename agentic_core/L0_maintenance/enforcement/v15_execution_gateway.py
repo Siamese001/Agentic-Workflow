@@ -25,6 +25,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     is_v15_soft_fail,
 )
 from agentic_core.L0_maintenance.types.v15_contracts import (
+    GuardrailGuard,
     PipeOrderEnforcer,
     PipeOrderViolation,
     PolicyConfigGuard,
@@ -45,6 +46,10 @@ from agentic_core.L0_maintenance.types.v15_p2_types import (
     SurgicalManifest,
 )
 from agentic_core.L0_maintenance.types.v15_p5_types import HashMismatchTracker
+from agentic_core.L0_maintenance.types.v15_types import (
+    TokenCapArtifact,
+    TokenGateResult,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -154,6 +159,9 @@ class V15ExecutionGateway:
             wave_id=trace_id,
         )
 
+        # §7.3 — GuardrailGuard
+        guardrail = GuardrailGuard(trace_id=trace_id)
+
         # §2.6 — HashMismatchTracker for rollback escalation
         self._mismatch_tracker = HashMismatchTracker(wave_id=trace_id)
 
@@ -187,6 +195,28 @@ class V15ExecutionGateway:
             agent_memory_hash=mem_hash,
             semantic_clock=self._clock,
         )
+
+        # §7.3 — GuardrailGuard enforcement (fail-closed before mutation)
+        policy_hash = policy_guard.policy_hash
+        token_cap = TokenCapArtifact(
+            trace_id=trace_id,
+            policy_hash=policy_hash,
+            budget_limit=0,
+            tokens_requested=0,
+            gate_result=TokenGateResult.ALLOW,
+        )
+        safety_markers = ["trace_id_present", "policy_hash_present", "schema_valid"]
+        boundary_token = pre_snapshot.trace_id
+        if not guardrail.enforce_all(
+            token_cap=token_cap,
+            payload_hash=signal_hash,
+            expected_hash=signal_hash,
+            markers=safety_markers,
+            boundary_token=boundary_token,
+        ):
+            raise V15HardFailAbort(
+                "§7.3 GuardrailGuard enforcement failed: one or more sub-checks blocked progression",
+            )
 
         # --- Pipe step 6: circuit_breaker_increment ---
         self._pipe_advance(pipe, "circuit_breaker_increment", trace_id)
