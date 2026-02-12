@@ -691,15 +691,29 @@ class TestP1CriticalDWiring:
         """V15_ENFORCEMENT environment variable must be recognized."""
         from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 
-        # Test enabled values
-        for val in ["1", "true", "yes", "TRUE", "True"]:
+        # Test enabled values (explicit opt-in)
+        for val in ["1", "true", "yes", "on", "TRUE", "True"]:
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert is_v15_enforced()
 
-        # Test disabled values
-        for val in ["0", "false", "no", "", "something"]:
+        # Test disabled values (explicit opt-out)
+        for val in ["0", "false", "no", "off"]:
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert not is_v15_enforced()
+
+        # Test default (unset) is fail-closed ON
+        env = os.environ.copy()
+        env.pop("V15_ENFORCEMENT", None)
+        with patch.dict(os.environ, env, clear=True):
+            assert is_v15_enforced()
+
+        # Test invalid values raise ValueError
+        import pytest
+
+        for val in ["", "something"]:
+            with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
+                with pytest.raises(ValueError):
+                    is_v15_enforced()
 
     def test_v15_execution_gateway_exists_and_callable(self):
         """V15ExecutionGateway must be instantiable and have execute method."""

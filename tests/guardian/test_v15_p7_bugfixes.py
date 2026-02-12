@@ -46,9 +46,19 @@ class TestEnforcementModeSemantics:
     def test_is_v15_enforced_rejects_disabled(self):
         from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
 
-        for val in ("0", "false", "no", "", "something"):
+        for val in ("0", "false", "no", "off"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert not is_v15_enforced(), f"V15_ENFORCEMENT={val} must NOT enter V15 path"
+
+    def test_is_v15_enforced_raises_on_invalid(self):
+        import pytest
+
+        from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+
+        for val in ("", "something"):
+            with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
+                with pytest.raises(ValueError):
+                    is_v15_enforced()
 
     def test_is_v15_hard_fail_only_for_hard_values(self):
         from agentic_core.L0_maintenance.types.guardian_contract import is_v15_hard_fail

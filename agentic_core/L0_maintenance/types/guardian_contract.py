@@ -33,18 +33,25 @@ class V15EnforcementError(RuntimeError):
 
 
 def is_v15_enforced() -> bool:
-    """Return True when V15_ENFORCEMENT is enabled in any mode (log, soft, hard).
+    """Return True when V15 enforcement is active (fail-closed: default ON).
 
-    Accepts: "1", "true", "yes", "log", "soft" (case-insensitive).
-    LOG_ONLY and SOFT_FAIL modes enter the V15 path but do not block;
-    use ``is_v15_hard_fail()`` to decide whether to raise/block.
+    Unset / absent env var → True (fail-closed production default).
+    Explicit opt-out: "0", "false", "no", "off" (case-insensitive) → False.
+    Explicit opt-in: "1", "true", "yes", "on", "log", "soft" (case-insensitive) → True.
+    Any other value → ValueError (deterministic misconfig rejection).
+    Use ``is_v15_hard_fail()`` / ``is_v15_soft_fail()`` for mode selection.
     """
-    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-        "log",
-        "soft",
+    raw = os.environ.get("V15_ENFORCEMENT")
+    if raw is None:
+        return True
+    normalized = raw.strip().lower()
+    if normalized in ("0", "false", "no", "off"):
+        return False
+    if normalized in ("1", "true", "yes", "on", "log", "soft"):
+        return True
+    raise ValueError(
+        f"V15_ENFORCEMENT={raw!r} is not a recognized value. "
+        f"Use: 1/true/yes/on/log/soft (enabled) or 0/false/no/off (disabled).",
     )
 
 
