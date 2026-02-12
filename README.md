@@ -1,8 +1,11 @@
+Most AI agent systems fail in production due to:
 
-# Deterministic Agentic Execution Framework
-
-> Contract-first, test-enforced agentic architecture built for deterministic execution and production safety.
-
+- Implicit aggregation logic  
+- Identifier-coupled validation  
+- Silent fallback behavior  
+- Untested invariants  
+- Non-deterministic healing  
+- Weak observability 
 ---
 
 ## What This Is (30-Second Context)
