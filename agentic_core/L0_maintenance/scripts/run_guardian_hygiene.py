@@ -29,6 +29,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     GuardianStatus,
     ScanBudgetExceeded,
     guard_scan_budget,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -201,7 +202,8 @@ def run_hygiene_guardian(
                 details="No temporary artifacts found",
             )
             result.metrics["temp_artifact_count"] = 0
-    except Exception as exc:  # guardian: allow-silent_swallower
+    # guardian: allow-silent-swallow
+    except Exception as exc:
         result.add_check(
             check_id="temp_artifacts",
             status=CheckStatus.FAIL,
@@ -226,7 +228,8 @@ def run_hygiene_guardian(
                 details="No empty folders found",
             )
         result.metrics["empty_folder_count"] = len(empty)
-    except Exception as exc:  # guardian: allow-silent_swallower
+    # guardian: allow-silent-swallow
+    except Exception as exc:
         result.add_check(
             check_id="empty_folders",
             status=CheckStatus.FAIL,
@@ -251,7 +254,8 @@ def run_hygiene_guardian(
                 details="No __init__.py-only folders found",
             )
         result.metrics["init_only_folder_count"] = len(init_only)
-    except Exception as exc:  # guardian: allow-silent_swallower
+    # guardian: allow-silent-swallow
+    except Exception as exc:
         result.add_check(
             check_id="init_only_folders",
             status=CheckStatus.FAIL,
@@ -280,6 +284,9 @@ def run_hygiene_guardian(
         for hint in default_hints:
             if hint not in result.remediation_hints:
                 result.remediation_hints.append(hint)
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     # --- Write artifact ---
     if write_artifacts_dir:

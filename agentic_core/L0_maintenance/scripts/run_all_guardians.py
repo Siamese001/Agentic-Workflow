@@ -29,6 +29,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -205,6 +206,9 @@ def run_all_guardians(
         combined.summary = (
             f"{total_failed} guardian(s) failed out of {guardian_count} ({total_checks} checks)"
         )
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(combined, commit_hash="HEAD")
 
     # Write combined artifact
     if write_artifacts_dir:

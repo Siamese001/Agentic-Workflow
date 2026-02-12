@@ -25,6 +25,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
 )
 from agentic_core.L0_maintenance.types.guardian_registry import (
     ALL_GUARDIANS,
@@ -185,6 +186,7 @@ def run_contract_integrity_guardian(
             details="No guardians found in SSOT registry (excluding self)",
         )
         result.set_error("No guardians in registry")
+        maybe_sign_result(result, commit_hash="HEAD")
         return result
 
     result.add_check(
@@ -317,6 +319,9 @@ def run_contract_integrity_guardian(
             "All guardian scripts must import and use normalize_repo_path",
             "All runner functions must annotate return type as GuardianResult",
         ]
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     return result
 

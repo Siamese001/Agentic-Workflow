@@ -28,6 +28,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -213,6 +214,9 @@ def run_drift_detection_guardian(
             "Move archived/backup/old files to archives/",
             "Remove duplicate folders that shadow SSOT locations",
         ]
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     # --- Write artifact ---
     if write_artifacts_dir:

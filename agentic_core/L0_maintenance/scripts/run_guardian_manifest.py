@@ -26,6 +26,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -94,6 +95,7 @@ def run_manifest_guardian(
         )
         result.summary = f"Manifest integrity: SKIP ({MANIFEST_FILENAME} absent)"
         result.metrics["manifest_exists"] = 0
+        maybe_sign_result(result, commit_hash="HEAD")
         if write_artifacts_dir:
             artifact_dir = repo_root / write_artifacts_dir
             out = write_guardian_result(result, artifact_dir, "guardian_manifest_result.json")
@@ -125,6 +127,7 @@ def run_manifest_guardian(
         result.remediation_hints = [
             f"Run ManifestGuardian.seal_manifest() to create {LOCK_FILENAME}",
         ]
+        maybe_sign_result(result, commit_hash="HEAD")
         if write_artifacts_dir:
             artifact_dir = repo_root / write_artifacts_dir
             out = write_guardian_result(result, artifact_dir, "guardian_manifest_result.json")
@@ -160,6 +163,7 @@ def run_manifest_guardian(
             result.remediation_hints = [
                 "Re-seal manifest with ManifestGuardian.seal_manifest() after intentional changes",
             ]
+    # guardian: allow-silent-swallow
     except Exception as exc:
         result.add_check(
             check_id="checksum_match",
@@ -178,6 +182,9 @@ def run_manifest_guardian(
         result.summary = f"Manifest integrity: {total}/{total} checks passed"
     else:
         result.summary = f"Manifest integrity: {failed}/{total} checks failed"
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     if write_artifacts_dir:
         artifact_dir = repo_root / write_artifacts_dir
