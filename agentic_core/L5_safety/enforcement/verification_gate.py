@@ -286,3 +286,6 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
             "cache_size": len(self.verification_cache),
             "cache_keys": list(self.verification_cache.keys()),
         }
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

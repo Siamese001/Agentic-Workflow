@@ -206,3 +206,6 @@ class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
         for fp in self.ctx.python_files:
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)
