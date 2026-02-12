@@ -123,32 +123,28 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
             )
             routing_result = get_router().route(routing_request)
 
-            # §3.1 — Emit RouteDecisionArtifact (fail-closed under V15)
-            _RISK_SCORES = {"low": 0.0, "medium": 0.5, "high": 1.0}
+            # §3.1 — Attach RouteDecisionArtifact to audit return (fail-closed under V15)
             _ROUTE_TO_RATIONALE = {
                 RoutePath.LOW_RISK_BYPASS: RoutingRationale.LOW_RISK_BYPASS,
                 RoutePath.STANDARD_VALIDATION: RoutingRationale.STANDARD_VALIDATION,
                 RoutePath.HUMAN_ESCALATION: RoutingRationale.HUMAN_ESCALATION,
                 RoutePath.POLICY_CHALLENGE_LOOP: RoutingRationale.POLICY_CHALLENGE,
-                RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW: RoutingRationale.CIRCUIT_BREAKER_OPEN,
+                RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW: RoutingRationale.BUDGET_OVERFLOW,
             }
             try:
                 route_artifact = RouteDecisionArtifact(
                     trace_id=request_id,
                     timestamp=routing_request.timestamp.isoformat(),
                     route_path=routing_result.decision,
-                    risk_score=_RISK_SCORES.get(
-                        routing_result.risk_level.value,
-                        1.0,
-                    ),
-                    budget_est=0.0,
+                    risk_score=0.0,  # sentinel: RiskLevel is non-numeric str; type change proposed next wave
+                    budget_est=0.0,  # not available at L3 seam
                     rationale_enum=_ROUTE_TO_RATIONALE[routing_result.decision],
-                    policy_config_hash="",
+                    policy_config_hash="",  # not available at L3 seam
                 )
                 route_artifact_dict = asdict(route_artifact)
             except Exception as exc:
                 raise V15HardFailAbort(
-                    "§3.1 RouteDecisionArtifact emission failed",
+                    "§3.1 RouteDecisionArtifact construction failed at routing boundary",
                 ) from exc
 
             if routing_result.decision in (
