@@ -549,6 +549,28 @@ class TelemetryEmitter:
             },
         )
 
+    def flush_to_artifacts_dir(self, artifacts_dir: Any) -> Any:
+        """Persist all buffered events as NDJSON to *artifacts_dir*.
+
+        File: ``telemetry_events.ndjson`` (one JSON object per line).
+        Follows the same mkdir-then-write pattern as ``write_guardian_result``.
+
+        Returns:
+            Path to the written file, or *None* if there are no events.
+        """
+        if not self._events:
+            return None
+        import json
+        from pathlib import Path
+
+        out_dir = Path(artifacts_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / "telemetry_events.ndjson"
+        with out_path.open("a", encoding="utf-8") as fh:
+            for event in self._events:
+                fh.write(json.dumps(event, sort_keys=True, default=str) + "\n")
+        return out_path
+
     @property
     def events(self) -> list[dict[str, Any]]:
         return list(self._events)
