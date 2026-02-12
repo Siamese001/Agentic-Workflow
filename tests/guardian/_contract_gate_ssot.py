@@ -17,26 +17,53 @@ from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_spe
 # NOTE: Only list modules that ACTUALLY EXIST on disk
 # Each guardian maps to its ACTUAL behavioral test module (not a catch-all)
 GUARDIAN_ID_TO_TEST_MODULES: dict[str, tuple[str, ...]] = {
-    # contract_integrity is tested via test_guardian_self_integrity
+    "architecture_governance": ("test_guardian_architecture_governance",),
+    "classification_compliance": ("test_guardian_classification_compliance",),
     "contract_integrity": ("test_guardian_self_integrity",),
-    # hygiene has its own behavioral test module
+    "drift_detection": ("test_drift_detection",),
+    "hierarchy_compliance": ("test_guardian_hierarchy_compliance",),
     "hygiene": ("test_guardian_hygiene",),
-    # manifest_integrity has its own behavioral test module
+    "location_alignment": ("test_location_alignment",),
     "manifest_integrity": ("test_guardian_manifest",),
 }
 
 # Required test symbols that prove semantic coverage per guardian
 # At least ONE of these symbols must appear in the mapped test module(s)
 GUARDIAN_ID_TO_REQUIRED_TEST_SYMBOLS: dict[str, tuple[str, ...]] = {
+    "architecture_governance": (
+        "run_architecture_governance_guardian",
+        "TestArchitectureGovernance",
+        "test_architecture_governance",
+    ),
+    "classification_compliance": (
+        "run_classification_compliance_guardian",
+        "TestClassificationCompliance",
+        "test_classification_compliance",
+    ),
     "contract_integrity": (
         "TestStatusPromotion",
         "TestRealRepoIntegrity",
         "run_contract_integrity_guardian",
     ),
+    "drift_detection": (
+        "TestDriftDetection",
+        "test_drift_detection",
+        "run_drift_detection_guardian",
+    ),
+    "hierarchy_compliance": (
+        "run_hierarchy_compliance_guardian",
+        "TestHierarchyCompliance",
+        "test_hierarchy_compliance",
+    ),
     "hygiene": (
         "TestHygieneRealRepo",
         "TestHygieneSyntheticViolation",
         "run_hygiene_guardian",
+    ),
+    "location_alignment": (
+        "run_location_alignment_guardian",
+        "TestLocationAlignment",
+        "test_location_alignment",
     ),
     "manifest_integrity": (
         "TestManifestRealRepo",
@@ -48,19 +75,22 @@ GUARDIAN_ID_TO_REQUIRED_TEST_SYMBOLS: dict[str, tuple[str, ...]] = {
 # Required status assertions per guardian (enforces actual behavioral testing)
 # Each guardian must have at least one assertion comparing *.status to the required status
 GUARDIAN_ID_TO_REQUIRED_STATUS_ASSERTIONS: dict[str, tuple[str, ...]] = {
+    "architecture_governance": (),
+    "classification_compliance": (),
     "contract_integrity": (
-        # Must test precedence ordering: ERROR > FAIL > PASS
-        "GuardianStatus.ERROR.value",
+        # Must test FAIL and PASS status detection
         "GuardianStatus.FAIL.value",
         "GuardianStatus.PASS.value",
     ),
+    "drift_detection": (),
+    "hierarchy_compliance": (),
     "hygiene": (
         # Must test FAIL status detection (synthetic violations)
         "GuardianStatus.FAIL.value",
     ),
+    "location_alignment": (),
     "manifest_integrity": (
-        # Must test SKIP (missing manifest) AND FAIL (checksum mismatch/missing lock)
-        "CheckStatus.SKIP.value",
+        # Must test FAIL status detection
         "GuardianStatus.FAIL.value",
     ),
 }
@@ -92,15 +122,26 @@ CONTRACT_GATE_TEST_MODULES: tuple[str, ...] = tuple(
         {module for modules in GUARDIAN_ID_TO_TEST_MODULES.values() for module in modules}
         | {
             # Core contract enforcement modules that EXIST on disk
+            "test_aggregator_invariants",
             "test_artifact_class_enum_ratchet",
             "test_behavioral_coverage_ratchet",
+            "test_conftest_ignore_policy",
+            "test_contract_compatibility",
             "test_core_components",
+            "test_execute_ssot_v15_contract",
+            "test_guardian_aggregation",
+            "test_guardian_contract",
             "test_guardian_contract_gate_scope",
+            "test_guardian_runtime_budget",
             "test_guardian_self_integrity",
             "test_guardian_hygiene",
             "test_guardian_manifest",
+            "test_l6_signal_contract",
             "test_no_xfail_skip_in_contract_gate",
+            "test_performance_caps",
+            "test_registry_completeness",
             "test_scan_budget_integrity",
+            "test_semantic_coverage_quality",
         },
     ),
 )

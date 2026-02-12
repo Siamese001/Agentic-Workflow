@@ -31,14 +31,29 @@ pytestmark = pytest.mark.guardian
 # ---------------------------------------------------------------------------
 
 GUARDIAN_COVERAGE_MAP: dict[str, list[str]] = {
-    "hygiene": [
-        "tests/guardian/test_guardian_hygiene.py",
+    "architecture_governance": [
+        "tests/guardian/test_guardian_architecture_governance.py",
     ],
-    "manifest_integrity": [
-        "tests/guardian/test_guardian_manifest.py",
+    "classification_compliance": [
+        "tests/guardian/test_guardian_classification_compliance.py",
     ],
     "contract_integrity": [
         "tests/guardian/test_guardian_self_integrity.py",
+    ],
+    "drift_detection": [
+        "tests/guardian/test_drift_detection.py",
+    ],
+    "hierarchy_compliance": [
+        "tests/guardian/test_guardian_hierarchy_compliance.py",
+    ],
+    "hygiene": [
+        "tests/guardian/test_guardian_hygiene.py",
+    ],
+    "location_alignment": [
+        "tests/guardian/test_location_alignment.py",
+    ],
+    "manifest_integrity": [
+        "tests/guardian/test_guardian_manifest.py",
     ],
 }
 

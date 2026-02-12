@@ -19,6 +19,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
+EXECUTE_SSOT_ENTRYPOINT = (
+    REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
+)
 GITIGNORE = REPO_ROOT / ".gitignore"
 
 
@@ -195,7 +198,7 @@ class TestCLIContract:
     def test_help_exits_zero(self):
         """--help must exit 0."""
         result = subprocess.run(
-            [sys.executable, str(EXECUTE_SSOT), "--help"],
+            [sys.executable, str(EXECUTE_SSOT_ENTRYPOINT), "--help"],
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
@@ -207,7 +210,7 @@ class TestCLIContract:
     def test_help_contains_expected_flags(self):
         """--help output must mention key flags."""
         result = subprocess.run(
-            [sys.executable, str(EXECUTE_SSOT), "--help"],
+            [sys.executable, str(EXECUTE_SSOT_ENTRYPOINT), "--help"],
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
@@ -238,11 +241,12 @@ class TestNoTrackedArtifacts:
         )
         before_lines = set(before.stdout.strip().splitlines())
 
-        # Run execute_ssot.py --dry-run --territory agentic_core (quick, no side effects)
+        # Run via entrypoint --legacy --dry-run --territory agentic_core (quick, no side effects)
         subprocess.run(
             [
                 sys.executable,
-                str(EXECUTE_SSOT),
+                str(EXECUTE_SSOT_ENTRYPOINT),
+                "--legacy",
                 "--v15-enforcement",
                 "0",
                 "--dry-run",

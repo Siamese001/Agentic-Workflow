@@ -70,7 +70,7 @@ class TestAgent:
 class AnotherAgent:
     pass
 
-class NotAnAgent:
+class NotAClass:
     pass
 """
         temp_file = self.create_temp_file(code)
@@ -84,7 +84,7 @@ class NotAnAgent:
             class_names = [cls.name for cls in agent_classes]
             assert "TestAgent" in class_names
             assert "AnotherAgent" in class_names
-            assert "NotAnAgent" not in class_names
+            assert "NotAClass" not in class_names
         finally:
             self.cleanup_temp_file(temp_file)
 
