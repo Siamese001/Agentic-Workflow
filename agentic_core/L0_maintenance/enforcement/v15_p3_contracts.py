@@ -16,11 +16,14 @@ from datetime import datetime, timezone
 from typing import Any
 
 from agentic_core.L0_maintenance.types.v15_p3_types import (
+    ChangeAction,
     EvidencePack,
     ExceptionScope,
+    HILOutcome,
     PolicyExceptionArtifact,
     PolicySnapshot,
     PolicyUpdateProposal,
+    ProposedPolicyChange,
     RouteDecisionRef,
 )
 
@@ -214,12 +217,112 @@ def validate_proposal(proposal: Any) -> PolicyUpdateProposal:
     return proposal
 
 
+# =============================================================================
+# §Wave2.3 — build_hil_policy_proposal
+# =============================================================================
+
+# Deterministic mapping: HILOutcome → default ProposedPolicyChange entries
+_HIL_OUTCOME_CHANGE_MAP: dict[HILOutcome, tuple[ProposedPolicyChange, ...]] = {
+    HILOutcome.APPROVED: (
+        ProposedPolicyChange(
+            target="routing_policy",
+            action=ChangeAction.ADJUST,
+            scope="L3/orchestration",
+            risk_note="Human approved action; consider lowering escalation threshold",
+            current_value="human_escalation",
+            proposed_value="standard_validation",
+        ),
+    ),
+    HILOutcome.REJECTED: (
+        ProposedPolicyChange(
+            target="routing_policy",
+            action=ChangeAction.ADD,
+            scope="L5/governance",
+            risk_note="Human rejected action; consider adding deny rule",
+            current_value="",
+            proposed_value="deny",
+        ),
+    ),
+    HILOutcome.OVERRIDDEN: (
+        ProposedPolicyChange(
+            target="routing_policy",
+            action=ChangeAction.ADJUST,
+            scope="L5/governance",
+            risk_note="Human overrode system decision; review policy calibration",
+            current_value="system_decision",
+            proposed_value="human_override",
+        ),
+    ),
+    HILOutcome.NEEDS_MORE_INFO: (),
+}
+
+
+def build_hil_policy_proposal(
+    trace_id: str,
+    evidence_pack_id: str,
+    hil_outcome: HILOutcome,
+    reviewer_id: str,
+    review_notes: str,
+    request_id: str = "",
+    file_scope: str = "",
+    confidence: float = 0.7,
+) -> PolicyUpdateProposal:
+    """§Wave2.3 — Build a PolicyUpdateProposal from HIL review outcome.
+
+    Uses a deterministic mapping table from HILOutcome to ProposedPolicyChange
+    entries. If no structured reason exists, proposed_changes is empty but
+    rationale must explain why.
+
+    Fail-closed: any invalid field raises PolicyUpdateError.
+    """
+    proposed_changes = _HIL_OUTCOME_CHANGE_MAP.get(hil_outcome, ())
+
+    # Override scope from file context if available
+    if file_scope and proposed_changes:
+        proposed_changes = tuple(
+            ProposedPolicyChange(
+                target=pc.target,
+                action=pc.action,
+                scope=file_scope,
+                risk_note=pc.risk_note,
+                current_value=pc.current_value,
+                proposed_value=pc.proposed_value,
+            )
+            for pc in proposed_changes
+        )
+
+    rationale = review_notes or f"HIL outcome: {hil_outcome.value}; no structured notes provided"
+
+    try:
+        proposal = PolicyUpdateProposal(
+            trace_id=trace_id,
+            override_id=request_id or str(uuid.uuid4()),
+            proposed_policy_diff=f"{hil_outcome.value}: {rationale[:200]}",
+            originating_agent=f"HIL/{reviewer_id}",
+            semantic_clock_tick=0,
+            proposal_id=str(uuid.uuid4()),
+            timestamp_utc=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            evidence_pack_id=evidence_pack_id,
+            hil_outcome=hil_outcome,
+            proposed_changes=proposed_changes,
+            rationale=rationale,
+            proposer="SYSTEM",
+            confidence=confidence,
+        )
+    except (ValueError, TypeError) as exc:
+        raise PolicyUpdateError(
+            f"FAIL (P3/Wave2.3): HIL PolicyUpdateProposal construction failed: {exc}",
+        ) from exc
+    return proposal
+
+
 __all__ = [
     "EvidencePackError",
     "PolicyExceptionError",
     "PolicyUpdateError",
     "build_evidence_pack",
     "build_hil_evidence_pack",
+    "build_hil_policy_proposal",
     "emit_policy_exception",
     "propose_policy_update",
     "validate_evidence_pack",
