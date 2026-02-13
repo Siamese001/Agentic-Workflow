@@ -447,6 +447,60 @@ def create_mcp_server(
     return server
 
 
+def execute_tool_with_capability(
+    server: MCPToolServer,
+    name: str,
+    arguments: dict[str, Any],
+    *,
+    semantic_clock: Any,
+    subject_kind: str,
+    subject_id: str,
+    issued_by: str,
+    permissions: list[str],
+    allowed_paths: list[str],
+    max_tool_calls: int,
+    policy_config_hash: str | None = None,
+) -> MCPToolResult:
+    """§Wave5.0.3 — Integration seam: issue token + execute tool in one call.
+
+    Mints a CapabilityTokenArtifact via issue_capability_token and passes
+    it to server.execute_tool using the explicit capability_token parameter.
+    No enforcement logic here — enforcement remains solely in execute_tool.
+
+    Args:
+        server: MCPToolServer instance
+        name: Tool name
+        arguments: Tool arguments
+        semantic_clock: SemanticClockSnapshot for token issuance
+        subject_kind: Subject type (e.g. "agent")
+        subject_id: Subject identifier
+        issued_by: Issuer identity
+        permissions: Permission code values (e.g. ["TOOL:READ"])
+        allowed_paths: Allowed resource path prefixes
+        max_tool_calls: Maximum invocations for this token
+        policy_config_hash: Optional policy config hash
+
+    Returns:
+        MCPToolResult from execute_tool
+    """
+    from agentic_core.L2_execution.types.capability_token_types import (
+        issue_capability_token,
+    )
+
+    token = issue_capability_token(
+        semantic_clock=semantic_clock,
+        subject_kind=subject_kind,
+        subject_id=subject_id,
+        issued_by=issued_by,
+        permissions=permissions,
+        allowed_paths=allowed_paths,
+        max_tool_calls=max_tool_calls,
+        policy_config_hash=policy_config_hash,
+    )
+
+    return server.execute_tool(name, arguments, capability_token=token)
+
+
 def execute_tool_calls(
     server: MCPToolServer,
     tool_calls: list[dict[str, Any]],

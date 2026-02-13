@@ -21,6 +21,7 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenSubject,
     build_capability_decision,
     build_capability_token,
+    issue_capability_token,
 )
 
 # ---------------------------------------------------------------------------
@@ -637,3 +638,150 @@ class TestCapabilityNoScatter:
         }
         actual = set(lines)
         assert actual <= allowed, f"CapabilityEnforcer( found outside expected files: {actual - allowed}"
+
+
+# ===========================================================================
+# 5) Wave 5.0.3 — Issuance Helper + Integration Seam Tests
+# ===========================================================================
+
+
+class TestIssueCapabilityToken:
+    """Wave 5.0.3: issue_capability_token helper tests."""
+
+    def test_helper_determinism_identical_inputs(self):
+        """Same inputs => byte-identical token JSON."""
+        kwargs = {
+            "semantic_clock": CLOCK,
+            "subject_kind": "agent",
+            "subject_id": "StructureHealerAgent",
+            "issued_by": "L5_Guardian",
+            "permissions": [PERMISSION_CODES["TOOL_READ"], PERMISSION_CODES["FS_READ"]],
+            "allowed_paths": ["tool/calculator", "tool/analyze_text"],
+            "max_tool_calls": 3,
+        }
+        t1 = issue_capability_token(**kwargs)
+        t2 = issue_capability_token(**kwargs)
+        assert t1.to_json() == t2.to_json()
+        assert t1.trace_id == t2.trace_id
+
+    def test_helper_determinism_shuffled_inputs(self):
+        """Shuffled permissions and paths => identical output JSON."""
+        t1 = issue_capability_token(
+            semantic_clock=CLOCK,
+            subject_kind="agent",
+            subject_id="TestAgent",
+            issued_by="L5_Guardian",
+            permissions=["FS:READ", "TOOL:READ", "GIT:READ"],
+            allowed_paths=["tool/z", "tool/a", "tool/m"],
+            max_tool_calls=5,
+        )
+        t2 = issue_capability_token(
+            semantic_clock=CLOCK,
+            subject_kind="agent",
+            subject_id="TestAgent",
+            issued_by="L5_Guardian",
+            permissions=["TOOL:READ", "GIT:READ", "FS:READ"],
+            allowed_paths=["tool/m", "tool/z", "tool/a"],
+            max_tool_calls=5,
+        )
+        assert t1.to_json() == t2.to_json()
+        assert t1.trace_id == t2.trace_id
+
+    def test_helper_rejects_unknown_permission(self):
+        """Unknown permission code => ValueError with stable message."""
+        with pytest.raises(ValueError, match="unknown permission 'BOGUS:PERM'"):
+            issue_capability_token(
+                semantic_clock=CLOCK,
+                subject_kind="agent",
+                subject_id="TestAgent",
+                issued_by="L5_Guardian",
+                permissions=["TOOL:READ", "BOGUS:PERM"],
+                allowed_paths=["tool/calc"],
+                max_tool_calls=3,
+            )
+
+    def test_helper_rejects_permission_key_not_value(self):
+        """Permission key (e.g. 'TOOL_READ') is not a valid value => ValueError."""
+        with pytest.raises(ValueError, match="unknown permission 'TOOL_READ'"):
+            issue_capability_token(
+                semantic_clock=CLOCK,
+                subject_kind="agent",
+                subject_id="TestAgent",
+                issued_by="L5_Guardian",
+                permissions=["TOOL_READ"],
+                allowed_paths=["tool/calc"],
+                max_tool_calls=3,
+            )
+
+    def test_helper_missing_semantic_clock(self):
+        """None semantic_clock => ValueError."""
+        with pytest.raises(ValueError, match="semantic_clock is required"):
+            issue_capability_token(
+                semantic_clock=None,
+                subject_kind="agent",
+                subject_id="TestAgent",
+                issued_by="L5_Guardian",
+                permissions=["TOOL:READ"],
+                allowed_paths=["tool/calc"],
+                max_tool_calls=3,
+            )
+
+    def test_e2e_helper_token_allow_decision(self):
+        """Helper-minted token passed to execute_tool => ALLOW with matching trace_id."""
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+        )
+
+        server = MCPToolServer("test-issuance-e2e")
+        server.register_tool(
+            MCPTool(
+                name="calculator",
+                description="test tool",
+                parameters={},
+                handler=lambda **kw: "ok",
+            ),
+        )
+        token = issue_capability_token(
+            semantic_clock=CLOCK,
+            subject_kind="agent",
+            subject_id="StructureHealerAgent",
+            issued_by="L5_Guardian",
+            permissions=[PERMISSION_CODES["TOOL_READ"]],
+            allowed_paths=["tool/calculator"],
+            max_tool_calls=5,
+        )
+        result = server.execute_tool("calculator", {}, capability_token=token)
+        assert result.success is True
+
+    def test_e2e_integration_seam(self):
+        """execute_tool_with_capability issues token and executes in one call."""
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+            execute_tool_with_capability,
+        )
+
+        server = MCPToolServer("test-seam-e2e")
+        server.register_tool(
+            MCPTool(
+                name="analyzer",
+                description="test tool",
+                parameters={},
+                handler=lambda **kw: "analyzed",
+            ),
+        )
+        result = execute_tool_with_capability(
+            server,
+            "analyzer",
+            {},
+            semantic_clock=CLOCK,
+            subject_kind="agent",
+            subject_id="TestAgent",
+            issued_by="L5_Guardian",
+            permissions=[PERMISSION_CODES["TOOL_READ"]],
+            allowed_paths=["tool/analyzer"],
+            max_tool_calls=3,
+        )
+        assert result.success is True
+        assert result.tool_name == "analyzer"

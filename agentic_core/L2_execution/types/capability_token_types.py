@@ -387,6 +387,72 @@ class CapabilityEnforcer:
 
 
 # =============================================================================
+# §D — High-Level Issuance Helper (Wave 5.0.3)
+# =============================================================================
+
+
+def issue_capability_token(
+    *,
+    semantic_clock: SemanticClockSnapshot,
+    subject_kind: str,
+    subject_id: str,
+    issued_by: str,
+    permissions: list[str],
+    allowed_paths: list[str],
+    max_tool_calls: int,
+    policy_config_hash: str | None = None,
+) -> CapabilityTokenArtifact:
+    """§Wave5.0.3 — Deterministic capability token issuance helper.
+
+    High-level convenience for upstream (L5/L3) callers to mint a
+    CapabilityTokenArtifact with flat parameters.  Validates permission
+    codes, constructs composite sub-objects, and delegates to
+    build_capability_token for deterministic trace_id generation.
+
+    Args:
+        semantic_clock: Required SemanticClockSnapshot (ValueError if None).
+        subject_kind: Subject type (e.g. "agent").
+        subject_id: Subject identifier (e.g. "StructureHealerAgent").
+        issued_by: Issuer identity string.
+        permissions: List of permission code values (must be in
+            ALL_PERMISSION_VALUES, e.g. "TOOL:READ").  Sorted automatically.
+        allowed_paths: List of resource path prefixes.  Sorted automatically.
+        max_tool_calls: Maximum invocations allowed under this token.
+        policy_config_hash: Optional policy config hash for pinning.
+
+    Returns:
+        CapabilityTokenArtifact with deterministic trace_id.
+
+    Raises:
+        ValueError: If semantic_clock is None or any permission is unknown.
+    """
+    validate_semantic_clock(semantic_clock, "issue_capability_token")
+
+    # Validate all permission codes against canonical set
+    for perm in permissions:
+        if perm not in ALL_PERMISSION_VALUES:
+            raise ValueError(
+                f"issue_capability_token: unknown permission '{perm}'. "
+                f"Valid values: {sorted(ALL_PERMISSION_VALUES)}",
+            )
+
+    subject = CapabilityTokenSubject(kind=subject_kind, id=subject_id)
+    constraints = CapabilityConstraints(
+        allowed_paths=tuple(sorted(allowed_paths)),
+        max_tool_calls=max_tool_calls,
+    )
+
+    return build_capability_token(
+        semantic_clock=semantic_clock,
+        subject=subject,
+        issued_by=issued_by,
+        permissions=list(permissions),
+        constraints=constraints,
+        policy_config_hash=policy_config_hash,
+    )
+
+
+# =============================================================================
 # Exports
 # =============================================================================
 
@@ -400,4 +466,5 @@ __all__ = [
     "PERMISSION_CODES",
     "build_capability_decision",
     "build_capability_token",
+    "issue_capability_token",
 ]
