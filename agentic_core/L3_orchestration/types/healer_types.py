@@ -22,48 +22,9 @@ class IHealerProtocol(Protocol):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]: ...
 
 
-class HealerAgentMixin:
-    """
-    Mixin for NEW agents. Enforces strict interface compliance.
-    Inherit from this to automatically get input validation.
-    """
-
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """
-        Template method that handles validation and error wrapping.
-        Subclasses should implement `_heal_impl`.
-        """
-        if not isinstance(violation, dict):
-            return {"status": "failed", "errors": ["Violation must be a dictionary"]}
-
-        try:
-            # Delegate to specific implementation
-            result = self._heal_impl(violation)
-            return self._normalize_result(result)
-        except Exception as e:
-            logging.error(f"Heal operation failed in {self.__class__.__name__}: {e}")
-            return {"status": "failed", "errors": [str(e)]}
-
-    def _heal_impl(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """Override this in your agent."""
-        raise NotImplementedError("Agents must implement _heal_impl")
-
-    def _normalize_result(self, result: Any) -> dict[str, Any]:
-        """Ensures result matches HEAL_RESULT_SCHEMA."""
-        if not isinstance(result, dict):
-            return {
-                "status": "success" if result else "failed",
-                "details": str(result),
-                "artifacts": [],
-                "errors": [],
-            }
-
-        # Backfill missing keys
-        defaults = {"status": "success", "details": "Fixed", "artifacts": [], "errors": []}
-        for k, v in defaults.items():
-            if k not in result:
-                result[k] = v
-        return result
+# Canonical definition moved to agentic_core/mixins/healer_agent_mixin.py
+# Re-export for backward compatibility
+from agentic_core.mixins.healer_agent_mixin import HealerAgentMixin  # noqa: F401
 
 
 class LegacyAgentAdapter:

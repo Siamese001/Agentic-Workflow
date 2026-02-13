@@ -20,7 +20,7 @@ from agentic_core.mixins.hallucination_detection_mixin import (
 Logger = logging.getLogger(__name__)
 
 
-class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, SovereignBaseAgent):
+class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
     """
     Structural validation layer that verifies actions against actual AST structure.
 
@@ -286,3 +286,6 @@ class VerificationGate(AtomicExecutionMixin, HallucinationDetectionMixin, Sovere
             "cache_size": len(self.verification_cache),
             "cache_keys": list(self.verification_cache.keys()),
         }
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

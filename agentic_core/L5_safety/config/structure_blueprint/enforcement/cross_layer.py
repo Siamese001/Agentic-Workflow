@@ -13,6 +13,7 @@ Emits graph depth metrics for audit-grade reporting.
 from __future__ import annotations
 
 import json as _json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -44,30 +45,48 @@ CONFIG_FORBIDDEN_IMPORTS = (
 _BASELINE_PATH = Path(__file__).resolve().parent / "known_debt_baseline.json"
 
 
-def _load_known_debt_baseline() -> tuple[frozenset[tuple[str, str]], int]:
+def _load_known_debt_baseline() -> tuple[frozenset[tuple[str, str]], int, list[dict[str, Any]]]:
     """Load known-debt entries and ceiling from the baseline file.
 
-    Returns (frozenset of (source, target) pairs, ceiling int).
+    Returns (frozenset of (source, target) pairs, ceiling int, full entries list).
     """
     if not _BASELINE_PATH.is_file():
-        return frozenset(), 0
+        return frozenset(), 0, []
     data = _json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
     ceiling = int(data.get("ceiling", 0))
     entries: set[tuple[str, str]] = set()
-    for entry in data.get("entries", []):
+    full_entries = data.get("entries", [])
+    for entry in full_entries:
         entries.add((entry["source"], entry["target"]))
-    return frozenset(entries), ceiling
+    return frozenset(entries), ceiling, full_entries
 
 
-KNOWN_CROSS_LAYER_DEBT, _DEBT_CEILING = _load_known_debt_baseline()
+KNOWN_CROSS_LAYER_DEBT, _DEBT_CEILING, _DEBT_ENTRIES = _load_known_debt_baseline()
 
 
 def check(
     root: Path,
     territories: Mapping[str, Any],
     import_graph: ImportGraph,
+    debt_baseline: dict[str, Any] | None = None,
 ) -> EnforcementResult:
-    """Check cross-layer import boundaries using the ImportGraph."""
+    """Check cross-layer import boundaries using the ImportGraph.
+
+    Args:
+        debt_baseline: Optional override for known-debt baseline (keys: entries,
+            ceiling). When None, uses the module-level baseline loaded from JSON.
+            Intended for test injection only.
+    """
+    # Resolve debt parameters: override or module defaults
+    if debt_baseline is not None:
+        bl_entries = debt_baseline.get("entries", [])
+        bl_ceiling = int(debt_baseline.get("ceiling", 0))
+        bl_debt_set: frozenset[tuple[str, str]] = frozenset((e["source"], e["target"]) for e in bl_entries)
+    else:
+        bl_entries = _DEBT_ENTRIES
+        bl_ceiling = _DEBT_CEILING
+        bl_debt_set = KNOWN_CROSS_LAYER_DEBT
+
     violations: list[Violation] = []
     stats = {
         "total_edges": 0,
@@ -78,8 +97,9 @@ def check(
         "config_execution_violations": 0,
     }
 
-    stats["known_debt_items"] = len(KNOWN_CROSS_LAYER_DEBT)
-    stats["debt_ceiling"] = _DEBT_CEILING
+    stats["known_debt_items"] = len(bl_debt_set)
+    stats["debt_ceiling"] = bl_ceiling
+    stats["expired_debt_items"] = 0
 
     # Count total and internal edges
     for source_rel in import_graph.all_files():
@@ -95,12 +115,15 @@ def check(
     _check_utils_purity(root, import_graph, violations, stats)
 
     # Rule 3: config/ must not import execution layers
-    _check_config_independence(root, import_graph, violations, stats)
+    _check_config_independence(root, import_graph, violations, stats, bl_debt_set)
+
+    # Rule 4: Check for expired debt items
+    _check_debt_expiry(violations, stats, bl_entries)
 
     # Ceiling enforcement: warning count must not exceed baseline ceiling
     warning_count = sum(1 for v in violations if v["severity"] == "warning")
     stats["warning_count"] = warning_count
-    if warning_count > _DEBT_CEILING:
+    if warning_count > bl_ceiling:
         violations.append(
             Violation(
                 type="debt_ceiling_breach",
@@ -108,7 +131,7 @@ def check(
                 severity="error",
                 detail=(
                     f"Known-debt warning count ({warning_count}) exceeds "
-                    f"baseline ceiling ({_DEBT_CEILING}). "
+                    f"baseline ceiling ({bl_ceiling}). "
                     "Update known_debt_baseline.json with --acknowledge-debt."
                 ),
             ),
@@ -183,6 +206,7 @@ def _check_config_independence(
     import_graph: ImportGraph,
     violations: list[Violation],
     stats: dict[str, int],
+    known_debt: frozenset[tuple[str, str]] = frozenset(),
 ) -> None:
     """config/ files must not import from execution layers (L2, L3)."""
     config_prefix = "agentic_core/config/"
@@ -195,7 +219,7 @@ def _check_config_independence(
             stats["cross_layer_edges_analyzed"] += 1
             for forbidden in CONFIG_FORBIDDEN_IMPORTS:
                 if edge.target_module.startswith(forbidden):
-                    is_known_debt = (source_fwd, edge.target_module) in KNOWN_CROSS_LAYER_DEBT
+                    is_known_debt = (source_fwd, edge.target_module) in known_debt
                     severity = "warning" if is_known_debt else "error"
                     stats["config_execution_violations"] += 1
                     violations.append(
@@ -210,3 +234,64 @@ def _check_config_independence(
                             ),
                         ),
                     )
+
+
+def _check_debt_expiry(
+    violations: list[Violation],
+    stats: dict[str, int],
+    debt_entries: list[dict[str, Any]] | None = None,
+) -> None:
+    """Check if any known debt items have expired and emit errors for them.
+
+    Parses 'expires' field (format: YYYY-QN) and compares to current date.
+    Expired debt items become hard errors.
+    """
+    entries = debt_entries if debt_entries is not None else _DEBT_ENTRIES
+    current_date = datetime.now()
+
+    for entry in entries:
+        expires_str = entry.get("expires", "")
+        if not expires_str:
+            # No expiry set — skip (legacy entries)
+            continue
+
+        # Parse expires field (format: "2026-Q2")
+        try:
+            year_str, quarter_str = expires_str.split("-Q")
+            year = int(year_str)
+            quarter = int(quarter_str)
+
+            # Convert quarter to end-of-quarter month
+            quarter_end_month = quarter * 3
+
+            # Check if current date is past the end of the quarter
+            if current_date.year > year or (
+                current_date.year == year and current_date.month > quarter_end_month
+            ):
+                stats["expired_debt_items"] += 1
+                violations.append(
+                    Violation(
+                        type="expired_debt_item",
+                        path=entry["source"],
+                        severity="error",
+                        detail=(
+                            f"Debt item expired {expires_str}: "
+                            f"{entry['source']} → {entry['target']}. "
+                            f"Burn-down plan: {entry.get('burn_down_plan', 'N/A')}. "
+                            f"Remove from known_debt_baseline.json or refactor immediately."
+                        ),
+                    ),
+                )
+        except (ValueError, KeyError) as e:
+            # Malformed expires field — emit warning
+            violations.append(
+                Violation(
+                    type="malformed_expiry",
+                    path=entry.get("source", "unknown"),
+                    severity="warning",
+                    detail=(
+                        f"Malformed 'expires' field in known_debt_baseline.json: "
+                        f"'{expires_str}' (expected format: YYYY-QN). Error: {e}"
+                    ),
+                ),
+            )

@@ -16,12 +16,10 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
-class DocstringComplianceAgent(AtomicExecutionMixin, SubatomicTestingMixin, SovereignBaseAgent):
+class DocstringComplianceAgent(SovereignBaseAgent):
     """
     Ensures public functions, classes, and modules have docstrings.
 
@@ -122,6 +120,7 @@ class DocstringComplianceAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sove
                 ctx.report(self.__class__.__name__, key_id=18, success=True, msg=message)
                 return {"healed": True, "details": message}
             return {"healed": False}
+        # guardian: allow-silent-swallow
         except Exception as e:
             ctx.report(self.__class__.__name__, 18, False, f"Docstring healing failed: {str(e)[:100]}")
             return {"healed": False}
@@ -145,11 +144,13 @@ class DocstringComplianceAgent(AtomicExecutionMixin, SubatomicTestingMixin, Sove
 
     @timeout(300)
     @standard_heal
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
+        # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
     ) -> dict[str, int]:

@@ -34,7 +34,7 @@ jobs:
         run: |
           python artifacts/dedup/run_dedup_analysis.py
 
-      # ── Phase 1: SSOT enforcement (must pass before dependent gates) ──
+      # ── Phase 1: SSOT enforcement + unit tests ──
       - name: Enforce Manifest SSOT Check
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -47,19 +47,19 @@ jobs:
         run: |
           python ops_scripts/ci/active_set_ssot_check.py
 
-      - name: Validate Target Manifest
+      - name: Active Set SSOT Check Unit Tests
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          python artifacts/consolidation/validate_target_manifest.py
+          python -m pytest tests/core/test_active_set_ssot_check.py -xvv
 
-      # ── Phase 2: Discovery / active-set gates ──
-      - name: Enforce Shim Contract Gate
+      - name: Governance Coverage Audit
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          python ops_scripts/ci/shim_contract_check.py
+          python ops_scripts/ci/governance_coverage_check.py
 
+      # ── Phase 2: Active-set gates ──
       - name: Enforce Agent Count Cap
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -72,13 +72,39 @@ jobs:
         run: |
           python ops_scripts/ci/discovery_registry_consistency_check.py
 
+      - name: Active Set Drift Snapshot Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          python ops_scripts/ci/active_set_snapshot_check.py
+
       # ── Phase 3: Remaining gates ──
+      - name: Enforce MRO New Diamond Check
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          python ops_scripts/ci/mro_new_diamond_check.py
+
       - name: Enforce MRO Diamond Contract
         env:
           PYTHONPATH: ${{ github.workspace }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           python ops_scripts/ci/mro_contract_check.py
+
+      - name: Validate Target Manifest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python artifacts/consolidation/validate_target_manifest.py
+
+      - name: Enforce Shim Contract Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/shim_contract_check.py
 
       - name: Enforce Init Contract
         env:
@@ -97,6 +123,12 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python ops_scripts/ci/centrality_gate.py
+
+      - name: CI Self-Consistency Gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python ops_scripts/ci/gate_consistency_check.py
 
       # ── Phase 4: Test suites ──
       - name: Executor Smoke Tests
@@ -134,12 +166,6 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python -m pytest tests/core/test_active_set_fingerprint.py -xvv
-
-      - name: Active Set SSOT Check Unit Tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          python -m pytest tests/core/test_active_set_ssot_check.py -xvv
 
       - name: Enforce Sprawl Gate
         env:

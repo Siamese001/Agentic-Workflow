@@ -51,3 +51,6 @@ class ValidatorAgent(LICAgentBase):
         """Simple retry logic - can be enhanced with LLM-based fixes."""
         # Basic retry - return original draft for now
         return draft
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

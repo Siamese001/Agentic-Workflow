@@ -8,7 +8,7 @@ plugins: anyio-4.12.0, dash-3.3.0, hypothesis-6.148.7, langsmith-0.5.0, asyncio-
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collecting ... collected 1 item
 
-tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_init_completeness 
+tests/guardian/test_import_safety.py::TestNuclearImportSweep::test_init_completeness
 === PHASE 2 MANDATORY: __init__.py Completeness Check ===
 
   Directories checked: 85
@@ -24,44 +24,44 @@ self = <guardian.test_import_safety.TestNuclearImportSweep object at 0x000001B56
         """
         MANDATORY TEST 4: Verify that every directory with .py files
         contains an __init__.py file.
-    
+
         Missing __init__.py can cause import failures in certain contexts.
         """
         print("\n=== PHASE 2 MANDATORY: __init__.py Completeness Check ===")
-    
+
         missing_init: list[str] = []
         checked_dirs = 0
-    
+
         for directory in self.SOURCE_DIRECTORIES:
             dir_path = PROJECT_ROOT / directory
             if not dir_path.exists():
                 continue
-    
+
             for root, dirs, files in os.walk(dir_path):
                 # Skip excluded directories
                 dirs[:] = [d for d in dirs if d not in self.EXCLUDED_DIRS]
-    
+
                 root_path = Path(root)
-    
+
                 # Check if this directory has Python files
                 py_files = [f for f in files if f.endswith(".py") and f != "__init__.py"]
-    
+
                 if py_files:
                     checked_dirs += 1
-    
+
                     # Check for __init__.py
                     init_file = root_path / "__init__.py"
                     if not init_file.exists():
                         rel_path = root_path.relative_to(PROJECT_ROOT)
                         missing_init.append(str(rel_path))
-    
+
         # Report results
         print(f"\n  Directories checked: {checked_dirs}")
         print(f"  Missing __init__.py: {len(missing_init)}")
-    
+
         # Track as tech debt with threshold
         KNOWN_MISSING_INIT = 20  # Allow up to 20 known missing __init__.py
-    
+
         if missing_init:
             if len(missing_init) <= KNOWN_MISSING_INIT:
                 print(f"\n[TECH DEBT] {len(missing_init)} directories missing __init__.py:")

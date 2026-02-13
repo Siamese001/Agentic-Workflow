@@ -25,7 +25,7 @@ import logging
 import threading
 import time
 from collections import OrderedDict
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
@@ -231,6 +231,73 @@ class PerformanceMixin:
                 self._perf_config.max_batch_queue_size = max_batch_queue_size
 
         Logger.info(f"[PERF] Configuration updated: {self._perf_config}")
+
+    # =========================================================================
+    # Compatibility API — CachingMixin surface
+    # =========================================================================
+
+    def configure_cache(
+        self,
+        enabled: bool | None = None,
+        max_size: int | None = None,
+        default_ttl: float | None = None,
+    ) -> None:
+        """Configure caching settings (CachingMixin-compat)."""
+        self.configure_performance(
+            cache_enabled=enabled,
+            cache_max_size=max_size,
+            cache_default_ttl=default_ttl,
+        )
+
+    # =========================================================================
+    # Compatibility API — MetricsMixin surface
+    # =========================================================================
+
+    def configure_metrics(self, enabled: bool | None = None) -> None:
+        """Configure metrics settings (MetricsMixin-compat)."""
+        self.configure_performance(metrics_enabled=enabled)
+
+    def record_timing(
+        self,
+        operation_name: str,
+        duration_ms: float,
+        error: bool = False,
+    ) -> None:
+        """Record timing for an operation (MetricsMixin-compat public wrapper)."""
+        self._record_timing(operation_name, duration_ms, error)
+
+    def record_cache_hit(self, operation_name: str) -> None:
+        """Record cache hit (MetricsMixin-compat public wrapper)."""
+        self._record_cache_hit(operation_name)
+
+    def record_cache_miss(self, operation_name: str) -> None:
+        """Record cache miss (MetricsMixin-compat public wrapper)."""
+        self._record_cache_miss(operation_name)
+
+    def get_metrics(self, operation_name: str | None = None) -> dict[str, Any]:
+        """Get performance metrics (MetricsMixin-compat alias)."""
+        return self.get_performance_metrics(operation_name)
+
+    # =========================================================================
+    # Compatibility API — BatchingMixin surface
+    # =========================================================================
+
+    def configure_batching(
+        self,
+        batch_size: int | None = None,
+        async_pool_size: int | None = None,
+        max_batch_queues: int | None = None,
+        max_batch_queue_size: int | None = None,
+        lazy_init_enabled: bool | None = None,
+    ) -> None:
+        """Configure batching settings (BatchingMixin-compat)."""
+        self.configure_performance(
+            batch_size=batch_size,
+            async_pool_size=async_pool_size,
+            max_batch_queues=max_batch_queues,
+            max_batch_queue_size=max_batch_queue_size,
+            lazy_init_enabled=lazy_init_enabled,
+        )
 
     # =========================================================================
     # Caching
@@ -596,6 +663,118 @@ class PerformanceMixin:
     def should_flush_batch(self, queue_name: str) -> bool:
         """Check if batch queue should be flushed."""
         return self.batch_size(queue_name) >= self._perf_config.batch_size
+
+    def batch_clear_all(self) -> int:
+        """Clear all batch queues. Returns count of queues cleared."""
+        with self._perf_lock:
+            count = len(self._batch_queues)
+            self._batch_queues.clear()
+            return count
+
+    def get_batching_status(self) -> dict[str, Any]:
+        """Get batching status (BatchingMixin-compat)."""
+        with self._perf_lock:
+            return {
+                "batch_queues": {name: len(items) for name, items in self._batch_queues.items()},
+                "lazy_registered": len(self._lazy_registry),
+                "lazy_initialized": len(self._lazy_initialized),
+                "config": {
+                    "batch_size": self._perf_config.batch_size,
+                    "async_pool_size": self._perf_config.async_pool_size,
+                    "max_batch_queues": self._perf_config.max_batch_queues,
+                },
+            }
+
+    # =========================================================================
+    # Parallel Batch Execution (BatchingMixin-compat)
+    # =========================================================================
+
+    async def execute_batch(
+        self,
+        tasks: Iterable[Awaitable[T]],
+        *,
+        concurrency: int = 10,
+        timeout: float | None = None,
+        return_exceptions: bool = False,
+    ) -> list[T]:
+        """Execute awaitables with bounded concurrency.
+
+        Args:
+            tasks: Iterable of awaitables to execute.
+            concurrency: Max concurrent tasks (semaphore limit).
+            timeout: Overall timeout in seconds (None = no limit).
+            return_exceptions: If True, exceptions are returned in the
+                result list instead of being raised.
+
+        Returns:
+            Ordered list of results matching the input task order.
+        """
+        task_list = list(tasks)
+        if not task_list:
+            return []
+
+        semaphore = asyncio.Semaphore(concurrency)
+        results: list[Any] = [None] * len(task_list)
+
+        async def _run(index: int, awaitable: Awaitable[T]) -> None:
+            async with semaphore:
+                results[index] = await awaitable
+
+        async def _run_safe(index: int, awaitable: Awaitable[T]) -> None:
+            async with semaphore:
+                try:
+                    results[index] = await awaitable
+                # guardian: allow-silent-swallow
+                except Exception as exc:
+                    results[index] = exc
+
+        runner = _run_safe if return_exceptions else _run
+
+        async def _execute() -> None:
+            async with asyncio.TaskGroup() as tg:
+                for i, aw in enumerate(task_list):
+                    tg.create_task(runner(i, aw))
+
+        if timeout is not None:
+            await asyncio.wait_for(_execute(), timeout=timeout)
+        else:
+            await _execute()
+
+        return results
+
+    async def batch_execute(
+        self,
+        tasks: list,
+        max_workers: int | None = None,
+        sequential: bool = False,
+    ) -> list[Any]:
+        """Backwards-compat alias for legacy BatchingMixin callers.
+
+        Args:
+            tasks: List of awaitables.
+            max_workers: Concurrency limit (defaults to async_pool_size config).
+            sequential: If True, run tasks one-by-one.
+
+        Returns:
+            List of results (exceptions returned, not raised).
+        """
+        if sequential:
+            results: list[Any] = []
+            for task in tasks:
+                try:
+                    results.append(await task)
+                # guardian: allow-silent-swallow
+                except Exception as e:
+                    results.append(e)
+            return results
+
+        effective_workers = max_workers if max_workers is not None else self._perf_config.async_pool_size
+        return await self.execute_batch(
+            tasks,
+            concurrency=effective_workers,
+            timeout=None,
+            return_exceptions=True,
+        )
 
     # =========================================================================
     # Async Pooling

@@ -182,7 +182,7 @@ The Phase 2 remediation addresses **522 landmines** across 5 categories: Silent 
 def test_silent_swallowers_prevented():
     """Verify all exceptions properly propagate through call chains"""
     # Test tool execution failures
-    # Test heal method failures  
+    # Test heal method failures
     # Test cross-agent error propagation
     # Verify error context preservation
 ```

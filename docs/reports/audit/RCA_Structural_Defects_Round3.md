@@ -1,7 +1,7 @@
 # RCA: knowledge/ Structure, config/ Subfolders, LocalDiskAdapter, Validator Alignment, L0/scripts Dump
 
-**Date:** 2026-02-07  
-**Severity:** Medium-High (structural misplacement, naming violations, dumping ground)  
+**Date:** 2026-02-07
+**Severity:** Medium-High (structural misplacement, naming violations, dumping ground)
 **Scope:** 7 files fixed, 4 blueprint rules hardened
 
 ---

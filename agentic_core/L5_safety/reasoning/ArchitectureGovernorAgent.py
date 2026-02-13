@@ -51,9 +51,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.base_agents.timeout_decorator import timeout
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_maintenance.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent

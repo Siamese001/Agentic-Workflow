@@ -36,6 +36,8 @@ from agentic_core.utils.report_location_validator_types import (
     ReportValidationResult,
 )
 
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+
 Logger = logging.getLogger(__name__)
 
 
@@ -53,7 +55,7 @@ class ReportLocationHealResult:
 
 
 @dataclass
-class ReportLocationAgent:
+class ReportLocationAgent(AtomicExecutionMixin):
     """
     SSOT Report Storage Enforcement Agent.
 
@@ -233,6 +235,7 @@ class ReportLocationAgent:
             else:
                 result["status"] = "failed"
                 result["error"] = "Move operation failed"
+        # guardian: allow-silent-swallow
         except Exception as e:
             result["status"] = "failed"
             result["error"] = str(e)

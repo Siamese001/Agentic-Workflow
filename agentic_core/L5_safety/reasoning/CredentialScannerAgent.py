@@ -41,7 +41,7 @@ class CredentialMatch:
 
 
 @dataclass
-class CredentialScannerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class CredentialScannerAgent(SovereignBaseAgent):
     """
     L5 Safety Agent for detecting hardcoded credentials.
 

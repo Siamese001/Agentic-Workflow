@@ -150,6 +150,9 @@ def main() -> int:
         print(f"FAIL: {len(errors)} issue(s):")
         for e in errors:
             print(f"  - {e}")
+        print(f"  Fix: edit {BASELINE_PATH} (set total={count}, add entries) and commit with tag:")
+        print("    MRO_BASELINE_BUMP:<reason>")
+        print("  Verify: PYTHONPATH=. python ops_scripts/ci/mro_contract_check.py")
         return 1
 
     # Rule 3: count < ceiling → debt was reduced. Always PASS.
@@ -162,10 +165,36 @@ def main() -> int:
             f"PASS: {count} MRO diamonds < ceiling {ceiling} (improved by {improvement})",
         )
         print(f"  old_ceiling={ceiling}  new_count={count}  delta=-{improvement}")
-        print(
-            f"  Update baseline: edit {BASELINE_PATH} "
-            f'set "total": {count} and remove {improvement} resolved entries',
-        )
+
+        # Auto-lower baseline when env var is set (never auto-bump upward)
+        # GUARD: auto-lower is forbidden in CI — baseline changes must be intentional
+        if os.environ.get("AUTO_LOWER_MRO_BASELINE") == "1" and (
+            os.environ.get("CI") == "true" or os.environ.get("GITHUB_ACTIONS") == "true"
+        ):
+            print(
+                "FAIL: AUTO_LOWER_MRO_BASELINE=1 is forbidden in CI. "
+                "Lower the baseline locally and commit the updated JSON.",
+                file=sys.stderr,
+            )
+            return 1
+
+        if os.environ.get("AUTO_LOWER_MRO_BASELINE") == "1":
+            from ops_scripts.ci.baseline_io import write_json_atomic
+
+            current_keys = {d["file"] + ":" + d["class"] for d in diamonds}
+            new_entries = [
+                e for e in baseline.get("entries", []) if e["file"] + ":" + e["class"] in current_keys
+            ]
+            baseline["total"] = count
+            baseline["entries"] = new_entries
+            write_json_atomic(baseline_file, baseline)
+            print(f"  AUTO-LOWERED baseline from {ceiling} → {count}")
+        else:
+            print(
+                f"  Update baseline: edit {BASELINE_PATH} "
+                f'set "total": {count} and remove {improvement} resolved entries',
+            )
+
         if tag_present:
             print("  (MRO_BASELINE_LOWERED tag detected)")
         return 0

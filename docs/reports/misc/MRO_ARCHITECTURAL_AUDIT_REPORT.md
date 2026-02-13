@@ -1,9 +1,9 @@
 # MRO Architectural Audit Report
 ## Comprehensive Analysis of Mixin Inheritance Structure
 
-**Generated:** February 2, 2026  
-**Scope:** agentic_core, apps_lic, apps_rg, apps_shared  
-**Total Agents Analyzed:** 171  
+**Generated:** February 2, 2026
+**Scope:** agentic_core, apps_lic, apps_rg, apps_shared
+**Total Agents Analyzed:** 171
 
 ---
 
@@ -398,7 +398,7 @@ class MyAgent(SovereignBaseAgent):
    ```python
    # Change from:
    class DispatchResumeToolsAgent(HealerMixin, MCPHardenedMixin):
-   
+
    # To:
    class DispatchResumeToolsAgent(SovereignBaseAgent):
    ```

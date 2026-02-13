@@ -1,7 +1,7 @@
 # Phase 6 Report: Namespace Validation and Healing
 
-**Date:** 2026-01-31  
-**Status:** Analysis Complete - Validation Logic Working As Designed  
+**Date:** 2026-01-31
+**Status:** Analysis Complete - Validation Logic Working As Designed
 **Scope:** Phase 6 from ROBUST_NUCLEAR_AUDIT_REPORT_REFRESHED.md
 
 ## Executive Summary
@@ -14,8 +14,8 @@ Phase 6 aims to ensure **all agents are in correct locations** per `structure_bl
 
 ## Phase 6 Scope (From Audit Report)
 
-**Goal:** Ensure all agents in correct locations per SSOT  
-**Duration:** 1 Cascade chat  
+**Goal:** Ensure all agents in correct locations per SSOT
+**Duration:** 1 Cascade chat
 **Priority:** LOW (after Phase 1 audit fix)
 
 **Tasks:**
@@ -61,22 +61,22 @@ def validate_namespace(self, file_path: Path, class_name: str) -> tuple[str, boo
     # Get relative path from project root
     rel_path = file_path.relative_to(self.project_root)
     parts = rel_path.parts
-    
+
     # Normalize path to use forward slashes
     namespace_str = str(Path(*parts[:-1])).replace("\\", "/")
-    
+
     # Constitutional check: Base agents MUST be in agentic_core/base_agents/
     if class_name.endswith("BaseAgent"):
         expected = "agentic_core/base_agents"
         is_valid = namespace_str == expected
         return namespace_str, is_valid
-    
+
     # Check against SOVEREIGN_TERRITORIES
     if len(parts) >= 2 and parts[0] == "agentic_core":
         if len(parts) >= 3:
             layer_folder = parts[2]
             subfolder = parts[3] if len(parts) > 3 else None
-            
+
             # Check if layer is in CORE_SUBFOLDER_MAP
             if layer_folder in self.structure_blueprint:
                 valid_subfolders = self.structure_blueprint[layer_folder]

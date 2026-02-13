@@ -60,7 +60,7 @@
         violations_found: int
         errors: list[str]
         skipped: list[str]
-        
+
     def heal(self, violation: dict) -> HealResult:
 >>>>>>>>
 ```
@@ -160,16 +160,16 @@ For each category, implement these tests:
 ```python
 def test_silent_swallowers_prevented():
     """Verify that all exceptions are properly propagated"""
-    
+
 def test_type_schemas_enforced():
     """Verify that all agent methods return structured types"""
-    
+
 def test_path_cross_platform():
     """Verify path handling works on Windows/Linux/Mac"""
-    
+
 def test_configuration_externalized():
     """Verify no hardcoded constants in logic flows"""
-    
+
 def test_no_global_mutation():
     """Verify agents don't modify sys.path or os.environ"""
 ```

@@ -19,9 +19,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 
 try:

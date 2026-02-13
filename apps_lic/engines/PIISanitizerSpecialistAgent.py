@@ -70,6 +70,9 @@ class PII_SanitizerSpecialistAgent(LICAgentBase):
             text = pattern.sub(f"[{pii_type}_REDACTED]", text)
         return text
 
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)
+
 
 @dataclass
 class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):

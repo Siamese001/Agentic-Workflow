@@ -50,14 +50,14 @@ class TestDagRuntimeInspectorAgent:
     """Validate DagRuntimeInspectorAgent imports and runs diagnostics."""
 
     def test_importable(self) -> None:
-        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
+        from agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
 
         assert DagRuntimeInspectorAgent is not None
 
     def test_diagnose_returns_inspection_result(self) -> None:
-        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
+        from agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
         from agentic_core.mixins.inspection_capability_mixin import InspectionResult
@@ -75,14 +75,14 @@ class TestTokenBudgetInspectorAgent:
     """Validate TokenBudgetInspectorAgent imports and runs diagnostics."""
 
     def test_importable(self) -> None:
-        from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
+        from archives.deprecated.TokenBudgetInspectorAgent import (
             TokenBudgetInspectorAgent,
         )
 
         assert TokenBudgetInspectorAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
-        from agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent import (
+        from archives.deprecated.TokenBudgetInspectorAgent import (
             TokenBudgetInspectorAgent,
         )
         from agentic_core.mixins.inspection_capability_mixin import InspectionResult
@@ -100,14 +100,14 @@ class TestSignatureVerifierAgent:
     """Validate SignatureVerifierAgent imports and runs diagnostics."""
 
     def test_importable(self) -> None:
-        from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
+        from archives.deprecated.SignatureVerifierAgent import (
             SignatureVerifierAgent,
         )
 
         assert SignatureVerifierAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
-        from agentic_core.L5_safety.reasoning.SignatureVerifierAgent import (
+        from archives.deprecated.SignatureVerifierAgent import (
             SignatureVerifierAgent,
         )
         from agentic_core.mixins.inspection_capability_mixin import InspectionResult

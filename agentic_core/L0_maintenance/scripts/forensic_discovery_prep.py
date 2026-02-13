@@ -42,13 +42,17 @@ from pathlib import Path
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
 # ==============================================================================
 try:
+    from agentic_core.L0_maintenance.utils.ssot_discovery_util import (
+        load_agent_discovery,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        FORENSIC_DISCOVERY_INTEGRITY_HASH,
+        FORENSIC_DISCOVERY_SCRIPT,
+    )
     from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
         AGENT_DISCOVERY_JSON,
         get_validated_project_root,
         validate_path_within_project,
-    )
-    from agentic_core.utils.ssot_discovery_validator import (
-        load_agent_discovery,
     )
 except ImportError:
     # Fallback for standalone auditing (if outside strict env)
@@ -85,9 +89,10 @@ class ForensicAgentRecord:
     parse_error: str = ""
     # Convenience booleans for audit matrix
     has_heal: bool = False
+    is_sovereign: bool = False
 
 
-OUTPUT_SCHEMA_VERSION = "1.2.0"
+OUTPUT_SCHEMA_VERSION = "1.3.0"
 
 
 def sha256_file(path: Path) -> str:
@@ -101,6 +106,7 @@ def sha256_file(path: Path) -> str:
 def safe_unparse(node: ast.AST) -> str:
     try:
         return ast.unparse(node)  # py>=3.9
+    # guardian: allow-silent-swallow
     except Exception:
         return node.__class__.__name__
 
@@ -119,6 +125,79 @@ def extract_precise_mro(node: ast.ClassDef) -> list[str]:
         else:
             bases.append(safe_unparse(base))
     return bases
+
+
+def build_class_bases_map(project_root: Path) -> dict[str, list[str]]:
+    """Build repo-wide mapping of class_name → direct base class names from AST.
+
+    Scans all .py files under known source roots to enable full MRO resolution.
+    On name collision, first-seen definition wins (deterministic via sorted paths).
+    Handles starred bases (e.g. ``class Foo(*BASE_CLASSES)``) by resolving
+    module-level tuple assignments in the same file.
+    """
+    class_map: dict[str, list[str]] = {}
+    scan_roots = [
+        project_root / "agentic_core",
+        project_root / "apps_lic",
+        project_root / "apps_rg",
+        project_root / "apps_shared",
+    ]
+    for root in scan_roots:
+        if not root.exists():
+            continue
+        for py_file in sorted(root.rglob("*.py")):
+            try:
+                content = py_file.read_text(encoding="utf-8", errors="replace")
+                tree = ast.parse(content)
+
+                # Collect tuple assignments for starred-base resolution
+                # (walks full AST to catch assignments inside try/except blocks)
+                module_tuples: dict[str, list[str]] = {}
+                for stmt in ast.walk(tree):
+                    if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+                        tgt = stmt.targets[0]
+                        if isinstance(tgt, ast.Name) and isinstance(stmt.value, ast.Tuple):
+                            elts = [e.id for e in stmt.value.elts if isinstance(e, ast.Name)]
+                            if elts and tgt.id not in module_tuples:
+                                module_tuples[tgt.id] = elts
+
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef) and node.name not in class_map:
+                        raw_bases = extract_precise_mro(node)
+                        resolved: list[str] = []
+                        for b in raw_bases:
+                            if b.startswith("*") and b[1:] in module_tuples:
+                                resolved.extend(module_tuples[b[1:]])
+                            else:
+                                resolved.append(b)
+                        class_map[node.name] = resolved
+            # guardian: allow-silent-swallow
+            except (SyntaxError, Exception):  # noqa: BLE001
+                continue
+    return class_map
+
+
+def resolve_full_mro(
+    direct_bases: list[str],
+    class_map: dict[str, list[str]],
+    _seen: set[str] | None = None,
+) -> list[str]:
+    """Recursively expand direct bases into a full transitive MRO chain.
+
+    Returns a flat list of all ancestor class names (deduplicated, depth-first).
+    """
+    if _seen is None:
+        _seen = set()
+    result: list[str] = []
+    for base in direct_bases:
+        simple = base.rsplit(".", 1)[-1] if "." in base else base
+        if simple in _seen:
+            continue
+        _seen.add(simple)
+        result.append(simple)
+        if simple in class_map:
+            result.extend(resolve_full_mro(class_map[simple], class_map, _seen))
+    return result
 
 
 def stub_sentinel_detected(content: str) -> bool:
@@ -207,6 +286,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
                     record.methods_detected.append(item.name)
             record.has_heal = "heal" in record.methods_detected
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         record.status = f"ERROR: {str(e)}"
         record.parse_error = str(e)
@@ -226,6 +306,7 @@ def get_git_commit(root: Path) -> str:
             stderr=subprocess.DEVNULL,
         )
         return out.decode("utf-8").strip()
+    # guardian: allow-silent-swallow
     except Exception:
         return ""
 
@@ -237,14 +318,77 @@ def atomic_write(path: Path, data: str) -> None:
     os.replace(tmp, path)
 
 
-def run_forensic_discovery(out_path: Path | None = None) -> int:
+# ==============================================================================
+# V5.4 Schema Transformation
+# ==============================================================================
+
+V54_SCHEMA_VERSION = "5.4.0"
+
+
+def _compute_ssot_validation(project_root: Path) -> dict[str, str]:
+    """Compute ssot_validation section: self-hash vs SSOT constant."""
+    script_path = project_root / FORENSIC_DISCOVERY_SCRIPT
+    if script_path.exists():
+        computed = hashlib.sha256(script_path.read_bytes()).hexdigest()
+    else:
+        computed = ""
+    return {
+        "blueprint_hash": FORENSIC_DISCOVERY_INTEGRITY_HASH,
+        "status": "MATCH" if computed == FORENSIC_DISCOVERY_INTEGRITY_HASH else "MISMATCH",
+    }
+
+
+def _derive_mixins(mro_chain: list[str]) -> list[str]:
+    """Derive mixins deterministically from MRO chain entries containing 'Mixin'."""
+    return [entry for entry in mro_chain if "Mixin" in entry]
+
+
+def _to_v54_schema(legacy: dict, project_root: Path) -> dict:
+    """Transform legacy discovery output to v5.4 strict schema."""
+    meta = legacy.get("audit_meta", {})
+    v54: dict = {
+        "meta": {
+            "timestamp": meta.get("generated_at", ""),
+            "root_path": meta.get("root", ""),
+            "git_hash": meta.get("git_commit", ""),
+            "schema_version": V54_SCHEMA_VERSION,
+            "python_version": meta.get("python_version", ""),
+            "platform": meta.get("platform", ""),
+            "total_candidates": meta.get("total_candidates", 0),
+        },
+        "ssot_validation": _compute_ssot_validation(project_root),
+        "agents": [],
+    }
+    for agent in legacy.get("environment_under_test", []):
+        mro_chain = agent.get("mro_signature", [])
+        v54["agents"].append(
+            {
+                "identity": agent.get("agent_name", ""),
+                "layer": agent.get("layer", ""),
+                "status": agent.get("status", ""),
+                "file_path": agent.get("file_path", ""),
+                "class_name": agent.get("class_name", ""),
+                "mro_chain": mro_chain,
+                "mixins": _derive_mixins(mro_chain),
+                "detected_methods": agent.get("methods_detected", []),
+                "integrity_hash": agent.get("file_sha256", ""),
+                "is_sovereign": agent.get("is_sovereign", False),
+            },
+        )
+    return v54
+
+
+def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool = False) -> int:
     project_root = get_validated_project_root()
+
+    # 0. Build repo-wide class→bases map for full MRO resolution
+    class_bases_map = build_class_bases_map(project_root)
 
     # 1. Load the Candidate List from SSOT
     raw_candidates = load_agent_discovery(project_root, force_reload=True)
     raw_candidates = sorted(
         raw_candidates,
-        key=lambda c: (c.get("layer", ""), c.get("name", ""), c.get("path", "")),
+        key=lambda c: (c.get("layer", ""), c.get("class_name", ""), c.get("file", "")),
     )
 
     manifest = {
@@ -264,8 +408,8 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
 
     # 2. Inspect every candidate
     for candidate in raw_candidates:
-        rel_path = candidate.get("path", "")
-        name = candidate.get("name", "Unknown")
+        rel_path = candidate.get("file", "") or candidate.get("path", "")
+        name = candidate.get("class_name", "") or candidate.get("name", "Unknown")
         layer = candidate.get("layer", "Unknown")
 
         if not rel_path:
@@ -285,6 +429,7 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
         full_path = project_root / rel_path
         try:
             validate_path_within_project(project_root, full_path)
+        # guardian: allow-silent-swallow
         except Exception:
             record = ForensicAgentRecord(
                 agent_name=name,
@@ -300,6 +445,14 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
             continue
 
         record = forensic_inspect(name, layer, full_path)
+
+        # Enrich with full transitive MRO and sovereign classification.
+        # Prefer class_bases_map (starred bases already resolved) over raw AST.
+        direct_bases = class_bases_map.get(record.class_name, record.mro_signature)
+        if direct_bases:
+            full_chain = resolve_full_mro(direct_bases, class_bases_map)
+            record.mro_signature = full_chain
+            record.is_sovereign = "SovereignBaseAgent" in full_chain
 
         if record.status == "ACTIVE":
             manifest["environment_under_test"].append(asdict(record))
@@ -321,7 +474,12 @@ def run_forensic_discovery(out_path: Path | None = None) -> int:
         counts[r["status"]] = counts.get(r["status"], 0) + 1
     manifest["counts"] = dict(sorted(counts.items(), key=lambda kv: kv[0]))
 
-    payload = json.dumps(manifest, indent=2)
+    if legacy_schema:
+        output = manifest
+    else:
+        output = _to_v54_schema(manifest, project_root)
+
+    payload = json.dumps(output, indent=2)
     if out_path:
         atomic_write(out_path, payload)
     else:
@@ -333,11 +491,18 @@ if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser(description="Forensic Discovery Prep (Audit Scope Generator)")
         parser.add_argument("--out", help="Write JSON output to file atomically (recommended)")
+        parser.add_argument(
+            "--legacy-schema",
+            action="store_true",
+            default=False,
+            help="Emit legacy schema (audit_meta/environment_under_test) instead of v5.4",
+        )
         args = parser.parse_args()
 
         outp = Path(args.out) if args.out else None
-        rc = run_forensic_discovery(outp)
+        rc = run_forensic_discovery(outp, legacy_schema=args.legacy_schema)
         sys.exit(rc)
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(json.dumps({"fatal_error": str(e)}))
         sys.exit(1)

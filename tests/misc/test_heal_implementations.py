@@ -23,7 +23,6 @@ AGENTS_TO_TEST = [
     ("agentic_core.L5_safety.reasoning.LocationHealerAgent", "LocationHealerAgent"),
     ("agentic_core.L5_safety.reasoning.LocationValidatorAgent", "LocationValidatorAgent"),
     ("agentic_core.L5_safety.validators.AutonomyGuardianAgent", "AutonomyGuardianAgent"),
-    ("agentic_core.L5_safety.validators.CartographerAgent", "CartographerAgent"),
     ("agentic_core.L5_safety.validators.GitAgent", "GitAgent"),
     ("agentic_core.L5_safety.validators.HygieneGuardianAgent", "HygieneGuardianAgent"),
 ]

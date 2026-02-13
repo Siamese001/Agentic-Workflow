@@ -27,13 +27,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 log = logging.getLogger(__name__)
 
 
 @dataclass
-class TestGeneratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class TestGeneratorAgent(SovereignBaseAgent):
     """
     Autonomous agent that generates subatomic tests for agent classes.
 
@@ -322,3 +321,6 @@ class TestGeneratorAgent(SubatomicTestingMixin, SovereignBaseAgent):
     def heal_repository(self, dry_run: bool = True, **kwargs) -> dict[str, int]:
         """Invoke healing chain via super()."""
         return super().heal_repository(dry_run=dry_run, **kwargs)
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

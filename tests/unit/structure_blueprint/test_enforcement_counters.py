@@ -162,6 +162,49 @@ class TestEnforcementReportArtifact:
             )
 
 
+class TestExpiredDebtEnforcement:
+    """Expiry enforcement must fail when a debt item has expired."""
+
+    def test_expired_debt_fails(self) -> None:
+        expired_baseline = {
+            "ceiling": 3,
+            "entries": [
+                {
+                    "source": "agentic_core/config/core/gateway_config.py",
+                    "target": "agentic_core.L2_execution.enforcement.SovereignLLMGateway",
+                    "rationale": "test expired debt",
+                    "owner": "test",
+                    "added": "2000-01-01",
+                    "expires": "2000-Q1",
+                    "burn_down_plan": "test burn-down",
+                },
+            ],
+        }
+
+        ig = ImportGraph(REPO_ROOT, SOVEREIGN_TERRITORIES)
+        result = cross_layer.check(
+            REPO_ROOT,
+            SOVEREIGN_TERRITORIES,
+            ig,
+            debt_baseline=expired_baseline,
+        )
+
+        assert result["stats"]["expired_debt_items"] == 1, (
+            f"Expected 1 expired debt item, got {result['stats']['expired_debt_items']}"
+        )
+        assert result["passed"] is False, "cross_layer.check() should FAIL when a debt item has expired"
+
+
+class TestOutputDirDriftGuard:
+    """Prevent reappearance of legacy guardian output directory."""
+
+    def test_legacy_guardian_artifacts_dir_must_not_exist(self) -> None:
+        legacy_dir = REPO_ROOT / "docs" / "reports" / "guardian_artifacts"
+        assert not legacy_dir.exists(), (
+            f"{legacy_dir} must not exist — guardian outputs belong under docs/reports/verification/guardian/"
+        )
+
+
 class TestMappingProxyRegression:
     """Direct regression test for the MappingProxyType bug."""
 

@@ -8,8 +8,8 @@
 ## Phase 2C: Final Broken Import Fixes (3 sub-phases)
 
 ### Phase 2C.1: Fix FilesystemSSOTReconcilerAgent
-**Duration:** 30 minutes  
-**Risk:** LOW  
+**Duration:** 30 minutes
+**Risk:** LOW
 **Impact:** HIGH
 
 **Issue:** Agent inherits from L0MaintenanceBaseAgent → SovereignBaseAgent, but audit doesn't recognize indirect inheritance
@@ -22,8 +22,8 @@
 **Test:** Run nuclear audit (should reduce to 2 broken imports)
 
 ### Phase 2C.2: Move MockSovereignAgent to Tests
-**Duration:** 20 minutes  
-**Risk:** LOW  
+**Duration:** 20 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Issue:** MockSovereignAgent is in production code but should be in tests/
@@ -36,8 +36,8 @@
 **Test:** Run nuclear audit (should reduce to 1 broken import)
 
 ### Phase 2C.3: Handle BiasAuditorAgent
-**Duration:** 20 minutes  
-**Risk:** LOW  
+**Duration:** 20 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Issue:** BiasAuditorAgent in runtime/shared_runtime (invalid namespace)
@@ -52,13 +52,13 @@
 ## Phase 3: Missing heal() Methods (4 sub-phases)
 
 ### Phase 3.1: Core Agent heal() Implementation
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** HIGH
 
 **Target Agents:** 10 high-priority agents missing heal()
 1. MetaLearningAgent
-2. HistorianAgent  
+2. HistorianAgent
 3. RgStrategicPlannerAgent
 4. ToolsmithAgent
 5. ValidationOrchestratorAgent
@@ -75,9 +75,9 @@
 
 **Test:** Run nuclear audit (should reduce signature mismatches)
 
-### Phase 3.2: L5 Safety Agents heal() Implementation  
-**Duration:** 45 minutes  
-**Risk:** LOW  
+### Phase 3.2: L5 Safety Agents heal() Implementation
+**Duration:** 45 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Target Agents:** 8 L5 safety agents
@@ -96,8 +96,8 @@
 **Test:** Run nuclear audit (continue reducing signature mismatches)
 
 ### Phase 3.3: Workflow Engine Agents heal() Implementation
-**Duration:** 45 minutes  
-**Risk:** LOW  
+**Duration:** 45 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Target Agents:** 15 workflow engine agents
@@ -118,8 +118,8 @@
 **Test:** Run nuclear audit (significant reduction in signature mismatches)
 
 ### Phase 3.4: Remaining Agents heal() Implementation
-**Duration:** 30 minutes  
-**Risk:** LOW  
+**Duration:** 30 minutes
+**Risk:** LOW
 **Impact:** LOW
 
 **Target Agents:** All remaining agents with signature mismatches
@@ -134,8 +134,8 @@
 ## Phase 4: Namespace Validation (2 sub-phases)
 
 ### Phase 4.1: Fix Namespace Violations
-**Duration:** 1 hour  
-**Risk:** MEDIUM  
+**Duration:** 1 hour
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Target:** All agents with [INVALID] namespace
@@ -149,8 +149,8 @@
 **Test:** Run nuclear audit (should show 0 namespace violations)
 
 ### Phase 4.2: Validate Namespace Rules
-**Duration:** 30 minutes  
-**Risk:** LOW  
+**Duration:** 30 minutes
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**
@@ -164,8 +164,8 @@
 ## Phase 5: Test Coverage Expansion (3 sub-phases)
 
 ### Phase 5.1: Fix Test Infrastructure
-**Duration:** 2 hours  
-**Risk:** MEDIUM  
+**Duration:** 2 hours
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Issues:** 679 test collection errors
@@ -179,8 +179,8 @@
 **Test:** `pytest --collect-only` should collect all tests
 
 ### Phase 5.2: Core Agent Test Coverage
-**Duration:** 3 hours  
-**Risk:** MEDIUM  
+**Duration:** 3 hours
+**Risk:** MEDIUM
 **Impact:** HIGH
 
 **Target:** 50+ core agents
@@ -194,8 +194,8 @@
 **Test:** `pytest --cov` should show 50%+ coverage
 
 ### Phase 5.3: Complete Test Coverage
-**Duration:** 2 hours  
-**Risk:** MEDIUM  
+**Duration:** 2 hours
+**Risk:** MEDIUM
 **Impact:** MEDIUM
 
 **Target:** All 67 agents
@@ -211,8 +211,8 @@
 ## Phase 6: Final Validation (2 sub-phases)
 
 ### Phase 6.1: Complete Audit Validation
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** HIGH
 
 **Tasks:**
@@ -225,8 +225,8 @@
 **Test:** Perfect audit results
 
 ### Phase 6.2: Integration Testing
-**Duration:** 1 hour  
-**Risk:** LOW  
+**Duration:** 1 hour
+**Risk:** LOW
 **Impact:** MEDIUM
 
 **Tasks:**

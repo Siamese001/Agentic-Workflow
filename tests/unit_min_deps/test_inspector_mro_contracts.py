@@ -16,15 +16,15 @@ pytestmark = pytest.mark.unit_min_deps
 
 INSPECTOR_SPECS = [
     (
-        "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
+        "agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent",
         "DagRuntimeInspectorAgent",
     ),
     (
-        "agentic_core.L5_safety.reasoning.TokenBudgetInspectorAgent",
+        "archives.deprecated.TokenBudgetInspectorAgent",
         "TokenBudgetInspectorAgent",
     ),
     (
-        "agentic_core.L5_safety.reasoning.SignatureVerifierAgent",
+        "archives.deprecated.SignatureVerifierAgent",
         "SignatureVerifierAgent",
     ),
 ]

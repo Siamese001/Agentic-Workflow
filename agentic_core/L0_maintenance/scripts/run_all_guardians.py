@@ -8,7 +8,7 @@ Produces a combined_guardian_result.json with:
 
 CLI:
     python -m agentic_core.L0_maintenance.scripts.run_all_guardians \\
-        --write-artifacts docs/reports/guardian_artifacts \\
+        --write-artifacts docs/reports/verification/guardian \\
         --strict
 """
 
@@ -17,16 +17,18 @@ from __future__ import annotations
 import argparse
 import importlib
 import sys
-import time
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    AGGREGATE_GUARDIAN_ID,
     CONTRACT_VERSION,
+    ArtifactClass,
     ArtifactType,
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -64,9 +66,14 @@ def run_all_guardians(
     write_artifacts_dir: str | None = None,
     timestamp: str | None = None,
     correlation_id: str | None = None,
+    include_disabled: bool = False,
 ) -> GuardianResult:
     """
     Execute all registered guardians in deterministic order and aggregate.
+
+    Args:
+        include_disabled: If True, run ALL guardians (including disabled_by_default).
+                          Default False = enabled-only.
 
     Returns a combined GuardianResult with:
     - guardian_id = "combined"
@@ -79,24 +86,24 @@ def run_all_guardians(
         repo_root = get_validated_project_root()
 
     combined = GuardianResult(
-        guardian_id="combined",
+        guardian_id=AGGREGATE_GUARDIAN_ID,
         version=CONTRACT_VERSION,
         timestamp=timestamp,
         correlation_id=correlation_id,
+        artifact_class=ArtifactClass.AGGREGATE,
     )
 
     per_guardian_results: list[dict[str, Any]] = []
+    guardian_index: dict[str, dict[str, Any]] = {}  # Phase 4: artifact index
     total_checks = 0
     total_failed = 0
     total_error = 0
 
     # Get guardians from SSOT registry (already sorted by guardian_id)
-    guardian_specs = get_guardian_specs(enabled_only=True)
+    guardian_specs = get_guardian_specs(enabled_only=not include_disabled)
 
     for spec in guardian_specs:
         gid = spec.guardian_id
-        start_ms = time.monotonic() * 1000
-
         try:
             result = _run_single_guardian(
                 spec,
@@ -105,8 +112,6 @@ def run_all_guardians(
                 timestamp,
                 correlation_id,
             )
-            elapsed_ms = (time.monotonic() * 1000) - start_ms
-
             # Add a roll-up check for this guardian
             combined.add_check(
                 check_id=f"guardian_{gid}",
@@ -116,7 +121,7 @@ def run_all_guardians(
                     "guardian_id": gid,
                     "status": result.status,
                     "check_count": len(result.checks),
-                    "elapsed_ms": round(elapsed_ms, 1),
+                    "checks": [c.to_dict() for c in result.checks],
                 },
             )
 
@@ -143,10 +148,16 @@ def run_all_guardians(
                     "guardian_id": gid,
                     "status": result.status,
                     "checks": len(result.checks),
-                    "elapsed_ms": round(elapsed_ms, 1),
                 },
             )
 
+            # Phase 4: build artifact index for L6 ingestion
+            guardian_index[gid] = {
+                "status": result.status,
+                "artifacts": [normalize_repo_path(a.path) for a in result.artifacts],
+            }
+
+        # guardian: allow-silent-swallow
         except Exception as exc:
             combined.add_check(
                 check_id=f"guardian_{gid}",
@@ -162,6 +173,10 @@ def run_all_guardians(
                     "error": str(exc),
                 },
             )
+            guardian_index[gid] = {
+                "status": "ERROR",
+                "artifacts": [],
+            }
 
     # Finalize
     guardian_count = len(guardian_specs)
@@ -174,6 +189,7 @@ def run_all_guardians(
         "total_checks": total_checks,
         "per_guardian": per_guardian_results,
     }
+    combined.index = guardian_index
 
     if combined.status == GuardianStatus.PASS.value:
         combined.summary = f"All {guardian_count} guardians passed ({total_checks} checks)"
@@ -183,6 +199,9 @@ def run_all_guardians(
         combined.summary = (
             f"{total_failed} guardian(s) failed out of {guardian_count} ({total_checks} checks)"
         )
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(combined, commit_hash="HEAD")
 
     # Write combined artifact
     if write_artifacts_dir:
@@ -214,7 +233,20 @@ def main() -> int:
         choices=["json", "text"],
         default="json",
     )
+    parser.add_argument(
+        "--json",
+        dest="format",
+        action="store_const",
+        const="json",
+        help="Shorthand for --format json",
+    )
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument(
+        "--include-disabled",
+        action="store_true",
+        default=False,
+        help="Include disabled-by-default guardians in aggregation",
+    )
     parser.add_argument("--timestamp", default=None)
     parser.add_argument("--correlation-id", default=None)
     args = parser.parse_args()
@@ -223,6 +255,7 @@ def main() -> int:
         write_artifacts_dir=args.write_artifacts,
         timestamp=args.timestamp,
         correlation_id=args.correlation_id,
+        include_disabled=args.include_disabled,
     )
 
     if args.format == "json":

@@ -206,7 +206,7 @@ class GuardianHealingStrategy:
         "import_order",
         "whitespace"
     ]
-    
+
     async def heal_guardian_violations(self, report: dict):
         for violation in report['violations']:
             if violation['category'] in self.SAFE_AUTO_FIX_CATEGORIES:
@@ -237,7 +237,7 @@ class GuardianHealingStrategy:
 # .guardian_config.yaml
 remediation:
   mode: hybrid  # pure_reporting | manual_scripts | agent_autonomous | hybrid | interactive
-  
+
   auto_fix:
     enabled: true
     categories:
@@ -246,7 +246,7 @@ remediation:
       - whitespace
     max_fixes_per_run: 50
     require_approval: false
-  
+
   agent_assisted:
     enabled: true
     categories:
@@ -254,7 +254,7 @@ remediation:
       - file_moves
     require_approval: true
     create_pr: true
-  
+
   manual_only:
     categories:
       - monolith_splitting

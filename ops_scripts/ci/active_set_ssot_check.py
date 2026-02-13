@@ -7,13 +7,16 @@ Enforces that scripts requiring the ACTIVE agent set use the shared
 AST-based rules per governed script:
   1. Must NOT import ssot_discovery_util (any form).
   2. Must NOT import perform_deep_integrity_scan (any form).
-  3. Must NOT call load_agent_discovery or perform_deep_integrity_scan.
+  3. Must NOT call or reference load_agent_discovery / perform_deep_integrity_scan.
   4. Must NOT reference 'agent_discovery_full.json' as a string literal.
-  5. MUST import from active_set_helper (or relative equivalent).
+  5. MUST import active_set_helper (from-import or plain import).
 
-Governed scripts:
-  - ops_scripts/ci/agent_count_cap.py
-  - ops_scripts/ci/discovery_registry_consistency_check.py
+Governed scripts are auto-discovered from ops_scripts/ci/*.py:
+  - Excludes __init__.py, active_set_helper.py, active_set_ssot_check.py,
+    active_set_snapshot_check.py, gate_consistency_check.py,
+    governance_coverage_check.py
+  - Includes scripts whose source contains active-set semantics markers
+    OR any prohibited module/name/string reference (auto-governs bypasses)
 
 Exit 0 = pass, exit 1 = violations found.
 
@@ -23,13 +26,71 @@ Merge-ready gate.
 from __future__ import annotations
 
 import ast
+import re
 import sys
 from pathlib import Path
 
-GOVERNED_SCRIPTS = [
-    "ops_scripts/ci/agent_count_cap.py",
-    "ops_scripts/ci/discovery_registry_consistency_check.py",
+# Scripts excluded from governance (self + helper)
+_GOVERNANCE_EXCLUDES = frozenset(
+    {
+        "__init__.py",
+        "active_set_helper.py",
+        "active_set_ssot_check.py",
+        "active_set_snapshot_check.py",
+        "baseline_io.py",
+        "gate_consistency_check.py",
+        "governance_coverage_check.py",
+        "mro_new_diamond_check.py",
+    },
+)
+
+# Substrings that indicate a script uses active-set semantics
+_GOVERNANCE_MARKERS = (
+    "active_set_helper",
+    "active set",
+    "get_active_set",
+    "agent_count_cap",
+    "registry_consistency_check",
+)
+
+# Patterns that indicate prohibited usage (auto-govern bypass attempts).
+# Compiled with word-boundary anchors to avoid false positives on substrings
+# embedded in unrelated identifiers or file paths.
+_PROHIBITED_PATTERNS = [
+    re.compile(r"\bssot_discovery_util\b"),
+    re.compile(r"(?<![./\\])\bfull_agent_discovery\b"),
+    re.compile(r"\bload_agent_discovery\b"),
+    re.compile(r"\bperform_deep_integrity_scan\b"),
+    re.compile(r"agent_discovery_full\.json"),
 ]
+
+
+def discover_governed_scripts(ci_dir: Path) -> list[str]:
+    """Auto-discover governed scripts under a CI directory.
+
+    Returns sorted list of forward-slash relative paths from project root.
+    """
+    if not ci_dir.is_dir():
+        return []
+
+    project_root = ci_dir.parents[1]  # ops_scripts/ci -> project_root
+    governed: list[str] = []
+
+    for py_file in sorted(ci_dir.glob("*.py")):
+        if py_file.name in _GOVERNANCE_EXCLUDES:
+            continue
+        try:
+            source = py_file.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        is_governed = any(marker in source for marker in _GOVERNANCE_MARKERS) or any(
+            pat.search(source) is not None for pat in _PROHIBITED_PATTERNS
+        )
+        if is_governed:
+            governed.append(py_file.relative_to(project_root).as_posix())
+
+    return governed
+
 
 PROHIBITED_MODULES = {
     "ssot_discovery_util",
@@ -48,6 +109,15 @@ PROHIBITED_STRINGS = {
 REQUIRED_IMPORT_FRAGMENT = "active_set_helper"
 
 
+def _build_parent_map(tree: ast.AST) -> dict[int, ast.AST]:
+    """Build a mapping from child node id -> parent node."""
+    parent_map: dict[int, ast.AST] = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parent_map[id(child)] = node
+    return parent_map
+
+
 def check_script_ast(source: str, rel_path: str) -> list[str]:
     """AST-check a single script. Return list of violation strings."""
     try:
@@ -57,12 +127,17 @@ def check_script_ast(source: str, rel_path: str) -> list[str]:
 
     violations: list[str] = []
     has_helper_import = False
+    parent_map = _build_parent_map(tree)
 
     for node in ast.walk(tree):
-        # Rule 5: detect active_set_helper import
+        # Rule 5: detect active_set_helper import (from-import or plain import)
         if isinstance(node, ast.ImportFrom) and node.module:
             if REQUIRED_IMPORT_FRAGMENT in node.module:
                 has_helper_import = True
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if REQUIRED_IMPORT_FRAGMENT in alias.name:
+                    has_helper_import = True
 
         # Rule 1+2: prohibited from-imports (module path AND imported names)
         if isinstance(node, ast.ImportFrom) and node.module:
@@ -101,7 +176,7 @@ def check_script_ast(source: str, rel_path: str) -> list[str]:
                         )
                         break
 
-        # Rule 3: prohibited attribute calls
+        # Rule 3: prohibited calls
         if isinstance(node, ast.Call):
             func = node.func
             name = None
@@ -114,10 +189,27 @@ def check_script_ast(source: str, rel_path: str) -> list[str]:
                     f"{rel_path}:{node.lineno}: call to prohibited function '{name}()'",
                 )
 
-        # Rule 3: prohibited name references (not just calls)
+        # Rule 3: prohibited name references (not calls)
         if isinstance(node, ast.Name) and node.id in PROHIBITED_NAMES:
-            # Skip if parent is already caught as a Call
-            pass
+            parent = parent_map.get(id(node))
+            # Skip if this Name is the callee of a Call (already caught above)
+            if isinstance(parent, ast.Call) and parent.func is node:
+                pass
+            else:
+                violations.append(
+                    f"{rel_path}:{node.lineno}: reference to prohibited name '{node.id}'",
+                )
+
+        # Rule 3: prohibited attribute references (not calls)
+        if isinstance(node, ast.Attribute) and node.attr in PROHIBITED_NAMES:
+            parent = parent_map.get(id(node))
+            # Skip if this Attribute is the callee of a Call (already caught above)
+            if isinstance(parent, ast.Call) and parent.func is node:
+                pass
+            else:
+                violations.append(
+                    f"{rel_path}:{node.lineno}: reference to prohibited attribute '{node.attr}'",
+                )
 
         # Rule 4: prohibited string literals
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
@@ -132,22 +224,45 @@ def check_script_ast(source: str, rel_path: str) -> list[str]:
             f"{rel_path}: missing required import from '{REQUIRED_IMPORT_FRAGMENT}'",
         )
 
-    return violations
+    # Deduplicate violations (same lineno+message should not double-report)
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for v in violations:
+        if v not in seen:
+            seen.add(v)
+            deduped.append(v)
+    return deduped
 
 
-def main() -> int:
-    project_root = Path(__file__).resolve().parents[2]
+def run_ssot_check(project_root: Path) -> tuple[int, list[str], list[str]]:
+    """Run the SSOT check against a project root.
+
+    Returns:
+        Tuple of (exit_code, governed_scripts, violations).
+    """
+    ci_dir = project_root / "ops_scripts" / "ci"
+    governed = discover_governed_scripts(ci_dir)
     all_violations: list[str] = []
 
-    for script_rel in GOVERNED_SCRIPTS:
+    for script_rel in governed:
         script_path = project_root / script_rel
         if not script_path.is_file():
             continue
         source = script_path.read_text(encoding="utf-8")
         all_violations.extend(check_script_ast(source, script_rel))
 
+    exit_code = 1 if all_violations else 0
+    return exit_code, governed, all_violations
+
+
+def main() -> int:
+    project_root = Path(__file__).resolve().parents[2]
+    exit_code, governed, all_violations = run_ssot_check(project_root)
+
     print("Active Set SSOT Check (AST-enforced):")
-    print(f"  governed_scripts={len(GOVERNED_SCRIPTS)}")
+    print(f"  governed_scripts={len(governed)}")
+    for g in governed:
+        print(f"    - {g}")
 
     if all_violations:
         print(f"FAIL: {len(all_violations)} violation(s):")

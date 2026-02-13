@@ -9,6 +9,6 @@ asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None,
 collecting ... collected 1 item
 
 python: can't open file 'C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\scripts\\full_agent_discovery.py': [Errno 2] No such file or directory
-tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader 
+tests/guardian/test_import_safety.py::TestImportSafety::test_global_smoke_loader
 === PHASE 2: Global Smoke Loader (ALL SOURCE FILES) ===
 FAILED

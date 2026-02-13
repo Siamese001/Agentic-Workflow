@@ -1,6 +1,6 @@
 # Unified Agent Configuration Schema
 # Phase 1.2: Configuration System Integration
-# 
+#
 # This schema defines the standard configuration structure for all UnifiedAgent instances.
 # Each agent category has specific configuration sections that are validated on load.
 

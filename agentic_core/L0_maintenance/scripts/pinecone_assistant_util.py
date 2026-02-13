@@ -23,7 +23,7 @@ print("Redirecting to PineconeSovereignAgent...")
 print()
 
 try:
-    from agentic_core.L5_safety.validators.PineconeSovereignAgent import PineconeSovereignAgent
+    from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
     project_root = Path(__file__).resolve().parents[3]
     gateway = PineconeSovereignAgent(project_root=project_root)

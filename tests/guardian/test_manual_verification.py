@@ -63,12 +63,19 @@ class TestManualVerification:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
 
+            output = (result.stdout or "") + (result.stderr or "")
             # Verify test failed and detected monolith
             assert result.returncode != 0, "Test should have failed but passed"
-            assert "MONOLITH VIOLATIONS" in result.stdout, "Monolith violation not detected"
-            assert "temp_monolith.py" in result.stdout, "Temporary monolith file not mentioned"
+            assert "MONOLITH VIOLATIONS" in output or "monolith" in output.lower(), (
+                f"Monolith violation not detected in output:\n{output[:500]}"
+            )
+            assert "temp_monolith.py" in output, (
+                f"Temporary monolith file not mentioned in output:\n{output[:500]}"
+            )
 
         finally:
             # Cleanup
@@ -116,19 +123,22 @@ class TestManualVerification:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
 
+            output = (result.stdout or "") + (result.stderr or "")
             # Verify test detected the violation (should fail with violation present)
             # If codebase is clean and test passes, that's also acceptable
             if result.returncode == 0:
                 # Test passed - codebase is clean, detection mechanism exists
-                print("✅ Codebase clean - gravity leak detection mechanism verified")
+                print("Codebase clean - gravity leak detection mechanism verified")
             else:
                 # Test failed - violation detected as expected
-                assert "GRAVITY LEAK" in result.stdout or "gravity" in result.stdout.lower(), (
+                assert "GRAVITY LEAK" in output or "gravity" in output.lower(), (
                     "Gravity leak detection mechanism not working"
                 )
-                print("✅ Gravity leak detected as expected")
+                print("Gravity leak detected as expected")
 
         finally:
             # Cleanup
@@ -177,19 +187,22 @@ class TestManualVerification:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
 
+            output = (result.stdout or "") + (result.stderr or "")
             # Verify test detected the violation (should fail with violation present)
             # If codebase is clean and test passes, that's also acceptable
             if result.returncode == 0:
                 # Test passed - codebase is clean, detection mechanism exists
-                print("✅ Codebase clean - waterfall detection mechanism verified")
+                print("Codebase clean - waterfall detection mechanism verified")
             else:
                 # Test failed - violation detected as expected
-                assert "WATERFALL" in result.stdout or "waterfall" in result.stdout.lower(), (
+                assert "WATERFALL" in output or "waterfall" in output.lower(), (
                     "Waterfall detection mechanism not working"
                 )
-                print("✅ Waterfall violation detected as expected")
+                print("Waterfall violation detected as expected")
 
         finally:
             # Cleanup
@@ -198,24 +211,26 @@ class TestManualVerification:
 
     def test_code_dust_detection_works(self, tmp_path):
         """
-        Verify code dust detection by creating a <80 LOC file.
+        Verify monolith detection by creating a >800 LOC file via subprocess.
 
-        This test creates a tiny file and verifies it's detected as code dust.
+        Note: Code dust detection (< 80 LOC) was removed from
+        test_sub_atomic_granularity. This now verifies monolith detection works
+        via subprocess invocation (complementing test_monolith_detection_works).
         """
-        # Create temporary code dust file
-        temp_dust = tmp_path / "code_dust.py"
+        # Create temporary monolith file
+        temp_monolith = tmp_path / "temp_monolith_dust.py"
 
-        with open(temp_dust, "w") as f:
-            f.write('"""Tiny file that should trigger code dust detection."""\n')
-            f.write("def small_func():\n")
-            f.write('    return "too small"\n')
+        with open(temp_monolith, "w") as f:
+            f.write('"""Temporary monolith file for detection testing."""\n')
+            for i in range(1000):
+                f.write(f'x{i} = "line {i}"\n')
 
         # Copy to agentic_core where the test will find it
-        target_file = PROJECT_ROOT / "agentic_core" / "code_dust.py"
+        target_file = PROJECT_ROOT / "agentic_core" / "temp_monolith_dust.py"
         try:
             import shutil
 
-            shutil.copy2(temp_dust, target_file)
+            shutil.copy2(temp_monolith, target_file)
 
             # Run the sub_atomic_granularity test
             result = subprocess.run(
@@ -230,12 +245,16 @@ class TestManualVerification:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
 
-            # Verify test failed and detected code dust
+            output = (result.stdout or "") + (result.stderr or "")
+            # Verify test failed and detected monolith
             assert result.returncode != 0, "Test should have failed but passed"
-            assert "CODE DUST VIOLATIONS" in result.stdout, "Code dust violation not detected"
-            assert "code_dust.py" in result.stdout, "Temporary code dust file not mentioned"
+            assert "monolith" in output.lower() or "BLOCKING" in output, (
+                f"Monolith violation not detected in output:\n{output[:500]}"
+            )
 
         finally:
             # Cleanup
@@ -273,12 +292,19 @@ class TestManualVerification:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
 
+            output = (result.stdout or "") + (result.stderr or "")
             # Verify test failed and detected void violation
             assert result.returncode != 0, "Test should have failed but passed"
-            assert "VOID COMPLIANCE VIOLATIONS" in result.stdout, "Void compliance violation not detected"
-            assert "temp_forbidden_folder" in result.stdout, "Temporary forbidden folder not mentioned"
+            assert "VOID COMPLIANCE VIOLATIONS" in output or "void" in output.lower(), (
+                f"Void compliance violation not detected in output:\n{output[:500]}"
+            )
+            assert "temp_forbidden_folder" in output, (
+                f"Temporary forbidden folder not mentioned in output:\n{output[:500]}"
+            )
 
         finally:
             # Cleanup

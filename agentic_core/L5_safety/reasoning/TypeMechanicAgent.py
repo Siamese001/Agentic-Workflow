@@ -15,12 +15,11 @@ import ast
 from typing import Any
 
 from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 
 # Sovereign Agent for type enforcement and precision engineering
 @dataclass
-class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     Type Mechanic Agent - Type hints and code quality enforcement.
 
@@ -207,3 +206,6 @@ class TypeMechanicAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgen
         for fp in self.ctx.python_files:
             violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

@@ -25,6 +25,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_maintenance.enforcement.v15_p3_contracts import (
+    build_hil_policy_proposal,
+)
+from agentic_core.L0_maintenance.types.v15_p3_types import HILOutcome
+
 Logger = logging.getLogger(__name__)
 
 
@@ -233,6 +238,7 @@ class HumanReviewQueue:
 
         Logger.info(f"[REVIEW_QUEUE] Request {request_id} APPROVED by {reviewer_id}")
         self._trigger_callback(request_id, "approved")
+        self._emit_policy_update_proposal(request, HILOutcome.APPROVED)
 
         return request
 
@@ -261,6 +267,7 @@ class HumanReviewQueue:
 
         Logger.info(f"[REVIEW_QUEUE] Request {request_id} REJECTED by {reviewer_id}: {notes}")
         self._trigger_callback(request_id, "rejected")
+        self._emit_policy_update_proposal(request, HILOutcome.REJECTED)
 
         return request
 
@@ -334,8 +341,48 @@ class HumanReviewQueue:
         if callback:
             try:
                 callback(request_id, action)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
+
+    def _emit_policy_update_proposal(
+        self,
+        request: ReviewRequest,
+        outcome: HILOutcome,
+    ) -> None:
+        """§Wave2.3 — Build and emit PolicyUpdateProposal after HIL finalization."""
+        try:
+            ctx = request.context_bundle
+            evidence_pack_id = ""
+            trace_id = request.request_id
+            file_scope = ""
+            if ctx is not None:
+                evidence_pack_id = ctx.additional_context.get("evidence_pack_id", "")
+                trace_id = ctx.additional_context.get("trace_id", request.request_id)
+                file_scope = str(ctx.proposed_diff.file_path) if ctx.proposed_diff else ""
+
+            proposal = build_hil_policy_proposal(
+                trace_id=trace_id,
+                evidence_pack_id=evidence_pack_id,
+                hil_outcome=outcome,
+                reviewer_id=request.reviewer_id or "unknown",
+                review_notes=request.review_notes,
+                request_id=request.request_id,
+                file_scope=file_scope,
+            )
+
+            from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+
+            emitter = TelemetryEmitter()
+            emitter.emit_typed_artifact("POLICY_UPDATE_PROPOSAL", proposal)
+            _log_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+            emitter.flush_to_artifacts_dir(_log_dir)
+        # guardian: allow-silent-swallow
+        except Exception as exc:
+            Logger.error(
+                "§Wave2.3 PolicyUpdateProposal emission failed at HIL boundary: %s",
+                exc,
+            )
 
     def get_queue_stats(self) -> dict[str, Any]:
         """Get queue statistics for observability."""

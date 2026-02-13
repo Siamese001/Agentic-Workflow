@@ -93,7 +93,7 @@ def heal_canon(self, file_path: Path) -> list[HealingAction]:
    ```python
    #!/usr/bin/env python3
    """Module docstring"""
-   
+
    import os
    ```
    - Assert: Future import added after docstring

@@ -118,7 +118,7 @@ class TestCaptureDomainPlannerGolden:
             pytest.skip("Golden snapshot already exists")
 
         try:
-            from agentic_core.L3_orchestration.reasoning.domain_planner_engine import (
+            from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (
                 DomainPlannerAgent,
             )
         except ImportError as e:

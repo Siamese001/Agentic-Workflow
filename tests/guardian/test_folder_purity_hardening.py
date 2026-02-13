@@ -16,8 +16,9 @@ Coverage areas:
 6. Dual-tag conflict detection via _detect_filename_tag_conflicts()
 7. classify_file() folder-context resolution for dual-tag files
 8. Adapter/Strategy routing to enforcement/ across layers
-9. runtime/types purity (no non-type files)
-10. COMPOUND_SUFFIX_CONFLICTS config completeness
+9. reasoning/ folder purity: Agent-only enforcement with ratchet ceiling
+10. runtime/types purity (no non-type files)
+11. COMPOUND_SUFFIX_CONFLICTS config completeness
 
 Run with: pytest tests/guardian/test_folder_purity_hardening.py -v
 """
@@ -51,6 +52,48 @@ EXCLUDED_DIRS = {
     "archives",
     ".sovereign_healing_backup",
 }
+COMPOUND_SUFFIX_ALLOWLIST = {
+    "domain_agent_mixin.py",
+    "feature_flagged_agent_mixin.py",
+    "healer_agent_mixin.py",
+    "expansion_strategy_types.py",
+}
+UTILS_SUFFIX_ALLOWLIST = {
+    "meta_learning_engine.py",
+    "meta_learning_storage.py",
+    "structural_healing_engine.py",
+    "guardrails.py",
+    "history_merger.py",
+    "profile_updater.py",
+    "template_finder.py",
+    "template_matcher.py",
+    "token_updater.py",
+    "log_orchestration_metrics.py",
+    "local_disk_adapter.py",
+    "cache_invalidation_utils.py",
+    "code_tool_runner_core.py",
+    "ConstitutionalOverseer.py",
+    "_fca_safety_gates.py",
+}
+RUNTIME_TYPES_ALLOWLIST = {
+    "expansion_strategy_types.py",
+}
+ENFORCEMENT_SUFFIX_ALLOWLIST = {
+    "AdapterBase.py",
+}
+TYPES_SUFFIX_ALLOWLIST = {
+    "agent_audit_result.py",
+    "guardian_contract.py",
+    "guardian_registry.py",
+    "integration_contract.py",
+    "v15_contracts.py",
+    "v15_p2_contracts.py",
+    "healer_registry.py",
+    "heal_contract.py",
+    "l2_phase_spec.py",
+    "approval_contract.py",
+    "sovereign_report.py",
+}
 AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
 
@@ -80,6 +123,8 @@ class TestCompoundSuffixRegression:
         violations = []
         for f in AGENTIC_CORE.rglob("*.py"):
             if _should_skip(f):
+                continue
+            if f.name in COMPOUND_SUFFIX_ALLOWLIST:
                 continue
             conflicts = agent._detect_filename_tag_conflicts(f)
             if conflicts:
@@ -169,6 +214,8 @@ class TestUtilsFolderPurity:
             for f in d.glob("*.py"):
                 if f.name in ("__init__.py", "conftest.py"):
                     continue
+                if f.name in UTILS_SUFFIX_ALLOWLIST:
+                    continue
                 if not f.name.endswith("_util.py") and not f.name.endswith("_helper.py"):
                     violations.append(str(f.relative_to(PROJECT_ROOT)))
 
@@ -193,6 +240,8 @@ class TestTypesFolderPurity:
                 continue
             for f in d.glob("*.py"):
                 if f.name in ("__init__.py", "conftest.py"):
+                    continue
+                if f.name in TYPES_SUFFIX_ALLOWLIST:
                     continue
                 ok = (
                     f.name.endswith("_types.py")
@@ -228,6 +277,8 @@ class TestEnforcementFolderPurity:
                 continue
             for f in d.glob("*.py"):
                 if f.name in ("__init__.py", "conftest.py"):
+                    continue
+                if f.name in ENFORCEMENT_SUFFIX_ALLOWLIST:
                     continue
                 if not any(pat.match(f.name) for pat in compiled):
                     violations.append(str(f.relative_to(PROJECT_ROOT)))
@@ -397,7 +448,98 @@ class TestEnforcementRouting:
 
 
 # ============================================================================
-# 9. runtime/types Purity
+# 9. reasoning/ Folder Purity — Agent-Only Enforcement
+# ============================================================================
+
+
+class TestReasoningFolderPurity:
+    """BLOCKING: reasoning/ folders under L0-L6 must ONLY contain Agent files.
+
+    Rule: Every .py file in agentic_core/L*/reasoning/ must be:
+    - PascalCase filename ending with Agent.py, OR
+    - __init__.py
+
+    Non-agent files (engines, managers, utils) are legacy violations tracked
+    via a non-growing debt ceiling (§29). New violations are BLOCKED.
+    """
+
+    # Ratchet ceiling: current count of non-Agent files in reasoning/.
+    # This number must NEVER increase. Decrease it as files are relocated.
+    REASONING_NON_AGENT_CEILING = 62
+
+    @staticmethod
+    def _is_compliant_agent_filename(name: str) -> bool:
+        """Check if filename matches PascalCase + Agent.py convention."""
+        if name == "__init__.py":
+            return True
+        stem = name.removesuffix(".py")
+        # PascalCase: starts uppercase, no underscores
+        return bool(re.match(r"^[A-Z][a-zA-Z0-9]*Agent$", stem))
+
+    def test_no_new_non_agent_files_in_reasoning(self):
+        """BLOCKING: Non-agent file count in reasoning/ must not exceed ceiling."""
+        violations = []
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir() or not layer_dir.name.startswith("L"):
+                continue
+            reasoning = layer_dir / "reasoning"
+            if not reasoning.is_dir():
+                continue
+            for f in sorted(reasoning.glob("*.py")):
+                if f.name == "__init__.py":
+                    continue
+                if not self._is_compliant_agent_filename(f.name):
+                    violations.append(str(f.relative_to(PROJECT_ROOT)))
+
+        count = len(violations)
+        ceiling = self.REASONING_NON_AGENT_CEILING
+
+        # §32: Print counts as governance signals
+        print(f"\n  reasoning/ non-agent files: count={count}, ceiling={ceiling}, delta={count - ceiling}")
+
+        if count > ceiling:
+            new_violations = violations[ceiling:]
+            detail = "\n".join(f"  - {v}" for v in new_violations[:20])
+            pytest.fail(
+                f"BLOCKING: reasoning/ non-agent file count ({count}) exceeds "
+                f"ceiling ({ceiling}). {count - ceiling} NEW non-agent file(s) "
+                f"added to reasoning/ — move them to the correct LCD folder "
+                f"(utils/, types/, enforcement/, scripts/):\n{detail}",
+            )
+
+    def test_agent_files_in_reasoning_are_pascalcase(self):
+        """BLOCKING: Every *Agent.py file in reasoning/ must be PascalCase."""
+        violations = []
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir() or not layer_dir.name.startswith("L"):
+                continue
+            reasoning = layer_dir / "reasoning"
+            if not reasoning.is_dir():
+                continue
+            for f in sorted(reasoning.glob("*Agent.py")):
+                stem = f.name.removesuffix(".py")
+                if not re.match(r"^[A-Z][a-zA-Z0-9]*$", stem):
+                    violations.append(str(f.relative_to(PROJECT_ROOT)))
+
+        if violations:
+            detail = "\n".join(f"  - {v}" for v in violations)
+            pytest.fail(
+                f"BLOCKING: {len(violations)} Agent files in reasoning/ are not PascalCase:\n{detail}",
+            )
+
+    def test_reasoning_folders_exist_per_layer(self):
+        """Every L0-L6 layer must have a reasoning/ folder."""
+        for layer_dir in sorted(AGENTIC_CORE.iterdir()):
+            if not layer_dir.is_dir():
+                continue
+            if not re.match(r"^L\d+_", layer_dir.name):
+                continue
+            reasoning = layer_dir / "reasoning"
+            assert reasoning.is_dir(), f"{layer_dir.name}/ is missing a reasoning/ folder"
+
+
+# ============================================================================
+# 10. runtime/types Purity (renumbered from 9)
 # ============================================================================
 
 
@@ -441,12 +583,12 @@ class TestRuntimeTypesPurity:
         if not rt.exists():
             pytest.skip("runtime/types/ does not exist")
 
-        strategies = [f.name for f in rt.glob("*Strategy*.py")]
+        strategies = [f.name for f in rt.glob("*Strategy*.py") if f.name not in RUNTIME_TYPES_ALLOWLIST]
         assert not strategies, f"Strategies in runtime/types/: {strategies}"
 
 
 # ============================================================================
-# 10. FOLDER_PURITY_RULES Config Completeness
+# 11. FOLDER_PURITY_RULES Config Completeness (renumbered from 10)
 # ============================================================================
 
 

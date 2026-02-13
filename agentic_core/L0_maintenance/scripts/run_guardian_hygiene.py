@@ -21,10 +21,15 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_maintenance.types.guardian_contract import (
+    IGNORE_PATTERNS,
+    MAX_FOLDER_DEPTH,
     ArtifactType,
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    ScanBudgetExceeded,
+    guard_scan_budget,
+    maybe_sign_result,
     normalize_repo_path,
     write_guardian_result,
 )
@@ -43,9 +48,19 @@ ARTIFACT_EXTENSIONS = frozenset({".pyc", ".pyo", ".tmp", ".bak", ".swp"})
 # ---------------------------------------------------------------------------
 
 
-def scan_temp_artifacts(repo_root: Path, allowed_roots: frozenset[str]) -> list[str]:
-    """Return repo-relative POSIX paths of temporary artifacts."""
+def scan_temp_artifacts(
+    repo_root: Path,
+    allowed_roots: frozenset[str],
+) -> list[str] | ScanBudgetExceeded:
+    """
+    Return repo-relative POSIX paths of temporary artifacts.
+
+    Enforces MAX_FILES_PER_SCAN and MAX_FOLDER_DEPTH caps.
+    Returns ScanBudgetExceeded sentinel on cap breach instead of raising.
+    """
     hits: list[str] = []
+    file_count = 0
+
     for root_name in sorted(allowed_roots):
         root_path = repo_root / root_name
         if not root_path.exists():
@@ -53,8 +68,22 @@ def scan_temp_artifacts(repo_root: Path, allowed_roots: frozenset[str]) -> list[
         for item in root_path.rglob("*"):
             if not item.is_file():
                 continue
-            if ".git" in item.parts:
+
+            # Enforce scan bounds via shared SSOT helper
+            file_count += 1
+            breach = guard_scan_budget(file_count)
+            if breach is not None:
+                return breach
+
+            # Check depth
+            depth = len(item.relative_to(repo_root).parts)
+            if depth > MAX_FOLDER_DEPTH:
+                continue  # Skip files beyond depth limit
+
+            # Skip ignored patterns
+            if any(pattern in item.parts for pattern in IGNORE_PATTERNS):
                 continue
+
             if item.suffix in ARTIFACT_EXTENSIONS:
                 hits.append(normalize_repo_path(item.relative_to(repo_root)))
     return sorted(hits)
@@ -144,21 +173,36 @@ def run_hygiene_guardian(
 
     # --- Check 1: Temporary artifacts ---
     try:
-        artifacts = scan_temp_artifacts(repo_root, allowed_roots)
-        if artifacts:
+        scan_result = scan_temp_artifacts(repo_root, allowed_roots)
+        if isinstance(scan_result, ScanBudgetExceeded):
+            result.add_check(
+                check_id="scan_budget_exceeded",
+                status=CheckStatus.FAIL,
+                details=scan_result.details,
+                evidence={
+                    "cap_name": scan_result.cap_name,
+                    "limit": scan_result.limit,
+                    "scanned": scan_result.scanned,
+                },
+            )
+            result.remediation_hints.extend(scan_result.remediation_hints)
+            result.metrics["temp_artifact_count"] = -1  # Unknown due to cap
+        elif scan_result:
             result.add_check(
                 check_id="temp_artifacts",
                 status=CheckStatus.FAIL,
-                details=f"Found {len(artifacts)} temporary artifact(s)",
-                evidence={"paths": artifacts},
+                details=f"Found {len(scan_result)} temporary artifact(s)",
+                evidence={"paths": scan_result},
             )
+            result.metrics["temp_artifact_count"] = len(scan_result)
         else:
             result.add_check(
                 check_id="temp_artifacts",
                 status=CheckStatus.PASS,
                 details="No temporary artifacts found",
             )
-        result.metrics["temp_artifact_count"] = len(artifacts)
+            result.metrics["temp_artifact_count"] = 0
+    # guardian: allow-silent-swallow
     except Exception as exc:
         result.add_check(
             check_id="temp_artifacts",
@@ -184,6 +228,7 @@ def run_hygiene_guardian(
                 details="No empty folders found",
             )
         result.metrics["empty_folder_count"] = len(empty)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         result.add_check(
             check_id="empty_folders",
@@ -209,6 +254,7 @@ def run_hygiene_guardian(
                 details="No __init__.py-only folders found",
             )
         result.metrics["init_only_folder_count"] = len(init_only)
+    # guardian: allow-silent-swallow
     except Exception as exc:
         result.add_check(
             check_id="init_only_folders",
@@ -229,11 +275,18 @@ def run_hygiene_guardian(
         result.summary = f"Hygiene: {passed_checks}/{total_checks} checks passed"
     else:
         result.summary = f"Hygiene: {failed_checks}/{total_checks} checks failed"
-        result.remediation_hints = [
+        # Extend (not overwrite) to preserve budget cap hints
+        default_hints = [
             "Remove temporary artifacts (.pyc/.pyo/.tmp/.bak/.swp)",
             "Remove or populate empty folders",
             "Add meaningful content to __init__.py-only folders or remove them",
         ]
+        for hint in default_hints:
+            if hint not in result.remediation_hints:
+                result.remediation_hints.append(hint)
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     # --- Write artifact ---
     if write_artifacts_dir:

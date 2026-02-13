@@ -35,18 +35,18 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 +Guardian Test for Agent Autonomy Compliance
 +Comprehensive tests for agent autonomy methods and compliance.
  """
- 
+
  import ast
  import sys
  from pathlib import Path
 +import tempfile
 +import pytest
- 
+
  # Ensure project root is in path
  PROJECT_ROOT = Path(__file__).resolve().parents[2]
  if str(PROJECT_ROOT) not in sys.path:
      sys.path.insert(0, str(PROJECT_ROOT))
- 
+
 -# Required autonomy methods for constitutional compliance
 -REQUIRED_METHODS = ["heal_repository"]
 -
@@ -218,19 +218,19 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 +Guardian Test for Agent Validation
 +Comprehensive tests for agent structure and compliance validation.
  """
- 
+
  import ast
  import sys
  from pathlib import Path
 -from typing import Any
 +import tempfile
 +import pytest
- 
+
  # Ensure project root is in path
  PROJECT_ROOT = Path(__file__).resolve().parents[2]
  if str(PROJECT_ROOT) not in sys.path:
      sys.path.insert(0, str(PROJECT_ROOT))
- 
+
 -
 -def check_agent_structure(file_path: Path) -> dict[str, Any]:
 -    """
@@ -343,13 +343,13 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 +class TestAgent(SovereignBaseAgent):
 +    def __init__(self):
 +        pass
-+    
++
 +    def run(self):
 +        pass
-+    
++
 +    def heal_repository(self):
 +        pass
-+    
++
 +    def test_self(self):
 +        pass
 +'''
@@ -558,10 +558,10 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 +    def test_agent_discovery_and_basic_violations(self):
 +        """Phase 1: Agent discovery and basic violation detection."""
 +        result = self._scan_all_agents()
-+        
++
 +        assert result.total_agents > 0, "Should discover agents"
 +        assert "agentic_core" in result.agents_by_territory, "Should find agentic_core agents"
-+        
++
 +        # Verify no basic structural violations
 +        basic_violations = result.violations_by_type.get("basic", 0)
 +        print(f"Phase 1: Found {result.total_agents} agents, {basic_violations} basic violations")
@@ -569,7 +569,7 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 +    def test_llm_validation_detection(self):
 +        """Phase 2: LLM-based validation detection."""
 +        result = self._scan_all_agents()
-+        
++
 +        # Check for LLM-based validation violations
 +        llm_violations = 0
 +        for agent_info in self._get_all_agents():
@@ -767,7 +767,7 @@ cp tests/guardian/test_core_components*.py backup/guardian_tests/
 ```bash
 # Remove simple versions (kept comprehensive versions)
 rm tests/guardian/test_agent_autonomy.py
-rm tests/guardian/test_agent_validation.py  
+rm tests/guardian/test_agent_validation.py
 rm tests/guardian/test_architecture_governance.py
 rm tests/guardian/test_core_components.py
 
@@ -799,34 +799,34 @@ from typing import Dict, List, Tuple
 
 def analyze_script_overlap() -> Dict[str, List[Path]]:
     """Analyze scripts for exact duplicates and similar functionality."""
-    
+
     script_dirs = [
         Path("scripts"),
-        Path("ops_scripts"), 
+        Path("ops_scripts"),
         Path("agentic_core/L0_maintenance/scripts")
     ]
-    
+
     # Hash-based duplicate detection
     file_hashes: Dict[str, List[Path]] = {}
-    
+
     for script_dir in script_dirs:
         if not script_dir.exists():
             continue
-            
+
         for script_file in script_dir.glob("**/*.py"):
             try:
                 content = script_file.read_text(encoding="utf-8")
                 file_hash = hashlib.md5(content.encode()).hexdigest()
-                
+
                 if file_hash not in file_hashes:
                     file_hashes[file_hash] = []
                 file_hashes[file_hash].append(script_file)
             except Exception:
                 continue
-    
+
     # Find exact duplicates
     duplicates = {h: paths for h, paths in file_hashes.items() if len(paths) > 1}
-    
+
     return duplicates
 ```
 
@@ -921,17 +921,17 @@ if str(PROJECT_ROOT) not in sys.path:
 
 class GuardianTestBase:
     """Base class for all Guardian tests."""
-    
+
     @staticmethod
     def get_project_root() -> Path:
         """Get project root path."""
         return PROJECT_ROOT
-    
+
     @staticmethod
     def scan_agents(pattern: str = "**/*Agent.py") -> List[Path]:
         """Scan for agent files matching pattern."""
         return list(PROJECT_ROOT.glob(pattern))
-    
+
     @staticmethod
     def check_layer_hierarchy(file_path: Path) -> Dict[str, Any]:
         """Check layer hierarchy compliance."""
@@ -944,23 +944,23 @@ class GuardianTestBase:
             "L5_safety": 5,
             "L6_observability": 6,
         }
-        
+
         parts = file_path.parts
         current_layer = None
         current_level = -1
-        
+
         for part in parts:
             if part in layer_hierarchy:
                 current_layer = part
                 current_level = layer_hierarchy[part]
                 break
-        
+
         return {
             "layer": current_layer,
             "level": current_level,
             "hierarchy": layer_hierarchy
         }
-    
+
     @staticmethod
     def parse_ast(file_path: Path) -> ast.Module | None:
         """Parse file to AST with error handling."""
@@ -969,7 +969,7 @@ class GuardianTestBase:
             return ast.parse(content)
         except Exception:
             return None
-    
+
     @staticmethod
     def find_agent_classes(tree: ast.Module) -> List[ast.ClassDef]:
         """Find all agent classes in AST."""
@@ -977,7 +977,7 @@ class GuardianTestBase:
             node for node in ast.walk(tree)
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent")
         ]
-    
+
     @staticmethod
     def get_class_methods(class_node: ast.ClassDef) -> List[str]:
         """Get all method names from a class."""
@@ -989,45 +989,45 @@ class GuardianTestBase:
 
 class AgentTestMixin:
     """Mixin for agent-specific test utilities."""
-    
+
     def create_temp_agent(self, code: str, suffix: str = ".py") -> Path:
         """Create temporary agent file."""
         import tempfile
-        
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False) as f:
             f.write(code)
             f.flush()
             return Path(f.name)
-    
+
     def assert_agent_compliance(self, agent_file: Path, required_methods: List[str]) -> None:
         """Assert agent has required methods."""
         tree = GuardianTestBase.parse_ast(agent_file)
         assert tree is not None, f"Could not parse {agent_file}"
-        
+
         agent_classes = GuardianTestBase.find_agent_classes(tree)
         assert agent_classes, f"No agent classes found in {agent_file}"
-        
+
         agent_class = agent_classes[0]
         methods = GuardianTestBase.get_class_methods(agent_class)
-        
+
         for method in required_methods:
             assert method in methods, f"Missing required method: {method}"
-    
+
     def assert_no_violations(self, agent_file: Path) -> None:
         """Assert agent has no validation violations."""
         tree = GuardianTestBase.parse_ast(agent_file)
         assert tree is not None, f"Could not parse {agent_file}"
-        
+
         # Check for validation patterns
         validation_patterns = ["validate", "check", "verify", "audit"]
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 method_name = node.name.lower()
                 if any(pattern in method_name for pattern in validation_patterns):
                     # Check if method uses LLM
                     method_source = ast.get_source_segment(open(agent_file).read(), node)
-                    if method_source and any(llm_call in method_source.lower() 
+                    if method_source and any(llm_call in method_source.lower()
                                            for llm_call in ["llm", "openai", "anthropic"]):
                         pytest.fail(f"Found LLM-based validation in {method_name}")
 ```
@@ -1041,7 +1041,7 @@ class AgentTestMixin:
 def agent_registry():
     """Session-scoped agent registry for all tests."""
     registry = {}
-    
+
     for agent_file in GuardianTestBase.scan_agents():
         tree = GuardianTestBase.parse_ast(agent_file)
         if tree:
@@ -1051,7 +1051,7 @@ def agent_registry():
                 "agent_classes": [cls.name for cls in agent_classes],
                 "layer": GuardianTestBase.check_layer_hierarchy(agent_file)["layer"]
             }
-    
+
     return registry
 
 @pytest.fixture(scope="session")
@@ -1099,7 +1099,7 @@ from tests.guardian.base import GuardianTestBase
 
 class TestGuardianIntegration:
     """Integration tests for Guardian suite."""
-    
+
     def test_anti_pattern_with_forensic_audit_integration(self):
         """Test anti-pattern detection integrates with forensic audit."""
         # Create a file with both anti-patterns and validation violations
@@ -1112,39 +1112,39 @@ class ProblematicAgent:
         try:
             # Global mutation anti-pattern
             sys.path.insert(0, os.getcwd())
-            
+
             # Silent swallower anti-pattern
             do_something()
         except Exception:
             pass
-        
+
         return {"status": "success"}
 '''
-        
+
         temp_file = GuardianTestBase.create_temp_agent(problematic_code, "Agent.py")
-        
+
         try:
             # Test anti-pattern detection
             scanner = AntiPatternScanner(PROJECT_ROOT)
             violations = scanner.scan_file(temp_file)
-            
+
             # Should detect multiple violations
             assert len(violations) >= 2, "Should detect multiple anti-patterns"
-            
+
             # Test forensic audit integration
             tree = GuardianTestBase.parse_ast(temp_file)
             agent_classes = GuardianTestBase.find_agent_classes(tree)
-            
+
             assert agent_classes, "Should find agent class"
-            
+
             # Verify violations are properly categorized
             violation_categories = {v.category.value for v in violations}
             assert "global_mutation" in violation_categories
             assert "silent_swallower" in violation_categories
-            
+
         finally:
             temp_file.unlink(missing_ok=True)
-    
+
     def test_cross_layer_validation(self):
         """Test validation across architectural layers."""
         # Create files in different layers with dependencies
@@ -1154,48 +1154,48 @@ class L5Validator:
         """Should not directly validate L4 components."""
         return True
 '''
-        
+
         l4_component = '''
 class L4Component:
     def get_state(self):
         return {"status": "active"}
 '''
-        
+
         temp_l5 = GuardianTestBase.create_temp_agent(l5_validator, ".py")
         temp_l4 = GuardianTestBase.create_temp_agent(l4_component, ".py")
-        
+
         try:
             # Test layer hierarchy
             l5_info = GuardianTestBase.check_layer_hierarchy(temp_l5)
             l4_info = GuardianTestBase.check_layer_hierarchy(temp_l4)
-            
+
             # L5 should be higher level than L4
             assert l5_info["level"] > l4_info["level"], "Layer hierarchy incorrect"
-            
+
             # Test cross-layer validation detection
             tree = GuardianTestBase.parse_ast(temp_l5)
             agent_classes = GuardianTestBase.find_agent_classes(tree)
-            
+
             # Should detect cross-layer validation pattern
             assert agent_classes, "Should find validator class"
-            
+
         finally:
             temp_l5.unlink(missing_ok=True)
             temp_l4.unlink(missing_ok=True)
-    
+
     def test_performance_benchmarks(self, guardian_performance_baseline):
         """Ensure Guardian tests meet performance targets."""
         start_time = time.time()
-        
+
         # Scan all agents
         agent_files = GuardianTestBase.scan_agents()
-        
+
         # Should complete within baseline time
         scan_time = time.time() - start_time
-        
+
         assert scan_time < guardian_performance_baseline["max_test_time_seconds"], \
             f"Agent scan took {scan_time:.2f}s, expected < {guardian_performance_baseline['max_test_time_seconds']}s"
-        
+
         assert len(agent_files) <= guardian_performance_baseline["max_agents_to_scan"], \
             f"Found {len(agent_files)} agents, expected <= {guardian_performance_baseline['max_agents_to_scan']}"
 ```
@@ -1217,11 +1217,11 @@ from tests.guardian.base import GuardianTestBase
 
 class TestRegression:
     """Regression tests for Guardian deduplication."""
-    
+
     def test_deduplication_regression(self):
         """Ensure deduplication doesn't break existing functionality."""
         # Test that all original test cases are still covered
-        
+
         # Agent autonomy tests
         autonomy_code = '''
 class TestAgent:
@@ -1229,54 +1229,54 @@ class TestAgent:
         pass
 '''
         temp_file = GuardianTestBase.create_temp_agent(autonomy_code, "Agent.py")
-        
+
         try:
             # Should pass autonomy validation
             GuardianTestBase.assert_agent_compliance(temp_file, ["heal_repository"])
         finally:
             temp_file.unlink(missing_ok=True)
-    
+
     def test_script_consolidation_regression(self):
         """Ensure script consolidation maintains functionality."""
         # Test that key scripts are still accessible
         script_paths = [
             "scripts/maintenance",
-            "scripts/ci", 
+            "scripts/ci",
             "scripts/security",
             "scripts/analysis"
         ]
-        
+
         for script_path in script_paths:
             path = Path(script_path)
             assert path.exists(), f"Script directory missing: {script_path}"
             assert any(path.iterdir()), f"Script directory empty: {script_path}"
-    
+
     def test_performance_regression(self):
         """Ensure test execution time doesn't increase."""
         import time
-        
+
         start_time = time.time()
-        
+
         # Run a subset of Guardian tests
         agent_files = GuardianTestBase.scan_agents("**/test_*Agent.py")
-        
+
         execution_time = time.time() - start_time
-        
+
         # Should complete in reasonable time
         assert execution_time < 10.0, f"Test execution too slow: {execution_time:.2f}s"
-    
+
     def test_coverage_maintenance(self):
         """Ensure test coverage is maintained after deduplication."""
         # Verify key test categories are still covered
-        
+
         test_categories = [
             "agent_autonomy",
-            "agent_validation", 
+            "agent_validation",
             "architecture_governance",
             "forensic_audit",
             "anti_patterns"
         ]
-        
+
         for category in test_categories:
             test_file = Path(f"tests/guardian/test_{category}.py")
             assert test_file.exists(), f"Missing test file for category: {category}"
@@ -1293,12 +1293,12 @@ class TestDeduplication:
         """Ensure no duplicate test logic across files."""
         # Scan all test files for duplicate test patterns
         pass
-    
+
     def test_script_uniqueness(self):
         """Ensure no duplicate scripts across directories."""
         # Check for duplicate script functionality
         pass
-    
+
     def test_coverage_maintenance(self):
         """Ensure coverage is maintained after deduplication."""
         # Compare before/after coverage metrics
@@ -1313,11 +1313,11 @@ class TestPerformance:
     def test_guardian_suite_performance(self):
         """Test Guardian suite meets performance targets."""
         pass
-    
+
     def test_memory_usage(self):
         """Test memory usage stays within limits."""
         pass
-    
+
     def test_parallel_execution(self):
         """Test parallel test execution efficiency."""
         pass

@@ -25,6 +25,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypeVar
 
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+
 Logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
@@ -157,6 +162,7 @@ class ToolReliabilityMixin:
 
         Logger.debug(f"[RELIABILITY] {self.__class__.__name__} tool reliability initialized")
 
+    # guardian: allow-magic-config
     def configure_tool_retry(
         self,
         tool_name: str,
@@ -205,6 +211,7 @@ class ToolReliabilityMixin:
         self._ensure_tool_health(tool_name)
         Logger.info(f"[RELIABILITY] Retry policy configured for '{tool_name}'")
 
+    # guardian: allow-magic-config
     def configure_circuit_breaker(
         self,
         tool_name: str,
@@ -345,6 +352,75 @@ class ToolReliabilityMixin:
                         f"{health.consecutive_failures} consecutive failures",
                     )
 
+    def _v15_build_retry_manifest(self, tool_name: str):
+        """§8.1d — Construct SurgicalManifest for retry boundary entry.
+
+        Built ONCE before the retry loop so the same manifest instance
+        survives all retry attempts. Returns None when V15 enforcement is off.
+        """
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = (
+            _hl.sha256(
+                f"ToolReliabilityMixin.retry.{tool_name}".encode(),
+            )
+            .hexdigest()[:8]
+            .upper()
+        )
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = f"ToolReliabilityMixin.with_retry({tool_name!r})"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id=self.__class__.__name__,
+            target_layer="L2",
+            ast_snippet=ast_snippet,
+            serialization_canon="tool_reliability_mixin",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+
+    def _v15_retry_audit(self, manifest, trace_id: str) -> None:
+        """§8.1d — Gateway audit at retry boundary (LOG_ONLY, no RESULT)."""
+        if manifest is None:
+            return
+        try:
+            import hashlib as _hl
+
+            from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+                V15ExecutionGateway,
+            )
+
+            gw = V15ExecutionGateway()
+            gw.execute(
+                manifest,
+                lambda m: {"status": "retry_audit", "errors": 0},
+                lambda: (
+                    _hl.sha256(b"fs_retry").hexdigest(),
+                    _hl.sha256(b"git_retry").hexdigest(),
+                    _hl.sha256(b"mem_retry").hexdigest(),
+                ),
+                trace_id=trace_id,
+            )
+        # guardian: allow-silent-swallow
+        except Exception as exc:
+            Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
+
+    @v15_runtime_guard("D.with_retry.tool_reliability_mixin")
     async def with_retry(
         self,
         tool_name: str,
@@ -368,6 +444,11 @@ class ToolReliabilityMixin:
             RetryExhaustedError: If all retries fail and no fallback
             CircuitBreakerError: If circuit breaker is open
         """
+        # §8.1d — V15 manifest at retry boundary (built ONCE, survives all attempts)
+        _v15_manifest = self._v15_build_retry_manifest(tool_name)
+        if _v15_manifest is not None:
+            self._v15_retry_audit(_v15_manifest, trace_id=_v15_manifest.correlation_id)
+
         # Check circuit breaker first
         self._check_circuit_breaker(tool_name)
 
@@ -416,6 +497,7 @@ class ToolReliabilityMixin:
 
         raise RetryExhaustedError(tool_name, policy.max_retries + 1, last_error or Exception("Unknown error"))
 
+    @v15_runtime_guard("D.with_retry_sync.tool_reliability_mixin")
     def with_retry_sync(
         self,
         tool_name: str,
@@ -433,6 +515,11 @@ class ToolReliabilityMixin:
         Returns:
             Result of operation or fallback
         """
+        # §8.1d — V15 manifest at retry boundary (built ONCE, survives all attempts)
+        _v15_manifest = self._v15_build_retry_manifest(tool_name)
+        if _v15_manifest is not None:
+            self._v15_retry_audit(_v15_manifest, trace_id=_v15_manifest.correlation_id)
+
         self._check_circuit_breaker(tool_name)
 
         policy = self._retry_policies.get(tool_name, RetryPolicy())

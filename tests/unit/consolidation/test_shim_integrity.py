@@ -31,36 +31,6 @@ MERGE_SHIM_MAP: dict[str, tuple[str, str, str]] = {
         "InspectorExecutor",
         "agentic_core.L5_safety.reasoning.InspectorExecutor",
     ),
-    "agentic_core/L6_observability/reasoning/CoordinateObservabilityOperationsAgent.py": (
-        "CoordinateObservabilityOperationsAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
-    "agentic_core/L6_observability/reasoning/DeadlockDetectorAgent.py": (
-        "DeadlockDetectorAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
-    "agentic_core/L6_observability/reasoning/DebateSynthesisAgent.py": (
-        "DebateSynthesisAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
-    "agentic_core/L6_observability/reasoning/RuntimeTelemetryAgent.py": (
-        "RuntimeTelemetryAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
-    "agentic_core/L6_observability/reasoning/StrategicObservationAgent.py": (
-        "StrategicObservationAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
-    "agentic_core/L6_observability/reasoning/TrackObservabilityCostAgent.py": (
-        "TrackObservabilityCostAgent",
-        "ObservabilityProbeExecutor",
-        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor",
-    ),
     "apps_lic/engines/CampaignBalanceAgent.py": (
         "CampaignBalanceAgent",
         "LICValidationExecutor",

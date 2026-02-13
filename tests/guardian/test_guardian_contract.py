@@ -106,8 +106,8 @@ class TestSchemaValidity:
             assert "evidence" in check
 
     def test_status_enum_values(self):
-        assert set(s.value for s in GuardianStatus) == {"PASS", "FAIL", "ERROR"}
-        assert set(s.value for s in CheckStatus) == {"PASS", "FAIL", "SKIP"}
+        assert {s.value for s in GuardianStatus} == {"PASS", "FAIL", "ERROR"}
+        assert {s.value for s in CheckStatus} == {"PASS", "FAIL", "SKIP"}
 
 
 # ---------------------------------------------------------------------------
@@ -179,8 +179,13 @@ class TestStatusPromotion:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("_disable_v15")
 class TestSerializationRoundTrip:
     """Verify to_json → load_guardian_result produces identical data."""
+
+    @pytest.fixture(autouse=True)
+    def _disable_v15(self, monkeypatch):
+        monkeypatch.setenv("V15_ENFORCEMENT", "0")
 
     def test_round_trip_passing(self, passing_result: GuardianResult, tmp_path: Path):
         out = write_guardian_result(passing_result, tmp_path)
@@ -216,6 +221,20 @@ class TestSerializationRoundTrip:
         j1 = passing_result.to_json()
         j2 = passing_result.to_json()
         assert j1 == j2, "Same input must produce identical JSON"
+
+    def test_load_malformed_json_raises(self, tmp_path: Path):
+        """load_guardian_result must raise json.JSONDecodeError on malformed JSON."""
+        bad = tmp_path / "malformed.json"
+        bad.write_text("{not valid json", encoding="utf-8")
+        with pytest.raises(json.JSONDecodeError):
+            load_guardian_result(bad)
+
+    def test_load_missing_guardian_id_raises(self, tmp_path: Path):
+        """load_guardian_result must raise KeyError when guardian_id is absent."""
+        no_id = tmp_path / "no_id.json"
+        no_id.write_text('{"status": "PASS", "checks": []}', encoding="utf-8")
+        with pytest.raises(KeyError, match="guardian_id"):
+            load_guardian_result(no_id)
 
 
 # ---------------------------------------------------------------------------

@@ -191,10 +191,6 @@ MISSING_TESTS = [
         "path": "agentic_core\\config\\blueprint_sovereign\\GovernanceAgent.py",
     },
     {
-        "class": "HealValidatorAgent",
-        "path": "agentic_core\\config\\blueprint_sovereign\\heal_validator.py",
-    },
-    {
         "class": "HierarchyAgent",
         "path": "agentic_core\\config\\blueprint_sovereign\\HierarchyAgent.py",
     },
@@ -232,10 +228,6 @@ MISSING_TESTS = [
     {
         "class": "SovereigntyAuditor",
         "path": "agentic_core\\utils\\core_extensions\\sovereignty_auditor.py",
-    },
-    {
-        "class": "TestSovereigntyAgent",
-        "path": "agentic_core\\config\\blueprint_sovereign\\TestSovereigntyAgent.py",
     },
     {
         "class": "TypeHintEnforcementAgent",
@@ -316,10 +308,6 @@ MISSING_TESTS = [
         "path": "agentic_core\\L5_safety\\guardrails\\BiasDetectorAgent.py",
     },
     {
-        "class": "CompositeGuardrailAgent",
-        "path": "agentic_core\\L5_safety\\guardrails\\GuardrailAgent.py",
-    },
-    {
         "class": "ConstitutionalReviewerAgent",
         "path": "agentic_core\\L5_safety\\guardrails\\ConstitutionalReviewerAgent.py",
     },
@@ -330,10 +318,6 @@ MISSING_TESTS = [
     {
         "class": "MultiProviderRouterAgent",
         "path": "agentic_core\\L5_safety\\guardrails\\multi_provider_router_agent.py",
-    },
-    {
-        "class": "PIISanitizerAgent",
-        "path": "agentic_core\\L5_safety\\guardrails\\PIISanitizerAgent.py",
     },
     {
         "class": "PromptInjectionDetectorAgent",

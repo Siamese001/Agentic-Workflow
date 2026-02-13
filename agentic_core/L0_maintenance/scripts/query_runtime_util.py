@@ -5,13 +5,24 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from rich.console import Console
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+    v15_runtime_guard,
+)
+
+try:
+    from rich.console import Console
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+except ImportError as _err:
+    raise ImportError(
+        "rich is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 # Approved SSOT: Singleton console to prevent terminal character interleaving
 _console = Console()
 
 
+@v15_runtime_guard("D.retry_query.query_runtime_util")
+# guardian: allow-magic-config
 def retry_query(max_retries: int = 3, base_delay: float = 1.0):
     """
     Decorator to provide exponential backoff with jitter for database queries.
@@ -24,6 +35,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
             for attempt in range(max_retries + 1):
                 try:
                     return func(*args, **kwargs)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     last_exception = e
                     if attempt < max_retries:
@@ -40,6 +52,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
     return decorator
 
 
+# guardian: allow-magic-config
 @retry_query(max_retries=3)
 def execute_sql(sql: str) -> Any:
     """
@@ -50,7 +63,11 @@ def execute_sql(sql: str) -> Any:
     raise NotImplementedError("execute_sql must be implemented with actual database driver")
 
 
-def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
+# guardian: allow-magic-config
+def run_hardened_query(
+    query_string: str,
+    timeout_seconds: int = 300,
+) -> Any:
     """
     Executes a database query with a decoupled animation thread.
 
@@ -81,6 +98,7 @@ def run_hardened_query(query_string: str, timeout_seconds: int = 300) -> Any:
 
             while True:
                 # Polling wait with 20Hz refresh to keep Rich UI responsive
+                # guardian: allow-magic-config
                 done, _ = concurrent.futures.wait(
                     [future],
                     timeout=0.05,

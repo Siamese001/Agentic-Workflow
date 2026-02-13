@@ -61,12 +61,12 @@ def _load_structure_blueprint() -> dict[str, Any]:
     This uses importlib to load the module at runtime, ensuring we always
     get the latest version of the blueprint.
     """
-    blueprint_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
+    blueprint_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
 
     if not blueprint_path.exists():
-        raise FileNotFoundError(f"structure_blueprint.py not found at {blueprint_path}")
+        raise FileNotFoundError(f"structure_blueprint_config.py not found at {blueprint_path}")
 
-    spec = importlib.util.spec_from_file_location("structure_blueprint", blueprint_path)
+    spec = importlib.util.spec_from_file_location("structure_blueprint_config", blueprint_path)
     if spec is None or spec.loader is None:
         raise ImportError("Could not load structure_blueprint.py")
 
@@ -101,9 +101,14 @@ def _get_all_python_files(excluded_dirs: set[str] | None = None) -> list[Path]:
             "archives",
             ".sovereign_healing_backup",
             ".backup",
+            ".healing_backups",
             "node_modules",
             ".mypy_cache",
             ".ruff_cache",
+            ".nox",
+            ".pytest_tmp",
+            "site-packages",
+            "Lib",
             "temp_quiet_test",
             "temp_verbose_test",
             ".github",
@@ -154,9 +159,14 @@ class TestSSOTAlignment:
         "archives",
         ".sovereign_healing_backup",
         ".backup",
+        ".healing_backups",
         "node_modules",
         ".mypy_cache",
         ".ruff_cache",
+        ".nox",
+        ".pytest_tmp",
+        "site-packages",
+        "Lib",
         "temp_quiet_test",
         "temp_verbose_test",
     }

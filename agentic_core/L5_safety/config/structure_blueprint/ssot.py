@@ -164,6 +164,11 @@ AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
 RUNTIME_STATE_JSON: str = "runtime_state.json"
 
+# Forensic discovery script integrity — canonical SHA-256 of the corrected script.
+# Verified by the audit precondition step before any analysis begins.
+FORENSIC_DISCOVERY_SCRIPT: str = "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py"
+FORENSIC_DISCOVERY_INTEGRITY_HASH: str = "e140d970cd529e7f8ca52ef47735113ebcea0cbc94d93f36a93e2a4aeeac093a"
+
 OPS_SCRIPTS_DIR: str = "ops_scripts"
 TESTS_DIR: str = "tests"
 
@@ -191,10 +196,6 @@ REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"
 COVERAGE_HTML_DIR: str = "reports/coverage_html"
 DOCS_REPORTS_PLANS: str = "docs/reports/plans"
-
-KNOWN_GOOD_HASHES: Final[Mapping[str, str]] = {
-    "forensic_discovery_prep.py": "3fadb7164353e0d7072d985da0ba06187a4f3a003588dd3341a43dd94eaa86d0",
-}
 
 PROJECT_ROOT_MARKERS: frozenset[str] = frozenset(
     {

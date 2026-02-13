@@ -61,7 +61,16 @@ class TestSchemaSnapshot:
         "metrics",
         "remediation_hints",
     }
-    EXPECTED_OPTIONAL_KEYS = {"timestamp", "correlation_id"}
+    EXPECTED_OPTIONAL_KEYS = {
+        "timestamp",
+        "correlation_id",
+        "index",
+        "artifact_class",
+        "v15_trace_id",
+        "v15_signature",
+        "v15_commit_hash",
+        "certification_hash",
+    }
 
     def test_snapshot_has_all_required_keys(self):
         assert self.EXPECTED_REQUIRED_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
@@ -154,6 +163,15 @@ class TestCompatibilityGate:
         errors = check_schema_compatibility(r.to_dict())
         assert errors == []
 
+    def test_extra_artifact_key_detected(self):
+        """Artifact with unexpected key triggers artifact-keys mismatch branch."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [
+            {"type": "json", "path": "foo.json", "description": "desc", "extra": "x"},
+        ]
+        errors = check_schema_compatibility(d)
+        assert any("Artifact keys mismatch" in e for e in errors)
+
 
 # ---------------------------------------------------------------------------
 # 5. Version bump migration test
@@ -171,8 +189,8 @@ class TestVersionBump:
 
     def test_snapshot_key_count_is_locked(self):
         """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 10, (
-            f"Schema key count changed from 10 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
+        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 16, (
+            f"Schema key count changed from 16 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
             f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
         )
 
@@ -241,9 +259,9 @@ class TestEnumValueLocking:
         assert ARTIFACT_TYPE_VALUES == {"diff", "json", "log", "snapshot"}
 
     def test_enum_matches_frozen_values(self):
-        assert set(s.value for s in GuardianStatus) == GUARDIAN_STATUS_VALUES
-        assert set(s.value for s in CheckStatus) == CHECK_STATUS_VALUES
-        assert set(t.value for t in ArtifactType) == ARTIFACT_TYPE_VALUES
+        assert {s.value for s in GuardianStatus} == GUARDIAN_STATUS_VALUES
+        assert {s.value for s in CheckStatus} == CHECK_STATUS_VALUES
+        assert {t.value for t in ArtifactType} == ARTIFACT_TYPE_VALUES
 
 
 # ---------------------------------------------------------------------------
@@ -274,3 +292,307 @@ class TestSyntheticBreakingChange:
         d["version"] = "1"  # String instead of int
         errors = validate_against_json_schema(d)
         assert any("integer" in e or "version" in e for e in errors)
+
+
+# ---------------------------------------------------------------------------
+# 9. Path validation (Phase 2 hardening)
+# ---------------------------------------------------------------------------
+
+
+class TestPathValidation:
+    """Artifact paths must be repo-relative POSIX (no backslashes, no leading slash)."""
+
+    def test_backslash_path_fails_validation(self):
+        """Artifact path with backslash fails schema validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "foo\\bar.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert any("pattern" in e or "path" in e for e in errors), "Backslash should fail"
+
+    def test_absolute_path_fails_validation(self):
+        """Artifact path with leading slash fails schema validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "/foo/bar.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert any("pattern" in e or "path" in e for e in errors), "Leading slash should fail"
+
+    def test_valid_posix_path_passes(self):
+        """Valid repo-relative POSIX path passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [{"type": "json", "path": "docs/reports/foo.json", "description": "desc"}]
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid POSIX path should pass: {errors}"
+
+
+# ---------------------------------------------------------------------------
+# 10. Schema policy enforcement (Phase 2 hardening)
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaPolicyEnforcement:
+    """Schema changes that break policy must fail validation."""
+
+    def test_required_to_optional_breaks_policy(self):
+        """Removing a required field is a breaking change."""
+        # This test documents the policy: if a field is required,
+        # removing it from a result should fail validation.
+        d = GuardianResult(guardian_id="test").to_dict()
+        del d["checks"]  # Required field
+        errors = validate_against_json_schema(d)
+        assert any("checks" in e for e in errors), "Missing required field should fail"
+
+    def test_additional_properties_false_enforced(self):
+        """additionalProperties: false prevents schema widening."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["new_field"] = "not allowed"
+        errors = validate_against_json_schema(d)
+        assert any("new_field" in e or "additional" in e.lower() for e in errors)
+
+    def test_check_additional_properties_false_enforced(self):
+        """Check objects must not allow additional properties."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {},
+                "extra_field": "not allowed",
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+
+    def test_artifact_additional_properties_false_enforced(self):
+        """Artifact objects must not allow additional properties."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["artifacts"] = [
+            {
+                "type": "json",
+                "path": "foo.json",
+                "description": "desc",
+                "extra_field": "not allowed",
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+
+
+# ---------------------------------------------------------------------------
+# 11. Schema bounds enforcement (Phase 2b: metrics/evidence constraints)
+# ---------------------------------------------------------------------------
+
+
+class TestSchemaBoundsEnforcement:
+    """Metrics and evidence must respect size and property count bounds."""
+
+    def test_metrics_within_bounds_passes(self):
+        """Metrics dict with reasonable size passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {"count": 5, "elapsed_ms": 12.3, "label": "ok"}
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid metrics should pass: {errors}"
+
+    def test_metrics_exceeding_max_properties_fails(self):
+        """Metrics dict with >50 properties fails validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {f"key_{i}": i for i in range(55)}
+        errors = validate_against_json_schema(d)
+        assert any("maxProperties" in e or "50" in e for e in errors), (
+            f"Exceeding maxProperties should fail: {errors}"
+        )
+
+    def test_evidence_within_bounds_passes(self):
+        """Evidence dict with reasonable size passes validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {"paths": ["a.py", "b.py"], "count": 2},
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert errors == [], f"Valid evidence should pass: {errors}"
+
+    def test_evidence_exceeding_max_properties_fails(self):
+        """Evidence dict with >30 properties fails validation."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["checks"] = [
+            {
+                "check_id": "c1",
+                "status": "PASS",
+                "details": "ok",
+                "evidence": {f"key_{i}": i for i in range(35)},
+            },
+        ]
+        errors = validate_against_json_schema(d)
+        assert any("maxProperties" in e or "30" in e for e in errors), (
+            f"Exceeding evidence maxProperties should fail: {errors}"
+        )
+
+    def test_payload_size_within_bounds_passes(self):
+        """Serialized payload within MAX_PAYLOAD_BYTES passes."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        errors = validate_against_json_schema(d)
+        assert not any("payload" in e.lower() for e in errors)
+
+    def test_payload_size_exceeding_limit_fails(self):
+        """Serialized payload exceeding MAX_PAYLOAD_BYTES fails."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        # Create a large payload that exceeds 512KB
+        d["metrics"] = {"big_data": "x" * (600 * 1024)}
+        errors = validate_against_json_schema(d)
+        assert any("MAX_PAYLOAD_BYTES" in e or "payload" in e.lower() for e in errors), (
+            f"Oversized payload should fail: {errors}"
+        )
+
+
+class TestSchemaBoundsConstantsLocked:
+    """Schema bounds constants must be immutable and have expected values."""
+
+    def test_max_metrics_properties_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_METRICS_PROPERTIES
+
+        assert MAX_METRICS_PROPERTIES == 50
+
+    def test_max_evidence_properties_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_PROPERTIES
+
+        assert MAX_EVIDENCE_PROPERTIES == 30
+
+    def test_max_payload_bytes_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_PAYLOAD_BYTES
+
+        assert MAX_PAYLOAD_BYTES == 512 * 1024
+
+    def test_max_evidence_depth_value(self):
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        assert MAX_EVIDENCE_DEPTH == 4
+
+
+class TestEvidenceDepthEnforcement:
+    """Evidence nesting depth must be enforced by the validator."""
+
+    def _make_result_with_evidence(self, evidence: dict) -> dict:
+        d = GuardianResult(guardian_id="depth_test").to_dict()
+        d["checks"] = [
+            {"check_id": "c1", "status": "PASS", "details": "ok", "evidence": evidence},
+        ]
+        return d
+
+    def test_evidence_at_max_depth_passes(self):
+        """Evidence nested exactly at MAX_EVIDENCE_DEPTH should pass."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build nested dict at exactly MAX_EVIDENCE_DEPTH levels
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH - 1):
+            evidence = {f"level_{i}": evidence}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert depth_errors == [], f"Evidence at max depth should pass: {depth_errors}"
+
+    def test_evidence_exceeding_max_depth_fails(self):
+        """Evidence nested beyond MAX_EVIDENCE_DEPTH must be rejected."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build nested dict at MAX_EVIDENCE_DEPTH + 1 levels
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH):
+            evidence = {f"level_{i}": evidence}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert len(depth_errors) > 0, f"Evidence at depth {MAX_EVIDENCE_DEPTH + 1} must fail validation"
+
+    def test_evidence_depth_via_array_nesting_fails(self):
+        """Arrays in evidence also count towards depth."""
+        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+
+        # Build mixed dict/list nesting beyond MAX_EVIDENCE_DEPTH
+        evidence: dict = {"leaf": "value"}
+        for i in range(MAX_EVIDENCE_DEPTH):
+            evidence = {f"level_{i}": [evidence]}
+
+        d = self._make_result_with_evidence(evidence)
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert len(depth_errors) > 0, "Array-nested evidence beyond max depth must fail validation"
+
+    def test_deeply_nested_metrics_does_not_trigger_evidence_depth(self):
+        """Depth guard applies only to evidence, not metrics."""
+        d = GuardianResult(guardian_id="test").to_dict()
+        d["metrics"] = {"a": {"b": {"c": {"d": {"e": "deep"}}}}}
+        errors = validate_against_json_schema(d)
+        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
+        assert depth_errors == [], f"Metrics depth should not trigger evidence depth guard: {depth_errors}"
+
+
+class TestAggregateOnlyIndexEnforcement:
+    """The 'index' field is aggregate-only — forbidden on non-aggregate results."""
+
+    def test_individual_result_with_index_fails(self):
+        """Individual (artifact_class=individual) emitting index must fail."""
+        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+
+        d = GuardianResult(guardian_id="hygiene").to_dict()
+        assert d.get("artifact_class") == ArtifactClass.INDIVIDUAL.value
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert len(index_errors) > 0, "Individual result with index must fail validation"
+        assert ArtifactClass.AGGREGATE.value in index_errors[0]
+
+    def test_aggregate_result_with_index_passes(self):
+        """Aggregate (artifact_class=aggregate) may have index."""
+        from agentic_core.L0_maintenance.types.guardian_contract import (
+            AGGREGATE_GUARDIAN_ID,
+            ArtifactClass,
+        )
+
+        d = GuardianResult(
+            guardian_id=AGGREGATE_GUARDIAN_ID,
+            artifact_class=ArtifactClass.AGGREGATE,
+        ).to_dict()
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert index_errors == [], f"Aggregate result with index should pass: {index_errors}"
+
+    def test_non_aggregate_artifact_class_with_index_fails(self):
+        """Even with aggregate guardian_id, if artifact_class != aggregate, index rejected."""
+        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+
+        d = GuardianResult(guardian_id=AGGREGATE_GUARDIAN_ID).to_dict()
+        d["artifact_class"] = "individual"
+        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e]
+        assert len(index_errors) > 0, "Non-aggregate artifact_class with index must fail"
+
+    def test_individual_result_without_index_passes(self):
+        """Individual result without index is valid (index is optional)."""
+        d = GuardianResult(guardian_id="hygiene").to_dict()
+        assert "index" not in d  # to_dict omits empty index
+        errors = validate_against_json_schema(d)
+        index_errors = [e for e in errors if "aggregate-only" in e or "index" in e.lower()]
+        assert index_errors == [], f"Individual without index should pass: {index_errors}"
+
+    def test_aggregate_guardian_id_constant_is_locked(self):
+        """AGGREGATE_GUARDIAN_ID must match the hardcoded aggregator value."""
+        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+
+        assert AGGREGATE_GUARDIAN_ID == "combined"
+
+    def test_default_artifact_class_is_individual(self):
+        """GuardianResult defaults to artifact_class=individual."""
+        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+
+        r = GuardianResult(guardian_id="test")
+        assert r.artifact_class == ArtifactClass.INDIVIDUAL.value

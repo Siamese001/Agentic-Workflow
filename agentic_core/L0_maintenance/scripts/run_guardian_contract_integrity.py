@@ -25,6 +25,7 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
+    maybe_sign_result,
 )
 from agentic_core.L0_maintenance.types.guardian_registry import (
     ALL_GUARDIANS,
@@ -95,6 +96,60 @@ def _check_no_raw_json_dumps(tree: ast.AST) -> list[int]:
     return suspicious_lines
 
 
+# Scan cap constants that indicate a guardian is a scanning guardian
+_SCAN_CAP_NAMES: frozenset[str] = frozenset({"MAX_FILES_PER_SCAN", "MAX_FOLDER_DEPTH"})
+
+
+def _check_imports_scan_caps(tree: ast.AST) -> bool:
+    """Check if the module imports any scan cap constants."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.names:
+            for alias in node.names:
+                if alias.name in _SCAN_CAP_NAMES:
+                    return True
+    return False
+
+
+def _check_uses_guard_scan_budget(tree: ast.AST) -> bool:
+    """Check if the module imports guard_scan_budget from SSOT."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.names:
+            for alias in node.names:
+                if alias.name == "guard_scan_budget":
+                    return True
+    return False
+
+
+def _check_no_raise_exception_for_caps(tree: ast.AST) -> list[tuple[int, str]]:
+    """
+    AST-detect 'raise <AnyException>(...)' where the message string references
+    scan cap constant names. Returns (line_number, exception_name) tuples.
+    Catches RuntimeError, ValueError, Exception, or any custom exception.
+    """
+    violations: list[tuple[int, str]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Raise) and node.exc is not None:
+            exc = node.exc
+            if isinstance(exc, ast.Call) and isinstance(exc.func, ast.Name):
+                exc_name = exc.func.id
+                for arg in exc.args:
+                    if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                        if any(cap in arg.value for cap in _SCAN_CAP_NAMES):
+                            violations.append((node.lineno, exc_name))
+                    if isinstance(arg, ast.JoinedStr):
+                        for val in arg.values:
+                            if isinstance(val, ast.Constant) and isinstance(val.value, str):
+                                if any(cap in val.value for cap in _SCAN_CAP_NAMES):
+                                    violations.append((node.lineno, exc_name))
+    return violations
+
+
+# Backward-compatible alias for existing tests
+def _check_no_raise_runtime_error_for_caps(tree: ast.AST) -> list[int]:
+    """Legacy wrapper — returns line numbers only."""
+    return [line for line, _ in _check_no_raise_exception_for_caps(tree)]
+
+
 # ---------------------------------------------------------------------------
 # Main guardian logic
 # ---------------------------------------------------------------------------
@@ -131,6 +186,7 @@ def run_contract_integrity_guardian(
             details="No guardians found in SSOT registry (excluding self)",
         )
         result.set_error("No guardians in registry")
+        maybe_sign_result(result, commit_hash="HEAD")
         return result
 
     result.add_check(
@@ -217,6 +273,37 @@ def run_contract_integrity_guardian(
             )
             violations_found += 1
 
+        # Check 4: Scanning guardians must use guard_scan_budget (not raise any exception)
+        if _check_imports_scan_caps(tree):
+            cap_raise_violations = _check_no_raise_exception_for_caps(tree)
+            if cap_raise_violations:
+                lines_and_types = [f"L{ln}:{exc}" for ln, exc in cap_raise_violations]
+                result.add_check(
+                    check_id=f"scan_budget_pattern_{gid}",
+                    status=CheckStatus.FAIL,
+                    details=(
+                        f"{gid} raises exception(s) for scan caps: {lines_and_types}. "
+                        f"Use guard_scan_budget() and return FAIL instead."
+                    ),
+                )
+                violations_found += 1
+            elif not _check_uses_guard_scan_budget(tree):
+                result.add_check(
+                    check_id=f"scan_budget_pattern_{gid}",
+                    status=CheckStatus.FAIL,
+                    details=(
+                        f"{gid} imports scan cap constants but does not import guard_scan_budget. "
+                        f"Scanning guardians MUST use guard_scan_budget() from SSOT."
+                    ),
+                )
+                violations_found += 1
+            else:
+                result.add_check(
+                    check_id=f"scan_budget_pattern_{gid}",
+                    status=CheckStatus.PASS,
+                    details=f"{gid} correctly uses guard_scan_budget for scan cap enforcement",
+                )
+
     # Finalize
     result.metrics = {
         "scripts_checked": scripts_checked,
@@ -232,6 +319,9 @@ def run_contract_integrity_guardian(
             "All guardian scripts must import and use normalize_repo_path",
             "All runner functions must annotate return type as GuardianResult",
         ]
+
+    # --- V15 signing (before serialization) ---
+    maybe_sign_result(result, commit_hash="HEAD")
 
     return result
 

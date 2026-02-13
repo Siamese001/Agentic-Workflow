@@ -16,13 +16,28 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import dash
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from dash import dcc, html
-from dash.dependencies import Input, Output
-from plotly.subplots import make_subplots
+try:
+    import dash
+    from dash import dcc, html
+    from dash.dependencies import Input, Output
+except ImportError as _err:
+    raise ImportError(
+        "dash is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
+try:
+    import pandas as pd
+except ImportError as _err:
+    raise ImportError(
+        "pandas is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+except ImportError as _err:
+    raise ImportError(
+        "plotly is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 # Path to log file (project root)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

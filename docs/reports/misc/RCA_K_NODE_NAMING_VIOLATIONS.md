@@ -1,9 +1,9 @@
 # Root Cause Analysis: K-Node Naming Convention Violations
 ## apps_lic/engines Snake_Case Anomalies
 
-**Date:** February 4, 2026  
-**Analyst:** Cascade AI  
-**Severity:** 🟡 MEDIUM - Architectural Inconsistency  
+**Date:** February 4, 2026
+**Analyst:** Cascade AI
+**Severity:** 🟡 MEDIUM - Architectural Inconsistency
 **Status:** IDENTIFIED - Remediation Required
 
 ---
@@ -43,8 +43,8 @@ Status: DEPRECATED - Do not use in production
 - Originally: K.3 Message Body Agent for archetype-specific content generation
 - Class would have been: `K3MessageBodyAgent` (if active)
 
-**Expected Name per FileClassificationAgent:** `K3MessageBodyAgent.py`  
-**Actual Name:** `k3_message_body_agent.py`  
+**Expected Name per FileClassificationAgent:** `K3MessageBodyAgent.py`
+**Actual Name:** `k3_message_body_agent.py`
 **Violation:** snake_case instead of PascalCase
 
 ---
@@ -63,8 +63,8 @@ Status: DEPRECATED - Do not use in production
 - Originally: K.5 CTA Agent for route-specific call-to-action generation
 - Class would have been: `K5CtaAgent` (if active)
 
-**Expected Name per FileClassificationAgent:** `K5CtaAgent.py`  
-**Actual Name:** `k5_cta_agent.py`  
+**Expected Name per FileClassificationAgent:** `K5CtaAgent.py`
+**Actual Name:** `k5_cta_agent.py`
 **Violation:** snake_case instead of PascalCase
 
 ---
@@ -83,8 +83,8 @@ Status: DEPRECATED - Do not use in production
 - Originally: K.5A Generation Agent for Unify bullets with provenance rules (3V-3T-1S)
 - Class would have been: `K5aAgent` (if active)
 
-**Expected Name per FileClassificationAgent:** `K5aAgent.py`  
-**Actual Name:** `k5a_agent.py`  
+**Expected Name per FileClassificationAgent:** `K5aAgent.py`
+**Actual Name:** `k5a_agent.py`
 **Violation:** snake_case instead of PascalCase
 
 ---
@@ -103,8 +103,8 @@ Status: DEPRECATED - Do not use in production
 - Originally: K.7 Assembly Agent for final message assembly with signature immutability
 - Class would have been: `K7AssemblyAgent` (if active)
 
-**Expected Name per FileClassificationAgent:** `K7AssemblyAgent.py`  
-**Actual Name:** `k7_assembly_agent.py`  
+**Expected Name per FileClassificationAgent:** `K7AssemblyAgent.py`
+**Actual Name:** `k7_assembly_agent.py`
 **Violation:** snake_case instead of PascalCase
 
 ---
@@ -125,8 +125,8 @@ class K3MessageArchitect(LICAgentBase):
 - Filename has malformed PascalCase: `K3messagearchitectagentStrategy.py`
 - Docstring header incorrectly references: `apps_lic/engines/k3_message_architect.py`
 
-**Expected Name per FileClassificationAgent:** `K3MessageArchitectAgent.py`  
-**Actual Name:** `K3messagearchitectagentStrategy.py`  
+**Expected Name per FileClassificationAgent:** `K3MessageArchitectAgent.py`
+**Actual Name:** `K3messagearchitectagentStrategy.py`
 **Violations:**
 1. Malformed PascalCase (lowercase `message`, `architect`, `agent`)
 2. Incorrect `Strategy` suffix (should be `Agent`)
@@ -148,8 +148,8 @@ Status: DEPRECATED - Do not use in production
 - Originally: Knowledge Graph Integration for Neo4j-based reasoning
 - Class would have been: `KnowledgeGraphAgent` (if active)
 
-**Expected Name per FileClassificationAgent:** `KnowledgeGraphAgent.py`  
-**Actual Name:** `knowledge_graph_agent.py`  
+**Expected Name per FileClassificationAgent:** `KnowledgeGraphAgent.py`
+**Actual Name:** `knowledge_graph_agent.py`
 **Violation:** snake_case instead of PascalCase
 
 ---
@@ -281,7 +281,7 @@ if file_type == "AGENT":
 
 #### **Special Case: K3messagearchitectagentStrategy.py**
 
-**Actual Class:** `K3MessageArchitect`  
+**Actual Class:** `K3MessageArchitect`
 **Filename:** `K3messagearchitectagentStrategy.py`
 
 **Misclassification Hypothesis:**
@@ -547,7 +547,7 @@ def _is_k_node_agent(self, path: Path) -> bool:
 
 def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
     # ... existing code ...
-    
+
     # Special handling for K-Node agents
     if file_type == "AGENT" and self._is_k_node_agent(path):
         # Extract K-Node identifier (k3, k5a, etc.)
@@ -587,17 +587,17 @@ from pathlib import Path
 def validate_agent_naming(filepath: str) -> bool:
     """Ensure agent files use PascalCase."""
     path = Path(filepath)
-    
+
     # Check if filename is PascalCase
     if path.stem != path.stem[0].upper() + path.stem[1:]:
         print(f"❌ {filepath}: Agent files must use PascalCase")
         return False
-    
+
     # Check for snake_case pattern
     if '_' in path.stem and not path.stem.startswith('test_'):
         print(f"❌ {filepath}: Agent files cannot use snake_case")
         return False
-    
+
     return True
 
 if __name__ == "__main__":
@@ -615,7 +615,7 @@ Add to `docs/architecture/K_NODE_NAMING_CONVENTIONS.md`:
 # K-Node Naming Conventions
 
 ## Overview
-K-Nodes are specialist agents with numeric identifiers (K.1, K.3, K.5A, K.7) 
+K-Nodes are specialist agents with numeric identifiers (K.1, K.3, K.5A, K.7)
 that follow standard PascalCase agent naming conventions.
 
 ## Naming Pattern
@@ -654,6 +654,6 @@ The K-Node naming violations stem from incomplete migration of deprecated legacy
 
 ---
 
-**Report Generated:** February 4, 2026  
-**Next Steps:** Execute Phase 1 (Delete Deprecated Files)  
+**Report Generated:** February 4, 2026
+**Next Steps:** Execute Phase 1 (Delete Deprecated Files)
 **Validation:** Run FileClassificationAgent audit post-remediation

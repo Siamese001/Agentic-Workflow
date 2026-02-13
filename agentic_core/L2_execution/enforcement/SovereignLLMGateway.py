@@ -22,6 +22,14 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.L0_maintenance.types.guardian_contract import (
+    V15HardFailAbort,
+    is_v15_enforced,
+)
+from agentic_core.L0_maintenance.types.v15_types import (
+    TokenCapArtifact,
+    TokenGateResult,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -137,6 +145,7 @@ class SovereignLLMGateway:
                 raise
         return self._google_client
 
+    # guardian: allow-magic-config
     async def generate(
         self,
         prompt: str,
@@ -145,8 +154,23 @@ class SovereignLLMGateway:
         temperature: float = 0.7,
         max_tokens: int = 4096,
         fallback_providers: list[Provider] | None = None,
+        token_cap: TokenCapArtifact | None = None,
+        trace_id: str = "",
+        token_budget_limit: int = 0,
         **kwargs,
     ) -> dict:
+        # §11.1 — TokenCapArtifact gate (existing V15 enforcement)
+        if is_v15_enforced():
+            if token_cap is None:
+                raise V15HardFailAbort(
+                    "§11.1 TokenCapArtifact missing: callers must supply a "
+                    "TokenCapArtifact when V15 enforcement is active",
+                )
+            if token_cap.gate_result != TokenGateResult.ALLOW:
+                raise V15HardFailAbort(
+                    f"§11.1 TokenCapArtifact denied: gate_result={token_cap.gate_result.value}",
+                )
+
         if model is None:
             if provider == "openai":
                 model = self.config.openai_model
@@ -154,6 +178,41 @@ class SovereignLLMGateway:
                 model = self.config.anthropic_model
             elif provider == "google":
                 model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+
+        effective_model = model or "unknown"
+
+        # §Wave1.8 — Hard token budget enforcement (pre-call gate)
+        if trace_id and token_budget_limit > 0:
+            from agentic_core.L2_execution.types.token_enforcement_types import (
+                TokenBudgetExceeded,
+                TokenEnforcementOutcome,
+                build_token_enforcement_artifact,
+                estimate_prompt_tokens,
+                get_token_budget_store,
+            )
+
+            store = get_token_budget_store()
+            budget_ctx = store.get_or_init(trace_id, token_budget_limit)
+            estimated_prompt = estimate_prompt_tokens(prompt)
+
+            if estimated_prompt > budget_ctx.remaining_budget:
+                fail_artifact = build_token_enforcement_artifact(
+                    trace_id=trace_id,
+                    model=effective_model,
+                    prompt_tokens=estimated_prompt,
+                    completion_tokens=0,
+                    remaining_budget=budget_ctx.remaining_budget,
+                    hard_limit=budget_ctx.initial_budget,
+                    outcome=TokenEnforcementOutcome.FAIL_PRE_CALL,
+                )
+                self._emit_token_artifact(fail_artifact)
+                raise TokenBudgetExceeded(
+                    trace_id=trace_id,
+                    required=estimated_prompt,
+                    remaining=budget_ctx.remaining_budget,
+                    phase="pre_call",
+                    artifact=fail_artifact,
+                )
 
         fallback_providers = fallback_providers or ["anthropic", "google"]
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
@@ -187,9 +246,64 @@ class SovereignLLMGateway:
                     self.operation_stats["fallbacks"] += 1
                     Logger.info(f"[LLM Gateway] Fallback to {current_provider} succeeded")
 
+                # §Wave1.8 — Hard token budget enforcement (post-call gate)
+                if trace_id and token_budget_limit > 0:
+                    from agentic_core.L2_execution.types.token_enforcement_types import (
+                        TokenBudgetExceeded,
+                        TokenEnforcementOutcome,
+                        build_token_enforcement_artifact,
+                        estimate_prompt_tokens,
+                        get_token_budget_store,
+                    )
+
+                    store = get_token_budget_store()
+                    budget_ctx = store.get_or_init(trace_id, token_budget_limit)
+                    total_tokens = result.get("tokens", 0)
+                    prompt_tokens = result.get("prompt_tokens", total_tokens // 2)
+                    completion_tokens = result.get("completion_tokens", total_tokens - prompt_tokens)
+                    tokens_used = prompt_tokens + completion_tokens
+                    new_remaining = store.consume(trace_id, tokens_used)
+
+                    if new_remaining < 0:
+                        fail_artifact = build_token_enforcement_artifact(
+                            trace_id=trace_id,
+                            model=effective_model,
+                            prompt_tokens=prompt_tokens,
+                            completion_tokens=completion_tokens,
+                            remaining_budget=new_remaining,
+                            hard_limit=budget_ctx.initial_budget,
+                            outcome=TokenEnforcementOutcome.FAIL_POST_CALL,
+                        )
+                        self._emit_token_artifact(fail_artifact)
+                        raise TokenBudgetExceeded(
+                            trace_id=trace_id,
+                            required=tokens_used,
+                            remaining=new_remaining,
+                            phase="post_call",
+                            artifact=fail_artifact,
+                        )
+
+                    pass_artifact = build_token_enforcement_artifact(
+                        trace_id=trace_id,
+                        model=effective_model,
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
+                        remaining_budget=new_remaining,
+                        hard_limit=budget_ctx.initial_budget,
+                        outcome=TokenEnforcementOutcome.PASS,
+                    )
+                    self._emit_token_artifact(pass_artifact)
+
                 return result
 
+            # guardian: allow-silent-swallow
             except Exception as e:
+                from agentic_core.L2_execution.types.token_enforcement_types import (
+                    TokenBudgetExceeded,
+                )
+
+                if isinstance(e, TokenBudgetExceeded):
+                    raise
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)
                 last_error = e
@@ -198,6 +312,20 @@ class SovereignLLMGateway:
 
         Logger.error(f"[LLM Gateway] All providers failed. Last Error: {last_error}")
         raise RuntimeError(f"All LLM providers failed. Last error: {last_error}")
+
+    def _emit_token_artifact(self, artifact: Any) -> None:
+        """§Wave1.8 — Emit TokenEnforcementArtifact via TelemetryEmitter."""
+        try:
+            from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+
+            emitter = TelemetryEmitter()
+            emitter.emit_typed_artifact("TOKEN_ENFORCEMENT", artifact)
+        # guardian: allow-silent-swallow
+        except Exception as _emit_exc:
+            Logger.error(
+                "§Wave1.8 TokenEnforcementArtifact emission failed: %s",
+                _emit_exc,
+            )
 
     async def _call_provider(
         self,

@@ -1,7 +1,7 @@
 # Architectural Anomalies Report — Deep Static Analysis
 
-**Generated:** 2026-02-07  
-**Scope:** `agentic_core/` directory (excluding `__pycache__`, `.healing_backups`, `.git`)  
+**Generated:** 2026-02-07
+**Scope:** `agentic_core/` directory (excluding `__pycache__`, `.healing_backups`, `.git`)
 **Analyzer:** Deep Static Analysis with import/inheritance/content heuristics
 
 ---

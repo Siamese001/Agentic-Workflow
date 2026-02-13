@@ -77,7 +77,7 @@ This plan implements a phased approach to refactor the Agentic-Workflow's mixin 
 class LLMGateway:
     def __init__(self):
         self._gateway = None
-    
+
     async def generate(self, prompt, **kwargs):
         # Implementation from current mixin
 ```

@@ -1,0 +1,60 @@
+# Mirror Waivers for Test Structure Contract
+# Format: module_path, reason, owner, expiry
+# Expiry format: YYYY-MM-DD
+
+# Mirror Waivers for Test Structure Contract
+# Format: module_path, reason, owner, expiry
+# Expiry format: YYYY-MM-DD
+
+waivers:
+  # Pure package markers only - verified no logic
+  - module: "agentic_core/__init__.py"
+    reason: "Pure package marker, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "agentic_core/**/__init__.py"
+    reason: "Package markers, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_lic/__init__.py"
+    reason: "Pure package marker, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_lic/**/__init__.py"
+    reason: "Package markers, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_rg/__init__.py"
+    reason: "Pure package marker, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_rg/**/__init__.py"
+    reason: "Package markers, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_shared/__init__.py"
+    reason: "Pure package marker, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+  - module: "apps_shared/**/__init__.py"
+    reason: "Package markers, no testable functionality"
+    owner: "test-structure-remediation"
+    expiry: "2026-12-31"
+
+  # Type definitions - simple type definitions only
+  - module: "apps_shared/types/**/*_types.py"
+    reason: "Simple type definitions, minimal test value"
+    owner: "test-structure-remediation"
+    expiry: "2026-09-30"
+
+  # Deprecated modules - explicitly marked as deprecated
+  - module: "apps_shared/utils/ARCHIVE_FILE_ACCESS_DEPRECATED.py"
+    reason: "Deprecated component, no longer maintained"
+    owner: "test-structure-remediation"
+    expiry: "2026-03-31"
+
+  # Existing comprehensive coverage
+  - module: "agentic_core/core/classification_kernel.py"
+    reason: "Has comprehensive contract tests in separate suite"
+    owner: "test-structure-remediation"
+    expiry: "2026-03-31"

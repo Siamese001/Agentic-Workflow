@@ -3,19 +3,14 @@
     "tag": "runtime",
     "roots": [
       "agentic_core",
-      "apps_lic",
-      "apps_rg",
       "apps_shared"
     ],
-    "exclude_subdirs": [
-      "dashboards",
-      "scripts"
-    ],
-    "files_scanned": 1583,
+    "exclude_subdirs": [],
+    "files_scanned": 1294,
     "dist_packages_found": 53,
-    "phantom_internal_modules": 13,
+    "phantom_internal_modules": 12,
     "parse_errors": [],
-    "timestamp": "2026-02-09T03:41:42.375585+00:00",
+    "timestamp": "2026-02-09T04:11:52.606009+00:00",
     "python_version": "3.12.10"
   },
   "dist_summary": {
@@ -58,12 +53,11 @@
         "yaml"
       ],
       "hard_files": [
+        "agentic_core/L0_maintenance/scripts/fix_heal_schema_violations_util.py",
+        "agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py",
         "apps_shared/types/config_format_types.py"
       ],
-      "excluded_hard_files": [
-        "agentic_core/L0_maintenance/scripts/fix_heal_schema_violations_util.py",
-        "agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py"
-      ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
         "agentic_core/L0_maintenance/scripts/audit_status.py",
@@ -92,9 +86,7 @@
       "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
-        "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
-        "apps_rg/reasoning/HardenedanthropicexecutorStrategy.py",
-        "apps_rg/utils/providers_anthropic_client.py"
+        "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py"
       ]
     },
     "bandit": {
@@ -112,10 +104,10 @@
       "import_names": [
         "bs4"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/inspect_dashboard_browser_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -139,18 +131,16 @@
       ],
       "excluded_hard_files": [],
       "deferred_files": [],
-      "conditional_files": [
-        "apps_lic/engines/lic_vector_memory_types.py"
-      ]
+      "conditional_files": []
     },
     "dash": {
       "import_names": [
         "dash"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -169,10 +159,10 @@
       "import_names": [
         "fastapi"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L6_observability/dashboards/core/experiencein_config.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
         "agentic_core/L5_safety/validators/intervention_server_validator.py"
@@ -196,8 +186,7 @@
       "hard_files": [],
       "excluded_hard_files": [],
       "deferred_files": [
-        "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
-        "apps_rg/tools/ResumeGenerator.py"
+        "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py"
       ],
       "conditional_files": [
         "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
@@ -234,10 +223,10 @@
       "import_names": [
         "livereload"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/dashboard_live_server_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -257,13 +246,12 @@
         "networkx"
       ],
       "hard_files": [
+        "agentic_core/L0_maintenance/scripts/disposition.py",
         "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py",
         "agentic_core/L3_orchestration/reasoning/dag_manager.py",
         "apps_shared/utils/mutation_phase.py"
       ],
-      "excluded_hard_files": [
-        "agentic_core/L0_maintenance/scripts/disposition.py"
-      ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
         "agentic_core/L3_orchestration/reasoning/recursive_orchestrator.py"
@@ -274,7 +262,7 @@
         "numpy"
       ],
       "hard_files": [
-        "agentic_core/L2_execution/reasoning/batch_embedding_service.py",
+        "agentic_core/L0_maintenance/scripts/runtime_shared_data_layer_example_util.py",
         "agentic_core/L2_execution/reasoning/tool_registry.py",
         "agentic_core/L3_orchestration/reasoning/coverage_engine.py",
         "agentic_core/L5_safety/reasoning/PineconeSovereignAgent.py",
@@ -284,9 +272,7 @@
         "apps_shared/types/validation_status_types.py",
         "apps_shared/validators/cache_entry_validator.py"
       ],
-      "excluded_hard_files": [
-        "agentic_core/L0_maintenance/scripts/runtime_shared_data_layer_example_util.py"
-      ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -300,9 +286,7 @@
         "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py"
       ],
       "conditional_files": [
-        "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
-        "apps_rg/reasoning/HardenedopenaiexecutorStrategy.py",
-        "apps_rg/utils/deep_brain_harvester.py"
+        "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py"
       ]
     },
     "opentelemetry-api": {
@@ -321,10 +305,10 @@
       "import_names": [
         "pandas"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
         "agentic_core/knowledge/document_loaders/csv_document_loader_config.py"
@@ -365,7 +349,6 @@
         "agentic_core/L0_maintenance/scripts/pinecone_populator.py",
         "agentic_core/L4_state/memory/semantic_cache_manager.py",
         "agentic_core/L4_state/reasoning/MemoryArchitectAgent.py",
-        "apps_rg/utils/deep_brain_harvester.py",
         "apps_shared/utils/vector_memory_types.py"
       ]
     },
@@ -373,10 +356,10 @@
       "import_names": [
         "playwright"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/diagnose_dashboard_live_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": [
         "agentic_core/L0_maintenance/scripts/dashboard_verifier.py",
@@ -389,10 +372,10 @@
       "import_names": [
         "plotly"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -416,6 +399,7 @@
         "pydantic_core"
       ],
       "hard_files": [
+        "agentic_core/L0_maintenance/scripts/base_tool.py",
         "agentic_core/L2_execution/config/mcpservermode_config.py",
         "agentic_core/L2_execution/config/strategist_bio_writer_config.py",
         "agentic_core/L2_execution/config/transform_config.py",
@@ -438,6 +422,7 @@
         "agentic_core/L5_safety/validators/golden_state_test_case_validator.py",
         "agentic_core/L5_safety/validators/hypothesis_validator.py",
         "agentic_core/L5_safety/validators/read_file_args_validator.py",
+        "agentic_core/L6_observability/dashboards/core/experiencein_config.py",
         "agentic_core/config/core/base_entity_config.py",
         "agentic_core/config/core/global_settings_config.py",
         "agentic_core/config/core/reflection_config.py",
@@ -453,15 +438,6 @@
         "agentic_core/runtime/types/sovereign_events_types.py",
         "agentic_core/runtime/types/state_types.py",
         "agentic_core/runtime/utils/sovereign_dependency_error_util.py",
-        "apps_lic/config/ReasoningToggles.py",
-        "apps_lic/config/archetype_indicator_config.py",
-        "apps_lic/engines/PIISanitizerSpecialistAgent.py",
-        "apps_lic/reasoning/ArchetypeIndicatorsAgent.py",
-        "apps_lic/reasoning/IndustrysensitivityStrategy.py",
-        "apps_lic/tools/SafetyProfile.py",
-        "apps_rg/config/AgentSpec.py",
-        "apps_rg/config/ReasoningToggles.py",
-        "apps_rg/types/PromptTemplate.py",
         "apps_shared/config/environment_config.py",
         "apps_shared/config/input_validator_config.py",
         "apps_shared/config/metric_augmenter_config.py",
@@ -488,18 +464,11 @@
         "apps_shared/validators/signal_quality_pipeline_validator.py",
         "apps_shared/validators/talent_signal_enhancer_validator.py"
       ],
-      "excluded_hard_files": [
-        "agentic_core/L0_maintenance/scripts/base_tool.py",
-        "agentic_core/L6_observability/dashboards/core/experiencein_config.py"
-      ],
+      "excluded_hard_files": [],
       "deferred_files": [
-        "agentic_core/config/core/base_entity_config.py",
-        "apps_rg/scripts/test_input.py",
-        "apps_rg/utils/agent_executor.py"
+        "agentic_core/config/core/base_entity_config.py"
       ],
-      "conditional_files": [
-        "apps_rg/engines/base_rg_engine.py"
-      ]
+      "conditional_files": []
     },
     "pydantic-settings": {
       "import_names": [
@@ -597,10 +566,10 @@
       "import_names": [
         "requests"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/inspect_dashboard_browser_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -608,10 +577,10 @@
       "import_names": [
         "rich"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/query_runtime_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -643,10 +612,10 @@
       "import_names": [
         "tabulate"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L0_maintenance/scripts/scan_duplicates_util.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -658,9 +627,7 @@
         "apps_shared/types/hardened_gemini_executor_types.py"
       ],
       "excluded_hard_files": [],
-      "deferred_files": [
-        "apps_rg/utils/agent_executor.py"
-      ],
+      "deferred_files": [],
       "conditional_files": []
     },
     "tiktoken": {
@@ -736,10 +703,10 @@
       "import_names": [
         "waitress"
       ],
-      "hard_files": [],
-      "excluded_hard_files": [
+      "hard_files": [
         "agentic_core/L6_observability/dashboards/core/StaticFileApp.py"
       ],
+      "excluded_hard_files": [],
       "deferred_files": [],
       "conditional_files": []
     },
@@ -795,7 +762,6 @@
     ],
     "runtime": [
       "agentic_core/runtime/utils/sovereign_dependency_error_util.py",
-      "apps_rg/tools/ResumeGenerator.py",
       "apps_shared/scripts/run_hardened_job.py",
       "apps_shared/types/execution_orchestrator_types.py"
     ],
@@ -815,9 +781,6 @@
     ],
     "territory_ssot_definitions": [
       "agentic_core/L0_maintenance/utils/complexity_visitor_util.py"
-    ],
-    "titanium_rag_pipeline": [
-      "apps_rg/reasoning/DispatchResumeToolsAgent.py"
     ]
   }
 }

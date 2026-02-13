@@ -1,14 +1,46 @@
 # .pre-commit-config.yaml
-# STREAMLINED: Syntax Gate -> Auto-Fix -> Analysis -> Structural -> Cleanup
+# STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Analysis -> Structural -> Cleanup
 # Order of operations:
-#   1. py_compile    — fastest gate, catches broken syntax immediately
-#   2. ruff --fix    — auto-fix lint issues (imports, unused vars, etc.)
-#   3. ruff-format   — normalize style on clean code
-#   4. anti-patterns — logic analysis runs on already-fixed/formatted code
-#   5. report-loc    — structural SSOT check (independent of code content)
-#   6. purge-cache   — cleanup, always last
+#   T0  normalize     — CRLF/LF, trailing whitespace, EOF (deterministic, no churn)
+#   T1  py_compile    — fastest gate, catches broken syntax immediately
+#   T2a ruff --fix    — auto-fix lint issues (imports, unused vars, etc.)
+#   T2b ruff-format   — normalize style on clean code
+#   T3a anti-patterns — logic analysis runs on already-fixed/formatted code
+#   T3b report-loc    — structural SSOT check (independent of code content)
+#   T3c guard         — reject generated artifacts that got re-tracked
+#   T3d purge-cache   — cleanup, always last
+#
+# NOTE: T3a–T3d share a single `repo: local` block. Tier labels in comments
+#       are logical groupings; YAML structure groups them under one repo entry.
+#
+# NOTE: `default_language_version` applies to hooks with `language: python`
+#       (virtualenv-based). All local hooks here use `language: system` and
+#       inherit the ambient Python; the setting below governs remote hooks only.
+
+fail_fast: true
+default_language_version:
+  python: python3.12
+
+# Global exclude — applied to every hook. Individual hooks may extend this.
+exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
 
 repos:
+  # ============================================================================
+  # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
+  # ============================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: "T0: Trailing Whitespace"
+      - id: end-of-file-fixer
+        name: "T0: End-of-File Fixer"
+      - id: mixed-line-ending
+        name: "T0: Enforce LF Line Endings"
+        args: [--fix=lf]
+      - id: check-merge-conflict
+        name: "T0: Check Merge Conflict Markers"
+
   # ============================================================================
   # TIER 1: Syntax Gate (Fastest Fail — broken files never proceed)
   # ============================================================================
@@ -19,7 +51,7 @@ repos:
         entry: python -m py_compile
         language: system
         types: [python]
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        require_serial: true
 
   # ============================================================================
   # TIER 2: Auto-Fixers & Formatters (clean code before analysis)
@@ -28,38 +60,57 @@ repos:
     rev: v0.14.13
     hooks:
       - id: ruff
-        name: "T2: Ruff Lint & Auto-Fix"
+        name: "T2a: Ruff Lint & Auto-Fix"
         args: [--fix]
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
+        exclude: ops_scripts/ci/check_anti_patterns\.py
       - id: ruff-format
-        name: "T2: Ruff Format"
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+        name: "T2b: Ruff Format"
+        exclude: ops_scripts/ci/check_anti_patterns\.py
 
   # ============================================================================
-  # TIER 3: Logic Analysis & Structural Checks (on cleaned code)
+  # TIER 3: Logic Analysis, Structural Checks, Guard & Cleanup (local hooks)
+  # All hooks below share this single `repo: local` block.
   # ============================================================================
   - repo: local
     hooks:
+      # -- T3a: Anti-pattern analysis (on already-fixed/formatted code) ----------
       - id: check-anti-patterns
-        name: "T3: Anti-Pattern Landmine Detection"
+        name: "T3a: Anti-Pattern Landmine Detection"
         entry: python ops_scripts/ci/check_anti_patterns.py
         language: system
         types: [python]
-        exclude: ^(archives/.*|\.sovereign_healing_backup/.*|ops_scripts/ci/check_anti_patterns.py)
+        require_serial: true
+        # Relocated legacy test-only agent fixtures; production gates enforce 0 L6 *Agent.py.
+        exclude: (ops_scripts/ci/check_anti_patterns\.py|tests/support/l6_observability/.*)
 
+      # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
-        name: "T3: Report Location SSOT Check"
+        name: "T3b: Report Location SSOT Check"
         entry: python ops_scripts/hooks/validate_report_location.py --staged-only
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
 
-  # ============================================================================
-  # TIER 4: Cleanup (always runs last)
-  # ============================================================================
+      # -- T3c: Generated-artifact tracking guard -------------------------------
+      # Rejects commits if git tracks any of:
+      #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json
+      # On failure: prints tracked paths + exact `git rm --cached` fix.
+      - id: reject-generated-artifacts-tracked
+        name: "T3c: Reject Tracked Generated Artifacts"
+        entry: python ops_scripts/hooks/reject_tracked_generated_artifacts.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3d: Pycache purge (idempotent, bounded) -----------------------------
+      # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
+      # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
       - id: purge-cache
-        name: "T4: Pycache Purge"
+        name: "T3d: Pycache Purge"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true

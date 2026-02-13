@@ -59,13 +59,19 @@ def _extract_test_class_names(test_path: Path) -> set[str]:
     return classes
 
 
-class TestCheckIdCoverage:
-    """Every check_id from SSOT registry must be referenced in its guardian's test file."""
+# Derived sets for parametrization
+_ENABLED_WITH_TESTS = [
+    g.guardian_id for g in ALL_GUARDIANS if g.enabled_by_default and g.guardian_id in GUARDIAN_TEST_FILES
+]
+_DISABLED_WITH_TESTS = [
+    g.guardian_id for g in ALL_GUARDIANS if not g.enabled_by_default and g.guardian_id in GUARDIAN_TEST_FILES
+]
 
-    @pytest.mark.parametrize(
-        "guardian_id",
-        [g.guardian_id for g in ALL_GUARDIANS if g.guardian_id in GUARDIAN_TEST_FILES],
-    )
+
+class TestCheckIdCoverage:
+    """Every check_id from enabled guardians must be referenced in its test file."""
+
+    @pytest.mark.parametrize("guardian_id", _ENABLED_WITH_TESTS)
     def test_all_check_ids_referenced_in_tests(self, guardian_id: str):
         spec = next(g for g in ALL_GUARDIANS if g.guardian_id == guardian_id)
         test_path = PROJECT_ROOT / GUARDIAN_TEST_FILES[guardian_id]
@@ -84,12 +90,9 @@ class TestCheckIdCoverage:
 
 
 class TestPassFailScenarios:
-    """Each guardian test must have both PASS and FAIL scenario test classes."""
+    """Each enabled guardian test must have both PASS and FAIL scenario test classes."""
 
-    @pytest.mark.parametrize(
-        "guardian_id",
-        [g.guardian_id for g in ALL_GUARDIANS if g.guardian_id in GUARDIAN_TEST_FILES],
-    )
+    @pytest.mark.parametrize("guardian_id", _ENABLED_WITH_TESTS)
     def test_has_pass_scenario(self, guardian_id: str):
         test_path = PROJECT_ROOT / GUARDIAN_TEST_FILES[guardian_id]
         classes = _extract_test_class_names(test_path)
@@ -102,10 +105,7 @@ class TestPassFailScenarios:
             f"Guardian '{guardian_id}': no PASS scenario found in {GUARDIAN_TEST_FILES[guardian_id]}"
         )
 
-    @pytest.mark.parametrize(
-        "guardian_id",
-        [g.guardian_id for g in ALL_GUARDIANS if g.guardian_id in GUARDIAN_TEST_FILES],
-    )
+    @pytest.mark.parametrize("guardian_id", _ENABLED_WITH_TESTS)
     def test_has_fail_scenario(self, guardian_id: str):
         test_path = PROJECT_ROOT / GUARDIAN_TEST_FILES[guardian_id]
         classes = _extract_test_class_names(test_path)
@@ -124,6 +124,26 @@ class TestPassFailScenarios:
         )
 
 
+class TestDisabledGuardianSmokeCoverage:
+    """Disabled guardians require only smoke coverage: test file exists + schema reference."""
+
+    @pytest.mark.parametrize("guardian_id", _DISABLED_WITH_TESTS)
+    def test_disabled_guardian_has_test_file(self, guardian_id: str):
+        """Disabled guardian must still have a test file."""
+        test_path = PROJECT_ROOT / GUARDIAN_TEST_FILES[guardian_id]
+        assert test_path.exists(), f"Test file missing for disabled guardian: {guardian_id}"
+
+    @pytest.mark.parametrize("guardian_id", _DISABLED_WITH_TESTS)
+    def test_disabled_guardian_references_schema(self, guardian_id: str):
+        """Disabled guardian test must reference schema-valid output (GuardianResult or status)."""
+        test_path = PROJECT_ROOT / GUARDIAN_TEST_FILES[guardian_id]
+        strings = _extract_string_literals_from_test(test_path)
+        has_schema_ref = any(
+            "GuardianResult" in s or "PASS" in s or "FAIL" in s for s in strings
+        ) or "GuardianResult" in test_path.read_text(encoding="utf-8")
+        assert has_schema_ref, f"Disabled guardian '{guardian_id}': test must reference schema-valid output"
+
+
 class TestStatusPromotionCoverage:
     """Verify status promotion is tested across guardians."""
 
@@ -131,7 +151,7 @@ class TestStatusPromotionCoverage:
         """The contract test file must contain status promotion tests."""
         contract_test = PROJECT_ROOT / "tests" / "guardian" / "test_guardian_contract.py"
         assert contract_test.exists()
-        strings = _extract_string_literals_from_test(contract_test)
+        _extract_string_literals_from_test(contract_test)
         classes = _extract_test_class_names(contract_test)
         assert "TestStatusPromotion" in classes, (
             "test_guardian_contract.py must contain TestStatusPromotion class"

@@ -54,6 +54,14 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
     sorted(
         [
             GuardianSpec(
+                guardian_id="location_alignment",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_location_alignment",
+                entrypoint_fn="run_location_alignment_guardian",
+                check_ids=("misplaced_files", "missing_directories"),
+                tier="slow",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
                 guardian_id="hygiene",
                 entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_hygiene",
                 entrypoint_fn="run_hygiene_guardian",
@@ -74,6 +82,38 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
                     "lock_exists",
                     "checksum_match",
                 ),
+                tier="fast",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
+                guardian_id="drift_detection",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_drift_detection",
+                entrypoint_fn="run_drift_detection_guardian",
+                check_ids=("root_drift",),
+                tier="fast",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
+                guardian_id="architecture_governance",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_architecture_governance",
+                entrypoint_fn="run_architecture_governance_guardian",
+                check_ids=("import_compliance", "layer_gravity"),
+                tier="slow",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
+                guardian_id="classification_compliance",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_classification_compliance",
+                entrypoint_fn="run_classification_compliance_guardian",
+                check_ids=("naming_compliance", "territory_compliance"),
+                tier="slow",
+                enabled_by_default=True,
+            ),
+            GuardianSpec(
+                guardian_id="hierarchy_compliance",
+                entrypoint_module="agentic_core.L0_maintenance.scripts.run_guardian_hierarchy_compliance",
+                entrypoint_fn="run_hierarchy_compliance_guardian",
+                check_ids=("missing_structure", "subfolder_compliance"),
                 tier="fast",
                 enabled_by_default=True,
             ),

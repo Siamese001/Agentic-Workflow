@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-09T03:49:28.207492+00:00",
+  "timestamp": "2026-02-09T04:38:55.983905+00:00",
   "verifier_version": "4.5.0",
   "overall_passed": true,
   "checks": [
@@ -169,14 +169,15 @@
         }
       ],
       "stats": {
-        "total_edges": 3344,
-        "internal_edges": 2905,
+        "total_edges": 3353,
+        "internal_edges": 2914,
         "cross_layer_edges_analyzed": 14,
         "core_stdlib_violations": 0,
         "utils_mixin_violations": 0,
         "config_execution_violations": 2,
         "known_debt_items": 2,
-        "debt_ceiling": 2,
+        "debt_ceiling": 3,
+        "expired_debt_items": 0,
         "warning_count": 2
       }
     }

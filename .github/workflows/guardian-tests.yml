@@ -1,4 +1,8 @@
-name: Guardian Tests
+# Guardian-Only Contract Gate
+# Runs guardian tests and aggregated guardian on every push/PR touching
+# guardian-relevant paths.  Collection exclusions for known-broken files
+# are managed in tests/guardian/conftest.py (collect_ignore_glob).
+name: Guardian Tests (Mandatory)
 
 on:
   push:
@@ -13,7 +17,7 @@ on:
       - 'tests/guardian/**'
 
 jobs:
-  guardian-tests:
+  guardian-contract-gate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,31 +31,34 @@ jobs:
         run: |
           pip install pytest
 
-      - name: Run Guardian tests (all phases)
+      - name: Run Guardian tests
         run: |
-          pytest tests/guardian/test_guardian_contract.py \
-                 tests/guardian/test_contract_compatibility.py \
-                 tests/guardian/test_guardian_hygiene.py \
-                 tests/guardian/test_guardian_manifest.py \
-                 tests/guardian/test_guardian_aggregation.py \
-                 tests/guardian/test_behavioral_coverage_ratchet.py \
-                 tests/guardian/test_l6_signal_contract.py \
-                 tests/guardian/test_guardian_runtime_budget.py \
-                 tests/guardian/test_guardian_self_integrity.py \
-                 tests/guardian/test_guardian_meta_coverage.py \
-                 -v --tb=short -m guardian
+          pytest tests/guardian/ -v --tb=short
 
       - name: Run aggregated guardian (--strict)
         run: |
           python -m agentic_core.L0_maintenance.scripts.run_all_guardians \
-                 --write-artifacts docs/reports/guardian_artifacts \
-                 --strict --format text
+                 --write-artifacts docs/reports/verification/guardian \
+                 --strict --format text \
+                 --correlation-id "${{ github.sha }}"
+
+      - name: Guard against output-dir drift
+        run: |
+          if [ -d "docs/reports/guardian_artifacts" ]; then
+            echo "::error::docs/reports/guardian_artifacts must not exist — guardian outputs belong under docs/reports/verification/guardian/"
+            exit 1
+          fi
+          if find docs/reports/verification/guardian -name '*.py' 2>/dev/null | grep -q .; then
+            echo "::error::docs/reports/verification/guardian/ must not contain .py files — output dir is for JSON artifacts only"
+            exit 1
+          fi
 
       - name: Upload guardian artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: guardian-results
+          name: guardian-results-${{ github.sha }}
           path: |
             agentic_core/L0_maintenance/logs/guardian_report.json
-            docs/reports/guardian_artifacts/
+            docs/reports/verification/guardian/
+          retention-days: 14

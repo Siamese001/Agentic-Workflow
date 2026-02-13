@@ -1,0 +1,13 @@
+# One dotted module path per line. Comments allowed with '#'.
+# Optional documented exclusions:
+# EXCLUDE agentic_core.L5_safety.reasoning.GovernanceAgent :: Broken import chain (missing dependency); fix upstream then include.
+
+tests.support.l6_observability.TelemetryAgent
+tests.support.l6_observability.TracingAgent
+tests.support.l6_observability.MetricsAgent
+tests.support.l6_observability.AutonomicMonitorAgent
+tests.support.l6_observability.SovereignObservabilityAgent
+
+agentic_core.L0_maintenance.reasoning.BootstrapAgent
+agentic_core.L0_maintenance.reasoning.GospelSyncAgent
+agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent

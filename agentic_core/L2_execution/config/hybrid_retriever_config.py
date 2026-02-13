@@ -14,7 +14,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from rank_bm25 import BM25Okapi
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError as _err:
+    raise ImportError(
+        "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

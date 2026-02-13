@@ -35,7 +35,6 @@ from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -65,7 +64,7 @@ class RedTeamResult:
 
 
 # NAMING CANON COMPLIANCE — renamed to AdversarialRedTeamerAgent for discovery and sovereignty — 2025-12-30
-class AdversarialRedTeamerAgent(SubatomicTestingMixin, SovereignBaseAgent, SubAtomicAgent):
+class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
     """
     The Skeptic - Adversarial Red Team Agent
 

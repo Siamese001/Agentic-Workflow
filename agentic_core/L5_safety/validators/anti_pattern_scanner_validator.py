@@ -213,6 +213,8 @@ class AntiPatternScanner:
                                     report.total_violations += 1
                                     report.all_violations.append(violation)
 
+            # Error handling - log and continue scanning other directories
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Error scanning {target_dir}: {e}")
                 report.errors.append(f"Error scanning {target_dir}: {e}")

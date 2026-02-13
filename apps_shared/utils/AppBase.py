@@ -18,16 +18,6 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Import mixins with fallbacks
 try:
-    from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-except ImportError:
-
-    class AtomicExecutionMixin:
-        """Fallback AtomicExecutionMixin when not available."""
-
-        pass
-
-
-try:
     from agentic_core.L1_cognition.reasoning.meta_learning_mixin import meta_learning_mixin  # noqa: F401
 except ImportError:
 
@@ -48,7 +38,7 @@ except ImportError:
 
 
 @dataclass
-class AppBase(AtomicExecutionMixin, MetaLearningMixin, SovereignBaseAgent, HealerMixin):
+class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     """
     AppBase: Common foundation for all application-level agents.
 
@@ -146,3 +136,6 @@ class AppBase(AtomicExecutionMixin, MetaLearningMixin, SovereignBaseAgent, Heale
             "version": self._app_version,
             "similarity_threshold": self._similarity_threshold,
         }
+
+    def heal(self, violation, **kwargs):
+        return super().heal(violation, **kwargs)

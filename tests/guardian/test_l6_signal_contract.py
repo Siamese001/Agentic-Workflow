@@ -63,7 +63,7 @@ class TestL6Constants:
         assert not GUARDIAN_ARTIFACT_DIR.startswith("/")
 
     def test_artifact_dir_value(self):
-        assert GUARDIAN_ARTIFACT_DIR == "docs/reports/guardian_artifacts"
+        assert GUARDIAN_ARTIFACT_DIR == "docs/reports/verification/guardian"
 
     def test_artifact_pattern_has_placeholder(self):
         assert "{guardian_id}" in GUARDIAN_ARTIFACT_PATTERN

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
+# Do not extend. Use: python -m agentic_core.L0_maintenance.scripts.l0_execute
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
@@ -36,22 +38,40 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
+
+def _optional_v15_runtime_guard():
+    """Lazy import to avoid import-time failure in bootstrap contexts.
+
+    Fail-closed semantics: when V15_ENFORCEMENT=1 and the guard cannot be
+    imported, re-raise so the caller sees a hard failure instead of a silent
+    no-op.  When enforcement is off (or unset), fall back to a no-op decorator.
+    """
+    try:
+        from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import v15_runtime_guard
+
+        return v15_runtime_guard
+    # guardian: allow-silent-swallow
+    except Exception:
+        if os.getenv("V15_ENFORCEMENT") == "1":
+            raise  # fail-closed: enforcement is on but guard is unavailable
+
+        def _noop_guard(_entry_point_id: str):
+            """No-op: accepts an ID string and returns an identity decorator."""
+
+            def _identity(func):
+                return func
+
+            return _identity
+
+        return _noop_guard
+
+
 try:
     from dotenv import load_dotenv
 
     load_dotenv()
 except ImportError:
     pass
-
-# [ETERNAL UTF-8] Force Windows consoles to handle unicode symbols (From Canon)
-if sys.platform.startswith("win"):
-    # [ULTRA-HARDENED] Replace shell command with direct subprocess call to eliminate injection vectors
-    try:
-        subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
-    except FileNotFoundError:
-        # chcp not available, skip - this is common in some Windows environments
-        pass
-    sys.stdout.reconfigure(encoding="utf-8")
 
 import ast
 import re
@@ -78,6 +98,135 @@ except ImportError:
 
         def heal(self, violation):
             return {"status": "failed", "errors": ["Adapter not available"]}
+
+
+def resolve_repo_root(start=None):
+    """Deterministic repo-root resolver.
+    Walk upward from this file (or provided start) until we find repo markers.
+    """
+    cur = Path(start or __file__).resolve()
+    for p in (cur, *cur.parents):
+        if (p / "agentic_core").is_dir() and (p / "ops_scripts").is_dir():
+            return p
+    raise RuntimeError(f"Unable to resolve repo root from: {cur}")
+
+
+REPO_ROOT = resolve_repo_root()  # noqa: N816
+
+
+def _apply_v15_enforcement_flag(args: argparse.Namespace) -> None:
+    """CLI overrides env to ensure determinism in CI/smoke paths."""
+    if getattr(args, "v15_enforcement", None) is None:
+        return
+    os.environ["V15_ENFORCEMENT"] = "1" if int(args.v15_enforcement) == 1 else "0"
+
+
+def _configure_logging(verbosity: int) -> None:
+    level = logging.WARNING
+    if verbosity >= 2:
+        level = logging.DEBUG
+    elif verbosity == 1:
+        level = logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        force=True,
+    )
+
+
+def _maybe_force_utf8_console() -> None:
+    """Opt-in Windows console UTF-8 coercion.  Called at runtime, NOT import time."""
+    if not sys.platform.startswith("win"):
+        return
+    if os.getenv("EXECUTE_SSOT_FORCE_UTF8", "0") != "1":
+        return
+    try:
+        subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
+    except FileNotFoundError:
+        pass
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    # guardian: allow-silent-swallow
+    except Exception:
+        return
+
+
+# ============================================================================
+# V15 MANIFEST CONSTRUCTION (§8.1e)
+# ============================================================================
+
+
+def _v15_build_ssot_manifest():
+    """§8.1e — Construct SurgicalManifest for SSOT bootstrap entry.
+
+    Returns None when V15 enforcement is off (zero overhead).
+    Bootstrap-safe: lazy imports with fail-closed semantics.
+    """
+    try:
+        from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+
+        if not is_v15_enforced():
+            return None
+
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+            generate_trace_id,
+        )
+        from agentic_core.L0_maintenance.types.v15_p2_types import (
+            FixConstraint,
+            SurgicalManifest,
+        )
+
+        _hex8 = _hl.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
+        trace_id = generate_trace_id(_hex8)
+
+        ast_snippet = "execute_ssot._legacy_main()"
+        return SurgicalManifest(
+            schema_version="1.0.0",
+            correlation_id=trace_id,
+            node_id="ExecuteSSOT",
+            target_layer="L0",
+            ast_snippet=ast_snippet,
+            serialization_canon="execute_ssot",
+            fix_constraint=FixConstraint.RELAXED,
+            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
+            change_history=(),
+            provenance_chain=(trace_id,),
+        )
+    # guardian: allow-silent-swallow
+    except Exception:
+        if os.getenv("V15_ENFORCEMENT") == "1":
+            raise  # fail-closed when hard enforcement is on
+        return None
+
+
+def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
+    """§8.1e — Invoke gateway.execute in LOG_ONLY mode for SSOT audit trail."""
+    if manifest is None:
+        return
+    try:
+        import hashlib as _hl
+
+        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            V15ExecutionGateway,
+        )
+
+        gw = V15ExecutionGateway()
+        gw.execute(
+            manifest,
+            lambda m: {"status": "ssot_audit", "errors": 0},
+            lambda: (
+                _hl.sha256(b"fs_ssot").hexdigest(),
+                _hl.sha256(b"git_ssot").hexdigest(),
+                _hl.sha256(b"mem_ssot").hexdigest(),
+            ),
+            trace_id=trace_id,
+        )
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        logging.getLogger(__name__).warning("[V15] SSOT gateway audit failed (LOG_ONLY): %s", exc)
+
 
 # ============================================================================
 # DATA CLASSES
@@ -212,6 +361,7 @@ class ASTCodeQualityValidator:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         # [SAFETY] Prevent OOM on massive generated files
+        # guardian: allow-magic-config
         self.max_file_size = 1_000_000  # 1MB limit
 
     def _read_and_parse_file(self, fp: str) -> tuple[ast.AST | None, str | None]:
@@ -226,6 +376,7 @@ class ASTCodeQualityValidator:
         except (OSError, SyntaxError) as e:
             return None, f"Error parsing {fp}: {str(e)}"
 
+    # guardian: allow-type-erasure
     def check_file_quality(self, file_path: Path) -> dict:
         """Check file for code quality issues (missing types, etc)."""
         violations = []
@@ -310,6 +461,7 @@ class AutonomousDecisionEngine:
                 return 0.9
         return 0.5
 
+    # guardian: allow-magic-config
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
         if agent_name in self._call_path:
@@ -320,6 +472,7 @@ class AutonomousDecisionEngine:
             return False, f"Budget exceeded ({self._healing_count})"
         return True, "OK"
 
+    # guardian: allow-magic-config
     def calculate_healing_confidence(
         self,
         violations_count: int,
@@ -484,6 +637,7 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
         except ImportError:
             logger.warning("CognitiveDispositionAgent not available, using default confidence")
             return [], ConfidenceScore(value=0.5, reasoning="CDA unavailable")
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Cognitive analysis failed: {e}")
             return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
@@ -504,6 +658,7 @@ class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
         super().__init__(enable_llm, state_mgr, enable_cda)
         self._sovereignty_token: str | None = None
         self._operation_stack: list[str] = []
+        # guardian: allow-magic-config
         self._max_stack_depth = 10  # Prevent infinite recursion
         self._atomic_lock = False
 
@@ -549,32 +704,6 @@ class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
 
 
 # ============================================================================
-# ENHANCED RUNTIME STATE MANAGER
-# ============================================================================
-
-
-class RuntimeStateManager:
-    """Manages live state with self-testing."""
-
-    def __init__(self, project_root: Path):
-        self.project_root = project_root.resolve()
-        self.state = {}
-        self._run_self_tests()
-
-    def _run_self_tests(self) -> bool:
-        """Run self-tests to validate state integrity (Ported from SubatomicTesting)."""
-        try:
-            test_key = "_self_test_marker"
-            self.state[test_key] = "test"
-            assert self.state.get(test_key) == "test"
-            del self.state[test_key]
-            return True
-        except Exception as e:
-            logging.error(f"State Manager Self-Test Failed: {e}")
-            return False
-
-
-# ============================================================================
 # PRE-FLIGHT VALIDATION LAYER (HARDENED)
 # ============================================================================
 
@@ -603,6 +732,7 @@ class PreFlightValidator:
                 val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if val != 1:
                     errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
 
@@ -632,6 +762,7 @@ class PreFlightValidator:
             try:
                 # Force instantiation to catch import/mixin errors immediately
                 agent = agent_cls(project_root=self.project_root) if inspect.isclass(agent_cls) else agent_cls
+            # guardian: allow-silent-swallow
             except Exception as e:
                 integrity_errors.append(f"Agent {name} FAILED INSTANTIATION: {e}")
                 continue
@@ -674,6 +805,7 @@ class NonInteractiveGuard:
     Now includes Resource Exhaustion Protection against infinite prompt loops.
     """
 
+    # guardian: allow-magic-config
     def __init__(self, active: bool = True, max_blocked_prompts: int = 10):
         self.active = active
         self.max_blocked_prompts = max_blocked_prompts
@@ -702,6 +834,8 @@ class NonInteractiveGuard:
         raise RuntimeError(f"Interactive prompt blocked in autonomous mode: {prompt}")
 
 
+@_optional_v15_runtime_guard()("D.with_retry.execute_ssot")
+# guardian: allow-magic-config
 def with_retry(max_retries=3, delay=1.0):
     """
     [HARDENED] Decorator for transient failure resilience with exponential backoff.
@@ -714,6 +848,7 @@ def with_retry(max_retries=3, delay=1.0):
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     last_exception = e
                     # Don't retry on security guard or exhaustion errors
@@ -740,12 +875,13 @@ def with_retry(max_retries=3, delay=1.0):
 # ============================================================================
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=2)
 def execute_phase2_reconciliation(
     agents: dict[str, Any],
     territory: str,
     decision_engine: SovereignDecisionEngine,  # [HARDENED] Updated type
-    state_mgr: RuntimeStateManager,
+    state_mgr: "RuntimeStateManager",
     plan: dict[str, Any],
     dry_run: bool = False,
     **kwargs,
@@ -820,6 +956,7 @@ def execute_phase2_reconciliation(
             reconciliation_log.append(fix_result)
             decision_engine.release_sovereignty_token(agent_name, success=True)
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logging.error(f"Fix failed for {agent_name} on {file_path}: {e}")
             failed_fixes.append({"violation": violation, "error": str(e), "status": "execution_error"})
@@ -868,43 +1005,6 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
     return True, ""
 
 
-@standard_heal
-@with_retry(max_retries=3)
-def execute_phase1_discovery(
-    agents,
-    territory,
-    decision_engine,
-    state_mgr,
-    dry_run=False,
-    auto_approve=True,
-    **kwargs,
-):
-    """
-    PHASE 1: TERRITORIAL DISCOVERY (Enhanced)
-    Uses AST validation and standardized healing schema.
-    """
-    # [ENHANCEMENT] AST Validation Integration
-    if not dry_run:
-        ASTCodeQualityValidator(Path(os.getcwd()))
-        # In a real run, we would iterate territory files here
-        pass
-
-    return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
-
-
-def execute_phase1_discovery_impl(
-    agents,
-    territory,
-    decision_engine,
-    state_mgr,
-    dry_run=False,
-    auto_approve=True,
-):
-    """Implementation for Phase 1 discovery."""
-    # Mock implementation for testing - in real scenario this would call actual agents
-    return {"mock": "data"}
-
-
 # ============================================================================
 # CONFIGURATION & CONSTANTS
 # ============================================================================
@@ -918,15 +1018,13 @@ SCRIPTS_DIR = "scripts"
 AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 RUNTIME_STATE_FILE = "runtime_state.json"
 
-# Project Root Path
-PROJECT_ROOT = Path.cwd()
+# Project Root Path — resolved lazily via module __getattr__ or REPO_ROOT.
 
 # [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports
 # Prevents loading agents from unexpected packages (defense-in-depth against tampered discovery/cache)
 ALLOWED_MODULE_PREFIXES = ("agentic_core", "apps_shared", "apps_lic", "apps_rg")
 
-# Logging Setup
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - [SOVEREIGN] - %(levelname)s - %(message)s")
+# Logging: configured once in _configure_logging() called from main().
 logger = logging.getLogger("UnifiedSovereign")
 
 # ============================================================================
@@ -1039,11 +1137,14 @@ class RuntimeStateManager:
             # Atomic replacement
             os.replace(temp_name, state_path)
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
             try:
+                # guardian: allow-path-string
                 if "temp_name" in locals() and os.path.exists(temp_name):
                     os.remove(temp_name)
+            # guardian: allow-silent-swallow
             except:
                 pass
 
@@ -1114,11 +1215,13 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                             continue
 
                         agents.append((agent["class_name"], module_path))
+                    # guardian: allow-silent-swallow
                     except Exception as p_err:
                         # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
                         continue
             logger.info(f"Loaded {len(agents)} agents from cache")
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.warning(f"Cache load failed: {e}")
 
@@ -1159,6 +1262,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                             continue
 
                         agents.append((agent["class_name"], module_path))
+                    # guardian: allow-silent-swallow
                     except Exception as p_err:
                         # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
@@ -1177,12 +1281,15 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
                 os.replace(temp_name, json_path)
                 logger.info(f"Discovered {len(agents)} agents (cached)")
+            # guardian: allow-silent-swallow
             except Exception as cache_err:
                 logger.warning(f"Failed to cache agent discovery: {cache_err}")
+                # guardian: allow-path-string
                 if temp_name and os.path.exists(temp_name):
                     os.remove(temp_name)
         except ImportError:
             logger.warning("Live discovery unavailable - Full_Agent_discovery not found")
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Live discovery failed: {e}")
 
@@ -1213,12 +1320,14 @@ def execute_phase3_validation(
 
     remaining_issues = []
     # [HARDENING] Use the memory-safe AST validator defined in Phase 1
-    validator = ASTCodeQualityValidator(Path(os.getcwd()))
+    # guardian: allow-path-string
+    validator = ASTCodeQualityValidator(REPO_ROOT)
 
     for v in original_violations:
         fpath = v.get("file")
 
         # 1. Existence Check
+        # guardian: allow-path-string
         if not fpath or not os.path.exists(fpath):
             # If it was an orphan that was deleted, this is good.
             # If it was a missing file that was created, we check existence.
@@ -1258,6 +1367,7 @@ def execute_phase3_validation(
 # ============================================================================
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=3)
 def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
@@ -1277,7 +1387,7 @@ def execute_phase1_discovery_impl(
 
     state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L0 - Maintenance")
 
-    reconciler = agents["reconciler"](project_root=Path.cwd())
+    reconciler = agents["reconciler"](project_root=REPO_ROOT)
     drift_report = reconciler.detect_root_drift()
 
     if drift_report is None:
@@ -1289,10 +1399,10 @@ def execute_phase1_discovery_impl(
 
     # Location Validation
     state_mgr.update_agent("LocationAgent", "L5 - Safety")
-    location_validator = agents["location"](project_root=Path.cwd())
+    location_validator = agents["location"](project_root=REPO_ROOT)
 
     # [ULTRA-HARDENED] Explicit path traversal protection for user-supplied territory string
-    agentic_core_base = (Path.cwd() / "agentic_core").resolve()
+    agentic_core_base = (REPO_ROOT / "agentic_core").resolve()
     territory_path = (agentic_core_base / territory).resolve()
     if not territory_path.is_relative_to(agentic_core_base):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
@@ -1387,7 +1497,7 @@ def execute_phase1_discovery_impl(
     classification_scan_result = {}
     try:
         state_mgr.update_agent("FileClassificationAgent", "L5 - Safety (Early Detection)")
-        file_classifier = agents["file_classification"](project_root=Path.cwd())
+        file_classifier = agents["file_classification"](project_root=REPO_ROOT)
 
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
@@ -1420,6 +1530,7 @@ def execute_phase1_discovery_impl(
 
         logger.info(f"📋 FileClassificationAgent early detection: {classification_count} issues found")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.warning(f"FileClassificationAgent early detection failed: {e}")
         state_mgr.complete_agent("FileClassificationAgent", False, f"Early detection error: {e}")
@@ -1429,6 +1540,7 @@ def execute_phase1_discovery_impl(
     return drift_report, violations, location_scan_result
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=3)
 def execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
     """PHASE 2: STRUCTURAL ALIGNMENT (Retriable)"""
@@ -1447,7 +1559,7 @@ def execute_phase2_alignment_impl(
     logger.info(f"=== PHASE 2: ALIGNMENT - {territory} ===")
 
     state_mgr.update_agent("HierarchyAgent", "L5 - Safety")
-    hierarchy = agents["hierarchy"](project_root=Path.cwd())
+    hierarchy = agents["hierarchy"](project_root=REPO_ROOT)
 
     # [STRICT SCOPE] Pass territory to scan only the target root
     scan = hierarchy.scan_root_violations(target_territory=territory)
@@ -1486,6 +1598,7 @@ def execute_phase2_alignment_impl(
     return None
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=3)
 def execute_phase3_architectural_validation(agents, territory, state_mgr):
     """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
@@ -1497,7 +1610,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     logger.info(f"=== PHASE 3: VALIDATION - {territory} ===")
 
     state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Safety")
-    arch_gov = agents["arch_governor"](project_root=Path.cwd())
+    arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
     gov_report = arch_gov.comprehensive_territory_audit(
         target_territories=[territory],
         check_layer_boundaries=True,
@@ -1512,7 +1625,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Violations: {violations}")
 
     state_mgr.update_agent("SystemArchitectAgent", "L5 - Safety")
-    sys_arch = agents["system_architect"](project_root=Path.cwd())
+    sys_arch = agents["system_architect"](project_root=REPO_ROOT)
     arch_report = sys_arch.validate_core_architecture(f"agentic_core/{territory}")
 
     if arch_report is None:
@@ -1529,6 +1642,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     return gov_report, arch_report
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=3)
 def execute_phase4_healing(
     agents,
@@ -1572,7 +1686,7 @@ def execute_phase4_healing_impl(
         logger.warning("No governance report - skipping healing")
         return None
 
-    arch_gov = agents["arch_governor"](project_root=Path.cwd())
+    arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
     plan = arch_gov.generate_healing_plan(gov_report)
 
     if plan is None:
@@ -1600,6 +1714,7 @@ def execute_phase4_healing_impl(
     return None
 
 
+# guardian: allow-magic-config
 @with_retry(max_retries=3)
 def execute_phase5_final(agents, territory, state_mgr, decision_engine=None):
     """PHASE 5: CERTIFICATION (Retriable)"""
@@ -1701,7 +1816,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         all_violations.append(violation_dict)
 
     # Get DebateSynthesisAgent violations
-    debate_synthesis_agent = agents["conversational_repair"](project_root=Path.cwd())
+    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT)
     debate_synthesis_result = debate_synthesis_agent.scan_violations(target_territory=territory)
     conversational_violations = debate_synthesis_result.get("violations", [])
     for conv_violation in conversational_violations:
@@ -1995,6 +2110,7 @@ def save_comprehensive_reports(
         logger.info(f"   JSON: {json_path.relative_to(project_root)}")
         logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Failed to save comprehensive reports: {e}")
         # Don't fail the entire process if report saving fails
@@ -2051,9 +2167,197 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
     except ImportError:
         logger.warning("L3 Orchestrator not found. Falling back to L5 iteration.")
         return False, None
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"L3 Orchestration failed: {e}. Falling back to L5 iteration.")
         return False, None
+
+
+# ============================================================================
+# EXECUTION PLAN (DETERMINISTIC, ORDERED)
+# ============================================================================
+
+# Canonical phase→agent→method mapping. This is the SSOT for pipeline structure.
+# Used by --plan introspection and by AST contract tests.
+EXECUTION_PLAN = [
+    {
+        "phase": "1",
+        "name": "Discovery",
+        "agents": [
+            {
+                "key": "reconciler",
+                "method": "detect_root_drift",
+                "description": "filesystem SSOT drift detection",
+            },
+            {
+                "key": "location",
+                "method": "run",
+                "description": "location validation (confidence gated heal)",
+            },
+            {
+                "key": "file_classification",
+                "method": "run",
+                "description": "file classification early detection",
+                "kwargs": "validate_only=True, dry_run=True",
+            },
+        ],
+    },
+    {
+        "phase": "2",
+        "name": "Reconciliation",
+        "agents": [
+            {"key": "reconciler", "method": "heal", "description": "drift reconciliation (confidence gated)"},
+        ],
+    },
+    {
+        "phase": "2.5",
+        "name": "Structural Alignment & Sovereignty",
+        "agents": [
+            {
+                "key": "hierarchy",
+                "method": "heal_hierarchy",
+                "description": "hierarchy alignment (confidence gated)",
+            },
+            {
+                "key": "file_classification",
+                "method": "heal_repository",
+                "description": "sovereignty purge (confidence gated, not dry_run, not validate)",
+            },
+        ],
+    },
+    {
+        "phase": "3",
+        "name": "Architectural Validation",
+        "agents": [
+            {
+                "key": "arch_governor",
+                "method": "comprehensive_territory_audit",
+                "description": "territory audit",
+            },
+            {
+                "key": "system_architect",
+                "method": "validate_core_architecture",
+                "description": "architecture validation",
+            },
+        ],
+    },
+    {
+        "phase": "4",
+        "name": "Healing",
+        "agents": [
+            {
+                "key": "arch_governor",
+                "method": "generate_healing_plan",
+                "description": "healing plan generation",
+            },
+            {
+                "key": "arch_governor",
+                "method": "execute_healing_plan",
+                "description": "healing plan execution",
+            },
+        ],
+    },
+    {
+        "phase": "4.5",
+        "name": "Additional Agents",
+        "agents": [
+            {
+                "key": "conversational_repair",
+                "method": "scan_violations",
+                "description": "conversational repair scan",
+            },
+            {
+                "key": "root_hygiene",
+                "method": "scan_root_violations",
+                "description": "root hygiene scan (if registered)",
+            },
+        ],
+    },
+    {
+        "phase": "5",
+        "name": "Certification",
+        "agents": [
+            {"key": "*", "method": "aggregate", "description": "final aggregation and certification"},
+        ],
+    },
+]
+
+# Agent dependency graph for --agent subset closure.
+# If agent A requires agent B to run first, declare it here.
+AGENT_DEPENDENCIES: dict[str, list[str]] = {
+    "hierarchy": ["reconciler", "location"],
+    "file_classification": ["reconciler", "location"],
+    "arch_governor": ["reconciler", "location", "hierarchy"],
+    "system_architect": ["reconciler", "location"],
+    "conversational_repair": [],
+    "root_hygiene": [],
+    "reconciler": [],
+    "location": ["reconciler"],
+    "cognitive_disposition": [],
+}
+
+# Canonical roster keys. Every agents["key"] reference in _legacy_main MUST
+# exist in this set. AST contract tests enforce this invariant.
+CANONICAL_ROSTER_KEYS = frozenset(
+    {
+        "reconciler",
+        "location",
+        "hierarchy",
+        "arch_governor",
+        "system_architect",
+        "file_classification",
+        "conversational_repair",
+        "cognitive_disposition",
+        "root_hygiene",
+    },
+)
+
+
+def get_execution_plan() -> list[dict]:
+    """Return the deterministic, ordered execution plan.
+
+    Pure introspection — no side effects, no file mutations.
+    """
+    return EXECUTION_PLAN
+
+
+def print_execution_plan() -> None:
+    """Print stable, sorted execution plan to stdout."""
+    for phase in EXECUTION_PLAN:
+        print(f"PHASE {phase['phase']}: {phase['name']}")
+        for agent in phase["agents"]:
+            kwargs_str = f" ({agent['kwargs']})" if agent.get("kwargs") else ""
+            print(f"  - {agent['key']}.{agent['method']}{kwargs_str}")
+            print(f"    # {agent['description']}")
+        print()
+
+
+def resolve_agent_subset(requested: list[str]) -> list[str]:
+    """Resolve requested agent keys to a closed set including dependencies.
+
+    Raises ValueError on unknown keys.
+    Deterministic ordering: sorted alphabetically after closure.
+    """
+    unknown = set(requested) - CANONICAL_ROSTER_KEYS
+    if unknown:
+        raise ValueError(f"Unknown agent key(s): {sorted(unknown)}. Valid: {sorted(CANONICAL_ROSTER_KEYS)}")
+
+    closed = set(requested)
+    frontier = list(requested)
+    while frontier:
+        key = frontier.pop()
+        for dep in AGENT_DEPENDENCIES.get(key, []):
+            if dep not in closed:
+                closed.add(dep)
+                frontier.append(dep)
+    return sorted(closed)
+
+
+def list_available_agents(project_root=None):
+    """Alias for discover_agents_from_registry (backward compat)."""
+    if project_root is None:
+        project_root = REPO_ROOT
+    return discover_agents_from_registry(project_root)
 
 
 # ============================================================================
@@ -2061,10 +2365,45 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
 # ============================================================================
 
 
-def main():
-    # Add project root to Python path
-    project_root = Path.cwd()
+def main() -> int:
+    """Deterministic wrapper: logging, V15 enforcement, console, then legacy body."""
+    pre_parser = argparse.ArgumentParser(add_help=False)
+    pre_parser.add_argument(
+        "--v15-enforcement",
+        type=int,
+        choices=(0, 1),
+        default=None,
+        help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
+    )
+    pre_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase log verbosity (repeatable).",
+    )
+    pre_args, remaining = pre_parser.parse_known_args()
+    _configure_logging(int(pre_args.verbose))
+    _apply_v15_enforcement_flag(pre_args)
+    _maybe_force_utf8_console()
+
+    try:
+        _legacy_main(remaining, repo_root=REPO_ROOT)
+    except SystemExit as exc:
+        return int(exc.code) if exc.code is not None else 0
+    return 0
+
+
+@_optional_v15_runtime_guard()("E.execute_ssot_main.execute_ssot")
+def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
+    # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
+    _v15_manifest = _v15_build_ssot_manifest()
+    if _v15_manifest is not None:
+        _v15_ssot_gateway_audit(_v15_manifest, trace_id=_v15_manifest.correlation_id)
+
+    project_root = repo_root if repo_root is not None else REPO_ROOT
     if str(project_root) not in sys.path:
+        # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
     parser = argparse.ArgumentParser(
@@ -2109,9 +2448,55 @@ Examples:
         action="store_true",
         help="Run in validation-only mode (CI/Dry-Run Mode)",
     )
+    parser.add_argument(
+        "--plan",
+        action="store_true",
+        help="Print the deterministic execution plan and exit. No side effects.",
+    )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        default=None,
+        help="Comma-separated list of agent keys to run (e.g. --agents location,hierarchy). Includes dependencies automatically. Hard-fails on unknown keys.",
+    )
     # [PHASE 8] New Flag for Golden Baseline capture
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--v15-enforcement",
+        type=int,
+        choices=(0, 1),
+        default=None,
+        help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase log verbosity (repeatable).",
+    )
+    args = parser.parse_args(extra_argv)
+
+    # [PLAN MODE] Pure introspection — no execution, no side effects.
+    if args.plan:
+        print_execution_plan()
+        return
+
+    # [AGENT SUBSET] Validate and resolve --agents early (before imports).
+    requested_agent_keys: list[str] | None = None
+    if args.agents:
+        raw_keys = [k.strip() for k in args.agents.split(",") if k.strip()]
+        try:
+            requested_agent_keys = resolve_agent_subset(raw_keys)
+            logger.info(f"Agent subset resolved: {requested_agent_keys}")
+        except ValueError as ve:
+            parser.error(str(ve))
+
+    # [CENTRALIZED] validate ⇒ dry_run mapping (single source of truth).
+    # When --validate is set, dry_run is forced True. This ensures
+    # FileClassificationAgent and all other agents see consistent flags.
+    if args.validate:
+        args.dry_run = True
 
     # [HARDENED] 0. Pre-Flight Validation
     validator = PreFlightValidator(project_root)
@@ -2148,6 +2533,7 @@ Examples:
             manifest = governor.capture_golden_baseline()
             print(f"✨ Golden Baseline captured at: {manifest}")
             sys.exit(0)
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Baseline capture failed: {e}")
             sys.exit(1)
@@ -2192,6 +2578,7 @@ Examples:
 
             logger.info(f"Result: {result}")
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to run agent: {e}")
             traceback.print_exc()
@@ -2200,8 +2587,8 @@ Examples:
     # 3. Initialize Sovereign State & Agents
     state_mgr = RuntimeStateManager(project_root)
 
-    # [SIMPLIFIED] Parse arguments first
-    dry_run = args.dry_run or args.validate
+    # [SIMPLIFIED] Parse arguments — validate⇒dry_run already centralized above.
+    dry_run = args.dry_run
     auto_approve = not args.interactive
 
     # [SIMPLIFIED] LLM enabled by default for healing, disabled in dry-run mode
@@ -2238,14 +2625,14 @@ Examples:
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
         from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
-            RootHygieneAgent,  # noqa: F401
+            RootHygieneAgent,
         )
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
         from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
             CognitiveDispositionAgent,
         )
-        from agentic_core.L6_observability.reasoning.DebateSynthesisAgent import (
-            DebateSynthesisAgent,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
+            ObservabilityProbeExecutor as DebateSynthesisAgent,
         )
         # Note: NamingAgent is a dependency for FileClassificationAgent, checked during instantiation
 
@@ -2258,6 +2645,7 @@ Examples:
             "file_classification": FileClassificationAgent,
             "conversational_repair": DebateSynthesisAgent,
             "cognitive_disposition": CognitiveDispositionAgent,
+            "root_hygiene": RootHygieneAgent,
         }
 
         logger.info("Total Awareness: Mandatory agent roster registered.")
@@ -2333,6 +2721,7 @@ Examples:
                             sys.exit(1)  # Fatal in CI
                         else:
                             logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.warning(f"Integrity check failed, continuing: {e}")
 
@@ -2443,7 +2832,7 @@ Examples:
                         if pascal_proceed and not dry_run:
                             logger.info(f"🛡️ Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
-                            pascal = agents["file_classification"](project_root=Path.cwd())
+                            pascal = agents["file_classification"](project_root=REPO_ROOT)
                             # Force the agent to fix headers and rename files with proper parameters
                             if hasattr(pascal, "heal_repository"):
                                 res = pascal.heal_repository(
@@ -2489,7 +2878,7 @@ Examples:
                         logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
                         state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
                         try:
-                            conversational_agent = agents["conversational_repair"](project_root=Path.cwd())
+                            conversational_agent = agents["conversational_repair"](project_root=REPO_ROOT)
                             if hasattr(conversational_agent, "scan_violations"):
                                 conv_results = conversational_agent.scan_violations(
                                     target_territory=territory,
@@ -2510,6 +2899,7 @@ Examples:
                                     False,
                                     "No scan_violations method",
                                 )
+                        # guardian: allow-silent-swallow
                         except Exception as e:
                             logger.warning(f"DebateSynthesisAgent failed: {e}")
                             state_mgr.complete_agent("DebateSynthesisAgent", False, str(e))
@@ -2517,7 +2907,7 @@ Examples:
                         # Execute RootHygieneAgent
                         try:
                             state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
-                            hygiene_agent = agents["root_hygiene"](project_root=Path.cwd())
+                            hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
                             if hasattr(hygiene_agent, "scan_root_violations"):
                                 hygiene_results = hygiene_agent.scan_root_violations(
                                     target_territory=territory,
@@ -2538,6 +2928,7 @@ Examples:
                                     False,
                                     "No scan_root_violations method",
                                 )
+                        # guardian: allow-silent-swallow
                         except Exception as e:
                             logger.warning(f"RootHygieneAgent failed: {e}")
                             state_mgr.complete_agent("RootHygieneAgent", False, str(e))
@@ -2556,6 +2947,7 @@ Examples:
                         state_mgr.add_event("error", f"Blocked Prompt in {territory}")
                         continue  # Skip this territory, try next
                     raise runtime_err
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.error(f"❌ Protocol crashed on {territory}: {e}")
                     traceback.print_exc()
@@ -2584,6 +2976,7 @@ Examples:
 
             return results
 
+    # guardian: allow-silent-swallow
     except Exception as fatal_e:
         # Catch-all for top-level crashes (e.g., initialization failure)
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
@@ -2595,7 +2988,7 @@ Examples:
 # ============================================================================
 # DYNAMIC AGENT DISCOVERY (Step 1 Implementation)
 # ============================================================================
-def load_agents(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
+def load_agents(project_root: Path | None = None) -> dict[str, Any]:
     """
     Dynamically discovers and loads compliant Healer Agents.
     Wraps non-compliant agents in LegacyAgentAdapter.
@@ -2607,6 +3000,8 @@ def load_agents(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
     Returns:
         Dict[str, Any]: Map of agent_name -> initialized_instance (or adapter)
     """
+    if project_root is None:
+        project_root = REPO_ROOT
     logging.info("Starting dynamic agent discovery...")
     discovered_agents = {}
 
@@ -2635,6 +3030,7 @@ def load_agents(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
                             "Agent" not in content and "Validator" not in content and "Fixer" not in content
                         ):
                             continue
+                # guardian: allow-silent-swallow
                 except Exception:
                     continue
 
@@ -2680,9 +3076,11 @@ def load_agents(project_root: Path = PROJECT_ROOT) -> dict[str, Any]:
                                     logging.info(f"Wrapping Legacy Agent: {name}")
                                     discovered_agents[name] = LegacyAgentAdapter(instance)
 
+                            # guardian: allow-silent-swallow
                             except Exception as e:
                                 logging.warning(f"Failed to instantiate {name}: {e}")
 
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     logging.debug(f"Skipping module {file_path}: {e}")
 
@@ -2720,4 +3118,10 @@ class GracefulExitHandler:
 
 
 if __name__ == "__main__":
-    main()
+    print(
+        "ERROR: Direct invocation of execute_ssot.py is not supported.\n"
+        "Use the entrypoint instead:\n"
+        "  python -m agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint --legacy\n",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)

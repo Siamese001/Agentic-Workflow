@@ -65,7 +65,7 @@ class L0MaintenanceBase(L0DelegationTestingMixin, SovereignBaseAgent):
 
     L0 Table Decision:
     - Basic Self-Testing: NO (boot-time stability)
-    - Delegation to TestSovereigntyAgent: YES (on failure)
+    - Delegation to L1+ test validators: YES (on failure)
     """
 
     # Zero-Ambiguity: Mark as foundational class, not runtime agent

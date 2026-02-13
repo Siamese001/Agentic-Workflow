@@ -653,7 +653,7 @@ def main():
             from agentic_core.L3_orchestration.Orchestrator import (
                 Orchestrator,
             )
-            from agentic_core.L4_state.reasoning.checkpoint_manager import (
+            from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )
             from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
@@ -664,7 +664,7 @@ def main():
                     import importlib.util
 
                     spec = importlib.util.find_spec(
-                        "agentic_core.L6_observability.reasoning.PerformanceAnalystAgentSimple",
+                        "agentic_core.L6_observability.engines.PerformanceAnalystAgentSimple",
                     )
                     if spec:
                         perf_module = importlib.util.module_from_spec(spec)

@@ -99,7 +99,7 @@ class MetaLearningClientMixin:
         """Ensure guardrails are initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_guardrails is None:
             try:
-                from agentic_core.L1_cognition.reasoning.guardrails import get_guardrails
+                from agentic_core.L1_cognition.utils.guardrails import get_guardrails
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")

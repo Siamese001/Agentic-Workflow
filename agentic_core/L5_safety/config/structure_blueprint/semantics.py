@@ -930,12 +930,6 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "fingerprint": "cc6465bde4266c9f",
         },
         {
-            "name": "MemoryArchitectAgent",
-            "file": "agentic_core/L2_execution/reasoning/MemoryArchitectAgent.py",
-            "methods": 13,
-            "fingerprint": "b07bc5ecfbb20791",
-        },
-        {
             "name": "SovereignActionPlaneAgent",
             "file": "agentic_core/L2_execution/reasoning/SovereignActionPlaneAgent.py",
             "methods": 11,
@@ -1013,7 +1007,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
         },
         {
             "name": "PineconeSovereignAgent",
-            "file": "agentic_core/L4_state/memory/PineconeSovereignAgent.py",
+            "file": "agentic_core/L4_state/reasoning/PineconeSovereignAgent.py",
             "methods": 12,
             "fingerprint": "4dd0d1e4b0e3e220",
         },
@@ -1028,12 +1022,6 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "file": "agentic_core/L4_state/memory/SchemaEvolverAgent.py",
             "methods": 14,
             "fingerprint": "895c1f48e33df32e",
-        },
-        {
-            "name": "SovereignPineconeStoreAgent",
-            "file": "agentic_core/L4_state/memory/SovereignPineconeStoreAgent.py",
-            "methods": 10,
-            "fingerprint": "f441583d3a2a4cd2",
         },
         {
             "name": "SubAtomicRegistryAgent",

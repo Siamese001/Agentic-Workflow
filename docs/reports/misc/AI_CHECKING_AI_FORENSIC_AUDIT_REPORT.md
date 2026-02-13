@@ -1,8 +1,8 @@
 # AI-Checking-AI Forensic Audit Report
 
-**Role:** Lead Architectural Auditor  
-**Objective:** Identify and remediate "AI-Checking-AI" violations  
-**Date:** January 31, 2026  
+**Role:** Lead Architectural Auditor
+**Objective:** Identify and remediate "AI-Checking-AI" violations
+**Date:** January 31, 2026
 **Scope:** agentic_core/, apps_lic/, apps_rg/, apps_shared/
 
 ---
@@ -18,8 +18,8 @@ This forensic audit identified **4 critical "AI-Checking-AI" violations** where 
 ## Phase 1: The "AI-Checking-AI" Forensic Audit
 
 ### VIOLATION #1: AutonomyGuardianAgent - L5 Safety Validator
-**File:** `agentic_core/L5_safety/validators/AutonomyGuardianAgent.py`  
-**Method:** `validate_agent_autonomy()` (lines 125-139)  
+**File:** `agentic_core/L5_safety/validators/AutonomyGuardianAgent.py`
+**Method:** `validate_agent_autonomy()` (lines 125-139)
 **Violation Type:** Heuristic Structural Validation
 
 **Description:** The AutonomyGuardianAgent performs AST-based validation of agent autonomy by parsing Python files and checking for required methods. This is structural validation that should be handled by deterministic Guardian tests.
@@ -85,7 +85,7 @@ async def audit_core_components(self) -> dict[str, Any]:
 ```python
 # Lines 16-24: Responsibilities list shows extensive validation
 - Validate layer boundaries (L0-L6) across ALL sovereign territories
-- Detect gravity violations (upward imports: L3 importing L5)  
+- Detect gravity violations (upward imports: L3 importing L5)
 - Enforce naming conventions (*Agent.py suffix)
 - Detect orphaned and duplicate agents
 - Trigger cross-root deduplication audits
@@ -109,7 +109,7 @@ def validate_agent(self, agent: dict) -> AgentValidation:
     """Run full validation on a single agent."""
     # Phase 1: Instantiation
     instance, error = self.instantiate_agent(agent)
-    # Phase 2: Self-testing  
+    # Phase 2: Self-testing
     test_pass, test_error = self.run_self_tests(instance, agent)
     # Phase 3: Healing simulation
     heal_pass, heal_error = self.simulate_healing(instance, agent)
@@ -148,7 +148,7 @@ def validate_agent(self, agent: dict) -> AgentValidation:
 +        """Delegate autonomy validation to Guardian test suite."""
 +        import subprocess
 +        result = subprocess.run([
-+            "python", "-m", "pytest", 
++            "python", "-m", "pytest",
 +            "tests/guardian/test_agent_autonomy.py::test_required_methods",
 +            str(agent_file), "--tb=no", "-q"
 +        ], capture_output=True, text=True)
@@ -171,25 +171,25 @@ from pathlib import Path
 def test_required_methods(agent_file: str):
     """Test agent has required autonomy methods."""
     required_methods = ["heal_repository"]
-    
+
     try:
         content = Path(agent_file).read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
-        
+
         method_names = {
-            node.name for node in ast.walk(tree) 
+            node.name for node in ast.walk(tree)
             if isinstance(node, ast.FunctionDef)
         }
-        
+
         missing = [m for m in required_methods if m not in method_names]
-        
+
         if missing:
             print(f"VIOLATION: {agent_file} missing methods: {missing}")
             sys.exit(1)
         else:
             print(f"COMPLIANT: {agent_file} has all required methods")
             sys.exit(0)
-            
+
     except Exception as e:
         print(f"ERROR: Failed to analyze {agent_file}: {e}")
         sys.exit(1)
@@ -299,11 +299,11 @@ def utility_function():
 +        """Delegate component audit to Guardian test suite."""
 +        import subprocess
 +        result = subprocess.run([
-+            "python", "-m", "pytest", 
++            "python", "-m", "pytest",
 +            "tests/guardian/test_core_components.py::test_critical_files_exist",
 +            "--tb=no", "-q"
 +        ], capture_output=True, text=True)
-+        
++
 +        # Parse pytest output for results
 +        passed = "passed" in result.stdout
 +        return {
@@ -328,7 +328,7 @@ from pathlib import Path
 
 CRITICAL_FILES = [
     "agentic_core/L3_orchestration/workflow_engines/mcp_router_sovereign.py",
-    "agentic_core/L5_safety/guardrails/mcp_sovereign.py", 
+    "agentic_core/L5_safety/guardrails/mcp_sovereign.py",
     "agentic_core/L4_state/semantic_memory/pinecone_mcp_client.py",
     "agentic_core/L4_state/knowledge_graph/SovereignGraphClient.py",
     "agentic_core/L6_observability/deepwiki_client_sovereign.py",
@@ -339,11 +339,11 @@ CRITICAL_FILES = [
 def test_critical_files_exist():
     """Test all critical files exist."""
     missing_files = []
-    
+
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing_files.append(filepath)
-    
+
     if missing_files:
         print(f"VIOLATION: Missing critical files: {missing_files}")
         sys.exit(1)
@@ -366,12 +366,12 @@ from pathlib import Path
 def test_all_critical_files_exist():
     """TC-CC-01: All critical files exist."""
     from tests.guardian.test_core_components import CRITICAL_FILES
-    
+
     missing = []
     for filepath in CRITICAL_FILES:
         if not Path(filepath).exists():
             missing.append(filepath)
-    
+
     assert len(missing) == 0, f"Missing critical files: {missing}"
 
 def test_missing_critical_file_detection():
@@ -381,10 +381,10 @@ def test_missing_critical_file_detection():
     if critical_file.exists():
         backup = critical_file.with_suffix(".py.backup")
         critical_file.rename(backup)
-        
+
         result = pytest.main(["test_core_components.py", "-q"])
         assert result != 0
-        
+
         # Restore file
         backup.rename(critical_file)
     else:
@@ -395,12 +395,12 @@ def test_empty_critical_file_handling():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("")  # Empty file
         temp_path = f.name
-    
+
     # Add to critical files temporarily
     from tests.guardian.test_core_components import CRITICAL_FILES
     original_files = CRITICAL_FILES.copy()
     CRITICAL_FILES.append(temp_path)
-    
+
     try:
         # Empty file should still count as "existing"
         result = pytest.main(["test_core_components.py", "-q"])
@@ -415,7 +415,7 @@ def test_permission_denied_handling():
     from tests.guardian.test_core_components import CRITICAL_FILES
     original_files = CRITICAL_FILES.copy()
     CRITICAL_FILES.append("/root/nonexistent/protected_file.py")
-    
+
     try:
         result = pytest.main(["test_core_components.py", "-q"])
         assert result != 0
@@ -437,7 +437,7 @@ def test_permission_denied_handling():
 -        """Validate architectural patterns across sovereign territories."""
 -        violations = []
 -        territories_to_check = target_territories or list(SOVEREIGN_TERRITORIES.keys())
--        
+-
 -        for territory in territories_to_check:
 -            if territory not in SOVEREIGN_TERRITORIES:
 -                violations.append({
@@ -446,20 +446,20 @@ def test_permission_denied_handling():
 -                    "message": f"Unknown territory: {territory}"
 -                })
 -                continue
--                
+-
 -            territory_path = self.project_root / territory
 -            if not territory_path.exists():
 -                violations.append({
--                    "type": "MISSING_TERRITORY", 
+-                    "type": "MISSING_TERRITORY",
 -                    "territory": territory,
 -                    "message": f"Territory directory missing: {territory}"
 -                })
 -                continue
--                
+-
 -            # Check layer boundaries, naming conventions, etc.
 -            territory_violations = self._validate_territory_structure(territory, territory_path)
 -            violations.extend(territory_violations)
--        
+-
 -        return {
 -            "territories_checked": len(territories_to_check),
 -            "violations_found": len(violations),
@@ -473,7 +473,7 @@ def test_permission_denied_handling():
 +            "tests/guardian/test_architecture_governance.py::test_sovereign_architecture",
 +            "--tb=no", "-q"
 +        ], capture_output=True, text=True)
-+        
++
 +        return {
 +            "territories_checked": len(SOVEREIGN_TERRITORIES),
 +            "violations_found": 0 if result.returncode == 0 else 1,
@@ -499,14 +499,14 @@ def test_sovereign_architecture():
     """Test sovereign architecture compliance."""
     project_root = Path.cwd()
     violations = []
-    
+
     # Test 1: Check sovereign territories exist
     sovereign_territories = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "tests"]
     for territory in sovereign_territories:
         territory_path = project_root / territory
         if not territory_path.exists():
             violations.append(f"MISSING_TERRITORY: {territory}")
-    
+
     # Test 2: Check agent naming convention (*Agent.py)
     for territory in ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]:
         territory_path = project_root / territory
@@ -516,14 +516,14 @@ def test_sovereign_architecture():
                     continue  # Correct naming
                 elif "Agent" in py_file.name and not py_file.name.startswith("test_"):
                     violations.append(f"NAMING_VIOLATION: {py_file} should end with Agent.py")
-    
+
     # Test 3: Check gravity violations (no upward imports)
     gravity_patterns = [
         (r"from agentic_core\.L5\.", "L0-L4 importing L5"),
         (r"from agentic_core\.L4\.", "L0-L3 importing L4"),
         (r"from agentic_core\.L3\.", "L0-L2 importing L3"),
     ]
-    
+
     for territory in ["agentic_core/L0", "agentic_core/L1", "agentic_core/L2"]:
         territory_path = project_root / territory
         if territory_path.exists():
@@ -535,7 +535,7 @@ def test_sovereign_architecture():
                             violations.append(f"GRAVITY_VIOLATION: {py_file} - {description}")
                 except Exception:
                     continue
-    
+
     if violations:
         print(f"VIOLATION: Architecture violations found:")
         for v in violations[:10]:  # Limit output
@@ -564,7 +564,7 @@ def test_proper_agent_naming():
     with tempfile.TemporaryDirectory() as tmpdir:
         agent_file = Path(tmpdir) / "TestAgent.py"
         agent_file.write_text("class TestAgent: pass")
-        
+
         # Temporarily add to project structure for testing
         result = pytest.main(["test_architecture_governance.py", "-q"])
         assert result == 0
@@ -574,7 +574,7 @@ def test_incorrect_agent_naming():
     with tempfile.TemporaryDirectory() as tmpdir:
         agent_file = Path(tmpdir) / "TestAgentClass.py"
         agent_file.write_text("class TestAgent: pass")
-        
+
         # This should be detected as naming violation
         # (Implementation would need to scan this temp dir)
         result = pytest.main(["test_architecture_governance.py", "-q"])
@@ -591,7 +591,7 @@ class LowLevelAgent:
     pass
 ''')
         temp_path = f.name
-    
+
     try:
         # Test should detect this gravity violation
         result = pytest.main(["test_architecture_governance.py", temp_path, "-q"])
@@ -606,7 +606,7 @@ def test_missing_territory_detection():
     if territory_path.exists():
         backup = territory_path.with_suffix(".backup")
         territory_path.rename(backup)
-        
+
         try:
             result = pytest.main(["test_architecture_governance.py", "-q"])
             assert result != 0
@@ -666,7 +666,7 @@ def test_missing_territory_detection():
 +            f"tests/guardian/test_agent_validation.py::test_agent_compliance::{agent['class_name']}",
 +            "--tb=no", "-q"
 +        ], capture_output=True, text=True)
-+        
++
 +        return AgentValidation(
 +            class_name=agent["class_name"],
 +            layer=agent["layer"],
@@ -699,32 +699,32 @@ def test_agent_compliance(agent_class_name: str):
         # Load agent discovery data
         project_root = Path.cwd()
         discovery_path = project_root / "agent_discovery_full.json"
-        
+
         if not discovery_path.exists():
             print("ERROR: agent_discovery_full.json not found")
             sys.exit(1)
-            
+
         import json
         with open(discovery_path) as f:
             agents_data = json.load(f)
-        
+
         # Find the agent
         agent_data = None
         for agent in agents_data:
             if agent.get("class_name") == agent_class_name:
                 agent_data = agent
                 break
-        
+
         if not agent_data:
             print(f"ERROR: Agent {agent_class_name} not found in discovery")
             sys.exit(1)
-        
+
         # Test 1: Check file exists
         agent_path = project_root / agent_data["path"]
         if not agent_path.exists():
             print(f"VIOLATION: Agent file missing: {agent_path}")
             sys.exit(1)
-        
+
         # Test 2: Check syntax
         try:
             with open(agent_path, encoding="utf-8") as f:
@@ -733,17 +733,17 @@ def test_agent_compliance(agent_class_name: str):
         except SyntaxError as e:
             print(f"VIOLATION: Syntax error in {agent_path}: {e}")
             sys.exit(1)
-        
+
         # Test 3: Check discovery data consistency
         if agent_data.get("testing", "None") == "None":
             print(f"WARNING: Agent {agent_class_name} has no testing capability")
-        
+
         if not agent_data.get("has_healing", False):
             print(f"WARNING: Agent {agent_class_name} has no healing capability")
-        
+
         print(f"COMPLIANT: Agent {agent_class_name} passed validation")
         sys.exit(0)
-        
+
     except Exception as e:
         print(f"ERROR: Validation failed for {agent_class_name}: {e}")
         sys.exit(1)
@@ -773,11 +773,11 @@ def test_compliant_agent():
 class CompliantAgent:
     def heal_repository(self, dry_run=True):
         return {"violations": 0}
-        
+
     def _run_self_tests(self):
         return True
 ''')
-        
+
         # Create discovery data
         discovery_data = [{
             "class_name": "CompliantAgent",
@@ -786,11 +786,11 @@ class CompliantAgent:
             "testing": "Self",
             "has_healing": True
         }]
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             json.dump(discovery_data, f)
             discovery_path = f.name
-        
+
         try:
             result = pytest.main([
                 "test_agent_validation.py", "CompliantAgent", "-q"
@@ -808,19 +808,19 @@ class BrokenAgent
     def heal_repository(self, dry_run=True  # Missing colon
         return {"violations": 0}
 ''')
-        
+
         discovery_data = [{
-            "class_name": "BrokenAgent", 
+            "class_name": "BrokenAgent",
             "path": str(agent_file),
             "layer": "L5",
             "testing": "None",
             "has_healing": False
         }]
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             json.dump(discovery_data, f)
             discovery_path = f.name
-        
+
         try:
             result = pytest.main([
                 "test_agent_validation.py", "BrokenAgent", "-q"
@@ -835,14 +835,14 @@ def test_missing_agent_file():
         "class_name": "MissingAgent",
         "path": "nonexistent/MissingAgent.py",
         "layer": "L5",
-        "testing": "None", 
+        "testing": "None",
         "has_healing": False
     }]
-    
+
     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
         json.dump(discovery_data, f)
         discovery_path = f.name
-    
+
     try:
         result = pytest.main([
             "test_agent_validation.py", "MissingAgent", "-q"
@@ -896,7 +896,7 @@ def test_agent_not_in_discovery():
 ### Compliance Path
 
 After implementing all remediations:
-- **Expected Health Score**: 98.5%+ 
+- **Expected Health Score**: 98.5%+
 - **Violations Eliminated**: 4/4 (100%)
 - **Guardian Test Coverage**: +16 new deterministic tests
 - **Constitutional Compliance**: FULL
@@ -905,7 +905,7 @@ After implementing all remediations:
 
 ## Phase 4: REMEDIATION COMPLETE ✅
 
-**Remediation Date**: January 31, 2026  
+**Remediation Date**: January 31, 2026
 **Status**: ALL VIOLATIONS ELIMINATED
 
 ### Implementation Summary
@@ -956,8 +956,8 @@ All Guardian tests follow deterministic patterns:
 
 ---
 
-**Report Generated**: January 31, 2026  
-**Remediation Completed**: January 31, 2026  
-**Auditor**: Lead Architectural Auditor  
-**Classification**: REMEDIATION COMPLETE - CONSTITUTIONAL COMPLIANCE ACHIEVED  
+**Report Generated**: January 31, 2026
+**Remediation Completed**: January 31, 2026
+**Auditor**: Lead Architectural Auditor
+**Classification**: REMEDIATION COMPLETE - CONSTITUTIONAL COMPLIANCE ACHIEVED
 **Status**: CLOSED

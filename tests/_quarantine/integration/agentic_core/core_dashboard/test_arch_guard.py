@@ -28,7 +28,6 @@ SDK_ALLOWLIST = {
     "google.generativeai": ["SovereignLLMGateway.py", "EmbeddingSovereignAgent.py"],
     "pinecone": [
         "PineconeSovereignAgent.py",
-        "MemoryArchitectAgent.py",  # [PHASE 11] Allowed Memory Orchestrator
         "SemanticKnowledgeClient.py",  # [PHASE 11] Legacy Client (To be migrated, but whitelisted for now)
         "SemanticCacheManager.py",  # [PHASE 12] L4 State Owner (Allowed)
     ],

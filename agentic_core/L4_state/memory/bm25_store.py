@@ -9,7 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from rank_bm25 import BM25Okapi
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError as _err:
+    raise ImportError(
+        "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'",
+    ) from _err
 
 
 class Bm25Store:

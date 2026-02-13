@@ -5,7 +5,7 @@
 ### 1. Ruff Linting Rules (Reduced from F,E,W,B,UP,I to F,E only)
 **MOVED TO GUARDIAN:**
 - W: Warning (style warnings) → test_code_quality_metrics.py
-- B: Flake8-bugbear (common pitfalls) → test_code_quality_metrics.py  
+- B: Flake8-bugbear (common pitfalls) → test_code_quality_metrics.py
 - UP: Pyupgrade (Python 3+ syntax) → test_code_quality_metrics.py
 - I: isort (import sorting) → test_code_quality_metrics.py
 
@@ -46,7 +46,7 @@ pytest tests/guardian/test_comprehensive_structure.py::TestComprehensiveSSOTStru
 ```
 **Expected:** Validates all Python files are in valid SSOT territories
 
-### Test 2: Package Structure Completeness  
+### Test 2: Package Structure Completeness
 ```bash
 pytest tests/guardian/test_comprehensive_structure.py::TestComprehensiveSSOTStructure::test_package_structure_completeness -v
 ```
@@ -99,7 +99,7 @@ pytest tests/guardian/test_import_safety.py::TestImportSafety::test_advanced_imp
 ### Issue: 4 Modified Files in Windsurf
 1. scripts/validate_structure.py - Modified by ruff-format (line endings, formatting)
 2. tests/guardian/test_code_quality_metrics.py - Modified by ruff-format
-3. tests/guardian/test_comprehensive_structure.py - Modified by ruff-format  
+3. tests/guardian/test_comprehensive_structure.py - Modified by ruff-format
 4. tests/guardian/test_import_safety.py - Modified by ruff-format
 
 ### Root Cause:

@@ -10,25 +10,20 @@ from pathlib import Path
 from typing import Any
 
 
-# from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent  # Refactored to dynamic import (Sprint 1)
 def _get_pinecone_sovereign_agent():
-    """Lazy load PineconeSovereignAgent to avoid L0 → L4 dependency."""
+    """Lazy load PineconeSovereignAgent to avoid L0 → L5 dependency."""
     import importlib
 
-    module = importlib.import_module("agentic_core.L4_state.vector.PineconeSovereignAgent")
-    return module
+    module = importlib.import_module("agentic_core.L4_state.reasoning.PineconeSovereignAgent")
+    return module.PineconeSovereignAgent
 
 
-# from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent  # Refactored to dynamic import (Sprint 1)
 def _get_redis_sovereign_agent():
-    """Lazy load redis_sovereign_agent to avoid L0 → L4 dependency."""
+    """Lazy load RedisSovereignAgent to avoid L0 → L4 dependency."""
     import importlib
 
-    module = importlib.import_module("agentic_core.L4_state.cache.redis_sovereign_agent")
-    return module
-
-
-# from agentic_core.L4_state.vector.PineconeSovereignAgent import PineconeSovereignAgent  # Refactored to dynamic import (Sprint 1)
+    module = importlib.import_module("agentic_core.L4_state.reasoning.RedisSovereignAgent")
+    return module.RedisSovereignAgent
 
 
 class RescueReviewer:
@@ -41,13 +36,15 @@ class RescueReviewer:
         self.archive_path = project_root / "archives/depth_violations"
         self.active_hashes = self._map_active_canon()
         try:
-            self.redis_gateway = RedisSovereignAgent(project_root)
+            _RedisCls = _get_redis_sovereign_agent()
+            self.redis_gateway = _RedisCls(project_root)
             self.redis = self.redis_gateway.get_client()
             print("   [OK] SRR: Redis decision cache online.")
         except Exception as e:
             print(f"   [!] Redis Link Failed: {e}")
             self.redis = None
-        self.pinecone = PineconeSovereignAgent(project_root)
+        _PineconeCls = _get_pinecone_sovereign_agent()
+        self.pinecone = _PineconeCls(project_root)
         self.auto_home_threshold = 0.9
         self.auto_home_min_signals = 3
 

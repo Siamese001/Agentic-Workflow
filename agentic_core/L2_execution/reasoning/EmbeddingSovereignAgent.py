@@ -48,7 +48,7 @@ EmbeddingProvider = Literal["gemini", "openai"]
 
 
 @dataclass
-class EmbeddingSovereignAgent(SubatomicTestingMixin, RedisCacheMixin, SovereignBaseAgent):
+class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
     """
     Unified Embedding Gateway with Redis caching.
 

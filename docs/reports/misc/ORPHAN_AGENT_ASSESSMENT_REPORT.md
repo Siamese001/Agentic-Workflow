@@ -1,8 +1,8 @@
 # Orphan Agent Assessment Report
 
-**Generated:** 2026-02-02  
-**Total Agents:** 171  
-**Orphan Agents:** 11  
+**Generated:** 2026-02-02
+**Total Agents:** 171
+**Orphan Agents:** 11
 **Orphan Rate:** 6.4%
 
 ---
@@ -26,11 +26,11 @@ This report identifies **11 orphan agents** that have no production references i
 
 ### 1. HOP9IntegrationAgent
 
-**Disposition:** `KEEP`  
-**Path:** `apps_lic/engines/HOP9IntegrationAgent.py`  
-**Layer:** Apps  
-**Territory:** Apps Lic/HOP  
-**LOC:** 68  
+**Disposition:** `KEEP`
+**Path:** `apps_lic/engines/HOP9IntegrationAgent.py`
+**Layer:** Apps
+**Territory:** Apps Lic/HOP
+**LOC:** 68
 **Cyclomatic Complexity:** 10
 
 **Reason:** HOP pipeline agent - may be used dynamically
@@ -43,18 +43,18 @@ This report identifies **11 orphan agents** that have no production references i
 
 ### 2. HistorianAgent
 
-**Disposition:** `DEPRECATE`  
-**Path:** `agentic_core/L2_execution/tool_registry/HistorianAgent.py`  
-**Layer:** L2  
-**Territory:** L2 Execution/Runners  
-**LOC:** 72  
+**Disposition:** `DEPRECATE`
+**Path:** `agentic_core/L2_execution/tool_registry/HistorianAgent.py`
+**Layer:** L2
+**Territory:** L2 Execution/Runners
+**LOC:** 72
 **Cyclomatic Complexity:** 7
 
 **Reason:** No clear usage pattern - mark for deprecation review
 
 **Analysis:** Small agent with low complexity. Has healing capabilities but no production consumers.
 
-**Recommended Action:** 
+**Recommended Action:**
 1. Add `@deprecated` decorator
 2. Schedule for removal in next major version
 3. Migrate any useful functionality to `SubAtomicRegistryAgent`
@@ -74,11 +74,11 @@ class HistorianAgent:
 
 ### 3. DecompositionOrchestratorAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L3_orchestration/workflow_engines/DecompositionOrchestratorAgent.py`  
-**Layer:** L3  
-**Territory:** L3 Orchestration/DAG  
-**LOC:** 235  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L3_orchestration/workflow_engines/DecompositionOrchestratorAgent.py`
+**Layer:** L3
+**Territory:** L3 Orchestration/DAG
+**LOC:** 235
 **Cyclomatic Complexity:** 52
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -101,11 +101,11 @@ git mv agentic_core/L3_orchestration/workflow_engines/DecompositionOrchestratorA
 
 ### 4. AdversarialProbeAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/red_teaming/AdversarialProbeAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Red Teaming  
-**LOC:** 160  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/red_teaming/AdversarialProbeAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Red Teaming
+**LOC:** 160
 **Cyclomatic Complexity:** 24
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -134,11 +134,11 @@ This agent probes for adversarial vulnerabilities...
 
 ### 5. BoundaryTestingAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/red_teaming/BoundaryTestingAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Red Teaming  
-**LOC:** 176  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/red_teaming/BoundaryTestingAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Red Teaming
+**LOC:** 176
 **Cyclomatic Complexity:** 26
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -151,11 +151,11 @@ This agent probes for adversarial vulnerabilities...
 
 ### 6. ChaosEngineeringAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/red_teaming/ChaosEngineeringAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Red Teaming  
-**LOC:** 152  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/red_teaming/ChaosEngineeringAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Red Teaming
+**LOC:** 152
 **Cyclomatic Complexity:** 24
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -171,12 +171,12 @@ This agent probes for adversarial vulnerabilities...
 
 ### 7. CostGovernorAgent
 
-**Disposition:** `MERGE`  
-**Path:** `agentic_core/L5_safety/guardrails/CostGovernorAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Guardrails/Core  
-**LOC:** 48  
-**Cyclomatic Complexity:** 7  
+**Disposition:** `MERGE`
+**Path:** `agentic_core/L5_safety/guardrails/CostGovernorAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Guardrails/Core
+**LOC:** 48
+**Cyclomatic Complexity:** 7
 **Merge Target:** `CodeDetectorAgent`
 
 **Reason:** Small agent, consider merging into CodeDetectorAgent
@@ -195,12 +195,12 @@ This agent probes for adversarial vulnerabilities...
 class BudgetGuardrailAgent(L5SafetyBase):
     """
     Unified resource and cost governance.
-    
+
     Merged from:
     - CostGovernorAgent (deprecated)
     - BudgetGuardrailAgent (original)
     """
-    
+
     def check_cost_limits(self, operation: str, estimated_cost: float) -> bool:
         """Migrated from CostGovernorAgent."""
         # ... cost governance logic from CostGovernorAgent
@@ -211,11 +211,11 @@ class BudgetGuardrailAgent(L5SafetyBase):
 
 ### 8. DependencyPruningAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/guardrails/DependencyPruningAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Guardrails/Hygiene  
-**LOC:** 98  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/guardrails/DependencyPruningAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Guardrails/Hygiene
+**LOC:** 98
 **Cyclomatic Complexity:** 23
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -231,11 +231,11 @@ class BudgetGuardrailAgent(L5SafetyBase):
 
 ### 9. PreCommitSovereignAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/validators/PreCommitSovereignAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Validators/Structure  
-**LOC:** 208  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/validators/PreCommitSovereignAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Validators/Structure
+**LOC:** 208
 **Cyclomatic Complexity:** 38
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -264,11 +264,11 @@ INTEGRATION STATUS: Review required
 
 ### 10. PromptInjectionAgent
 
-**Disposition:** `ARCHIVE`  
-**Path:** `agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Red Teaming  
-**LOC:** 147  
+**Disposition:** `ARCHIVE`
+**Path:** `agentic_core/L5_safety/red_teaming/PromptInjectionAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Red Teaming
+**LOC:** 147
 **Cyclomatic Complexity:** 22
 
 **Reason:** Complex agent with healing - archive for potential future use
@@ -284,11 +284,11 @@ INTEGRATION STATUS: Review required
 
 ### 11. SemanticDebuggerAgent
 
-**Disposition:** `DEPRECATE`  
-**Path:** `agentic_core/L5_safety/validators/SemanticDebuggerAgent.py`  
-**Layer:** L5  
-**Territory:** L5 Safety/Validators/Content  
-**LOC:** 61  
+**Disposition:** `DEPRECATE`
+**Path:** `agentic_core/L5_safety/validators/SemanticDebuggerAgent.py`
+**Layer:** L5
+**Territory:** L5 Safety/Validators/Content
+**LOC:** 61
 **Cyclomatic Complexity:** 9
 
 **Reason:** No clear usage pattern - mark for deprecation review
@@ -315,15 +315,15 @@ def test_orphan_detection_excludes_production_agents():
     detector.load_agent_discovery()
     detector.scan_references()
     orphans = detector.identify_orphans()
-    
+
     # These agents should NOT be orphans
     active_agents = {
         "LocationAgent",
-        "HierarchyAgent", 
+        "HierarchyAgent",
         "GovernanceAgent",
         "NervousSystemAgent",
     }
-    
+
     orphan_names = {o.class_name for o in orphans}
     assert not active_agents.intersection(orphan_names), \
         f"Active agents incorrectly flagged as orphans: {active_agents.intersection(orphan_names)}"
@@ -338,11 +338,11 @@ def test_deprecated_agents_have_markers():
         "HistorianAgent",
         "SemanticDebuggerAgent",
     ]
-    
+
     for agent_name in deprecated_agents:
         agent_path = find_agent_path(agent_name)
         content = Path(agent_path).read_text()
-        
+
         assert "deprecated" in content.lower() or "DEPRECATED" in content, \
             f"{agent_name} missing deprecation marker"
 ```
@@ -356,12 +356,12 @@ def test_archived_agents_in_correct_location():
         "DecompositionOrchestratorAgent",
         # Add others after archival
     ]
-    
+
     for agent_name in archived_agents:
         # Should be in legacy_archive
         legacy_path = PROJECT_ROOT / "agentic_core" / "legacy_archive" / f"{agent_name}.py"
         original_path = find_original_agent_path(agent_name)
-        
+
         assert legacy_path.exists() or not original_path.exists(), \
             f"{agent_name} not properly archived"
 ```
@@ -374,11 +374,11 @@ def test_merged_agent_functionality_preserved():
     merges = {
         "CostGovernorAgent": "BudgetGuardrailAgent",
     }
-    
+
     for source, target in merges.items():
         target_path = find_agent_path(target)
         content = Path(target_path).read_text()
-        
+
         # Check for migration marker
         assert f"Merged from: {source}" in content or \
                f"migrated from {source}" in content.lower(), \
