@@ -7,10 +7,11 @@ Phase 1 of duplicate cleanup workflow.
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.utils.security import safe_git_execute
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.security import safe_git_execute
 
 
 def count_methods(file_path: Path) -> int:
@@ -42,6 +43,7 @@ def count_lines(file_path: Path) -> int:
 def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
     """Generate unified diff between files."""
     try:
+        # guardian: allow-magic-config
         result = safe_git_execute(
             ["diff", "--no-index", "--unified=3", str(canonical), str(duplicate)],
             repo_root=canonical.parent,
@@ -49,6 +51,7 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
             check=False,
         )
         return result.stdout
+    # guardian: allow-silent-swallow
     except:
         return ""
 

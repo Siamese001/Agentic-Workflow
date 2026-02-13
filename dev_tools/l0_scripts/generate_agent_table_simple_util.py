@@ -8,8 +8,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.core.classification_kernel import is_agent_file as _kernel_is_agent
 from agentic_core.utils.security import safe_execute
+
+from agentic_core.core.classification_kernel import is_agent_file as _kernel_is_agent
 
 
 def is_agent_file(path: str) -> bool:

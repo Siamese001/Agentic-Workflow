@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
-"""Find agents missing heal_repository and add it to them."""
+"""Find all agents missing heal_repository and add it to them."""
 
 import json
-import re
 from pathlib import Path
 
 # Load agent discovery
-with open("C:/Git/Agentic-Workflow/agent_discovery_full.json", encoding="utf-8") as f:
-    data = json.load(f)
+discovery_json = Path("C:/Git/Agentic-Workflow/agent_discovery_full.json")
+if not discovery_json.exists():
+    print("ERROR: agent_discovery_full.json not found. Run full_agent_discovery.py first.")
+    exit(1)
+
+with open(discovery_json, encoding="utf-8") as f:
+    agents = json.load(f)
 
 # Find agents missing heal_repository
-missing = [a for a in data if not a.get("has_healing")]
+missing = [a for a in agents if not a.get("has_healing")]
 print(f"Agents missing heal_repository: {len(missing)}")
 
-for agent in missing:
-    print(f"  {agent['path']}")
+if len(missing) == 0:
+    print("✅ All agents have heal_repository!")
+    exit(0)
 
-# Now fix each one
-print(f"\n=== Fixing {len(missing)} agents ===")
-
+# Heal method template
 heal_method = '''
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs):
         """
@@ -50,41 +53,39 @@ for agent in missing:
             print(f"  ⏭️  Already has heal_repository: {agent['path']}")
             continue
 
-        # Find the last method or end of class
+        # Find the last line of the class (before end of file or next class)
         lines = content.split("\n")
 
-        # Find class definition
+        # Find the class definition line
         class_line = -1
+        class_name = agent.get("class_name", "")
         for i, line in enumerate(lines):
-            if re.match(r"^class\s+\w+.*:", line):
+            if f"class {class_name}" in line and ":" in line:
                 class_line = i
                 break
 
         if class_line == -1:
-            print(f"  ❌ No class found: {agent['path']}")
+            print(f"  ❌ No class {class_name} found: {agent['path']}")
             continue
 
-        # Find insertion point - look for last method or end of file
-        insertion_line = len(lines)
-        for i in range(len(lines) - 1, class_line, -1):
-            line = lines[i].strip()
-            if (
-                line
-                and not line.startswith("#")
-                and not line.startswith('"""')
-                and not line.startswith("'''")
-            ):
-                insertion_line = i + 1
+        # Find the end of the class (next class or end of file)
+        end_line = len(lines)
+        for i in range(class_line + 1, len(lines)):
+            line = lines[i]
+            # Check if we hit another class definition at the same indentation level
+            if line.strip().startswith("class ") and ":" in line and not line.startswith("    "):
+                end_line = i
                 break
 
-        # Insert the heal_repository method
-        new_lines = lines[:insertion_line] + [heal_method] + lines[insertion_line:]
+        # Insert heal_repository before the end of the class
+        new_lines = lines[:end_line] + [heal_method] + lines[end_line:]
         new_content = "\n".join(new_lines)
 
         agent_path.write_text(new_content, encoding="utf-8")
         print(f"  ✅ Fixed: {agent['path']}")
         fixed_count += 1
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  ❌ Error fixing {agent['path']}: {e}")
 

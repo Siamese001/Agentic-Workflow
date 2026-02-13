@@ -65,7 +65,7 @@ ALLOWLISTED_FILES: frozenset[str] = frozenset(
         "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
         # --- Phase 2 Step 1: Refactored to delegate to kernel ---
         # generate_agent_table_simple_util: is_agent_file() wraps kernel for string paths
-        "agentic_core/L0_maintenance/scripts/generate_agent_table_simple_util.py",
+        "dev_tools/l0_scripts/generate_agent_table_simple_util.py",
         # pascal_sovereignty_fixer: classify_file() → kernel classify_file_standalone()
         "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
         # mece_test_rebaseline: classify_file() → kernel classify_file_standalone()

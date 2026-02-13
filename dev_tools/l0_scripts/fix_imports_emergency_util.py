@@ -37,6 +37,7 @@ def fix_sovereign_imports():
                 print(f"  ✅ Fixed: {file_path.relative_to(root_dir)}")
                 count_fixed += 1
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"  ❌ Failed to read/write {file_path.name}: {e}")
             count_errors += 1

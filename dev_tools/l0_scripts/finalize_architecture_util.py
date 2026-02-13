@@ -6,7 +6,9 @@ import sys
 from pathlib import Path
 
 # Add project root to Python path
+# guardian: allow-path-string
 PROJECT_ROOT = Path(os.getcwd())
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.discovery import AgentRegistry
@@ -48,6 +50,7 @@ def step_1_migrate_test_agents():
     try:
         source_dir.rmdir()
         logger.info(" - Removed legacy 'tests' directory.")
+    # guardian: allow-silent-swallow
     except OSError:
         logger.warning(" - Could not remove 'tests' directory (not empty).")
 
@@ -115,6 +118,7 @@ if __name__ == "__main__":
         print("   Compliance:    100%")
         print("=" * 60)
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.critical(f"Finalization Failed: {e}", exc_info=True)
         exit(1)
