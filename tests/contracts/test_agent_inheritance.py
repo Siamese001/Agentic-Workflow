@@ -77,7 +77,7 @@ def _check_inheritance(filepath: Path, tree: ast.Module) -> list[str]:
 # ── Known pre-existing debt ────────────────────────────────────────────────────
 KNOWN_DEBT: frozenset[str] = frozenset(
     {
-        "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py",
+        "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
         "agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
         "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
         "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",

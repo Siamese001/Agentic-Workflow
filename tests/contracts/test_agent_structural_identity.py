@@ -74,9 +74,9 @@ def _check_structural_identity(filepath: Path, tree: ast.Module) -> list[str]:
 # Adding new files here is forbidden (§29 non-growing debt).
 KNOWN_DEBT: frozenset[str] = frozenset(
     {
-        "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py",
-        "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py",
-        "agentic_core/L0_maintenance/reasoning/IntegrityGateExecutorAgent.py",
+        "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
+        "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
+        "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
         "agentic_core/L0_maintenance/reasoning/RootCustomsAgent.py",
         "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
         "agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",

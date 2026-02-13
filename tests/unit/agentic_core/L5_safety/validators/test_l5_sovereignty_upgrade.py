@@ -125,7 +125,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_sync_method_exists(self, mock_project):
         """Test 5.1a: Verify run_ci_verification_sync() method exists."""
-        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 
@@ -137,7 +137,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_sync_returns_tuple(self, mock_project):
         """Test 5.1b: Verify run_ci_verification_sync() returns (bool, dict)."""
-        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 
@@ -160,7 +160,7 @@ class TestPhase5HeadlessOrchestration:
 
     def test_ci_verification_headless_no_stdin(self, mock_project):
         """Test 5.1c: Verify CI verification works without stdin."""
-        from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
 

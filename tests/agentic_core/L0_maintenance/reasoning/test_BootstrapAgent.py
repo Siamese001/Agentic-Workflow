@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L0_maintenance.reasoning.BootstrapAgent
+import agentic_core.L5_safety.reasoning.BootstrapAgent
 
 
 def test_BootstrapAgent_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L0_maintenance.reasoning.BootstrapAgent is not None
+    assert agentic_core.L5_safety.reasoning.BootstrapAgent is not None
 
 
 def test_BootstrapAgent_exists():
     """Test that BootstrapAgent class exists and can be instantiated."""
     try:
-        cls = agentic_core.L0_maintenance.reasoning.BootstrapAgent.BootstrapAgent
+        cls = agentic_core.L5_safety.reasoning.BootstrapAgent.BootstrapAgent
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_BootstrapAgent_exists():
 def test_run_bootstrap_exists():
     """Test that run_bootstrap function exists."""
     try:
-        func = agentic_core.L0_maintenance.reasoning.BootstrapAgent.run_bootstrap
+        func = agentic_core.L5_safety.reasoning.BootstrapAgent.run_bootstrap
         assert callable(func)
     except AttributeError:
         pytest.skip("Function run_bootstrap not found in module")
@@ -43,7 +43,7 @@ def test_run_bootstrap_exists():
 def test_heal_repository_exists():
     """Test that heal_repository function exists."""
     try:
-        func = agentic_core.L0_maintenance.reasoning.BootstrapAgent.heal_repository
+        func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal_repository
         assert callable(func)
     except AttributeError:
         pytest.skip("Function heal_repository not found in module")
@@ -52,7 +52,7 @@ def test_heal_repository_exists():
 def test_heal_exists():
     """Test that heal function exists."""
     try:
-        func = agentic_core.L0_maintenance.reasoning.BootstrapAgent.heal
+        func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal
         assert callable(func)
     except AttributeError:
         pytest.skip("Function heal not found in module")
@@ -61,7 +61,7 @@ def test_heal_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L0_maintenance.reasoning.BootstrapAgent
+    import agentic_core.L5_safety.reasoning.BootstrapAgent
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0MaintenanceBase.__dict__
@@ -73,5 +73,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L0_maintenance.reasoning.BootstrapAgent appears to be empty"
+        "Module agentic_core.L5_safety.reasoning.BootstrapAgent appears to be empty"
     )

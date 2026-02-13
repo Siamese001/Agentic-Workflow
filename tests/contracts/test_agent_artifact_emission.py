@@ -93,12 +93,12 @@ def _check_artifact_emission(filepath: Path, tree: ast.Module) -> list[str]:
 # ── Known pre-existing debt ────────────────────────────────────────────────────
 KNOWN_DEBT: frozenset[str] = frozenset(
     {
-        "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py",
-        "agentic_core/L0_maintenance/reasoning/BootstrapAgent.py",
-        "agentic_core/L0_maintenance/reasoning/DocstringComplianceAgent.py",
-        "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py",
-        "agentic_core/L0_maintenance/reasoning/GospelSyncAgent.py",
-        "agentic_core/L0_maintenance/reasoning/IntegrityGateExecutorAgent.py",
+        "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
+        "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
+        "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py",
+        "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
+        "agentic_core/L5_safety/reasoning/GospelSyncAgent.py",
+        "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
         "agentic_core/L0_maintenance/reasoning/RootCustomsAgent.py",
         "agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py",
         "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",

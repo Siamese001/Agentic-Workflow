@@ -582,7 +582,7 @@ class TestSSOTCompliance:
         # Any NEW monolith not in this set will hard-fail.
         _KNOWN_MONOLITHS = frozenset(
             {
-                "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py",
+                "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
                 "agentic_core/L0_maintenance/scripts/execute_ssot.py",
                 "agentic_core/L0_maintenance/types/guardian_contract.py",
                 "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",

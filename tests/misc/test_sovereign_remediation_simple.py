@@ -14,7 +14,7 @@ sys.path.insert(0, str(project_root))
 
 AGENTS_TO_TEST = [
     (
-        "agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent",
+        "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent",
         "FilesystemSSOTReconcilerAgent",
     ),
     ("agentic_core.L5_safety.reasoning.LocationAgent", "LocationAgent"),

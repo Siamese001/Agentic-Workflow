@@ -34,7 +34,7 @@ class TestFilesystemSSOTReconcilerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+            from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
                 FilesystemSSOTReconcilerAgent,
             )
 
@@ -89,7 +89,7 @@ class TestFilesystemSSOTReconcilerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+                from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
                     FilesystemSSOTReconcilerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

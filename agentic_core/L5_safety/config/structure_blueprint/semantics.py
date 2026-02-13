@@ -843,7 +843,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
     "L0": [
         {
             "name": "BootstrapAgent",
-            "file": "agentic_core/L0_maintenance/reasoning/BootstrapAgent.py",
+            "file": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
             "methods": 6,
             "fingerprint": "fcfd5e27416abb4c",
         },

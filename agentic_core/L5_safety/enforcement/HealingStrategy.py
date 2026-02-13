@@ -246,7 +246,7 @@ class HealingStrategy:
                 return CodeDeduplicationAgent()
 
             elif agent_name == "FilesystemSSOTReconcilerAgent":
-                from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+                from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
                     FilesystemSSOTReconcilerAgent,
                 )
 

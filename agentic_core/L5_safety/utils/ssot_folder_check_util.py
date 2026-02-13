@@ -22,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent import (
+from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
     FilesystemSSOTReconcilerAgent,
 )
 
