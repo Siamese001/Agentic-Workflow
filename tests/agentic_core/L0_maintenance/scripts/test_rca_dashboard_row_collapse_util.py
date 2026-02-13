@@ -4,37 +4,37 @@ Test for test_rca_dashboard_row_collapse_util
 # GENERATED_MIRROR_TEST
 """
 
-import importlib
-
 import pytest
+
+from tests.helpers.dev_tools_loader import load_dev_script
 
 
 def test_test_rca_dashboard_row_collapse_util_can_import():
     """Test that the module can be imported successfully."""
     try:
-        mod = importlib.import_module("agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util")
+        mod = load_dev_script("rca_dashboard_row_collapse_util.py")
         assert mod is not None
     except ImportError as e:
         pytest.skip(
-            f"Cannot import module agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util: {e}",
+            f"Cannot load dev_tools/l0_scripts/rca_dashboard_row_collapse_util.py: {e}",
         )
 
 
 def test_test_rca_dashboard_row_collapse_util_has_file_attribute():
     """Test that module has __file__ attribute."""
     try:
-        mod = importlib.import_module("agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util")
+        mod = load_dev_script("rca_dashboard_row_collapse_util.py")
         assert hasattr(mod, "__file__")
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util",
+            "Cannot load dev_tools/l0_scripts/rca_dashboard_row_collapse_util.py",
         )
 
 
 def test_test_rca_dashboard_row_collapse_util_has_public_attributes():
     """Test that module has public attributes or callables."""
     try:
-        mod = importlib.import_module("agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util")
+        mod = load_dev_script("rca_dashboard_row_collapse_util.py")
         # Count non-private attributes
         public_attrs = [name for name in dir(mod) if not name.startswith("_")]
         # Look for at least one callable
@@ -48,5 +48,5 @@ def test_test_rca_dashboard_row_collapse_util_has_public_attributes():
             assert len(public_attrs) >= 0
     except ImportError:
         pytest.skip(
-            "Cannot import module agentic_core.L0_maintenance.scripts.rca_dashboard_row_collapse_util",
+            "Cannot load dev_tools/l0_scripts/rca_dashboard_row_collapse_util.py",
         )

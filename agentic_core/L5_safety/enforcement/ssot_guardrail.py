@@ -67,7 +67,7 @@ ALLOWLISTED_FILES: frozenset[str] = frozenset(
         # generate_agent_table_simple_util: is_agent_file() wraps kernel for string paths
         "dev_tools/l0_scripts/generate_agent_table_simple_util.py",
         # pascal_sovereignty_fixer: classify_file() → kernel classify_file_standalone()
-        "agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py",
+        "dev_tools/l0_scripts/pascal_sovereignty_fixer.py",
         # mece_test_rebaseline: classify_file() → kernel classify_file_standalone()
         "ops_scripts/general/mece_test_rebaseline.py",
     },

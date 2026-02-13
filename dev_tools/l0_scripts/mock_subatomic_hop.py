@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 project_root: Any = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 from ops_scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
 from ops_scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
@@ -58,6 +59,7 @@ async def demo_phase2_batch_embeddings() -> Any:
     print("\n" + "=" * 80)
     print("📊 PHASE 2 DEMO: Batch Embeddings")
     print("=" * 80)
+    # guardian: allow-magic-config
     embedder: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
     sample_texts: Any = [f"Resume section {i}: Python developer with ML experience" for i in range(100)]
     print(f"\n⏱️  Sequential Processing ({len(sample_texts)} texts)...")
@@ -82,6 +84,7 @@ async def demo_phase2_vector_cache(embeddings: list) -> Any:
     print("\n" + "=" * 80)
     print("💾 PHASE 2 DEMO: In-Memory Vector cache")
     print("=" * 80)
+    # guardian: allow-magic-config
     vector_cache: Any = create_memory_vector_cache(collection_name="demo_resumes", max_memory_gb=8)
     documents: Any = [f"Resume {i}" for i in range(len(embeddings))]
     metadatas: Any = [{"index": i, "type": "resume"} for i in range(len(embeddings))]
@@ -116,6 +119,7 @@ async def demo_phase3_subatomic_swarm() -> Any:
     print("\n" + "=" * 80)
     print("🤖 PHASE 3 DEMO: SubatomicSwarm (Parallel I/O)")
     print("=" * 80)
+    # guardian: allow-magic-config
     swarm: Any = create_subatomic_swarm(max_concurrency=5, timeout_per_hop=30.0)
     num_hops: Any = 20
     hops: Any = [MockSubatomicHop(f"hop_{i}") for i in range(num_hops)]
@@ -176,8 +180,11 @@ async def demo_full_pipeline() -> Any:
     print("=" * 80)
     total_start: Any = time.time()
     print("\n📦 Initializing Services...")
+    # guardian: allow-magic-config
     embedder: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
+    # guardian: allow-magic-config
     vector_cache: Any = create_memory_vector_cache(collection_name="pipeline_demo", max_memory_gb=8)
+    # guardian: allow-magic-config
     llm_swarm: Any = create_subatomic_swarm(max_concurrency=5)
     cpu_swarm: Any = create_resume_swarm(num_workers=6)
     num_jobs: Any = 50
@@ -254,6 +261,7 @@ async def main() -> Any:
         print("  3. Integrate with your actual resume generation pipeline")
         print("  4. Monitor metrics and adjust concurrency levels")
         print("  5. Scale up gradually to production workloads")
+    # guardian: allow-silent-swallow
     except Exception as e:
         Logger.error(f"Pipeline failed: {e}", exc_info=True)
         print(f"\n❌ Error: {e}")

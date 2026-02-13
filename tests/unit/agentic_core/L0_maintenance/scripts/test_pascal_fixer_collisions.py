@@ -5,9 +5,10 @@ Rationale: Verifies collision resolution strategies (Delete vs Conflict Rename).
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.pascal_sovereignty_fixer import (
-    PascalSovereigntyFixer,
-)
+from tests.helpers.dev_tools_loader import load_dev_script
+
+_psf = load_dev_script("pascal_sovereignty_fixer.py")
+PascalSovereigntyFixer = _psf.PascalSovereigntyFixer
 
 
 @pytest.fixture
