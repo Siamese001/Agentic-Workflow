@@ -348,7 +348,7 @@ class TestCapabilityEnforcement:
             MCPToolServer,
         )
 
-        server = MCPToolServer("test-server")
+        server = MCPToolServer("test-server", allow_legacy_capability_enforcer=True)
         server.register_tool(
             MCPTool(
                 name="calculator",
@@ -373,7 +373,7 @@ class TestCapabilityEnforcement:
             MCPToolServer,
         )
 
-        server = MCPToolServer("test-server")
+        server = MCPToolServer("test-server", allow_legacy_capability_enforcer=True)
         server.register_tool(
             MCPTool(
                 name="evil_tool",
@@ -471,13 +471,16 @@ class TestCapabilityPropagation:
     """Wave 5.0.2: explicit capability_token parameter propagation."""
 
     @staticmethod
-    def _server_with_tool(name="calculator"):
+    def _server_with_tool(name="calculator", *, legacy_compat=False):
         from agentic_core.L2_execution.types.mcp_tool_types import (
             MCPTool,
             MCPToolServer,
         )
 
-        server = MCPToolServer("test-propagation")
+        server = MCPToolServer(
+            "test-propagation",
+            allow_legacy_capability_enforcer=legacy_compat,
+        )
         server.register_tool(
             MCPTool(
                 name=name,
@@ -598,8 +601,8 @@ class TestCapabilityPropagation:
         assert all(r.success for r in results)
 
     def test_legacy_enforcer_still_works(self):
-        """set_capability_enforcer path works when capability_token is None."""
-        server = self._server_with_tool()
+        """set_capability_enforcer path works when capability_token is None and compat enabled."""
+        server = self._server_with_tool(legacy_compat=True)
         token = _make_token()
         enforcer = CapabilityEnforcer(token)
         server.set_capability_enforcer(enforcer)
@@ -785,3 +788,94 @@ class TestIssueCapabilityToken:
         )
         assert result.success is True
         assert result.tool_name == "analyzer"
+
+
+# ===========================================================================
+# 6) Wave 5.0.4 — Fail-Closed Default + Explicit Compat Flag Tests
+# ===========================================================================
+
+
+class TestFailClosedDefault:
+    """Wave 5.0.4: default fail-closed + allow_legacy_capability_enforcer flag."""
+
+    def test_default_fail_closed_no_token(self):
+        """Server with defaults + no capability_token => DENY NO_TOKEN_PROVIDED."""
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+        )
+
+        server = MCPToolServer("test-fail-closed")
+        server.register_tool(
+            MCPTool(
+                name="calc",
+                description="test",
+                parameters={},
+                handler=lambda **kw: "ok",
+            ),
+        )
+        with pytest.raises(PermissionError, match="CAPABILITY_DENIED:NO_TOKEN_PROVIDED"):
+            server.execute_tool("calc", {})
+
+    def test_legacy_enforcer_disabled_by_default(self):
+        """Server with defaults, calling set_capability_enforcer raises ValueError."""
+        from agentic_core.L2_execution.types.mcp_tool_types import MCPToolServer
+
+        server = MCPToolServer("test-legacy-disabled")
+        enforcer = CapabilityEnforcer(_make_token())
+        with pytest.raises(ValueError, match="legacy capability enforcer is disabled"):
+            server.set_capability_enforcer(enforcer)
+
+    def test_compat_enabled_legacy_path(self):
+        """Server with allow_legacy_capability_enforcer=True allows legacy path."""
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+        )
+
+        server = MCPToolServer("test-compat", allow_legacy_capability_enforcer=True)
+        server.register_tool(
+            MCPTool(
+                name="calculator",
+                description="test",
+                parameters={},
+                handler=lambda **kw: "ok",
+            ),
+        )
+        token = _make_token()
+        enforcer = CapabilityEnforcer(token)
+        server.set_capability_enforcer(enforcer)
+
+        result = server.execute_tool("calculator", {})
+        assert result.success is True
+        assert enforcer.call_count == 1
+
+    def test_explicit_token_wins_over_legacy(self):
+        """When compat enabled + legacy enforcer set, explicit token takes precedence."""
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+        )
+
+        server = MCPToolServer("test-precedence", allow_legacy_capability_enforcer=True)
+        server.register_tool(
+            MCPTool(
+                name="calculator",
+                description="test",
+                parameters={},
+                handler=lambda **kw: "ok",
+            ),
+        )
+        # Set legacy enforcer with one token
+        legacy_token = _make_token()
+        legacy_enforcer = CapabilityEnforcer(legacy_token)
+        server.set_capability_enforcer(legacy_enforcer)
+
+        # Pass a different explicit token
+        explicit_token = _make_token(
+            permissions=(PERMISSION_CODES["TOOL_READ"], PERMISSION_CODES["FS_READ"]),
+        )
+        result = server.execute_tool("calculator", {}, capability_token=explicit_token)
+        assert result.success is True
+        # Legacy enforcer should NOT have been called (explicit token wins)
+        assert legacy_enforcer.call_count == 0

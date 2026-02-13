@@ -72,26 +72,44 @@ class MCPToolResult:
 class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
-    def __init__(self, name: str = "agentic-workflow-tools"):
+    def __init__(
+        self,
+        name: str = "agentic-workflow-tools",
+        *,
+        allow_legacy_capability_enforcer: bool = False,
+    ):
         """Initialize MCP tool server.
 
         Args:
             name: Server name
+            allow_legacy_capability_enforcer: If True, permits the legacy
+                set_capability_enforcer() path.  Default False (fail-closed).
         """
         self.name = name
         self._tools: dict[str, MCPTool] = {}
         self._capability_enforcer: Any | None = None
+        self._allow_legacy_capability_enforcer = allow_legacy_capability_enforcer
         Logger.info(f"MCP tool server initialized: {name}")
 
     def set_capability_enforcer(self, enforcer: Any) -> None:
         """Set the CapabilityEnforcer for this server.
 
         §Wave5.0.1: Single L2 chokepoint capability enforcement.
-        When set, every execute_tool call validates against the token.
+        §Wave5.0.4: Disabled by default.  Requires
+        allow_legacy_capability_enforcer=True at construction time.
 
         Args:
             enforcer: CapabilityEnforcer instance (or None to clear)
+
+        Raises:
+            ValueError: If legacy capability enforcer is disabled (default).
         """
+        if not self._allow_legacy_capability_enforcer:
+            raise ValueError(
+                "legacy capability enforcer is disabled. "
+                "Use allow_legacy_capability_enforcer=True at construction "
+                "or pass capability_token= per call.",
+            )
         self._capability_enforcer = enforcer
 
     def register_tool(self, tool: MCPTool) -> None:
@@ -230,8 +248,8 @@ class MCPToolServer:
                 required_permission=required_perm,
                 semantic_clock=capability_token.semantic_clock,
             )
-        elif self._capability_enforcer is not None:
-            # §Wave5.0.1 legacy path: server-level enforcer
+        elif self._allow_legacy_capability_enforcer and self._capability_enforcer is not None:
+            # §Wave5.0.1 legacy path: server-level enforcer (compat flag required)
             enforcer_legacy: CapabilityEnforcer = self._capability_enforcer
             enforcer_legacy.check(
                 tool_name=name,
