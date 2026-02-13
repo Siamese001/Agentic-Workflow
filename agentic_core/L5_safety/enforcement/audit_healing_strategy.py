@@ -79,6 +79,7 @@ class AuditHealingStrategy:
                 Logger.warning(f"[L0 L6 AUDIT HEALING] Audit log not found: {self.audit_log_path}")
                 return []
             log_content = await self.fs_client.read_text(str(self.audit_log_path))
+        # guardian: allow-silent-swallow (pre-existing, moved from L0)
         except Exception as e:
             Logger.error(f"[L0 L6 AUDIT HEALING] Failed to read audit log: {e}")
             return []

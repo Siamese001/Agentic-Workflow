@@ -13,8 +13,8 @@
 ║     (heuristic for inline shadow classification).                          ║
 ║                                                                            ║
 ║  Usage:                                                                    ║
-║    python -m agentic_core.L0_maintenance.enforcement.ssot_guardrail        ║
-║    python -m agentic_core.L0_maintenance.enforcement.ssot_guardrail --fail ║
+║    python -m agentic_core.L5_safety.enforcement.ssot_guardrail              ║
+║    python -m agentic_core.L5_safety.enforcement.ssot_guardrail --fail       ║
 ║                                                                            ║
 ║  Exit codes:                                                               ║
 ║    0 — No violations found                                                 ║
@@ -44,7 +44,7 @@ ALLOWLISTED_FILES: frozenset[str] = frozenset(
         # FCA is the high-level consumer that wraps the kernel
         "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
         # This guardrail itself
-        "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
+        "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
         # Contract tests reference the kernel
         "tests/core/test_classification_contract.py",
         # --- Phase 1 refactored wrappers (delegate to kernel) ---
@@ -91,7 +91,7 @@ ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset(
     {
         KERNEL_PATH,
         "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
-        "agentic_core/L0_maintenance/enforcement/ssot_guardrail.py",
+        "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
         "tests/core/test_classification_contract.py",
         # These use endswith("Agent") for metadata extraction, not classification:
         "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
