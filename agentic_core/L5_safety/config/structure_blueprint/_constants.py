@@ -106,12 +106,34 @@ def _build_lcd_subfolders_template() -> dict[str, SubfolderDefinition]:
 
 LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L0_maintenance": {
-        "purpose": "Reflexive system health, boot integrity, and compliance checks.",
-        "forbidden_capabilities": ["debate", "synthesis", "complex_reasoning", "multi_agent_coordination"],
-        "notes": "L0 agents must be low-level and deterministic. LCD+ canonical skeleton + scripts/ nuance.",
+        "purpose": (
+            "Core Logic & Routing + Control-Plane Core — "
+            "ingestion, route election, capability arbitration, policy-aware dispatch; "
+            "plus boot integrity, SSOT discovery, and guardian runner health checks."
+        ),
+        "forbidden_capabilities": [
+            "debate",
+            "synthesis",
+            "complex_reasoning",
+            "multi_agent_coordination",
+        ],
+        "notes": (
+            "L0 is the routing and minimal system-integrity control-plane. "
+            "Agents must be low-level and deterministic. "
+            "LCD+ canonical skeleton + scripts/ nuance."
+        ),
+        "routing_rules": {
+            "*_guardian.py": "enforcement",
+            "*_boot*.py": "enforcement",
+            "*_routing*.py": "enforcement",
+            "*_dispatch*.py": "enforcement",
+            "*_config.py": "config",
+            "*_types.py": "types",
+            "*Agent.py": "reasoning",
+        },
         "extra_subfolders": {
             "scripts": {
-                "purpose": "Maintenance and operational scripts (Zero-Ambiguity Standard)",
+                "purpose": "Operational scripts (Zero-Ambiguity Standard)",
                 "subfolders": {
                     ".github": {"purpose": "GitHub workflow scripts"},
                     "ci": {"purpose": "CI/CD pipeline scripts"},
