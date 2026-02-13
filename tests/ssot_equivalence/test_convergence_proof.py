@@ -43,6 +43,12 @@ from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
 pytestmark = pytest.mark.ssot_equivalence
 
 
+@pytest.fixture(autouse=True)
+def _ensure_test_signing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """§Wave5.0.5: Ensure V15_TEST_SIGNING=1 for in-process guardian calls."""
+    monkeypatch.setenv("V15_TEST_SIGNING", "1")
+
+
 # ---------------------------------------------------------------------------
 # 1. Legacy → Guardian coverage mapping
 # ---------------------------------------------------------------------------

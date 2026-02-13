@@ -14,10 +14,17 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.tool_policy_enforcer import (
     ToolPolicyEnforcer,
     _stable_args_hash,
     set_tool_policy_enforcer,
+)
+from agentic_core.L2_execution.types.capability_token_types import (
+    PERMISSION_CODES,
+    CapabilityConstraints,
+    CapabilityTokenSubject,
+    build_capability_token,
 )
 from agentic_core.L2_execution.types.mcp_tool_types import (
     MCPTool,
@@ -27,6 +34,22 @@ from agentic_core.L2_execution.types.tool_enforcement_types import (
     LawSlotOutcome,
     ToolEnforcementArtifact,
     ToolPolicyBlocked,
+)
+
+# §Wave5.0.5 — deterministic capability token for LawSlotHandler tests.
+# These tests exercise the LawSlotHandler enforcement gate (Wave 2.4),
+# not capability enforcement. The token lets calls pass the capability
+# gate so they reach the LawSlot gate under test.
+_TEST_CLOCK = SemanticClockSnapshot(tick=1, vector_clock={"L2": 1})
+_TEST_TOKEN = build_capability_token(
+    semantic_clock=_TEST_CLOCK,
+    subject=CapabilityTokenSubject(kind="test", id="tool-enforcement-gate-test"),
+    issued_by="test-harness",
+    permissions=(PERMISSION_CODES["TOOL_READ"],),
+    constraints=CapabilityConstraints(
+        allowed_paths=("tool/test_tool",),
+        max_tool_calls=100,
+    ),
 )
 
 # =========================================================================
@@ -174,7 +197,7 @@ class TestPassPath:
 
     def test_pass_tool_executes(self):
         server = _make_server_with_tool()
-        result = server.execute_tool("test_tool", {"key": "value"})
+        result = server.execute_tool("test_tool", {"key": "value"}, capability_token=_TEST_TOKEN)
         assert result.success is True
         assert result.result["status"] == "ok"
         assert len(server._test_call_log) == 1  # type: ignore[attr-defined]
@@ -190,7 +213,7 @@ class TestPassPath:
             "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
-            server.execute_tool("test_tool", {"x": 1})
+            server.execute_tool("test_tool", {"x": 1}, capability_token=_TEST_TOKEN)
 
         assert len(emitted) == 1
         assert emitted[0]["type"] == "TOOL_ENFORCEMENT"
@@ -218,7 +241,7 @@ class TestPassPath:
             "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
-            result = server.execute_tool("test_tool", {"a": 1})
+            result = server.execute_tool("test_tool", {"a": 1}, capability_token=_TEST_TOKEN)
 
         assert result.success is True
         assert len(emitted) == 1
@@ -245,7 +268,7 @@ class TestBlockPath:
 
         server = _make_server_with_tool()
         with pytest.raises(ToolPolicyBlocked, match="Blocked by security policy"):
-            server.execute_tool("test_tool", {"x": 1})
+            server.execute_tool("test_tool", {"x": 1}, capability_token=_TEST_TOKEN)
 
     def test_block_tool_not_executed(self):
         enforcer = ToolPolicyEnforcer()
@@ -258,7 +281,7 @@ class TestBlockPath:
 
         server = _make_server_with_tool()
         try:
-            server.execute_tool("test_tool", {})
+            server.execute_tool("test_tool", {}, capability_token=_TEST_TOKEN)
         except ToolPolicyBlocked:
             pass
         assert len(server._test_call_log) == 0  # type: ignore[attr-defined]
@@ -284,7 +307,7 @@ class TestBlockPath:
             mock_emit,
         ):
             with pytest.raises(ToolPolicyBlocked):
-                server.execute_tool("test_tool", {"a": 1})
+                server.execute_tool("test_tool", {"a": 1}, capability_token=_TEST_TOKEN)
 
         assert len(emitted) == 1
         assert emitted[0].outcome == LawSlotOutcome.BLOCK
@@ -301,7 +324,7 @@ class TestBlockPath:
 
         server = _make_server_with_tool()
         with pytest.raises(ToolPolicyBlocked) as exc_info:
-            server.execute_tool("test_tool", {})
+            server.execute_tool("test_tool", {}, capability_token=_TEST_TOKEN)
         assert exc_info.value.rationale == "Rate limit exceeded for tool"
         assert isinstance(exc_info.value.artifact, ToolEnforcementArtifact)
 
@@ -326,7 +349,7 @@ class TestModifyPath:
         set_tool_policy_enforcer(enforcer)
 
         server = _make_server_with_tool()
-        result = server.execute_tool("test_tool", {"query": "test"})
+        result = server.execute_tool("test_tool", {"query": "test"}, capability_token=_TEST_TOKEN)
         assert result.success is True
         received = server._test_call_log[0]  # type: ignore[attr-defined]
         assert received["safe_mode"] is True
@@ -354,7 +377,7 @@ class TestModifyPath:
             "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
-            server.execute_tool("test_tool", {"a": 1})
+            server.execute_tool("test_tool", {"a": 1}, capability_token=_TEST_TOKEN)
 
         assert len(emitted) == 1
         art = emitted[0]
@@ -403,10 +426,10 @@ class TestDeterminism:
             "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
-            server.execute_tool("test_tool", {"x": 42})
+            server.execute_tool("test_tool", {"x": 42}, capability_token=_TEST_TOKEN)
             # Reset enforcer to same rule for second call
             set_tool_policy_enforcer(enforcer)
-            server.execute_tool("test_tool", {"x": 42})
+            server.execute_tool("test_tool", {"x": 42}, capability_token=_TEST_TOKEN)
 
         assert len(artifacts) == 2
         assert artifacts[0].original_args_hash == artifacts[1].original_args_hash
@@ -423,7 +446,7 @@ class TestDeterminism:
             "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
-            server.execute_tool("test_tool", {"key": "value"})
-            server.execute_tool("test_tool", {"key": "value"})
+            server.execute_tool("test_tool", {"key": "value"}, capability_token=_TEST_TOKEN)
+            server.execute_tool("test_tool", {"key": "value"}, capability_token=_TEST_TOKEN)
 
         assert artifacts[0].original_args_hash == artifacts[1].original_args_hash
