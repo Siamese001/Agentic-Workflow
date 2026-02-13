@@ -24,19 +24,19 @@ from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrc
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.L0_maintenance.enforcement.v15_p3_contracts import (
+from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
     build_hil_evidence_pack,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
     is_v15_enforced,
 )
-from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
-from agentic_core.L0_maintenance.types.v15_p3_types import (
+from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
+from agentic_core.L0_routing.types.v15_p3_types import (
     PolicySnapshot,
     RouteDecisionRef,
 )
-from agentic_core.L0_maintenance.types.v15_types import (
+from agentic_core.L0_routing.types.v15_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
@@ -133,7 +133,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
         try:
             _l3_emitter = TelemetryEmitter()
             _l3_emitter.emit_typed_artifact("L3_ROUTE_DECISION", l3_artifact)
-            _l3_log_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+            _l3_log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
             _l3_emitter.flush_to_artifacts_dir(_l3_log_dir)
         # guardian: allow-silent-swallow
         except Exception:
@@ -179,7 +179,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
             try:
                 _emitter = TelemetryEmitter()
                 _emitter.emit_route_decision(route_artifact)
-                _artifacts_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+                _artifacts_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
                 _emitter.flush_to_artifacts_dir(_artifacts_dir)
             except Exception as exc:
                 if is_v15_enforced():
@@ -215,7 +215,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                     _hil_pack_dict = asdict(_hil_pack)
                     _hil_emitter = TelemetryEmitter()
                     _hil_emitter.emit_typed_artifact("HIL_EVIDENCE_PACK", _hil_pack)
-                    _hil_log_dir = Path(__file__).resolve().parents[2] / "L0_maintenance" / "logs"
+                    _hil_log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
                     _hil_emitter.flush_to_artifacts_dir(_hil_log_dir)
                 # guardian: allow-silent-swallow
                 except Exception as _hil_exc:

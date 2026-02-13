@@ -50,7 +50,7 @@ class TestGuardianIntegration(AgentTestMixin):
     def test_layer_hierarchy_detection(self):
         """Test that layer hierarchy detection works correctly."""
         test_paths = [
-            (Path("agentic_core/L0_maintenance/test.py"), "L0_maintenance", 0),
+            (Path("agentic_core/L0_routing/test.py"), "L0_routing", 0),
             (Path("agentic_core/L5_safety/test.py"), "L5_safety", 5),
             (Path("apps_lic/test.py"), None, -1),
         ]
@@ -120,7 +120,7 @@ class TestAgent:
     def test_cross_layer_validation(self, layer_hierarchy):
         """Test validation across architectural layers."""
         assert layer_hierarchy["L5_safety"] > layer_hierarchy["L1_cognition"]
-        assert layer_hierarchy["L0_maintenance"] < layer_hierarchy["L6_observability"]
+        assert layer_hierarchy["L0_routing"] < layer_hierarchy["L6_observability"]
 
     def test_performance_benchmarks(self, guardian_performance_baseline):
         """Ensure Guardian tests meet performance targets."""

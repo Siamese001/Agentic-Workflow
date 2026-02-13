@@ -10,7 +10,7 @@ import json
 
 import pytest
 
-from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     ALL_PERMISSION_VALUES,
     PERMISSION_CODES,

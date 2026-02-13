@@ -31,7 +31,7 @@ class AlwaysHealTestAgent:
 """)
 
     try:
-        from agentic_core.L0_maintenance.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
             RuntimeStateManager,
             SovereignDecisionEngine,
             execute_phase2_reconciliation,
@@ -138,7 +138,7 @@ def test_confidence_thresholds():
 
     print("\n=== Test: Confidence Threshold Behavior ===\n")
 
-    from agentic_core.L0_maintenance.scripts.execute_ssot import (
+    from agentic_core.L0_routing.scripts.execute_ssot import (
         ConfidenceScore,
         SovereignDecisionEngine,
     )

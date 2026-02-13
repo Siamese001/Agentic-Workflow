@@ -19,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.L0_maintenance.types.integration_contract import (
+from agentic_core.L0_routing.types.integration_contract import (
     Finding,
     ResultEnvelope,
 )
@@ -39,7 +39,7 @@ EVIDENCE_FILES = {
 
 GUARDIAN_REPORT_PATHS = [
     REPO_ROOT / "docs" / "reports" / "plans" / "guardian_report.json",
-    REPO_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "guardian_report.json",
+    REPO_ROOT / "agentic_core" / "L0_routing" / "logs" / "guardian_report.json",
 ]
 
 

@@ -33,7 +33,7 @@ from typing import Any
 
 PROJECT_ROOT = Path(
     __file__,
-).parent.parent.parent.parent  # agentic_core/L0_maintenance/scripts -> project root
+).parent.parent.parent.parent  # agentic_core/L0_routing/scripts -> project root
 DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
 DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
 

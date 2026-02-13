@@ -112,7 +112,7 @@ def get_territory_for_agent(agent: dict) -> str:
         return "L1 Cognition/Core"
 
     # L0 Maintenance territories
-    if "L0_maintenance" in path or layer == "L0":
+    if "L0_routing" in path or layer == "L0":
         return "L0 Maintenance/Core"
 
     # Apps

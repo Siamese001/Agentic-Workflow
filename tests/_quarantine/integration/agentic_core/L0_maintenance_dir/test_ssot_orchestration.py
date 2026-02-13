@@ -1,5 +1,5 @@
 """
-File: tests/integration/agentic_core/L0_maintenance/test_ssot_orchestration.py
+File: tests/integration/agentic_core/L0_routing/test_ssot_orchestration.py
 Description: Tests for Dynamic Loading, Signal Handling, and Main Orchestration.
 Mandate: 100% Pass.
 """
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import (
+from agentic_core.L0_routing.scripts.execute_ssot import (
     GracefulExitHandler,
     RuntimeStateManager,
     load_agents,
@@ -85,7 +85,7 @@ class InvalidAgent:
         Critical: Main must reject invalid args before starting.
         """
         # We test via the validation function directly since we can't easily capture argparse exit in unit test
-        from agentic_core.L0_maintenance.scripts.execute_ssot import validate_territory_input
+        from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
 
         valid, msg = validate_territory_input("../traversal")
         assert valid is False
@@ -93,9 +93,9 @@ class InvalidAgent:
         valid, msg = validate_territory_input("valid_scope")
         assert valid is True
 
-    @patch("agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery")
-    @patch("agentic_core.L0_maintenance.scripts.execute_ssot.load_agents")
-    @patch("agentic_core.L0_maintenance.scripts.execute_ssot.RuntimeStateManager")
+    @patch("agentic_core.L0_routing.scripts.execute_ssot.execute_phase1_discovery")
+    @patch("agentic_core.L0_routing.scripts.execute_ssot.load_agents")
+    @patch("agentic_core.L0_routing.scripts.execute_ssot.RuntimeStateManager")
     def test_main_flow_aborts_on_empty_agents(self, mock_state_mgr, mock_load, mock_p1, tmp_path):
         """
         Critical: If no agents loaded, abort immediately.
@@ -106,7 +106,7 @@ class InvalidAgent:
         mock_state_instance = MagicMock()
         mock_state_mgr.return_value = mock_state_instance
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import main
+        from agentic_core.L0_routing.scripts.execute_ssot import main
 
         with patch("sys.argv", ["script", "--territory", "test"]), patch("sys.exit") as mock_exit:
             # Mock sys.exit to actually raise SystemExit to stop execution

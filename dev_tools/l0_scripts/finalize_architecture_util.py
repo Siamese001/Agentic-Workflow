@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(os.getcwd())
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.discovery import AgentRegistry
-from agentic_core.L0_maintenance.enforcement.manifest_guardian_util import ManifestGuardian
+from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -20,11 +20,11 @@ logger = logging.getLogger("Finalizer")
 
 
 def step_1_migrate_test_agents():
-    """Moves agents from 'tests' layer to 'L0_maintenance/testing'."""
+    """Moves agents from 'tests' layer to 'L0_routing/testing'."""
     logger.info("STEP 1: Migrating Test Agents...")
 
     source_dir = PROJECT_ROOT / "agentic_core" / "tests"
-    target_dir = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "testing"
+    target_dir = PROJECT_ROOT / "agentic_core" / "L0_routing" / "testing"
 
     if not source_dir.exists():
         logger.info(" - No legacy 'tests' directory found. Architecture is clean.")

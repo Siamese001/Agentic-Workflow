@@ -27,14 +27,14 @@ if str(REPO_ROOT) not in sys.path:
 
 # Import available Guardians
 try:
-    from agentic_core.L0_maintenance.scripts.guard_no_underscore_fields import (
+    from agentic_core.L0_routing.scripts.guard_no_underscore_fields import (
         check_file as check_underscore_fields,
     )
 except ImportError:
     check_underscore_fields = None
 
 try:
-    from agentic_core.L0_maintenance.scripts.guard_ddd_alignment_validator import (
+    from agentic_core.L0_routing.scripts.guard_ddd_alignment_validator import (
         validate_ddd_alignment,
     )
 except ImportError:

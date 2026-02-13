@@ -8,7 +8,7 @@ Architecture (after layer inversion fix):
 
     BACKWARD-COMPAT SHIMS:
         - agentic_core/L5_safety/utils/decorators_util.py  (re-exports from base_agents)
-        - agentic_core/L0_maintenance/utils/timeout_decorator_util.py  (re-exports from base_agents)
+        - agentic_core/L0_routing/utils/timeout_decorator_util.py  (re-exports from base_agents)
 
 These tests verify:
     1. Canonical modules export required symbols
@@ -109,7 +109,7 @@ class TestBackwardCompatShimIdentity:
     def test_l0_shim_timeout_is_canonical(self) -> None:
         """L0 shim must re-export base_agents.timeout_decorator.timeout."""
         from agentic_core.base_agents.timeout_decorator import timeout as canonical
-        from agentic_core.L0_maintenance.utils.timeout_decorator_util import (
+        from agentic_core.L0_routing.utils.timeout_decorator_util import (
             timeout as shim,
         )
 
@@ -122,7 +122,7 @@ class TestNoShimImportsEnforcement:
     SHIM_FILES = {"decorators_util.py", "timeout_decorator_util.py"}
     FORBIDDEN_IMPORTS = [
         "agentic_core.L5_safety.utils.decorators_util",
-        "agentic_core.L0_maintenance.utils.timeout_decorator_util",
+        "agentic_core.L0_routing.utils.timeout_decorator_util",
     ]
 
     def test_no_imports_from_shim_locations(self) -> None:
@@ -167,7 +167,7 @@ class TestBaseAgentsDecoratorImports:
     DECORATOR_FILES = {"decorators.py", "timeout_decorator.py"}
     FORBIDDEN_SHIM_IMPORTS = [
         "agentic_core.L5_safety.utils.decorators_util",
-        "agentic_core.L0_maintenance.utils.timeout_decorator_util",
+        "agentic_core.L0_routing.utils.timeout_decorator_util",
     ]
 
     def test_base_agents_decorators_no_shim_imports(self) -> None:
@@ -203,7 +203,7 @@ class TestShimAllowlist:
     """AST enforcement: shims must import ONLY from base_agents canonical locations."""
 
     DECORATORS_SHIM = ROOT / "agentic_core/L5_safety/utils/decorators_util.py"
-    TIMEOUT_SHIM = ROOT / "agentic_core/L0_maintenance/utils/timeout_decorator_util.py"
+    TIMEOUT_SHIM = ROOT / "agentic_core/L0_routing/utils/timeout_decorator_util.py"
 
     def test_decorators_shim_imports_only_base_agents(self) -> None:
         """decorators_util.py must import ONLY from base_agents.decorators."""

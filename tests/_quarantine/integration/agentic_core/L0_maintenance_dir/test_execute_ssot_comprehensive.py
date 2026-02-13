@@ -1,5 +1,5 @@
 """
-File: tests/integration/agentic_core/L0_maintenance/test_execute_ssot_comprehensive.py
+File: tests/integration/agentic_core/L0_routing/test_execute_ssot_comprehensive.py
 Description: Comprehensive 10-case test suite for enhanced SSOT execution, covering safety, LLM logic, and telemetry.
 """
 
@@ -13,7 +13,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import (
+from agentic_core.L0_routing.scripts.execute_ssot import (
     ASTCodeQualityValidator,
     AutonomousDecisionEngine,
     ConfidenceScore,
@@ -238,7 +238,7 @@ def typed_function(x: int) -> int:
 
         # Run Phase 1
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
+            "agentic_core.L0_routing.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             # The impl returns raw data, decorator standardizes it
             mock_impl.return_value = {"raw_data": "test"}

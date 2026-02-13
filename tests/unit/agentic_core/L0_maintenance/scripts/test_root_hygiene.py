@@ -5,7 +5,7 @@ Rationale:
 """
 
 import pytest
-from agentic_core.L0_maintenance.scripts.root_hygiene_enforcer import enforce_root_hygiene
+from agentic_core.L0_routing.scripts.root_hygiene_enforcer import enforce_root_hygiene
 
 
 @pytest.fixture
@@ -44,8 +44,8 @@ def test_hygiene_enforcement(dirty_repo, monkeypatch):
     # 2. Standalone script -> ops_scripts
     assert (dirty_repo / "ops_scripts" / "standalone_tool.py").exists()
 
-    # 3. Core script -> agentic_core/L0_maintenance/scripts
-    assert (dirty_repo / "agentic_core" / "L0_maintenance" / "scripts" / "core_tool.py").exists()
+    # 3. Core script -> agentic_core/L0_routing/scripts
+    assert (dirty_repo / "agentic_core" / "L0_routing" / "scripts" / "core_tool.py").exists()
 
     # 4. Coverage -> reports
     assert (dirty_repo / "reports" / "coverage_html" / "index.html").exists()

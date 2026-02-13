@@ -63,8 +63,8 @@ def main():
     print(f"New import: {NEW_IMPORT}")
     print()
 
-    # Find all Python files in L0_maintenance/scripts
-    l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR
+    # Find all Python files in L0_routing/scripts
+    l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_routing" / SCRIPTS_DIR
 
     if not l0_scripts.exists():
         print(f"❌ Directory not found: {l0_scripts}")

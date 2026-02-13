@@ -72,7 +72,7 @@ class TestObsoleteFunctionalityDetection:
         - 'tests_root': tests/*.py
         - 'tests_unit': tests/unit/*.py
         - 'tests_unit_agentic_core': tests/unit/agentic_core/*.py
-        - 'tests_unit_agentic_core_L0': tests/unit/agentic_core/L0_maintenance/*.py
+        - 'tests_unit_agentic_core_L0': tests/unit/agentic_core/L0_routing/*.py
         - etc.
         """
         result = {}
@@ -96,7 +96,7 @@ class TestObsoleteFunctionalityDetection:
                         if level3_tests:
                             result[f"tests_{subdir.name}_{subsubdir.name}"] = level3_tests
 
-                        # Level 4: tests/unit/agentic_core/L0_maintenance/, etc.
+                        # Level 4: tests/unit/agentic_core/L0_routing/, etc.
                         for subsubsubdir in subsubdir.iterdir():
                             if subsubsubdir.is_dir() and not subsubsubdir.name.startswith(("__", ".")):
                                 level4_tests = list(subsubsubdir.glob("test_*.py"))

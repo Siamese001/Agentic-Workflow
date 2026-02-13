@@ -20,13 +20,13 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Import the target module - robust import handling required for integration tests
-# Path: tests/integration/agentic_core/L0_maintenance/ -> need 5 parents to get to project root
+# Path: tests/integration/agentic_core/L0_routing/ -> need 5 parents to get to project root
 project_root = Path(__file__).parent.parent.parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 # Add the scripts directory to path for direct import
-scripts_dir = project_root / "agentic_core" / "L0_maintenance" / "scripts"
+scripts_dir = project_root / "agentic_core" / "L0_routing" / "scripts"
 if str(scripts_dir) not in sys.path:
     sys.path.insert(0, str(scripts_dir))
 
@@ -35,7 +35,7 @@ try:
 except ImportError:
     # Fallback: try full module path
     try:
-        from agentic_core.L0_maintenance.scripts import execute_ssot
+        from agentic_core.L0_routing.scripts import execute_ssot
     except ImportError:
         sys.path.append(os.getcwd())
         import execute_ssot

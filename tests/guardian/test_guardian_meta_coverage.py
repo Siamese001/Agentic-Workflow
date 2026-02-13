@@ -18,7 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry import (
     ALL_GUARDIANS,
     get_guardian_specs,
 )
@@ -112,12 +112,12 @@ class TestGuardianMetaCoverage:
 
     def test_contract_module_exists(self):
         """The canonical contract module must exist."""
-        contract_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
+        contract_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
         assert contract_path.exists(), f"Contract module missing: {contract_path}"
 
     def test_registry_module_exists(self):
         """The SSOT registry module must exist."""
-        registry_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_registry.py"
+        registry_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_registry.py"
         assert registry_path.exists(), f"Registry module missing: {registry_path}"
 
     def test_registry_not_empty(self):

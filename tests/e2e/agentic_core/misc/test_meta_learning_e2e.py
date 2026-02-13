@@ -36,7 +36,7 @@ class TestEndToEndHealingCycle:
     """Test complete healing cycles across multiple agents."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
+        "agentic_core.L0_routing.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_full_healing_cycle_with_caching(self, mock_integrity):
         """Test complete healing cycle: detect -> cache check -> heal -> store."""
@@ -93,7 +93,7 @@ class TestEndToEndHealingCycle:
         client.reset_healing_depth(agent.__class__.__name__, signature)
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
+        "agentic_core.L0_routing.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_multi_agent_healing_coordination(self, mock_integrity):
         """Test multiple agents coordinating healing through shared cache."""
@@ -201,7 +201,7 @@ class TestPerformanceIntegration:
     """Test performance across the full system."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
+        "agentic_core.L0_routing.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_healing_performance_at_scale(self, mock_integrity):
         """Test healing performance with many violations."""
@@ -339,7 +339,7 @@ class TestFullSystemIntegration:
     """Test the full meta-learning system integration."""
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
+        "agentic_core.L0_routing.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_all_agents_have_meta_learning(self, mock_integrity):
         """Verify all major agents have meta-learning capabilities."""
@@ -399,7 +399,7 @@ class TestFullSystemIntegration:
         client.clear_local_cache()
 
     @patch(
-        "agentic_core.L0_maintenance.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
+        "agentic_core.L0_routing.enforcement.core_integrity_util.CoreIntegrityVerifier.verify_core_integrity",
     )
     def test_system_stability_under_load(self, mock_integrity):
         """Test system remains stable under sustained load."""

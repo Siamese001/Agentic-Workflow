@@ -38,9 +38,7 @@ def regenerate_full():
     print("=" * 70)
 
     # Import and run the full regeneration script
-    script_path = (
-        PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "regenerate_dashboard_full.py"
-    )
+    script_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts" / "regenerate_dashboard_full.py"
 
     if not script_path.exists():
         print(f"❌ Script not found: {script_path}")
@@ -64,7 +62,7 @@ def regenerate_data_only():
     print("=" * 70)
 
     # Import SSOT definitions
-    from agentic_core.L0_maintenance.scripts.territory_ssot_definitions_config import (
+    from agentic_core.L0_routing.scripts.territory_ssot_definitions_config import (
         get_territory_sort_key,
     )
     from agentic_core.L5_safety.validators.dashboard_ssot_definitions_config import (

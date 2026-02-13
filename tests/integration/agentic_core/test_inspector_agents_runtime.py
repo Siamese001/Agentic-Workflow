@@ -82,10 +82,10 @@ class TestTokenBudgetInspectorAgent:
         assert TokenBudgetInspectorAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
         from archives.deprecated.TokenBudgetInspectorAgent import (
             TokenBudgetInspectorAgent,
         )
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = TokenBudgetInspectorAgent()
         result = agent.run_inspection("test_target")
@@ -107,10 +107,10 @@ class TestSignatureVerifierAgent:
         assert SignatureVerifierAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
         from archives.deprecated.SignatureVerifierAgent import (
             SignatureVerifierAgent,
         )
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = SignatureVerifierAgent()
         result = agent.run_inspection("test_target")
@@ -150,7 +150,7 @@ class TestDecoratorRuntimeImports:
 
     def test_timeout_shim_identity_with_full_deps(self) -> None:
         from agentic_core.base_agents.timeout_decorator import timeout as canonical
-        from agentic_core.L0_maintenance.utils.timeout_decorator_util import (
+        from agentic_core.L0_routing.utils.timeout_decorator_util import (
             timeout as shim,
         )
 

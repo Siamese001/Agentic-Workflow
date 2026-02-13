@@ -556,7 +556,7 @@ class TestSSOTAlignment:
         print("\n=== PHASE 3 ADDITIONAL: Layer Directory Structure ===")
 
         expected_layers = [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",

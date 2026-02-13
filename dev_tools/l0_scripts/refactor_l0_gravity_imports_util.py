@@ -138,7 +138,7 @@ def main():
     print("=" * 80)
     print()
 
-    l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_maintenance" / SCRIPTS_DIR
+    l0_scripts = REPO / AGENTIC_CORE_DIR / "L0_routing" / SCRIPTS_DIR
 
     if not l0_scripts.exists():
         print(f"❌ Directory not found: {l0_scripts}")

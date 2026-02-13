@@ -24,7 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     ARTIFACT_SCHEMA_KEYS,
     ARTIFACT_TYPE_VALUES,
     CHECK_SCHEMA_KEYS,
@@ -453,22 +453,22 @@ class TestSchemaBoundsConstantsLocked:
     """Schema bounds constants must be immutable and have expected values."""
 
     def test_max_metrics_properties_value(self):
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_METRICS_PROPERTIES
+        from agentic_core.L0_routing.types.guardian_contract import MAX_METRICS_PROPERTIES
 
         assert MAX_METRICS_PROPERTIES == 50
 
     def test_max_evidence_properties_value(self):
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_PROPERTIES
+        from agentic_core.L0_routing.types.guardian_contract import MAX_EVIDENCE_PROPERTIES
 
         assert MAX_EVIDENCE_PROPERTIES == 30
 
     def test_max_payload_bytes_value(self):
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_PAYLOAD_BYTES
+        from agentic_core.L0_routing.types.guardian_contract import MAX_PAYLOAD_BYTES
 
         assert MAX_PAYLOAD_BYTES == 512 * 1024
 
     def test_max_evidence_depth_value(self):
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+        from agentic_core.L0_routing.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
         assert MAX_EVIDENCE_DEPTH == 4
 
@@ -485,7 +485,7 @@ class TestEvidenceDepthEnforcement:
 
     def test_evidence_at_max_depth_passes(self):
         """Evidence nested exactly at MAX_EVIDENCE_DEPTH should pass."""
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+        from agentic_core.L0_routing.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
         # Build nested dict at exactly MAX_EVIDENCE_DEPTH levels
         evidence: dict = {"leaf": "value"}
@@ -499,7 +499,7 @@ class TestEvidenceDepthEnforcement:
 
     def test_evidence_exceeding_max_depth_fails(self):
         """Evidence nested beyond MAX_EVIDENCE_DEPTH must be rejected."""
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+        from agentic_core.L0_routing.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
         # Build nested dict at MAX_EVIDENCE_DEPTH + 1 levels
         evidence: dict = {"leaf": "value"}
@@ -513,7 +513,7 @@ class TestEvidenceDepthEnforcement:
 
     def test_evidence_depth_via_array_nesting_fails(self):
         """Arrays in evidence also count towards depth."""
-        from agentic_core.L0_maintenance.types.guardian_contract import MAX_EVIDENCE_DEPTH
+        from agentic_core.L0_routing.types.guardian_contract import MAX_EVIDENCE_DEPTH
 
         # Build mixed dict/list nesting beyond MAX_EVIDENCE_DEPTH
         evidence: dict = {"leaf": "value"}
@@ -539,7 +539,7 @@ class TestAggregateOnlyIndexEnforcement:
 
     def test_individual_result_with_index_fails(self):
         """Individual (artifact_class=individual) emitting index must fail."""
-        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract import ArtifactClass
 
         d = GuardianResult(guardian_id="hygiene").to_dict()
         assert d.get("artifact_class") == ArtifactClass.INDIVIDUAL.value
@@ -551,7 +551,7 @@ class TestAggregateOnlyIndexEnforcement:
 
     def test_aggregate_result_with_index_passes(self):
         """Aggregate (artifact_class=aggregate) may have index."""
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             AGGREGATE_GUARDIAN_ID,
             ArtifactClass,
         )
@@ -567,7 +567,7 @@ class TestAggregateOnlyIndexEnforcement:
 
     def test_non_aggregate_artifact_class_with_index_fails(self):
         """Even with aggregate guardian_id, if artifact_class != aggregate, index rejected."""
-        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+        from agentic_core.L0_routing.types.guardian_contract import AGGREGATE_GUARDIAN_ID
 
         d = GuardianResult(guardian_id=AGGREGATE_GUARDIAN_ID).to_dict()
         d["artifact_class"] = "individual"
@@ -586,13 +586,13 @@ class TestAggregateOnlyIndexEnforcement:
 
     def test_aggregate_guardian_id_constant_is_locked(self):
         """AGGREGATE_GUARDIAN_ID must match the hardcoded aggregator value."""
-        from agentic_core.L0_maintenance.types.guardian_contract import AGGREGATE_GUARDIAN_ID
+        from agentic_core.L0_routing.types.guardian_contract import AGGREGATE_GUARDIAN_ID
 
         assert AGGREGATE_GUARDIAN_ID == "combined"
 
     def test_default_artifact_class_is_individual(self):
         """GuardianResult defaults to artifact_class=individual."""
-        from agentic_core.L0_maintenance.types.guardian_contract import ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract import ArtifactClass
 
         r = GuardianResult(guardian_id="test")
         assert r.artifact_class == ArtifactClass.INDIVIDUAL.value

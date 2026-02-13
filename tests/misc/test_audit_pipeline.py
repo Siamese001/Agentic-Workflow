@@ -26,7 +26,7 @@ from unittest.mock import patch
 import pytest
 
 # Import the modules we're testing
-from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+from agentic_core.L0_routing.scripts.full_agent_discovery import (
     check_compliance_gate,
     discover_all_agents,
     get_agent_discovery_summary,
@@ -55,7 +55,7 @@ class TestSSOTCompliance:
             "APPS_RG_DIR": "mock_apps_rg",
             "APPS_LIC_DIR": "mock_apps_lic",
             "APPS_SHARED_DIR": "mock_apps_shared",
-            "L0_MAINTENANCE_DIR": "mock_L0_maintenance",
+            "L0_MAINTENANCE_DIR": "mock_L0_routing",
             "L1_COGNITION_DIR": "mock_L1_cognition",
             "L2_EXECUTION_DIR": "mock_L2_execution",
             "L3_ORCHESTRATION_DIR": "mock_L3_orchestration",
@@ -67,11 +67,11 @@ class TestSSOTCompliance:
         }
 
         with patch(
-            "agentic_core.L0_maintenance.scripts.full_agent_discovery.AGENT_DISCOVERY_JSON",
+            "agentic_core.L0_routing.scripts.full_agent_discovery.AGENT_DISCOVERY_JSON",
             mock_constants["AGENT_DISCOVERY_JSON"],
         ):
             with patch(
-                "agentic_core.L0_maintenance.scripts.full_agent_discovery.AGENTIC_CORE_DIR",
+                "agentic_core.L0_routing.scripts.full_agent_discovery.AGENTIC_CORE_DIR",
                 mock_constants["AGENTIC_CORE_DIR"],
             ):
                 # Test that the function can be called with mocked constants
@@ -90,7 +90,7 @@ class TestSSOTCompliance:
         Verifies the SSOT import pattern is working correctly.
         """
         # Check that the module imports structure_blueprint constants
-        import agentic_core.L0_maintenance.scripts.full_agent_discovery as discovery_module
+        import agentic_core.L0_routing.scripts.full_agent_discovery as discovery_module
 
         # Verify SSOT imports exist
         ssot_imports = [
@@ -111,14 +111,14 @@ class TestSSOTCompliance:
         Test that compliance gate uses SSOT constants for directory validation.
         """
         with patch(
-            "agentic_core.L0_maintenance.scripts.full_agent_discovery.get_validated_project_root",
+            "agentic_core.L0_routing.scripts.full_agent_discovery.get_validated_project_root",
         ) as mock_root:
             with patch(
-                "agentic_core.L0_maintenance.scripts.full_agent_discovery.AGENTIC_CORE_DIR",
+                "agentic_core.L0_routing.scripts.full_agent_discovery.AGENTIC_CORE_DIR",
                 "mock_core",
             ):
                 with patch(
-                    "agentic_core.L0_maintenance.scripts.full_agent_discovery.APPS_RG_DIR",
+                    "agentic_core.L0_routing.scripts.full_agent_discovery.APPS_RG_DIR",
                     "mock_apps_rg",
                 ):
                     # Mock project root

@@ -48,7 +48,7 @@ class TestUltraHardening:
             ARTIFACT_ROUTING_MAP,
         )
 
-        script_rules = ARTIFACT_ROUTING_MAP["agentic_core/L0_maintenance/scripts"]
+        script_rules = ARTIFACT_ROUTING_MAP["agentic_core/L0_routing/scripts"]
         assert "class Test" in script_rules["forbidden_keywords"]
         assert "def test_" in script_rules["forbidden_keywords"]
 

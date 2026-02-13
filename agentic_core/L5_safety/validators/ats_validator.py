@@ -4,7 +4,7 @@ ATS Validator - Deterministic ATS Compatibility Validation
 Zero-Ambiguity Standard: Renamed from ats_validation_deterministic_validator.py
 Category: VALIDATOR (Deterministic safety check)
 
-Moved from L0_maintenance/deterministic to L5_safety/validators.
+Moved from L0_routing/deterministic to L5_safety/validators.
 
 Deterministic Operations:
 - Pattern matching for ATS-unfriendly formats
@@ -167,6 +167,7 @@ class AtsValidator:
         # Normalize case for comparison
         return text.lower()
 
+    # guardian: allow-magic-config
     def extract_keywords(self, text: str, min_length: int = 3) -> set[str]:
         """
         Extract keywords from text using deterministic regex.

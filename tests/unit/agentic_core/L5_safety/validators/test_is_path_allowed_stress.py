@@ -57,8 +57,8 @@ class TestPathHardeningRigor:
         blocked_path = "agentic_core/L2_execution/test_helper.py"
         assert is_path_allowed(blocked_path) is False
 
-        # test_ prefix allowed in L0_maintenance/scripts
-        allowed_path = "agentic_core/L0_maintenance/scripts/test_validator.py"
+        # test_ prefix allowed in L0_routing/scripts
+        allowed_path = "agentic_core/L0_routing/scripts/test_validator.py"
         assert is_path_allowed(allowed_path) is True
 
         # __init__.py always allowed

@@ -13,11 +13,11 @@ import json
 
 import pytest
 
-from agentic_core.L0_maintenance.enforcement.vigilance_routing import (
+from agentic_core.L0_routing.enforcement.vigilance_routing import (
     route_vigilance_event,
 )
-from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L0_maintenance.types.v15_types import RoutePath
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.v15_types import RoutePath
 from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
     classify_signals,
     emit_vigilance_event,

@@ -141,7 +141,7 @@ class TestNoCircularImports:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             # Base agents should not import from L0-L6 reasoning (which inherit from them)
             for layer in [
-                "L0_maintenance",
+                "L0_routing",
                 "L1_cognition",
                 "L2_execution",
                 "L3_orchestration",

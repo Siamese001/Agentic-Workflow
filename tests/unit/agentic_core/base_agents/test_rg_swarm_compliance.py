@@ -262,7 +262,7 @@ class TestRGSwarmCompliance:
         legacy_imports = [
             "from agentic_core.L5_safety.enforcement.mcp_hardened_mixin import MCPHardenedMixin",
             "from agentic_core.mixins.healer_mixin import HealerMixin",
-            "from agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin",
+            "from agentic_core.L0_routing.mixins.subatomic_testing_mixin import SubatomicTestingMixin",
         ]
 
         violations = []

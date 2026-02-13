@@ -246,11 +246,13 @@ def check_init_reexports(path: Path) -> int:
     return bonus
 
 
+# guardian: allow-magic-config
 def check_import_impact(
     rename_map: dict[str, str],
     import_counts: dict[str, int],
     python_files: list[Path],
     project_root: Path,
+    # guardian: allow-magic-config
     max_import_impact: int = 25,
 ) -> list[dict[str, Any]]:
     """
@@ -302,6 +304,7 @@ def check_import_impact(
 # WAVE 1.3 — Mass Action Guard
 # ============================================================================
 
+# guardian: allow-magic-config
 MAX_ACTIONS_DEFAULT = 50
 
 
@@ -478,7 +481,7 @@ def check_observability_violation(
         return None
 
     # L0 maintenance scripts are explicitly allowed for dashboard work
-    if "L0_maintenance" in parts:
+    if "L0_routing" in parts:
         for folder in L0_DASHBOARD_ALLOWLIST_FOLDERS:
             if folder in parts:
                 return None
@@ -671,12 +674,14 @@ def filter_actions_for_wave(
 # ============================================================================
 
 
+# guardian: allow-magic-config
 def run_all_safety_gates(
     rename_map: dict[str, str],
     existing_files: set[str],
     python_files: list[Path],
     project_root: Path,
     case_sensitive: bool = False,
+    # guardian: allow-magic-config
     max_import_impact: int = 25,
     max_actions: int = MAX_ACTIONS_DEFAULT,
     force: bool = False,

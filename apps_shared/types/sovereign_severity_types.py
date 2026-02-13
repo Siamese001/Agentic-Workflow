@@ -1226,53 +1226,39 @@ class file_paths_config:
     """File paths for data files used by the workflow."""
 
     master_resume: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "master_resume.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "master_resume.json"
+        ),
     )
     hyphenation_rules: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "hyphenation_rules.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "hyphenation_rules.json"
+        ),
     )
     app_tracker_schema: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "app_tracker_schema.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "app_tracker_schema.json"
+        ),
     )
     artist_specs: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "artist_specs.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "artist_specs.json"
+        ),
     )
     artist_constraints: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "artist_constraints.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "artist_constraints.json"
+        ),
     )
     validator_rules: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "validator_rules.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "validator_rules.json"
+        ),
     )
     prompts: Path = field(
-        default_factory=lambda: Path(__file__).parent.parent.parent
-        / "config"
-        / "P1_core"
-        / "data"
-        / "prompts.json",
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent / "config" / "P1_core" / "data" / "prompts.json"
+        ),
     )
 
 
@@ -1975,7 +1961,7 @@ CORE_CONTRACTS_REGISTRY.update(
     },
 )
 
-# Shared Core models (from L0_maintenance/scripts/shared_core_models_types_part.py)
+# Shared Core models (from L0_routing/scripts/shared_core_models_types_part.py)
 # Note: ValidationResult, ThematicAnalysis, RAGState already exist in Phase 2C - skipping duplicates
 
 

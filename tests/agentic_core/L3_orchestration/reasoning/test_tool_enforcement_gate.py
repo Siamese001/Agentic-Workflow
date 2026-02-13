@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.tool_policy_enforcer import (
     ToolPolicyEnforcer,
     _stable_args_hash,
@@ -210,7 +210,7 @@ class TestPassPath:
             emitted.append({"type": type_label, "artifact": artifact})
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"x": 1}, capability_token=_TEST_TOKEN)
@@ -238,7 +238,7 @@ class TestPassPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             result = server.execute_tool("test_tool", {"a": 1}, capability_token=_TEST_TOKEN)
@@ -303,7 +303,7 @@ class TestBlockPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             with pytest.raises(ToolPolicyBlocked):
@@ -374,7 +374,7 @@ class TestModifyPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"a": 1}, capability_token=_TEST_TOKEN)
@@ -423,7 +423,7 @@ class TestDeterminism:
             artifacts.append(artifact)
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"x": 42}, capability_token=_TEST_TOKEN)
@@ -443,7 +443,7 @@ class TestDeterminism:
             artifacts.append(artifact)
 
         with patch(
-            "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"key": "value"}, capability_token=_TEST_TOKEN)

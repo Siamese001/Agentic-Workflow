@@ -122,7 +122,7 @@ class TestRuntimeBoundaryExists:
 
     def test_v15_runtime_boundary_exported(self):
         """v15_runtime_boundary must be importable from the guard module."""
-        from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+        from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
             v15_runtime_boundary,
         )
 
@@ -130,7 +130,7 @@ class TestRuntimeBoundaryExists:
 
     def test_v15_runtime_boundary_in_all(self):
         """v15_runtime_boundary must be in __all__."""
-        guard_path = REPO_ROOT / "agentic_core" / "L0_maintenance" / "enforcement" / "v15_runtime_guard.py"
+        guard_path = REPO_ROOT / "agentic_core" / "L0_routing" / "enforcement" / "v15_runtime_guard.py"
         source = guard_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
         for node in ast.walk(tree):
@@ -151,7 +151,7 @@ class TestEntrypointDecomposition:
 
     def test_entrypoint_exists(self):
         """execute_ssot_entrypoint.py must exist."""
-        ep = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
+        ep = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
         assert ep.exists(), "execute_ssot_entrypoint.py not found"
 
     def test_entrypoint_requires_legacy_flag(self):
@@ -160,7 +160,7 @@ class TestEntrypointDecomposition:
             [
                 sys.executable,
                 "-m",
-                "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+                "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
             ],
             capture_output=True,
             text=True,
@@ -173,7 +173,7 @@ class TestEntrypointDecomposition:
 
     def test_legacy_main_still_guarded(self):
         """_legacy_main in execute_ssot.py must still have V15 guard decorator."""
-        ssot_path = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
+        ssot_path = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
         source = ssot_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
         for node in ast.walk(tree):

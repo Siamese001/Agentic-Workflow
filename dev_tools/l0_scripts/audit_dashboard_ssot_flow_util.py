@@ -41,7 +41,7 @@ discovery_file = project_root / "agent_discovery_full.json"
 dashboard_data_file = (
     project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 )
-ssot_file = project_root / "agentic_core" / "L0_maintenance" / "scripts" / "dashboard_ssot_definitions.py"
+ssot_file = project_root / "agentic_core" / "L0_routing" / "scripts" / "dashboard_ssot_definitions.py"
 
 files_exist = {
     "agent_discovery_full.json": discovery_file.exists(),
@@ -66,7 +66,7 @@ print("=" * 70)
 
 # Import SSOT definitions
 # guardian: allow-global-mutation
-sys.path.insert(0, str(project_root / "agentic_core" / "L0_maintenance" / "scripts"))
+sys.path.insert(0, str(project_root / "agentic_core" / "L0_routing" / "scripts"))
 from dashboard_ssot_definitions import (
     COL_CANONICAL_INHERITANCE,
     COL_CODE_QUALITY,

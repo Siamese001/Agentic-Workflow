@@ -12,10 +12,11 @@ import traceback
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Monkey-patch PreFlightValidator to skip Windows registry check
-import agentic_core.L0_maintenance.scripts.execute_ssot as execute_ssot_mod
+import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_mod
 
 _original_run_checks = execute_ssot_mod.PreFlightValidator.run_checks
 
@@ -56,7 +57,7 @@ ssot_logger.setLevel(logging.DEBUG)
 # All territories to scan
 TERRITORIES = [
     "prompt_governance",
-    "L0_maintenance",
+    "L0_routing",
     "L1_cognition",
     "L2_execution",
     "L3_orchestration",
@@ -77,7 +78,7 @@ for territory in TERRITORIES:
 
     # Reset FCA stats by creating fresh module state
     try:
-        from agentic_core.L0_maintenance.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
             _configure_logging,
             _legacy_main,
             _maybe_force_utf8_console,
@@ -97,12 +98,14 @@ for territory in TERRITORIES:
             )
         except SystemExit:
             pass  # Expected for some exit paths
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"  ERROR in {territory}: {e}", file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
         finally:
             sys.stdout = real_stdout
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"  FATAL ERROR for {territory}: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)

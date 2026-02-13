@@ -7,7 +7,7 @@ This suite ensures the Global Weight Standard is properly enforced:
 - 20-25 (Critical Safety): L5_safety (Guardrails, Gravity)
 - 15-18 (Domain Logic): prompt_governance, L1_cognition, L3_orchestration
 - 10-14 (State & Schema): L4_state, schemas/models, version_registry
-- 5-9 (Generic Utilities): L0_maintenance, L2_execution (Tool Registry)
+- 5-9 (Generic Utilities): L0_routing, L2_execution (Tool Registry)
 """
 
 import pytest

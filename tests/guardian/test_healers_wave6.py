@@ -119,7 +119,7 @@ def import_check() -> dict:
             "violation_count": 1,
             "violations": [
                 {
-                    "path": "agentic_core/L0_maintenance/scripts/bad.py",
+                    "path": "agentic_core/L0_routing/scripts/bad.py",
                     "source_layer": "L0",
                     "target_layer": "L5",
                     "import_line": "from agentic_core.L5_safety.reasoning import ...",
@@ -139,7 +139,7 @@ def gravity_check() -> dict:
             "violation_count": 1,
             "violations": [
                 {
-                    "path": "agentic_core/L0_maintenance/reasoning/WrongAgent.py",
+                    "path": "agentic_core/L0_routing/reasoning/WrongAgent.py",
                     "agent_name": "WrongAgent",
                     "actual_layer": "L0",
                     "assigned_layer": "L3",

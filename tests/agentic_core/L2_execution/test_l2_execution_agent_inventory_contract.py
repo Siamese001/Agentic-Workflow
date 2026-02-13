@@ -114,7 +114,7 @@ class TestL2AgentNamingAndStructure:
             if len(agent_classes) == 0:
                 violations.append(f"{af}: NO agent ClassDef found (classes: {classes})")
         assert not violations, "L2 *Agent.py files without a qualifying agent ClassDef:\n" + "\n".join(
-            violations
+            violations,
         )
 
 

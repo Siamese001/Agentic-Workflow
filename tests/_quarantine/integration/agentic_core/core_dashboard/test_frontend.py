@@ -4,7 +4,7 @@ Dashboard Frontend Tests (Phase 3-4)
 
 Tests for dashboard frontend components.
 
-Migrated from: agentic_core/L0_maintenance/scripts/test_phase3_phase4_frontend.py
+Migrated from: agentic_core/L0_routing/scripts/test_phase3_phase4_frontend.py
 """
 
 import sys

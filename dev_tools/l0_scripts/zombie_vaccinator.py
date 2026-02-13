@@ -5,9 +5,9 @@ Identifies 'Super only' agents (zombies) and wires latent internal methods into 
 This is a sovereign maintenance tool for the Sleeping Giant awakening campaign.
 
 Usage:
-    python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --dry-run
-    python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --pilot AgentName
-    python -m agentic_core.L0_maintenance.scripts.ZombieVaccinator --execute
+    python -m agentic_core.L0_routing.scripts.ZombieVaccinator --dry-run
+    python -m agentic_core.L0_routing.scripts.ZombieVaccinator --pilot AgentName
+    python -m agentic_core.L0_routing.scripts.ZombieVaccinator --execute
 """
 
 import argparse

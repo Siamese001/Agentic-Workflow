@@ -433,7 +433,7 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         """
         # Extract signature block (last 4 lines before fence end)
         lines = content.split(
-            "\nfrom agentic_core.L0_maintenance.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.enforcement.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.mixins.healer_mixin import HealerMixin\n",
+            "\nfrom agentic_core.L0_routing.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nfrom agentic_core.L5_safety.enforcement.mcp_hardened_mixin import MCPHardenedMixin\nfrom agentic_core.mixins.healer_mixin import HealerMixin\n",
         )
 
         # Find signature (look for "Regards,")
@@ -507,6 +507,7 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
 
         return len(intersection) / len(union)
 
+    # guardian: allow-type-erasure
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

@@ -54,7 +54,7 @@ FORBIDDEN_FILES = [
 ]
 
 # 3. [PHASE 21] Structure Lock - Baseline file counts per layer
-DIR_FILE_LIMITS = {"L0_maintenance": 15, "L5_safety": 25, "L2_execution": 30}
+DIR_FILE_LIMITS = {"L0_routing": 15, "L5_safety": 25, "L2_execution": 30}
 
 
 def get_python_files(directory: Path) -> list[Path]:

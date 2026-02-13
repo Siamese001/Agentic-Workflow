@@ -15,13 +15,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.run_guardian_location_alignment import (
+from agentic_core.L0_routing.scripts.run_guardian_location_alignment import (
     GUARDIAN_ID,
     run_location_alignment_guardian,
     scan_misplaced_files,
     scan_missing_directories,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,

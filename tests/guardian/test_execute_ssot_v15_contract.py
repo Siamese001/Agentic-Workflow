@@ -18,10 +18,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
-EXECUTE_SSOT_ENTRYPOINT = (
-    REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
-)
+EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+EXECUTE_SSOT_ENTRYPOINT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
 GITIGNORE = REPO_ROOT / ".gitignore"
 
 
@@ -97,9 +95,9 @@ class TestDefaultOutputsGitignored:
     """Default output directory must be covered by .gitignore."""
 
     def test_logs_dir_gitignored(self):
-        """agentic_core/L0_maintenance/logs/ should be gitignored or its contents should be."""
+        """agentic_core/L0_routing/logs/ should be gitignored or its contents should be."""
         result = subprocess.run(
-            ["git", "check-ignore", "-q", "agentic_core/L0_maintenance/logs/test_artifact.json"],
+            ["git", "check-ignore", "-q", "agentic_core/L0_routing/logs/test_artifact.json"],
             cwd=str(REPO_ROOT),
             capture_output=True,
             text=True,
@@ -109,13 +107,13 @@ class TestDefaultOutputsGitignored:
         if result.returncode != 0:
             # Check the broader pattern
             result2 = subprocess.run(
-                ["git", "check-ignore", "-q", "agentic_core/L0_maintenance/logs/guardian_report.json"],
+                ["git", "check-ignore", "-q", "agentic_core/L0_routing/logs/guardian_report.json"],
                 cwd=str(REPO_ROOT),
                 capture_output=True,
                 text=True,
             )
             assert result2.returncode == 0, (
-                "Default output location (agentic_core/L0_maintenance/logs/) "
+                "Default output location (agentic_core/L0_routing/logs/) "
                 "is not gitignored — tracked artifacts risk"
             )
 

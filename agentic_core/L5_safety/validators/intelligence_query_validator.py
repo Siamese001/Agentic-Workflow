@@ -4,7 +4,7 @@ Intelligence Query Validator - Deterministic Query Validation
 Zero-Ambiguity Standard: Renamed from intelligence_librarian_deterministic_validator.py
 Category: VALIDATOR (Deterministic safety check)
 
-Moved from L0_maintenance/deterministic to L5_safety/validators.
+Moved from L0_routing/deterministic to L5_safety/validators.
 
 Deterministic Operations:
 - Query validation (string validation)

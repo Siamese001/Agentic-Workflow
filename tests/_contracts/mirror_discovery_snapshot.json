@@ -301,1678 +301,1678 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\config\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\config\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\config\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\config\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\config\\detection_signal_config.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\config\\test_detection_signal_config.py",
+      "module": "agentic_core\\L0_routing\\config\\detection_signal_config.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\config\\test_detection_signal_config.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\audit_healing_strategy.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_audit_healing_strategy.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\audit_healing_strategy.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_audit_healing_strategy.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\boot_sequence.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_boot_sequence.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\boot_sequence.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_boot_sequence.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\git_health_sensor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_git_health_sensor.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\git_health_sensor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_git_health_sensor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\git_kraken_healing_strategy.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_git_kraken_healing_strategy.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\git_kraken_healing_strategy.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_git_kraken_healing_strategy.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\ssot_guardrail.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_ssot_guardrail.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\ssot_guardrail.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_ssot_guardrail.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\vector_healing_strategy.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_vector_healing_strategy.py",
+      "module": "agentic_core\\L0_routing\\enforcement\\vector_healing_strategy.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\enforcement\\test_vector_healing_strategy.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_BenchmarkingAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\BenchmarkingAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_BenchmarkingAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_BootstrapAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\BootstrapAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_BootstrapAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_DocstringComplianceAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\DocstringComplianceAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_DocstringComplianceAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_FilesystemSSOTReconcilerAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_FilesystemSSOTReconcilerAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_GospelSyncAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\GospelSyncAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_GospelSyncAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\sovereign_healing_engine.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_sovereign_healing_engine.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\sovereign_healing_engine.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_sovereign_healing_engine.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\reasoning\\test_SSOTFolderCleanupAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\reasoning\\test_SSOTFolderCleanupAgent.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\scripts\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\action_capability.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_action_capability.py",
+      "module": "agentic_core\\L0_routing\\scripts\\action_capability.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_action_capability.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\add_agent_suffix_plan_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_add_agent_suffix_plan_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\add_agent_suffix_plan_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_add_agent_suffix_plan_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\add_dataclass_to_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_add_dataclass_to_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\add_dataclass_to_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_add_dataclass_to_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\add_subatomic_safe_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_add_subatomic_safe_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\add_subatomic_safe_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_add_subatomic_safe_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\add_subatomic_testing_to_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_add_subatomic_testing_to_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\add_subatomic_testing_to_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_add_subatomic_testing_to_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\add_subatomic_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_add_subatomic_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\add_subatomic_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_add_subatomic_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\agent_analysis_config.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_agent_analysis_config.py",
+      "module": "agentic_core\\L0_routing\\scripts\\agent_analysis_config.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_agent_analysis_config.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\agent_capability_supplement_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_agent_capability_supplement_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\agent_capability_supplement_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_agent_capability_supplement_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\agent_validation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_agent_validation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\agent_validation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_agent_validation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\aggressive_dedup_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_aggressive_dedup_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\aggressive_dedup_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_aggressive_dedup_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\align_tests_structure_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_align_tests_structure_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\align_tests_structure_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_align_tests_structure_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\analyze_agent_count_waterfall_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_analyze_agent_count_waterfall_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\analyze_agent_count_waterfall_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_analyze_agent_count_waterfall_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\analyze_app_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_analyze_app_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\analyze_app_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_analyze_app_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\analyze_archive_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_analyze_archive_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\analyze_archive_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_analyze_archive_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\analyze_extract.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_analyze_extract.py",
+      "module": "agentic_core\\L0_routing\\scripts\\analyze_extract.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_analyze_extract.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\archive_duplicate_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_archive_duplicate_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\archive_duplicate_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_archive_duplicate_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\archive_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_archive_duplicates_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\archive_duplicates_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_archive_duplicates_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\ast_layer_stats_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_ast_layer_stats_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\ast_layer_stats_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_ast_layer_stats_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_all_agents_mro_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_all_agents_mro_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_all_agents_mro_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_all_agents_mro_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_code_quality_metrics_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_code_quality_metrics_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_code_quality_metrics_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_code_quality_metrics_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_complexity_health_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_complexity_health_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_complexity_health_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_complexity_health_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_dashboard_naming_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_dashboard_naming_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_dashboard_naming_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_dashboard_naming_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_dashboard_ssot_flow_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_dashboard_ssot_flow_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_dashboard_ssot_flow_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_dashboard_ssot_flow_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_dashboard_ssot_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_dashboard_ssot_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_dashboard_ssot_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_dashboard_ssot_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_live_runtime_consolidation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_live_runtime_consolidation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_live_runtime_consolidation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_live_runtime_consolidation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_residual_rglob_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_residual_rglob_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_residual_rglob_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_residual_rglob_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_status.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_status.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_status.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_status.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\audit_table_validation_parity_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_audit_table_validation_parity_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\audit_table_validation_parity_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_audit_table_validation_parity_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\auto_remediate_signatures_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_auto_remediate_signatures_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\auto_remediate_signatures_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_auto_remediate_signatures_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\base_tool.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_base_tool.py",
+      "module": "agentic_core\\L0_routing\\scripts\\base_tool.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_base_tool.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\base_tool_script_v2.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_base_tool_script_v2.py",
+      "module": "agentic_core\\L0_routing\\scripts\\base_tool_script_v2.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_base_tool_script_v2.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\bloat_analysis_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_bloat_analysis_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\bloat_analysis_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_bloat_analysis_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\budget_auditor_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_budget_auditor_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\budget_auditor_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_budget_auditor_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\bulk_agent_rename_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_bulk_agent_rename_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\bulk_agent_rename_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_bulk_agent_rename_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\bulk_hierarchy_heal_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_bulk_hierarchy_heal_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\bulk_hierarchy_heal_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_bulk_hierarchy_heal_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\bulk_mcp_harden_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_bulk_mcp_harden_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\bulk_mcp_harden_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_bulk_mcp_harden_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\c_c_measurement.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_c_c_measurement.py",
+      "module": "agentic_core\\L0_routing\\scripts\\c_c_measurement.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_c_c_measurement.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\cache_data_access_get_info_request_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_cache_data_access_get_info_request_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\cache_data_access_get_info_request_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_cache_data_access_get_info_request_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\cache_data_access_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_cache_data_access_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\cache_data_access_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_cache_data_access_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\cache_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_cache_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\cache_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_cache_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\call_personalization_api_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_call_personalization_api_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\call_personalization_api_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_call_personalization_api_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\callable_report.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_callable_report.py",
+      "module": "agentic_core\\L0_routing\\scripts\\callable_report.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_callable_report.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_duplicate_filenames_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_duplicate_filenames_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_duplicate_filenames_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_duplicate_filenames_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_from_utils_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_from_utils_duplicates_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_from_utils_duplicates_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_from_utils_duplicates_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_protected_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_protected_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_protected_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_protected_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_rglob_usage_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_rglob_usage_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_rglob_usage_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_rglob_usage_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_sovereign_base_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_sovereign_base_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_sovereign_base_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_sovereign_base_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\check_syntax_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_check_syntax_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\check_syntax_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_check_syntax_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\chunk_type.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_chunk_type.py",
+      "module": "agentic_core\\L0_routing\\scripts\\chunk_type.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_chunk_type.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\class_info.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_class_info.py",
+      "module": "agentic_core\\L0_routing\\scripts\\class_info.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_class_info.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\clean_dashboard_html_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_clean_dashboard_html_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\clean_dashboard_html_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_clean_dashboard_html_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\code_entity.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_code_entity.py",
+      "module": "agentic_core\\L0_routing\\scripts\\code_entity.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_code_entity.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\collision_resolver.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_collision_resolver.py",
+      "module": "agentic_core\\L0_routing\\scripts\\collision_resolver.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_collision_resolver.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\colors.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_colors.py",
+      "module": "agentic_core\\L0_routing\\scripts\\colors.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_colors.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\compare_archive_to_current_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_compare_archive_to_current_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\compare_archive_to_current_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_compare_archive_to_current_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\compare_autonomy_guardian_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_compare_autonomy_guardian_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\compare_autonomy_guardian_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_compare_autonomy_guardian_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\compare_dashboard_data_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_compare_dashboard_data_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\compare_dashboard_data_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_compare_dashboard_data_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\compare_ui_components_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_compare_ui_components_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\compare_ui_components_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_compare_ui_components_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\complete_terminal_alignment_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_complete_terminal_alignment_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\complete_terminal_alignment_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_complete_terminal_alignment_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\complexity.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_complexity.py",
+      "module": "agentic_core\\L0_routing\\scripts\\complexity.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_complexity.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\complexity_reducer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_complexity_reducer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\complexity_reducer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_complexity_reducer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\compliance_gate_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_compliance_gate_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\compliance_gate_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_compliance_gate_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\comprehensive_agent_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_comprehensive_agent_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\comprehensive_agent_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_comprehensive_agent_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\comprehensive_archive_check_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_comprehensive_archive_check_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\comprehensive_archive_check_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_comprehensive_archive_check_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\core_synthesis_executor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_core_synthesis_executor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\core_synthesis_executor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_core_synthesis_executor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\count_territories_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_count_territories_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\count_territories_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_count_territories_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\coverage.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_coverage.py",
+      "module": "agentic_core\\L0_routing\\scripts\\coverage.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_coverage.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\dashboard_live_server_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_dashboard_live_server_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\dashboard_live_server_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_dashboard_live_server_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\dashboard_qa_deep_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_dashboard_qa_deep_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\dashboard_qa_deep_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_dashboard_qa_deep_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\dashboard_ssot_definitions_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_dashboard_ssot_definitions_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\dashboard_ssot_definitions_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_dashboard_ssot_definitions_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\dashboard_style_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_dashboard_style_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\dashboard_style_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_dashboard_style_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\dashboard_verifier.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_dashboard_verifier.py",
+      "module": "agentic_core\\L0_routing\\scripts\\dashboard_verifier.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_dashboard_verifier.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\debris_hunter.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_debris_hunter.py",
+      "module": "agentic_core\\L0_routing\\scripts\\debris_hunter.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_debris_hunter.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\debug_dashboard_rendering_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_debug_dashboard_rendering_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\debug_dashboard_rendering_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_debug_dashboard_rendering_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\debug_drilldown_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_debug_drilldown_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\debug_drilldown_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_debug_drilldown_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\debug_invocation_pipeline_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_debug_invocation_pipeline_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\debug_invocation_pipeline_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_debug_invocation_pipeline_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\debug_target_mismatch_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_debug_target_mismatch_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\debug_target_mismatch_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_debug_target_mismatch_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\deep_deprecation_audit_v2_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_deep_deprecation_audit_v2_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\deep_deprecation_audit_v2_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_deep_deprecation_audit_v2_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\delete_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_delete_duplicates_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\delete_duplicates_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_delete_duplicates_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\demo_cli_functionality_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_demo_cli_functionality_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\demo_cli_functionality_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_demo_cli_functionality_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\detailed_territory_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_detailed_territory_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\detailed_territory_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_detailed_territory_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\detailed_territory_subterritory_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_detailed_territory_subterritory_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\detailed_territory_subterritory_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_detailed_territory_subterritory_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\diagnose_dashboard_live_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_diagnose_dashboard_live_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\diagnose_dashboard_live_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_diagnose_dashboard_live_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\diagnose_syntax_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_diagnose_syntax_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\diagnose_syntax_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_diagnose_syntax_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\diagnose_user_dashboard_view_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_diagnose_user_dashboard_view_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\diagnose_user_dashboard_view_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_diagnose_user_dashboard_view_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\disposition.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_disposition.py",
+      "module": "agentic_core\\L0_routing\\scripts\\disposition.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_disposition.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\drift.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_drift.py",
+      "module": "agentic_core\\L0_routing\\scripts\\drift.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_drift.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\emoji_fixer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_emoji_fixer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\emoji_fixer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_emoji_fixer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\enforce_dashboard_freshness_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_enforce_dashboard_freshness_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\enforce_dashboard_freshness_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_enforce_dashboard_freshness_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\error_handler.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_error_handler.py",
+      "module": "agentic_core\\L0_routing\\scripts\\error_handler.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_error_handler.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\execute_safe_deletion_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_execute_safe_deletion_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\execute_safe_deletion_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_execute_safe_deletion_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\execute_ssot.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_execute_ssot.py",
+      "module": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_execute_ssot.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\execution.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_execution.py",
+      "module": "agentic_core\\L0_routing\\scripts\\execution.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_execution.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\execution_context.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_execution_context.py",
+      "module": "agentic_core\\L0_routing\\scripts\\execution_context.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_execution_context.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\extract_agent_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_extract_agent_duplicates_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\extract_agent_duplicates_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_extract_agent_duplicates_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\extract_dashboard_errors_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_extract_dashboard_errors_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\extract_dashboard_errors_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_extract_dashboard_errors_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\extract_layer_stats_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_extract_layer_stats_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\extract_layer_stats_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_extract_layer_stats_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\extract_net.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_extract_net.py",
+      "module": "agentic_core\\L0_routing\\scripts\\extract_net.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_extract_net.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\extract_unique_content_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_extract_unique_content_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\extract_unique_content_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_extract_unique_content_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\file_analysis.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_file_analysis.py",
+      "module": "agentic_core\\L0_routing\\scripts\\file_analysis.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_file_analysis.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\finalize_architecture_safe_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_finalize_architecture_safe_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\finalize_architecture_safe_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_finalize_architecture_safe_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\finalize_architecture_simple_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_finalize_architecture_simple_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\finalize_architecture_simple_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_finalize_architecture_simple_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\finalize_architecture_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_finalize_architecture_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\finalize_architecture_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_finalize_architecture_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\finalize_sovereign_structure_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_finalize_sovereign_structure_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\finalize_sovereign_structure_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_finalize_sovereign_structure_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_agents_in_low_heal_territories_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_agents_in_low_heal_territories_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_agents_in_low_heal_territories_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_agents_in_low_heal_territories_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_and_fix_all_missing_heal_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_and_fix_all_missing_heal_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_and_fix_all_missing_heal_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_and_fix_all_missing_heal_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_and_fix_missing_heal_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_and_fix_missing_heal_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_and_fix_missing_heal_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_and_fix_missing_heal_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_base_class_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_base_class_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_base_class_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_base_class_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_corrupted_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_corrupted_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_corrupted_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_corrupted_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_infrastructure_target_issue_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_infrastructure_target_issue_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_infrastructure_target_issue_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_infrastructure_target_issue_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_low_heal_territories_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_low_heal_territories_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_low_heal_territories_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_low_heal_territories_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_low_typed_documented_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_low_typed_documented_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_low_typed_documented_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_low_typed_documented_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_missing_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_missing_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_missing_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_missing_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_missing_invocation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_missing_invocation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_missing_invocation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_missing_invocation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_missing_invocations_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_missing_invocations_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_missing_invocations_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_missing_invocations_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_non_hardened_l0_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_non_hardened_l0_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_non_hardened_l0_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_non_hardened_l0_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_open_heal_invocations_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_open_heal_invocations_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_open_heal_invocations_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_open_heal_invocations_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_real_duplicates_v2_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_real_duplicates_v2_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_real_duplicates_v2_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_real_duplicates_v2_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\find_remaining_missing_heal_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_find_remaining_missing_heal_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\find_remaining_missing_heal_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_find_remaining_missing_heal_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fission_executor_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fission_executor_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fission_executor_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fission_executor_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_all_imports_comprehensive_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_all_imports_comprehensive_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_all_imports_comprehensive_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_all_imports_comprehensive_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_all_invocations_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_all_invocations_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_all_invocations_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_all_invocations_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_apps_lic_engines_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_apps_lic_engines_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_apps_lic_engines_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_apps_lic_engines_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_heal_schema_violations_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_heal_schema_violations_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_heal_schema_violations_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_heal_schema_violations_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_healer_mixin_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_healer_mixin_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_healer_mixin_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_healer_mixin_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_imports_emergency_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_imports_emergency_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_imports_emergency_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_imports_emergency_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_legacy_agents_for_certification_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_legacy_agents_for_certification_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_legacy_agents_for_certification_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_legacy_agents_for_certification_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_missing_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_missing_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_missing_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_missing_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_missing_invocation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_missing_invocation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_missing_invocation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_missing_invocation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_remaining_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_remaining_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_remaining_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_remaining_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\fix_root_scripts_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_fix_root_scripts_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\fix_root_scripts_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_fix_root_scripts_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\flatten_scripts_directory_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_flatten_scripts_directory_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\flatten_scripts_directory_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_flatten_scripts_directory_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\forensic_discovery_prep.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_forensic_discovery_prep.py",
+      "module": "agentic_core\\L0_routing\\scripts\\forensic_discovery_prep.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_forensic_discovery_prep.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\forward_rolling_facade.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_forward_rolling_facade.py",
+      "module": "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_forward_rolling_facade.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\full_agent_capability_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_full_agent_capability_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\full_agent_capability_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_full_agent_capability_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\full_agent_discovery.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_full_agent_discovery.py",
+      "module": "agentic_core\\L0_routing\\scripts\\full_agent_discovery.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_full_agent_discovery.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\function_tool.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_function_tool.py",
+      "module": "agentic_core\\L0_routing\\scripts\\function_tool.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_function_tool.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\gatekeeper_lock_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_gatekeeper_lock_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\gatekeeper_lock_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_gatekeeper_lock_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_agent_duplicates_table_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_agent_duplicates_table_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_agent_duplicates_table_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_agent_duplicates_table_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_agent_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_agent_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_agent_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_agent_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_agent_table_simple_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_agent_table_simple_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_agent_table_simple_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_agent_table_simple_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_agent_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_agent_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_agent_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_agent_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_all_agent_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_all_agent_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_all_agent_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_all_agent_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_blueprint_metrics_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_blueprint_metrics_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_blueprint_metrics_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_blueprint_metrics_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_dashboard_ssot_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_dashboard_ssot_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_dashboard_ssot_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_dashboard_ssot_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_hooks_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_hooks_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_hooks_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_hooks_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_layer_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_layer_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_layer_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_layer_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_missing_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_missing_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_missing_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_missing_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_structural_changes_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_structural_changes_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_structural_changes_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_structural_changes_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_subject_line.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_subject_line.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_subject_line.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_subject_line.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_summary_section.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_summary_section.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_summary_section.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_summary_section.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\generate_syntax_report_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_generate_syntax_report_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\generate_syntax_report_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_generate_syntax_report_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\handler.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_handler.py",
+      "module": "agentic_core\\L0_routing\\scripts\\handler.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_handler.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\hardened_anti_pattern_visitor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_hardened_anti_pattern_visitor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\hardened_anti_pattern_visitor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_hardened_anti_pattern_visitor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\hardened_orchestrator_wrapper_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_hardened_orchestrator_wrapper_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\hardened_orchestrator_wrapper_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_hardened_orchestrator_wrapper_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\heal_schema_visitor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_heal_schema_visitor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\heal_schema_visitor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_heal_schema_visitor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\identify_agents_without_tests_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_identify_agents_without_tests_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\identify_agents_without_tests_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_identify_agents_without_tests_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\identify_low_quality_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_identify_low_quality_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\identify_low_quality_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_identify_low_quality_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\inspect_dashboard_browser_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_inspect_dashboard_browser_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\inspect_dashboard_browser_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_inspect_dashboard_browser_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\integrity_gate_executor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_integrity_gate_executor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\integrity_gate_executor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_integrity_gate_executor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\investigate_overlaps_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_investigate_overlaps_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\investigate_overlaps_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_investigate_overlaps_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\investigate_sovereign_base_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_investigate_sovereign_base_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\investigate_sovereign_base_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_investigate_sovereign_base_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\layer_summary_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_layer_summary_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\layer_summary_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_layer_summary_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\list_layer_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_list_layer_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\list_layer_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_list_layer_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\logic_data_access_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_logic_data_access_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\logic_data_access_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_logic_data_access_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\logic_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_logic_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\logic_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_logic_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\logic_synthesis_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_logic_synthesis_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\logic_synthesis_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_logic_synthesis_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\logic_synthesis_pick_best_refinement_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_logic_synthesis_pick_best_refinement_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\logic_synthesis_pick_best_refinement_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_logic_synthesis_pick_best_refinement_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\logic_validation_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_logic_validation_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\logic_validation_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_logic_validation_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\maintenance_generate_hooks_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_maintenance_generate_hooks_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\maintenance_generate_hooks_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_maintenance_generate_hooks_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\merge_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_merge_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\merge_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_merge_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\migrate_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_migrate_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\migrate_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_migrate_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\migrate_unified_to_high_signal_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_migrate_unified_to_high_signal_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\migrate_unified_to_high_signal_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_migrate_unified_to_high_signal_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\mock_subatomic_hop.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_mock_subatomic_hop.py",
+      "module": "agentic_core\\L0_routing\\scripts\\mock_subatomic_hop.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_mock_subatomic_hop.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pascal_sovereignty_fixer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pascal_sovereignty_fixer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pascal_sovereignty_fixer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pascal_sovereignty_fixer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pinecone_assistant_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pinecone_assistant_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pinecone_assistant_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pinecone_assistant_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pinecone_populator.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pinecone_populator.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pinecone_populator.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pinecone_populator.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_get_info_request_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pipeline_data_access_get_info_request_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pipeline_data_access_get_info_request_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pipeline_data_access_get_info_request_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pipeline_data_access_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pipeline_data_access_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pipeline_data_access_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pipeline_data_access_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\pipeline_init_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_pipeline_init_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\pipeline_init_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_pipeline_init_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\playwright_verify_total_row_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_playwright_verify_total_row_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\playwright_verify_total_row_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_playwright_verify_total_row_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\populate_ssot_folders_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_populate_ssot_folders_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\populate_ssot_folders_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_populate_ssot_folders_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\prove_violation_detection_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_prove_violation_detection_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\prove_violation_detection_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_prove_violation_detection_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\query_runtime_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_query_runtime_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\query_runtime_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_query_runtime_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\quick_scan_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_quick_scan_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\quick_scan_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_quick_scan_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rca_agent_count_analysis_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rca_agent_count_analysis_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rca_agent_count_analysis_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rca_agent_count_analysis_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rca_dashboard_row_collapse_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rca_dashboard_row_collapse_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rca_dashboard_row_collapse_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rca_dashboard_row_collapse_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rca_table_rendering_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rca_table_rendering_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rca_table_rendering_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rca_table_rendering_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\reasoning.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_reasoning.py",
+      "module": "agentic_core\\L0_routing\\scripts\\reasoning.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_reasoning.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\recalculate_code_quality_scores_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_recalculate_code_quality_scores_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\recalculate_code_quality_scores_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_recalculate_code_quality_scores_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\recalculate_health_scores_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_recalculate_health_scores_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\recalculate_health_scores_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_recalculate_health_scores_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\reduce_complexity_top5_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_reduce_complexity_top5_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\reduce_complexity_top5_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_reduce_complexity_top5_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\refactor_l0_gravity_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_refactor_l0_gravity_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\refactor_l0_gravity_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_refactor_l0_gravity_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\refactor_l1_mcp_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_refactor_l1_mcp_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\refactor_l1_mcp_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_refactor_l1_mcp_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\refactor_legacy_base_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_refactor_legacy_base_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\refactor_legacy_base_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_refactor_legacy_base_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\refactor_mcp_imports_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_refactor_mcp_imports_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\refactor_mcp_imports_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_refactor_mcp_imports_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\regenerate_dashboard_full_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_regenerate_dashboard_full_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\regenerate_dashboard_full_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_regenerate_dashboard_full_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\regenerate_dashboard_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_regenerate_dashboard_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\regenerate_dashboard_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_regenerate_dashboard_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\remove_duplicate_lines_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_remove_duplicate_lines_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\remove_duplicate_lines_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_remove_duplicate_lines_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\remove_duplicate_suffixes_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_remove_duplicate_suffixes_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\remove_duplicate_suffixes_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_remove_duplicate_suffixes_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rename_to_agent_suffix_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rename_to_agent_suffix_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rename_to_agent_suffix_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rename_to_agent_suffix_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rename_unified_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rename_unified_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rename_unified_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rename_unified_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\repair_legacy_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_repair_legacy_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\repair_legacy_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_repair_legacy_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\rescue_reviewer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_rescue_reviewer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\rescue_reviewer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_rescue_reviewer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\restore_unique_archives_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_restore_unique_archives_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\restore_unique_archives_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_restore_unique_archives_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\revert_cognitive_moves_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_revert_cognitive_moves_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\revert_cognitive_moves_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_revert_cognitive_moves_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\root_hygiene_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_root_hygiene_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\root_hygiene_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_root_hygiene_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\routing_decision.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_routing_decision.py",
+      "module": "agentic_core\\L0_routing\\scripts\\routing_decision.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_routing_decision.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_all_guardians.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_all_guardians.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_all_guardians.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_all_guardians.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_guardian_contract_integrity.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_guardian_contract_integrity.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_guardian_contract_integrity.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_guardian_contract_integrity.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_guardian_hygiene.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_guardian_hygiene.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_guardian_hygiene.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_guardian_hygiene.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_guardian_manifest.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_guardian_manifest.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_guardian_manifest.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_guardian_manifest.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_hierarchy_agent_dry_run_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_hierarchy_agent_dry_run_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_hierarchy_agent_dry_run_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_hierarchy_agent_dry_run_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_hierarchy_healer_dry_run_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_hierarchy_healer_dry_run_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_hierarchy_healer_dry_run_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_hierarchy_healer_dry_run_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_hygiene_guardian_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_hygiene_guardian_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_hygiene_guardian_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_hygiene_guardian_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_hygiene_naming_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_hygiene_naming_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_hygiene_naming_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_hygiene_naming_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_naming_law_check_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_naming_law_check_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_naming_law_check_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_naming_law_check_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_naming_scan_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_naming_scan_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_naming_scan_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_naming_scan_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\run_sovereign_compliance_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_run_sovereign_compliance_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\run_sovereign_compliance_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_run_sovereign_compliance_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\runtime_shared_data_layer_example_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_runtime_shared_data_layer_example_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\runtime_shared_data_layer_example_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_runtime_shared_data_layer_example_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\scan_duplicates_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_scan_duplicates_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\scan_duplicates_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_scan_duplicates_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\scan_testing_compliance_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_scan_testing_compliance_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\scan_testing_compliance_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_scan_testing_compliance_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\scour_and_seal_legacy_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_scour_and_seal_legacy_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\scour_and_seal_legacy_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_scour_and_seal_legacy_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\set_all_agents_tested_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_set_all_agents_tested_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\set_all_agents_tested_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_set_all_agents_tested_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\set_all_invocations_yes_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_set_all_invocations_yes_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\set_all_invocations_yes_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_set_all_invocations_yes_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\set_schema_strictness_100_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_set_schema_strictness_100_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\set_schema_strictness_100_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_set_schema_strictness_100_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\set_typed_documented_100_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_set_typed_documented_100_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\set_typed_documented_100_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_set_typed_documented_100_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\show_manual_review_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_show_manual_review_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\show_manual_review_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_show_manual_review_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\silo_mover.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_silo_mover.py",
+      "module": "agentic_core\\L0_routing\\scripts\\silo_mover.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_silo_mover.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\simulate_sovereign_workflow_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_simulate_sovereign_workflow_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\simulate_sovereign_workflow_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_simulate_sovereign_workflow_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\smart_discovery_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_smart_discovery_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\smart_discovery_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_smart_discovery_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_lockdown_check_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_lockdown_check_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_lockdown_check_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_lockdown_check_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_mission_control_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_mission_control_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_mission_control_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_mission_control_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_model_visitor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_model_visitor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_model_visitor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_model_visitor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_pdf_parser.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_pdf_parser.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_pdf_parser.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_pdf_parser.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_precommit_no_hardcoded_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_precommit_no_hardcoded_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_precommit_no_hardcoded_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_precommit_no_hardcoded_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereign_precommit_no_raw_prompts_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereign_precommit_no_raw_prompts_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereign_precommit_no_raw_prompts_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereign_precommit_no_raw_prompts_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sovereignty_auditor.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sovereignty_auditor.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sovereignty_auditor.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sovereignty_auditor.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\ssot_archive_refactor_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_ssot_archive_refactor_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\ssot_archive_refactor_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_ssot_archive_refactor_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\ssot_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_ssot_audit_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\ssot_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_ssot_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\ssot_cli.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_ssot_cli.py",
+      "module": "agentic_core\\L0_routing\\scripts\\ssot_cli.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_ssot_cli.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\ssot_consolidation_analyzer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_ssot_consolidation_analyzer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\ssot_consolidation_analyzer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_ssot_consolidation_analyzer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\standardize_base_agent_names_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_standardize_base_agent_names_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\standardize_base_agent_names_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_standardize_base_agent_names_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\start_dashboard_server_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_start_dashboard_server_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\start_dashboard_server_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_start_dashboard_server_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\start_runtime_api_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_start_runtime_api_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\start_runtime_api_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_start_runtime_api_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\suggest_variant_renames_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_suggest_variant_renames_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\suggest_variant_renames_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_suggest_variant_renames_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\swarm_scheduler.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_swarm_scheduler.py",
+      "module": "agentic_core\\L0_routing\\scripts\\swarm_scheduler.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_swarm_scheduler.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sync_dashboard_agent_count_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sync_dashboard_agent_count_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sync_dashboard_agent_count_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sync_dashboard_agent_count_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\sync_mcp_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_sync_mcp_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\sync_mcp_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_sync_mcp_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\syntax_healer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_syntax_healer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\syntax_healer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_syntax_healer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\syntax_scar_repairer.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_syntax_scar_repairer.py",
+      "module": "agentic_core\\L0_routing\\scripts\\syntax_scar_repairer.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_syntax_scar_repairer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\terminal_alignment_final_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_terminal_alignment_final_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\terminal_alignment_final_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_terminal_alignment_final_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\territory_ssot_definitions_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_territory_ssot_definitions_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\territory_ssot_definitions_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_territory_ssot_definitions_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\toolbox_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_toolbox_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\toolbox_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_toolbox_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\tooling_add_docstrings_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_tooling_add_docstrings_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\tooling_add_docstrings_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_tooling_add_docstrings_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\tooling_auto_init_py_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_tooling_auto_init_py_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\tooling_auto_init_py_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_tooling_auto_init_py_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\tooling_auto_ruff_path_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_tooling_auto_ruff_path_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\tooling_auto_ruff_path_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_tooling_auto_ruff_path_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\tooling_enforce_verb_noun_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_tooling_enforce_verb_noun_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\tooling_enforce_verb_noun_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_tooling_enforce_verb_noun_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\trace_dashboard_generation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_trace_dashboard_generation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\trace_dashboard_generation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_trace_dashboard_generation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\trace_drilldown_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_trace_drilldown_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\trace_drilldown_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_trace_drilldown_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\undo_core_moves_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_undo_core_moves_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\undo_core_moves_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_undo_core_moves_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\update_mcp_metadata_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_update_mcp_metadata_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\update_mcp_metadata_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_update_mcp_metadata_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_base_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_base_agents_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_base_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_base_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_dashboard_changes_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_dashboard_changes_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_dashboard_changes_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_dashboard_changes_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_dashboard_totals_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_dashboard_totals_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_dashboard_totals_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_dashboard_totals_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_drilldown_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_drilldown_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_drilldown_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_drilldown_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_sovereign_structure_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_sovereign_structure_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_sovereign_structure_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_sovereign_structure_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\validate_table2_data_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_validate_table2_data_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\validate_table2_data_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_validate_table2_data_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_agent_status_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_agent_status_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_agent_status_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_agent_status_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_all_checkpoint_files_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_all_checkpoint_files_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_all_checkpoint_files_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_all_checkpoint_files_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_base_agent_names_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_base_agent_names_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_base_agent_names_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_base_agent_names_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_heal_invocation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_heal_invocation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_heal_invocation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_heal_invocation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_healing_metrics_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_healing_metrics_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_healing_metrics_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_healing_metrics_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_health_calculation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_health_calculation_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_health_calculation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_health_calculation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_intentional_variants_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_intentional_variants_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_intentional_variants_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_intentional_variants_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_l2_fix_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_l2_fix_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_l2_fix_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_l2_fix_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_manifest_cleanliness_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_manifest_cleanliness_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_manifest_cleanliness_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_manifest_cleanliness_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_manifest_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_manifest_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_manifest_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_manifest_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_mro_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_mro_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_mro_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_mro_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_refactor_integrity_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_refactor_integrity_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_refactor_integrity_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_refactor_integrity_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_row_order_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_row_order_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_row_order_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_row_order_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\verify_territory_counts_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_verify_territory_counts_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\verify_territory_counts_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_verify_territory_counts_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\windsurf_realtime_dashboard_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_windsurf_realtime_dashboard_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\windsurf_realtime_dashboard_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_windsurf_realtime_dashboard_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\workflow_review_pending_merge_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_workflow_review_pending_merge_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\workflow_review_pending_merge_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_workflow_review_pending_merge_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\workflow_track_changes_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_workflow_track_changes_util.py",
+      "module": "agentic_core\\L0_routing\\scripts\\workflow_track_changes_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_workflow_track_changes_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\scripts\\zombie_vaccinator.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\scripts\\test_zombie_vaccinator.py",
+      "module": "agentic_core\\L0_routing\\scripts\\zombie_vaccinator.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\scripts\\test_zombie_vaccinator.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\types\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\types\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\types\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\types\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\types\\agent_audit_result.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\types\\test_agent_audit_result.py",
+      "module": "agentic_core\\L0_routing\\types\\agent_audit_result.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\types\\test_agent_audit_result.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\types\\guardian_contract.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\types\\test_guardian_contract.py",
+      "module": "agentic_core\\L0_routing\\types\\guardian_contract.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\types\\test_guardian_contract.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\types\\guardian_registry.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\types\\test_guardian_registry.py",
+      "module": "agentic_core\\L0_routing\\types\\guardian_registry.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\types\\test_guardian_registry.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\utils\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test___init__.py",
       "status": "WAIVED"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\add_test_coverage_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_add_test_coverage_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\add_test_coverage_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_add_test_coverage_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\complexity_visitor_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_complexity_visitor_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\complexity_visitor_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_complexity_visitor_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\component_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_component_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\component_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_component_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\core_integrity_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_core_integrity_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\core_integrity_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_core_integrity_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\file_utils_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_file_utils_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\file_utils_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_file_utils_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\find_misnamed_agents_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_find_misnamed_agents_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\find_misnamed_agents_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_find_misnamed_agents_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\fix_all_tunnels_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_fix_all_tunnels_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\fix_all_tunnels_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_fix_all_tunnels_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\fix_depth_violations_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_fix_depth_violations_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\fix_depth_violations_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_fix_depth_violations_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\fix_mission_runner_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_fix_mission_runner_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\fix_mission_runner_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_fix_mission_runner_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\fix_remaining_depth_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_fix_remaining_depth_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\fix_remaining_depth_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_fix_remaining_depth_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\force_annexation_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_force_annexation_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\force_annexation_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_force_annexation_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\gravity_audit_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_gravity_audit_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\gravity_audit_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_gravity_audit_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\init_setup_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_init_setup_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\init_setup_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_init_setup_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\json_formatter_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_json_formatter_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\json_formatter_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_json_formatter_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\manifest_guardian_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_manifest_guardian_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\manifest_guardian_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_manifest_guardian_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\project_root_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_project_root_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\project_root_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_project_root_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\scan_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_scan_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\scan_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_scan_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\scorched_earth_merge_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_scorched_earth_merge_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\scorched_earth_merge_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_scorched_earth_merge_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\sovereign_alignment_v2_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_sovereign_alignment_v2_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\sovereign_alignment_v2_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_sovereign_alignment_v2_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\sovereign_convergence_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_sovereign_convergence_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\sovereign_convergence_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_sovereign_convergence_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\ssot_discovery_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_ssot_discovery_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\ssot_discovery_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_ssot_discovery_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\structural_fix_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_structural_fix_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\structural_fix_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_structural_fix_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\timeout_decorator_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_timeout_decorator_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\timeout_decorator_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_timeout_decorator_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\utils\\trim_remaining_airlocks_util.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\utils\\test_trim_remaining_airlocks_util.py",
+      "module": "agentic_core\\L0_routing\\utils\\trim_remaining_airlocks_util.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\utils\\test_trim_remaining_airlocks_util.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\validators\\__init__.py",
-      "expected_test": "tests\\agentic_core\\L0_maintenance\\validators\\test___init__.py",
+      "module": "agentic_core\\L0_routing\\validators\\__init__.py",
+      "expected_test": "tests\\agentic_core\\L0_routing\\validators\\test___init__.py",
       "status": "WAIVED"
     },
     {

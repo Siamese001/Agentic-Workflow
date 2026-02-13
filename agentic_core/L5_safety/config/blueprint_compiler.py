@@ -54,7 +54,7 @@ def make_lcd_layer(
     Generate a standard LCD layer definition with optional extras.
 
     Args:
-        layer_name: e.g., "L0_maintenance"
+        layer_name: e.g., "L0_routing"
         purpose: Layer purpose description
         extras: Additional subfolders beyond the standard 6 (e.g., ["scripts"])
         forbidden_capabilities: Capabilities this layer must not have
@@ -163,8 +163,8 @@ def _identify_l4_folders(
     # Add known L4 folders from layer nuances
     known_l4 = [
         "agentic_core/L6_observability/dashboards",
-        "agentic_core/L0_maintenance/scripts",
-        "agentic_core/L0_maintenance/reasoning",
+        "agentic_core/L0_routing/scripts",
+        "agentic_core/L0_routing/reasoning",
         "agentic_core/L3_orchestration/reasoning",
     ]
     for path in known_l4:

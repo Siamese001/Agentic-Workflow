@@ -59,7 +59,7 @@ GOLDEN_SET: list[tuple[str, FileType]] = [
     ("agentic_core/L5_safety/reasoning/HierarchyAgent.py", "AGENT"),
     ("apps_lic/engines/CampaignBalanceAgent.py", "AGENT"),
     # --- PRIORITY 11: STRATEGY ---
-    ("agentic_core/L0_maintenance/enforcement/audit_healing_strategy.py", "STRATEGY"),
+    ("agentic_core/L0_routing/enforcement/audit_healing_strategy.py", "STRATEGY"),
     # --- PRIORITY 12: ADAPTER ---
     ("agentic_core/L4_state/utils/local_disk_adapter.py", "ADAPTER"),
     # --- PRIORITY 14: CONFIG ---

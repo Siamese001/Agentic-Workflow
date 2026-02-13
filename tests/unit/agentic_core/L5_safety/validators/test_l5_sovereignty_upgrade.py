@@ -21,7 +21,7 @@ class TestPhase4PerimeterDetection:
     def mock_project(self, tmp_path):
         """Setup project with multiple sovereign roots."""
         # Create sovereign roots
-        (tmp_path / "agentic_core" / "L0_maintenance").mkdir(parents=True)
+        (tmp_path / "agentic_core" / "L0_routing").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L5_safety").mkdir(parents=True)
         (tmp_path / "apps_shared").mkdir()
         (tmp_path / "apps_rg").mkdir()
@@ -29,7 +29,7 @@ class TestPhase4PerimeterDetection:
         (tmp_path / "tests" / "e2e").mkdir(parents=True)
 
         # Create test files
-        (tmp_path / "agentic_core" / "L0_maintenance" / "test.py").write_text("# Test")
+        (tmp_path / "agentic_core" / "L0_routing" / "test.py").write_text("# Test")
         (tmp_path / "apps_shared" / "util.py").write_text("# Util")
         (tmp_path / "tests" / "unit" / "test_example.py").write_text("# Test")
 
@@ -118,7 +118,7 @@ class TestPhase5HeadlessOrchestration:
     @pytest.fixture
     def mock_project(self, tmp_path):
         """Setup compliant project structure."""
-        (tmp_path / "agentic_core" / "L0_maintenance").mkdir(parents=True)
+        (tmp_path / "agentic_core" / "L0_routing").mkdir(parents=True)
         (tmp_path / "apps_shared").mkdir()
         (tmp_path / "tests" / "unit").mkdir(parents=True)
         return tmp_path

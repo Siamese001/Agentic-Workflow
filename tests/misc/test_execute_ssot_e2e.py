@@ -31,7 +31,7 @@ class InvalidLocationAgent:
 
     try:
         # Import the execute_ssot module components
-        from agentic_core.L0_maintenance.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
             RuntimeStateManager,
             SovereignDecisionEngine,
             execute_phase2_reconciliation,
@@ -140,7 +140,7 @@ def test_agent_validation():
     print("\n=== Agent Validation Test ===\n")
 
     try:
-        from agentic_core.L0_maintenance.scripts.execute_ssot import PreFlightValidator
+        from agentic_core.L0_routing.scripts.execute_ssot import PreFlightValidator
 
         validator = PreFlightValidator(project_root)
 

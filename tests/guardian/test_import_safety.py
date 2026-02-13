@@ -1151,7 +1151,7 @@ class TestGravityCompliance:
 
     # Gravity layers in order (lower index = lower layer)
     GRAVITY_LAYERS = [
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L3_orchestration",
@@ -1368,8 +1368,8 @@ class TestGravityCompliance:
                 print(f"\n  ... and {len(by_type) - 10} more violation types")
 
             print("\n[REMEDIATION] Run HierarchyAgent:")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --dry-run")
-            print("  python -m agentic_core.L0_maintenance.scripts.HierarchyAgent --heal-gravity --apply")
+            print("  python -m agentic_core.L0_routing.scripts.HierarchyAgent --heal-gravity --dry-run")
+            print("  python -m agentic_core.L0_routing.scripts.HierarchyAgent --heal-gravity --apply")
             print("\n  See: tests/guardian/REMEDIATION_GUIDE.md#gravity-leaks")
         else:
             print(f"[OK] No gravity leaks detected ({len(core_files)} core files checked)")

@@ -19,7 +19,7 @@ SOVEREIGN_REGISTRY: dict = {
     "agentic_core": {
         "depth": 3,
         "subfolders": [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -120,7 +120,7 @@ HEALING_CONFIG: dict = {
 # CORE SUBFOLDER MAPS
 # ============================================================================
 CORE_SUBFOLDER_MAP: dict = {
-    "L0_maintenance": ["scripts", "logs", "benchmarks", "mixins"],
+    "L0_routing": ["scripts", "logs", "benchmarks", "mixins"],
     "L1_cognition": ["thought_engine", "intent_analysis", "planning"],
     "L2_execution": ["tool_registry", "action_handlers", "mcp", "tool_registry"],
     "L3_orchestration": [
@@ -174,7 +174,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
         "observability",
         "L6_observability",
         "L3_orchestration",
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L4_state",
@@ -192,7 +192,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset = frozenset(
 # ============================================================================
 L4_APPROVED_FOLDERS: set = {
     "agentic_core/L6_observability/dashboards",
-    "agentic_core/L0_maintenance/scripts",
+    "agentic_core/L0_routing/scripts",
     "agentic_core/L3_orchestration/reasoning",
     "agentic_core/L1_cognition/thought_engine",
     "agentic_core/L5_safety/enforcement",
@@ -255,7 +255,7 @@ MCP_CAPABILITIES: dict = {
 # LAYER DIRECTORIES MAPPING
 # ============================================================================
 LAYER_DIRS: dict = {
-    "L0": "L0_maintenance",
+    "L0": "L0_routing",
     "L1": "L1_cognition",
     "L2": "L2_execution",
     "L3": "L3_orchestration",
@@ -303,9 +303,9 @@ L2_TO_L1_MAP: dict = {
     "version_registry": "prompt_governance",
     "environments": "config",
     "feature_flags": "config",
-    "scripts": "L0_maintenance",
-    "logs": "L0_maintenance",
-    "benchmarks": "L0_maintenance",
+    "scripts": "L0_routing",
+    "logs": "L0_routing",
+    "benchmarks": "L0_routing",
 }
 
 __all__ = [

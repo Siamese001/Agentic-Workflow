@@ -21,14 +21,14 @@ class TestArchitectureGovernorAgentActivation:
     def mock_project(self, tmp_path):
         """Setup project with sovereign territories."""
         # Create sovereign roots
-        (tmp_path / "agentic_core" / "L0_maintenance").mkdir(parents=True)
+        (tmp_path / "agentic_core" / "L0_routing").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L3_orchestration").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L5_safety").mkdir(parents=True)
         (tmp_path / "apps_shared").mkdir()
         (tmp_path / "tests" / "unit").mkdir(parents=True)
 
         # Create valid files
-        (tmp_path / "agentic_core" / "L0_maintenance" / "util.py").write_text("# Valid L0 file")
+        (tmp_path / "agentic_core" / "L0_routing" / "util.py").write_text("# Valid L0 file")
         (tmp_path / "agentic_core" / "L5_safety" / "TestAgent.py").write_text("class TestAgent: pass")
 
         return tmp_path

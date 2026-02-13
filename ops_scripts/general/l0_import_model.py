@@ -31,7 +31,7 @@ from typing import Any
 # ── Layer map: folder prefix → (layer_name, rank) ──
 # Lower rank = lower layer. Upward import = src_rank > dst_rank.
 LAYER_MAP: dict[str, tuple[str, int]] = {
-    "L0_maintenance": ("L0_maintenance", 0),
+    "L0_routing": ("L0_routing", 0),
     "L1_cognition": ("L1_cognition", 1),
     "L2_execution": ("L2_execution", 2),
     "L3_orchestration": ("L3_orchestration", 3),

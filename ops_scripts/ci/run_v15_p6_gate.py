@@ -33,12 +33,12 @@ LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 
 # V15 type files that define cross-layer boundaries
 V15_TYPE_FILES = [
-    "agentic_core/L0_maintenance/types/v15_p2_types.py",
-    "agentic_core/L0_maintenance/types/v15_p2_contracts.py",
-    "agentic_core/L0_maintenance/types/v15_p3_types.py",
-    "agentic_core/L0_maintenance/types/v15_p4_types.py",
-    "agentic_core/L0_maintenance/types/v15_p5_types.py",
-    "agentic_core/L0_maintenance/types/v15_p6_types.py",
+    "agentic_core/L0_routing/types/v15_p2_types.py",
+    "agentic_core/L0_routing/types/v15_p2_contracts.py",
+    "agentic_core/L0_routing/types/v15_p3_types.py",
+    "agentic_core/L0_routing/types/v15_p4_types.py",
+    "agentic_core/L0_routing/types/v15_p5_types.py",
+    "agentic_core/L0_routing/types/v15_p6_types.py",
 ]
 
 
@@ -74,7 +74,7 @@ class P6EvidenceCollector:
 
     def _check_ssot_binding_type(self):
         """Verify SSOTBinding type exists with required fields."""
-        p6_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p6_types.py"
+        p6_path = self.repo_root / "agentic_core/L0_routing/types/v15_p6_types.py"
         if not p6_path.exists():
             self.violations.append(
                 {
@@ -110,7 +110,7 @@ class P6EvidenceCollector:
 
     def _check_context_retrieval_request(self):
         """Verify ContextRetrievalRequest exists for L0→L4 boundary."""
-        p6_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p6_types.py"
+        p6_path = self.repo_root / "agentic_core/L0_routing/types/v15_p6_types.py"
         if not p6_path.exists():
             return
 
@@ -193,7 +193,7 @@ class P6EvidenceCollector:
 
     def _check_p6_artifact_immutability(self):
         """Verify all dataclasses in v15_p6_types are frozen."""
-        p6_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p6_types.py"
+        p6_path = self.repo_root / "agentic_core/L0_routing/types/v15_p6_types.py"
         if not p6_path.exists():
             return
 

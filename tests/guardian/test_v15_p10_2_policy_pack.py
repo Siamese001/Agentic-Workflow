@@ -16,7 +16,7 @@ from ops_scripts.policy.validate_v15_policy_pack import validate_policy_pack
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-REAL_PACK = REPO_ROOT / "agentic_core" / "L0_maintenance" / "policy" / "v15_policy_pack.json"
+REAL_PACK = REPO_ROOT / "agentic_core" / "L0_routing" / "policy" / "v15_policy_pack.json"
 
 
 def _valid_rule(rule_id: str = "TEST_001", **overrides):

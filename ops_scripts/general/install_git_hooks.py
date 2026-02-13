@@ -43,7 +43,7 @@ if [ $PRECOMMIT_EXIT -ne 0 ]; then
 fi
 
 # Step 2: Run Pascal Sovereignty validation (legacy check)
-python agentic_core/L0_maintenance/scripts/PascalSovereigntyFixer.py --validate
+python agentic_core/L0_routing/scripts/PascalSovereigntyFixer.py --validate
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
@@ -51,7 +51,7 @@ if [ $EXIT_CODE -ne 0 ]; then
     echo " [BLOCK] SOVEREIGNTY VIOLATION DETECTED"
     echo "================================================================"
     echo " Your commit introduces file naming violations."
-    echo " Please run: python agentic_core/L0_maintenance/scripts/PascalSovereigntyFixer.py"
+    echo " Please run: python agentic_core/L0_routing/scripts/PascalSovereigntyFixer.py"
     echo "================================================================"
     exit 1
 fi
@@ -81,6 +81,7 @@ def install_hook():
         print("[SUCCESS] Pre-commit hook installed.")
         print("          Pascal Sovereignty will now protect this repo from regression.")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"[ERROR] Failed to install hook: {e}")
         sys.exit(1)

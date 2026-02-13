@@ -145,8 +145,8 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     else:
         report.status = GuardianStatus.BLOCK.value
 
-    # Write JSON report to agentic_core/L0_maintenance/utils/guardian_report.json
-    json_report_path = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "logs" / "guardian_report.json"
+    # Write JSON report to agentic_core/L0_routing/utils/guardian_report.json
+    json_report_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs" / "guardian_report.json"
     json_report_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -225,7 +225,7 @@ def agent_registry():
 def layer_hierarchy():
     """Shared layer hierarchy data."""
     return {
-        "L0_maintenance": 0,
+        "L0_routing": 0,
         "L1_cognition": 1,
         "L2_execution": 2,
         "L3_orchestration": 3,

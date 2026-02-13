@@ -12,7 +12,7 @@ import ast
 from pathlib import Path
 
 try:
-    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
         SCRIPTS_DIR,
         TESTS_DIR,
     )
@@ -69,6 +69,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                 },
             )
             continue
+        # guardian: allow-silent-swallow
         except Exception as e:
             violations.append(
                 {

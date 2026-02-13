@@ -190,7 +190,7 @@ class DEvidenceCollector:
 
     def check_healing_transaction_boundary(self) -> dict[str, Any]:
         """Check that HealingTransactionBoundary is available."""
-        contracts_file = self.project_root / "agentic_core" / "L0_maintenance" / "types" / "v15_contracts.py"
+        contracts_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "v15_contracts.py"
 
         if not contracts_file.exists():
             return {"passed": False, "details": "v15_contracts.py not found"}
@@ -212,7 +212,7 @@ class DEvidenceCollector:
 
     def check_policy_config_guard(self) -> dict[str, Any]:
         """Check that PolicyConfigGuard is available."""
-        contracts_file = self.project_root / "agentic_core" / "L0_maintenance" / "types" / "v15_contracts.py"
+        contracts_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "v15_contracts.py"
 
         if not contracts_file.exists():
             return {"passed": False, "details": "v15_contracts.py not found"}
@@ -236,7 +236,7 @@ class DEvidenceCollector:
     def check_semantic_clock_usage(self) -> dict[str, Any]:
         """Check that SemanticClock is used in state commits."""
         gateway_file = (
-            self.project_root / "agentic_core" / "L0_maintenance" / "enforcement" / "v15_execution_gateway.py"
+            self.project_root / "agentic_core" / "L0_routing" / "enforcement" / "v15_execution_gateway.py"
         )
 
         if not gateway_file.exists():
@@ -273,7 +273,7 @@ class DEvidenceCollector:
         has_trace_id = "trace_id" in content
 
         # Check that artifacts accept trace_id
-        p2_types_file = self.project_root / "agentic_core" / "L0_maintenance" / "types" / "v15_p2_types.py"
+        p2_types_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "v15_p2_types.py"
         has_trace_in_artifacts = False
         if p2_types_file.exists():
             with open(p2_types_file, encoding="utf-8") as f:
@@ -297,9 +297,7 @@ class DEvidenceCollector:
 
     def check_guardian_signing(self) -> dict[str, Any]:
         """Check that guardian signing enforcement exists."""
-        guardian_file = (
-            self.project_root / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
-        )
+        guardian_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
 
         if not guardian_file.exists():
             return {"passed": False, "details": "guardian_contract.py not found"}

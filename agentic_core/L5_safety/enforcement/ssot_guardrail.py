@@ -49,9 +49,9 @@ ALLOWLISTED_FILES: frozenset[str] = frozenset(
         "tests/core/test_classification_contract.py",
         # --- Phase 1 refactored wrappers (delegate to kernel) ---
         # complexity_visitor_util: is_sovereign_agent() → kernel, is_agent_class() shim
-        "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
+        "agentic_core/L0_routing/utils/complexity_visitor_util.py",
         # full_agent_discovery: analyze_agent_integrity() → kernel classify_file_standalone()
-        "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        "agentic_core/L0_routing/scripts/full_agent_discovery.py",
         # run_classification: classify_file() → kernel classify_file_standalone()
         "ops_scripts/maintenance/run_classification.py",
         # discovery_util: _scan_file_for_agents() → kernel is_agent_file()
@@ -61,8 +61,8 @@ ALLOWLISTED_FILES: frozenset[str] = frozenset(
         # type_erasure_validator: _is_agent_class() aligned with kernel
         "agentic_core/L5_safety/validators/type_erasure_validator.py",
         # Dedup utilities: is_agent_file() aligned with kernel naming
-        "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
-        "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        "agentic_core/L0_routing/scripts/extract_agent_duplicates_util.py",
+        "agentic_core/L0_routing/scripts/find_real_duplicates_v2_util.py",
         # --- Phase 2 Step 1: Refactored to delegate to kernel ---
         # generate_agent_table_simple_util: is_agent_file() wraps kernel for string paths
         "dev_tools/l0_scripts/generate_agent_table_simple_util.py",
@@ -94,16 +94,16 @@ ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset(
         "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
         "tests/core/test_classification_contract.py",
         # These use endswith("Agent") for metadata extraction, not classification:
-        "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
-        "agentic_core/L0_maintenance/scripts/full_agent_discovery.py",
+        "agentic_core/L0_routing/utils/complexity_visitor_util.py",
+        "agentic_core/L0_routing/scripts/full_agent_discovery.py",
         # Naming/renaming scripts that check suffixes for compliance:
         "agentic_core/L5_safety/enforcement/ssot_scanner.py",
         "agentic_core/L5_safety/enforcement/registry_verification.py",
         "agentic_core/L5_safety/enforcement/data.py",
         "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
         # Dedup/migration scripts:
-        "agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py",
-        "agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py",
+        "agentic_core/L0_routing/scripts/extract_agent_duplicates_util.py",
+        "agentic_core/L0_routing/scripts/find_real_duplicates_v2_util.py",
         # Naming convention enforcement:
         "ops_scripts/maintenance/run_classification.py",
     },

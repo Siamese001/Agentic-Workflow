@@ -83,7 +83,7 @@ class TestPascalSovereignReplacements:
     def test_execute_ssot_comments_updated(self):
         """Verify execute_ssot.py comments updated."""
         file_path = (
-            Path(__file__).parent.parent.parent.parent / "agentic_core/L0_maintenance/scripts/execute_ssot.py"
+            Path(__file__).parent.parent.parent.parent / "agentic_core/L0_routing/scripts/execute_ssot.py"
         )
 
         content = file_path.read_text(encoding="utf-8")

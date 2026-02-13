@@ -2,7 +2,7 @@
 Test scripts purity policy.
 
 Validates:
-- scripts/ allowed only under L0_maintenance
+- scripts/ allowed only under L0_routing
 - PascalCase filenames forbidden in scripts/
 - test_*.py forbidden in scripts/
 - SCRIPTS_FORBIDDEN_PATTERNS enforced
@@ -64,17 +64,17 @@ class TestScriptsLocationPolicy:
     """Tests for scripts/ folder location policy."""
 
     def test_scripts_only_in_l0_maintenance(self):
-        """scripts/ subfolder should only exist in L0_maintenance."""
+        """scripts/ subfolder should only exist in L0_routing."""
         for layer, subfolders in CORE_SUBFOLDER_MAP.items():
-            if layer == "L0_maintenance":
-                assert "scripts" in subfolders, "L0_maintenance must have scripts/"
+            if layer == "L0_routing":
+                assert "scripts" in subfolders, "L0_routing must have scripts/"
             elif layer.startswith("L") and "_" in layer:
                 # Other L* layers should not have scripts/
                 assert "scripts" not in subfolders, f"{layer} should not have scripts/"
 
     def test_l0_maintenance_has_scripts(self):
-        """L0_maintenance must have scripts/ subfolder."""
-        l0_subfolders = CORE_SUBFOLDER_MAP.get("L0_maintenance", [])
+        """L0_routing must have scripts/ subfolder."""
+        l0_subfolders = CORE_SUBFOLDER_MAP.get("L0_routing", [])
         assert "scripts" in l0_subfolders
 
 

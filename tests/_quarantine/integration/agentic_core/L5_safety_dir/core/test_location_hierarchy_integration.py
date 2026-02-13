@@ -52,14 +52,14 @@ class TestLocationHierarchyIntegration:
     def test_cross_layer_validation(self, mock_project_root):
         """Test validation across layer boundaries."""
         l5_path = mock_project_root / "agentic_core" / "L5_safety" / "validators" / "TestValidator.py"
-        l0_path = mock_project_root / "agentic_core" / "L0_maintenance" / "scripts" / "TestScript.py"
+        l0_path = mock_project_root / "agentic_core" / "L0_routing" / "scripts" / "TestScript.py"
 
         # Create the directories
         l0_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Each should be in correct layer
         assert "L5_safety" in str(l5_path), "L5 path correct"
-        assert "L0_maintenance" in str(l0_path), "L0 path correct"
+        assert "L0_routing" in str(l0_path), "L0 path correct"
 
 
 class TestValidatorChainIntegration:

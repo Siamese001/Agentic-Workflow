@@ -14,13 +14,13 @@ class TestNoStrayLegacyStringRefs:
     """Deleted legacy agent names must not appear as string literals outside canonical locations."""
 
     _CANONICAL_FILES = {
-        os.path.normpath("agentic_core/L0_maintenance/legacy_agent_name_allowlist.py"),
+        os.path.normpath("agentic_core/L0_routing/legacy_agent_name_allowlist.py"),
         os.path.normpath("tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py"),
         os.path.normpath("tests/agentic_core/L5_safety/test_l5_no_stray_legacy_refs.py"),
     }
 
     def test_no_stray_string_refs_for_legacy_agents(self):
-        from agentic_core.L0_maintenance.legacy_agent_name_allowlist import (
+        from agentic_core.L0_routing.legacy_agent_name_allowlist import (
             LEGACY_AGENT_NAME_ALLOWLIST,
         )
 
@@ -49,5 +49,5 @@ class TestNoStrayLegacyStringRefs:
             f"Stray string refs for deleted legacy agents found outside canonical "
             f"locations ({len(failures)} hits).\n"
             f"Fix: remove the literal or import from "
-            f"agentic_core.L0_maintenance.legacy_agent_name_allowlist.\n" + "\n".join(failures)
+            f"agentic_core.L0_routing.legacy_agent_name_allowlist.\n" + "\n".join(failures)
         )

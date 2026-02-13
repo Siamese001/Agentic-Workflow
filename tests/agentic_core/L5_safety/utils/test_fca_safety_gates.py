@@ -322,7 +322,7 @@ class TestObservabilityDetection:
         """L0 maintenance script with 'dashboard' in name but no obs imports => NOT flagged."""
         p = tmp_path / "audit_dashboard_util.py"
         p.write_text("import json\nprint('audit')\n")
-        parts = ("agentic_core", "L0_maintenance", "scripts", "audit_dashboard_util.py")
+        parts = ("agentic_core", "L0_routing", "scripts", "audit_dashboard_util.py")
         result = check_observability_violation(p, parts=parts)
         assert result is None
 

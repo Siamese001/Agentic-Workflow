@@ -31,7 +31,7 @@ class DynamicLoader:
             "class": "VerificationGate",
         },
         "detection": {
-            "module": "agentic_core.L0_maintenance.enforcement.detection_signal",
+            "module": "agentic_core.L0_routing.enforcement.detection_signal",
             "class": "DetectionSignalEmitter",
         },
         "review": {

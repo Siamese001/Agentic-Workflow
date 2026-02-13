@@ -93,8 +93,8 @@ class RegistryVerifier:
 
     def _find_discovery_json(self) -> Path:
         """Find the agent discovery JSON file."""
-        # Check L0_maintenance location first (SSOT location)
-        l0_path = self.project_root / AGENTIC_CORE_DIR / "L0_maintenance" / AGENT_DISCOVERY_JSON
+        # Check L0_routing location first (SSOT location)
+        l0_path = self.project_root / AGENTIC_CORE_DIR / "L0_routing" / AGENT_DISCOVERY_JSON
         if l0_path.exists():
             return l0_path
         # Fallback to root

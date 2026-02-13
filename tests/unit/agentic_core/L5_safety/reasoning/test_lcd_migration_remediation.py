@@ -412,7 +412,7 @@ class TestRecursiveTerritoryEnforcement:
 
     def test_script_in_l0_goes_to_scripts(self, agent, tmp_path):
         """A script file in L0 enforcement/ should go to scripts/."""
-        layer = tmp_path / "agentic_core" / "L0_maintenance"
+        layer = tmp_path / "agentic_core" / "L0_routing"
         scripts = layer / "scripts"
         scripts.mkdir(parents=True)
         enforcement = layer / "enforcement"
@@ -985,8 +985,8 @@ class TestLayerAffinity:
         )
 
         scores = agent._compute_layer_affinity(test_file)
-        assert scores["L0_maintenance"] > scores["L5_safety"]
-        assert scores["L0_maintenance"] > scores["L6_observability"]
+        assert scores["L0_routing"] > scores["L5_safety"]
+        assert scores["L0_routing"] > scores["L6_observability"]
 
     def test_safety_agent_scores_l5(self, agent, tmp_path):
         """A file with safety/guard/enforce keywords should score highest for L5."""
@@ -1008,7 +1008,7 @@ class TestLayerAffinity:
         )
 
         scores = agent._compute_layer_affinity(test_file)
-        assert scores["L5_safety"] > scores["L0_maintenance"]
+        assert scores["L5_safety"] > scores["L0_routing"]
 
     def test_monitor_scores_l6(self, agent, tmp_path):
         """A file with monitor/telemetry/report keywords should score highest for L6."""
@@ -1094,7 +1094,7 @@ class TestNewConfigConstants:
         from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_KEYWORD_AFFINITY
 
         expected_layers = {
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -1258,7 +1258,7 @@ class TestEphemeralScriptDetection:
 
     def test_sprint_numbered_detected(self, agent):
         """sprint4_phase1_l3_dynamic_seal_util.py should be flagged."""
-        path = Path("C:/repo/agentic_core/L0_maintenance/scripts/sprint4_phase1_l3_dynamic_seal_util.py")
+        path = Path("C:/repo/agentic_core/L0_routing/scripts/sprint4_phase1_l3_dynamic_seal_util.py")
         result = agent._detect_ephemeral_scripts(path)
         assert result is not None
 
@@ -1441,7 +1441,7 @@ class TestDuplicateFileDetection:
         """Three copies of a file should produce two violations."""
         registry = [
             Path("C:/repo/agentic_core/utils/decorators_util.py"),
-            Path("C:/repo/agentic_core/L0_maintenance/utils/decorators_util.py"),
+            Path("C:/repo/agentic_core/L0_routing/utils/decorators_util.py"),
             Path("C:/repo/agentic_core/L5_safety/utils/decorators_util.py"),
         ]
         violations = agent._detect_duplicate_files(registry)
@@ -1450,7 +1450,7 @@ class TestDuplicateFileDetection:
     def test_init_files_exempt(self, agent):
         """__init__.py should NOT be flagged as duplicate."""
         registry = [
-            Path("C:/repo/agentic_core/L0_maintenance/__init__.py"),
+            Path("C:/repo/agentic_core/L0_routing/__init__.py"),
             Path("C:/repo/agentic_core/L5_safety/__init__.py"),
         ]
         violations = agent._detect_duplicate_files(registry)

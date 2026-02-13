@@ -24,7 +24,7 @@ class TestAnomalyRepoBuilder:
         build_minimal_repo(tmp_path)
 
         for layer in [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -40,7 +40,7 @@ class TestAnomalyRepoBuilder:
         build_minimal_repo(tmp_path)
 
         lcd_subfolders = ["config", "types", "reasoning", "enforcement", "validators", "utils"]
-        for layer in ["L0_maintenance", "L5_safety"]:
+        for layer in ["L0_routing", "L5_safety"]:
             for subfolder in lcd_subfolders:
                 path = tmp_path / "agentic_core" / layer / subfolder
                 assert path.exists(), f"Missing {layer}/{subfolder}"
@@ -54,7 +54,7 @@ class TestAnomalyRepoBuilder:
             tmp_path / "agentic_core" / "L5_safety" / "enforcement" / "dashboard_e2_e_pipeline.py"
         ).exists()
         assert (tmp_path / "agentic_core" / "L4_state" / "enforcement" / "CachedStateLedgerAgent.py").exists()
-        assert (tmp_path / "agentic_core" / "L0_maintenance" / "scripts" / "AgentAuditResult.py").exists()
+        assert (tmp_path / "agentic_core" / "L0_routing" / "scripts" / "AgentAuditResult.py").exists()
 
 
 class TestRemediationPlanGeneration:
@@ -98,7 +98,7 @@ class TestRemediationPlanGeneration:
 
         # Create violation: PascalCase in scripts/
         pascal_file = builder.create_file(
-            "agentic_core/L0_maintenance/scripts/MyClass.py",
+            "agentic_core/L0_routing/scripts/MyClass.py",
             "class MyClass:\n    pass\n",
         )
 
@@ -143,10 +143,10 @@ class TestRemediationCoverage:
         assert (tmp_path / "agentic_core" / "L5_safety" / "types").exists()
 
         # E: PascalCase in scripts
-        assert (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").exists()
+        assert (tmp_path / "agentic_core" / "L0_routing" / "scripts").exists()
 
         # F: Test files in scripts
-        assert (tmp_path / "agentic_core" / "L0_maintenance" / "scripts" / "test_something.py").exists()
+        assert (tmp_path / "agentic_core" / "L0_routing" / "scripts" / "test_something.py").exists()
 
     def test_remediation_targets_exist(self, tmp_path):
         """All remediation target directories should exist."""

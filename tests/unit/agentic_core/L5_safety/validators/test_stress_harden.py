@@ -16,7 +16,7 @@ class TestStressHarden:
     # --- 2. The "Deportation" Sanction ---
     def test_core_rejects_app_prefixed_files(self):
         """100% PASS: Prevents 'rg_resume.py' from existing in 'agentic_core'."""
-        path = "agentic_core/L0_maintenance/scripts/rg_leaked_script.py"
+        path = "agentic_core/L0_routing/scripts/rg_leaked_script.py"
         assert is_path_allowed(path) is False
 
     # --- 3. The "Depth-5" Sprawl ---

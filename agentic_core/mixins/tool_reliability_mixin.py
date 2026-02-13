@@ -25,10 +25,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypeVar
 
-from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
 Logger = logging.getLogger(__name__)
 
@@ -363,10 +363,10 @@ class ToolReliabilityMixin:
 
         import hashlib as _hl
 
-        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_maintenance.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.v15_p2_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -401,7 +401,7 @@ class ToolReliabilityMixin:
         try:
             import hashlib as _hl
 
-            from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
                 V15ExecutionGateway,
             )
 

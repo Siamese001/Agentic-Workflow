@@ -133,7 +133,7 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
     if any(x in name_lower for x in ["safe", "guard", "policy", "red_team", "gravity"]):
         return "L5_safety"
     if any(x in name_lower for x in ["maint", "script", "log", "bench"]):
-        return "L0_maintenance"
+        return "L0_routing"
     if any(x in name_lower for x in ["config", "env", "setting"]):
         return "config"
     if any(x in name_lower for x in ["schema", "model", "request", "response"]):

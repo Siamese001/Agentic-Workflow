@@ -235,7 +235,7 @@ class TestPassCase:
 
         with (
             patch(
-                "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+                "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
                 mock_emit,
             ),
             patch(
@@ -304,7 +304,7 @@ class TestPreCallFail:
 
         with (
             patch(
-                "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+                "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
                 mock_emit,
             ),
             patch(
@@ -370,7 +370,7 @@ class TestPostCallFail:
 
         with (
             patch(
-                "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+                "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
                 mock_emit,
             ),
             patch(
@@ -438,7 +438,7 @@ class TestNestedCalls:
 
         with (
             patch(
-                "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+                "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
                 mock_emit,
             ),
             patch(
@@ -513,7 +513,7 @@ class TestNestedCalls:
 
         with (
             patch(
-                "agentic_core.L0_maintenance.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+                "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
                 mock_emit,
             ),
             patch(

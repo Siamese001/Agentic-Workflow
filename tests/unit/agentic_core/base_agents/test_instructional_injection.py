@@ -29,7 +29,7 @@ def get_project_root() -> Path:
 
 # SSOT-approved folders containing worker agents
 SSOT_AGENT_FOLDERS = [
-    "agentic_core/L0_maintenance/scripts",
+    "agentic_core/L0_routing/scripts",
     "agentic_core/L1_cognition/thought_engine",
     "agentic_core/L2_execution/reasoning",
     "agentic_core/L3_orchestration/reasoning",

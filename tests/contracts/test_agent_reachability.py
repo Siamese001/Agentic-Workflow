@@ -152,7 +152,7 @@ def _check_reachability(
 # ── Known pre-existing debt ────────────────────────────────────────────────────
 KNOWN_DEBT: frozenset[str] = frozenset(
     {
-        "agentic_core/L0_maintenance/reasoning/RootCustomsAgent.py",
+        "agentic_core/L0_routing/reasoning/RootCustomsAgent.py",
         "agentic_core/L3_orchestration/reasoning/DagEngineAgent.py",
         "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
         "agentic_core/L4_state/reasoning/GravityStateAgent.py",

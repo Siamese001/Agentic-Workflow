@@ -33,7 +33,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_specs
+from agentic_core.L0_routing.types.guardian_registry import get_guardian_specs
 from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     EXPECTED_PHASE_NAMES,
     PHASE_CHECK_ID_PREFIXES,
@@ -190,7 +190,7 @@ class TestDeterministicReplay:
     """Verify guardian scans are deterministic across multiple runs."""
 
     def test_classification_deterministic(self) -> None:
-        from agentic_core.L0_maintenance.scripts.run_guardian_classification_compliance import (
+        from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
             run_classification_compliance_guardian,
         )
 
@@ -204,7 +204,7 @@ class TestDeterministicReplay:
             assert c1.evidence == c2.evidence
 
     def test_hierarchy_deterministic(self) -> None:
-        from agentic_core.L0_maintenance.scripts.run_guardian_hierarchy_compliance import (
+        from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (
             run_hierarchy_compliance_guardian,
         )
 
@@ -217,7 +217,7 @@ class TestDeterministicReplay:
             assert c1.evidence == c2.evidence
 
     def test_architecture_deterministic(self) -> None:
-        from agentic_core.L0_maintenance.scripts.run_guardian_architecture_governance import (
+        from agentic_core.L0_routing.scripts.run_guardian_architecture_governance import (
             run_architecture_governance_guardian,
         )
 

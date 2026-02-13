@@ -105,7 +105,7 @@ def _build_lcd_subfolders_template() -> dict[str, SubfolderDefinition]:
 # ============================================================================
 
 LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
-    "L0_maintenance": {
+    "L0_routing": {
         "purpose": (
             "Core Logic & Routing + Control-Plane Core — "
             "ingestion, route election, capability arbitration, policy-aware dispatch; "
@@ -491,7 +491,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
 
     # Add L0-L6 layers
     for layer in [
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L3_orchestration",
@@ -561,7 +561,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "utils": {
                 "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",
                 "forbidden_patterns": ["test_", "utilities_"],
-                "notes": "Scripts go to L0_maintenance/scripts. Tests go to tests/.",
+                "notes": "Scripts go to L0_routing/scripts. Tests go to tests/.",
             },
             # semantic_memory removed — never materialized, use knowledge/ instead
             "knowledge": {
@@ -779,7 +779,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "agentic_core": {
                         "purpose": "Unit tests for agentic_core modules",
                         "subfolders": {
-                            "L0_maintenance": [
+                            "L0_routing": [
                                 "config",
                                 "types",
                                 "reasoning",

@@ -14,15 +14,15 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
     V15ExecutionGateway,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import V15HardFailAbort
-from agentic_core.L0_maintenance.types.v15_contracts import (
+from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+from agentic_core.L0_routing.types.v15_contracts import (
     PipeOrderEnforcer,
     PipeOrderViolation,
 )
-from agentic_core.L0_maintenance.types.v15_p2_types import (
+from agentic_core.L0_routing.types.v15_p2_types import (
     FixConstraint,
     SurgicalManifest,
 )
@@ -57,7 +57,7 @@ class TestPipeOrderUnit:
 
     def test_correct_order_completes(self):
         pipe = PipeOrderEnforcer()
-        from agentic_core.L0_maintenance.types.v15_types import HEALER_PIPE_ORDER
+        from agentic_core.L0_routing.types.v15_types import HEALER_PIPE_ORDER
 
         for step in HEALER_PIPE_ORDER:
             pipe.advance(step)

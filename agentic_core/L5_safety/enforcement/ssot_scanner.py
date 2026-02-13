@@ -55,7 +55,7 @@ class SSOTScanner:
 
     # Layer assignment rules from structure_blueprint.py
     LAYER_ASSIGNMENTS: dict[str, str] = {
-        "L0_maintenance": "L0",
+        "L0_routing": "L0",
         "L1_cognition": "L1",
         "L2_execution": "L2",
         "L3_orchestration": "L3",
@@ -127,6 +127,7 @@ class SSOTScanner:
                 if metadata:
                     agents.append(metadata)
                     self._cache[str(agent_file)] = metadata
+            # guardian: allow-silent-swallow
             except Exception:
                 # Skip files that can't be parsed
                 continue

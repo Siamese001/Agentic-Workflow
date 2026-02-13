@@ -93,7 +93,7 @@ def get_canonical_layer(file_path: str | Path) -> str:
 
     # Direct layer mappings
     layer_patterns = {
-        r"/L0_maintenance/": "L0",
+        r"/L0_routing/": "L0",
         r"/L1_cognition/": "L1",
         r"/L2_execution/": "L2",
         r"/L3_orchestration/": "L3",

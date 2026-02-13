@@ -23,10 +23,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_manifest import (
+from agentic_core.L0_routing.scripts.run_guardian_manifest import (
     run_manifest_guardian,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     CheckStatus,
     GuardianStatus,
     validate_no_absolute_paths,

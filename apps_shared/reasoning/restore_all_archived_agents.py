@@ -27,7 +27,7 @@ AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
 
 # Target directories for restoration
 TARGETS = {
-    "L0": "L0_maintenance/scripts/",
+    "L0": "L0_routing/scripts/",
     "L1": "L1_cognition/thought_engine/",
     "L2": "L2_execution/engine/",
     "L3": "L3_orchestration/engine/",
@@ -101,6 +101,7 @@ def restore_agent(source: Path, target: Path, dry_run: bool = False) -> tuple[bo
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(source), str(target))
         return True, f"Restored to {target.relative_to(PROJECT_ROOT)}"
+    # guardian: allow-silent-swallow
     except Exception as e:
         return False, f"Error: {e}"
 

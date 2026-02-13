@@ -6,17 +6,17 @@
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_maintenance/enforcement/v15_execution_gateway.py"
+      "file": "agentic_core/L0_routing/enforcement/v15_execution_gateway.py"
     },
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_maintenance/enforcement/v15_runtime_guard.py"
+      "file": "agentic_core/L0_routing/enforcement/v15_runtime_guard.py"
     },
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_maintenance/enforcement/v15_p4_contracts.py"
+      "file": "agentic_core/L0_routing/enforcement/v15_p4_contracts.py"
     },
     {
       "check": "forbidden_mutation_pattern",
@@ -36,7 +36,7 @@
   ],
   "phase": "P3",
   "spec_section": "\u00a713.1",
-  "timestamp": "2026-02-13T13:08:35.387638+00:00",
+  "timestamp": "2026-02-13T22:23:57.618259+00:00",
   "total_checks": 6,
   "violation_details": [],
   "violations": 0

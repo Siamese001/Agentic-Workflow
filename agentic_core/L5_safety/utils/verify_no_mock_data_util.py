@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Import SSOT for dashboard directory - NO HARDCODING
 try:
-    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
         DASHBOARD_DIR,
         get_validated_project_root,
     )

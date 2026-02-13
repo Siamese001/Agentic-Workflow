@@ -21,7 +21,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity import (
+from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
     _check_imports_scan_caps,
     _check_no_raise_exception_for_caps,
     _check_no_raise_runtime_error_for_caps,
@@ -36,7 +36,7 @@ pytestmark = pytest.mark.guardian
 # ---------------------------------------------------------------------------
 
 GOOD_GUARDIAN_SOURCE = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
     guard_scan_budget,
@@ -53,7 +53,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_RUNTIME_ERROR = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -68,7 +68,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_NO_BUDGET_HELPER = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -83,7 +83,7 @@ def scan(repo_root):
 """
 
 NON_SCANNING_GUARDIAN_SOURCE = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianResult,
     CheckStatus,
 )
@@ -94,7 +94,7 @@ def run_guardian(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_VALUE_ERROR = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -109,7 +109,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_CUSTOM_EXCEPTION = """\
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     MAX_FILES_PER_SCAN,
 )
 

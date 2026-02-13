@@ -17,11 +17,11 @@ logger = logging.getLogger("Finalizer")
 
 
 def step_1_migrate_test_agents():
-    """Moves agents from 'tests' layer to 'L0_maintenance/testing'."""
+    """Moves agents from 'tests' layer to 'L0_routing/testing'."""
     logger.info("STEP 1: Migrating Test Agents...")
 
     source_dir = PROJECT_ROOT / "agentic_core" / "tests"
-    target_dir = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "testing"
+    target_dir = PROJECT_ROOT / "agentic_core" / "L0_routing" / "testing"
 
     if not source_dir.exists():
         logger.info(" - No legacy 'tests' directory found. Architecture is clean.")
@@ -78,10 +78,10 @@ def step_2_regenerate_manifest_simple():
                     layer = part
                     break
                 elif part == "testing":
-                    layer = "L0_maintenance"
+                    layer = "L0_routing"
                     break
                 elif part == "scripts":
-                    layer = "L0_maintenance"
+                    layer = "L0_routing"
                     break
 
             agents.append(
@@ -115,7 +115,7 @@ def step_3_seal_architecture():
 
     try:
         # Import ManifestGuardian directly
-        from agentic_core.L0_maintenance.enforcement.manifest_guardian_util import ManifestGuardian
+        from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 
         checksum = ManifestGuardian.seal_manifest()
         logger.info("🔒 MANIFEST LOCKED.")

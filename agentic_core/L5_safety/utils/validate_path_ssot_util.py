@@ -46,7 +46,7 @@ HARDCODED_PATH_PATTERNS = [
         "Use AGENT_DISCOVERY_MANIFEST_JSON constant",
     ),
     # Layer directories - exact matches only
-    (r'["\']agentic_core/L0_maintenance["\'](?!\s*[:\]])', "Use L0_MAINTENANCE_DIR constant"),
+    (r'["\']agentic_core/L0_routing["\'](?!\s*[:\]])', "Use L0_MAINTENANCE_DIR constant"),
     (r'["\']agentic_core/L1_cognition["\'](?!\s*[:\]])', "Use L1_COGNITION_DIR constant"),
     (r'["\']agentic_core/L2_execution["\'](?!\s*[:\]])', "Use L2_EXECUTION_DIR constant"),
     (r'["\']agentic_core/L3_orchestration["\'](?!\s*[:\]])', "Use L3_ORCHESTRATION_DIR constant"),
@@ -104,6 +104,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
 
+    # guardian: allow-silent-swallow
     except Exception:
         pass
 

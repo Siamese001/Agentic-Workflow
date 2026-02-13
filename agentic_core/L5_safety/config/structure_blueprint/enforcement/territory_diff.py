@@ -76,7 +76,7 @@ def check(
         )
 
         # For territories with nested subfolders (e.g. agentic_core has
-        # L0_maintenance, config, mixins, etc. each with their own subfolders),
+        # L0_routing, config, mixins, etc. each with their own subfolders),
         # recurse into those.
         subfolders_dict = _get_mapping(config, "subfolders")
         if subfolders_dict:

@@ -13,7 +13,7 @@ import json
 
 import pytest
 
-from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L3_orchestration.types.cognitive_diff_types import (
     CognitiveStateSnapshot,
     DiffOp,

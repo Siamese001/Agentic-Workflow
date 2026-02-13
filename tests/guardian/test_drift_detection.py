@@ -14,14 +14,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.run_guardian_drift_detection import (
+from agentic_core.L0_routing.scripts.run_guardian_drift_detection import (
     GUARDIAN_ID,
     run_drift_detection_guardian,
     scan_archived_files_at_root,
     scan_duplicate_ssot_folders,
     scan_forbidden_root_folders,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,
@@ -35,8 +35,8 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
 @pytest.fixture()
 def clean_repo(tmp_path: Path) -> Path:
     """Minimal repo tree that passes all drift checks."""
-    (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L0_maintenance" / "logs").mkdir(parents=True)
+    (tmp_path / "agentic_core" / "L0_routing" / "scripts").mkdir(parents=True)
+    (tmp_path / "agentic_core" / "L0_routing" / "logs").mkdir(parents=True)
     (tmp_path / "agentic_core" / "__init__.py").write_text("", encoding="utf-8")
     (tmp_path / "README.md").write_text("# clean\n", encoding="utf-8")
     return tmp_path
@@ -46,8 +46,8 @@ def clean_repo(tmp_path: Path) -> Path:
 def dirty_repo(tmp_path: Path) -> Path:
     """Repo tree with all three drift conditions triggered."""
     # SSOT locations (must exist for duplicate detection)
-    (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L0_maintenance" / "logs").mkdir(parents=True)
+    (tmp_path / "agentic_core" / "L0_routing" / "scripts").mkdir(parents=True)
+    (tmp_path / "agentic_core" / "L0_routing" / "logs").mkdir(parents=True)
 
     # Drift condition 1: forbidden folders at root
     (tmp_path / "scripts").mkdir()
@@ -128,7 +128,7 @@ class TestScanDuplicateSSOTFolders:
 
     def test_no_root_folder_no_duplicate(self, tmp_path: Path) -> None:
         # SSOT location exists but root folder does not
-        (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir(
+        (tmp_path / "agentic_core" / "L0_routing" / "scripts").mkdir(
             parents=True,
         )
         assert scan_duplicate_ssot_folders(tmp_path) == []

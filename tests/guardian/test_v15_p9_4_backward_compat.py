@@ -15,11 +15,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
     GatewayResult,
     V15ExecutionGateway,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
 )
 
@@ -30,8 +30,8 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
 
 def _make_manifest(seed: str):
     """Create a distinct valid SurgicalManifest from a seed."""
-    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import generate_trace_id
-    from agentic_core.L0_maintenance.types.v15_p2_types import FixConstraint, SurgicalManifest
+    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
+    from agentic_core.L0_routing.types.v15_p2_types import FixConstraint, SurgicalManifest
 
     _hex8 = hashlib.sha256(seed.encode()).hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -172,7 +172,7 @@ class TestModeDefaulting:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"})
     def test_soft_mode_via_env_only(self):
         """SOFT_FAIL triggered by env, no mode kwarg needed."""
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         m = _make_manifest("compat_soft")
@@ -193,7 +193,7 @@ class TestModeDefaulting:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "1"})
     def test_hard_mode_via_env_only(self):
         """HARD_FAIL triggered by env, no mode kwarg needed."""
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()

@@ -4,7 +4,7 @@ Lead Quality Validator - Deterministic Lead Quality Validation
 Zero-Ambiguity Standard: Renamed from lead_quality_deterministic_validator.py
 Category: VALIDATOR (Deterministic safety check)
 
-Moved from L0_maintenance/deterministic to L5_safety/validators.
+Moved from L0_routing/deterministic to L5_safety/validators.
 
 Deterministic Operations:
 - Required field validation (existence checks)

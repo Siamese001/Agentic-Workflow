@@ -18,7 +18,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_maintenance.enforcement.v15_p5_contracts import (
+from agentic_core.L0_routing.enforcement.v15_p5_contracts import (
     EscalationRequiredError,
     ReplayDetectedError,
     ReplayGuardStore,
@@ -32,7 +32,7 @@ from agentic_core.L0_maintenance.enforcement.v15_p5_contracts import (
     sign_artifact,
     verify_signature,
 )
-from agentic_core.L0_maintenance.types.v15_p5_types import (
+from agentic_core.L0_routing.types.v15_p5_types import (
     DeterministicTestEnclave,
     HashMismatchTracker,
     HumanResolution,

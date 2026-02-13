@@ -87,7 +87,7 @@ class TestAgentDistributionMetrics:
         layer_counts = {}
 
         layers = [
-            ("L0", "agentic_core/L0_maintenance"),
+            ("L0", "agentic_core/L0_routing"),
             ("L1", "agentic_core/L1_cognition"),
             ("L2", "agentic_core/L2_execution"),
             ("L3", "agentic_core/L3_orchestration"),

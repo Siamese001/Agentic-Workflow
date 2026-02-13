@@ -197,8 +197,8 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
 L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
     {
         "agentic_core/L6_observability/dashboards",
-        "agentic_core/L0_maintenance/scripts",
-        "agentic_core/L0_maintenance/reasoning",
+        "agentic_core/L0_routing/scripts",
+        "agentic_core/L0_routing/reasoning",
         "agentic_core/L3_orchestration/reasoning",
         "agentic_core/L1_cognition/reasoning",
         "agentic_core/L5_safety/enforcement",
@@ -225,12 +225,12 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
         "description": "Standalone utilities (setup, pip, env) with NO core dependencies.",
         "forbidden_imports": ["agentic_core"],
         "allowed_depth": 1,
-        "violation_destination": "agentic_core/L0_maintenance/scripts",
+        "violation_destination": "agentic_core/L0_routing/scripts",
     },
     "l0_maintenance_scripts": {
         "description": "System maintenance, healing, and sovereign agents.",
         "required_capabilities": ["core_access"],
-        "preferred_location": "agentic_core/L0_maintenance/scripts",
+        "preferred_location": "agentic_core/L0_routing/scripts",
     },
 }
 
@@ -265,7 +265,7 @@ def verify_derived_registries() -> list[str]:
 
     standard_lcd = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
     for layer in [
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L3_orchestration",

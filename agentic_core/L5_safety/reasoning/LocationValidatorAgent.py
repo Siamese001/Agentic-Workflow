@@ -176,7 +176,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             if not is_path_allowed(str(rel_path)):
                 return False, f"VOID VIOLATION: Path '{rel_path}' not in sovereign territory"
 
-        # Special Semantic Check for scripts/ vs L0_maintenance
+        # Special Semantic Check for scripts/ vs L0_routing
         if root_folder == "scripts" and rel_path is not None:
             file_path = self.project_root / rel_path
             is_compliant, reason = self._validate_scripts_isolation(file_path)
@@ -200,7 +200,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         They MUST NOT import from `agentic_core`.
 
         If a script imports `agentic_core`, it is part of the system
-        and belongs in `agentic_core/L0_maintenance/scripts/`.
+        and belongs in `agentic_core/L0_routing/scripts/`.
         """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             SCRIPTS_PLACEMENT_RULES,
@@ -223,7 +223,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                             if alias.name.startswith(prefix):
                                 return False, (
                                     f"SEMANTIC VIOLATION: Root script imports '{alias.name}'. "
-                                    f"Files importing '{prefix}' belong in agentic_core/L0_maintenance/scripts/"
+                                    f"Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/"
                                 )
 
                 # Check 'from x import y'
@@ -233,7 +233,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                             if node.module.startswith(prefix):
                                 return False, (
                                     f"SEMANTIC VIOLATION: Root script imports from '{node.module}'. "
-                                    f"Files importing '{prefix}' belong in agentic_core/L0_maintenance/scripts/"
+                                    f"Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/"
                                 )
 
         except SyntaxError:

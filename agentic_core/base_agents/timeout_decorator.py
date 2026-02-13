@@ -8,7 +8,7 @@ Currently a placeholder pass-through decorator as timeout functionality
 is not implemented in the current architecture.
 
 Canonical location: agentic_core/base_agents/timeout_decorator.py
-Backward-compat shim: agentic_core/L0_maintenance/utils/timeout_decorator_util.py
+Backward-compat shim: agentic_core/L0_routing/utils/timeout_decorator_util.py
 """
 
 from __future__ import annotations

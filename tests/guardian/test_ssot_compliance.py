@@ -395,7 +395,7 @@ class TestSSOTCompliance:
 
         # Define layer hierarchy (lower number = lower layer)
         layer_order = {
-            "L0_maintenance": 0,
+            "L0_routing": 0,
             "L1_cognition": 1,
             "L2_execution": 2,
             "L3_orchestration": 3,
@@ -408,12 +408,12 @@ class TestSSOTCompliance:
         # These are architectural decisions that are intentionally allowed
         allowed_exceptions = {
             # L0 can import from any layer (maintenance scripts need full access)
-            ("L0_maintenance", "L1_cognition"),
-            ("L0_maintenance", "L2_execution"),
-            ("L0_maintenance", "L3_orchestration"),
-            ("L0_maintenance", "L4_state"),
-            ("L0_maintenance", "L5_safety"),
-            ("L0_maintenance", "L6_observability"),
+            ("L0_routing", "L1_cognition"),
+            ("L0_routing", "L2_execution"),
+            ("L0_routing", "L3_orchestration"),
+            ("L0_routing", "L4_state"),
+            ("L0_routing", "L5_safety"),
+            ("L0_routing", "L6_observability"),
             # L1 cognition imports execution tools, orchestration, state, and safety config
             ("L1_cognition", "L2_execution"),
             ("L1_cognition", "L3_orchestration"),
@@ -432,7 +432,7 @@ class TestSSOTCompliance:
             # L5 safety imports observability for tracing
             ("L5_safety", "L6_observability"),
             # All layers can import from base_agents
-            ("L0_maintenance", "base_agents"),
+            ("L0_routing", "base_agents"),
             ("L1_cognition", "base_agents"),
             ("L2_execution", "base_agents"),
             ("L3_orchestration", "base_agents"),
@@ -440,9 +440,9 @@ class TestSSOTCompliance:
             ("L5_safety", "base_agents"),
             ("L6_observability", "base_agents"),
             # All layers can import from utils, config, schemas
-            ("L0_maintenance", "utils"),
-            ("L0_maintenance", "config"),
-            ("L0_maintenance", "schemas"),
+            ("L0_routing", "utils"),
+            ("L0_routing", "config"),
+            ("L0_routing", "schemas"),
             ("L1_cognition", "utils"),
             ("L2_execution", "utils"),
             ("L3_orchestration", "utils"),
@@ -583,9 +583,9 @@ class TestSSOTCompliance:
         _KNOWN_MONOLITHS = frozenset(
             {
                 "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
-                "agentic_core/L0_maintenance/scripts/execute_ssot.py",
-                "agentic_core/L0_maintenance/types/guardian_contract.py",
-                "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
+                "agentic_core/L0_routing/scripts/execute_ssot.py",
+                "agentic_core/L0_routing/types/guardian_contract.py",
+                "agentic_core/L0_routing/utils/complexity_visitor_util.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_constants.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_verify.py",
                 "agentic_core/L5_safety/config/structure_blueprint/semantics.py",

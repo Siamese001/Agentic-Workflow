@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 
 try:
-    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
         AGENT_DISCOVERY_JSON,
     )
 except ImportError:

@@ -33,7 +33,7 @@ class TestFCABlueprintConsistency:
     def test_layer_nuances_in_subfolder_map(self):
         """Layer nuances (scripts, tools, memory, dashboards) must be in CORE_SUBFOLDER_MAP."""
         nuances = {
-            "L0_maintenance": "scripts",
+            "L0_routing": "scripts",
             "L2_execution": "tools",
             "L4_state": "memory",
             "L6_observability": "dashboards",
@@ -49,7 +49,7 @@ class TestFCABlueprintConsistency:
             ("L5_safety", "reasoning"),
             ("L5_safety", "enforcement"),
             ("L5_safety", "types"),
-            ("L0_maintenance", "scripts"),
+            ("L0_routing", "scripts"),
             ("L2_execution", "tools"),
             ("L4_state", "memory"),
             ("L6_observability", "dashboards"),

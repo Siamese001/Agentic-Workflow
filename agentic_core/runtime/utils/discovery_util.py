@@ -153,7 +153,7 @@ class AgentRegistry:
 
         # Map directory patterns to layers
         layer_mappings = {
-            "L0_maintenance": "L0_maintenance",
+            "L0_routing": "L0_routing",
             "L1_cognition": "L1_cognition",
             "L2_execution": "L2_execution",
             "L3_orchestration": "L3_orchestration",

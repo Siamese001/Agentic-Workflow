@@ -21,8 +21,8 @@ class TestHierarchyAgent:
         """Create a mock project structure."""
         # Setup agentic_core (Legacy support)
         (tmp_path / "agentic_core").mkdir()
-        (tmp_path / "agentic_core" / "L0_maintenance").mkdir()
-        (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir()
+        (tmp_path / "agentic_core" / "L0_routing").mkdir()
+        (tmp_path / "agentic_core" / "L0_routing" / "scripts").mkdir()
 
         # Setup apps_shared (Universal Scope support)
         (tmp_path / "apps_shared").mkdir()

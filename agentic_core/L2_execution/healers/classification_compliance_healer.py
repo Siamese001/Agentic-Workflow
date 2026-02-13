@@ -16,7 +16,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from agentic_core.L0_maintenance.types.guardian_contract import normalize_repo_path
+from agentic_core.L0_routing.types.guardian_contract import normalize_repo_path
 from agentic_core.L2_execution.types.heal_contract import (
     HealCheckResult,
     HealStatus,

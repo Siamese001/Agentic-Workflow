@@ -321,7 +321,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },
     # === DATA & LOGS (Runtime Debugging) ===
-    "agentic_core/L0_maintenance/utils": {
+    "agentic_core/L0_routing/utils": {
         "description": "Runtime debug logs, error dumps, and stack traces.",
         "file_extensions": [".log", ".err", ".out", ".txt"],
         "content_signals": {
@@ -343,7 +343,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "forbidden_keywords": ["def main", "if __name__", "import sys", "class "],
     },
     # === PYTHON UTILITY SCRIPTS (Standalone) ===
-    "agentic_core/L0_maintenance/scripts": {
+    "agentic_core/L0_routing/scripts": {
         "description": "Python utility scripts, maintenance tools, and standalone executables.",
         "file_extensions": [".py"],
         "content_signals": {

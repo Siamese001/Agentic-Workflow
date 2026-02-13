@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     V15SoftFailAbort,
     is_v15_enforced,
     is_v15_hard_fail,
@@ -27,9 +27,9 @@ from agentic_core.L0_maintenance.types.guardian_contract import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-GATEWAY_PATH = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "enforcement" / "v15_execution_gateway.py"
+GATEWAY_PATH = PROJECT_ROOT / "agentic_core" / "L0_routing" / "enforcement" / "v15_execution_gateway.py"
 GATEWAY_SRC = GATEWAY_PATH.read_text(encoding="utf-8")
-CONTRACT_PATH = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
+CONTRACT_PATH = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
 CONTRACT_SRC = CONTRACT_PATH.read_text(encoding="utf-8")
 
 
@@ -143,8 +143,8 @@ class TestStructuralSoftFail:
 
 def _make_test_manifest():
     """Create a minimal valid SurgicalManifest for testing."""
-    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import generate_trace_id
-    from agentic_core.L0_maintenance.types.v15_p2_types import FixConstraint, SurgicalManifest
+    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
+    from agentic_core.L0_routing.types.v15_p2_types import FixConstraint, SurgicalManifest
 
     _hex8 = hashlib.sha256(b"test_soft_fail").hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -191,7 +191,7 @@ class TestGatewayLogOnly:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_normal_execution_succeeds(self):
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import V15ExecutionGateway
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -206,7 +206,7 @@ class TestGatewaySoftFail:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"})
     def test_normal_execution_succeeds_without_violations(self):
         """When no violation occurs, SOFT_FAIL mode should succeed normally."""
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import V15ExecutionGateway
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -217,8 +217,8 @@ class TestGatewaySoftFail:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"})
     def test_pipe_violation_causes_structured_abort(self):
         """Force a pipe order violation; SOFT_FAIL must return structured failure, not crash."""
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import V15ExecutionGateway
+        from agentic_core.L0_routing.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -250,8 +250,8 @@ class TestGatewaySoftFail:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"})
     def test_soft_fail_result_has_deterministic_fields(self):
         """Structured failure result must have all required GatewayResult fields."""
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import V15ExecutionGateway
+        from agentic_core.L0_routing.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -280,9 +280,9 @@ class TestGatewayHardFail:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "1"})
     def test_hard_fail_raises_on_pipe_violation(self):
         """HARD_FAIL must escalate PipeOrderViolation to V15HardFailAbort."""
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_maintenance.types.guardian_contract import V15HardFailAbort
-        from agentic_core.L0_maintenance.types.v15_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import V15ExecutionGateway
+        from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+        from agentic_core.L0_routing.types.v15_contracts import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
 

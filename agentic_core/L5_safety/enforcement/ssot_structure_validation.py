@@ -40,7 +40,7 @@ BASE_AGENT_REQUIRED_PATH: Final[str] = "agentic_core/base_agents"
 
 # Layer prefix patterns
 LAYER_PATTERNS: Final[dict[str, str]] = {
-    "L0": "L0_maintenance",
+    "L0": "L0_routing",
     "L1": "L1_cognition",
     "L2": "L2_execution",
     "L3": "L3_orchestration",

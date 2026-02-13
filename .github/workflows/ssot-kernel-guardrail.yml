@@ -27,7 +27,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           echo "Scanning for shadow classification logic..."
-          python -m agentic_core.L0_maintenance.enforcement.ssot_guardrail --fail --errors-only
+          python -m agentic_core.L0_routing.enforcement.ssot_guardrail --fail --errors-only
           echo "SSOT Kernel guardrail passed — 0 shadow errors"
 
       - name: Run Classification Contract Tests

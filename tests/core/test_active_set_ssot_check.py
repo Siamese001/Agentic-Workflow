@@ -44,7 +44,7 @@ COMPLIANT_PLAIN_IMPORT = dedent("""\
 
 NON_COMPLIANT_DIRECT_IMPORT = dedent("""\
     from __future__ import annotations
-    from agentic_core.L0_maintenance.utils.ssot_discovery_util import load_agent_discovery
+    from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
     from ops_scripts.ci.active_set_helper import get_active_set
 
     def main():
@@ -53,7 +53,7 @@ NON_COMPLIANT_DIRECT_IMPORT = dedent("""\
 
 NON_COMPLIANT_ALIASED_IMPORT = dedent("""\
     from __future__ import annotations
-    from agentic_core.L0_maintenance.scripts import full_agent_discovery as fad
+    from agentic_core.L0_routing.scripts import full_agent_discovery as fad
     from ops_scripts.ci.active_set_helper import get_active_set
 
     def main():

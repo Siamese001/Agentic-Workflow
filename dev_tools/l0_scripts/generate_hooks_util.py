@@ -49,7 +49,7 @@ def sync_pre_commit(dry_run: bool = False):
     print(f"   [PATTERN] Files: {files_pattern}")
 
     # Locate the pre-commit config
-    config_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / ".pre-commit-config.yaml"
+    config_path = project_root / "agentic_core" / "L0_routing" / "scripts" / ".pre-commit-config.yaml"
 
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")

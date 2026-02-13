@@ -34,7 +34,7 @@ class TestBaselineWeightAudit:
         l0_patterns = [
             path
             for path in AST_PLACEMENT_SIGNALS.keys()
-            if "L0_maintenance" in path or "maintenance" in path.lower()
+            if "L0_routing" in path or "maintenance" in path.lower()
         ]
 
         for path in l0_patterns:

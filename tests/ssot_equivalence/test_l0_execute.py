@@ -58,7 +58,7 @@ class TestRunPipelineAPI:
     """Test the run_pipeline function directly."""
 
     def test_scan_mode_returns_guardian_result(self) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
         assert result["tool_id"] == "l0_execute"
@@ -67,7 +67,7 @@ class TestRunPipelineAPI:
         assert "heal_result" not in result
 
     def test_scan_mode_guardian_has_checks(self) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
         guardian = result["guardian_result"]
@@ -76,7 +76,7 @@ class TestRunPipelineAPI:
         assert len(guardian["checks"]) > 0
 
     def test_dry_run_mode_returns_heal_result(self, tmp_path: Path) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(
             mode="dry-run",
@@ -88,7 +88,7 @@ class TestRunPipelineAPI:
         assert "heal_result" in result
 
     def test_dry_run_heal_result_has_results(self, tmp_path: Path) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(
             mode="dry-run",
@@ -101,7 +101,7 @@ class TestRunPipelineAPI:
         assert len(heal["results"]) > 0
 
     def test_dry_run_all_healers_skipped(self, tmp_path: Path) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(
             mode="dry-run",
@@ -112,7 +112,7 @@ class TestRunPipelineAPI:
             assert hr["status"] == "SKIPPED", f"{hr['check_id']} status={hr['status']}"
 
     def test_timestamp_injected(self) -> None:
-        from agentic_core.L0_maintenance.scripts.l0_execute import run_pipeline
+        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
 
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
         assert result["timestamp"] == FIXED_UTC
@@ -131,7 +131,7 @@ class TestCLI:
             [
                 sys.executable,
                 "-m",
-                "agentic_core.L0_maintenance.scripts.l0_execute",
+                "agentic_core.L0_routing.scripts.l0_execute",
                 "--scan",
                 "--format",
                 "json",
@@ -156,7 +156,7 @@ class TestCLI:
             [
                 sys.executable,
                 "-m",
-                "agentic_core.L0_maintenance.scripts.l0_execute",
+                "agentic_core.L0_routing.scripts.l0_execute",
                 "--scan",
                 "--format",
                 "summary",

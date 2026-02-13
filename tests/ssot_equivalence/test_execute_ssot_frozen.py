@@ -9,8 +9,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 FROZEN_HEADER = "# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline)."
 
 LEGACY_FILES = [
-    REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py",
-    REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py",
+    REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py",
+    REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py",
 ]
 
 

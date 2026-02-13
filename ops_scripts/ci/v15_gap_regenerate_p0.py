@@ -64,7 +64,7 @@ ADAPTER_SCANNER_TIMEOUT_SECONDS = 30
 # AST helpers — boundary-level verification (not mere symbol existence)
 # ---------------------------------------------------------------------------
 
-_GUARDIAN_CONTRACT = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
+_GUARDIAN_CONTRACT = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
 
 
 def _parse_file(filepath: Path) -> ast.Module | None:

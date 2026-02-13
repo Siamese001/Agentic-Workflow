@@ -7,12 +7,12 @@ name: Guardian Tests (Mandatory)
 on:
   push:
     paths:
-      - 'agentic_core/L0_maintenance/**'
+      - 'agentic_core/L0_routing/**'
       - 'agentic_core/L5_safety/**'
       - 'tests/guardian/**'
   pull_request:
     paths:
-      - 'agentic_core/L0_maintenance/**'
+      - 'agentic_core/L0_routing/**'
       - 'agentic_core/L5_safety/**'
       - 'tests/guardian/**'
 
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run aggregated guardian (--strict)
         run: |
-          python -m agentic_core.L0_maintenance.scripts.run_all_guardians \
+          python -m agentic_core.L0_routing.scripts.run_all_guardians \
                  --write-artifacts docs/reports/verification/guardian \
                  --strict --format text \
                  --correlation-id "${{ github.sha }}"
@@ -59,6 +59,6 @@ jobs:
         with:
           name: guardian-results-${{ github.sha }}
           path: |
-            agentic_core/L0_maintenance/logs/guardian_report.json
+            agentic_core/L0_routing/logs/guardian_report.json
             docs/reports/verification/guardian/
           retention-days: 14

@@ -20,7 +20,7 @@ import threading
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult
+    from agentic_core.L0_routing.types.guardian_contract import GuardianResult
 
 # Thread-safe global registry of asserted check_ids
 _ASSERTED_CHECK_IDS: dict[str, set[str]] = {}  # guardian_id -> {check_ids}

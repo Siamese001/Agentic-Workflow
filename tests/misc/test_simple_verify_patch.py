@@ -15,7 +15,7 @@ def verify_patch():
     print("=" * 50)
 
     project_root = Path.cwd()
-    execute_ssot_path = project_root / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
+    execute_ssot_path = project_root / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 
     if not execute_ssot_path.exists():
         print("❌ FAIL: execute_ssot.py not found")
@@ -100,7 +100,7 @@ def test_imports():
         project_root = Path.cwd()
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L0_maintenance.scripts.execute_ssot import AutonomousDecisionEngine
+        from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
 
         print("✅ PASS: Module imports successfully")
 

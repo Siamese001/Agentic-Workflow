@@ -586,9 +586,9 @@ class TestSubatomicCompliance:
         _KNOWN_MONOLITHS = frozenset(
             {
                 "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
-                "agentic_core/L0_maintenance/scripts/execute_ssot.py",
-                "agentic_core/L0_maintenance/types/guardian_contract.py",
-                "agentic_core/L0_maintenance/utils/complexity_visitor_util.py",
+                "agentic_core/L0_routing/scripts/execute_ssot.py",
+                "agentic_core/L0_routing/types/guardian_contract.py",
+                "agentic_core/L0_routing/utils/complexity_visitor_util.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_constants.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_verify.py",
                 "agentic_core/L5_safety/config/structure_blueprint/semantics.py",

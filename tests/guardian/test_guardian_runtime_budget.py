@@ -20,22 +20,22 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_all_guardians import (
+from agentic_core.L0_routing.scripts.run_all_guardians import (
     run_all_guardians,
 )
-from agentic_core.L0_maintenance.scripts.run_guardian_hygiene import (
+from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
     run_hygiene_guardian,
 )
-from agentic_core.L0_maintenance.scripts.run_guardian_manifest import (
+from agentic_core.L0_routing.scripts.run_guardian_manifest import (
     run_manifest_guardian,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GUARDIAN_ARTIFACT_DIR,
     MAX_ARTIFACT_SIZE_KB,
     MAX_GUARDIAN_RUNTIME_MS,
     MAX_SCAN_DEPTH,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry import (
     ALL_GUARDIANS,
 )
 
@@ -156,7 +156,7 @@ class TestArtifactSize:
         )
 
     def test_written_artifact_under_ceiling(self, sandbox_repo: Path):
-        result = run_hygiene_guardian(
+        _result = run_hygiene_guardian(
             repo_root=sandbox_repo,
             write_artifacts_dir=GUARDIAN_ARTIFACT_DIR,
         )

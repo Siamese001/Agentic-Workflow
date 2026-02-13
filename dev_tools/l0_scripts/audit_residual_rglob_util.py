@@ -154,14 +154,14 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print("REFACTORING PRIORITY (High to Low)")
     print("=" * 80)
 
-    print("\n1. HIGH PRIORITY - L0_maintenance/scripts (Easy wins, 1 call each)")
-    l0_scripts = [f for f, calls in sorted_files if "L0_maintenance/scripts" in f]
+    print("\n1. HIGH PRIORITY - L0_routing/scripts (Easy wins, 1 call each)")
+    l0_scripts = [f for f, calls in sorted_files if "L0_routing/scripts" in f]
     print(f"   {len(l0_scripts)} files to refactor")
     for file in l0_scripts[:10]:
         print(f"   - {file}")
 
     print("\n2. MEDIUM PRIORITY - Other directories")
-    other_files = [f for f, calls in sorted_files if "L0_maintenance/scripts" not in f]
+    other_files = [f for f, calls in sorted_files if "L0_routing/scripts" not in f]
     print(f"   {len(other_files)} files to refactor")
     for file in other_files[:10]:
         print(f"   - {file}")
@@ -179,7 +179,7 @@ def print_audit_report(audit_results: dict[str, Any]) -> None:
     print(f"Target count: {target}")
     print(f"Calls to eliminate: {needed}")
     print("\nRecommended approach:")
-    print(f"  1. Refactor all L0_maintenance/scripts files ({len(l0_scripts)} files)")
+    print(f"  1. Refactor all L0_routing/scripts files ({len(l0_scripts)} files)")
     print("  2. Refactor remaining high-value targets")
     print("  3. Verify with AST scanner")
 

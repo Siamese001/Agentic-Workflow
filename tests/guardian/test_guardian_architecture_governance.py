@@ -25,17 +25,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_architecture_governance import (
+from agentic_core.L0_routing.scripts.run_guardian_architecture_governance import (
     GUARDIAN_ID,
     _collect_python_files,
     run_architecture_governance_guardian,
     scan_import_compliance,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
 
 pytestmark = pytest.mark.guardian
 
@@ -62,10 +62,10 @@ def clean_synthetic_repo(tmp_path: Path) -> Path:
     ac = tmp_path / "agentic_core"
 
     # L0 file importing from L0 only (no upward)
-    l0 = ac / "L0_maintenance" / "scripts"
+    l0 = ac / "L0_routing" / "scripts"
     l0.mkdir(parents=True)
     (l0 / "helper.py").write_text(
-        "from agentic_core.L0_maintenance.types import foo\n",
+        "from agentic_core.L0_routing.types import foo\n",
         encoding="utf-8",
     )
 
@@ -73,7 +73,7 @@ def clean_synthetic_repo(tmp_path: Path) -> Path:
     l5 = ac / "L5_safety" / "reasoning"
     l5.mkdir(parents=True)
     (l5 / "SafetyAgent.py").write_text(
-        "from agentic_core.L0_maintenance.types import bar\n",
+        "from agentic_core.L0_routing.types import bar\n",
         encoding="utf-8",
     )
 
@@ -86,7 +86,7 @@ def violating_synthetic_repo(tmp_path: Path) -> Path:
     ac = tmp_path / "agentic_core"
 
     # L0 file importing from L5 (upward — violation!)
-    l0 = ac / "L0_maintenance" / "scripts"
+    l0 = ac / "L0_routing" / "scripts"
     l0.mkdir(parents=True)
     (l0 / "bad_import.py").write_text(
         "from agentic_core.L5_safety.reasoning import SomeAgent\n",
@@ -192,7 +192,7 @@ class TestScanImportCompliance:
         ac = tmp_path / "agentic_core" / "L5_safety" / "reasoning"
         ac.mkdir(parents=True)
         (ac / "agent.py").write_text(
-            "from agentic_core.L0_maintenance.types import x\n",
+            "from agentic_core.L0_routing.types import x\n",
             encoding="utf-8",
         )
         violations = scan_import_compliance(tmp_path)

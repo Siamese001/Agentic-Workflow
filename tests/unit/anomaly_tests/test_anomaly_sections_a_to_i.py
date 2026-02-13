@@ -150,20 +150,20 @@ class TestSectionE_PascalCaseInL0Scripts:
     @pytest.mark.parametrize(
         "old_name,new_path",
         [
-            ("AgentAuditResult.py", "L0_maintenance/types/agent_audit_result.py"),
+            ("AgentAuditResult.py", "L0_routing/types/agent_audit_result.py"),
             ("BatchEmbeddingService.py", "L2_execution/reasoning/batch_embedding_service.py"),
-            ("GitKrakenHealingStrategy.py", "L0_maintenance/enforcement/git_kraken_healing_strategy.py"),
+            ("GitKrakenHealingStrategy.py", "L0_routing/enforcement/git_kraken_healing_strategy.py"),
             ("InMemoryVectorCache.py", "L4_state/memory/in_memory_vector_cache.py"),
-            ("SovereignHealingEngine.py", "L0_maintenance/reasoning/sovereign_healing_engine.py"),
+            ("SovereignHealingEngine.py", "L0_routing/reasoning/sovereign_healing_engine.py"),
             ("SovereignReport.py", "L6_observability/types/sovereign_report.py"),
             ("StrategistBioWriter.py", "L1_cognition/reasoning/strategist_bio_writer.py"),
-            ("VectorHealingStrategy.py", "L0_maintenance/enforcement/vector_healing_strategy.py"),
+            ("VectorHealingStrategy.py", "L0_routing/enforcement/vector_healing_strategy.py"),
         ],
     )
     def test_pascalcase_moved_from_scripts(self, old_name: str, new_path: str):
         """PascalCase files must be moved out of L0/scripts."""
         base = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core")
-        old_full = base / "L0_maintenance" / "scripts" / old_name
+        old_full = base / "L0_routing" / "scripts" / old_name
         new_full = base / new_path
 
         assert not old_full.exists(), f"PascalCase file still in scripts: {old_name}"
@@ -187,7 +187,7 @@ class TestSectionF_TestFilesInL0Scripts:
     def test_test_files_moved_from_scripts(self, test_file: str):
         """Test files must be moved out of L0/scripts to tests/."""
         base = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core")
-        old_full = base / "L0_maintenance" / "scripts" / test_file
+        old_full = base / "L0_routing" / "scripts" / test_file
 
         assert not old_full.exists(), f"Test file still in scripts: {test_file}"
 
@@ -220,23 +220,23 @@ class TestSectionH_OrphanedGlobalUtils:
     @pytest.mark.parametrize(
         "old_name,new_path",
         [
-            ("ssot_discovery_util.py", "L0_maintenance/utils/ssot_discovery_util.py"),
-            ("project_root_util.py", "L0_maintenance/utils/project_root_util.py"),
+            ("ssot_discovery_util.py", "L0_routing/utils/ssot_discovery_util.py"),
+            ("project_root_util.py", "L0_routing/utils/project_root_util.py"),
             ("tool_registry_util.py", "L2_execution/utils/tool_registry_util.py"),
-            ("find_misnamed_agents_util.py", "L0_maintenance/utils/find_misnamed_agents_util.py"),
+            ("find_misnamed_agents_util.py", "L0_routing/utils/find_misnamed_agents_util.py"),
             ("fix_testing_observability_util.py", "L6_observability/utils/fix_testing_observability_util.py"),
             ("guard_ddd_alignment_util.py", "L5_safety/utils/guard_ddd_alignment_util.py"),
-            ("scan_util.py", "L0_maintenance/utils/scan_util.py"),
+            ("scan_util.py", "L0_routing/utils/scan_util.py"),
             ("canonical_truth_util.py", "L5_safety/utils/canonical_truth_util.py"),
-            ("scorched_earth_merge_util.py", "L0_maintenance/utils/scorched_earth_merge_util.py"),
+            ("scorched_earth_merge_util.py", "L0_routing/utils/scorched_earth_merge_util.py"),
             ("forge_fortress_util.py", "L5_safety/utils/forge_fortress_util.py"),
-            ("structural_fix_util.py", "L0_maintenance/utils/structural_fix_util.py"),
+            ("structural_fix_util.py", "L0_routing/utils/structural_fix_util.py"),
             ("force_app_depth_util.py", "L5_safety/utils/force_app_depth_util.py"),
             ("egress_util.py", "L2_execution/utils/egress_util.py"),
-            ("component_util.py", "L0_maintenance/utils/component_util.py"),
-            ("add_test_coverage_util.py", "L0_maintenance/utils/add_test_coverage_util.py"),
+            ("component_util.py", "L0_routing/utils/component_util.py"),
+            ("add_test_coverage_util.py", "L0_routing/utils/add_test_coverage_util.py"),
             ("verify_no_mock_data_util.py", "L5_safety/utils/verify_no_mock_data_util.py"),
-            ("file_utils_util.py", "L0_maintenance/utils/file_utils_util.py"),
+            ("file_utils_util.py", "L0_routing/utils/file_utils_util.py"),
             ("exceptions_util.py", "runtime/exceptions/exceptions_util.py"),
         ],
     )

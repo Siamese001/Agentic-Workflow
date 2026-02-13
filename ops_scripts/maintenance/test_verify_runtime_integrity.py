@@ -59,12 +59,12 @@ def test_instantiation():
         ("L3_orchestration.engine.FissionManagerAgent", "FissionManagerAgent"),
         ("L5_safety.guardrails.HallucinationHunterAgent", "HallucinationHunterAgent"),
         ("L5_safety.reasoning.NeuralAutoImmuneAgent", "NeuralAutoImmuneAgent"),
-        ("L0_maintenance.scripts.DependencyDiplomatAgent", "DependencyDiplomatAgent"),
+        ("L0_routing.scripts.DependencyDiplomatAgent", "DependencyDiplomatAgent"),
         (
             "L1_cognition.agents.SemanticTerritoryMapperAgent",
             "SemanticTerritoryMapperAgent",
         ),
-        ("L0_maintenance.scripts.BootstrapAgent", "BootstrapAgent"),
+        ("L0_routing.scripts.BootstrapAgent", "BootstrapAgent"),
         ("L2_execution.L2ExecutionBase", "L2ExecutionBase"),
     ]
 

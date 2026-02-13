@@ -300,9 +300,9 @@
     },
     {
       "identity": "BenchmarkingAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\BenchmarkingAgent.py",
       "class_name": "BenchmarkingAgent",
       "mro_chain": [
         "SovereignBaseAgent"
@@ -330,9 +330,9 @@
     },
     {
       "identity": "BootstrapAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\BootstrapAgent.py",
       "class_name": "BootstrapAgent",
       "mro_chain": [
         "L0MaintenanceBase"
@@ -840,9 +840,9 @@
     },
     {
       "identity": "DocstringComplianceAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\DocstringComplianceAgent.py",
       "class_name": "DocstringComplianceAgent",
       "mro_chain": [
         "AtomicExecutionMixin",
@@ -1047,9 +1047,9 @@
     },
     {
       "identity": "FilesystemSSOTReconcilerAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\FilesystemSSOTReconcilerAgent.py",
       "class_name": "FilesystemSSOTReconcilerAgent",
       "mro_chain": [
         "AtomicExecutionMixin",
@@ -1160,9 +1160,9 @@
     },
     {
       "identity": "GospelSyncAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\GospelSyncAgent.py",
       "class_name": "GospelSyncAgent",
       "mro_chain": [
         "L0MaintenanceBase"
@@ -2115,9 +2115,9 @@
     },
     {
       "identity": "SSOTFolderCleanupAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent.py",
       "class_name": "SSOTFolderCleanupAgent",
       "mro_chain": [
         "SovereignBaseAgent"

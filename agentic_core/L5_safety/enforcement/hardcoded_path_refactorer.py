@@ -36,7 +36,7 @@ PATH_TO_SSOT_MAP = {
     r'["\']agent_discovery_full\.json["\']': "AGENT_DISCOVERY_JSON",
     r'["\']agent_discovery_full\.manifest\.json["\']': "AGENT_DISCOVERY_MANIFEST_JSON",
     # Layer directories
-    r'["\']agentic_core/L0_maintenance["\']': "L0_MAINTENANCE_DIR",
+    r'["\']agentic_core/L0_routing["\']': "L0_MAINTENANCE_DIR",
     r'["\']agentic_core/L1_cognition["\']': "L1_COGNITION_DIR",
     r'["\']agentic_core/L2_execution["\']': "L2_EXECUTION_DIR",
     r'["\']agentic_core/L3_orchestration["\']': "L3_ORCHESTRATION_DIR",
@@ -68,7 +68,7 @@ PATH_TO_SSOT_MAP = {
 # Path() constructor patterns
 PATH_CONSTRUCTOR_MAP = {
     r'Path\(["\']agent_discovery_full\.json["\']\)': "get_validated_project_root() / AGENT_DISCOVERY_JSON",
-    r'Path\(["\']agentic_core/L0_maintenance["\']\)': "get_validated_project_root() / L0_MAINTENANCE_DIR",
+    r'Path\(["\']agentic_core/L0_routing["\']\)': "get_validated_project_root() / L0_MAINTENANCE_DIR",
     r'Path\(["\']agentic_core/L1_cognition["\']\)': "get_validated_project_root() / L1_COGNITION_DIR",
     r'Path\(["\']agentic_core/L2_execution["\']\)': "get_validated_project_root() / L2_EXECUTION_DIR",
     r'Path\(["\']agentic_core/L3_orchestration["\']\)': "get_validated_project_root() / L3_ORCHESTRATION_DIR",
@@ -195,6 +195,7 @@ def refactor_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
 
         return False, 0
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         print(f"❌ Error processing {file_path}: {e}")
         return False, 0

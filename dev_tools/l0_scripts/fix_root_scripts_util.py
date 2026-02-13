@@ -3,7 +3,7 @@
 Project Exodus: Automated Migration Tool for Root Scripts
 
 Scans scripts/ at project root and migrates files that import agentic_core
-to their correct location in agentic_core/L0_maintenance/scripts/.
+to their correct location in agentic_core/L0_routing/scripts/.
 
 Features:
 - AST-based import detection (no brittle heuristics)
@@ -19,7 +19,7 @@ from pathlib import Path
 # Constants
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SOURCE_DIR = PROJECT_ROOT / "scripts"
-TARGET_DIR = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts"
+TARGET_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
 
 
 def get_file_hash(file_path: Path) -> str:
@@ -51,7 +51,7 @@ def has_core_dependency(file_path: Path) -> bool:
 
 
 def migrate_scripts():
-    """Move complying scripts to L0_maintenance with duplicate handling."""
+    """Move complying scripts to L0_routing with duplicate handling."""
     print(f"Scanning {SOURCE_DIR} for agents disguised as scripts...")
 
     if not SOURCE_DIR.exists():

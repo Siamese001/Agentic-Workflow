@@ -9,7 +9,7 @@ import shutil
 from typing import Any
 
 try:
-    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR,
         SCRIPTS_DIR,
         TESTS_DIR,

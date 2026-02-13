@@ -123,7 +123,7 @@ def run_legacy_in_sandbox(
     cmd = [
         sys.executable,
         "-m",
-        "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+        "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
         "--legacy",
         *(extra_args or []),
     ]

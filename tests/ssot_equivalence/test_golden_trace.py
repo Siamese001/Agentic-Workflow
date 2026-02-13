@@ -37,8 +37,8 @@ from tests.ssot_equivalence._sandbox_repo import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GOLDEN_DIR = Path(__file__).resolve().parent / "golden"
 GOLDEN_SNAPSHOT_PATH = GOLDEN_DIR / "legacy_trace.json"
-ENTRYPOINT_MODULE = "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint"
-GUARDIAN_MODULE = "agentic_core.L0_maintenance.scripts.run_all_guardians"
+ENTRYPOINT_MODULE = "agentic_core.L0_routing.scripts.execute_ssot_entrypoint"
+GUARDIAN_MODULE = "agentic_core.L0_routing.scripts.run_all_guardians"
 DISPATCHER_MODULE = "agentic_core.L2_execution.scripts.remediation_dispatcher"
 DISPATCHER_FIXED_UTC = "2000-01-01T00:00:00Z"
 MAX_CAPTURE = 2000
@@ -378,7 +378,7 @@ class TestLegacyPlanModeTrace:
     def test_plan_mode_golden_snapshot_written(self, tmp_path: Path) -> None:
         """Generate and write the golden snapshot for --plan mode + dispatcher dry-run."""
         # Snapshot a stable subset: the scripts directory only
-        scripts_dir = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts"
+        scripts_dir = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts"
         tree_before = _snapshot_tree(scripts_dir, rel_base=REPO_ROOT)
 
         result = _run_legacy_subprocess("--plan")
@@ -464,7 +464,7 @@ class TestLegacyFullExecution:
         porcelain_before = self._primary_porcelain()
 
         # Snapshot sandbox before
-        scripts_dir = sandbox / "agentic_core" / "L0_maintenance" / "scripts"
+        scripts_dir = sandbox / "agentic_core" / "L0_routing" / "scripts"
         tree_before = _snapshot_tree(scripts_dir, rel_base=sandbox)
 
         # Run legacy in validate mode (dry-run, no healing writes)

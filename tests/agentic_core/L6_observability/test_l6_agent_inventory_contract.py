@@ -51,7 +51,7 @@ PRODUCTION_ENTRYPOINTS = [
     "agentic_core/L3_orchestration/enforcement/mission_runner.py",
     "agentic_core/L3_orchestration/enforcement/safety_strategy.py",
     "agentic_core/L5_safety/enforcement/HealingStrategy.py",
-    "agentic_core/L0_maintenance/scripts/execute_ssot.py",
+    "agentic_core/L0_routing/scripts/execute_ssot.py",
     "agentic_core/interfaces/IValidatorProtocol.py",
     "agentic_core/interfaces/IHealingStrategyProtocol.py",
 ]

@@ -7,7 +7,7 @@ import logging
 "Brief description of functionality and purpose."
 from typing import Any
 
-from agentic_core.L0_maintenance.utils.TelemetryRecorder import TelemetryRecorder
+from agentic_core.L0_routing.utils.TelemetryRecorder import TelemetryRecorder
 from agentic_core.L1_cognition.boundaries.semantic_gatekeeper_validator import semantic_gatekeeper
 from agentic_core.L1_cognition.reasoning.StructuredEngineAgent import StructuredEngineAgent
 from agentic_core.L2_execution.action_handlers.sandbox import DockerSandbox

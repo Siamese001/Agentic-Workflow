@@ -72,7 +72,7 @@ class TestNoNestedLCD:
     @pytest.mark.parametrize(
         "layer",
         [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",

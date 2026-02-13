@@ -19,7 +19,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
     AdvisoryViolationError,
     CognitiveDiffError,
     ErrorSignatureError,
@@ -41,7 +41,7 @@ from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
     verify_manifest_hash,
     verify_policy_config_unchanged,
 )
-from agentic_core.L0_maintenance.types.v15_p4_types import (
+from agentic_core.L0_routing.types.v15_p4_types import (
     CitationBundle,
     CitationEntry,
     CognitiveDiffBundle,

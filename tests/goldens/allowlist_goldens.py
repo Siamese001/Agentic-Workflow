@@ -40,7 +40,7 @@ SCRIPTS_FORBIDDEN_PATTERNS_GOLDEN: Final[list[str]] = [
 # Any change to LAYER_ROOTS must update this golden
 LAYER_ROOTS_GOLDEN: Final[frozenset[str]] = frozenset(
     {
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L3_orchestration",

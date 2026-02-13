@@ -11,7 +11,7 @@ Architecture:
 
     BACKWARD-COMPAT SHIMS (re-export only):
         - agentic_core/L5_safety/utils/decorators_util.py
-        - agentic_core/L0_maintenance/utils/timeout_decorator_util.py
+        - agentic_core/L0_routing/utils/timeout_decorator_util.py
 
 Enforced invariants:
     1. No agentic_core module (except shims) imports from shim locations.
@@ -43,7 +43,7 @@ SHIM_FILENAMES = frozenset({"decorators_util.py", "timeout_decorator_util.py"})
 SHIM_MODULES = frozenset(
     {
         "agentic_core.L5_safety.utils.decorators_util",
-        "agentic_core.L0_maintenance.utils.timeout_decorator_util",
+        "agentic_core.L0_routing.utils.timeout_decorator_util",
     },
 )
 
@@ -55,7 +55,7 @@ CANONICAL_FILES = {
 SHIM_TO_CANONICAL = {
     AGENTIC_CORE / "L5_safety" / "utils" / "decorators_util.py": "agentic_core.base_agents.decorators",
     AGENTIC_CORE
-    / "L0_maintenance"
+    / "L0_routing"
     / "utils"
     / "timeout_decorator_util.py": "agentic_core.base_agents.timeout_decorator",
 }

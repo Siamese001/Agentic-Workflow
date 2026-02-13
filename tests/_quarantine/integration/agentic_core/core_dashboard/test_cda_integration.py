@@ -26,7 +26,7 @@ class TestCDAIntegration(unittest.TestCase):
     def test_enhanced_decision_engine_creation(self):
         """Test that EnhancedAutonomousDecisionEngine can be created with CDA enabled"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
                 RuntimeStateManager,
             )
@@ -59,7 +59,7 @@ class TestCDAIntegration(unittest.TestCase):
                 DispositionDecision,  # noqa: F401
             )
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
             )
 
@@ -90,7 +90,7 @@ class TestCDAIntegration(unittest.TestCase):
                 DispositionDecision,
             )
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
             )
 
@@ -116,7 +116,7 @@ class TestCDAIntegration(unittest.TestCase):
         except ImportError as e:
             self.skipTest(f"Could not import required modules: {e}")
 
-    @patch("agentic_core.L0_maintenance.scripts.execute_ssot.CognitiveDispositionAgent")
+    @patch("agentic_core.L0_routing.scripts.execute_ssot.CognitiveDispositionAgent")
     def test_async_cognitive_analysis(self, mock_cda_class):
         """Test async cognitive analysis with mocked CDA"""
         try:
@@ -126,7 +126,7 @@ class TestCDAIntegration(unittest.TestCase):
                 DispositionDecision,
             )
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
             )
 
@@ -168,7 +168,7 @@ class TestCDAIntegration(unittest.TestCase):
         try:
             import argparse  # noqa: F401
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import main
+            from agentic_core.L0_routing.scripts.execute_ssot import main
 
             # Mock sys.argv to test argument parsing
             with patch("sys.argv", ["execute_ssot.py", "--enable-cda", "--territory", "test"]):
@@ -193,7 +193,7 @@ class TestCDAIntegration(unittest.TestCase):
                 DispositionDecision,
             )
 
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
             )
 
@@ -244,7 +244,7 @@ class TestCDALiveIntegration(unittest.TestCase):
     def test_live_cda_integration(self):
         """Test live CDA integration (requires actual LLM access)"""
         try:
-            from agentic_core.L0_maintenance.scripts.execute_ssot import (
+            from agentic_core.L0_routing.scripts.execute_ssot import (
                 EnhancedAutonomousDecisionEngine,
                 RuntimeStateManager,
             )
@@ -283,7 +283,7 @@ def run_basic_integration_test():
 
     try:
         # Test import
-        from agentic_core.L0_maintenance.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
             EnhancedAutonomousDecisionEngine,
         )
 

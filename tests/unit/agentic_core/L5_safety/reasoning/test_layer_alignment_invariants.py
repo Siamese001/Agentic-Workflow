@@ -52,7 +52,7 @@ class TestBlueprintAPI:
     def test_is_layer_root(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import is_layer_root
 
-        assert is_layer_root("L0_maintenance") is True
+        assert is_layer_root("L0_routing") is True
         assert is_layer_root("L5_safety") is True
         assert is_layer_root("L6_observability") is True
         assert is_layer_root("prompt_governance") is False
@@ -85,8 +85,8 @@ class TestBlueprintAPI:
     def test_validate_no_nested_lcd_allowed_under_layer(self):
         from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
 
-        # L0_maintenance/scripts/prompt_governance — OK because layer root is ancestor
-        parts = ("agentic_core", "L0_maintenance", "scripts", "prompt_governance", "reasoning", "x.py")
+        # L0_routing/scripts/prompt_governance — OK because layer root is ancestor
+        parts = ("agentic_core", "L0_routing", "scripts", "prompt_governance", "reasoning", "x.py")
         result = validate_no_nested_lcd(parts)
         assert result is None
 
@@ -126,7 +126,7 @@ class TestFCALayerAlignment:
     def test_scripts_purity_rejects_pascalcase(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
-        p = _make_py(tmp_path, "agentic_core/L0_maintenance/scripts/SomeClass.py", "class SomeClass: pass")
+        p = _make_py(tmp_path, "agentic_core/L0_routing/scripts/SomeClass.py", "class SomeClass: pass")
         result = fca.validate_layer_alignment(p)
         assert result is not None
         assert result["violation"] == "PASCALCASE_IN_SCRIPTS"
@@ -134,7 +134,7 @@ class TestFCALayerAlignment:
     def test_scripts_purity_rejects_test_files(self, tmp_path):
         fca_cls = _get_fca()
         fca = fca_cls(project_root=tmp_path)
-        p = _make_py(tmp_path, "agentic_core/L0_maintenance/scripts/test_something.py", "def test_x(): pass")
+        p = _make_py(tmp_path, "agentic_core/L0_routing/scripts/test_something.py", "def test_x(): pass")
         result = fca.validate_layer_alignment(p)
         assert result is not None
         assert result["violation"] == "TEST_IN_SCRIPTS"
@@ -144,7 +144,7 @@ class TestFCALayerAlignment:
         fca = fca_cls(project_root=tmp_path)
         p = _make_py(
             tmp_path,
-            "agentic_core/L0_maintenance/scripts/run_audit.py",
+            "agentic_core/L0_routing/scripts/run_audit.py",
             "if __name__ == '__main__': pass",
         )
         result = fca.validate_layer_alignment(p)
@@ -233,20 +233,20 @@ class TestRepoInvariants:
             assert not agents, f"{f.name} still contains Agent class(es): {agents}"
 
     def test_no_pascalcase_in_l0_scripts(self):
-        """L0_maintenance/scripts/ must not contain PascalCase .py files."""
-        scripts_dir = Path("agentic_core/L0_maintenance/scripts")
+        """L0_routing/scripts/ must not contain PascalCase .py files."""
+        scripts_dir = Path("agentic_core/L0_routing/scripts")
         if not scripts_dir.exists():
-            pytest.skip("L0_maintenance/scripts not found")
+            pytest.skip("L0_routing/scripts not found")
         for f in scripts_dir.glob("*.py"):
             if f.name.startswith("__"):
                 continue
             assert not f.name[0].isupper(), f"PascalCase file in scripts/: {f.name}"
 
     def test_no_test_files_in_l0_scripts(self):
-        """L0_maintenance/scripts/ must not contain test_*.py files."""
-        scripts_dir = Path("agentic_core/L0_maintenance/scripts")
+        """L0_routing/scripts/ must not contain test_*.py files."""
+        scripts_dir = Path("agentic_core/L0_routing/scripts")
         if not scripts_dir.exists():
-            pytest.skip("L0_maintenance/scripts not found")
+            pytest.skip("L0_routing/scripts not found")
         for f in scripts_dir.glob("test_*.py"):
             pytest.fail(f"test file in scripts/: {f.name}")
 

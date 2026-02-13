@@ -40,14 +40,14 @@ class TestFindGovernedReferences:
     """Detection of governed resource references."""
 
     def test_prohibited_module_import_from(self):
-        source = "from agentic_core.L0_maintenance.utils.ssot_discovery_util import load_agent_discovery"
+        source = "from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery"
         tree = ast.parse(source)
         refs = _find_governed_references(tree, source)
         assert len(refs) >= 1
         assert any("prohibited module" in r for r in refs)
 
     def test_prohibited_module_plain_import(self):
-        source = "import agentic_core.L0_maintenance.scripts.full_agent_discovery"
+        source = "import agentic_core.L0_routing.scripts.full_agent_discovery"
         tree = ast.parse(source)
         refs = _find_governed_references(tree, source)
         assert len(refs) >= 1
@@ -106,7 +106,7 @@ class TestBypassDetection:
 
     def test_bypass_caught(self):
         source = textwrap.dedent("""\
-            from agentic_core.L0_maintenance.utils.ssot_discovery_util import load_agent_discovery
+            from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
 
             def main():
                 data = load_agent_discovery(".")

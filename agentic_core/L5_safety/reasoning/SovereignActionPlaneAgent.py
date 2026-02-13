@@ -7,10 +7,10 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
 """Sovereign Action Plane Implementation.
 
@@ -220,10 +220,10 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
 
         import hashlib as _hl
 
-        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_maintenance.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.v15_p2_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -258,7 +258,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
         if manifest is not None:
             import hashlib as _hl
 
-            from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
                 V15ExecutionGateway,
             )
 

@@ -65,7 +65,7 @@ class {agent_name}({base_class}):
         return self.create_file(path, content)
 
     def create_script_file(self, name: str, with_main: bool = True) -> Path:
-        """Create a script-like module in L0_maintenance/scripts/."""
+        """Create a script-like module in L0_routing/scripts/."""
         content = '''"""Script module."""
 
 def main():
@@ -76,7 +76,7 @@ def main():
             content += """if __name__ == "__main__":
     main()
 """
-        path = f"agentic_core/L0_maintenance/scripts/{name}"
+        path = f"agentic_core/L0_routing/scripts/{name}"
         return self.create_file(path, content)
 
     def create_types_file(self, layer: str, name: str, with_agent: bool = False) -> Path:
@@ -135,7 +135,7 @@ def build_minimal_repo(tmp_path: Path) -> RepoBuilder:
     builder = RepoBuilder(tmp_path)
 
     # Create all L0-L6 layers with LCD subfolders
-    builder.create_lcd_layer("L0_maintenance", extras=["scripts"])
+    builder.create_lcd_layer("L0_routing", extras=["scripts"])
     builder.create_lcd_layer("L1_cognition")
     builder.create_lcd_layer("L2_execution", extras=["tools"])
     builder.create_lcd_layer("L3_orchestration")
@@ -177,13 +177,13 @@ def build_anomaly_repo(tmp_path: Path) -> RepoBuilder:
 
     # E: PascalCase in L0/scripts
     builder.create_file(
-        "agentic_core/L0_maintenance/scripts/AgentAuditResult.py",
+        "agentic_core/L0_routing/scripts/AgentAuditResult.py",
         "class AgentAuditResult:\n    pass\n",
     )
 
     # F: Test files in L0/scripts
     builder.create_file(
-        "agentic_core/L0_maintenance/scripts/test_something.py",
+        "agentic_core/L0_routing/scripts/test_something.py",
         "def test_example():\n    assert True\n",
     )
 

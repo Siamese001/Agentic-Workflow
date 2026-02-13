@@ -1,5 +1,5 @@
 """
-File: tests/e2e/agentic_core/L0_maintenance/test_ssot_e2e_reporting.py
+File: tests/e2e/agentic_core/L0_routing/test_ssot_e2e_reporting.py
 Description: End-to-End integration tests for SSOT reporting, state persistence, and multi-agent coordination.
 """
 
@@ -15,7 +15,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import (
+from agentic_core.L0_routing.scripts.execute_ssot import (
     AutonomousDecisionEngine,
     ConfidenceScore,
     ReconciliationViolation,
@@ -62,7 +62,7 @@ class TestSSOTE2EReporting:
 
         # Execute Phase 1 in Dry Run - mock the implementation directly
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
+            "agentic_core.L0_routing.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             mock_impl.return_value = {
                 "status": "success",
@@ -164,7 +164,7 @@ class TestSSOTE2EReporting:
         # This test validates the input validator/logic we added respects boundaries
 
         # Verify validate_territory_input allows strictly "A"
-        from agentic_core.L0_maintenance.scripts.execute_ssot import validate_territory_input
+        from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
 
         valid, _ = validate_territory_input("A")
         assert valid
@@ -216,7 +216,7 @@ class TestSSOTE2EReporting:
 
         # Execute
         with patch(
-            "agentic_core.L0_maintenance.scripts.execute_ssot.execute_phase1_discovery_impl",
+            "agentic_core.L0_routing.scripts.execute_ssot.execute_phase1_discovery_impl",
         ) as mock_impl:
             # Simulate the impl catching the error
             mock_impl.return_value = {

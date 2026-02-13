@@ -24,7 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     CONTRACT_VERSION,
     ArtifactType,
     CheckStatus,
@@ -121,8 +121,8 @@ class TestPathNormalization:
     @pytest.mark.parametrize(
         "input_path,expected",
         [
-            ("agentic_core/L0_maintenance/scripts/foo.py", "agentic_core/L0_maintenance/scripts/foo.py"),
-            ("agentic_core\\L0_maintenance\\scripts\\foo.py", "agentic_core/L0_maintenance/scripts/foo.py"),
+            ("agentic_core/L0_routing/scripts/foo.py", "agentic_core/L0_routing/scripts/foo.py"),
+            ("agentic_core\\L0_routing\\scripts\\foo.py", "agentic_core/L0_routing/scripts/foo.py"),
             ("./agentic_core/foo.py", "agentic_core/foo.py"),
         ],
     )
@@ -136,11 +136,11 @@ class TestPathNormalization:
     def test_artifact_auto_normalizes(self):
         a = GuardianArtifact(
             type=ArtifactType.JSON.value,
-            path="agentic_core\\L0_maintenance\\logs\\result.json",
+            path="agentic_core\\L0_routing\\logs\\result.json",
             description="test",
         )
         assert "\\" not in a.path
-        assert a.path == "agentic_core/L0_maintenance/logs/result.json"
+        assert a.path == "agentic_core/L0_routing/logs/result.json"
 
     def test_no_absolute_paths_in_result(self, passing_result: GuardianResult):
         violations = validate_no_absolute_paths(passing_result.to_dict())

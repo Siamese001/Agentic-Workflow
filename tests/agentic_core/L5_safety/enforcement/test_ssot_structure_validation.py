@@ -315,7 +315,7 @@ class TestLayerValidation:
 
         assert "L0" in LAYER_PATTERNS
         assert "L5" in LAYER_PATTERNS
-        assert LAYER_PATTERNS["L0"] == "L0_maintenance"
+        assert LAYER_PATTERNS["L0"] == "L0_routing"
         assert LAYER_PATTERNS["L5"] == "L5_safety"
 
 

@@ -70,7 +70,7 @@ class TestExtractLayerFromPath:
 
     def test_extract_layer_from_path_l0(self):
         """Should extract L0 from path."""
-        path = Path("agentic_core/L0_maintenance/scripts/cleanup.py")
+        path = Path("agentic_core/L0_routing/scripts/cleanup.py")
         assert extract_layer_from_path(path) == "L0"
 
     def test_extract_layer_from_path_l3(self):

@@ -806,7 +806,7 @@ class HierarchyAgent(SovereignBaseAgent):
             if not root_check(rel.parts[0]):
                 continue
             # [FIX] Depth = folder level where file resides, not path length
-            # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
+            # agentic_core/L0_routing/scripts/file.md → depth 3 (scripts is level 3)
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
 
             # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)
@@ -951,7 +951,7 @@ class HierarchyAgent(SovereignBaseAgent):
             rel = file_path.relative_to(self.project_root)
             if rel.parts[0] == "agentic_core":
                 # [FIX] Depth = folder level where file resides, not path length
-                # agentic_core/L0_maintenance/scripts/file.md → depth 3 (scripts is level 3)
+                # agentic_core/L0_routing/scripts/file.md → depth 3 (scripts is level 3)
                 depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
 
                 # [SSOT FIX] Check if this is a variable-depth subfolder (exempt from strict depth check)

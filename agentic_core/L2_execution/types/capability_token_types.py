@@ -15,7 +15,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from agentic_core.L0_maintenance.types.v15_p2_types import (
+from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )

@@ -78,7 +78,7 @@ class CoverageAgent(SovereignBaseAgent):
         """
         self.name: str = "CoverageAgent"
         self.layers: list[str] = layers or [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",

@@ -4,7 +4,7 @@ Dashboard UI Layout Tests (Phase 5)
 
 Tests for dashboard UI layout and styling.
 
-Migrated from: agentic_core/L0_maintenance/scripts/test_phase5_ui_layout.py
+Migrated from: agentic_core/L0_routing/scripts/test_phase5_ui_layout.py
 """
 
 import sys

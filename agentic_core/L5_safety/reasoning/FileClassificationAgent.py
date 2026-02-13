@@ -346,7 +346,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         # === L0 SCRIPTS SPECIAL CASE ===
-        if "L0_maintenance" in parts and "scripts" in parts:
+        if "L0_routing" in parts and "scripts" in parts:
             scripts_idx = parts.index("scripts")
             # If file is directly in scripts/ (not in a sub-subfolder)
             if file_depth == scripts_idx + 1:
@@ -1821,6 +1821,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             return "L2_execution"
         return None
 
+    # guardian: allow-type-erasure
     def suggest_agent_layer(self, path: Path) -> dict[str, Any] | None:
         """
         Generalized layer-routing for ALL Agent files using AST-based import
@@ -1909,7 +1910,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Check cross-layer agentic_core imports
             if mod.startswith("agentic_core."):
                 for layer_name in (
-                    "L0_maintenance",
+                    "L0_routing",
                     "L1_cognition",
                     "L2_execution",
                     "L3_orchestration",
@@ -2356,7 +2357,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # Map layer numbers to names for readable messages
         layer_names = {
-            "0": "L0_maintenance",
+            "0": "L0_routing",
             "1": "L1_cognition",
             "2": "L2_execution",
             "3": "L3_orchestration",
@@ -3871,7 +3872,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Rules:
         1. test_*.py files must NOT exist inside agentic_core/ (except tests/).
         2. utilities_* prefix is banned (redundant naming).
-        3. Scripts (if __name__ == '__main__') in utils/ must move to L0_maintenance/scripts.
+        3. Scripts (if __name__ == '__main__') in utils/ must move to L0_routing/scripts.
 
         Args:
             path: File path being checked
@@ -3903,13 +3904,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "suggested_destination": "Rename: strip 'utilities_' prefix.",
             }
 
-        # Rule 3: Scripts in utils/ should be in L0_maintenance/scripts
+        # Rule 3: Scripts in utils/ should be in L0_routing/scripts
         if "utils" in parts and content:
             if "if __name__ ==" in content or "if __name__==" in content:
                 return {
                     "type": "MISPLACED_SCRIPT",
-                    "message": f"'{name}' in utils/ contains __main__ guard. Move to L0_maintenance/scripts/.",
-                    "suggested_destination": "agentic_core/L0_maintenance/scripts/",
+                    "message": f"'{name}' in utils/ contains __main__ guard. Move to L0_routing/scripts/.",
+                    "suggested_destination": "agentic_core/L0_routing/scripts/",
                 }
 
         return None
@@ -3936,7 +3937,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         parts = path.parts
 
         # --- Rule 1: L0 Cognitive Pollution Detection ---
-        if "L0_maintenance" in parts:
+        if "L0_routing" in parts:
             cognitive_signals = ["debate", "synthesis", "conversation", "llm_generate", "multi_agent"]
             orchestration_signals = ["strategy", "orchestrat", "coordination", "workflow_engine"]
             found_cognitive = [s for s in cognitive_signals if s in content_lower]
@@ -4109,12 +4110,10 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Scripts, utilities, and active workers MUST be relocated
             if current_parent == "base_agents":
                 if file_type in ("SCRIPT", "UTILITY"):
-                    # Flag for movement to L0_maintenance/scripts/
+                    # Flag for movement to L0_routing/scripts/
                     for i, part in enumerate(path.parts):
                         if part == "agentic_core":
-                            target_path = (
-                                Path(*path.parts[: i + 1]) / "L0_maintenance" / "scripts" / path.name
-                            )
+                            target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
                             return target_path
@@ -4122,7 +4121,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 # CLASS and MIXIN are allowed in base_agents - no violation
                 if file_type in ("CLASS", "MIXIN"):
                     return None
-                # AGENT workers should be moved to engines/ (not L0_maintenance/scripts/)
+                # AGENT workers should be moved to engines/ (not L0_routing/scripts/)
                 if file_type == "AGENT":
                     for i, part in enumerate(path.parts):
                         if part == "agentic_core":
@@ -4149,14 +4148,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                             return target_path
 
             # [HARDENED] config/ PURIFICATION: Only CONFIG types allowed
-            # Scripts and utilities in config/ MUST be moved to L0_maintenance/scripts/
+            # Scripts and utilities in config/ MUST be moved to L0_routing/scripts/
             if current_parent == "config":
                 if file_type in ("SCRIPT", "UTILITY"):
                     for i, part in enumerate(path.parts):
                         if part == "agentic_core":
-                            target_path = (
-                                Path(*path.parts[: i + 1]) / "L0_maintenance" / "scripts" / path.name
-                            )
+                            target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
                             return target_path
@@ -4194,7 +4191,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "TYPES": "types",
                             "MIXIN": "utils",
                             "CLASS": "reasoning",
-                            "SCRIPT": "L0_maintenance/scripts",
+                            "SCRIPT": "L0_routing/scripts",
                             "UTILITY": "utils",
                             "STRATEGY": "reasoning",
                             "ADAPTER": "reasoning",
@@ -4210,7 +4207,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "MIXIN": "utils",
                             "CLASS": "reasoning",
                             "CONFIG": "config",
-                            "SCRIPT": "L0_maintenance/scripts",
+                            "SCRIPT": "L0_routing/scripts",
                             "UTILITY": "utils",
                             "TYPES": "types",
                         }

@@ -16,13 +16,13 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_maintenance.types.v15_p2_types import (
+from agentic_core.L0_routing.types.v15_p2_types import (
     FixConstraint,
     SurgicalManifest,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SSOT_PATH = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
+SSOT_PATH = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 SSOT_SRC = SSOT_PATH.read_text(encoding="utf-8")
 SSOT_AST = ast.parse(SSOT_SRC)
 
@@ -131,12 +131,12 @@ class TestStructuralSSOTBootstrap:
 
 def _local_build_ssot_manifest():
     """Locally extracted replica of _v15_build_ssot_manifest for testing."""
-    from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+    from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
     if not is_v15_enforced():
         return None
 
-    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import generate_trace_id
+    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
 
     _hex8 = hashlib.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -188,7 +188,7 @@ class TestRuntimeSSOTManifest:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest(self):
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
             V15ExecutionGateway,
         )
 

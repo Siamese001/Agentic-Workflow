@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

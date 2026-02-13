@@ -23,12 +23,12 @@
     "threshold": 1
   },
   "file_hashes": {
-    "agentic_core/L0_maintenance/reasoning/BenchmarkingAgent.py": "fd83202a95bbcea10a1962bf1c6937d7",
-    "agentic_core/L0_maintenance/reasoning/BootstrapAgent.py": "99dcc1878511172966f9e9a1a10927e4",
-    "agentic_core/L0_maintenance/reasoning/DocstringComplianceAgent.py": "db68ffd2f7cf8123cd2b48a29eb0177c",
-    "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py": "833aa5a18fd0d881e8337e298ca3bf17",
-    "agentic_core/L0_maintenance/reasoning/GospelSyncAgent.py": "3dea4093048b3630258403e14c1fbc68",
-    "agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py": "87722e05eaec9ff9e7b039d14b6480f3",
+    "agentic_core/L0_routing/reasoning/BenchmarkingAgent.py": "fd83202a95bbcea10a1962bf1c6937d7",
+    "agentic_core/L0_routing/reasoning/BootstrapAgent.py": "99dcc1878511172966f9e9a1a10927e4",
+    "agentic_core/L0_routing/reasoning/DocstringComplianceAgent.py": "db68ffd2f7cf8123cd2b48a29eb0177c",
+    "agentic_core/L0_routing/reasoning/FilesystemSSOTReconcilerAgent.py": "833aa5a18fd0d881e8337e298ca3bf17",
+    "agentic_core/L0_routing/reasoning/GospelSyncAgent.py": "3dea4093048b3630258403e14c1fbc68",
+    "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py": "87722e05eaec9ff9e7b039d14b6480f3",
     "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py": "4c222b8cc64f77e1ad8fb2facc10d56c",
     "agentic_core/L1_cognition/reasoning/AutonomousPromptEvolutionAgent.py": "a3a1463a8efab205c4a21e6d52ea7175",
     "agentic_core/L1_cognition/reasoning/BudgetAgent.py": "4fb39d4ba0d6bfb42bc2cea71a66f020",

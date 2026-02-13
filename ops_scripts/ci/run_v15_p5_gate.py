@@ -73,7 +73,7 @@ class P5EvidenceCollector:
 
     def _check_signed_modify_type(self):
         """Verify SignedModify type exists with required fields."""
-        p5_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p5_types.py"
+        p5_path = self.repo_root / "agentic_core/L0_routing/types/v15_p5_types.py"
         if not p5_path.exists():
             self.violations.append(
                 {
@@ -108,7 +108,7 @@ class P5EvidenceCollector:
 
     def _check_ensure_v15_signed(self):
         """Verify ensure_v15_signed function exists in guardian_contract."""
-        gc_path = self.repo_root / "agentic_core/L0_maintenance/types/guardian_contract.py"
+        gc_path = self.repo_root / "agentic_core/L0_routing/types/guardian_contract.py"
         if not gc_path.exists():
             self.violations.append(
                 {
@@ -136,7 +136,7 @@ class P5EvidenceCollector:
 
     def _check_policy_exception_artifact(self):
         """Verify PolicyExceptionArtifact exists with required fields."""
-        p3_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p3_types.py"
+        p3_path = self.repo_root / "agentic_core/L0_routing/types/v15_p3_types.py"
         if not p3_path.exists():
             self.violations.append(
                 {
@@ -171,7 +171,7 @@ class P5EvidenceCollector:
 
     def _check_authority_immutability(self):
         """Verify authority artifacts use frozen=True."""
-        p5_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p5_types.py"
+        p5_path = self.repo_root / "agentic_core/L0_routing/types/v15_p5_types.py"
         if not p5_path.exists():
             return
 
@@ -197,7 +197,7 @@ class P5EvidenceCollector:
 
     def _check_evidence_pack_type(self):
         """Verify EvidencePack exists for human escalation (§3.4)."""
-        p3_path = self.repo_root / "agentic_core/L0_maintenance/types/v15_p3_types.py"
+        p3_path = self.repo_root / "agentic_core/L0_routing/types/v15_p3_types.py"
         if not p3_path.exists():
             return
 

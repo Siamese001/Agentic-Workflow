@@ -1,4 +1,4 @@
-[SOVEREIGNTY] Scoped to territory: L0_maintenance
+[SOVEREIGNTY] Scoped to territory: L0_routing
 [WARNING] Windows LongPathsEnabled is NOT set to 1.
   [PLAN] RENAME legacy_agent_name_allowlist.py -> legacy_agent_name_allowlist_util.py
   [PLAN] RENAME audit_healing_strategy.py -> AuditHealingStrategy.py
@@ -13,7 +13,7 @@
   [PLAN] RENAME v15_p6_contracts.py -> v15_p6_contracts_exceptions.py
   [PLAN] RENAME v15_runtime_guard.py -> v15_runtime_guard_util.py
   [PLAN] RENAME vector_healing_strategy.py -> VectorHealingStrategy.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\reasoning\sovereign_healing_engine.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\sovereign_healing_engine.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\reasoning\sovereign_healing_engine.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\sovereign_healing_engine.py
   [PLAN] RENAME sovereign_healing_engine.py -> SovereignHealingEngine.py
   [PLAN] RENAME action_capability.py -> action_capability_config.py
   [PLAN] RENAME add_agent_suffix_plan_util.py -> add_agent_suffix_plan.py
@@ -209,44 +209,44 @@
   [PLAN] RENAME workflow_track_changes_util.py -> workflow_track_changes.py
   [PLAN] RENAME zombie_vaccinator.py -> ZombieVaccinator.py
   [PLAN] RENAME agent_audit_result.py -> agent_audit_result_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\agent_audit_result.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\agent_audit_result.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\agent_audit_result.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\agent_audit_result.py
   [PLAN] RENAME agent_audit_result.py -> AgentAuditResult.py
   [PLAN] RENAME guardian_contract.py -> guardian_contract_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\guardian_contract.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\guardian_contract.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\guardian_contract.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\guardian_contract.py
   [PLAN] RENAME guardian_contract.py -> guardian_contract_exceptions.py
   [PLAN] RENAME guardian_registry.py -> guardian_registry_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\guardian_registry.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\guardian_registry.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\guardian_registry.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\guardian_registry.py
   [PLAN] RENAME guardian_registry.py -> guardian_registry_validator.py
   [PLAN] RENAME integration_contract.py -> integration_contract_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\integration_contract.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\integration_contract.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\integration_contract.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\integration_contract.py
   [PLAN] RENAME integration_contract.py -> integration_contract_types.py
   [PLAN] RENAME v15_contracts.py -> v15_contracts_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\v15_contracts.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\v15_contracts.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\v15_contracts.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\v15_contracts.py
   [PLAN] RENAME v15_contracts.py -> v15_contracts_validator.py
   [PLAN] RENAME v15_p2_contracts.py -> v15_p2_contracts_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\types\v15_p2_contracts.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\enforcement\v15_p2_contracts.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\types\v15_p2_contracts.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\v15_p2_contracts.py
   [PLAN] RENAME v15_p2_contracts.py -> v15_p2_contracts_exceptions.py
   [PLAN] RENAME v15_p2_types.py -> v15_p2_validator.py
   [PLAN] RENAME v15_p3_types.py -> v15_p3_config.py
   [PLAN] RENAME v15_p4_types.py -> v15_p4_validator.py
   [PLAN] RENAME v15_types.py -> v15_config.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\add_test_coverage_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\add_test_coverage_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\complexity_visitor_util.py -> C:\Git\Agentic-Workflow\agentic_core\config\complexity_visitor_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\add_test_coverage_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\add_test_coverage_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\complexity_visitor_util.py -> C:\Git\Agentic-Workflow\agentic_core\config\complexity_visitor_util.py
   [PLAN] RENAME component_util.py -> ComponentFactory.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\core_integrity_util.py -> C:\Git\Agentic-Workflow\agentic_core\validators\core_integrity_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\fix_all_tunnels_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\fix_all_tunnels_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\fix_depth_violations_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\fix_depth_violations_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\fix_mission_runner_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\fix_mission_runner_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\fix_remaining_depth_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\fix_remaining_depth_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\force_annexation_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\force_annexation_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\gravity_audit_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\gravity_audit_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\json_formatter_util.py -> C:\Git\Agentic-Workflow\agentic_core\reasoning\json_formatter_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\manifest_guardian_util.py -> C:\Git\Agentic-Workflow\agentic_core\config\manifest_guardian_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\scorched_earth_merge_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\scorched_earth_merge_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\sovereign_alignment_v2_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\sovereign_alignment_v2_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\sovereign_convergence_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\sovereign_convergence_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\structural_fix_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\structural_fix_util.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\utils\trim_remaining_airlocks_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\trim_remaining_airlocks_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\core_integrity_util.py -> C:\Git\Agentic-Workflow\agentic_core\validators\core_integrity_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\fix_all_tunnels_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\fix_all_tunnels_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\fix_depth_violations_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\fix_depth_violations_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\fix_mission_runner_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\fix_mission_runner_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\fix_remaining_depth_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\fix_remaining_depth_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\force_annexation_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\force_annexation_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\gravity_audit_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\gravity_audit_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\json_formatter_util.py -> C:\Git\Agentic-Workflow\agentic_core\reasoning\json_formatter_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\manifest_guardian_util.py -> C:\Git\Agentic-Workflow\agentic_core\config\manifest_guardian_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\scorched_earth_merge_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\scorched_earth_merge_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\sovereign_alignment_v2_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\sovereign_alignment_v2_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\sovereign_convergence_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\sovereign_convergence_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\structural_fix_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\structural_fix_util.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L0_routing\utils\trim_remaining_airlocks_util.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\trim_remaining_airlocks_util.py
   - Gateways: 0
 [SOVEREIGNTY] Scoped to territory: L1_cognition
 [WARNING] Windows LongPathsEnabled is NOT set to 1.
@@ -429,7 +429,7 @@
   [PLAN] RENAME blueprint_compiler.py -> blueprint_compiler_config.py
   [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L5_safety\config\blueprint_compiler.py -> C:\Git\Agentic-Workflow\agentic_core\L5_safety\enforcement\blueprint_compiler.py
   [PLAN] RENAME blueprint_compiler.py -> blueprint_compiler_types.py
-  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L5_safety\config\structure_blueprint_config.py -> C:\Git\Agentic-Workflow\agentic_core\L0_maintenance\scripts\structure_blueprint_config.py
+  [PLAN] MOVE C:\Git\Agentic-Workflow\agentic_core\L5_safety\config\structure_blueprint_config.py -> C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\structure_blueprint_config.py
   [PLAN] RENAME artifacts.py -> artifacts_util.py
   [PLAN] RENAME classification.py -> classification_util.py
   [PLAN] RENAME derived.py -> derived_util.py
@@ -473,7 +473,7 @@
     },
     "FilesystemSSOTReconcilerAgent": {
       "status": "OK",
-      "module": "agentic_core.L0_maintenance.reasoning.FilesystemSSOTReconcilerAgent"
+      "module": "agentic_core.L0_routing.reasoning.FilesystemSSOTReconcilerAgent"
     },
     "LocationAgent": {
       "status": "OK",
@@ -507,7 +507,7 @@
     }
   },
   "territory_results": {
-    "L0_maintenance": {
+    "L0_routing": {
       "FileClassificationAgent": {
         "success": true,
         "result": {
@@ -838,9 +838,9 @@
       "message": "Leaf domain 'knowledge' must not sprout LCD subfolder 'reasoning/'. Only L0\u2013L6 layer roots may have LCD subtrees."
     },
     {
-      "file": "agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py",
+      "file": "agentic_core/L0_routing/reasoning/FilesystemSSOTReconcilerAgent.py",
       "violation": "AGENT_LAYER_MISPLACEMENT",
-      "current_layer": "L0_maintenance",
+      "current_layer": "L0_routing",
       "suggested_layer": "L5_safety",
       "confidence": "HIGH",
       "evidence": [
@@ -850,17 +850,17 @@
         "agentic_core.L5_safety.types.surgical_context_types",
         "agentic_core.L5_safety.config.structure_blueprint_config"
       ],
-      "message": "'FilesystemSSOTReconcilerAgent.py' is in L0_maintenance but infrastructure imports and content signals suggest L5_safety (confidence=HIGH, score=30 vs 0). Evidence: ['agentic_core.L5_safety.enforcement.archival_gatekeeper', 'agentic_core.L5_safety.reasoning.HierarchyAgent', 'agentic_core.L5_safety.reasoning.LocationValidatorAgent', 'agentic_core.L5_safety.types.surgical_context_types', 'agentic_core.L5_safety.config.structure_blueprint_config']"
+      "message": "'FilesystemSSOTReconcilerAgent.py' is in L0_routing but infrastructure imports and content signals suggest L5_safety (confidence=HIGH, score=30 vs 0). Evidence: ['agentic_core.L5_safety.enforcement.archival_gatekeeper', 'agentic_core.L5_safety.reasoning.HierarchyAgent', 'agentic_core.L5_safety.reasoning.LocationValidatorAgent', 'agentic_core.L5_safety.types.surgical_context_types', 'agentic_core.L5_safety.config.structure_blueprint_config']"
     },
     {
-      "file": "agentic_core/L0_maintenance/reasoning/sovereign_healing_engine.py",
+      "file": "agentic_core/L0_routing/reasoning/sovereign_healing_engine.py",
       "violation": "NON_AGENT_IN_REASONING",
-      "message": "'sovereign_healing_engine.py' is in reasoning/ but contains no Agent, Orchestrator, or Executor class. Move to utils/ or enforcement/ under L0_maintenance."
+      "message": "'sovereign_healing_engine.py' is in reasoning/ but contains no Agent, Orchestrator, or Executor class. Move to utils/ or enforcement/ under L0_routing."
     },
     {
-      "file": "agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py",
+      "file": "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
       "violation": "AGENT_LAYER_MISPLACEMENT",
-      "current_layer": "L0_maintenance",
+      "current_layer": "L0_routing",
       "suggested_layer": "L5_safety",
       "confidence": "HIGH",
       "evidence": [
@@ -869,210 +869,210 @@
         "agentic_core.L5_safety.enforcement.archival_gatekeeper",
         "agentic_core.L5_safety.reasoning.FileClassificationAgent"
       ],
-      "message": "'SSOTFolderCleanupAgent.py' is in L0_maintenance but infrastructure imports and content signals suggest L5_safety (confidence=HIGH, score=24 vs 0). Evidence: ['agentic_core.L5_safety.config.structure_blueprint_config', 'agentic_core.L5_safety.reasoning.CognitiveDispositionAgent', 'agentic_core.L5_safety.enforcement.archival_gatekeeper', 'agentic_core.L5_safety.reasoning.FileClassificationAgent']"
+      "message": "'SSOTFolderCleanupAgent.py' is in L0_routing but infrastructure imports and content signals suggest L5_safety (confidence=HIGH, score=24 vs 0). Evidence: ['agentic_core.L5_safety.config.structure_blueprint_config', 'agentic_core.L5_safety.reasoning.CognitiveDispositionAgent', 'agentic_core.L5_safety.enforcement.archival_gatekeeper', 'agentic_core.L5_safety.reasoning.FileClassificationAgent']"
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/audit_code_quality_metrics_util.py",
+      "file": "agentic_core/L0_routing/scripts/audit_code_quality_metrics_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "metric",
-      "current_layer": "L0_maintenance",
-      "message": "'audit_code_quality_metrics_util.py' contains observability keyword 'metric' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'audit_code_quality_metrics_util.py' contains observability keyword 'metric' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/audit_dashboard_naming_util.py",
+      "file": "agentic_core/L0_routing/scripts/audit_dashboard_naming_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'audit_dashboard_naming_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'audit_dashboard_naming_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_flow_util.py",
+      "file": "agentic_core/L0_routing/scripts/audit_dashboard_ssot_flow_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'audit_dashboard_ssot_flow_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'audit_dashboard_ssot_flow_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/audit_dashboard_ssot_util.py",
+      "file": "agentic_core/L0_routing/scripts/audit_dashboard_ssot_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'audit_dashboard_ssot_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'audit_dashboard_ssot_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/clean_dashboard_html_util.py",
+      "file": "agentic_core/L0_routing/scripts/clean_dashboard_html_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'clean_dashboard_html_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'clean_dashboard_html_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/compare_dashboard_data_util.py",
+      "file": "agentic_core/L0_routing/scripts/compare_dashboard_data_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'compare_dashboard_data_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'compare_dashboard_data_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/dashboard_live_server_util.py",
+      "file": "agentic_core/L0_routing/scripts/dashboard_live_server_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'dashboard_live_server_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'dashboard_live_server_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/dashboard_qa_deep_audit_util.py",
+      "file": "agentic_core/L0_routing/scripts/dashboard_qa_deep_audit_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'dashboard_qa_deep_audit_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'dashboard_qa_deep_audit_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/dashboard_ssot_definitions_util.py",
+      "file": "agentic_core/L0_routing/scripts/dashboard_ssot_definitions_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'dashboard_ssot_definitions_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'dashboard_ssot_definitions_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/dashboard_style_report_util.py",
+      "file": "agentic_core/L0_routing/scripts/dashboard_style_report_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'dashboard_style_report_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'dashboard_style_report_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/dashboard_verifier.py",
+      "file": "agentic_core/L0_routing/scripts/dashboard_verifier.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'dashboard_verifier.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'dashboard_verifier.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/debug_dashboard_rendering_util.py",
+      "file": "agentic_core/L0_routing/scripts/debug_dashboard_rendering_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'debug_dashboard_rendering_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'debug_dashboard_rendering_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/diagnose_dashboard_live_util.py",
+      "file": "agentic_core/L0_routing/scripts/diagnose_dashboard_live_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'diagnose_dashboard_live_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'diagnose_dashboard_live_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/diagnose_user_dashboard_view_util.py",
+      "file": "agentic_core/L0_routing/scripts/diagnose_user_dashboard_view_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'diagnose_user_dashboard_view_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'diagnose_user_dashboard_view_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/enforce_dashboard_freshness_util.py",
+      "file": "agentic_core/L0_routing/scripts/enforce_dashboard_freshness_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'enforce_dashboard_freshness_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'enforce_dashboard_freshness_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/extract_dashboard_errors_util.py",
+      "file": "agentic_core/L0_routing/scripts/extract_dashboard_errors_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'extract_dashboard_errors_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'extract_dashboard_errors_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/generate_blueprint_metrics_util.py",
+      "file": "agentic_core/L0_routing/scripts/generate_blueprint_metrics_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "metric",
-      "current_layer": "L0_maintenance",
-      "message": "'generate_blueprint_metrics_util.py' contains observability keyword 'metric' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'generate_blueprint_metrics_util.py' contains observability keyword 'metric' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py",
+      "file": "agentic_core/L0_routing/scripts/generate_dashboard_ssot_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'generate_dashboard_ssot_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'generate_dashboard_ssot_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/inspect_dashboard_browser_util.py",
+      "file": "agentic_core/L0_routing/scripts/inspect_dashboard_browser_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'inspect_dashboard_browser_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'inspect_dashboard_browser_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/rca_dashboard_row_collapse_util.py",
+      "file": "agentic_core/L0_routing/scripts/rca_dashboard_row_collapse_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'rca_dashboard_row_collapse_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'rca_dashboard_row_collapse_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_full_util.py",
+      "file": "agentic_core/L0_routing/scripts/regenerate_dashboard_full_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'regenerate_dashboard_full_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'regenerate_dashboard_full_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/regenerate_dashboard_util.py",
+      "file": "agentic_core/L0_routing/scripts/regenerate_dashboard_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'regenerate_dashboard_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'regenerate_dashboard_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/start_dashboard_server_util.py",
+      "file": "agentic_core/L0_routing/scripts/start_dashboard_server_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'start_dashboard_server_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'start_dashboard_server_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/sync_dashboard_agent_count_util.py",
+      "file": "agentic_core/L0_routing/scripts/sync_dashboard_agent_count_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'sync_dashboard_agent_count_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'sync_dashboard_agent_count_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/trace_dashboard_generation_util.py",
+      "file": "agentic_core/L0_routing/scripts/trace_dashboard_generation_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'trace_dashboard_generation_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'trace_dashboard_generation_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/validate_dashboard_changes_util.py",
+      "file": "agentic_core/L0_routing/scripts/validate_dashboard_changes_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'validate_dashboard_changes_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'validate_dashboard_changes_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/validate_dashboard_totals_util.py",
+      "file": "agentic_core/L0_routing/scripts/validate_dashboard_totals_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'validate_dashboard_totals_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'validate_dashboard_totals_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/verify_healing_metrics_util.py",
+      "file": "agentic_core/L0_routing/scripts/verify_healing_metrics_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "metric",
-      "current_layer": "L0_maintenance",
-      "message": "'verify_healing_metrics_util.py' contains observability keyword 'metric' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'verify_healing_metrics_util.py' contains observability keyword 'metric' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
-      "file": "agentic_core/L0_maintenance/scripts/windsurf_realtime_dashboard_util.py",
+      "file": "agentic_core/L0_routing/scripts/windsurf_realtime_dashboard_util.py",
       "violation": "OBSERVABILITY_OUTSIDE_L6",
       "keyword": "dashboard",
-      "current_layer": "L0_maintenance",
-      "message": "'windsurf_realtime_dashboard_util.py' contains observability keyword 'dashboard' but is in L0_maintenance, not L6_observability. Move to L6_observability/."
+      "current_layer": "L0_routing",
+      "message": "'windsurf_realtime_dashboard_util.py' contains observability keyword 'dashboard' but is in L0_routing, not L6_observability. Move to L6_observability/."
     },
     {
       "file": "agentic_core/L1_cognition/reasoning/budget_enforcer.py",
@@ -1855,7 +1855,7 @@
     }
   ],
   "territories_scanned": [
-    "L0_maintenance",
+    "L0_routing",
     "L1_cognition",
     "L2_execution",
     "L3_orchestration",

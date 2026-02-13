@@ -148,7 +148,7 @@ def test_3_roster_cleanliness():
     print("TEST 3: Roster Cleanliness")
     print("=" * 60)
 
-    from agentic_core.L0_maintenance.scripts.discovery_roster_builder import SKIP_AGENTS
+    from agentic_core.L0_routing.scripts.discovery_roster_builder import SKIP_AGENTS
 
     # Core agents that should be skipped
     tier0_agents = ["SyntaxValidatorAgent", "HygieneGuardianAgent"]

@@ -21,16 +21,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_all_guardians import (
+from agentic_core.L0_routing.scripts.run_all_guardians import (
     run_all_guardians,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GUARDIAN_ARTIFACT_DIR,
     GUARDIAN_ARTIFACT_PATTERN,
     ArtifactClass,
     get_artifact_filename,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry import (
     ALL_GUARDIANS,
 )
 
@@ -143,7 +143,7 @@ class TestContractDoc:
         assert doc.exists(), "L6 ingestion contract document missing"
 
     def test_contract_module_exists(self):
-        mod = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
+        mod = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
         assert mod.exists()
 
 

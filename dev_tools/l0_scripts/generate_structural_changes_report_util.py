@@ -45,9 +45,9 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
 
 
 def scan_l0_maintenance_scripts() -> list[dict[str, Any]]:
-    """Scan agentic_core/L0_maintenance/scripts for relocated files."""
+    """Scan agentic_core/L0_routing/scripts for relocated files."""
     relocated_files = []
-    scripts_dir = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "scripts"
+    scripts_dir = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
 
     if not scripts_dir.exists():
         return relocated_files
@@ -115,13 +115,13 @@ def scan_removed_folders() -> list[dict[str, str]]:
         {
             "folder_name": "scripts",
             "original_location": "scripts/",
-            "removal_reason": "Merged into agentic_core/L0_maintenance/scripts/",
+            "removal_reason": "Merged into agentic_core/L0_routing/scripts/",
             "action": "consolidated",
         },
         {
             "folder_name": "logs",
             "original_location": "logs/",
-            "removal_reason": "Merged into agentic_core/L0_maintenance/utils/",
+            "removal_reason": "Merged into agentic_core/L0_routing/utils/",
             "action": "consolidated",
         },
         {
@@ -171,7 +171,7 @@ def generate_comprehensive_report() -> dict[str, Any]:
         },
         "relocated_files": {
             "count": len(relocated_files),
-            "target_location": "agentic_core/L0_maintenance/scripts/",
+            "target_location": "agentic_core/L0_routing/scripts/",
             "files": relocated_files,
         },
         "created_directories": {"count": len(created_dirs), "directories": created_dirs},

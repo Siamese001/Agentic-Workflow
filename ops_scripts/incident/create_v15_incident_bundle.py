@@ -64,7 +64,7 @@ python ops_scripts/review/generate_v15_review_summary.py \\
 
 # Validate policy pack
 python ops_scripts/policy/validate_v15_policy_pack.py \\
-    --path agentic_core/L0_maintenance/policy/v15_policy_pack.json \\
+    --path agentic_core/L0_routing/policy/v15_policy_pack.json \\
     --json-out artifacts/policy_envelope.json
 ```
 
@@ -108,7 +108,7 @@ Record commands executed during incident response:
 def _guardian_report_placeholder() -> str:
     return f"""{SENTINEL}
 Copy the guardian_report.json from:
-  agentic_core/L0_maintenance/logs/guardian_report.json
+  agentic_core/L0_routing/logs/guardian_report.json
 
 Or generate fresh:
   python -m pytest tests/guardian/ -q
@@ -126,7 +126,7 @@ Generate and copy here:
 def _policy_pack_placeholder() -> str:
     return f"""{SENTINEL}
 Copy the policy pack from:
-  agentic_core/L0_maintenance/policy/v15_policy_pack.json
+  agentic_core/L0_routing/policy/v15_policy_pack.json
 """
 
 

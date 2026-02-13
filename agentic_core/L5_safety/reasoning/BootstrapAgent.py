@@ -71,7 +71,7 @@ class BootstrapAgent(L0MaintenanceBase):
             critical_files = [
                 "agentic_core/__init__.py",
                 "agentic_core/base_agents/SovereignBaseAgent.py",
-                "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
+                "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py",
             ]
 
             for file_path in critical_files:

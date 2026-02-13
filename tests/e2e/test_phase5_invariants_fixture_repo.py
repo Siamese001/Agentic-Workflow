@@ -71,9 +71,9 @@ class TestInvariant1_NoFilesInOriginalLocations:
     def test_section_e_pascalcase_in_scripts_gone(self, base_path):
         """Section E: PascalCase files should not exist in L0/scripts."""
         anomalies = [
-            "L0_maintenance/scripts/AgentAuditResult.py",
-            "L0_maintenance/scripts/BatchEmbeddingService.py",
-            "L0_maintenance/scripts/SovereignHealingEngine.py",
+            "L0_routing/scripts/AgentAuditResult.py",
+            "L0_routing/scripts/BatchEmbeddingService.py",
+            "L0_routing/scripts/SovereignHealingEngine.py",
         ]
         for path in anomalies:
             full_path = base_path / path
@@ -82,9 +82,9 @@ class TestInvariant1_NoFilesInOriginalLocations:
     def test_section_f_test_files_in_scripts_gone(self, base_path):
         """Section F: Test files should not exist in L0/scripts."""
         anomalies = [
-            "L0_maintenance/scripts/test_boundary_stress_test.py",
-            "L0_maintenance/scripts/test_lifecycle_audit.py",
-            "L0_maintenance/scripts/test_verify_self_healing.py",
+            "L0_routing/scripts/test_boundary_stress_test.py",
+            "L0_routing/scripts/test_lifecycle_audit.py",
+            "L0_routing/scripts/test_verify_self_healing.py",
         ]
         for path in anomalies:
             full_path = base_path / path
@@ -127,7 +127,7 @@ class TestInvariant3_ScriptsPurity:
 
     def test_no_pascalcase_in_scripts(self):
         """No PascalCase filenames in L0/scripts."""
-        scripts_dir = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core/L0_maintenance/scripts")
+        scripts_dir = Path("c:/Git/Agentic-Workflow/Agentic-Workflow/agentic_core/L0_routing/scripts")
         if not scripts_dir.exists():
             pytest.skip("scripts dir not found")
 

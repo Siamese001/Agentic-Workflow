@@ -28,8 +28,8 @@ ALLOWED_ROOTS = {
     "fixtures",
     "migration",
     "governance",
-    "L0_maintenance",
-}  # L0_maintenance for maintenance scripts
+    "L0_routing",
+}  # L0_routing for maintenance scripts
 ALLOWED_ROOT_FILES = {"conftest.py", "pytest.ini", "README.md", "__init__.py"}
 
 

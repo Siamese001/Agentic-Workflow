@@ -20,16 +20,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_all_guardians import (
+from agentic_core.L0_routing.scripts.run_all_guardians import (
     run_all_guardians,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     AGGREGATE_GUARDIAN_ID,
     CONTRACT_VERSION,
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry import (
     ALL_GUARDIANS,
 )
 
@@ -39,7 +39,7 @@ pytestmark = pytest.mark.guardian
 @pytest.fixture
 def clean_repo(tmp_path: Path) -> Path:
     """Minimal sandboxed repo with full SOVEREIGN_TERRITORIES structure."""
-    from agentic_core.L0_maintenance.scripts.run_guardian_hierarchy_compliance import (
+    from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (
         _get_l3_subfolders,
     )
     from agentic_core.L5_safety.config.structure_blueprint_config import (
@@ -157,7 +157,7 @@ class TestRollupPrecedence:
             return r
 
         with patch(
-            "agentic_core.L0_maintenance.scripts.run_all_guardians._run_single_guardian",
+            "agentic_core.L0_routing.scripts.run_all_guardians._run_single_guardian",
             side_effect=_synthetic,
         ):
             result = run_all_guardians(repo_root=clean_repo)
@@ -222,7 +222,7 @@ class TestPerGuardianMetadata:
         """Aggregate result must preserve contract version."""
         result = run_all_guardians(repo_root=clean_repo)
 
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             CONTRACT_VERSION,
         )
 
@@ -330,7 +330,7 @@ class TestArtifactIndex:
 
     def test_index_schema_validates(self, clean_repo: Path):
         """Aggregate with index must pass JSON schema validation."""
-        from agentic_core.L0_maintenance.types.guardian_contract import validate_against_json_schema
+        from agentic_core.L0_routing.types.guardian_contract import validate_against_json_schema
 
         result = run_all_guardians(repo_root=clean_repo)
         errors = validate_against_json_schema(result.to_dict())

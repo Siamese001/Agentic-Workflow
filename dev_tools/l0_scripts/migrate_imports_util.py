@@ -11,8 +11,8 @@ This script updates imports across the codebase to use the new SSOT patterns:
 - agentic_core.utils.core_extensions.healer_mixin for HealerMixin
 
 Usage:
-    python -m agentic_core.L0_maintenance.scripts.migrate_imports --dry-run
-    python -m agentic_core.L0_maintenance.scripts.migrate_imports --apply
+    python -m agentic_core.L0_routing.scripts.migrate_imports --dry-run
+    python -m agentic_core.L0_routing.scripts.migrate_imports --apply
 """
 
 

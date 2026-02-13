@@ -76,7 +76,7 @@ NAMING_CONVENTIONS: Final[Mapping[str, Mapping[str, Any]]] = {
 # ============================================================================
 
 LAYER_KEYWORD_AFFINITY: Final[Mapping[str, Sequence[str]]] = {
-    "L0_maintenance": [
+    "L0_routing": [
         "cleanup",
         "maintenance",
         "bootstrap",
@@ -799,7 +799,7 @@ L2_TO_L1_MAP: Final[Mapping[str, str]] = {
     "config": "CONTEXT_DEPENDENT",
     "types": "CONTEXT_DEPENDENT",
     # Nuance folders → specific layer
-    "scripts": "L0_maintenance",
+    "scripts": "L0_routing",
     "tools": "L2_execution",
     "memory": "L4_state",
     "dashboards": "L6_observability",
@@ -823,7 +823,7 @@ EXERCISER_REGISTRY: Final[Mapping[str, str]] = {
     "L1_cognition": "L1CognitionExerciserAgent",
     "L2_execution": "GeneralExerciserAgent",  # Fallback generic
     "L3_orchestration": "GeneralExerciserAgent",
-    "L0_maintenance": "GeneralExerciserAgent",
+    "L0_routing": "GeneralExerciserAgent",
     "observability": "GeneralExerciserAgent",
     "utils": "GeneralExerciserAgent",
     "config": "GeneralExerciserAgent",
@@ -1342,7 +1342,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
             ],
         },
     },
-    "L0_maintenance": {
+    "L0_routing": {
         "scripts": {
             "purpose": "Autonomous healing scripts, Checkpoint management, self-updating systems, neural immune agents, and sovereign improvement missions",
             "entity_types": ["Class", "Function"],
@@ -1359,7 +1359,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "refactor",
                 "evolution",
             ],
-            "imports": ["agentic_core.L0_maintenance.scripts", "structure_blueprint"],
+            "imports": ["agentic_core.L0_routing.scripts", "structure_blueprint"],
             "bases": ["CanonBaseAgent", "AutonomousAgent", "HealingEngine"],
             "examples": [
                 "AutonomousCheckpointManager",
@@ -1382,7 +1382,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "healing_trace",
                 "mission_log",
             ],
-            "imports": ["agentic_core.L0_maintenance.utils", "logging", "json"],
+            "imports": ["agentic_core.L0_routing.utils", "logging", "json"],
             "bases": ["DiagnosticLogger", "MissionTranscript", "MaintenanceAudit"],
             "examples": [
                 "HealingOperationLogger",
@@ -1405,7 +1405,7 @@ semantic_l2_registry: Final[Mapping[str, Any]] = {
                 "resource",
                 "efficiency",
             ],
-            "imports": ["agentic_core.L0_maintenance.benchmarks", "time", "asyncio", "psutil"],
+            "imports": ["agentic_core.L0_routing.benchmarks", "time", "asyncio", "psutil"],
             "bases": ["BenchmarkSuite", "PerformanceProfiler", "ResourceMonitor"],
             "examples": [
                 "SovereignBenchmarkRunner",

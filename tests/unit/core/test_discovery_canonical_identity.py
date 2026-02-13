@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+from agentic_core.L0_routing.scripts.full_agent_discovery import (
     perform_deep_integrity_scan,
 )
-from agentic_core.L0_maintenance.utils.ssot_discovery_util import (
+from agentic_core.L0_routing.utils.ssot_discovery_util import (
     load_agent_discovery,
 )
 from agentic_core.L5_safety.config.structure_blueprint_config import (

@@ -37,7 +37,7 @@ from agentic_core.L5_safety.config.structure_blueprint.derived import (
 
 LAYER_ROOTS: Final[frozenset[str]] = frozenset(
     {
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L3_orchestration",
@@ -166,13 +166,13 @@ RUNTIME_STATE_JSON: str = "runtime_state.json"
 
 # Forensic discovery script integrity — canonical SHA-256 of the corrected script.
 # Verified by the audit precondition step before any analysis begins.
-FORENSIC_DISCOVERY_SCRIPT: str = "agentic_core/L0_maintenance/scripts/forensic_discovery_prep.py"
+FORENSIC_DISCOVERY_SCRIPT: str = "agentic_core/L0_routing/scripts/forensic_discovery_prep.py"
 FORENSIC_DISCOVERY_INTEGRITY_HASH: str = "e140d970cd529e7f8ca52ef47735113ebcea0cbc94d93f36a93e2a4aeeac093a"
 
 OPS_SCRIPTS_DIR: str = "ops_scripts"
 TESTS_DIR: str = "tests"
 
-L0_MAINTENANCE_DIR: str = "agentic_core/L0_maintenance"
+L0_MAINTENANCE_DIR: str = "agentic_core/L0_routing"
 L1_COGNITION_DIR: str = "agentic_core/L1_cognition"
 L2_EXECUTION_DIR: str = "agentic_core/L2_execution"
 L3_ORCHESTRATION_DIR: str = "agentic_core/L3_orchestration"
@@ -258,7 +258,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "validators",
         "L6_observability",
         "L3_orchestration",
-        "L0_maintenance",
+        "L0_routing",
         "L1_cognition",
         "L2_execution",
         "L4_state",
@@ -813,7 +813,7 @@ def is_path_allowed(rel_path: str | Path) -> bool:
         # Critical Analysis: Blocks 'rg_', 'lic_', and 'test_' prefixes to prevent
         # semantic drift while allowing __init__.py and L0 scripts.
         if filename.startswith(("rg_", "lic_", "test_")):
-            if not (filename == "__init__.py" or "L0_maintenance/scripts" in normalized_path):
+            if not (filename == "__init__.py" or "L0_routing/scripts" in normalized_path):
                 return False
 
     # 3. Depth Enforcement: L4 applies to folder structure, not the filename

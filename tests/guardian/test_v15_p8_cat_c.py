@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_maintenance.types.v15_p2_types import (
+from agentic_core.L0_routing.types.v15_p2_types import (
     FixConstraint,
     SurgicalManifest,
 )
@@ -136,12 +136,12 @@ def _local_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
 
     Same logic as mission_runner.py but without importing the heavy module.
     """
-    from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced as _check
+    from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced as _check
 
     if not _check():
         return None
 
-    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import generate_trace_id
+    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
 
     _hex8 = hashlib.sha256(f"mission_runner.{mode_name}".encode()).hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -186,7 +186,7 @@ class TestRuntimeManifestConstruction:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_audit_invokes_gateway_execute(self):
         """Monkeypatch gateway.execute to capture call and verify manifest is passed."""
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
             V15ExecutionGateway,
         )
 

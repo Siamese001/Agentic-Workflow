@@ -41,10 +41,10 @@ from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
     OrchestrationStrategy,
@@ -659,13 +659,13 @@ class Orchestrator(SovereignBaseAgent):
 
         import hashlib as _hl
 
-        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_maintenance.types.v15_p2_contracts import (
+        from agentic_core.L0_routing.types.v15_p2_contracts import (
             require_manifest_hash_ok,
         )
-        from agentic_core.L0_maintenance.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.v15_p2_types import (
             FixConstraint,
             SurgicalManifest,
         )

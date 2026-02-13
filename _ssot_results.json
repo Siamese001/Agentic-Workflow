@@ -10,7 +10,7 @@
     ],
     "line_count": 6
   },
-  "L0_maintenance": {
+  "L0_routing": {
     "log_lines": [
       "INFO UnifiedSovereign \ud83c\udfdb\ufe0f UNIFIED SOVEREIGN PROTOCOL STARTED",
       "INFO UnifiedSovereign   Mode: AUTONOMOUS",

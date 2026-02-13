@@ -72,7 +72,7 @@ class MCPSovereignAuthority:
             target: Any = args.get("target") or args.get("scope", "")
             if not target or ".." in str(target) or str(target).startswith("/"):
                 raise PermissionError(f"L0 tool target '{target}' invalid — path traversal blocked.")
-            allowed_prefixes: Any = {"L0_maintenance", "logs", "benchmarks", "apps_shared"}
+            allowed_prefixes: Any = {"L0_routing", "logs", "benchmarks", "apps_shared"}
             if not any(str(target).startswith(p) for p in allowed_prefixes):
                 raise PermissionError("L0 tool target outside sovereign maintenance zones.")
         if tool_name == "redteam_simulate":

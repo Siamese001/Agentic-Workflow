@@ -4,50 +4,50 @@
   "total_agents": 190,
   "agents": [
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\BenchmarkingAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\BenchmarkingAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\BenchmarkingAgent",
       "class_name": "BenchmarkingAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\BootstrapAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\BootstrapAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\BootstrapAgent",
       "class_name": "BootstrapAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\DocstringComplianceAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\DocstringComplianceAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\DocstringComplianceAgent",
       "class_name": "DocstringComplianceAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\FilesystemSSOTReconcilerAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\FilesystemSSOTReconcilerAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\FilesystemSSOTReconcilerAgent",
       "class_name": "FilesystemSSOTReconcilerAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\GospelSyncAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\GospelSyncAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\GospelSyncAgent",
       "class_name": "GospelSyncAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },
     {
-      "file": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent.py",
-      "module": "agentic_core\\L0_maintenance\\reasoning\\SSOTFolderCleanupAgent",
+      "file": "agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent.py",
+      "module": "agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent",
       "class_name": "SSOTFolderCleanupAgent",
-      "layer": "L0_maintenance",
+      "layer": "L0_routing",
       "fca_type": "AGENT",
       "exists": true
     },

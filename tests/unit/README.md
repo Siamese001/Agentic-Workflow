@@ -10,7 +10,7 @@ The unit testing structure mirrors the agent hierarchy:
 tests/unit/
 ├── agentic_core/
 │   ├── base_agents/          # Base agent testing
-│   ├── L0_maintenance/       # Maintenance agents
+│   ├── L0_routing/       # Maintenance agents
 │   ├── L1_cognition/         # Cognition agents
 │   ├── L2_execution/         # Execution agents
 │   ├── L3_orchestration/     # Orchestration agents

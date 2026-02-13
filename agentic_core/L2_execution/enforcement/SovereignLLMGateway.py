@@ -22,11 +22,11 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
     is_v15_enforced,
 )
-from agentic_core.L0_maintenance.types.v15_types import (
+from agentic_core.L0_routing.types.v15_types import (
     TokenCapArtifact,
     TokenGateResult,
 )
@@ -316,7 +316,7 @@ class SovereignLLMGateway:
     def _emit_token_artifact(self, artifact: Any) -> None:
         """§Wave1.8 — Emit TokenEnforcementArtifact via TelemetryEmitter."""
         try:
-            from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+            from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOKEN_ENFORCEMENT", artifact)

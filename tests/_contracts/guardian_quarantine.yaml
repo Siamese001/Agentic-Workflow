@@ -3,53 +3,53 @@
 # This is a temporary measure - these tests should be fixed or removed
 
 quarantined_tests:
-  # L0_maintenance errors
-  - path: tests/agentic_core/L0_maintenance/core/test_manifest_analysis.py
+  # L0_routing errors
+  - path: tests/agentic_core/L0_routing/core/test_manifest_analysis.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/reasoning/test_BootstrapAgent.py
+  - path: tests/agentic_core/L0_routing/reasoning/test_BootstrapAgent.py
     error_type: NameError
     reason: "NameError: name 'SubatomicTestingMixin' is not defined"
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/reasoning/test_DocstringComplianceAgent.py
+  - path: tests/agentic_core/L0_routing/reasoning/test_DocstringComplianceAgent.py
     error_type: TypeError
     reason: "TypeError: Cannot create a consistent method resolution"
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/reasoning/test_FilesystemSSOTReconcilerAgent.py
+  - path: tests/agentic_core/L0_routing/reasoning/test_FilesystemSSOTReconcilerAgent.py
     error_type: NameError
     reason: "NameError: name 'AtomicExecutionMixin' is not defined"
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/reasoning/test_GospelSyncAgent.py
+  - path: tests/agentic_core/L0_routing/reasoning/test_GospelSyncAgent.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/reasoning/test_sovereign_healing_engine.py
+  - path: tests/agentic_core/L0_routing/reasoning/test_sovereign_healing_engine.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/scripts/test_lifecycle_audit.py
+  - path: tests/agentic_core/L0_routing/scripts/test_lifecycle_audit.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/scripts/test_root_hygiene.py
+  - path: tests/agentic_core/L0_routing/scripts/test_root_hygiene.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/scripts/test_runtime_verify_installation.py
+  - path: tests/agentic_core/L0_routing/scripts/test_runtime_verify_installation.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation
     expiry: 2026-03-31
-  - path: tests/agentic_core/L0_maintenance/scripts/test_verify_meta_learning_integration.py
+  - path: tests/agentic_core/L0_routing/scripts/test_verify_meta_learning_integration.py
     error_type: ImportError
     reason: Module import errors in legacy test
     owner: test-structure-remediation

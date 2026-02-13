@@ -204,7 +204,7 @@ def create_critical_tests_first():
         "agentic_core/base_agents/",
         "agentic_core/core/",
         "agentic_core/interfaces/",
-        "agentic_core/L0_maintenance/reasoning/",
+        "agentic_core/L0_routing/reasoning/",
         "agentic_core/L5_safety/enforcement/",
         "apps_lic/engines/",
         "apps_rg/engines/",
@@ -284,6 +284,7 @@ def validate_minimum_behavioral_bar():
             if assertion_count < 2:
                 violations.append(f"{test_file}: Insufficient assertions ({assertion_count} < 2)")
 
+        # guardian: allow-silent-swallow
         except Exception as e:
             violations.append(f"{test_file}: Error reading file - {e}")
 

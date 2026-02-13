@@ -13,10 +13,10 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_maintenance.types.v15_p2_contracts import (
+from agentic_core.L0_routing.types.v15_p2_contracts import (
     require_manifest_hash_ok,
 )
-from agentic_core.L0_maintenance.types.v15_p2_types import (
+from agentic_core.L0_routing.types.v15_p2_types import (
     FixConstraint,
     SurgicalManifest,
 )

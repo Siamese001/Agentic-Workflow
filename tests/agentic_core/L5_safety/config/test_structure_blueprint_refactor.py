@@ -27,7 +27,7 @@ class TestExportEquivalence:
 
         assert isinstance(LAYER_ROOTS, frozenset)
         assert len(LAYER_ROOTS) == 7
-        assert "L0_maintenance" in LAYER_ROOTS
+        assert "L0_routing" in LAYER_ROOTS
         assert "L5_safety" in LAYER_ROOTS
 
     def test_required_lcd_subfolders_available(self):
@@ -55,7 +55,7 @@ class TestExportEquivalence:
         from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
         assert isinstance(CORE_SUBFOLDER_MAP, dict)
-        assert "L0_maintenance" in CORE_SUBFOLDER_MAP
+        assert "L0_routing" in CORE_SUBFOLDER_MAP
         assert "L5_safety" in CORE_SUBFOLDER_MAP
 
     def test_validation_functions_available(self):
@@ -111,7 +111,7 @@ class TestDerivedRegistries:
         lcd_folders = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
 
         for layer in [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",

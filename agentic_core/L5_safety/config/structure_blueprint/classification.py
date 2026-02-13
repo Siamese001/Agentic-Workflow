@@ -277,7 +277,7 @@ CANONICAL_LOCATION_PRIORITY: Final[Sequence[str]] = [
     "L3_orchestration",
     "L2_execution",
     "L1_cognition",
-    "L0_maintenance",
+    "L0_routing",
 ]
 
 DUPLICATE_DETECTION_EXEMPT: Final[Sequence[str]] = [

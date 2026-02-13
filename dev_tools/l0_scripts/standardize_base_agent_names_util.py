@@ -31,7 +31,7 @@ RENAME_MAP = {
 
 # File renames (old path -> new path, relative to PROJECT_ROOT)
 FILE_RENAMES = {
-    "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py": "agentic_core/L0_maintenance/scripts/L0MaintenanceBaseAgent.py",
+    "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py": "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py",
     "agentic_core/L1_cognition/thought_engine/L1CognitionBase.py": "agentic_core/L1_cognition/thought_engine/L1CognitionBase.py",
 }
 

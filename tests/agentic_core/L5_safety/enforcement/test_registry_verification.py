@@ -130,7 +130,7 @@ class TestRegistryVerifier:
     def test_extract_layer_l0(self):
         """Test layer extraction for L0."""
         verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        layer = verifier._extract_layer("agentic_core/L0_maintenance/scripts/TestAgent.py")
+        layer = verifier._extract_layer("agentic_core/L0_routing/scripts/TestAgent.py")
         assert layer == "L0"
 
     def test_extract_layer_base(self):

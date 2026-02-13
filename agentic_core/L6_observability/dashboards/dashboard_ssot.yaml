@@ -5,13 +5,13 @@
 #
 # This YAML file is the single source of truth for all dashboard constants.
 # It is automatically synchronized to:
-#   - Python: agentic_core/L0_maintenance/scripts/dashboard_ssot_definitions_config_util.py
+#   - Python: agentic_core/L0_routing/scripts/dashboard_ssot_definitions_config_util.py
 #   - JavaScript: agentic_core/L6_observability/dashboards/js/constants/dashboard-constants.js
 #
 # To update constants:
 #   1. Edit this file
-#   2. Run: python agentic_core/L0_maintenance/scripts/generate_dashboard_ssot_util.py
-#   3. Regenerate dashboard data: python agentic_core/L0_maintenance/scripts/regenerate_dashboard_full_util.py
+#   2. Run: python agentic_core/L0_routing/scripts/generate_dashboard_ssot_util.py
+#   3. Regenerate dashboard data: python agentic_core/L0_routing/scripts/regenerate_dashboard_full_util.py
 #
 # Last Updated: 2026-01-16
 # ============================================================================

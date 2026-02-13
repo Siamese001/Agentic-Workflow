@@ -25,18 +25,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_hierarchy_compliance import (
+from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (
     GUARDIAN_ID,
     _get_l3_subfolders,
     run_hierarchy_compliance_guardian,
     scan_missing_structure,
     scan_subfolder_compliance,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
 
 pytestmark = pytest.mark.guardian
 

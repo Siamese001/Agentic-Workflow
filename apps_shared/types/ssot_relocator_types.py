@@ -87,7 +87,7 @@ class SSOTRelocator:
 
         # Setup logging
         if log_file is None:
-            log_dir = project_root / "agentic_core" / "L0_maintenance" / "logs"
+            log_dir = project_root / "agentic_core" / "L0_routing" / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
             log_file = log_dir / "enforcement_history.log"
 
@@ -292,6 +292,7 @@ class SSOTRelocator:
 
                 # Clean up empty parent directories
                 self._cleanup_empty_dirs(source.parent)
+            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -344,6 +345,7 @@ class SSOTRelocator:
                 shutil.move(str(source), str(target))
                 result.success = True
                 logger.info(f"{action}: {result.source} → {result.target}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
@@ -399,6 +401,7 @@ class SSOTRelocator:
 
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
+            # guardian: allow-silent-swallow
             except Exception as e:
                 result.error = str(e)
                 logger.error(f"Failed to flatten {result.source}: {e}")

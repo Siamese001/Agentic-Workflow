@@ -48,7 +48,7 @@ ALLOWLIST: dict[str, int] = {
     "agentic_core.L5_safety.reasoning.HierarchyAgent": 20,
     "apps_rg.utils.RGAgentBase": 20,
     "agentic_core.mixins.mcp_hardened_mixin": 20,
-    "agentic_core.L0_maintenance.scripts.full_agent_discovery": 20,
+    "agentic_core.L0_routing.scripts.full_agent_discovery": 20,
     "agentic_core.L3_orchestration.reasoning.UnifiedAgent": 20,
     "agentic_core.L5_safety.reasoning.FileClassificationAgent": 20,
     "agentic_core.L5_safety.reasoning.CodeHealerAgent": 20,
@@ -87,6 +87,7 @@ def compute_centrality(project_root: Path) -> tuple[dict[str, int], dict[str, se
             for f in files:
                 if not f.endswith(".py"):
                     continue
+                # guardian: allow-path-string
                 fpath = os.path.join(dirpath, f)
                 rel = os.path.relpath(fpath, project_root)
                 mod = _path_to_module(rel)

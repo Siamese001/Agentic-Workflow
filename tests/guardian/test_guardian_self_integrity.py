@@ -22,14 +22,14 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import ast
 
-from agentic_core.L0_maintenance.scripts.run_guardian_contract_integrity import (
+from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
     _check_imports_contract,
     _check_imports_normalize,
     _check_no_raw_json_dumps,
     _check_returns_guardian_result,
     run_contract_integrity_guardian,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     CheckStatus,
     GuardianStatus,
     check_schema_compatibility,
@@ -45,7 +45,7 @@ pytestmark = pytest.mark.guardian
 
 COMPLIANT_SCRIPT = '''
 """Compliant guardian."""
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianResult,
     normalize_repo_path,
 )
@@ -146,7 +146,7 @@ class TestSyntheticViolation:
     def test_non_compliant_detected(self, tmp_path: Path):
         """A synthetic non-compliant script should be caught."""
         # Create a fake repo with a non-compliant guardian script
-        scripts_dir = tmp_path / "agentic_core" / "L0_maintenance" / "scripts"
+        scripts_dir = tmp_path / "agentic_core" / "L0_routing" / "scripts"
         scripts_dir.mkdir(parents=True)
         bad_script = scripts_dir / "run_guardian_fake.py"
         bad_script.write_text(NON_COMPLIANT_SCRIPT, encoding="utf-8")

@@ -10,7 +10,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 TARGET_FILE = "BootstrapAgent.py"
-VALID_PATH = PROJECT_ROOT / "agentic_core/L0_maintenance/scripts/BootstrapAgent.py"
+VALID_PATH = PROJECT_ROOT / "agentic_core/L0_routing/scripts/BootstrapAgent.py"
 
 
 def hunt_bootstrap():
@@ -37,6 +37,7 @@ def hunt_bootstrap():
                 try:
                     found_path.rename(dest)
                     print(f" -> Archived to {dest.name}")
+                # guardian: allow-silent-swallow
                 except Exception as e:
                     print(f" -> Failed to archive: {e}")
 

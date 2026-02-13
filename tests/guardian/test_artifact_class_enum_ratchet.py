@@ -113,7 +113,7 @@ def test_no_artifact_class_value_usage_in_construction():
 
     # Scan specific directories
     scan_dirs = [
-        repo_root / "agentic_core" / "L0_maintenance" / "scripts",
+        repo_root / "agentic_core" / "L0_routing" / "scripts",
         repo_root / "tests" / "guardian",
     ]
 
@@ -128,10 +128,10 @@ def test_no_artifact_class_value_usage_in_construction():
             f"  {file_path.relative_to(repo_root)}:{line} - {desc}"
             for file_path, line, desc in all_violations
         ]
-        assert False, (
+        raise AssertionError(
             "Found GuardianResult construction using .value:\n"
             + "\n".join(violation_msgs)
-            + "\n\nUse ArtifactClass enum directly, e.g., artifact_class=ArtifactClass.AGGREGATE"
+            + "\n\nUse ArtifactClass enum directly, e.g., artifact_class=ArtifactClass.AGGREGATE",
         )
 
 
@@ -141,7 +141,7 @@ def test_synthetic_value_usage_detected():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult, ArtifactClass
 
         # This should be flagged
         result = GuardianResult(
@@ -171,7 +171,7 @@ def test_synthetic_value_usage_allowed_in_to_dict():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult, ArtifactClass
 
         class GuardianResult:
             def to_dict(self):
@@ -198,7 +198,7 @@ def test_synthetic_value_usage_rejected_in_construction():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult, ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult, ArtifactClass
 
         def run_all_guardians():
             # This should be flagged - not in allowed context

@@ -25,18 +25,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_classification_compliance import (
+from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
     GUARDIAN_ID,
     _collect_python_files,
     run_classification_compliance_guardian,
     scan_naming_compliance,
     scan_territory_compliance,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
 
 pytestmark = pytest.mark.guardian
 
@@ -199,7 +199,7 @@ class TestScanNamingCompliance:
 
     def test_compound_suffix_detected(self, tmp_path: Path) -> None:
         """A file with compound suffix should be detected."""
-        ac = tmp_path / "agentic_core" / "L0_maintenance" / "scripts"
+        ac = tmp_path / "agentic_core" / "L0_routing" / "scripts"
         ac.mkdir(parents=True)
         # _agent_types is a known compound suffix conflict
         (ac / "code_detector_agent_types.py").write_text(
@@ -213,7 +213,7 @@ class TestScanNamingCompliance:
 
     def test_no_false_positive_on_single_suffix(self, tmp_path: Path) -> None:
         """A file with a single suffix should not be flagged."""
-        ac = tmp_path / "agentic_core" / "L0_maintenance" / "types"
+        ac = tmp_path / "agentic_core" / "L0_routing" / "types"
         ac.mkdir(parents=True)
         (ac / "guardian_types.py").write_text(
             "X = 1\n",

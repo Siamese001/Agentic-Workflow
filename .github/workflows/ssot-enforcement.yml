@@ -41,6 +41,6 @@ jobs:
           echo "✅ SSOT STRUCTURE VERIFIED"
           echo "All files comply with sovereign folder structure:"
           echo "  - Root scripts/ contains only standalone utilities"
-          echo "  - L0_maintenance/scripts/ contains system-integrated tools"
+          echo "  - L0_routing/scripts/ contains system-integrated tools"
           echo "  - Hierarchy depth rules enforced"
           echo "  - No orphaned files detected"

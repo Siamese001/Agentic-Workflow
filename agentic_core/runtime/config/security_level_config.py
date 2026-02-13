@@ -13,10 +13,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
 """
 Security Level Agent Types
@@ -930,10 +930,10 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
         if not is_v15_enforced():
             return None
 
-        from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_maintenance.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.v15_p2_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -966,7 +966,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
         # §8.1a — V15 manifest construction at validation→heal boundary
         manifest = self._v15_build_operation_manifest("heal_repository")
         if manifest is not None:
-            from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
                 V15ExecutionGateway,
             )
 

@@ -26,7 +26,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          python -m agentic_core.L0_maintenance.scripts.full_agent_discovery --summary
+          python -m agentic_core.L0_routing.scripts.full_agent_discovery --summary
 
       - name: Run Dedup Analysis (regenerate similarity artifacts)
         env:

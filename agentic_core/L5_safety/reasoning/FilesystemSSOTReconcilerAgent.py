@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
-Territory: agentic_core/L0_maintenance/scripts/
+Territory: agentic_core/L0_routing/scripts/
 
 VERSION 2.0 — 2025-12-31
 Enforces SSOT blueprint by aligning filesystem structure.
@@ -1301,8 +1301,8 @@ class FilesystemSSOTReconcilerAgent(
 
     # Forbidden folders at root (they have SSOT locations elsewhere)
     FORBIDDEN_ROOT_FOLDERS = {
-        "scripts",  # SSOT: agentic_core/L0_maintenance/scripts/
-        "logs",  # SSOT: agentic_core/L0_maintenance/utils/
+        "scripts",  # SSOT: agentic_core/L0_routing/scripts/
+        "logs",  # SSOT: agentic_core/L0_routing/utils/
         "coverage_html",  # SSOT: reports/coverage_html/ or gitignored
         "observability",  # SSOT: agentic_core/L6_observability/
     }
@@ -1350,8 +1350,8 @@ class FilesystemSSOTReconcilerAgent(
 
         # 3. Check for duplicate folders
         ssot_locations = {
-            "scripts": self.project_root / "agentic_core" / "L0_maintenance" / "scripts",
-            "logs": self.project_root / "agentic_core" / "L0_maintenance" / "logs",
+            "scripts": self.project_root / "agentic_core" / "L0_routing" / "scripts",
+            "logs": self.project_root / "agentic_core" / "L0_routing" / "logs",
         }
 
         for folder_name, ssot_path in ssot_locations.items():

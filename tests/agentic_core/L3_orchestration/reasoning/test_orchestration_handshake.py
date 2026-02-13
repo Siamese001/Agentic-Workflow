@@ -26,7 +26,9 @@ def test_test_orchestration_handshake_has_file_attribute():
         mod = importlib.import_module("agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent")
         assert hasattr(mod, "__file__")
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent")
+        pytest.skip(
+            "Cannot import module agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent",
+        )
 
 
 def test_test_orchestration_handshake_has_public_attributes():
@@ -45,4 +47,6 @@ def test_test_orchestration_handshake_has_public_attributes():
             # If no callables, at least assert we have some public attributes
             assert len(public_attrs) >= 0
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent")
+        pytest.skip(
+            "Cannot import module agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent",
+        )

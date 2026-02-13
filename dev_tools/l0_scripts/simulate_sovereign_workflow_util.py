@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import Sovereign Agents
-from agentic_core.L0_maintenance.enforcement.core_integrity_util import CoreIntegrityVerifier
+from agentic_core.L0_routing.enforcement.core_integrity_util import CoreIntegrityVerifier
 from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
 from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 

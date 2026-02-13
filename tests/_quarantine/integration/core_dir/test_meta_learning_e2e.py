@@ -37,7 +37,7 @@ class TestCompleteHealingWorkflow:
         violation = {
             "type": "gravity_violation",
             "path": "/agentic_core/L5_safety/test_file.py",
-            "import_statement": "from agentic_core.L0_maintenance import util",
+            "import_statement": "from agentic_core.L0_routing import util",
             "file_layer": "L5",
             "import_layer": "L0",
         }

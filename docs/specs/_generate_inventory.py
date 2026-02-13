@@ -227,10 +227,8 @@ def main(argv: list[str] | None = None) -> None:
         inventory.sort(key=lambda e: (e["qualname"].split(".")[0], e["lineno"]))
     else:
         # Default: both legacy files
-        ssot_file = REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot.py"
-        entrypoint_file = (
-            REPO_ROOT / "agentic_core" / "L0_maintenance" / "scripts" / "execute_ssot_entrypoint.py"
-        )
+        ssot_file = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+        entrypoint_file = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
         inventory: list[dict] = []
         inventory.extend(inventory_file(ssot_file, prefix="execute_ssot."))
         inventory.extend(inventory_file(entrypoint_file, prefix="execute_ssot_entrypoint."))

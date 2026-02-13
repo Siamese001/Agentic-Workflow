@@ -19,10 +19,10 @@ from pathlib import Path
 
 from agentic_core.utils.security import safe_git_execute
 
-from agentic_core.L0_maintenance.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -131,13 +131,13 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
 
     import hashlib as _hl
 
-    from agentic_core.L0_maintenance.enforcement.v15_p4_contracts import (
+    from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
         generate_trace_id,
     )
-    from agentic_core.L0_maintenance.types.v15_p2_contracts import (
+    from agentic_core.L0_routing.types.v15_p2_contracts import (
         require_manifest_hash_ok,
     )
-    from agentic_core.L0_maintenance.types.v15_p2_types import (
+    from agentic_core.L0_routing.types.v15_p2_types import (
         FixConstraint,
         SurgicalManifest,
     )
@@ -169,7 +169,7 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
     try:
         import hashlib as _hl
 
-        from agentic_core.L0_maintenance.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
             V15ExecutionGateway,
         )
 

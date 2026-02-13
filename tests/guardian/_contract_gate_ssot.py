@@ -7,7 +7,7 @@ No manual exclusion lists - SSOT-derived only.
 
 from __future__ import annotations
 
-from agentic_core.L0_maintenance.types.guardian_registry import get_guardian_specs
+from agentic_core.L0_routing.types.guardian_registry import get_guardian_specs
 
 # ---------------------------------------------------------------------------
 # SSOT: Contract gate test modules derived from guardian registry

@@ -118,7 +118,7 @@ class TestLocationAgentValidation:
         valid_paths = [
             "agentic_core/base_agents/SovereignBaseAgent.py",
             "agentic_core/L5_safety/validators/LocationAgent.py",
-            "agentic_core/L0_maintenance/scripts/BootstrapAgent.py",
+            "agentic_core/L0_routing/scripts/BootstrapAgent.py",
         ]
 
         for path in valid_paths:

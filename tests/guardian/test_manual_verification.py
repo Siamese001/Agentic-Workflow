@@ -103,8 +103,8 @@ class TestManualVerification:
             f.write("def test_function():\n")
             f.write('    return "This should trigger gravity leak detection"\n')
 
-        # Copy to L0_maintenance where the test will find it
-        target_file = PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "bad_gravity.py"
+        # Copy to L0_routing where the test will find it
+        target_file = PROJECT_ROOT / "agentic_core" / "L0_routing" / "bad_gravity.py"
         try:
             import shutil
 

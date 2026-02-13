@@ -27,7 +27,7 @@ class TestSovereignValidationE2E:
         """Create complete mock project structure."""
         # Create agentic_core structure
         (tmp_path / "agentic_core" / "base_agents").mkdir(parents=True)
-        (tmp_path / "agentic_core" / "L0_maintenance" / "scripts").mkdir(parents=True)
+        (tmp_path / "agentic_core" / "L0_routing" / "scripts").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L5_safety" / "validators").mkdir(parents=True)
         (tmp_path / "agentic_core" / "L6_observability" / "agents").mkdir(parents=True)
 
@@ -109,7 +109,7 @@ class TestSovereignValidationE2E:
         """Test SSOT compliance end-to-end."""
         # Verify structure matches blueprint
         expected_structure = {
-            "agentic_core": ["base_agents", "L0_maintenance", "L5_safety", "L6_observability"],
+            "agentic_core": ["base_agents", "L0_routing", "L5_safety", "L6_observability"],
             "apps_lic": ["engines"],
             "apps_rg": ["engines"],
             "apps_shared": ["common_utils"],

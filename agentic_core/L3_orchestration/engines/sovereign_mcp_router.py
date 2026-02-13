@@ -199,7 +199,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     cleanup_result: Any = await self.manager.call_tool(
                         "l0_cleanup",
                         {
-                            "target": "L0_maintenance/scripts",
+                            "target": "L0_routing/scripts",
                             "patterns": ["*_old.py", "temp_*.py", "backup_*.py"],
                         },
                     )

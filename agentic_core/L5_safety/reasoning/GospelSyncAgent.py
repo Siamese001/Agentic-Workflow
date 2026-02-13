@@ -12,7 +12,7 @@ GOSPEL SYNC AGENT
 L0 Maintenance Agent designed to ensure 100% synchronization between the
 Gospel (structure_blueprint.py) and the physical filesystem.
 
-CANONICAL PATH: agentic_core/L0_maintenance/GospelSyncAgent.py
+CANONICAL PATH: agentic_core/L0_routing/GospelSyncAgent.py
 VIOLATION JUSTIFICATION: None. Standard L0 Infrastructure mapping.
 """
 
@@ -22,7 +22,7 @@ from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
-from agentic_core.L0_maintenance.utils.ssot_discovery_util import get_python_files
+from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 
 
 @dataclass

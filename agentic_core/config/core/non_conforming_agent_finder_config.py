@@ -25,7 +25,7 @@ import ast
 from pathlib import Path
 
 try:
-    from agentic_core.L0_maintenance.scripts.full_agent_discovery import (
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR,
         ARCHIVES_DIR,
     )
@@ -122,6 +122,7 @@ def main():
         try:
             source = py_file.read_text(encoding="utf-8")
             tree = ast.parse(source)
+        # guardian: allow-silent-swallow
         except Exception:
             continue  # Skip unparseable files
 

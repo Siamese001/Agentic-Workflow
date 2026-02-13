@@ -25,13 +25,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_maintenance.scripts.run_guardian_hygiene import (
+from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
     run_hygiene_guardian,
     scan_empty_folders,
     scan_init_only_folders,
     scan_temp_artifacts,
 )
-from agentic_core.L0_maintenance.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract import (
     CheckStatus,
     GuardianStatus,
     validate_no_absolute_paths,
@@ -85,7 +85,7 @@ def dirty_repo(tmp_repo: Path) -> Path:
 
 class TestCleanRepo:
     def test_clean_repo_passes(self, tmp_repo: Path):
-        allowed = frozenset({"agentic_core", "apps_shared", "tests"})
+        _allowed = frozenset({"agentic_core", "apps_shared", "tests"})
         result = run_hygiene_guardian(repo_root=tmp_repo)
         assert result.status == GuardianStatus.PASS.value
         assert result.guardian_id == "hygiene"
@@ -169,7 +169,7 @@ class TestSchemaCompliance:
 
 class TestArtifactWriting:
     def test_writes_json_artifact(self, tmp_repo: Path):
-        result = run_hygiene_guardian(
+        _result = run_hygiene_guardian(
             repo_root=tmp_repo,
             write_artifacts_dir="docs/reports/plans",
         )

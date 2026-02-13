@@ -11,8 +11,8 @@
 ║                                                                            ║
 ║  Consumers:                                                                ║
 ║  - FileClassificationAgent.py (L5_safety) — full AST classification       ║
-║  - full_agent_discovery.py (L0_maintenance) — agent manifest generation    ║
-║  - complexity_visitor_util.py (L0_maintenance) — dashboard discovery       ║
+║  - full_agent_discovery.py (L0_routing) — agent manifest generation    ║
+║  - complexity_visitor_util.py (L0_routing) — dashboard discovery       ║
 ║  - discovery_util.py (runtime) — runtime agent registry                   ║
 ║  - file_intent.py (prompt_governance) — prompt intent classification      ║
 ║  - type_erasure_validator.py (L5_safety) — type checking                  ║

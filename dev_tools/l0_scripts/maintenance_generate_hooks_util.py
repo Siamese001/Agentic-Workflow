@@ -16,7 +16,7 @@ project_root = Path(__file__).resolve().parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L0_maintenance.scripts.generate_hooks import (
+from agentic_core.L0_routing.scripts.generate_hooks import (
     generate_sovereign_list,
     sync_pre_commit,
 )

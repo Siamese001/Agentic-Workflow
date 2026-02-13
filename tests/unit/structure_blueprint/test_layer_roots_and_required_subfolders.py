@@ -25,7 +25,7 @@ class TestLayerRoots:
     def test_layer_roots_contains_all_layers(self):
         """All L0-L6 layers must be in LAYER_ROOTS."""
         expected = {
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -42,7 +42,7 @@ class TestLayerRoots:
     @pytest.mark.parametrize(
         "layer",
         [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -82,7 +82,7 @@ class TestRequiredLCDSubfolders:
     @pytest.mark.parametrize(
         "layer",
         [
-            "L0_maintenance",
+            "L0_routing",
             "L1_cognition",
             "L2_execution",
             "L3_orchestration",
@@ -104,7 +104,7 @@ class TestRequiredLCDSubfolders:
             ("L5_safety", "reasoning"),
             ("L5_safety", "enforcement"),
             ("L5_safety", "config"),
-            ("L0_maintenance", "scripts"),
+            ("L0_routing", "scripts"),
             ("L2_execution", "tools"),
             ("L4_state", "memory"),
             ("L6_observability", "dashboards"),

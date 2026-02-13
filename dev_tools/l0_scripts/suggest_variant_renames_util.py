@@ -63,7 +63,7 @@ def suggest_rename_for_init_files(file_paths):
         # Extract meaningful context
         if "config" in path_parts:
             pass
-        elif "L0_maintenance" in path_parts:
+        elif "L0_routing" in path_parts:
             pass
         elif "L1_cognition" in path_parts:
             pass
@@ -128,7 +128,7 @@ def suggest_rename_for_canon_validator(file_paths):
         rel_path = file_path.relative_to(project_root)
 
         # Determine purpose from location
-        if "L0_maintenance/scripts" in str(rel_path):
+        if "L0_routing/scripts" in str(rel_path):
             suggested_name = "canon_validator_bootstrap.py"
             reason = "Bootstrap/initialization script for canon validator in maintenance layer"
         elif "tests/core" in str(rel_path):
@@ -193,7 +193,7 @@ def main():
     print()
 
     files = [
-        project_root / "agentic_core/L0_maintenance/scripts/canon_validator___init__.py",
+        project_root / "agentic_core/L0_routing/scripts/canon_validator___init__.py",
         project_root / "tests/core/canon_validator___init__.py",
     ]
 

@@ -1,5 +1,5 @@
 """
-File: tests/unit/agentic_core/L0_maintenance/test_manifest_analysis.py
+File: tests/unit/agentic_core/L0_routing/test_manifest_analysis.py
 Description: Tests for the Dry-Run Verification Tool.
 Mandate: 100% Pass.
 """
@@ -7,7 +7,7 @@ Mandate: 100% Pass.
 from unittest.mock import patch
 
 import pytest
-from agentic_core.L0_maintenance.scripts.verify_manifest import analyze_impact
+from agentic_core.L0_routing.scripts.verify_manifest import analyze_impact
 
 
 class TestManifestAnalysis:

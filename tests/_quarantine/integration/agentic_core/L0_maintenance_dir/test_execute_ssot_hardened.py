@@ -1,10 +1,10 @@
 """
-File: tests/integration/agentic_core/L0_maintenance/test_execute_ssot_hardened.py
+File: tests/integration/agentic_core/L0_routing/test_execute_ssot_hardened.py
 """
 
 from unittest.mock import MagicMock
 
-from agentic_core.L0_maintenance.scripts.execute_ssot import (
+from agentic_core.L0_routing.scripts.execute_ssot import (
     SovereignDecisionEngine,
     execute_phase2_reconciliation,
 )

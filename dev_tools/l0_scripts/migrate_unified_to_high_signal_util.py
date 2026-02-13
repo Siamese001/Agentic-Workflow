@@ -23,7 +23,7 @@ from pathlib import Path
 
 def migrate_unified():
     """Performs physical migration, file renaming, and deep import refactoring."""
-    # Logic: root is 3 levels up from L0_maintenance/scripts
+    # Logic: root is 3 levels up from L0_routing/scripts
     project_root = Path(__file__).resolve().parents[3]
 
     # 1. PATH MAPPING configuration

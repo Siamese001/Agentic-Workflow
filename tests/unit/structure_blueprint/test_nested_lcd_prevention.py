@@ -61,7 +61,7 @@ class TestValidateNoNestedLCD:
     @pytest.mark.parametrize(
         "layer,lcd_subfolder",
         [
-            ("L0_maintenance", "reasoning"),
+            ("L0_routing", "reasoning"),
             ("L1_cognition", "enforcement"),
             ("L2_execution", "types"),
             ("L3_orchestration", "config"),
@@ -78,10 +78,10 @@ class TestValidateNoNestedLCD:
 
     def test_deeply_nested_lcd_allowed_under_layer(self):
         """LCD subfolders nested under layer scripts are allowed."""
-        # L0_maintenance/scripts/prompt_governance is OK because L0 is a layer root
-        path_parts = ["agentic_core", "L0_maintenance", "scripts", "prompt_governance"]
+        # L0_routing/scripts/prompt_governance is OK because L0 is a layer root
+        path_parts = ["agentic_core", "L0_routing", "scripts", "prompt_governance"]
         result = validate_no_nested_lcd(path_parts)
-        # This should be allowed because L0_maintenance is a layer root ancestor
+        # This should be allowed because L0_routing is a layer root ancestor
         assert result is None
 
     def test_non_lcd_subfolder_under_leaf_allowed(self):

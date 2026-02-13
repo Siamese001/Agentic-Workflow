@@ -48,7 +48,7 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_has_v15_fields(self):
         """GuardianResult must have v15_trace_id, v15_signature, v15_commit_hash."""
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
 
         field_names = {f.name for f in dataclasses.fields(GuardianResult)}
         assert "v15_trace_id" in field_names
@@ -57,8 +57,8 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_sign_produces_signed_artifact(self):
         """GuardianResult.sign() must produce a SignedGuardianArtifact."""
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult
-        from agentic_core.L0_maintenance.types.v15_p5_types import (
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.v15_p5_types import (
             SignedGuardianArtifact,
         )
 
@@ -76,7 +76,7 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_sign_requires_trace_id(self):
         """sign() must raise V15EnforcementError if v15_trace_id is not set."""
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             GuardianResult,
             V15EnforcementError,
         )
@@ -91,7 +91,7 @@ class TestP01GuardianSchema:
         """INV-2: to_json() must raise when V15 enforced and result unsigned."""
         _set_v15_enforcement(True, monkeypatch)
 
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             GuardianResult,
             V15EnforcementError,
         )
@@ -104,7 +104,7 @@ class TestP01GuardianSchema:
         """Signed results must serialize without error in V15 mode."""
         _set_v15_enforcement(True, monkeypatch)
 
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
 
         result = GuardianResult(
             guardian_id="test_guardian",
@@ -121,7 +121,7 @@ class TestP01GuardianSchema:
         """Without V15 enforcement, unsigned results must still serialize."""
         _set_v15_enforcement(False, monkeypatch)
 
-        from agentic_core.L0_maintenance.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
 
         result = GuardianResult(guardian_id="test_guardian")
         output = result.to_json()
@@ -131,7 +131,7 @@ class TestP01GuardianSchema:
 
     def test_contract_version_bumped(self):
         """CONTRACT_VERSION must be >= 2 after P0.1."""
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             CONTRACT_VERSION,
         )
 
@@ -139,7 +139,7 @@ class TestP01GuardianSchema:
 
     def test_v15_enforcement_error_exists(self):
         """V15EnforcementError must be importable."""
-        from agentic_core.L0_maintenance.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract import (
             V15EnforcementError,
         )
 
@@ -291,7 +291,7 @@ class TestP04MissingTypedArtifacts:
     """P0.4: HealingPlan, StaleWriteIncident, SideEffectRegistry."""
 
     def test_healing_plan_construction(self):
-        from agentic_core.L0_maintenance.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.v15_types import HealingPlan
 
         hp = HealingPlan(
             trace_id="t1",
@@ -304,7 +304,7 @@ class TestP04MissingTypedArtifacts:
         assert hp.manifests == ("m1", "m2")
 
     def test_healing_plan_frozen(self):
-        from agentic_core.L0_maintenance.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.v15_types import HealingPlan
 
         hp = HealingPlan(
             trace_id="t1",
@@ -317,7 +317,7 @@ class TestP04MissingTypedArtifacts:
             hp.trace_id = "changed"  # type: ignore[misc]
 
     def test_healing_plan_validation(self):
-        from agentic_core.L0_maintenance.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.v15_types import HealingPlan
 
         with pytest.raises(ValueError, match="trace_id"):
             HealingPlan(
@@ -337,7 +337,7 @@ class TestP04MissingTypedArtifacts:
             )
 
     def test_stale_write_incident_construction(self):
-        from agentic_core.L0_maintenance.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
 
         swi = StaleWriteIncident(
             trace_id="t1",
@@ -350,7 +350,7 @@ class TestP04MissingTypedArtifacts:
         assert swi.actual_hash == "bbb"
 
     def test_stale_write_incident_frozen(self):
-        from agentic_core.L0_maintenance.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
 
         swi = StaleWriteIncident(
             trace_id="t",
@@ -363,7 +363,7 @@ class TestP04MissingTypedArtifacts:
             swi.trace_id = "x"  # type: ignore[misc]
 
     def test_stale_write_incident_validation(self):
-        from agentic_core.L0_maintenance.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
 
         with pytest.raises(ValueError, match="target_path"):
             StaleWriteIncident(
@@ -375,7 +375,7 @@ class TestP04MissingTypedArtifacts:
             )
 
     def test_side_effect_registry_construction(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
 
         ser = SideEffectRegistry(
             trace_id="t1",
@@ -387,7 +387,7 @@ class TestP04MissingTypedArtifacts:
         assert ser.paths_read == ("a.py",)
 
     def test_side_effect_registry_frozen(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
 
         ser = SideEffectRegistry(
             trace_id="t",
@@ -400,7 +400,7 @@ class TestP04MissingTypedArtifacts:
             ser.wave_id = "x"  # type: ignore[misc]
 
     def test_side_effect_registry_validation(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
 
         with pytest.raises(ValueError, match="trace_id"):
             SideEffectRegistry(trace_id="", wave_id="w", paths_read=(), paths_written=(), apis_called=())
@@ -423,7 +423,7 @@ class TestP05DiscoverySchema:
     """P0.5: V15DiscoverySchema pinned with all required fields."""
 
     def test_v15_discovery_schema_all_fields(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import (
+        from agentic_core.L0_routing.types.v15_p6_types import (
             V15_DISCOVERY_REQUIRED_FIELDS,
         )
 
@@ -442,7 +442,7 @@ class TestP05DiscoverySchema:
         assert V15_DISCOVERY_REQUIRED_FIELDS == expected
 
     def test_v15_discovery_schema_construction(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
 
         schema = V15DiscoverySchema(
             identity="AgentA",
@@ -459,7 +459,7 @@ class TestP05DiscoverySchema:
         assert schema.identity == "AgentA"
 
     def test_v15_discovery_schema_frozen(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
 
         schema = V15DiscoverySchema(
             identity="A",
@@ -478,7 +478,7 @@ class TestP05DiscoverySchema:
 
     def test_v15_discovery_schema_missing_field_fails(self):
         """Missing any required field must raise ValueError/TypeError."""
-        from agentic_core.L0_maintenance.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
 
         with pytest.raises(ValueError, match="identity"):
             V15DiscoverySchema(
@@ -495,7 +495,7 @@ class TestP05DiscoverySchema:
             )
 
     def test_v15_discovery_schema_version_pinned(self):
-        from agentic_core.L0_maintenance.types.v15_p6_types import (
+        from agentic_core.L0_routing.types.v15_p6_types import (
             V15_DISCOVERY_SCHEMA_VERSION,
         )
 
@@ -1089,7 +1089,7 @@ class TestINV1NoParallelSchemas:
         """No class named 'GuardianArtifact' that is a frozen dataclass
         with signing fields outside guardian_contract.py."""
         guardian_contract_path = (
-            PROJECT_ROOT / "agentic_core" / "L0_maintenance" / "types" / "guardian_contract.py"
+            PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
         )
         violations = []
         for py_file in sorted((PROJECT_ROOT / "agentic_core").rglob("*.py")):

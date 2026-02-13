@@ -4,7 +4,7 @@ Governance Shield Validator - Deterministic Governance Validation
 Zero-Ambiguity Standard: Renamed from governance_shield_deterministic_validator.py
 Category: VALIDATOR (Deterministic safety check)
 
-Moved from L0_maintenance/deterministic to L5_safety/validators.
+Moved from L0_routing/deterministic to L5_safety/validators.
 
 Deterministic Operations:
 - Risk level scanning (rule-based classification)

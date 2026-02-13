@@ -38,8 +38,8 @@ class AuditHealingStrategy:
         self.priority = 1
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
-        # Use L0_maintenance/logs as SSOT-approved location for maintenance logs
-        self.audit_log_path = Path("agentic_core/L0_maintenance/utils/healing_audit.jsonl")
+        # Use L0_routing/logs as SSOT-approved location for maintenance logs
+        self.audit_log_path = Path("agentic_core/L0_routing/utils/healing_audit.jsonl")
         Logger.info("[L0 L6 AUDIT HEALING] Strategy initialized")
 
     async def diagnose(self, issues: list[dict]) -> list[dict]:

@@ -18,7 +18,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import protected_f
 PROTECTED_FOLDERS = protected_folders  # Alias for backward compatibility
 
 # [L0 IMPORTS]
-from agentic_core.L0_maintenance.sovereign_enforcement import run_l6_preflight
+from agentic_core.L0_routing.sovereign_enforcement import run_l6_preflight
 
 # [PHASE 20] DEPRECATION: void_compliance.py removed - using modular agents
 from agentic_core.L5_safety.config.structure_blueprint_config import (
