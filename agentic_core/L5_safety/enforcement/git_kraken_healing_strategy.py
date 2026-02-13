@@ -8,7 +8,8 @@ Replaces all direct subprocess git calls.
 import logging
 from typing import Any
 
-from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
+def get_git_client():  # P1_core deprecated; stub until MCP client is relocated
+    raise NotImplementedError("P1_core.gitkraken_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

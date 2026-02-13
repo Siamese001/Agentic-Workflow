@@ -15,9 +15,15 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
-from agentic_core.L0_maintenance.P1_core.gitkraken_mcp_client_1 import get_git_client
-from agentic_core.L0_maintenance.P1_core.transaction_manager import HealingTransaction
+def get_filesystem_client():  # P1_core deprecated; stub until MCP client is relocated
+    raise NotImplementedError("P1_core.filesystem_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
+
+def get_git_client():  # P1_core deprecated; stub until MCP client is relocated
+    raise NotImplementedError("P1_core.gitkraken_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
+
+class HealingTransaction:  # P1_core deprecated; stub until transaction_manager is relocated
+    def __init__(self, *a, **kw):
+        raise NotImplementedError("P1_core.transaction_manager was removed; see RCA_P1_core_dead_imports.md")
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

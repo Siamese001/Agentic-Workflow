@@ -22,7 +22,8 @@ def _get_pinecone_client():
 
 
 # from _mcp_client import get_pinecone_mcp_client  # Commented out - appears to be incomplete/broken import
-from agentic_core.L0_maintenance.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+def get_filesystem_client():  # P1_core deprecated; stub until MCP client is relocated
+    raise NotImplementedError("P1_core.filesystem_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

@@ -14,7 +14,7 @@ import logging
 import subprocess
 from pathlib import Path
 
-from agentic_core.L0_maintenance.enforcement.detection_signal_config import (
+from agentic_core.L5_safety.config.detection_signal_config import (
     DetectionSignal,
     FailureContext,
     ImpactAssessment,
