@@ -459,3 +459,181 @@ class TestCapabilityDeterminism:
         parsed = json.loads(j1)
         j2 = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         assert j1 == j2
+
+
+# ===========================================================================
+# 4) Wave 5.0.2 — Explicit Token Propagation Tests
+# ===========================================================================
+
+
+class TestCapabilityPropagation:
+    """Wave 5.0.2: explicit capability_token parameter propagation."""
+
+    @staticmethod
+    def _server_with_tool(name="calculator"):
+        from agentic_core.L2_execution.types.mcp_tool_types import (
+            MCPTool,
+            MCPToolServer,
+        )
+
+        server = MCPToolServer("test-propagation")
+        server.register_tool(
+            MCPTool(
+                name=name,
+                description="test tool",
+                parameters={},
+                handler=lambda **kw: "ok",
+            ),
+        )
+        return server
+
+    def test_explicit_token_reaches_execute_tool(self):
+        """Token passed via capability_token= is used for enforcement."""
+        server = self._server_with_tool()
+        token = _make_token()
+        result = server.execute_tool(
+            "calculator",
+            {},
+            capability_token=token,
+        )
+        assert result.success is True
+
+    def test_no_token_no_enforcer_denies(self):
+        """No token and no legacy enforcer => deterministic DENY."""
+        server = self._server_with_tool()
+        with pytest.raises(PermissionError, match="CAPABILITY_DENIED:NO_TOKEN_PROVIDED"):
+            server.execute_tool("calculator", {})
+
+    def test_no_token_emits_deny_artifact(self):
+        """The DENY path emits a CapabilityDecisionArtifact with NO_TOKEN_PROVIDED."""
+        from agentic_core.L2_execution.types.capability_token_types import (
+            build_capability_decision,
+        )
+
+        captured = []
+        _orig = build_capability_decision
+
+        def _capture(**kwargs):
+            artifact = _orig(**kwargs)
+            captured.append(artifact)
+            return artifact
+
+        import agentic_core.L2_execution.types.mcp_tool_types as _mod
+
+        _mod_ref = _mod.__dict__
+        server = self._server_with_tool()
+
+        import agentic_core.L2_execution.types.capability_token_types as _cap_mod
+
+        original_fn = _cap_mod.build_capability_decision
+        _cap_mod.build_capability_decision = _capture
+        try:
+            with pytest.raises(PermissionError, match="NO_TOKEN_PROVIDED"):
+                server.execute_tool("calculator", {})
+        finally:
+            _cap_mod.build_capability_decision = original_fn
+
+        assert len(captured) == 1
+        assert captured[0].decision == "DENY"
+        assert captured[0].deny_reason == "NO_TOKEN_PROVIDED"
+        assert captured[0].capability_trace_id == "NONE"
+
+    def test_explicit_token_deterministic_decision(self):
+        """Same token + same call => byte-identical decision artifact JSON."""
+        server1 = self._server_with_tool()
+        server2 = self._server_with_tool()
+        token = _make_token()
+
+        decisions1: list = []
+        decisions2: list = []
+        _orig_check = CapabilityEnforcer.check
+
+        def _capture_to(target):
+            def _wrap(self, **kwargs):
+                result = _orig_check(self, **kwargs)
+                target.append(result)
+                return result
+
+            return _wrap
+
+        CapabilityEnforcer.check = _capture_to(decisions1)
+        try:
+            server1.execute_tool("calculator", {}, capability_token=token)
+        finally:
+            CapabilityEnforcer.check = _orig_check
+
+        CapabilityEnforcer.check = _capture_to(decisions2)
+        try:
+            server2.execute_tool("calculator", {}, capability_token=token)
+        finally:
+            CapabilityEnforcer.check = _orig_check
+
+        assert len(decisions1) == 1
+        assert len(decisions2) == 1
+        assert decisions1[0].to_json() == decisions2[0].to_json()
+
+    def test_execute_tool_calls_propagates_token(self):
+        """execute_tool_calls passes capability_token through to each call."""
+        from agentic_core.L2_execution.types.mcp_tool_types import execute_tool_calls
+
+        server = self._server_with_tool("calc")
+        token = _make_token(
+            constraints=CapabilityConstraints(
+                allowed_paths=("tool/calc",),
+                max_tool_calls=10,
+            ),
+        )
+
+        tool_calls = [
+            {"function": {"name": "calc", "arguments": {}}},
+            {"function": {"name": "calc", "arguments": {}}},
+        ]
+        results = execute_tool_calls(
+            server,
+            tool_calls,
+            capability_token=token,
+        )
+        assert len(results) == 2
+        assert all(r.success for r in results)
+
+    def test_legacy_enforcer_still_works(self):
+        """set_capability_enforcer path works when capability_token is None."""
+        server = self._server_with_tool()
+        token = _make_token()
+        enforcer = CapabilityEnforcer(token)
+        server.set_capability_enforcer(enforcer)
+
+        result = server.execute_tool("calculator", {})
+        assert result.success is True
+        assert enforcer.call_count == 1
+
+
+class TestCapabilityNoScatter:
+    """Wave 5.0.2: enforcement logic confined to expected files only."""
+
+    def test_enforcer_usage_only_in_expected_files(self):
+        """CapabilityEnforcer( construction only in mcp_tool_types + capability_token_types."""
+        import subprocess
+
+        result = subprocess.run(
+            [
+                "python",
+                "-c",
+                "import pathlib, re; "
+                "root = pathlib.Path(r'c:/Git/Agentic-Workflow/agentic_core'); "
+                "hits = []; "
+                "[hits.append(str(p.relative_to(root))) "
+                " for p in root.rglob('*.py') "
+                " if 'CapabilityEnforcer(' in p.read_text(encoding='utf-8', errors='ignore')]; "
+                "print('\\n'.join(sorted(set(hits))))",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        lines = [l for l in result.stdout.strip().split("\n") if l.strip()]
+        allowed = {
+            "L2_execution\\types\\capability_token_types.py",
+            "L2_execution\\types\\mcp_tool_types.py",
+        }
+        actual = set(lines)
+        assert actual <= allowed, f"CapabilityEnforcer( found outside expected files: {actual - allowed}"

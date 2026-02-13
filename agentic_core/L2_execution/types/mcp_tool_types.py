@@ -175,6 +175,8 @@ class MCPToolServer:
         self,
         name: str,
         arguments: dict[str, Any],
+        *,
+        capability_token: Any | None = None,
     ) -> MCPToolResult:
         """Execute a tool.
 
@@ -182,15 +184,20 @@ class MCPToolServer:
         gate before execution. The gate resolves applicable law slots,
         records an enforcement artifact, and may PASS/BLOCK/MODIFY.
 
+        §Wave5.0.2: Explicit capability_token parameter for per-call
+        propagation. Precedence: explicit token > legacy enforcer > DENY.
+
         Args:
             name: Tool name
             arguments: Tool arguments
+            capability_token: Explicit CapabilityTokenArtifact for this call
 
         Returns:
             MCPToolResult with execution result
 
         Raises:
             ToolPolicyBlocked: If enforcement blocks the tool call
+            PermissionError: If capability enforcement denies the call
         """
         tool = self.get_tool(name)
 
@@ -202,27 +209,54 @@ class MCPToolServer:
                 error=f"Tool not found: {name}",
             )
 
-        # §Wave5.0.1 — Capability token enforcement gate (before LawSlotHandler)
-        if self._capability_enforcer is not None:
-            from agentic_core.L2_execution.types.capability_token_types import (
-                PERMISSION_CODES,
-                CapabilityEnforcer,
-            )
+        # §Wave5.0.2 — Capability token enforcement gate (before LawSlotHandler)
+        # Precedence: explicit token > legacy enforcer > DENY
+        from agentic_core.L2_execution.types.capability_token_types import (
+            PERMISSION_CODES,
+            CapabilityEnforcer,
+            build_capability_decision,
+        )
 
-            enforcer: CapabilityEnforcer = self._capability_enforcer
-            # Determine required permission: tools default to TOOL:READ
-            required_perm = PERMISSION_CODES["TOOL_READ"]
-            # Build resource path from tool name
-            resource_path = f"tool/{name}"
+        required_perm = PERMISSION_CODES["TOOL_READ"]
+        resource_path = f"tool/{name}"
 
-            # This raises PermissionError on DENY; emits decision artifact always
-            enforcer.check(
+        if capability_token is not None:
+            # §Wave5.0.2 path: per-call enforcer from explicit token
+            enforcer_local = CapabilityEnforcer(capability_token)
+            enforcer_local.check(
                 tool_name=name,
                 action="execute",
                 requested_resource=resource_path,
                 required_permission=required_perm,
-                semantic_clock=enforcer.token.semantic_clock,
+                semantic_clock=capability_token.semantic_clock,
             )
+        elif self._capability_enforcer is not None:
+            # §Wave5.0.1 legacy path: server-level enforcer
+            enforcer_legacy: CapabilityEnforcer = self._capability_enforcer
+            enforcer_legacy.check(
+                tool_name=name,
+                action="execute",
+                requested_resource=resource_path,
+                required_permission=required_perm,
+                semantic_clock=enforcer_legacy.token.semantic_clock,
+            )
+        else:
+            # §Wave5.0.2 fail-closed: no token provided → deterministic DENY
+            from agentic_core.L0_maintenance.types.v15_p2_types import (
+                SemanticClockSnapshot,
+            )
+
+            deny_clock = SemanticClockSnapshot(tick=0, vector_clock={})
+            build_capability_decision(
+                semantic_clock=deny_clock,
+                tool_name=name,
+                action="execute",
+                requested_resource=resource_path,
+                decision="DENY",
+                deny_reason="NO_TOKEN_PROVIDED",
+                capability_trace_id="NONE",
+            )
+            raise PermissionError("CAPABILITY_DENIED:NO_TOKEN_PROVIDED")
 
         # §Wave2.4 — LawSlotHandler enforcement gate
         from agentic_core.L2_execution.enforcement.tool_policy_enforcer import (
@@ -416,12 +450,17 @@ def create_mcp_server(
 def execute_tool_calls(
     server: MCPToolServer,
     tool_calls: list[dict[str, Any]],
+    *,
+    capability_token: Any | None = None,
 ) -> list[MCPToolResult]:
     """Execute multiple tool calls.
+
+    §Wave5.0.2: capability_token is propagated to each server.execute_tool call.
 
     Args:
         server: MCP tool server
         tool_calls: List of tool call definitions
+        capability_token: Explicit CapabilityTokenArtifact for all calls
 
     Returns:
         List of MCPToolResult
@@ -442,7 +481,11 @@ def execute_tool_calls(
                 except json.JSONDecodeError:
                     arguments = {}
 
-            result = server.execute_tool(name, arguments)
+            result = server.execute_tool(
+                name,
+                arguments,
+                capability_token=capability_token,
+            )
             results.append(result)
 
     return results
