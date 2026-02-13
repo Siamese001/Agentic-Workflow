@@ -166,12 +166,19 @@ class MCPToolServer:
     ) -> MCPToolResult:
         """Execute a tool.
 
+        §Wave2.4: All tool calls pass through the LawSlotHandler enforcement
+        gate before execution. The gate resolves applicable law slots,
+        records an enforcement artifact, and may PASS/BLOCK/MODIFY.
+
         Args:
             name: Tool name
             arguments: Tool arguments
 
         Returns:
             MCPToolResult with execution result
+
+        Raises:
+            ToolPolicyBlocked: If enforcement blocks the tool call
         """
         tool = self.get_tool(name)
 
@@ -183,8 +190,55 @@ class MCPToolServer:
                 error=f"Tool not found: {name}",
             )
 
+        # §Wave2.4 — LawSlotHandler enforcement gate
+        from agentic_core.L2_execution.enforcement.tool_policy_enforcer import (
+            _stable_args_hash,
+            get_tool_policy_enforcer,
+        )
+        from agentic_core.L2_execution.types.tool_enforcement_types import (
+            LawSlotOutcome,
+            ToolPolicyBlocked,
+        )
+
+        enforcer = get_tool_policy_enforcer()
+        original_hash = _stable_args_hash(arguments)
+        outcome, new_args, rationale, applied_slots = enforcer.enforce(
+            name,
+            arguments,
+        )
+
+        modified_hash = _stable_args_hash(new_args) if outcome == LawSlotOutcome.MODIFY else ""
+
+        artifact = enforcer.build_artifact(
+            tool_name=name,
+            outcome=outcome,
+            applied_slots=applied_slots,
+            rationale=rationale,
+            original_args_hash=original_hash,
+            modified_args_hash=modified_hash,
+        )
+
+        # Emit enforcement artifact via TelemetryEmitter
         try:
-            result = tool.handler(**arguments)
+            from agentic_core.L0_maintenance.types.v15_contracts import TelemetryEmitter
+
+            emitter = TelemetryEmitter()
+            emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)
+        # guardian: allow-silent-swallow
+        except Exception as _emit_exc:
+            Logger.error(
+                "§Wave2.4 ToolEnforcementArtifact emission failed: %s",
+                _emit_exc,
+            )
+
+        if outcome == LawSlotOutcome.BLOCK:
+            raise ToolPolicyBlocked(name, rationale, artifact)
+
+        # Use potentially modified args
+        effective_args = new_args if outcome == LawSlotOutcome.MODIFY else arguments
+
+        try:
+            result = tool.handler(**effective_args)
 
             return MCPToolResult(
                 tool_name=name,
