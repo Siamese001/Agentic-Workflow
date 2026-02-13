@@ -69,6 +69,7 @@ class TestP1F01RouteDecisionArtifact:
         "budget_est",
         "rationale_enum",
         "policy_config_hash",
+        "semantic_clock",  # §Phase3.2 — SemanticClock propagation (optional, default None)
     }
 
     def test_all_required_fields_present(self):

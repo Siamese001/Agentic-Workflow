@@ -13,6 +13,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
+
 # =============================================================================
 # §3.4 — EvidencePack (Human Escalation)
 # =============================================================================
@@ -70,6 +72,8 @@ class EvidencePack:
     policy_snapshot_data: PolicySnapshot | None = None
     ssot_hash: str = ""
     attachments: tuple[str, ...] = ()
+    # §Phase3.2 — SemanticClock propagation
+    semantic_clock: SemanticClockSnapshot | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -212,6 +216,8 @@ class PolicyUpdateProposal:
     rationale: str = ""
     proposer: str = ""
     confidence: float = 0.0
+    # §Phase3.2 — SemanticClock propagation
+    semantic_clock: SemanticClockSnapshot | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:

@@ -15,6 +15,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from agentic_core.L0_maintenance.types.v15_p2_types import (
+    SemanticClockSnapshot,
+)
+
 
 @dataclass(frozen=True)
 class ChosenRoute:
@@ -69,6 +73,8 @@ class L3RouteDecisionArtifact:
     candidates: tuple[CandidateEntry, ...]
     policy_context: PolicyContext
     determinism: DeterminismContext
+    # §Phase3.2 — SemanticClock propagation
+    semantic_clock: SemanticClockSnapshot | None = None
 
     def __post_init__(self) -> None:
         if not self.decision_id:
@@ -87,6 +93,7 @@ def build_l3_route_decision_artifact(
     candidates: list[dict[str, Any]],
     policy_context: dict[str, Any] | None = None,
     determinism: dict[str, Any] | None = None,
+    semantic_clock: SemanticClockSnapshot | None = None,
 ) -> L3RouteDecisionArtifact:
     """Factory: build artifact from delegate_task() runtime data."""
     policy_ctx = policy_context or {}
@@ -121,6 +128,7 @@ def build_l3_route_decision_artifact(
             temperature=det_ctx.get("temperature", 0.0),
             seed=det_ctx.get("seed", None),
         ),
+        semantic_clock=semantic_clock,
     )
 
 

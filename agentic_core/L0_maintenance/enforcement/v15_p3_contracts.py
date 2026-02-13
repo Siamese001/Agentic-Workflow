@@ -15,6 +15,9 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
+from agentic_core.L0_maintenance.types.v15_p2_types import (
+    SemanticClockSnapshot,
+)
 from agentic_core.L0_maintenance.types.v15_p3_types import (
     ChangeAction,
     EvidencePack,
@@ -86,6 +89,7 @@ def build_hil_evidence_pack(
     guardian_results: tuple[str, ...] = (),
     ssot_hash: str = "",
     attachments: tuple[str, ...] = (),
+    semantic_clock: SemanticClockSnapshot | None = None,
 ) -> EvidencePack:
     """§Wave2.2 — Build a full EvidencePack for HIL escalation.
 
@@ -107,6 +111,7 @@ def build_hil_evidence_pack(
             policy_snapshot_data=policy_snapshot_data,
             ssot_hash=ssot_hash,
             attachments=attachments,
+            semantic_clock=semantic_clock,
         )
     except (ValueError, TypeError) as exc:
         raise EvidencePackError(
@@ -266,6 +271,7 @@ def build_hil_policy_proposal(
     request_id: str = "",
     file_scope: str = "",
     confidence: float = 0.7,
+    semantic_clock: SemanticClockSnapshot | None = None,
 ) -> PolicyUpdateProposal:
     """§Wave2.3 — Build a PolicyUpdateProposal from HIL review outcome.
 
@@ -308,6 +314,7 @@ def build_hil_policy_proposal(
             rationale=rationale,
             proposer="SYSTEM",
             confidence=confidence,
+            semantic_clock=semantic_clock,
         )
     except (ValueError, TypeError) as exc:
         raise PolicyUpdateError(

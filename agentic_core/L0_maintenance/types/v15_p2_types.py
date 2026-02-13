@@ -155,6 +155,52 @@ class StateCommitInvalid(Exception):
     """§13.1.1 — StateCommit validation failed; clock must not advance."""
 
 
+@dataclass(frozen=True)
+class SemanticClockSnapshot:
+    """§Phase3.2 — Immutable snapshot of SemanticClock for embedding in frozen artifacts.
+
+    Serializes as {"tick": <int>, "vector_clock": {<layer>: <int>, ...}}.
+    """
+
+    tick: int
+    vector_clock: tuple[tuple[str, int], ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.tick < 0:
+            raise ValueError(
+                f"SemanticClockSnapshot: tick must be >= 0, got {self.tick}",
+            )
+
+    def to_dict(self) -> dict[str, object]:
+        """Deterministic serialization: sorted vector_clock keys."""
+        return {
+            "tick": self.tick,
+            "vector_clock": dict(sorted(self.vector_clock)),
+        }
+
+    @classmethod
+    def from_clock(cls, clock: SemanticClock) -> SemanticClockSnapshot:
+        """Capture a snapshot from a live SemanticClock."""
+        return cls(
+            tick=clock.step_id,
+            vector_clock=tuple(sorted(clock.vector_clock.items())),
+        )
+
+
+def validate_semantic_clock(
+    semantic_clock: SemanticClockSnapshot | None,
+    context: str = "",
+) -> SemanticClockSnapshot:
+    """§Phase3.2 — Hard-fail if semantic_clock is None at a determinism chokepoint."""
+    if semantic_clock is None:
+        raise ValueError("semantic_clock is required")
+    if not isinstance(semantic_clock, SemanticClockSnapshot):
+        raise TypeError(
+            f"semantic_clock must be SemanticClockSnapshot, got {type(semantic_clock).__name__}",
+        )
+    return semantic_clock
+
+
 # §13.2 — Wall-clock guard types
 # =============================================================================
 
@@ -340,8 +386,10 @@ __all__ = [
     "MEMORY_CONFIDENCE_THRESHOLD",
     "MemoryHypostate",
     "SemanticClock",
+    "SemanticClockSnapshot",
     "StateCommitInvalid",
     "SurgicalManifest",
+    "validate_semantic_clock",
     "TRACE_BUFFER_VELOCITY_THRESHOLD",
     "TrajectoryReuseConstraint",
     "WALL_CLOCK_FORBIDDEN_CALLABLES",
