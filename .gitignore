@@ -87,3 +87,14 @@ v15_d_inventory_p4.json
 
 # Machine-local integrity seals (non-portable)
 **/.core_golden_seal
+
+# Runtime logs (any layer)
+**/logs/
+
+# User-owned technical docs/images (not version-controlled)
+docs/technical/*.png
+docs/technical/*.jpeg
+docs/technical/*.md
+
+# Root README (auto-generated / user-local)
+/README.md
