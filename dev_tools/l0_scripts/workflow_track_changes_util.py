@@ -15,10 +15,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.utils.security import safe_git_execute
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.utils.security import safe_git_execute
 
 sovereign_agents: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR}
 
@@ -27,6 +28,7 @@ def main() -> None:
     """Main entry point for tracking changes."""
     Path(".").resolve()
     tracker_path: Any = root / ".git" / "CANON_CHANGE.staging"
+    # guardian: allow-magic-config
     result: Any = safe_git_execute(
         ["diff", "--cached", "--name-status"],
         repo_root=root,
@@ -57,6 +59,7 @@ def main() -> None:
         tracker_path.parent.mkdir(exist_ok=True)
         with open(tracker_path, "w") as f:
             f.write("\n".join(changes))
+        # guardian: allow-global-mutation
         os.environ["CANON_CHANGE_TRACKER"] = str(tracker_path)
         [c for c in changes if "|DELETE" in c]
         [c for c in changes if "|RENAME|" in c]

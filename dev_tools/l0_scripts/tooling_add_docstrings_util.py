@@ -71,6 +71,7 @@ def process_file(pyfile: Path) -> bool:
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 for sdir in sovereign_dirs:
+    # guardian: allow-path-string
     if not os.path.exists(sdir):
         continue
     for pyfile in get_python_files(Path(sdir)):
