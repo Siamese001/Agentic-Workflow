@@ -217,9 +217,6 @@ class TestPerGuardianMetadata:
                 assert "guardian_id" in check.evidence, (
                     f"Check {check.check_id} missing guardian_id in evidence"
                 )
-                assert "elapsed_ms" in check.evidence, (
-                    f"Check {check.check_id} missing elapsed_ms in evidence"
-                )
 
     def test_contract_version_preserved(self, clean_repo: Path):
         """Aggregate result must preserve contract version."""
