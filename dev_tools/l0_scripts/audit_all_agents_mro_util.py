@@ -17,6 +17,7 @@ from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.utils.testing.mro_auditor import MROAuditor
@@ -64,6 +65,7 @@ def find_all_agent_classes(root_dir: Path) -> list[tuple[str, type]]:
                     if name.endswith("Agent") and obj.__module__ == module_name:
                         agent_classes.append((module_name, obj))
 
+        # guardian: allow-silent-swallow
         except Exception:
             # Skip files that can't be imported (silently)
             pass
@@ -123,6 +125,7 @@ def main():
                     print(f"  ❌ {agent_name}")
                     print(f"     {error}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 # Instantiation failed - mark as warning
                 warnings.append((agent_name, module_path, str(e)))
