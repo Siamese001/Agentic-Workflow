@@ -134,18 +134,8 @@ class TestDeterministicOrdering:
     def test_same_input_same_output(self, clean_repo: Path):
         r1 = run_all_guardians(repo_root=clean_repo)
         r2 = run_all_guardians(repo_root=clean_repo)
-        # Compare without per_guardian elapsed_ms (non-deterministic timing)
         d1 = r1.to_dict()
         d2 = r2.to_dict()
-        # Zero out timing for comparison
-        for pg in d1.get("metrics", {}).get("per_guardian", []):
-            pg.pop("elapsed_ms", None)
-        for pg in d2.get("metrics", {}).get("per_guardian", []):
-            pg.pop("elapsed_ms", None)
-        for c in d1["checks"]:
-            c["evidence"].pop("elapsed_ms", None)
-        for c in d2["checks"]:
-            c["evidence"].pop("elapsed_ms", None)
         assert d1 == d2
 
 

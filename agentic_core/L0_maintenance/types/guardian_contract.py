@@ -15,10 +15,10 @@ Contract version is an integer that increments on breaking changes.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
-import uuid
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path, PurePosixPath
@@ -126,7 +126,7 @@ class ArtifactType(str, Enum):
 # Contract version
 # ---------------------------------------------------------------------------
 
-CONTRACT_VERSION: int = 2
+CONTRACT_VERSION: int = 3
 
 # Frozen schema shape: top-level keys → expected types.
 # Any change to this set is a BREAKING change requiring CONTRACT_VERSION bump.
@@ -147,6 +147,8 @@ CONTRACT_SCHEMA_SNAPSHOT: dict[str, str] = {
     "v15_trace_id": "str|None",
     "v15_signature": "str|None",
     "v15_commit_hash": "str|None",
+    # Phase 3.1: Certification evidence hygiene (CONTRACT_VERSION >= 3)
+    "certification_hash": "str|None",
 }
 
 # Frozen check-level keys
@@ -252,6 +254,7 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
         "v15_trace_id": {"type": ["string", "null"]},
         "v15_signature": {"type": ["string", "null"]},
         "v15_commit_hash": {"type": ["string", "null"]},
+        "certification_hash": {"type": ["string", "null"]},
     },
 }
 
@@ -646,6 +649,39 @@ def validate_no_absolute_paths(data: dict[str, Any]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Deterministic serialization helpers (Phase 3.1)
+# ---------------------------------------------------------------------------
+
+
+def _sort_value(v: Any) -> Any:
+    """Recursively sort dicts by key and lists of dicts by a stable key."""
+    if isinstance(v, dict):
+        return {k: _sort_value(val) for k, val in sorted(v.items())}
+    if isinstance(v, list):
+        return [_sort_value(item) for item in _stable_sort_list(v)]
+    return v
+
+
+def _stable_sort_list(items: list) -> list:
+    """Sort a list deterministically. Dicts sorted by 'guardian_id' or first key."""
+    if not items:
+        return items
+    if isinstance(items[0], dict):
+        sort_key = "guardian_id" if "guardian_id" in items[0] else None
+        if sort_key:
+            return sorted(items, key=lambda x: x.get(sort_key, ""))
+        return items
+    if isinstance(items[0], str):
+        return sorted(items)
+    return items
+
+
+def _sort_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
+    """Return metrics dict with sorted keys and deterministic nested values."""
+    return {k: _sort_value(v) for k, v in sorted(metrics.items())}
+
+
+# ---------------------------------------------------------------------------
 # Dataclasses
 # ---------------------------------------------------------------------------
 
@@ -712,6 +748,8 @@ class GuardianResult:
     v15_trace_id: str | None = None
     v15_signature: str | None = None
     v15_commit_hash: str | None = None
+    # Phase 3.1: Certification evidence hygiene (CONTRACT_VERSION >= 3)
+    certification_hash: str | None = None
 
     # -- Mutation helpers ---------------------------------------------------
 
@@ -784,15 +822,18 @@ class GuardianResult:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        sorted_checks = sorted(self.checks, key=lambda c: c.check_id)
+        sorted_artifacts = sorted(self.artifacts, key=lambda a: a.path)
+        sorted_hints = sorted(self.remediation_hints)
         d: dict[str, Any] = {
             "guardian_id": self.guardian_id,
             "version": self.version,
             "status": self.status,
             "summary": self.summary,
-            "checks": [c.to_dict() for c in self.checks],
-            "artifacts": [a.to_dict() for a in self.artifacts],
-            "metrics": self.metrics,
-            "remediation_hints": self.remediation_hints,
+            "checks": [c.to_dict() for c in sorted_checks],
+            "artifacts": [a.to_dict() for a in sorted_artifacts],
+            "metrics": _sort_metrics(self.metrics),
+            "remediation_hints": sorted_hints,
         }
         if self.timestamp is not None:
             d["timestamp"] = self.timestamp
@@ -806,6 +847,8 @@ class GuardianResult:
         d["v15_trace_id"] = self.v15_trace_id
         d["v15_signature"] = self.v15_signature
         d["v15_commit_hash"] = self.v15_commit_hash
+        # Phase 3.1: certification hash (set after compute_certification_hash)
+        d["certification_hash"] = self.certification_hash
         return d
 
     def ensure_v15_signed(self) -> None:
@@ -820,9 +863,22 @@ class GuardianResult:
                 "V15_ENFORCEMENT is enabled. Call sign() before emission.",
             )
 
+    def compute_certification_hash(self) -> str:
+        """Compute SHA256 over canonical JSON (sorted keys, no whitespace).
+
+        The hash excludes the ``certification_hash`` field itself.
+        Stores the result in ``self.certification_hash`` and returns it.
+        """
+        d = self.to_dict()
+        d.pop("certification_hash", None)
+        canonical = json.dumps(d, sort_keys=True, separators=(",", ":"))
+        self.certification_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        return self.certification_hash
+
     def to_json(self, indent: int = 2) -> str:
         self.ensure_v15_signed()
-        return json.dumps(self.to_dict(), indent=indent, sort_keys=False)
+        self.compute_certification_hash()
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
 
     # -- Validation ---------------------------------------------------------
 
@@ -910,6 +966,7 @@ def load_guardian_result(path: Path | str) -> GuardianResult:
         v15_trace_id=data.get("v15_trace_id"),
         v15_signature=data.get("v15_signature"),
         v15_commit_hash=data.get("v15_commit_hash"),
+        certification_hash=data.get("certification_hash"),
     )
 
 
@@ -982,7 +1039,13 @@ def maybe_sign_result(
         return result
 
     if not result.v15_trace_id:
-        result.v15_trace_id = str(uuid.uuid4())
+        payload_seed = json.dumps(
+            {"guardian_id": result.guardian_id, "status": result.status},
+            sort_keys=True,
+        )
+        result.v15_trace_id = hashlib.sha256(
+            payload_seed.encode("utf-8"),
+        ).hexdigest()
 
     enclave = get_default_signing_enclave()
     result.sign(enclave, GUARDIAN_SIGNING_KEY_ID, commit_hash or "HEAD")

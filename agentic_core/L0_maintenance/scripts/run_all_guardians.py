@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import importlib
 import sys
-import time
 from pathlib import Path
 from typing import Any
 
@@ -105,8 +104,6 @@ def run_all_guardians(
 
     for spec in guardian_specs:
         gid = spec.guardian_id
-        start_ms = time.monotonic() * 1000
-
         try:
             result = _run_single_guardian(
                 spec,
@@ -115,8 +112,6 @@ def run_all_guardians(
                 timestamp,
                 correlation_id,
             )
-            elapsed_ms = (time.monotonic() * 1000) - start_ms
-
             # Add a roll-up check for this guardian
             combined.add_check(
                 check_id=f"guardian_{gid}",
@@ -126,7 +121,6 @@ def run_all_guardians(
                     "guardian_id": gid,
                     "status": result.status,
                     "check_count": len(result.checks),
-                    "elapsed_ms": round(elapsed_ms, 1),
                     "checks": [c.to_dict() for c in result.checks],
                 },
             )
@@ -154,7 +148,6 @@ def run_all_guardians(
                     "guardian_id": gid,
                     "status": result.status,
                     "checks": len(result.checks),
-                    "elapsed_ms": round(elapsed_ms, 1),
                 },
             )
 
@@ -239,6 +232,13 @@ def main() -> int:
         "--format",
         choices=["json", "text"],
         default="json",
+    )
+    parser.add_argument(
+        "--json",
+        dest="format",
+        action="store_const",
+        const="json",
+        help="Shorthand for --format json",
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument(

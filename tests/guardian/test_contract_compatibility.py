@@ -69,6 +69,7 @@ class TestSchemaSnapshot:
         "v15_trace_id",
         "v15_signature",
         "v15_commit_hash",
+        "certification_hash",
     }
 
     def test_snapshot_has_all_required_keys(self):
@@ -188,8 +189,8 @@ class TestVersionBump:
 
     def test_snapshot_key_count_is_locked(self):
         """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 15, (
-            f"Schema key count changed from 15 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
+        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 16, (
+            f"Schema key count changed from 16 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
             f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
         )
 
