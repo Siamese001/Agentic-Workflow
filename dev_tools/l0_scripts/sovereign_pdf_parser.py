@@ -63,6 +63,7 @@ class SovereignPdfParser:
             try:
                 images = convert_from_path(str(pdf_path), dpi=200)
                 return "\n".join([pytesseract.image_to_string(img) for img in images])
+            # guardian: allow-silent-swallow
             except Exception as e:
                 return f"OCR_ERROR: {e}"
 

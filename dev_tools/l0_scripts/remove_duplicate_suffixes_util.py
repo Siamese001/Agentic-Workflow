@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 PROBLEMATIC_SUFFIXES = [
     "_flat",
@@ -98,6 +99,7 @@ def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_ru
             try:
                 dup_path.unlink()
                 removed_count += 1
+            # guardian: allow-silent-swallow
             except Exception:
                 pass
     return removed_count

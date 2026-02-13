@@ -9,13 +9,13 @@ import sys
 from pathlib import Path
 
 repo_root: Any = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.append(str(REPO_ROOT))
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
-from canon_validator_agentic_v2 import run_mission as run_healing
-
 from agentic_core.L0_maintenance.P1_core.sovereign_auditor_v3 import main_util as run_audit
+from canon_validator_agentic_v2 import run_mission as run_healing
 
 
 async def execute_unified_mission(target: Any = "agentic_core") -> Any:

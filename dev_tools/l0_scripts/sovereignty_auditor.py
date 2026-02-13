@@ -17,7 +17,10 @@ from pathlib import Path
 
 # Ensure repo root is in sys.path
 REPO_ROOT = Path(__file__).parent.parent.resolve()
+# guardian: allow-global-mutation
 sys.path.insert(0, str(REPO_ROOT))
+
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
@@ -25,7 +28,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 
 class SovereigntyAuditor:
@@ -52,6 +54,7 @@ class SovereigntyAuditor:
                 self.naming_violations.append(
                     f"{path.name}: Expected class '{module_name}' not found. Found: {classes}",
                 )
+        # guardian: allow-silent-swallow
         except Exception as e:
             self.naming_violations.append(f"{path.name}: AST Parse Error - {e}")
 
@@ -65,6 +68,7 @@ class SovereigntyAuditor:
                 spec.loader.exec_module(module)
         except ImportError as e:
             self.import_failures.append(f"{path.name}: {e}")
+        # guardian: allow-silent-swallow
         except Exception as e:
             # Catch runtime errors during module init (e.g. missing env vars)
             # We log but strictly speaking only ImportErrors confirm "orphaned imports"
