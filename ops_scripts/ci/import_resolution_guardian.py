@@ -1,0 +1,499 @@
+#!/usr/bin/env python3
+"""ImportResolutionGuardian — Referential Integrity for Python Imports.
+
+AST-walks all .py files under SCAN_ROOTS, resolves every internal import
+target against the filesystem, and fails on NEW unresolved imports.
+
+Follows the phantom-baseline-lock pattern (§21):
+  - Snapshot existing unresolved imports into a baseline JSON
+  - Fail only on *new* unresolved imports (not in baseline)
+  - Require explicit --update-baseline to accept fixes
+  - CI refuses --update-baseline unless ALLOW_BASELINE_WRITES_IN_CI=1
+
+Output: artifacts/import_health/import_health_report.json
+
+Exit codes:
+  0 = PASS (no new unresolved imports)
+  1 = FAIL (new unresolved imports detected, or baseline drift)
+  2 = ERROR (script-level failure)
+
+Usage:
+  python ops_scripts/ci/import_resolution_guardian.py
+  python ops_scripts/ci/import_resolution_guardian.py --update-baseline
+  python ops_scripts/ci/import_resolution_guardian.py --repo-root /path/to/repo
+  python ops_scripts/ci/import_resolution_guardian.py --verbose
+"""
+
+from __future__ import annotations
+
+import ast
+import json
+import os
+import sys
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    # guardian: allow-global-mutation
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+SCAN_ROOTS: tuple[str, ...] = (
+    "agentic_core",
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+)
+
+INTERNAL_ROOTS: frozenset[str] = frozenset(SCAN_ROOTS)
+
+WALK_EXCLUDES: frozenset[str] = frozenset(
+    {
+        ".venv",
+        "venv",
+        "__pycache__",
+        ".git",
+        "dist",
+        "build",
+        ".pytest_cache",
+        "node_modules",
+        ".nox",
+        "archives",
+        ".sovereign_healing_backup",
+        ".backup",
+    },
+)
+
+BASELINE_PATH = PROJECT_ROOT / "artifacts" / "import_health" / "import_health_baseline.json"
+REPORT_PATH = PROJECT_ROOT / "artifacts" / "import_health" / "import_health_report.json"
+
+
+# ---------------------------------------------------------------------------
+# AST Import Extractor
+# ---------------------------------------------------------------------------
+
+
+class UnresolvedImport:
+    """A single unresolved import edge."""
+
+    __slots__ = ("source_file", "target_module", "lineno", "imported_names")
+
+    def __init__(
+        self,
+        source_file: str,
+        target_module: str,
+        lineno: int,
+        imported_names: tuple[str, ...],
+    ) -> None:
+        self.source_file = source_file
+        self.target_module = target_module
+        self.lineno = lineno
+        self.imported_names = imported_names
+
+    def key(self) -> str:
+        """Deterministic sort key: source_file::target_module::lineno."""
+        return f"{self.source_file}::{self.target_module}::{self.lineno}"
+
+    def to_dict(self) -> dict:
+        return {
+            "source_file": self.source_file,
+            "target_module": self.target_module,
+            "lineno": self.lineno,
+            "imported_names": list(self.imported_names),
+        }
+
+
+def resolve_module_path(root: Path, module: str) -> Path | None:
+    """Resolve a dotted module path to a filesystem Path, or None.
+
+    Checks (in order):
+      1. Package: root/a/b/c/__init__.py
+      2. Module:  root/a/b/c.py
+    """
+    parts = module.split(".")
+    # Try as package (directory with __init__.py)
+    pkg_path = root / "/".join(parts) / "__init__.py"
+    if pkg_path.is_file():
+        return pkg_path
+    # Try as module file
+    if len(parts) >= 2:
+        mod_path = root / "/".join(parts[:-1]) / (parts[-1] + ".py")
+        if mod_path.is_file():
+            return mod_path
+    # Try as direct file (e.g. agentic_core.core -> agentic_core/core.py)
+    direct_path = root / ("/".join(parts) + ".py")
+    if direct_path.is_file():
+        return direct_path
+    return None
+
+
+def collect_unresolved_imports(
+    root: Path,
+    scan_roots: tuple[str, ...],
+    *,
+    verbose: bool = False,
+) -> tuple[list[UnresolvedImport], int, list[str]]:
+    """AST-walk all .py files under scan_roots and find unresolved internal imports.
+
+    Returns:
+        (unresolved_imports, files_parsed, parse_errors)
+    """
+    unresolved: list[UnresolvedImport] = []
+    files_parsed = 0
+    parse_errors: list[str] = []
+
+    for scan_root in scan_roots:
+        scan_dir = root / scan_root
+        if not scan_dir.is_dir():
+            continue
+        for dirpath, dirnames, filenames in os.walk(scan_dir):
+            dirnames[:] = [d for d in dirnames if d not in WALK_EXCLUDES]
+            for fn in filenames:
+                if not fn.endswith(".py"):
+                    continue
+                fpath = Path(dirpath) / fn
+                rel = fpath.relative_to(root).as_posix()
+                file_unresolved = _parse_file_imports(root, fpath, rel, verbose=verbose)
+                if file_unresolved is None:
+                    parse_errors.append(rel)
+                else:
+                    files_parsed += 1
+                    unresolved.extend(file_unresolved)
+
+    # Deterministic sort
+    unresolved.sort(key=lambda u: u.key())
+    return unresolved, files_parsed, parse_errors
+
+
+def _parse_file_imports(
+    root: Path,
+    fpath: Path,
+    rel: str,
+    *,
+    verbose: bool = False,
+) -> list[UnresolvedImport] | None:
+    """Parse a single file and return unresolved internal imports, or None on parse error."""
+    try:
+        source = fpath.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+    try:
+        tree = ast.parse(source, filename=str(fpath))
+    except SyntaxError:
+        return None
+
+    unresolved: list[UnresolvedImport] = []
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            top = node.module.split(".")[0]
+            if top not in INTERNAL_ROOTS:
+                continue
+            names = tuple(a.name for a in (node.names or []))
+            if resolve_module_path(root, node.module) is None:
+                unresolved.append(
+                    UnresolvedImport(
+                        source_file=rel,
+                        target_module=node.module,
+                        lineno=node.lineno,
+                        imported_names=names,
+                    ),
+                )
+                if verbose:
+                    print(f"  UNRESOLVED: {rel}:{node.lineno} -> {node.module}")
+
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                top = alias.name.split(".")[0]
+                if top not in INTERNAL_ROOTS:
+                    continue
+                if resolve_module_path(root, alias.name) is None:
+                    unresolved.append(
+                        UnresolvedImport(
+                            source_file=rel,
+                            target_module=alias.name,
+                            lineno=node.lineno,
+                            imported_names=(alias.name,),
+                        ),
+                    )
+                    if verbose:
+                        print(f"  UNRESOLVED: {rel}:{node.lineno} -> {alias.name}")
+
+    return unresolved
+
+
+# ---------------------------------------------------------------------------
+# Baseline Management
+# ---------------------------------------------------------------------------
+
+
+def _baseline_key(entry: dict) -> str:
+    """Canonical key for a baseline entry."""
+    return f"{entry['source_file']}::{entry['target_module']}"
+
+
+def load_baseline(path: Path) -> dict[str, dict]:
+    """Load baseline JSON. Returns dict keyed by source_file::target_module."""
+    if not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    entries = data.get("unresolved_imports", [])
+    return {_baseline_key(e): e for e in entries}
+
+
+def _require_baseline_approval() -> bool:
+    """Check IMPORT_BASELINE_UPDATE_APPROVED env var. Return True if approved."""
+    return os.environ.get("IMPORT_BASELINE_UPDATE_APPROVED") == "true"
+
+
+def save_baseline(path: Path, unresolved: list[UnresolvedImport]) -> None:
+    """Save current unresolved imports as baseline.
+
+    Requires IMPORT_BASELINE_UPDATE_APPROVED=true env var.
+    Produces deterministic JSON: sorted keys, no timestamps.
+    """
+    from ops_scripts.ci.baseline_io import write_json_atomic
+
+    if not _require_baseline_approval():
+        raise SystemExit(
+            "[IMPORT-GUARDIAN] FAIL: Baseline mutation requires IMPORT_BASELINE_UPDATE_APPROVED=true",
+        )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {
+        "schema_version": 1,
+        "unresolved_count": len(unresolved),
+        "unresolved_imports": [u.to_dict() for u in unresolved],
+    }
+    write_json_atomic(path, data)
+
+
+def compute_drift(
+    baseline: dict[str, dict],
+    current: list[UnresolvedImport],
+) -> tuple[list[UnresolvedImport], list[dict]]:
+    """Compare current unresolved against baseline.
+
+    Returns:
+        (new_unresolved, fixed_entries)
+        - new_unresolved: imports not in baseline (regressions)
+        - fixed_entries: baseline entries no longer present (improvements)
+    """
+    current_keys = set()
+    new_unresolved: list[UnresolvedImport] = []
+
+    for u in current:
+        key = f"{u.source_file}::{u.target_module}"
+        current_keys.add(key)
+        if key not in baseline:
+            new_unresolved.append(u)
+
+    fixed_keys = set(baseline.keys()) - current_keys
+    fixed_entries = [baseline[k] for k in sorted(fixed_keys)]
+
+    return new_unresolved, fixed_entries
+
+
+# ---------------------------------------------------------------------------
+# Debt Classification
+# ---------------------------------------------------------------------------
+
+
+def _classify_layer(source_file: str) -> str:
+    """Infer debt layer from source file path.
+
+    Rules (per spec):
+      - /L5_safety/  -> "healing"
+      - /runtime/    -> "runtime"
+      - /L<N>_*/     -> "L<N>"
+      - apps_*       -> "apps"
+      - otherwise    -> "other"
+    """
+    if "/L5_safety/" in source_file or source_file.startswith("agentic_core/L5_safety/"):
+        return "healing"
+    if "/runtime/" in source_file or source_file.startswith("agentic_core/runtime/"):
+        return "runtime"
+    for n in ("0", "1", "2", "3", "4", "6"):
+        tag = f"L{n}_"
+        if f"/{tag}" in source_file or source_file.startswith(f"agentic_core/{tag}"):
+            return f"L{n}"
+    if source_file.startswith("apps_"):
+        return "apps"
+    return "other"
+
+
+def build_debt_summary(unresolved: list[UnresolvedImport]) -> dict:
+    """Build deterministic debt classification summary."""
+    by_layer: dict[str, int] = {}
+    healing_count = 0
+    runtime_count = 0
+
+    for u in unresolved:
+        layer = _classify_layer(u.source_file)
+        by_layer[layer] = by_layer.get(layer, 0) + 1
+        if layer == "healing":
+            healing_count += 1
+        elif layer == "runtime":
+            runtime_count += 1
+
+    return {
+        "total_unresolved": len(unresolved),
+        "by_layer": dict(sorted(by_layer.items())),
+        "healing_count": healing_count,
+        "runtime_count": runtime_count,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Report Generation
+# ---------------------------------------------------------------------------
+
+
+def generate_report(
+    unresolved: list[UnresolvedImport],
+    new_unresolved: list[UnresolvedImport],
+    fixed_entries: list[dict],
+    files_parsed: int,
+    parse_errors: list[str],
+    baseline_count: int,
+) -> dict:
+    """Generate the import health report as a dict.
+
+    Deterministic: no timestamps, sorted keys. Repeated runs produce zero diff
+    when the codebase is unchanged.
+    """
+    debt = build_debt_summary(unresolved)
+    return {
+        "schema_version": 1,
+        "summary": {
+            "files_parsed": files_parsed,
+            "parse_errors": len(parse_errors),
+            "total_unresolved": len(unresolved),
+            "baseline_count": baseline_count,
+            "new_unresolved": len(new_unresolved),
+            "fixed_count": len(fixed_entries),
+            "passed": len(new_unresolved) == 0,
+            "by_layer": debt["by_layer"],
+            "healing_count": debt["healing_count"],
+            "runtime_count": debt["runtime_count"],
+        },
+        "new_unresolved_imports": [u.to_dict() for u in new_unresolved],
+        "all_unresolved_imports": [u.to_dict() for u in unresolved],
+        "fixed_imports": fixed_entries,
+        "parse_errors": parse_errors,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+
+def main() -> int:
+    """Entry point. Returns exit code."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="ImportResolutionGuardian — detect unresolved internal imports",
+    )
+    parser.add_argument(
+        "--repo-root",
+        type=Path,
+        default=PROJECT_ROOT,
+        help="Repository root (default: auto-detected)",
+    )
+    parser.add_argument(
+        "--update-baseline",
+        action="store_true",
+        help="Update baseline with current unresolved imports. "
+        "Requires IMPORT_BASELINE_UPDATE_APPROVED=true.",
+    )
+    parser.add_argument(
+        "--init-baseline",
+        action="store_true",
+        help="Alias for --update-baseline (deprecated).",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print each unresolved import as it is found",
+    )
+    args = parser.parse_args()
+    root = args.repo_root.resolve()
+
+    # ── Step 1: Collect all unresolved imports ──
+    print(f"[IMPORT-GUARDIAN] Scanning {len(SCAN_ROOTS)} roots under {root}")
+    unresolved, files_parsed, parse_errors = collect_unresolved_imports(
+        root,
+        SCAN_ROOTS,
+        verbose=args.verbose,
+    )
+    print(f"[IMPORT-GUARDIAN] Parsed {files_parsed} files, {len(parse_errors)} parse errors")
+    print(f"[IMPORT-GUARDIAN] Found {len(unresolved)} unresolved internal imports")
+
+    # ── Step 2: Handle baseline update (requires env var) ──
+    if args.init_baseline or args.update_baseline:
+        # save_baseline checks IMPORT_BASELINE_UPDATE_APPROVED internally
+        save_baseline(BASELINE_PATH, unresolved)
+        print(f"[IMPORT-GUARDIAN] Baseline updated: {BASELINE_PATH}")
+        print(f"[IMPORT-GUARDIAN] Baseline count: {len(unresolved)}")
+        return 0
+
+    # ── Step 3: Load baseline and compute drift ──
+    baseline = load_baseline(BASELINE_PATH)
+    baseline_count = len(baseline)
+
+    if baseline_count == 0 and len(unresolved) > 0:
+        print("[IMPORT-GUARDIAN] WARNING: No baseline found. Run with --init-baseline first.")
+        print(f"[IMPORT-GUARDIAN] Current unresolved count: {len(unresolved)}")
+        # Still generate report but treat all as "new" for visibility
+        new_unresolved = unresolved
+        fixed_entries: list[dict] = []
+    else:
+        new_unresolved, fixed_entries = compute_drift(baseline, unresolved)
+
+    # ── Step 4: Print governance signals (§32) ──
+    print(f"[IMPORT-GUARDIAN] baseline_count={baseline_count}")
+    print(f"[IMPORT-GUARDIAN] current_count={len(unresolved)}")
+    print(f"[IMPORT-GUARDIAN] new_unresolved={len(new_unresolved)}")
+    print(f"[IMPORT-GUARDIAN] fixed_count={len(fixed_entries)}")
+
+    if new_unresolved:
+        print("\n[IMPORT-GUARDIAN] NEW UNRESOLVED IMPORTS (regressions):")
+        for u in new_unresolved:
+            print(f"  {u.source_file}:{u.lineno} -> {u.target_module}")
+
+    if fixed_entries:
+        print(
+            f"\n[IMPORT-GUARDIAN] {len(fixed_entries)} previously-unresolved imports now resolve (improvements)",
+        )
+
+    # ── Step 5: Generate report ──
+    report = generate_report(
+        unresolved=unresolved,
+        new_unresolved=new_unresolved,
+        fixed_entries=fixed_entries,
+        files_parsed=files_parsed,
+        parse_errors=parse_errors,
+        baseline_count=baseline_count,
+    )
+
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    report_content = json.dumps(report, indent=2, sort_keys=True) + "\n"
+    REPORT_PATH.write_text(report_content, encoding="utf-8")
+    print(f"\n[IMPORT-GUARDIAN] Report written: {REPORT_PATH}")
+
+    # ── Step 6: Pass/Fail ──
+    if len(new_unresolved) > 0:
+        print(f"\n[IMPORT-GUARDIAN] FAIL: {len(new_unresolved)} new unresolved import(s) detected")
+        return 1
+
+    print("\n[IMPORT-GUARDIAN] PASS: No new unresolved imports")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
