@@ -16,6 +16,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.L0_maintenance.types.v15_p2_types import SemanticClockSnapshot
+
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact
 # Required fields: trace_id, timestamp, route_path, risk_score,
@@ -57,6 +59,8 @@ class RouteDecisionArtifact:
     budget_est: float
     rationale_enum: RoutingRationale
     policy_config_hash: str
+    # §Phase3.2 — SemanticClock propagation
+    semantic_clock: SemanticClockSnapshot | None = None
 
 
 # =============================================================================
