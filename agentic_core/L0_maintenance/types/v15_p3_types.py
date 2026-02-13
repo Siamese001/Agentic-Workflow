@@ -142,6 +142,9 @@ class PolicyExceptionArtifact:
 # Required fields per spec:
 #   trace_id, override_id, proposed_policy_diff, originating_agent,
 #   semantic_clock_tick
+# Wave 2.3 extension:
+#   proposal_id, timestamp_utc, evidence_pack_id, hil_outcome,
+#   proposed_changes, rationale, proposer, confidence
 # =============================================================================
 
 
@@ -153,12 +156,45 @@ class ProposalStatus(Enum):
     REJECTED = "rejected"
 
 
+class HILOutcome(Enum):
+    """§Wave2.3 — Human-in-the-Loop decision outcomes."""
+
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    OVERRIDDEN = "overridden"
+    NEEDS_MORE_INFO = "needs_more_info"
+
+
+class ChangeAction(Enum):
+    """§Wave2.3 — Actions that can be proposed for a policy change."""
+
+    ADD = "add"
+    REMOVE = "remove"
+    ADJUST = "adjust"
+
+
+@dataclass(frozen=True)
+class ProposedPolicyChange:
+    """§Wave2.3 — A single proposed change to a policy rule or configuration."""
+
+    target: str
+    action: ChangeAction
+    scope: str
+    risk_note: str
+    current_value: str = ""
+    proposed_value: str = ""
+
+
 @dataclass(frozen=True)
 class PolicyUpdateProposal:
     """§3.5 — Bidirectional feedback from human override back to policy layer.
 
     Emitted when a human override occurs, proposing a policy diff
     that the Policy Update Mechanism (L0/L5) should evaluate.
+
+    Wave 2.3 extension: proposal_id, timestamp_utc, evidence_pack_id,
+    hil_outcome, proposed_changes, rationale, proposer, confidence —
+    all optional (defaults) to preserve backward compat.
     """
 
     trace_id: str
@@ -167,6 +203,15 @@ class PolicyUpdateProposal:
     originating_agent: str
     semantic_clock_tick: int
     status: ProposalStatus = ProposalStatus.PENDING
+    # §Wave2.3 — HIL feedback loop extended fields
+    proposal_id: str = ""
+    timestamp_utc: str = ""
+    evidence_pack_id: str = ""
+    hil_outcome: HILOutcome | None = None
+    proposed_changes: tuple[ProposedPolicyChange, ...] = ()
+    rationale: str = ""
+    proposer: str = ""
+    confidence: float = 0.0
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -189,14 +234,21 @@ class PolicyUpdateProposal:
             raise TypeError(
                 f"PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}",
             )
+        if not (0.0 <= self.confidence <= 1.0):
+            raise ValueError(
+                f"PolicyUpdateProposal: confidence must be in [0.0, 1.0], got {self.confidence}",
+            )
 
 
 __all__ = [
+    "ChangeAction",
     "EvidencePack",
     "ExceptionScope",
+    "HILOutcome",
     "PolicyExceptionArtifact",
     "PolicySnapshot",
     "PolicyUpdateProposal",
     "ProposalStatus",
+    "ProposedPolicyChange",
     "RouteDecisionRef",
 ]
