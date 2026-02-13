@@ -11,8 +11,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+
 def get_filesystem_client():  # P1_core deprecated; stub until MCP client is relocated
     raise NotImplementedError("P1_core.filesystem_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
+
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
