@@ -80,7 +80,19 @@ class MCPToolServer:
         """
         self.name = name
         self._tools: dict[str, MCPTool] = {}
+        self._capability_enforcer: Any | None = None
         Logger.info(f"MCP tool server initialized: {name}")
+
+    def set_capability_enforcer(self, enforcer: Any) -> None:
+        """Set the CapabilityEnforcer for this server.
+
+        §Wave5.0.1: Single L2 chokepoint capability enforcement.
+        When set, every execute_tool call validates against the token.
+
+        Args:
+            enforcer: CapabilityEnforcer instance (or None to clear)
+        """
+        self._capability_enforcer = enforcer
 
     def register_tool(self, tool: MCPTool) -> None:
         """Register a tool.
@@ -188,6 +200,28 @@ class MCPToolServer:
                 success=False,
                 result=None,
                 error=f"Tool not found: {name}",
+            )
+
+        # §Wave5.0.1 — Capability token enforcement gate (before LawSlotHandler)
+        if self._capability_enforcer is not None:
+            from agentic_core.L2_execution.types.capability_token_types import (
+                PERMISSION_CODES,
+                CapabilityEnforcer,
+            )
+
+            enforcer: CapabilityEnforcer = self._capability_enforcer
+            # Determine required permission: tools default to TOOL:READ
+            required_perm = PERMISSION_CODES["TOOL_READ"]
+            # Build resource path from tool name
+            resource_path = f"tool/{name}"
+
+            # This raises PermissionError on DENY; emits decision artifact always
+            enforcer.check(
+                tool_name=name,
+                action="execute",
+                requested_resource=resource_path,
+                required_permission=required_perm,
+                semantic_clock=enforcer.token.semantic_clock,
             )
 
         # §Wave2.4 — LawSlotHandler enforcement gate
