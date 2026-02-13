@@ -1,4 +1,4 @@
-# agentic_core/L0_maintenance/scripts/fix_root_scripts_util.py
+# dev_tools/l0_scripts/fix_root_scripts_util.py
 """
 Project Exodus: Automated Migration Tool for Root Scripts
 

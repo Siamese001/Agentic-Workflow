@@ -1,5 +1,5 @@
 """
-agentic_core/L0_maintenance/scripts/maintenance_generate_hooks_util.py
+dev_tools/l0_scripts/maintenance_generate_hooks_util.py
 -----------------------------------------------------------------
 DEPRECATED: Redirects to the unified 'generate_hooks.py' script.
 This file is retained as a stub to prevent breaking existing automation
