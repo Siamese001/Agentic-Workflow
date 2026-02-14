@@ -272,5 +272,46 @@ def main() -> int:
     return 0
 
 
+# =============================================================================
+# §Wave7.0.7 — L0 Render-Only Integration Seam (no apply, no mutation)
+# =============================================================================
+
+
+def render_meta_learning_change_package(
+    package: Any,
+    *,
+    as_json: bool = True,
+) -> str:
+    """Render a MetaLearningChangePackageArtifact as a deterministic string.
+
+    This is a **pure function**: it does NOT call apply_meta_learning_proposal(),
+    does NOT mutate any config, and does NOT write any files.
+
+    Parameters
+    ----------
+    package : MetaLearningChangePackageArtifact
+        The change package to render.
+    as_json : bool
+        If True, return canonical JSON string of package.to_dict().
+        If False, return a stable, minimal single-line summary.
+
+    Returns
+    -------
+    str
+        Deterministic string representation.
+    """
+    import json as _json
+
+    if as_json:
+        return _json.dumps(package.to_dict(), sort_keys=True, separators=(",", ":"))
+
+    return (
+        f"CHANGE_PACKAGE target={package.target_component}"
+        f" decision_trace={package.decision_trace_id[:12]}"
+        f" trace={package.trace_id[:12]}"
+        f" spec_keys={sorted(package.change_spec.keys())}"
+    )
+
+
 if __name__ == "__main__":
     sys.exit(main())

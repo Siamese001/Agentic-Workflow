@@ -11,6 +11,9 @@ import json
 
 import pytest
 
+from agentic_core.L0_routing.scripts.run_all_guardians import (
+    render_meta_learning_change_package,
+)
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     DENY_REASONS,
@@ -642,3 +645,60 @@ class TestChangePackage:
         assert pkg1.trace_id == pkg2.trace_id
         assert len(pkg1.trace_id) == 64
         assert pkg1.to_json() == pkg2.to_json()
+
+
+# =============================================================================
+# §11 — Render-Only Integration Seam (Wave 7.0.7)
+# =============================================================================
+
+
+def _build_change_package():
+    """Build a valid change package through the full pipeline."""
+    proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+    return build_meta_learning_change_package(
+        proposal=proposal,
+        evaluation=evaluation,
+        approval=approval,
+        decision=decision,
+        target_component="routing_thresholds",
+        change_spec={"threshold": 0.7, "alpha": 0.1},
+        semantic_clock=_CLOCK,
+        policy_config_hash=None,
+    )
+
+
+class TestRenderChangePackage:
+    def test_render_change_package_returns_canonical_json(self) -> None:
+        """as_json=True returns canonical JSON matching to_json()."""
+        pkg = _build_change_package()
+        rendered = render_meta_learning_change_package(pkg, as_json=True)
+        # Must be valid JSON
+        parsed = json.loads(rendered)
+        assert parsed["artifact_type"] == "META_LEARNING_CHANGE_PACKAGE"
+        assert parsed["target_component"] == "routing_thresholds"
+        # Must match the artifact's own to_json()
+        assert rendered == pkg.to_json()
+
+    def test_render_change_package_is_deterministic(self) -> None:
+        """Two renders of the same package produce identical output."""
+        pkg = _build_change_package()
+        r1_json = render_meta_learning_change_package(pkg, as_json=True)
+        r2_json = render_meta_learning_change_package(pkg, as_json=True)
+        assert r1_json == r2_json
+
+        r1_summary = render_meta_learning_change_package(pkg, as_json=False)
+        r2_summary = render_meta_learning_change_package(pkg, as_json=False)
+        assert r1_summary == r2_summary
+        assert "CHANGE_PACKAGE" in r1_summary
+        assert "routing_thresholds" in r1_summary
+
+    def test_render_change_package_no_apply_called(self) -> None:
+        """apply_meta_learning_proposal() still raises and render doesn't invoke it."""
+        pkg = _build_change_package()
+        # Render succeeds without triggering apply
+        rendered = render_meta_learning_change_package(pkg, as_json=True)
+        assert len(rendered) > 0
+
+        # Apply still raises
+        with pytest.raises(RuntimeError, match="META_LEARNING_APPLY_PROHIBITED"):
+            apply_meta_learning_proposal()
