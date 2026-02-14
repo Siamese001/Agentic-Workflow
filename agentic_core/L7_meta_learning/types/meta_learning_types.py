@@ -1,7 +1,8 @@
-"""Meta-Learning Proposal Contract — Wave 7.0.1 (Schema Lock Only).
+"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 (Schema Lock Only).
 
-Defines the MetaLearningProposalArtifact frozen dataclass and the
-build_meta_learning_proposal() deterministic builder.
+Defines schema-locked, frozen artifacts for the meta-learning subsystem:
+  - MetaLearningProposalArtifact  (Wave 7.0.1)
+  - MetaLearningEvaluationArtifact (Wave 7.0.3)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -215,6 +216,149 @@ def build_meta_learning_proposal(
         target_component=target_component,
         proposed_change=proposed_change,
         objective_signal=objective_signal,
+        evidence_hash=evidence_hash,
+        policy_config_hash=policy_config_hash,
+    )
+
+
+# =============================================================================
+# §Wave7.0.3 — Evaluation Thresholds (deterministic, no smoothing)
+# =============================================================================
+
+EVAL_THRESHOLDS: dict[str, float] = {
+    "IMPROVE_MIN_DELTA": 0.0,
+    "NO_CHANGE_EPS": 0.0,
+}
+
+
+def _derive_verdict(delta: float) -> Literal["IMPROVE", "REGRESS", "NO_CHANGE"]:
+    """Deterministic verdict from delta using EVAL_THRESHOLDS."""
+    if delta > EVAL_THRESHOLDS["IMPROVE_MIN_DELTA"]:
+        return "IMPROVE"
+    if abs(delta) <= EVAL_THRESHOLDS["NO_CHANGE_EPS"]:
+        return "NO_CHANGE"
+    return "REGRESS"
+
+
+# =============================================================================
+# §Wave7.0.3 — MetaLearningEvaluationArtifact
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class MetaLearningEvaluationArtifact:
+    """Frozen, schema-locked offline evaluation result.
+
+    Rules
+    -----
+    - semantic_clock required (ValueError if missing).
+    - delta MUST equal candidate - baseline (computed deterministically).
+    - verdict derived deterministically via _derive_verdict().
+    - canonical serialization (sort_keys=True).
+    """
+
+    artifact_type: Literal["META_LEARNING_EVALUATION"]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+    proposal_trace_id: str
+    evaluator: str
+    dataset_id: str
+    metrics: ObjectiveSignal
+    verdict: Literal["IMPROVE", "REGRESS", "NO_CHANGE"]
+    evidence_hash: str
+    policy_config_hash: str | None
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "MetaLearningEvaluationArtifact")
+        if self.artifact_type != "META_LEARNING_EVALUATION":
+            raise ValueError(
+                f"artifact_type must be 'META_LEARNING_EVALUATION', got {self.artifact_type!r}",
+            )
+
+    def to_dict(self) -> dict[str, object]:
+        """Canonical, deterministic serialization (keys sorted alphabetically)."""
+        return {
+            "artifact_type": self.artifact_type,
+            "dataset_id": self.dataset_id,
+            "evaluator": self.evaluator,
+            "evidence_hash": self.evidence_hash,
+            "metrics": self.metrics.to_dict(),
+            "policy_config_hash": self.policy_config_hash,
+            "proposal_trace_id": self.proposal_trace_id,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "trace_id": self.trace_id,
+            "verdict": self.verdict,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string (sort_keys=True, compact separators)."""
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+
+
+def build_meta_learning_evaluation(
+    *,
+    proposal: MetaLearningProposalArtifact,
+    evaluator: str,
+    dataset_id: str,
+    baseline: float,
+    candidate: float,
+    evidence_hash: str,
+    policy_config_hash: str | None = None,
+) -> MetaLearningEvaluationArtifact:
+    """Build a MetaLearningEvaluationArtifact with deterministic trace_id.
+
+    Parameters
+    ----------
+    proposal : MetaLearningProposalArtifact
+        The proposal being evaluated.
+    evaluator : str
+        Identifier of the evaluating subsystem.
+    dataset_id : str
+        Identifier of the evaluation dataset.
+    baseline, candidate : float
+        Metric values before and after the proposed change.
+    evidence_hash : str
+        SHA-256 of the evaluation evidence bundle.
+    policy_config_hash : str | None
+        Optional hash of the governing policy config.
+
+    Returns
+    -------
+    MetaLearningEvaluationArtifact
+        Frozen, deterministic evaluation artifact.
+    """
+    delta = candidate - baseline
+    verdict = _derive_verdict(delta)
+    metrics = ObjectiveSignal(
+        metric_name=proposal.objective_signal.metric_name,
+        baseline=baseline,
+        candidate=candidate,
+        delta=delta,
+    )
+
+    temp_payload = {
+        "artifact_type": "META_LEARNING_EVALUATION",
+        "dataset_id": dataset_id,
+        "evaluator": evaluator,
+        "evidence_hash": evidence_hash,
+        "metrics": metrics.to_dict(),
+        "policy_config_hash": policy_config_hash,
+        "proposal_trace_id": proposal.trace_id,
+        "semantic_clock": proposal.semantic_clock.to_dict(),
+        "verdict": verdict,
+    }
+    canonical = _canonical_payload_json(temp_payload)
+    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    return MetaLearningEvaluationArtifact(
+        artifact_type="META_LEARNING_EVALUATION",
+        semantic_clock=proposal.semantic_clock,
+        trace_id=trace_id,
+        proposal_trace_id=proposal.trace_id,
+        evaluator=evaluator,
+        dataset_id=dataset_id,
+        metrics=metrics,
+        verdict=verdict,
         evidence_hash=evidence_hash,
         policy_config_hash=policy_config_hash,
     )

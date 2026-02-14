@@ -14,9 +14,11 @@ import pytest
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     IMMUTABLE_COMPONENTS,
+    MetaLearningEvaluationArtifact,
     MetaLearningProposalArtifact,
     ObjectiveSignal,
     ProposedChange,
+    build_meta_learning_evaluation,
     build_meta_learning_proposal,
 )
 
@@ -26,6 +28,7 @@ from agentic_core.L7_meta_learning.types.meta_learning_types import (
 
 _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))
 _EVIDENCE = "abc123"
+_EVAL_EVIDENCE = "eval_hash_456"
 
 
 def _build_sample(**overrides) -> MetaLearningProposalArtifact:
@@ -176,3 +179,79 @@ class TestTraceIdDeterminism:
         a = _build_sample(baseline=0.80, candidate=0.85)
         b = _build_sample(baseline=0.70, candidate=0.75)
         assert a.trace_id != b.trace_id
+
+
+# =============================================================================
+# §7 — Evaluation: Delta, Verdict, Determinism (Wave 7.0.3)
+# =============================================================================
+
+
+def _build_eval_sample(
+    baseline: float = 0.80,
+    candidate: float = 0.85,
+    **overrides,
+) -> MetaLearningEvaluationArtifact:
+    """Build a sample evaluation from a default proposal."""
+    proposal = _build_sample()
+    defaults = {
+        "proposal": proposal,
+        "evaluator": "offline_bench",
+        "dataset_id": "ds_001",
+        "baseline": baseline,
+        "candidate": candidate,
+        "evidence_hash": _EVAL_EVIDENCE,
+        "policy_config_hash": None,
+    }
+    defaults.update(overrides)
+    return build_meta_learning_evaluation(**defaults)
+
+
+class TestEvaluationDeltaAndVerdict:
+    def test_evaluation_delta_and_verdict_deterministic(self) -> None:
+        """delta == candidate - baseline; verdict derived deterministically."""
+        ev = _build_eval_sample(baseline=0.80, candidate=0.85)
+        assert ev.metrics.delta == pytest.approx(0.05)
+        assert ev.verdict == "IMPROVE"
+
+        ev_regress = _build_eval_sample(baseline=0.85, candidate=0.80)
+        assert ev_regress.metrics.delta == pytest.approx(-0.05)
+        assert ev_regress.verdict == "REGRESS"
+
+        ev_nochange = _build_eval_sample(baseline=0.80, candidate=0.80)
+        assert ev_nochange.metrics.delta == pytest.approx(0.0)
+        assert ev_nochange.verdict == "NO_CHANGE"
+
+
+class TestEvaluationSemanticClock:
+    def test_evaluation_missing_semantic_clock_rejected(self) -> None:
+        """Raises ValueError when semantic_clock is None."""
+        with pytest.raises(ValueError, match="semantic_clock is required"):
+            MetaLearningEvaluationArtifact(
+                artifact_type="META_LEARNING_EVALUATION",
+                semantic_clock=None,  # type: ignore[arg-type]
+                trace_id="dummy",
+                proposal_trace_id="dummy",
+                evaluator="test",
+                dataset_id="ds",
+                metrics=ObjectiveSignal(metric_name="m", baseline=0.0, candidate=0.0, delta=0.0),
+                verdict="NO_CHANGE",
+                evidence_hash="x",
+                policy_config_hash=None,
+            )
+
+
+class TestEvaluationTraceId:
+    def test_evaluation_trace_id_stable_under_dict_order_shuffle(self) -> None:
+        """Same inputs in different construction order → identical trace_id."""
+        a = _build_eval_sample(baseline=0.80, candidate=0.85)
+        b = _build_eval_sample(baseline=0.80, candidate=0.85)
+        assert a.trace_id == b.trace_id
+        assert len(a.trace_id) == 64
+
+
+class TestEvaluationJsonDeterminism:
+    def test_evaluation_json_byte_identical_same_inputs(self) -> None:
+        """Two identical evaluations → byte-identical JSON."""
+        a = _build_eval_sample()
+        b = _build_eval_sample()
+        assert a.to_json() == b.to_json()
