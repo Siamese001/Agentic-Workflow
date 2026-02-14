@@ -30,6 +30,7 @@ from agentic_core.L0_routing.types.v15_types import (
     TokenCapArtifact,
     TokenGateResult,
 )
+from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
 
 Logger = logging.getLogger(__name__)
 
@@ -57,6 +58,9 @@ class SovereignLLMGateway:
     )
 
     audit_log: list[dict[str, Any]] = field(default_factory=list)
+
+    # v5.5 Prompt Security - Injection Detector instance
+    _injection_detector: InjectionDetector = field(default_factory=InjectionDetector, init=False)
 
     # Provider clients (lazy-loaded)
     _openai_client: Any = None
@@ -157,6 +161,7 @@ class SovereignLLMGateway:
         token_cap: TokenCapArtifact | None = None,
         trace_id: str = "",
         token_budget_limit: int = 0,
+        response_schema: Any | None = None,
         **kwargs,
     ) -> dict:
         # §11.1 — TokenCapArtifact gate (existing V15 enforcement)
@@ -214,11 +219,8 @@ class SovereignLLMGateway:
                     artifact=fail_artifact,
                 )
 
-        # §P1 — Pre-call injection scan on final prompt payload
-        from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
-
-        _injection_scanner = InjectionDetector()
-        _injection_scanner.scan(prompt)
+        # §P1 — Pre-call injection scan (uses instance detector)
+        self._injection_detector.scan(prompt)
 
         fallback_providers = fallback_providers or ["anthropic", "google"]
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
@@ -300,6 +302,43 @@ class SovereignLLMGateway:
                     )
                     self._emit_token_artifact(pass_artifact)
 
+                # §P2 — Bounded schema validation retry (max 1)
+                if response_schema is not None:
+                    from agentic_core.prompt_governance.security.output_schema_validator import (
+                        validate_against_schema,
+                    )
+
+                    content = result.get("content", "")
+                    ok, code, details = validate_against_schema(content, response_schema)
+                    if not ok:
+                        # First attempt failed — retry once with schema hint
+                        retry_prompt = (
+                            prompt
+                            + "\n\nReturn ONLY valid JSON matching this schema:\n"
+                            + str(response_schema)
+                            + "\nDo not add extra keys. Do not include explanations."
+                        )
+                        retry_result = await self._call_provider(
+                            current_provider,
+                            retry_prompt,
+                            current_model,
+                            temperature,
+                            max_tokens,
+                            **kwargs,
+                        )
+                        retry_content = retry_result.get("content", "")
+                        ok2, code2, details2 = validate_against_schema(retry_content, response_schema)
+                        if not ok2:
+                            from agentic_core.runtime.exceptions.sovereign_errors import (
+                                SecurityViolationError,
+                            )
+
+                            raise SecurityViolationError(
+                                message=(f"§P2 Output schema validation failed after retry: code={code2}"),
+                                violation_type="SCHEMA_VALIDATION_FAILED",
+                            )
+                        result = retry_result
+
                 return result
 
             # guardian: allow-silent-swallow
@@ -307,8 +346,11 @@ class SovereignLLMGateway:
                 from agentic_core.L2_execution.types.token_enforcement_types import (
                     TokenBudgetExceeded,
                 )
+                from agentic_core.runtime.exceptions.sovereign_errors import (
+                    SecurityViolationError as _SVE,
+                )
 
-                if isinstance(e, TokenBudgetExceeded):
+                if isinstance(e, (TokenBudgetExceeded, _SVE)):
                     raise
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)

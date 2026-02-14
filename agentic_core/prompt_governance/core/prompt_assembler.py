@@ -18,6 +18,8 @@ from typing import Any
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 from pydantic import BaseModel
 
+from agentic_core.prompt_governance.security.output_schema_validator import validate_against_schema
+
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
 __all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityIntegrityError"]
 
@@ -152,6 +154,7 @@ You are {role}. Your objective is {objective}.
 
                 Logger.debug(f"Loaded template: {template_name}")
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.error(f"Failed to load template {file_path}: {e}")
 
@@ -377,11 +380,15 @@ You are {role}. Your objective is {objective}.
 """
         return notice + prompt
 
-    def parse_response(self, response: str) -> dict[str, Any]:
+    def parse_response(self, response: str, *, schema: Any | None = None) -> dict[str, Any]:
         """Parse a response that follows the XML structure.
 
         Args:
             response: The response string to parse
+            schema: Optional Pydantic model class or dict JSON Schema to
+                    validate ``result["content"]`` against.  When provided
+                    and validation fails, the returned dict has
+                    ``type="schema_validation_failed"``.
 
         Returns:
             Parsed response components
@@ -405,6 +412,17 @@ You are {role}. Your objective is {objective}.
                 result["content"] = json.loads(response)
             except json.JSONDecodeError:
                 result["content"] = response
+
+        # §P2 — Optional schema validation gate
+        if schema is not None:
+            ok, code, details = validate_against_schema(result.get("content"), schema)
+            if not ok:
+                return {
+                    "type": "schema_validation_failed",
+                    "content": result.get("content"),
+                    "schema_error_code": code,
+                    "schema_error": details,
+                }
 
         return result
 
@@ -519,17 +537,19 @@ def assemble_prompt(
     )
 
 
-def parse_response(response: str) -> dict[str, Any]:
+def parse_response(response: str, *, schema: Any | None = None) -> dict[str, Any]:
     """Parse a response using the global assembler.
 
     Args:
         response: Response to parse
+        schema: Optional Pydantic model class or dict JSON Schema for
+                output validation.
 
     Returns:
         Parsed components
     """
     assembler = get_prompt_assembler()
-    return assembler.parse_response(response)
+    return assembler.parse_response(response, schema=schema)
 
 
 # Backward compatibility wrapper
