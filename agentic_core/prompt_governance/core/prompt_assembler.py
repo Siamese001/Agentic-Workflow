@@ -13,7 +13,7 @@ import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 from pydantic import BaseModel
@@ -21,7 +21,13 @@ from pydantic import BaseModel
 from agentic_core.prompt_governance.security.output_schema_validator import validate_against_schema
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
-__all__ = ["PromptAssembler", "PromptComponents", "PromptTemplate", "SecurityIntegrityError"]
+__all__ = [
+    "AssembledPrompt",
+    "PromptAssembler",
+    "PromptComponents",
+    "PromptTemplate",
+    "SecurityIntegrityError",
+]
 
 
 # Compatibility aliases
@@ -78,6 +84,13 @@ class PromptComponents:
     metadata: dict[str, Any] = None
 
 
+class AssembledPrompt(NamedTuple):
+    """Result of prompt assembly carrying both text and schema binding."""
+
+    text: str
+    response_schema: Any | None = None
+
+
 class PromptTemplate(BaseModel):
     """XML template for prompt assembly."""
 
@@ -85,6 +98,14 @@ class PromptTemplate(BaseModel):
     template: str
     version: str = "1.0"
     description: str = ""
+    response_schema: Any | None = None
+
+    def __repr__(self) -> str:
+        return (
+            f"PromptTemplate(name={self.name!r}, version={self.version!r}, "
+            f"description={self.description!r}, "
+            f"has_schema={self.response_schema is not None})"
+        )
 
 
 class PromptAssembler:
@@ -121,6 +142,7 @@ You are {role}. Your objective is {objective}.
         self.template = template or self.DEFAULT_TEMPLATE
         self.legacy_mode = legacy_mode
         self.templates: dict[str, PromptTemplate] = {}
+        self._last_response_schema: Any | None = None
 
         # Load custom templates
         self._load_templates()
@@ -318,8 +340,35 @@ You are {role}. Your objective is {objective}.
         if not self.legacy_mode:
             prompt = self._add_fencing_notice(prompt)
 
+        # §P2.2 — Bind the original (unsanitized) schema for downstream runtime validation
+        self._last_response_schema = output_schema
+
         Logger.debug("Prompt assembled successfully with security hardening")
         return prompt
+
+    def assemble_with_schema(
+        self,
+        role: str,
+        objective: str,
+        context_data: dict[str, Any] | str,
+        injections: list[InjectionMatch],
+        **kwargs,
+    ) -> AssembledPrompt:
+        """Assemble a prompt and return it with its bound schema.
+
+        Identical to :meth:`assemble` but returns an :class:`AssembledPrompt`
+        carrying both the prompt text and the original ``output_schema`` for
+        mechanical threading into ``gateway.generate(response_schema=...)``
+        and ``parse_response(schema=...)``.
+        """
+        prompt_text = self.assemble(
+            role=role,
+            objective=objective,
+            context_data=context_data,
+            injections=injections,
+            **kwargs,
+        )
+        return AssembledPrompt(text=prompt_text, response_schema=self._last_response_schema)
 
     def _format_context_data(self, context: dict[str, Any]) -> str:
         """Format context data as XML."""
@@ -529,6 +578,28 @@ def assemble_prompt(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble(
+        role=role,
+        objective=objective,
+        context_data=context_data,
+        injections=injections,
+        **kwargs,
+    )
+
+
+def assemble_prompt_with_schema(
+    role: str,
+    objective: str,
+    context_data: dict[str, Any] | str,
+    injections: list[InjectionMatch],
+    **kwargs,
+) -> AssembledPrompt:
+    """Assemble a prompt with schema binding using the global assembler.
+
+    Returns:
+        AssembledPrompt with .text and .response_schema
+    """
+    assembler = get_prompt_assembler()
+    return assembler.assemble_with_schema(
         role=role,
         objective=objective,
         context_data=context_data,
