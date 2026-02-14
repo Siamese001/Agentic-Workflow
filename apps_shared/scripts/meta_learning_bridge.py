@@ -1,4 +1,4 @@
-"""APPS_* Meta-Learning Emit-Only Bridge — Wave 7.0.9.
+"""APPS_* Meta-Learning Emit-Only Bridge — Waves 7.0.9–7.0.11.
 
 Pure emit-only bridge for APPS_* domains to produce meta-learning artifacts.
 Calls L7 builders to construct frozen, deterministic artifacts.
@@ -13,9 +13,13 @@ HARD RULES
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
+
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.app_signal_types import (
+    AppSignalAggregateArtifact,
     AppSignalEventArtifact,
+    aggregate_app_signals,
     build_app_signal_event,
 )
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
@@ -133,4 +137,32 @@ def propose_from_signal_aggregate(
         candidate=candidate,
         evidence_hash=evidence_hash,
         policy_config_hash=policy_config_hash,
+    )
+
+
+def emit_app_signal_aggregate(
+    *,
+    app_id: str,
+    window_id: str,
+    metric_name: str,
+    events: Sequence[AppSignalEventArtifact],
+    baseline_selector: Callable[[AppSignalEventArtifact], bool],
+    candidate_selector: Callable[[AppSignalEventArtifact], bool],
+    evidence_hash: str,
+    semantic_clock: SemanticClockSnapshot,
+) -> AppSignalAggregateArtifact:
+    """Aggregate APP signal events into an AppSignalAggregateArtifact.
+
+    Pure function — no side effects, no file writes, no apply calls.
+    Delegates to aggregate_app_signals() for deterministic computation.
+    """
+    return aggregate_app_signals(
+        app_id=app_id,
+        window_id=window_id,
+        metric_name=metric_name,
+        events=events,
+        baseline_selector=baseline_selector,
+        candidate_selector=candidate_selector,
+        evidence_hash=evidence_hash,
+        semantic_clock=semantic_clock,
     )

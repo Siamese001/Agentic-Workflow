@@ -1,9 +1,10 @@
-"""APP Signal Contracts — Waves 7.0.8–7.0.10 (Schema Lock Only).
+"""APP Signal Contracts — Waves 7.0.8–7.0.11 (Schema Lock Only).
 
 Defines schema-locked, frozen artifacts for measurable APP outcome signals:
   - AppSignalEventArtifact     (individual signal event)
   - AppSignalAggregateArtifact (aggregated window summary)
   - APP_SIGNAL_CATALOG         (allowlist of optimizable metrics, Wave 7.0.10)
+  - aggregate_app_signals      (deterministic offline aggregator, Wave 7.0.11)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -13,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
@@ -373,4 +375,113 @@ def build_app_signal_aggregate(
         evidence_hash=evidence_hash,
         semantic_clock=semantic_clock,
         trace_id=trace_id,
+    )
+
+
+# =============================================================================
+# §Wave7.0.11 — Deterministic Offline Aggregator
+# =============================================================================
+
+
+def _deterministic_mean(values: list[float]) -> float:
+    """Deterministic mean: sum / len. Fail-closed on empty."""
+    if not values:
+        raise ValueError("EMPTY_VALUES_FOR_MEAN")
+    return sum(sorted(values)) / len(values)
+
+
+def _deterministic_median(values: list[float]) -> float:
+    """Deterministic median: sorted list, middle element(s). Fail-closed on empty."""
+    if not values:
+        raise ValueError("EMPTY_VALUES_FOR_MEDIAN")
+    s = sorted(values)
+    n = len(s)
+    mid = n // 2
+    if n % 2 == 1:
+        return s[mid]
+    return (s[mid - 1] + s[mid]) / 2.0
+
+
+def aggregate_app_signals(
+    *,
+    app_id: str,
+    window_id: str,
+    metric_name: str,
+    events: Sequence[AppSignalEventArtifact],
+    baseline_selector: Callable[[AppSignalEventArtifact], bool],
+    candidate_selector: Callable[[AppSignalEventArtifact], bool],
+    evidence_hash: str,
+    semantic_clock: SemanticClockSnapshot,
+) -> AppSignalAggregateArtifact:
+    """Deterministic offline aggregator: events -> AppSignalAggregateArtifact.
+
+    Parameters
+    ----------
+    app_id : str
+        Application identifier.
+    window_id : str
+        Aggregation window identifier.
+    metric_name : str
+        Must be in APP_SIGNAL_CATALOG.
+    events : Sequence[AppSignalEventArtifact]
+        Raw signal events to aggregate.
+    baseline_selector : Callable
+        Predicate selecting baseline events.
+    candidate_selector : Callable
+        Predicate selecting candidate events.
+    evidence_hash : str
+        SHA-256 of the evidence bundle.
+    semantic_clock : SemanticClockSnapshot
+        Required immutable clock snapshot.
+
+    Returns
+    -------
+    AppSignalAggregateArtifact
+
+    Raises
+    ------
+    ValueError
+        If metric_name not in catalog, empty baseline/candidate, or non-finite values.
+    """
+    entry = APP_SIGNAL_CATALOG.get(metric_name)
+    if entry is None:
+        raise ValueError(f"METRIC_NAME_NOT_IN_CATALOG: {metric_name!r}")
+
+    filtered = [e for e in events if e.metric_name == metric_name and e.app_id == app_id]
+
+    baseline_vals: list[float] = []
+    candidate_vals: list[float] = []
+    for evt in filtered:
+        _validate_finite(evt.metric_value, "event_metric_value")
+        if baseline_selector(evt):
+            baseline_vals.append(evt.metric_value)
+        if candidate_selector(evt):
+            candidate_vals.append(evt.metric_value)
+
+    if not baseline_vals:
+        raise ValueError("EMPTY_BASELINE")
+    if not candidate_vals:
+        raise ValueError("EMPTY_CANDIDATE")
+
+    agg_method = str(entry.get("aggregation", "mean"))
+    if agg_method in ("rate", "mean"):
+        agg_fn = _deterministic_mean
+    elif agg_method == "median":
+        agg_fn = _deterministic_median
+    else:
+        raise ValueError(f"UNKNOWN_AGGREGATION: {agg_method!r}")
+
+    baseline_value = agg_fn(baseline_vals)
+    candidate_value = agg_fn(candidate_vals)
+    n = len(baseline_vals) + len(candidate_vals)
+
+    return build_app_signal_aggregate(
+        app_id=app_id,
+        window_id=window_id,
+        metric_name=metric_name,
+        baseline_value=baseline_value,
+        candidate_value=candidate_value,
+        n=n,
+        evidence_hash=evidence_hash,
+        semantic_clock=semantic_clock,
     )

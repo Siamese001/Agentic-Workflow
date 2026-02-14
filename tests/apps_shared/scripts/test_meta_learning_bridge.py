@@ -1,18 +1,24 @@
-"""Tests for apps_shared.scripts.meta_learning_bridge — Wave 7.0.9.
+"""Tests for apps_shared.scripts.meta_learning_bridge — Waves 7.0.9–7.0.11.
 
 Validates:
   a) bridge emits APP_SIGNAL_EVENT deterministically
   b) bridge cannot apply (source text has zero apply_meta_learning_proposal usage)
   c) end-to-end artifact chain stays deterministic for a sample apps_rg scenario
+  d) bridge aggregate emits deterministic trace_id across shuffled events (7.0.11)
+  e) AST-based: bridge has no ImportFrom/Name for apply_meta_learning_proposal (7.0.11)
 """
 
 from __future__ import annotations
 
+import ast
 import inspect
 import json
 from pathlib import Path
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L7_meta_learning.types.app_signal_types import (
+    build_app_signal_event,
+)
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,
@@ -20,6 +26,7 @@ from agentic_core.L7_meta_learning.types.meta_learning_types import (
     build_meta_learning_evaluation,
 )
 from apps_shared.scripts.meta_learning_bridge import (
+    emit_app_signal_aggregate,
     emit_app_signal_event,
     propose_from_signal_aggregate,
 )
@@ -165,3 +172,83 @@ class TestBridgeEndToEndChain:
         parsed = json.loads(pkg.to_json())
         assert parsed["artifact_type"] == "META_LEARNING_CHANGE_PACKAGE"
         assert parsed["target_component"] == "routing_thresholds"
+
+
+# =============================================================================
+# § Bridge Aggregate + AST Safety (Wave 7.0.11)
+# =============================================================================
+
+
+def _make_bridge_events(
+    values: list[float],
+    *,
+    prefix: str = "msg",
+) -> list:
+    """Helper: build AppSignalEventArtifact list for bridge tests."""
+    return [
+        build_app_signal_event(
+            app_id="apps_rg",
+            run_id="run_bridge",
+            message_id=f"{prefix}_{i:03d}",
+            metric_name="resume_message_response_rate",
+            metric_value=v,
+            semantic_clock=_CLOCK,
+        )
+        for i, v in enumerate(values)
+    ]
+
+
+class TestBridgeAggregate:
+    def test_bridge_aggregate_deterministic_across_shuffled_events(self) -> None:
+        """Bridge aggregate produces identical trace_id regardless of event order."""
+        baseline_events = _make_bridge_events([0.80, 0.85, 0.90], prefix="bl")
+        candidate_events = _make_bridge_events([0.70, 0.75], prefix="cd")
+
+        all_events = baseline_events + candidate_events
+        shuffled = list(reversed(all_events))
+
+        agg1 = emit_app_signal_aggregate(
+            app_id="apps_rg",
+            window_id="w_bridge",
+            metric_name="resume_message_response_rate",
+            events=all_events,
+            baseline_selector=lambda e: e.message_id.startswith("bl"),
+            candidate_selector=lambda e: e.message_id.startswith("cd"),
+            evidence_hash="bridge_hash",
+            semantic_clock=_CLOCK,
+        )
+        agg2 = emit_app_signal_aggregate(
+            app_id="apps_rg",
+            window_id="w_bridge",
+            metric_name="resume_message_response_rate",
+            events=shuffled,
+            baseline_selector=lambda e: e.message_id.startswith("bl"),
+            candidate_selector=lambda e: e.message_id.startswith("cd"),
+            evidence_hash="bridge_hash",
+            semantic_clock=_CLOCK,
+        )
+        assert agg1.trace_id == agg2.trace_id
+        assert agg1.to_json() == agg2.to_json()
+        assert agg1.artifact_type == "APP_SIGNAL_AGGREGATE"
+
+
+class TestBridgeASTSafety:
+    def test_bridge_ast_forbids_apply_import(self) -> None:
+        """AST scan: bridge must not import or reference apply_meta_learning_proposal."""
+        bridge_path = Path(inspect.getfile(emit_app_signal_event))
+        source = bridge_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(bridge_path))
+
+        violations: list[str] = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    if alias.name == "apply_meta_learning_proposal":
+                        violations.append(
+                            f"ImportFrom at line {node.lineno}: {alias.name}",
+                        )
+            if isinstance(node, ast.Name) and node.id == "apply_meta_learning_proposal":
+                violations.append(
+                    f"Name ref at line {node.lineno}: {node.id}",
+                )
+        assert not violations, f"apply_meta_learning_proposal found in bridge AST: {violations}"
