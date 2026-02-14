@@ -15,6 +15,10 @@ from agentic_core.L0_routing.scripts.run_all_guardians import (
     render_meta_learning_change_package,
 )
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L7_meta_learning.types.app_signal_types import (
+    build_app_signal_aggregate,
+    build_app_signal_event,
+)
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     DENY_REASONS,
     IMMUTABLE_COMPONENTS,
@@ -702,3 +706,92 @@ class TestRenderChangePackage:
         # Apply still raises
         with pytest.raises(RuntimeError, match="META_LEARNING_APPLY_PROHIBITED"):
             apply_meta_learning_proposal()
+
+
+# =============================================================================
+# §12 — APP Signal Contracts (Wave 7.0.8)
+# =============================================================================
+
+
+class TestAppSignalEvent:
+    def test_event_requires_semantic_clock(self) -> None:
+        """AppSignalEventArtifact rejects None semantic_clock."""
+        with pytest.raises(ValueError, match="semantic_clock"):
+            build_app_signal_event(
+                app_id="apps_rg",
+                run_id="run_001",
+                message_id="msg_001",
+                metric_name="response_rate",
+                metric_value=0.85,
+                semantic_clock=None,  # type: ignore[arg-type]
+            )
+
+    def test_event_trace_id_determinism(self) -> None:
+        """Same inputs produce identical trace_id."""
+        kwargs = {
+            "app_id": "apps_rg",
+            "run_id": "run_001",
+            "message_id": "msg_001",
+            "metric_name": "response_rate",
+            "metric_value": 0.85,
+            "semantic_clock": _CLOCK,
+        }
+        e1 = build_app_signal_event(**kwargs)
+        e2 = build_app_signal_event(**kwargs)
+        assert e1.trace_id == e2.trace_id
+        assert len(e1.trace_id) == 64
+
+    def test_event_rejects_nan_inf(self) -> None:
+        """NaN and inf metric_value are rejected."""
+        base = {
+            "app_id": "apps_rg",
+            "run_id": "run_001",
+            "message_id": "msg_001",
+            "metric_name": "response_rate",
+            "semantic_clock": _CLOCK,
+        }
+        with pytest.raises(ValueError, match="metric_value_NOT_FINITE"):
+            build_app_signal_event(**base, metric_value=float("nan"))
+        with pytest.raises(ValueError, match="metric_value_NOT_FINITE"):
+            build_app_signal_event(**base, metric_value=float("inf"))
+        with pytest.raises(ValueError, match="metric_value_NOT_FINITE"):
+            build_app_signal_event(**base, metric_value=float("-inf"))
+
+
+class TestAppSignalAggregate:
+    def test_aggregate_delta_correctness_and_determinism(self) -> None:
+        """delta == candidate_value - baseline_value, trace_id deterministic."""
+        kwargs = {
+            "app_id": "apps_rg",
+            "window_id": "w_2026_02",
+            "metric_name": "response_rate",
+            "baseline_value": 0.80,
+            "candidate_value": 0.85,
+            "n": 100,
+            "evidence_hash": "abc123",
+            "semantic_clock": _CLOCK,
+        }
+        a1 = build_app_signal_aggregate(**kwargs)
+        a2 = build_app_signal_aggregate(**kwargs)
+        assert a1.delta == 0.85 - 0.80
+        assert a1.trace_id == a2.trace_id
+        assert len(a1.trace_id) == 64
+
+    def test_canonicalization_stable(self) -> None:
+        """JSON text exactly identical across two builds."""
+        kwargs = {
+            "app_id": "apps_lic",
+            "window_id": "w_2026_02",
+            "metric_name": "match_score",
+            "baseline_value": 0.70,
+            "candidate_value": 0.75,
+            "n": 50,
+            "evidence_hash": "def456",
+            "semantic_clock": _CLOCK,
+        }
+        a1 = build_app_signal_aggregate(**kwargs)
+        a2 = build_app_signal_aggregate(**kwargs)
+        assert a1.to_json() == a2.to_json()
+        parsed = json.loads(a1.to_json())
+        assert parsed["artifact_type"] == "APP_SIGNAL_AGGREGATE"
+        assert parsed["delta"] == 0.75 - 0.70

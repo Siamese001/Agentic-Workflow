@@ -7,6 +7,8 @@ Defines schema-locked, frozen artifacts for the meta-learning subsystem:
   - MetaLearningDecisionArtifact      (Wave 7.0.5)
   - MetaLearningChangePackageArtifact (Wave 7.0.6)
 
+APP signal artifacts (Wave 7.0.8) are in app_signal_types.py.
+
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
 
