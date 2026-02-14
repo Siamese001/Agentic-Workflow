@@ -1,0 +1,14 @@
+{
+  "version": "5.4.2",
+  "canonical_artifact_path": "docs/reports/assessments/Prompt v5.4 State Gap Implementation.md",
+  "assembled_sha256": "de0a349ba2894f54e2b4ee2fb164b75e75fd28c328d0e019d068f28dca4a18af",
+  "modules": [
+    {
+      "path": "docs/reports/assessments/Prompt v5.4 State Gap Implementation.md",
+      "order": 0,
+      "sha256": "de0a349ba2894f54e2b4ee2fb164b75e75fd28c328d0e019d068f28dca4a18af",
+      "classification": "monolith",
+      "version_pin": "5.4.2"
+    }
+  ]
+}
