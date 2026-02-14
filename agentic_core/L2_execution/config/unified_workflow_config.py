@@ -17,6 +17,14 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.capability_chokepoint import (
+    authorize_and_execute,
+)
+from agentic_core.L2_execution.types.capability_token_types import (
+    CapabilityTokenArtifact,
+)
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+
 
 class MissionFocus(Enum):
     """Mission focus types for coordinator selection."""
@@ -375,16 +383,36 @@ class UnifiedWorkflowEngine:
         self.total_successes = 0
         self.total_failures = 0
 
-    def orchestrate(self, mission: dict[str, Any]) -> dict[str, Any]:
+    def orchestrate(
+        self,
+        mission: dict[str, Any],
+        *,
+        capability_token: CapabilityTokenArtifact | None = None,
+        semantic_clock: SemanticClockSnapshot | None = None,
+    ) -> dict[str, Any]:
         """
         Orchestrate mission using appropriate coordinator.
 
+        All execution routes through the P5.1 capability chokepoint.
+
         Args:
             mission: Mission dict with 'focus' key and mission-specific data
+            capability_token: Required CapabilityTokenArtifact (FAIL-CLOSED if None).
+            semantic_clock: Required SemanticClockSnapshot for chokepoint decisions.
 
         Returns:
             Orchestration result from selected coordinator
+
+        Raises:
+            PermissionError: If token is missing/invalid (FAIL-CLOSED).
+            ValueError: If semantic_clock is missing.
         """
+        if semantic_clock is None:
+            raise ValueError(
+                "UnifiedWorkflowEngine.orchestrate: semantic_clock is required "
+                "for P5.1 capability chokepoint enforcement"
+            )
+
         self.total_missions += 1
 
         # Determine mission focus
@@ -397,8 +425,17 @@ class UnifiedWorkflowEngine:
         # Select coordinator
         coordinator = self.coordinators.get(focus, self.coordinators[MissionFocus.DEFAULT])
 
-        # Execute mission
-        result = coordinator.execute(mission)
+        # Execute mission through P5.1 capability chokepoint
+        result = authorize_and_execute(
+            token=capability_token,
+            fn=coordinator.execute,
+            args=(mission,),
+            tool_name=f"L2:{coordinator.name}",
+            action="orchestrate",
+            requested_resource=f"coordinator/{focus.value}",
+            required_permission="TOOL:READ",
+            semantic_clock=semantic_clock,
+        )
 
         # Track results
         if result.get("status") == "success":
