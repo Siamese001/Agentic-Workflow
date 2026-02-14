@@ -1,10 +1,15 @@
-"""Meta-Learning Operator — Wave 7.0.16.
+"""Meta-Learning Operator — Wave 7.0.16 / 7.0.19.
 
 Single explicit operator entrypoint for the full Phase-7 pipeline:
-offline replay → bundle render → optional apply.
+offline replay -> bundle render -> optional apply.
 
 Defaults to DRY_RUN.  No background automation.  No auto-apply.
 APPLY requires a capability token with FS:WRITE permission.
+
+Wave 7.0.19 additions:
+  - Audit pack now includes "current_config" and "dry_run_delta".
+  - Uses config_store (read-only) — NO meta_apply / meta_apply_ops calls
+    for the audit join.
 """
 
 from __future__ import annotations
@@ -15,6 +20,13 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
+from agentic_core.L0_routing.meta_control.config_store import (
+    apply_change_package_readonly,
+    load_current,
+)
+from agentic_core.L0_routing.meta_control.config_store_types import (
+    ConfigDeltaArtifact,
+)
 from agentic_core.L0_routing.meta_control.meta_apply import (
     apply_meta_learning_rollout,
 )
@@ -41,8 +53,13 @@ from agentic_core.L7_meta_learning.types.rollout_types import (
     MetaLearningRollbackArtifact,
 )
 
+# Default store root for config_store reads.
+_DEFAULT_STORE_ROOT = (
+    Path(__file__).resolve().parents[2] / "agentic_core" / "L0_routing" / "meta_control" / "config_store"
+)
+
 # =============================================================================
-# §Wave7.0.16 — Deterministic helpers
+# Deterministic helpers
 # =============================================================================
 
 
@@ -54,7 +71,7 @@ def _deterministic_evidence_hash(events: Sequence[AppSignalEventArtifact]) -> st
 
 
 # =============================================================================
-# §Wave7.0.16 — Operator Entrypoint
+# Operator Entrypoint
 # =============================================================================
 
 
@@ -82,6 +99,7 @@ def run_meta_learning_operator(
     mode: Literal["DRY_RUN", "APPLY"] = "DRY_RUN",
     capability_token: CapabilityTokenArtifact | None = None,
     fs_root: Path | None = None,
+    store_root: Path | None = None,
 ) -> dict[str, Any]:
     """Run the full Phase-7 meta-learning pipeline end-to-end.
 
@@ -90,6 +108,8 @@ def run_meta_learning_operator(
 
     Returns a stable audit pack dict.
     """
+    effective_store_root = store_root if store_root is not None else _DEFAULT_STORE_ROOT
+
     # ------------------------------------------------------------------
     # Step 1: Aggregate signals
     # ------------------------------------------------------------------
@@ -136,6 +156,28 @@ def run_meta_learning_operator(
     bundle_json: str = render_offline_replay_bundle(bundle)
 
     # ------------------------------------------------------------------
+    # Step 3b (Wave 7.0.19): Read-only config join for audit pack
+    # ------------------------------------------------------------------
+    current_payload: dict[str, Any] = load_current(
+        effective_store_root,
+        app_id,
+        target_component,
+    )
+    current_config: dict[str, Any] = {
+        "app_id": app_id,
+        "target_component": target_component,
+        "payload": current_payload,
+    }
+
+    dry_run_delta: ConfigDeltaArtifact | None = None
+    if bundle.change_package is not None:
+        dry_run_delta = apply_change_package_readonly(
+            effective_store_root,
+            bundle.change_package,
+            semantic_clock,
+        )
+
+    # ------------------------------------------------------------------
     # Step 4: Apply logic (APPLY mode only, with ALLOW_TO_APPLY decision)
     # ------------------------------------------------------------------
     apply_attempt: MetaLearningApplyAttemptArtifact | None = None
@@ -176,11 +218,13 @@ def run_meta_learning_operator(
         "apply_attempt": apply_attempt,
         "rollback": rollback,
         "applied": applied,
+        "current_config": current_config,
+        "dry_run_delta": dry_run_delta,
     }
 
 
 # =============================================================================
-# §Wave7.0.16 — Deterministic Audit Pack Renderer
+# Deterministic Audit Pack Renderer
 # =============================================================================
 
 
@@ -191,11 +235,14 @@ def render_meta_learning_audit_pack(audit_pack: dict[str, Any]) -> str:
     """
     attempt = audit_pack.get("apply_attempt")
     rb = audit_pack.get("rollback")
+    delta = audit_pack.get("dry_run_delta")
 
     serializable: dict[str, Any] = {
         "applied": audit_pack["applied"],
         "apply_attempt": attempt.to_dict() if attempt is not None else None,
         "bundle_json": audit_pack["bundle_json"],
+        "current_config": audit_pack.get("current_config"),
+        "dry_run_delta": delta.to_dict() if delta is not None else None,
         "mode": audit_pack["mode"],
         "rollback": rb.to_dict() if rb is not None else None,
     }
