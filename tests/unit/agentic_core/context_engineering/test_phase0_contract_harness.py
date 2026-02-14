@@ -37,21 +37,40 @@ class TestSubAtomicEngineImplContract:
 
     MODULE = "agentic_core.L3_orchestration.engines.sub_atomic_engine_impl"
 
-    def _import(self):
-        return _importorskip_robust(self.MODULE)
-
     def test_module_importable(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert mod is not None
 
     def test_class_exists(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert hasattr(mod, "SubAtomicEngineImpl"), f"{self.MODULE} must export SubAtomicEngineImpl"
 
     def test_resilient_mutation_exists(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         cls = mod.SubAtomicEngineImpl
         assert hasattr(cls, "resilient_mutation"), "SubAtomicEngineImpl must have resilient_mutation method"
+
+    def test_fence_prompt_exists(self):
+        mod = importlib.import_module(self.MODULE)
+        cls = mod.SubAtomicEngineImpl
+        assert hasattr(cls, "_fence_prompt"), "SubAtomicEngineImpl must have _fence_prompt method"
+
+    def test_fence_prompt_produces_xml_tags(self):
+        mod = importlib.import_module(self.MODULE)
+        cls = mod.SubAtomicEngineImpl
+        result = cls._fence_prompt("You are a coder.", "Fix this bug.")
+        assert "<SYSTEM_PRIME>" in result
+        assert "</SYSTEM_PRIME>" in result
+        assert "<CONTEXT_DATA>" in result
+        assert "</CONTEXT_DATA>" in result
+        assert "You are a coder." in result
+        assert "Fix this bug." in result
+
+    def test_fence_prompt_empty_system_returns_user_prompt(self):
+        mod = importlib.import_module(self.MODULE)
+        cls = mod.SubAtomicEngineImpl
+        result = cls._fence_prompt("", "Just a user prompt.")
+        assert result == "Just a user prompt."
 
 
 # ── 2. SovereignLLMGateway ──────────────────────────────────────────────
