@@ -340,9 +340,7 @@ class SovereignLLMGateway:
                         result = retry_result
 
                 # §P3 — Post-call output injection scan (warn-mode)
-                _response_content = (
-                    result.get("content") if isinstance(result, dict) else None
-                )
+                _response_content = result.get("content")
                 if _response_content:
                     from agentic_core.runtime.exceptions.sovereign_errors import (
                         SecurityViolationError as _SVE_P3,
