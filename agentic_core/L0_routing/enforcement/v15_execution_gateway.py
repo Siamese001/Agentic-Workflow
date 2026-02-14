@@ -47,8 +47,12 @@ from agentic_core.L0_routing.types.v15_p2_types import (
 )
 from agentic_core.L0_routing.types.v15_p5_types import HashMismatchTracker
 from agentic_core.L0_routing.types.v15_types import (
+    HEALER_PIPE_ORDER,
     TokenCapArtifact,
     TokenGateResult,
+)
+from agentic_core.L2_execution.enforcement.healer_pipe_order import (
+    enforce_healer_pipe_order,
 )
 
 Logger = logging.getLogger(__name__)
@@ -151,6 +155,8 @@ class V15ExecutionGateway:
         """Inner execution body, may raise V15SoftFailAbort on violations."""
         # §2.5 — Instantiate pipe order enforcer for this execution wave
         pipe = PipeOrderEnforcer()
+        # G-2-3 — Accumulate observed steps for final completeness gate
+        observed_steps: list[str] = []
 
         # §4.1 — PolicyConfigGuard: capture policy snapshot at wave start
         policy_config = kwargs.get("policy_config", {})
@@ -166,25 +172,25 @@ class V15ExecutionGateway:
         self._mismatch_tracker = HashMismatchTracker(wave_id=trace_id)
 
         # --- Pipe step 1: schema_validation ---
-        self._pipe_advance(pipe, "schema_validation", trace_id)
+        self._pipe_advance(pipe, "schema_validation", trace_id, observed_steps)
         manifest = validate_execution_input(execution_input)
 
         # --- Pipe step 2: hash_verification ---
-        self._pipe_advance(pipe, "hash_verification", trace_id)
+        self._pipe_advance(pipe, "hash_verification", trace_id, observed_steps)
         validate_manifest_emission(manifest)
 
         # --- Pipe step 3: immediate_rollback_on_mismatch ---
-        self._pipe_advance(pipe, "immediate_rollback_on_mismatch", trace_id)
+        self._pipe_advance(pipe, "immediate_rollback_on_mismatch", trace_id, observed_steps)
         # §5.1 — Dedupe check
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
         dedupe_hit = signal_hash in self._seen_signals
         self._seen_signals.add(signal_hash)
 
         # --- Pipe step 4: signed_modify_override_check ---
-        self._pipe_advance(pipe, "signed_modify_override_check", trace_id)
+        self._pipe_advance(pipe, "signed_modify_override_check", trace_id, observed_steps)
 
         # --- Pipe step 5: stale_write_incident_emission ---
-        self._pipe_advance(pipe, "stale_write_incident_emission", trace_id)
+        self._pipe_advance(pipe, "stale_write_incident_emission", trace_id, observed_steps)
         # §10.2 — Capture pre-mutation boundary snapshot
         fs_hash, git_hash, mem_hash = state_hash_fn()
         self._clock.prepare_commit(manifest.target_layer)
@@ -219,13 +225,13 @@ class V15ExecutionGateway:
             )
 
         # --- Pipe step 6: circuit_breaker_increment ---
-        self._pipe_advance(pipe, "circuit_breaker_increment", trace_id)
+        self._pipe_advance(pipe, "circuit_breaker_increment", trace_id, observed_steps)
 
         # --- Pipe step 7: ast_deserialization ---
-        self._pipe_advance(pipe, "ast_deserialization", trace_id)
+        self._pipe_advance(pipe, "ast_deserialization", trace_id, observed_steps)
 
         # --- Pipe step 8: ast_native_transformation (heal execution) ---
-        self._pipe_advance(pipe, "ast_native_transformation", trace_id)
+        self._pipe_advance(pipe, "ast_native_transformation", trace_id, observed_steps)
         commit_valid = False
         healing_output: dict[str, Any] = {}
         error: str | None = None
@@ -239,13 +245,16 @@ class V15ExecutionGateway:
             Logger.error(f"[V15-GW] Healing failed: {exc}")
 
         # --- Pipe step 9: post_transform_node_id_check ---
-        self._pipe_advance(pipe, "post_transform_node_id_check", trace_id)
+        self._pipe_advance(pipe, "post_transform_node_id_check", trace_id, observed_steps)
 
         # §4.1 — Verify policy immutability at wave end
         self._policy_check(policy_guard, policy_config, trace_id)
 
         # --- Pipe step 10: commit ---
-        self._pipe_advance(pipe, "commit", trace_id)
+        self._pipe_advance(pipe, "commit", trace_id, observed_steps)
+
+        # G-2-3 — Final completeness gate: verify all 10 steps executed in order
+        enforce_healer_pipe_order(HEALER_PIPE_ORDER, observed_steps, trace_id)
         # §13.1/§13.1.1 — Advance semantic clock only on valid commit
         tick = self._clock.step_id
         if commit_valid:
@@ -310,8 +319,17 @@ class V15ExecutionGateway:
     # Internal helpers (mode-aware)
     # -----------------------------------------------------------------
 
-    def _pipe_advance(self, pipe: PipeOrderEnforcer, step: str, trace_id: str) -> None:
+    def _pipe_advance(
+        self,
+        pipe: PipeOrderEnforcer,
+        step: str,
+        trace_id: str,
+        observed_steps: list[str] | None = None,
+    ) -> None:
         """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
+        # G-2-3: record observed step for final completeness check
+        if observed_steps is not None:
+            observed_steps.append(step)
         try:
             pipe.advance(step)
         except PipeOrderViolation as pov:
