@@ -1,9 +1,10 @@
-"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 / 7.0.4 (Schema Lock Only).
+"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 / 7.0.4 / 7.0.5 (Schema Lock Only).
 
 Defines schema-locked, frozen artifacts for the meta-learning subsystem:
   - MetaLearningProposalArtifact   (Wave 7.0.1)
   - MetaLearningEvaluationArtifact (Wave 7.0.3)
   - MetaLearningApprovalArtifact   (Wave 7.0.4)
+  - MetaLearningDecisionArtifact   (Wave 7.0.5)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -480,3 +481,208 @@ def build_meta_learning_approval(
 def apply_meta_learning_proposal(*args, **kwargs) -> None:  # noqa: ARG001
     """Deliberate guardrail: proposals cannot be applied by any L7 code path in v5.4."""
     raise RuntimeError("META_LEARNING_APPLY_PROHIBITED")
+
+
+# =============================================================================
+# §Wave7.0.5 — Deny Reason Codes (stable strings)
+# =============================================================================
+
+DENY_REASONS: dict[str, str] = {
+    "MISSING_PROPOSAL": "MISSING_PROPOSAL",
+    "MISSING_EVALUATION": "MISSING_EVALUATION",
+    "MISSING_APPROVAL": "MISSING_APPROVAL",
+    "TRACE_MISMATCH": "TRACE_MISMATCH",
+    "POLICY_HASH_MISMATCH": "POLICY_HASH_MISMATCH",
+    "EVAL_VERDICT_NOT_IMPROVE": "EVAL_VERDICT_NOT_IMPROVE",
+    "APPROVAL_REJECTED": "APPROVAL_REJECTED",
+    "CLOCK_INVALID": "CLOCK_INVALID",
+}
+
+
+# =============================================================================
+# §Wave7.0.5 — MetaLearningDecisionArtifact
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class MetaLearningDecisionArtifact:
+    """Frozen, schema-locked intake gate decision.
+
+    Rules
+    -----
+    - semantic_clock required (ValueError if missing).
+    - decision is ALLOW_TO_APPLY or REJECT (fail-closed).
+    - deny_reason is None when ALLOW_TO_APPLY, a stable code when REJECT.
+    - This artifact does NOT trigger application; apply remains RuntimeError.
+    - canonical serialization (sort_keys=True).
+    """
+
+    artifact_type: Literal["META_LEARNING_DECISION"]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+    proposal_trace_id: str
+    evaluation_trace_id: str | None
+    approval_trace_id: str | None
+    decision: Literal["ALLOW_TO_APPLY", "REJECT"]
+    deny_reason: str | None
+    policy_config_hash: str | None
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "MetaLearningDecisionArtifact")
+        if self.artifact_type != "META_LEARNING_DECISION":
+            raise ValueError(
+                f"artifact_type must be 'META_LEARNING_DECISION', got {self.artifact_type!r}",
+            )
+
+    def to_dict(self) -> dict[str, object]:
+        """Canonical, deterministic serialization (keys sorted alphabetically)."""
+        return {
+            "approval_trace_id": self.approval_trace_id,
+            "artifact_type": self.artifact_type,
+            "decision": self.decision,
+            "deny_reason": self.deny_reason,
+            "evaluation_trace_id": self.evaluation_trace_id,
+            "policy_config_hash": self.policy_config_hash,
+            "proposal_trace_id": self.proposal_trace_id,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "trace_id": self.trace_id,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string (sort_keys=True, compact separators)."""
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+
+
+# =============================================================================
+# §Wave7.0.5 — Intake Gate Builder (fail-closed, no side effects)
+# =============================================================================
+
+
+def _build_reject_decision(
+    *,
+    deny_reason: str,
+    proposal_trace_id: str,
+    evaluation_trace_id: str | None,
+    approval_trace_id: str | None,
+    semantic_clock: SemanticClockSnapshot,
+    policy_config_hash: str | None,
+) -> MetaLearningDecisionArtifact:
+    """Internal helper to build a REJECT decision with deterministic trace_id."""
+    temp_payload = {
+        "approval_trace_id": approval_trace_id,
+        "artifact_type": "META_LEARNING_DECISION",
+        "decision": "REJECT",
+        "deny_reason": deny_reason,
+        "evaluation_trace_id": evaluation_trace_id,
+        "policy_config_hash": policy_config_hash,
+        "proposal_trace_id": proposal_trace_id,
+        "semantic_clock": semantic_clock.to_dict(),
+    }
+    canonical = _canonical_payload_json(temp_payload)
+    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return MetaLearningDecisionArtifact(
+        artifact_type="META_LEARNING_DECISION",
+        semantic_clock=semantic_clock,
+        trace_id=trace_id,
+        proposal_trace_id=proposal_trace_id,
+        evaluation_trace_id=evaluation_trace_id,
+        approval_trace_id=approval_trace_id,
+        decision="REJECT",
+        deny_reason=deny_reason,
+        policy_config_hash=policy_config_hash,
+    )
+
+
+def build_meta_learning_decision(
+    *,
+    proposal: MetaLearningProposalArtifact | None,
+    evaluation: MetaLearningEvaluationArtifact | None,
+    approval: MetaLearningApprovalArtifact | None,
+    semantic_clock: SemanticClockSnapshot,
+    policy_config_hash: str | None,
+) -> MetaLearningDecisionArtifact:
+    """Deterministic intake gate: consume Proposal+Evaluation+Approval, emit Decision.
+
+    Fail-closed: any validation failure produces REJECT with a stable deny_reason.
+    ALLOW_TO_APPLY is emitted ONLY as an artifact — it MUST NOT trigger application.
+
+    Parameters
+    ----------
+    proposal, evaluation, approval : artifacts or None
+        The three pipeline artifacts. None → REJECT.
+    semantic_clock : SemanticClockSnapshot
+        Required immutable clock snapshot.
+    policy_config_hash : str | None
+        Expected policy config hash; all artifacts must match.
+
+    Returns
+    -------
+    MetaLearningDecisionArtifact
+    """
+    # Validate semantic clock (raises ValueError if None)
+    validate_semantic_clock(semantic_clock, "build_meta_learning_decision")
+
+    # Helper to build reject with available trace ids
+    def _reject(reason: str) -> MetaLearningDecisionArtifact:
+        return _build_reject_decision(
+            deny_reason=reason,
+            proposal_trace_id=proposal.trace_id if proposal else "",
+            evaluation_trace_id=evaluation.trace_id if evaluation else None,
+            approval_trace_id=approval.trace_id if approval else None,
+            semantic_clock=semantic_clock,
+            policy_config_hash=policy_config_hash,
+        )
+
+    # --- Presence checks (fail-closed) ---
+    if proposal is None:
+        return _reject(DENY_REASONS["MISSING_PROPOSAL"])
+    if evaluation is None:
+        return _reject(DENY_REASONS["MISSING_EVALUATION"])
+    if approval is None:
+        return _reject(DENY_REASONS["MISSING_APPROVAL"])
+
+    # --- Cross-artifact trace linkage ---
+    if evaluation.proposal_trace_id != proposal.trace_id:
+        return _reject(DENY_REASONS["TRACE_MISMATCH"])
+    if approval.proposal_trace_id != proposal.trace_id or approval.evaluation_trace_id != evaluation.trace_id:
+        return _reject(DENY_REASONS["TRACE_MISMATCH"])
+
+    # --- Policy hash alignment (None is a valid value; all must match) ---
+    if not (
+        proposal.policy_config_hash == policy_config_hash
+        and evaluation.policy_config_hash == policy_config_hash
+        and approval.policy_config_hash == policy_config_hash
+    ):
+        return _reject(DENY_REASONS["POLICY_HASH_MISMATCH"])
+
+    # --- Verdict + decision checks ---
+    if evaluation.verdict != "IMPROVE":
+        return _reject(DENY_REASONS["EVAL_VERDICT_NOT_IMPROVE"])
+    if approval.decision != "APPROVE":
+        return _reject(DENY_REASONS["APPROVAL_REJECTED"])
+
+    # --- All checks pass → ALLOW_TO_APPLY ---
+    temp_payload = {
+        "approval_trace_id": approval.trace_id,
+        "artifact_type": "META_LEARNING_DECISION",
+        "decision": "ALLOW_TO_APPLY",
+        "deny_reason": None,
+        "evaluation_trace_id": evaluation.trace_id,
+        "policy_config_hash": policy_config_hash,
+        "proposal_trace_id": proposal.trace_id,
+        "semantic_clock": semantic_clock.to_dict(),
+    }
+    canonical = _canonical_payload_json(temp_payload)
+    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    return MetaLearningDecisionArtifact(
+        artifact_type="META_LEARNING_DECISION",
+        semantic_clock=semantic_clock,
+        trace_id=trace_id,
+        proposal_trace_id=proposal.trace_id,
+        evaluation_trace_id=evaluation.trace_id,
+        approval_trace_id=approval.trace_id,
+        decision="ALLOW_TO_APPLY",
+        deny_reason=None,
+        policy_config_hash=policy_config_hash,
+    )

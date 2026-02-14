@@ -13,6 +13,7 @@ import pytest
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
+    DENY_REASONS,
     IMMUTABLE_COMPONENTS,
     MetaLearningApprovalArtifact,
     MetaLearningEvaluationArtifact,
@@ -21,6 +22,7 @@ from agentic_core.L7_meta_learning.types.meta_learning_types import (
     ProposedChange,
     apply_meta_learning_proposal,
     build_meta_learning_approval,
+    build_meta_learning_decision,
     build_meta_learning_evaluation,
     build_meta_learning_proposal,
 )
@@ -316,3 +318,182 @@ class TestApplyProhibited:
 
         with pytest.raises(RuntimeError, match="META_LEARNING_APPLY_PROHIBITED"):
             apply_meta_learning_proposal("any", "args", key="value")
+
+
+# =============================================================================
+# §9 — Decision Intake Gate (Wave 7.0.5)
+# =============================================================================
+
+
+def _build_full_pipeline():
+    """Build a valid Proposal → Evaluation → Approval pipeline."""
+    proposal = _build_sample()
+    evaluation = build_meta_learning_evaluation(
+        proposal=proposal,
+        evaluator="offline_bench",
+        dataset_id="ds_001",
+        baseline=0.80,
+        candidate=0.85,
+        evidence_hash=_EVAL_EVIDENCE,
+        policy_config_hash=None,
+    )
+    approval = build_meta_learning_approval(
+        evaluation=evaluation,
+        approver="human_reviewer",
+        decision="APPROVE",
+        rationale="Confirmed on holdout.",
+        policy_config_hash=None,
+    )
+    return proposal, evaluation, approval
+
+
+class TestDecisionGate:
+    def test_decision_rejects_missing_proposal(self) -> None:
+        """None proposal → REJECT MISSING_PROPOSAL."""
+        _, evaluation, approval = _build_full_pipeline()
+        d = build_meta_learning_decision(
+            proposal=None,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["MISSING_PROPOSAL"]
+
+    def test_decision_rejects_missing_evaluation(self) -> None:
+        """None evaluation → REJECT MISSING_EVALUATION."""
+        proposal, _, approval = _build_full_pipeline()
+        d = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=None,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["MISSING_EVALUATION"]
+
+    def test_decision_rejects_missing_approval(self) -> None:
+        """None approval → REJECT MISSING_APPROVAL."""
+        proposal, evaluation, _ = _build_full_pipeline()
+        d = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=None,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["MISSING_APPROVAL"]
+
+    def test_decision_rejects_trace_mismatch(self) -> None:
+        """Mismatched trace ids → REJECT TRACE_MISMATCH."""
+        proposal, evaluation, approval = _build_full_pipeline()
+        # Build a second, different proposal to create a mismatch
+        other_proposal = _build_sample(baseline=0.70, candidate=0.75)
+        d = build_meta_learning_decision(
+            proposal=other_proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["TRACE_MISMATCH"]
+
+    def test_decision_rejects_policy_hash_mismatch(self) -> None:
+        """Mismatched policy_config_hash → REJECT POLICY_HASH_MISMATCH."""
+        proposal, evaluation, approval = _build_full_pipeline()
+        d = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash="different_hash",
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["POLICY_HASH_MISMATCH"]
+
+    def test_decision_rejects_non_improve_verdict(self) -> None:
+        """Evaluation verdict != IMPROVE → REJECT EVAL_VERDICT_NOT_IMPROVE."""
+        proposal = _build_sample()
+        evaluation = build_meta_learning_evaluation(
+            proposal=proposal,
+            evaluator="offline_bench",
+            dataset_id="ds_001",
+            baseline=0.85,
+            candidate=0.80,  # REGRESS
+            evidence_hash=_EVAL_EVIDENCE,
+            policy_config_hash=None,
+        )
+        approval = build_meta_learning_approval(
+            evaluation=evaluation,
+            approver="human_reviewer",
+            decision="APPROVE",
+            rationale="Approved anyway.",
+            policy_config_hash=None,
+        )
+        d = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["EVAL_VERDICT_NOT_IMPROVE"]
+
+    def test_decision_rejects_when_approval_reject(self) -> None:
+        """Approval decision=REJECT → REJECT APPROVAL_REJECTED."""
+        proposal = _build_sample()
+        evaluation = build_meta_learning_evaluation(
+            proposal=proposal,
+            evaluator="offline_bench",
+            dataset_id="ds_001",
+            baseline=0.80,
+            candidate=0.85,
+            evidence_hash=_EVAL_EVIDENCE,
+            policy_config_hash=None,
+        )
+        approval = build_meta_learning_approval(
+            evaluation=evaluation,
+            approver="human_reviewer",
+            decision="REJECT",
+            rationale="Denied.",
+            policy_config_hash=None,
+        )
+        d = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d.decision == "REJECT"
+        assert d.deny_reason == DENY_REASONS["APPROVAL_REJECTED"]
+
+    def test_decision_allows_to_apply_when_all_valid_and_approved(self) -> None:
+        """Full valid pipeline → ALLOW_TO_APPLY + deterministic trace_id + JSON."""
+        proposal, evaluation, approval = _build_full_pipeline()
+        d1 = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d1.decision == "ALLOW_TO_APPLY"
+        assert d1.deny_reason is None
+        assert len(d1.trace_id) == 64
+
+        # Determinism: build again → identical trace_id + JSON
+        d2 = build_meta_learning_decision(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert d1.trace_id == d2.trace_id
+        assert d1.to_json() == d2.to_json()
