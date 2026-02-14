@@ -10,6 +10,8 @@ import secrets
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.prompt_governance.security.injection_scan_util import scan_untrusted_text
+
 LOGGER = logging.getLogger(__name__)
 
 Logger: Any = logging.getLogger(__name__)
@@ -87,6 +89,8 @@ class CanaryDefense:
         Returns:
             Wrapped input with XML tags
         """
+        # §P1 — Canonical injection scan on raw user input (fail-closed)
+        scan_untrusted_text(user_input, source="canary_user_input")
         return self.input_wrapper.format(content=user_input)
 
     def detect_canary_leakage(self: Any, output: str, canary: CanaryToken) -> tuple[bool, dict]:

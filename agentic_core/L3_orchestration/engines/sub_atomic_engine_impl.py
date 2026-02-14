@@ -9,6 +9,7 @@ import os
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway
+from agentic_core.prompt_governance.security.injection_scan_util import scan_untrusted_text
 
 Logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class SubAtomicEngineImpl:
     async def get_embedding(self, text: str) -> list[float]:
         try:
             return await self.embedding_gateway.get_embedding(text, provider="gemini")
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Embedding failed: {e}")
             return [0.0] * 768
@@ -36,6 +38,10 @@ class SubAtomicEngineImpl:
         fission_active = kwargs.get("fission_active", False)
 
         full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+
+        # §P1 — Canonical injection scan on non-fenced joinpoint (fail-closed)
+        scan_untrusted_text(prompt, source="sub_atomic_user_prompt")
+        scan_untrusted_text(full_prompt, source="sub_atomic_full_prompt")
 
         try:
             gen_config = {}
@@ -52,6 +58,7 @@ class SubAtomicEngineImpl:
                 generation_config=gen_config,
             )
             return response["content"]
+        # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Mutation failed: {e}")
             return prompt
