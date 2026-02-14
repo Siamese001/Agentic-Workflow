@@ -17,6 +17,7 @@ MARKERS:
     @pytest.mark.guardian - Mark a test as part of the Guardian Layer
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -33,12 +34,26 @@ if str(PROJECT_ROOT) not in sys.path:
 # =============================================================================
 
 
+def pytest_addoption(parser):
+    """Register --import-strict CLI flag for controlled import strictness ramp."""
+    parser.addoption(
+        "--import-strict",
+        action="store_true",
+        default=False,
+        help="Enable strict import mode: pytest.fail() instead of pytest.skip() on ImportError",
+    )
+
+
 def pytest_configure(config):
     """
     Register custom pytest markers for the Guardian Layer.
 
     This prevents warnings about unknown markers when running tests.
     """
+    # Propagate --import-strict to environment for tests._config.import_strict_mode
+    if getattr(config.option, "import_strict", False):
+        os.environ["IMPORT_STRICT_MODE"] = "1"
+
     config.addinivalue_line(
         "markers",
         "guardian: marks tests as part of the Guardian Layer (Zero-Trust architecture validation)",

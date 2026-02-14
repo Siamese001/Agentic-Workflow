@@ -210,6 +210,7 @@ ignore = [
     "S106",  # hardcoded-password-func-arg: false positives on config keys
     "B905",  # zip-without-explicit-strict: legacy patterns
     "UP035", # deprecated-import: maintaining backward compat
+    "COM812", # missing-trailing-comma: conflicts with ruff-format (formatter handles commas)
 ]
 
 [tool.ruff.lint.per-file-ignores]

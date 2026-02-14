@@ -1,6 +1,18 @@
 # WINDSURF STATE→GAP→IMPLEMENTATION PROMPT (v5.4 – PNG CONTROL-PLANE / EXECUTION-OPERATIONAL / REPO-GROUNDED / HARDENED)
 
-## PURPOSE (v5.3)
+## VERSION (v5.4.2)
+
+This patch updates the **TARGET STATE** and **PLANNING RULES** to incorporate:
+
+1) **Phase 5 P0 execution hardening** (capability-gated L2 execution boundary with deterministic audit artifacts).
+2) **Governed Improvement (Meta-learning)** as a first-class, schema-locked target capability set, strictly bounded by the control spine.
+
+3) **Compliance-audit-aligned P0 inclusions** (SSOT binding resolution §1.5, TokenControl PreGuard Snapshot §6.3) and stricter gating of governed improvement on all P0 closures.
+
+Hard rule:
+* Meta-learning is only COMPLIANT if it is **governed, versioned in L4, re-enters via L0**, and **cannot bypass L5/HIL/L2**.
+
+## PURPOSE (v5.4.2)
 
 You will produce an **execution-ready** output that is strictly:
 
@@ -42,7 +54,7 @@ This prompt is an **executable repo-to-target transformation contract**. Evaluat
 | Discovery JSON | Scope authority | Exact schema conformance + `integrity_hash` per agent |
 | `structure_blueprint.py` | Structural SSOT | SHA-256 match required before audit proceeds |
 | L0–L6 Architecture Principles (P1–P6) | Gating invariants | P1–P6 checks applied wherever capability touches boundaries/authority/state |
-| Agentic Process V15 Diagrams (L0–L6) | Target capability SSOT | **Only** the V15 capabilities enumerated in §1–§15 are in-scope; no additional interpretation |
+| Agentic Process V15 Diagrams (L0–L6) | Target capability SSOT | **Only** the V15 capabilities enumerated in §1–§16 are in-scope; no additional interpretation |
 
 **Zero external inference rule**: If not explicitly present in one of the four sources → it does not exist.
 
@@ -52,6 +64,10 @@ Evaluate **only** capabilities enumerated in **§1–§15** (which are derived f
 
 * Flow narration is out-of-scope **unless** it produces a **typed artifact**, **trace event**, **audit/metric event**, or **policy update event** that can be proven.
 * Focus on **gating failures** (P1–P6) and on **typed artifacts** that cross boundaries.
+
+PATCH (v5.4.2):
+* Capabilities are enumerated in **§1–§16** (Meta-learning is now in-scope as governed improvement).
+* Any meta-learning mechanism that performs direct mutation (bypassing L0/L5/HIL/L4 versioning) is a FAIL (P3/P6).
 
 ### 0.3 Evidence Standard (Strict)
 
@@ -249,6 +265,16 @@ Planning constraints (v5.3):
 * Write authority requires signed artifacts; conversational approval is non-authoritative.
 * Tokens are scoped and expiring; bind (TraceID, action-set, target-set, policy-hash, timestamp, nonce).
 
+### P5.1 Capability-Gated Execution Boundary (P0, GLOBAL)
+
+* L2 tool/action invocation MUST be capability-gated at a **single chokepoint** (no scattered checks).
+* Capability tokens MUST be typed, deterministic artifacts, semantic-clock bound, and trace-addressable.
+* Every attempted invocation MUST emit a typed decision artifact (ALLOW or DENY).
+* Absence of a valid capability token at the L2 boundary MUST FAIL-CLOSED (abort).
+* Capability scope MUST include (minimum): permitted operations + permitted targets + max invocations.
+
+This requirement is a prerequisite for any governed improvement activation in §16.
+
 ## P6. Explicit Boundaries / Zero Trust Between Layers (GLOBAL)
 
 * Layer APIs are typed and versioned; cross-layer calls must conform to schemas.
@@ -271,7 +297,7 @@ Absence of proof = MISSING. Contradiction to an invariant = FAIL.
 
 # V15 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v5.1) (ZERO-LOSS)
 
-> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING.
+> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING. Capabilities are enumerated in §1–§16.
 
 ---
 
@@ -690,7 +716,139 @@ High-velocity signals (≥`TRACE_BUFFER_VELOCITY_THRESHOLD` events per Semantic 
 
 ---
 
-# OUTPUT REQUIREMENTS (STRICT) — v5.3 STRUCTURE (REQUIRED ORDER)
+## 16. Governed Improvement (Meta-Learning) (CONTROLLED ADAPTATION, ZERO-BYPASS)
+
+Meta-learning is part of the TARGET STATE only if it is governed and bounded by the control spine.
+Meta-learning MUST NOT directly patch live logic. All behavior changes MUST be:
+1) proposed as typed artifacts
+2) evaluated via deterministic replay / drift evaluation
+3) approved (L5 and/or HIL depending on risk)
+4) versioned in L4
+5) re-entered via L0 routing using the new version pointer
+
+### 16.1 Metrics Foundation (MetaLearningMetricsArtifact)
+
+16.1 A canonical `MetaLearningMetricsArtifact` MUST be emitted for every completed run:
+* Answer-only
+* L5-gated path
+* HIL escalation path
+* L2 execution path
+
+16.2 Metrics MUST be deterministic and replayable:
+* semantic_clock-bound
+* no wall-clock dependence
+* no uuid4
+* sorted lists
+* JSON emitted with sort_keys=True
+
+Required fields (minimum):
+* artifact_type = "META_LEARNING_METRICS"
+* trace_id (deterministic)
+* semantic_clock (required)
+* route_path
+* risk_tier
+* vigilance_tier (optional)
+* decision_outcome (ANSWER_ONLY / EXECUTED / ESCALATED / REJECTED)
+* policy_config_hash (optional)
+* model_version (optional)
+* tool_invocations (int)
+* token_usage {prompt:int, completion:int, total:int}
+* errors (sorted list[str] of stable codes)
+* healing_triggered (bool)
+* human_review {required: bool, approved: bool|None}
+* cost_units (deterministic formula derived from token_usage)
+
+16.3 Emission point MUST be a single control-spine finalization chokepoint (no duplication).
+
+### 16.2 Evaluation + Drift Detection (EvalReportArtifact)
+
+16.4 Deterministic evaluators MUST consume MetaLearningMetricsArtifact sets and produce `EvalReportArtifact`.
+Evaluation windows MUST be defined by semantic_clock tick intervals (not timestamps).
+
+Required fields (minimum):
+* artifact_type = "EVAL_REPORT"
+* trace_id (deterministic)
+* semantic_clock (required)
+* window {start_tick:int, end_tick:int, sample_count:int}
+* metrics_rollup {pass_rate:float, exec_rate:float, hil_rate:float, heal_rate:float}
+* drift_signals (sorted list[{code:str, severity:str, value:float, threshold:float}])
+* regressions (sorted list[str])
+* recommendation (NO_CHANGE / PROPOSE_UPDATE)
+
+### 16.3 Explicit Learning Proposals (LearningProposalArtifact)
+
+16.5 Learning changes MUST be represented only as typed proposal artifacts (no implicit config edits).
+Targets MUST be explicit:
+* ROUTING thresholds
+* POLICY versions
+* PROMPT versions
+* TOOL_PLAN sequences
+* HEAL_PLAYBOOK configurations
+
+Required fields (minimum):
+* artifact_type = "LEARNING_PROPOSAL"
+* proposal_id (deterministic)
+* semantic_clock (required)
+* target {kind, ref} where kind ∈ {ROUTING, POLICY, PROMPT, TOOL_PLAN, HEAL_PLAYBOOK}
+* change {before_hash, after_hash, diff_summary (sorted list[str])}
+* evidence {eval_report_trace_id, supporting_trace_ids (sorted list[str])}
+* risk {tier, blast_radius}
+* required_approvals {hil, quorum}
+* success_metrics (sorted list[{name, direction, target}])
+* rollback {enabled: bool, revert_to_hash: str}
+
+16.6 Proposal artifacts MUST be non-mutating; they MUST NOT write L4.
+
+### 16.4 Promotion Pipeline (Candidate → Shadow → Active)
+
+16.7 All promotions MUST be mediated by a typed `PromotionDecisionArtifact` at a single chokepoint.
+L4 MUST store versioned pointers per target kind:
+* candidate pointer
+* shadow pointer
+* active pointer
+
+16.8 Authorization rules (fail-closed):
+* High-risk proposals require HIL approval
+* Low-risk proposals may auto-promote only to SHADOW (never ACTIVE)
+* ACTIVE promotion is forbidden without replay gate success (16.5)
+
+### 16.5 Replay Harness Gate (ReplayRunArtifact)
+
+16.9 A deterministic replay harness MUST evaluate archived traces under candidate/shadow configs.
+If blocking regressions exist, promotion to ACTIVE is forbidden.
+
+Required fields (minimum):
+* artifact_type = "REPLAY_RUN"
+* semantic_clock (required)
+* proposal_id
+* config_under_test_hash
+* traces (sorted list[str])
+* results (sorted list[{trace_id, outcome, regressions (sorted list[str])}])
+* summary {pass_rate:float, blocking_regressions:int}
+* gate {ALLOW_PROMOTION: bool, reason_codes (sorted list[str])}
+
+### 16.6 Layer Touchpoints (Where Meta-learning "Touches" L0–L6)
+
+Meta-learning MUST operate by producing governed artifacts that affect versions/configs only:
+* L1: prompt refinements and model selection metadata (versioned; no direct mutation)
+* L0: routing threshold/version pointer updates (re-enter via L0; logged RouteDecision)
+* L3: workflow/tool-plan sequencing versions (via proposal + promotion)
+* L5: policy version updates (via proposal + approvals)
+* L6: anomaly classifier version updates (via proposal + promotion)
+* L2: sandbox constraints / healing playbook versions (via proposal; capability-gated execution)
+* L4: versioned storage of candidate/shadow/active pointers (single mutation chokepoint)
+
+### 16.7 Meta-learning Safety Invariants (NON-NEGOTIABLE)
+
+* No wall-clock timestamps in determinism-critical meta-learning artifacts.
+* No uuid4 in determinism-critical meta-learning artifacts.
+* All lists sorted; all JSON emitted with sort_keys=True.
+* All behavior changes MUST re-enter via L0 routing and be visible to L5/HIL gates.
+* Meta-learning activation is forbidden until P0 execution hardening is closed (P5.1, §12.3).
+
+---
+
+# OUTPUT REQUIREMENTS (STRICT) — v5.4.2 STRUCTURE (REQUIRED ORDER)
 
 You MUST output the following sections, in this exact order:
 
@@ -712,7 +870,7 @@ You MUST derive these from the repository (discovery JSON + deterministic scans;
 
 ## SECTION B — TARGET STATE (PNG/V15-ALIGNED)
 
-You MUST express the target using the capability list in §1–§15 and the following control-plane rules:
+You MUST express the target using the capability list in §1–§16 and the following control-plane rules:
 
 1) **Single sanctioned execution path**
 2) **No mutation outside L2**
@@ -759,7 +917,7 @@ Coverage assertion (mandatory):
 
 ## SECTION 1 — GLOBAL FRAMEWORK EVIDENCE TABLE (KEEP)
 
-Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14, 15
+Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14, 15, 16
 
 **Format:** Table
 
@@ -838,7 +996,7 @@ Completeness assertions (mandatory):
 
 | Forensic Summary |
 |-----------------|
-| Total capabilities evaluated: 15 |
+| Total capabilities evaluated: 16 |
 | Global compliance: Y% (COMPLIANT / total) |
 | ACTIVE agents audited: N |
 | Per-agent compliance table: |
@@ -889,7 +1047,7 @@ Deduplication rule:
 
 ## SECTION 5 — IMPLEMENTATION PLAN (DETERMINISTIC / NO HEURISTICS) (KEEP, BUT MUST MAP 1:1 TO SECTION C GAP_IDs)
 
-Generate an implementation plan by applying the rules in §16 exactly.
+Generate an implementation plan by applying the rules in §17 exactly.
 
 Format:
 | Wave | Priority (P0/P1/P2) | Capability IDs | Work Item (noun phrase) | Scope (files/agents) | Acceptance Evidence (exact commands) |
@@ -912,18 +1070,34 @@ Fallback evidence rule (mandatory):
 
 ---
 
-## 16. PLANNING RULES (NON-NEGOTIABLE)
+## 17. PLANNING RULES (NON-NEGOTIABLE)
 
 The implementation plan MUST be derived deterministically from the Gap Set using ONLY these rules:
 
-### 16.1 Priority Assignment
+### 17.1 Priority Assignment
 Assign the highest applicable priority:
 
 * **P0 (Blockers):** Any gap that violates P1/P2/P3/P4/P5/P6 globally OR prevents trustworthy evaluation (discovery integrity, SSOT hash mismatch, missing typed artifacts required for traceability, signature verification absent).
 * **P1 (Critical Path):** Gaps on the main enforcement/control path: §1 (SurgicalManifest), §2 (Validator–Healer), §3 (Control Plane routing), §7 (Guardian Physics), §10 (Atomic rollback), §11 (Budget).
 * **P2 (Supporting):** Observability/monitoring enhancements (§15), advanced cognition/RAG custody (§6) that do not block enforcement correctness, and any per-agent hygiene that is not on the execution boundary.
 
-### 16.2 Wave Ordering
+PATCH (v5.4.2) — Explicit P0 inclusions (non-exhaustive, but mandatory when present as gaps):
+* §1.5 SSOT Binding resolution (node_id→structure_blueprint.py; fail-closed)
+* §6.3 TokenControl PreGuard Snapshot (deterministic pre-guard capture; required for budget assurance)
+
+* §2.2 Validator Safety Emulation
+* §2.3 Validator Permission Check (L5)
+* §2.8 Flow enforcement (AGGREGATE/RESULT/INCIDENT/HEALING_PLAN legality)
+* §5.3 Root Scope Pinning
+* §5.5 Correlation artifact required before INCIDENT emission
+* §8.3 Safety mixins LEFT in MRO (enforced, fail-closed)
+* §9.1–§9.3 Separation-of-responsibility enforcement (runtime/scanner evidence)
+* §11.2 Route Recovery (TokenOverflow)
+* §12.3 Read-only boundary enforcement for L0/L4/L6 (comprehensive mutation lock)
+* P5.1 Capability-gated L2 execution boundary
+* §16.7 Meta-learning safety invariants (when §16 is in-scope)
+
+### 17.2 Wave Ordering
 Order waves strictly:
 1) **Wave 0:** Discovery integrity + SSOT hash match gates
 2) **Wave 1:** Typed artifact schemas required for P4/P6 traceability at boundaries
@@ -932,27 +1106,36 @@ Order waves strictly:
 5) **Wave 4:** Control Plane routing + EvidencePack + PolicyUpdateProposal
 6) **Wave 5:** Budget guards + Semantic Clock determinism
 7) **Wave 6:** L6 incident response (tiers, diff bundle, trace buffer) and remaining P2 items
+8) **Wave 7:** P0 execution boundary hardening (Capability Tokens + decision artifacts; single L2 chokepoint)
+9) **Wave 8:** Governed Improvement (Meta-learning) (§16): metrics → eval → proposals → promotion → replay gate
 
-### 16.3 Dependency Resolution
+Hard gate (Phase discipline):
+* Treat **Wave 7** as **Phase 5 (P0 hardening)** and **Wave 6 + §17.1 inclusions** as **Phase 6 (P0/P1 gap closure)**.
+* **Phase 7 / Wave 8 MUST NOT start** until **Phase 5 and Phase 6 are COMPLETE** (i.e., Wave 7 is CLOSED and all §17.1 explicit P0 inclusions are CLOSED).
+
+### 17.3 Dependency Resolution
 If a plan row depends on another capability ID, it MUST be placed in a later wave.
 Default dependencies (minimum):
 * §1.7 (typed artifacts) precedes any capability that emits/validates those artifacts.
 * §7 (Guardian) precedes §2.5 (Healer commit) when Guardian gates admission.
 * §10 (snapshots/rollback) precedes any write/commit authorization.
 * §13 (Semantic Clock) precedes any hashing/deduplication that references time buckets.
+* §1.5 SSOT binding resolution precedes any replay/eval/meta-learning gating (trustworthy trace binding)
+* §6.3 TokenControl PreGuard Snapshot precedes metrics/eval foundations when §16 is in-scope
+* P5.1 capability tokens and §12.3 mutation lock precede §16 meta-learning activation and promotion.
 
 Dependency escalation rule (mandatory):
 * If §13.1 (Semantic Clock) is MISSING/FAIL, then §5.2 (time-bucketed signatures) MUST be scheduled as P0 in a later wave, explicitly blocked on §13 closure.
 
-### 16.4 Aggregation Rule
+### 17.4 Aggregation Rule
 If a capability is missing across ≥3 agents, create a single plan row with aggregated scope and a single acceptance gate; do NOT repeat per-agent rows unless an agent has a unique FAIL contradiction.
 
-### 16.5 Acceptance Evidence Sufficiency
+### 17.5 Acceptance Evidence Sufficiency
 Every wave MUST include:
 * at least one deterministic test command (pytest target or equivalent)
 * and at least one artifact/schema/contract validation command when the wave touches boundaries.
 
-### 16.6 Empty-Gap Handling
+### 17.6 Empty-Gap Handling
 
 If Section 4 Gap Set is empty:
 * Section 5 MUST contain exactly one row:
@@ -977,21 +1160,25 @@ Your output **MUST NOT** contain:
 * probabilistic language
 
 Allowed (v5.1):
-* deterministic implementation plan tables (Sections 4–5) adhering to §16
+* deterministic implementation plan tables (Sections 4–5) adhering to §17
 
 Violation invalidates the audit.
 
 ---
 
-## FINAL RULE (v5.3)
+## FINAL RULE (v5.4.2)
 
 This is a **current-state to target-state operational plan generator**.
 
-If a capability is not **explicit, deterministic, and provable** in the discovery-scoped code/config/tests, it is **MISSING** (or **FAIL** where illegal states or fail-closed violations are evidenced), and it MUST appear in Section 4 and be scheduled in Section 5 per §16.
+If a capability is not **explicit, deterministic, and provable** in the discovery-scoped code/config/tests, it is **MISSING** (or **FAIL** where illegal states or fail-closed violations are evidenced), and it MUST appear in Section 4 and be scheduled in Section 5 per §17.
+
+PATCH (v5.4.2) — Meta-learning enforcement:
+* If any form of "learning" performs direct mutation (bypassing L0/L5/HIL/L4 versioning), status = FAIL (P3/P6).
+* If §16 capabilities are requested but any Phase 5/6 P0 gates are open (P5.1, §12.3, or any §17.1 explicit P0 inclusion), §16 activation/promotion MUST be treated as blocked (P0) and scheduled only after those closures.
 
 ---
 
-## START EXECUTION (v5.3)
+## START EXECUTION (v5.4.2)
 
 1) Run discovery script
 2) Ingest JSON + freeze scope

@@ -55,7 +55,7 @@ def write_json_atomic(path: Path | str, data: dict | list) -> None:
             "Set ALLOW_BASELINE_WRITES_IN_CI=1 to override (not recommended).",
         )
 
-    content = json.dumps(data, indent=2) + "\n"
+    content = json.dumps(data, indent=2, sort_keys=True) + "\n"
 
     # Write to temp in same directory, then atomic rename
     fd, tmp_path = tempfile.mkstemp(
