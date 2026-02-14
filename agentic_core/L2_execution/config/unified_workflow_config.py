@@ -17,13 +17,16 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
 )
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L5_safety.enforcement.activation_gate import (
+    assert_activation_allowed,
+)
 
 
 class MissionFocus(Enum):
@@ -407,6 +410,9 @@ class UnifiedWorkflowEngine:
             PermissionError: If token is missing/invalid (FAIL-CLOSED).
             ValueError: If semantic_clock is missing.
         """
+        # G-16-6: FAIL-CLOSED activation gate — must pass before any dispatch
+        assert_activation_allowed(trace_id=capability_token.trace_id if capability_token else None)
+
         if semantic_clock is None:
             raise ValueError(
                 "UnifiedWorkflowEngine.orchestrate: semantic_clock is required "

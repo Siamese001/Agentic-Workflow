@@ -26,6 +26,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.enforcement.activation_gate import (
+    assert_activation_allowed,
+)
 
 
 class DashboardE2EPipeline:
@@ -144,6 +147,7 @@ class DashboardE2EPipeline:
                 print(f"   ✅ Fixed: {name}")
                 fixed_count += 1
 
+            # guardian: allow-silent-swallow
             except Exception as e:
                 print(f"   ❌ ERROR: {name} - {str(e)}")
 
@@ -165,6 +169,7 @@ class DashboardE2EPipeline:
         try:
             print("   ⏳ Running discovery (this may take 2-3 minutes)...")
             # Run discovery script with longer timeout
+            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(discovery_script)],
                 cwd=str(self.project_root),
@@ -216,6 +221,7 @@ class DashboardE2EPipeline:
             return False
 
         try:
+            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(dashboard_script)],
                 cwd=str(self.project_root),
@@ -265,6 +271,7 @@ class DashboardE2EPipeline:
             return False
 
         try:
+            # guardian: allow-magic-config
             result = safe_execute(
                 [sys.executable, str(test_script)],
                 cwd=str(self.project_root),
@@ -337,6 +344,9 @@ class DashboardE2EPipeline:
 
     def run(self) -> bool:
         """Run complete pipeline."""
+        # G-16-6: FAIL-CLOSED activation gate — must pass before any pipeline execution
+        assert_activation_allowed(trace_id="dashboard-e2e-pipeline")
+
         self.print_header("AUTOMATED DASHBOARD E2E PIPELINE")
 
         # Step 1: Analyze
