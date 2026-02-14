@@ -1,10 +1,11 @@
-"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 / 7.0.4 / 7.0.5 (Schema Lock Only).
+"""Meta-Learning Contracts — Waves 7.0.1–7.0.6 (Schema Lock Only).
 
 Defines schema-locked, frozen artifacts for the meta-learning subsystem:
-  - MetaLearningProposalArtifact   (Wave 7.0.1)
-  - MetaLearningEvaluationArtifact (Wave 7.0.3)
-  - MetaLearningApprovalArtifact   (Wave 7.0.4)
-  - MetaLearningDecisionArtifact   (Wave 7.0.5)
+  - MetaLearningProposalArtifact      (Wave 7.0.1)
+  - MetaLearningEvaluationArtifact    (Wave 7.0.3)
+  - MetaLearningApprovalArtifact      (Wave 7.0.4)
+  - MetaLearningDecisionArtifact      (Wave 7.0.5)
+  - MetaLearningChangePackageArtifact (Wave 7.0.6)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -14,7 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
@@ -684,5 +685,170 @@ def build_meta_learning_decision(
         approval_trace_id=approval.trace_id,
         decision="ALLOW_TO_APPLY",
         deny_reason=None,
+        policy_config_hash=policy_config_hash,
+    )
+
+
+# =============================================================================
+# §Wave7.0.6 — Mutable Components (strict allowlist)
+# =============================================================================
+
+MUTABLE_COMPONENTS: tuple[str, ...] = (
+    "prompt_templates",
+    "routing_thresholds",
+    "tool_policies",
+)
+
+
+# =============================================================================
+# §Wave7.0.6 — MetaLearningChangePackageArtifact
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class MetaLearningChangePackageArtifact:
+    """Frozen, schema-locked change package.
+
+    Rules
+    -----
+    - semantic_clock required (ValueError if missing).
+    - target_component must be in MUTABLE_COMPONENTS.
+    - change_spec is canonicalized (sorted keys) on construction.
+    - This artifact does NOT apply changes; apply remains RuntimeError.
+    - canonical serialization (sort_keys=True).
+    """
+
+    artifact_type: Literal["META_LEARNING_CHANGE_PACKAGE"]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+    proposal_trace_id: str
+    evaluation_trace_id: str
+    approval_trace_id: str
+    decision_trace_id: str
+    target_component: str
+    change_spec: dict[str, Any]
+    policy_config_hash: str | None
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "MetaLearningChangePackageArtifact")
+        if self.artifact_type != "META_LEARNING_CHANGE_PACKAGE":
+            raise ValueError(
+                f"artifact_type must be 'META_LEARNING_CHANGE_PACKAGE', got {self.artifact_type!r}",
+            )
+        if self.target_component not in MUTABLE_COMPONENTS:
+            raise ValueError("IMMUTABLE_COMPONENT")
+
+    def to_dict(self) -> dict[str, object]:
+        """Canonical, deterministic serialization (keys sorted alphabetically)."""
+        return {
+            "approval_trace_id": self.approval_trace_id,
+            "artifact_type": self.artifact_type,
+            "change_spec": self.change_spec,
+            "decision_trace_id": self.decision_trace_id,
+            "evaluation_trace_id": self.evaluation_trace_id,
+            "policy_config_hash": self.policy_config_hash,
+            "proposal_trace_id": self.proposal_trace_id,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "target_component": self.target_component,
+            "trace_id": self.trace_id,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string (sort_keys=True, compact separators)."""
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+
+
+# =============================================================================
+# §Wave7.0.6 — Change Package Builder (fail-closed, no side effects)
+# =============================================================================
+
+
+def build_meta_learning_change_package(
+    *,
+    proposal: MetaLearningProposalArtifact,
+    evaluation: MetaLearningEvaluationArtifact,
+    approval: MetaLearningApprovalArtifact,
+    decision: MetaLearningDecisionArtifact,
+    target_component: str,
+    change_spec: dict[str, Any],
+    semantic_clock: SemanticClockSnapshot,
+    policy_config_hash: str | None,
+) -> MetaLearningChangePackageArtifact:
+    """Build a MetaLearningChangePackageArtifact with deterministic trace_id.
+
+    Fail-closed: validates decision==ALLOW_TO_APPLY, trace linkage,
+    target_component ∈ MUTABLE_COMPONENTS, and policy hash alignment.
+
+    Parameters
+    ----------
+    proposal, evaluation, approval, decision : artifacts
+        The four pipeline artifacts.
+    target_component : str
+        Must be in MUTABLE_COMPONENTS.
+    change_spec : dict
+        Deterministic change specification (will be canonicalized).
+    semantic_clock : SemanticClockSnapshot
+        Required immutable clock snapshot.
+    policy_config_hash : str | None
+        Expected policy config hash; all artifacts must match.
+
+    Returns
+    -------
+    MetaLearningChangePackageArtifact
+    """
+    # --- Decision gate ---
+    if decision.decision != "ALLOW_TO_APPLY":
+        raise ValueError("DECISION_NOT_ALLOW_TO_APPLY")
+
+    # --- Target component validation ---
+    if target_component not in MUTABLE_COMPONENTS:
+        raise ValueError("IMMUTABLE_COMPONENT")
+
+    # --- Trace linkage ---
+    if (
+        decision.proposal_trace_id != proposal.trace_id
+        or decision.evaluation_trace_id != evaluation.trace_id
+        or decision.approval_trace_id != approval.trace_id
+    ):
+        raise ValueError("TRACE_LINKAGE_MISMATCH")
+
+    # --- Policy hash alignment ---
+    if not (
+        proposal.policy_config_hash == policy_config_hash
+        and evaluation.policy_config_hash == policy_config_hash
+        and approval.policy_config_hash == policy_config_hash
+        and decision.policy_config_hash == policy_config_hash
+    ):
+        raise ValueError("POLICY_HASH_MISMATCH")
+
+    # --- Canonicalize change_spec ---
+    canonical_spec_str = json.dumps(change_spec, sort_keys=True, separators=(",", ":"))
+    canonical_spec: dict[str, Any] = json.loads(canonical_spec_str)
+
+    # --- Build trace_id ---
+    temp_payload = {
+        "approval_trace_id": approval.trace_id,
+        "artifact_type": "META_LEARNING_CHANGE_PACKAGE",
+        "change_spec": canonical_spec,
+        "decision_trace_id": decision.trace_id,
+        "evaluation_trace_id": evaluation.trace_id,
+        "policy_config_hash": policy_config_hash,
+        "proposal_trace_id": proposal.trace_id,
+        "semantic_clock": semantic_clock.to_dict(),
+        "target_component": target_component,
+    }
+    canonical = _canonical_payload_json(temp_payload)
+    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    return MetaLearningChangePackageArtifact(
+        artifact_type="META_LEARNING_CHANGE_PACKAGE",
+        semantic_clock=semantic_clock,
+        trace_id=trace_id,
+        proposal_trace_id=proposal.trace_id,
+        evaluation_trace_id=evaluation.trace_id,
+        approval_trace_id=approval.trace_id,
+        decision_trace_id=decision.trace_id,
+        target_component=target_component,
+        change_spec=canonical_spec,
         policy_config_hash=policy_config_hash,
     )

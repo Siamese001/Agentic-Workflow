@@ -22,6 +22,7 @@ from agentic_core.L7_meta_learning.types.meta_learning_types import (
     ProposedChange,
     apply_meta_learning_proposal,
     build_meta_learning_approval,
+    build_meta_learning_change_package,
     build_meta_learning_decision,
     build_meta_learning_evaluation,
     build_meta_learning_proposal,
@@ -497,3 +498,147 @@ class TestDecisionGate:
         )
         assert d1.trace_id == d2.trace_id
         assert d1.to_json() == d2.to_json()
+
+
+# =============================================================================
+# §10 — Change Package Contract (Wave 7.0.6)
+# =============================================================================
+
+
+def _build_full_decision_pipeline():
+    """Build Proposal → Evaluation → Approval → Decision (ALLOW_TO_APPLY)."""
+    proposal, evaluation, approval = _build_full_pipeline()
+    decision = build_meta_learning_decision(
+        proposal=proposal,
+        evaluation=evaluation,
+        approval=approval,
+        semantic_clock=_CLOCK,
+        policy_config_hash=None,
+    )
+    return proposal, evaluation, approval, decision
+
+
+class TestChangePackage:
+    def test_change_package_requires_allow_to_apply(self) -> None:
+        """REJECT decision → ValueError DECISION_NOT_ALLOW_TO_APPLY."""
+        proposal, evaluation, approval = _build_full_pipeline()
+        reject_decision = build_meta_learning_decision(
+            proposal=None,
+            evaluation=evaluation,
+            approval=approval,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        with pytest.raises(ValueError, match="DECISION_NOT_ALLOW_TO_APPLY"):
+            build_meta_learning_change_package(
+                proposal=proposal,
+                evaluation=evaluation,
+                approval=approval,
+                decision=reject_decision,
+                target_component="routing_thresholds",
+                change_spec={"threshold": 0.7},
+                semantic_clock=_CLOCK,
+                policy_config_hash=None,
+            )
+
+    def test_change_package_rejects_immutable_component(self) -> None:
+        """target_component not in MUTABLE_COMPONENTS → ValueError."""
+        proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+        with pytest.raises(ValueError, match="IMMUTABLE_COMPONENT"):
+            build_meta_learning_change_package(
+                proposal=proposal,
+                evaluation=evaluation,
+                approval=approval,
+                decision=decision,
+                target_component="guardian_contract",
+                change_spec={"x": 1},
+                semantic_clock=_CLOCK,
+                policy_config_hash=None,
+            )
+
+    def test_change_package_trace_linkage_enforced(self) -> None:
+        """Mismatched trace linkage → ValueError TRACE_LINKAGE_MISMATCH."""
+        proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+        # Use a different proposal to break trace linkage
+        other_proposal = _build_sample(baseline=0.70, candidate=0.75)
+        with pytest.raises(ValueError, match="TRACE_LINKAGE_MISMATCH"):
+            build_meta_learning_change_package(
+                proposal=other_proposal,
+                evaluation=evaluation,
+                approval=approval,
+                decision=decision,
+                target_component="routing_thresholds",
+                change_spec={"threshold": 0.7},
+                semantic_clock=_CLOCK,
+                policy_config_hash=None,
+            )
+
+    def test_change_package_policy_hash_alignment(self) -> None:
+        """Mismatched policy_config_hash → ValueError POLICY_HASH_MISMATCH."""
+        proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+        with pytest.raises(ValueError, match="POLICY_HASH_MISMATCH"):
+            build_meta_learning_change_package(
+                proposal=proposal,
+                evaluation=evaluation,
+                approval=approval,
+                decision=decision,
+                target_component="routing_thresholds",
+                change_spec={"threshold": 0.7},
+                semantic_clock=_CLOCK,
+                policy_config_hash="mismatched_hash",
+            )
+
+    def test_change_package_change_spec_canonicalized_sorted_keys(self) -> None:
+        """change_spec is canonicalized with sorted keys regardless of input order."""
+        proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+        spec_a = {"z_key": 1, "a_key": 2, "m_key": 3}
+        spec_b = {"a_key": 2, "m_key": 3, "z_key": 1}
+        pkg_a = build_meta_learning_change_package(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            decision=decision,
+            target_component="routing_thresholds",
+            change_spec=spec_a,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        pkg_b = build_meta_learning_change_package(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            decision=decision,
+            target_component="routing_thresholds",
+            change_spec=spec_b,
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert pkg_a.change_spec == pkg_b.change_spec
+        assert list(pkg_a.change_spec.keys()) == ["a_key", "m_key", "z_key"]
+
+    def test_change_package_trace_id_deterministic(self) -> None:
+        """Same inputs → identical trace_id and JSON."""
+        proposal, evaluation, approval, decision = _build_full_decision_pipeline()
+        pkg1 = build_meta_learning_change_package(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            decision=decision,
+            target_component="routing_thresholds",
+            change_spec={"threshold": 0.7},
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        pkg2 = build_meta_learning_change_package(
+            proposal=proposal,
+            evaluation=evaluation,
+            approval=approval,
+            decision=decision,
+            target_component="routing_thresholds",
+            change_spec={"threshold": 0.7},
+            semantic_clock=_CLOCK,
+            policy_config_hash=None,
+        )
+        assert pkg1.trace_id == pkg2.trace_id
+        assert len(pkg1.trace_id) == 64
+        assert pkg1.to_json() == pkg2.to_json()
