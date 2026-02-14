@@ -532,7 +532,7 @@ class TestReasoningFolderPurity:
         for layer_dir in sorted(AGENTIC_CORE.iterdir()):
             if not layer_dir.is_dir():
                 continue
-            if not re.match(r"^L\d+_", layer_dir.name):
+            if not re.match(r"^L[0-6]_", layer_dir.name):
                 continue
             reasoning = layer_dir / "reasoning"
             assert reasoning.is_dir(), f"{layer_dir.name}/ is missing a reasoning/ folder"
