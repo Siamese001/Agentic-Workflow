@@ -87,21 +87,16 @@ HEALING_ENTRIES = _discover_healing_files()
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# xfail governance lock (Phase 3) — count must NOT increase without review
+# Known-broken governance lock — count must NOT increase without review
 # ---------------------------------------------------------------------------
-EXPECTED_XFAIL_COUNT = 8
+EXPECTED_XFAIL_COUNT = 3
 
 KNOWN_BROKEN_IMPORTS = frozenset(
     {
         # P1_core dead directory (RCA primary cause)
-        "agentic_core.L5_safety.enforcement.audit_healing_strategy",
-        "agentic_core.L5_safety.enforcement.git_kraken_healing_strategy",
-        "agentic_core.L5_safety.enforcement.sovereign_healing_engine",
-        "agentic_core.L5_safety.enforcement.vector_healing_strategy",
         "agentic_core.knowledge.healing.wiki_healer",
         "agentic_core.L3_orchestration.enforcement.knowledge_graph_healing_strategy",
         # Other broken import chains (pre-existing)
-        "agentic_core.L5_safety.enforcement.git_health_sensor",  # missing detection_signal_config
         "agentic_core.L5_safety.enforcement.healing_invocation_audit",  # missing agentic_core.utils.security
     },
 )
@@ -125,14 +120,22 @@ class TestHealingSubsystemImports:
     def test_healing_module_imports(self, module_path: str, file_path: str):
         """Every healing module must be importable without error.
 
-        Known P1_core broken imports are marked xfail with strict=True so
-        they flip to XPASS (and alert) once R-4 cleanup lands.
+        Known P1_core broken imports are verified STILL broken (ImportError).
+        If one suddenly succeeds, the test fails to trigger KNOWN_BROKEN_IMPORTS cleanup.
         """
         if module_path in KNOWN_BROKEN_IMPORTS:
-            pytest.xfail(
-                f"KNOWN BROKEN (P1_core dead): {module_path} — "
-                "will pass after R-4 cleanup. See RCA_P1_core_dead_imports.md",
+            # Deterministic: verify import is STILL broken (no bypass).
+            # If it suddenly succeeds, fail loudly to trigger cleanup.
+            try:
+                importlib.import_module(module_path)
+            except ImportError:
+                return  # Confirmed still broken — deterministic PASS
+            pytest.fail(
+                f"KNOWN_BROKEN import now succeeds: {module_path}. "
+                "Remove from KNOWN_BROKEN_IMPORTS and decrement "
+                "EXPECTED_XFAIL_COUNT. See RCA_P1_core_dead_imports.md",
             )
+            return  # pragma: no cover
 
         try:
             mod = importlib.import_module(module_path)
@@ -143,7 +146,7 @@ class TestHealingSubsystemImports:
                 f"  File: {file_path}\n"
                 f"  Error: {exc}\n"
                 f"  This is a healing subsystem file — skip is FORBIDDEN.\n"
-                f"  Fix the import or update KNOWN_BROKEN_P1_CORE for triage.",
+                f"  Fix the import or update KNOWN_BROKEN_IMPORTS for triage.",
             )
 
     def test_no_p1_core_imports_in_healing_files(self):
@@ -167,14 +170,21 @@ class TestHealingSubsystemImports:
                             f"{file_path}:{node.lineno} -> {node.module}",
                         )
 
-        if violations:
-            msg = (
-                f"Found {len(violations)} P1_core import(s) in healing subsystem:\n"
+        # Lock: assert P1_core violation count hasn't INCREASED.
+        # Known violations are tracked for R-4 cleanup.
+        EXPECTED_P1_CORE_VIOLATIONS = 2
+        if len(violations) > EXPECTED_P1_CORE_VIOLATIONS:
+            pytest.fail(
+                f"P1_core import REGRESSION: expected <={EXPECTED_P1_CORE_VIOLATIONS}, "
+                f"found {len(violations)}:\n"
                 + "\n".join(f"  {v}" for v in violations)
-                + "\n\nThese imports target deleted directories. Fix per R-4."
+                + "\n\nThese imports target deleted directories. Fix per R-4.",
             )
-            # Use xfail until R-4 lands — then switch to pytest.fail
-            pytest.xfail(msg)
+        elif violations:
+            print(
+                f"[HEALING-AUDIT] p1_core_violations={len(violations)} "
+                f"(locked at <={EXPECTED_P1_CORE_VIOLATIONS}, pending R-4)",
+            )
 
     def test_healing_discovery_count(self):
         """Governance signal: track number of discovered healing files."""
