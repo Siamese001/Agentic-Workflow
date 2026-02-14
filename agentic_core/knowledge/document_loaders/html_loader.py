@@ -45,6 +45,59 @@ _RE_TAGS = re.compile(r"<[^>]+>")
 _RE_WHITESPACE = re.compile(r"\s+")
 
 
+def _try_load_text(file_path: Path) -> str | None:
+    """
+    Attempt HTML text extraction via multiple strategies.
+
+    Returns:
+        Extracted visible text on success, or None on any failure.
+    """
+    try:
+        raw = Path(file_path).read_text(encoding="utf-8", errors="ignore")
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        log.warning("HTML read failed for %s: %s", file_path, exc)
+        return None
+
+    # Fast path: BeautifulSoup if available
+    try:
+        from bs4 import BeautifulSoup  # type: ignore[import-untyped]
+
+        soup = BeautifulSoup(raw, "html.parser")
+        for tag in soup(["script", "style"]):
+            tag.decompose()
+        text: str = soup.get_text(separator=" ", strip=True)
+        return _RE_WHITESPACE.sub(" ", text).strip()
+    except ImportError:
+        pass
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        log.warning("bs4 extraction failed, falling back to stdlib: %s", exc)
+
+    # Stdlib path
+    try:
+        stripper = _TagStripper()
+        stripper.feed(raw)
+        text = stripper.get_text()
+        text = html.unescape(text)
+        text = _RE_WHITESPACE.sub(" ", text).strip()
+        return text
+    # guardian: allow-silent-swallow
+    except Exception as exc:
+        log.warning("Stdlib HTML extraction failed for %s: %s", file_path, exc)
+
+    # Last-resort regex fallback
+    try:
+        text = _RE_SCRIPT_STYLE.sub("", raw)
+        text = _RE_TAGS.sub(" ", text)
+        text = html.unescape(text)
+        text = _RE_WHITESPACE.sub(" ", text).strip()
+        return text
+    # guardian: allow-silent-swallow
+    except Exception:
+        return None
+
+
 class HTMLDocumentLoader:
     """ImportError-safe HTML loader. Uses BeautifulSoup if available, stdlib otherwise."""
 
@@ -59,50 +112,8 @@ class HTMLDocumentLoader:
         Returns:
             Visible text content with tags stripped, or "" on any failure.
         """
-        try:
-            raw = Path(file_path).read_text(encoding="utf-8", errors="ignore")
-        # guardian: allow-silent-swallow
-        except Exception as exc:
-            log.warning("HTML read failed for %s: %s", file_path, exc)
-            return ""
-
-        # Fast path: BeautifulSoup if available
-        try:
-            from bs4 import BeautifulSoup  # type: ignore[import-untyped]
-
-            soup = BeautifulSoup(raw, "html.parser")
-            for tag in soup(["script", "style"]):
-                tag.decompose()
-            text: str = soup.get_text(separator=" ", strip=True)
-            return _RE_WHITESPACE.sub(" ", text).strip()
-        except ImportError:
-            pass
-        # guardian: allow-silent-swallow
-        except Exception as exc:
-            log.warning("bs4 extraction failed, falling back to stdlib: %s", exc)
-
-        # Stdlib path
-        try:
-            stripper = _TagStripper()
-            stripper.feed(raw)
-            text = stripper.get_text()
-            text = html.unescape(text)
-            text = _RE_WHITESPACE.sub(" ", text).strip()
-            return text
-        # guardian: allow-silent-swallow
-        except Exception as exc:
-            log.warning("Stdlib HTML extraction failed for %s: %s", file_path, exc)
-
-        # Last-resort regex fallback
-        try:
-            text = _RE_SCRIPT_STYLE.sub("", raw)
-            text = _RE_TAGS.sub(" ", text)
-            text = html.unescape(text)
-            text = _RE_WHITESPACE.sub(" ", text).strip()
-            return text
-        # guardian: allow-silent-swallow
-        except Exception:
-            return ""
+        text = _try_load_text(file_path)
+        return text if text is not None else ""
 
     @staticmethod
     def load_path(path: Path) -> str:
