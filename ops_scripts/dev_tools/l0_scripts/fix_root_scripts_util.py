@@ -1,4 +1,4 @@
-# dev_tools/l0_scripts/fix_root_scripts_util.py
+# ops_scripts/dev_tools/l0_scripts/fix_root_scripts_util.py
 """
 Project Exodus: Automated Migration Tool for Root Scripts
 

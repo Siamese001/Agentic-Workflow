@@ -398,7 +398,7 @@ Status: DEPRECATED - Do not use in production
 # Suggested keywords to add in docstring/code: engine, healer, memory, orchestrator, state, validator
 # This boosts alignment detection — review and integrate appropriately
 
-# from agentic_core.base_agents.decorators import standard_heal
+# from agentic_core.utils.decorators import standard_heal
 # from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 

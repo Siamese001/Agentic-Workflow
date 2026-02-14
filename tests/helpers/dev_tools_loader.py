@@ -20,7 +20,7 @@ DEV_SCRIPTS_DIR = REPO_ROOT / "dev_tools" / "l0_scripts"
 
 
 def load_dev_script(filename: str) -> ModuleType:
-    """Load a dev_tools/l0_scripts/<filename> module by file path.
+    """Load a ops_scripts/dev_tools/l0_scripts/<filename> module by file path.
 
     Args:
         filename: Script filename (e.g. ``"my_util.py"``).
@@ -34,7 +34,7 @@ def load_dev_script(filename: str) -> ModuleType:
     """
     script_path = DEV_SCRIPTS_DIR / filename
     if not script_path.exists():
-        raise FileNotFoundError(f"dev_tools/l0_scripts/{filename} not found")
+        raise FileNotFoundError(f"ops_scripts/dev_tools/l0_scripts/{filename} not found")
 
     stem = script_path.stem
     spec = importlib.util.spec_from_file_location(stem, str(script_path))

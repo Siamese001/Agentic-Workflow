@@ -79,7 +79,7 @@ import ast
 import re
 
 try:
-    from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA, standard_heal
+    from agentic_core.utils.decorators import HEAL_RESULT_SCHEMA, standard_heal
 except ImportError:
     # Fallback for bootstrapping scenarios
     def standard_heal(func):

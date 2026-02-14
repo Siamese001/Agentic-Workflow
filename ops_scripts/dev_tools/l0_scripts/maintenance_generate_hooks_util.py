@@ -1,5 +1,5 @@
 """
-dev_tools/l0_scripts/maintenance_generate_hooks_util.py
+ops_scripts/dev_tools/l0_scripts/maintenance_generate_hooks_util.py
 -----------------------------------------------------------------
 DEPRECATED: Redirects to the unified 'generate_hooks.py' script.
 This file is retained as a stub to prevent breaking existing automation

@@ -80,7 +80,7 @@ def check_test_status(
     existing_tests: list[pathlib.Path],
 ) -> tuple[str, pathlib.Path]:
     """Check test status for a module."""
-    existing_test_paths = {t for t in existing_tests}
+    existing_test_paths = set(existing_tests)
 
     if expected_test_path in existing_test_paths:
         return "PRESENT", expected_test_path

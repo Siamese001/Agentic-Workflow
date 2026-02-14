@@ -69,7 +69,7 @@ GOLDEN_SET: list[tuple[str, FileType]] = [
     # --- PRIORITY 16: FACTORY ---
     ("agentic_core/runtime/enforcement/envelope_factory.py", "FACTORY"),
     # --- PRIORITY 4: SCRIPT ---
-    ("dev_tools/l0_scripts/add_agent_suffix_plan_util.py", "SCRIPT"),
+    ("ops_scripts/dev_tools/l0_scripts/add_agent_suffix_plan_util.py", "SCRIPT"),
 ]
 
 

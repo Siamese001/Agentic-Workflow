@@ -10,7 +10,6 @@ import shutil
 
 def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathlib.Path]]:
     """Discover all mislocated tests and their target locations."""
-    root = pathlib.Path(".")
     mislocated = []
 
     # Existing tests in old structure

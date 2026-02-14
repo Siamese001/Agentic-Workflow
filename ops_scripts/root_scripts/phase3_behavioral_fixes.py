@@ -14,7 +14,7 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
 
     try:
         content = test_path.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+        ast.parse(content)
 
         # Determine the correct module import from test path
         relative_path = test_path.relative_to("tests")
