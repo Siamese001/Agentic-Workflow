@@ -50,27 +50,21 @@ class TestSubAtomicEngineImplContract:
         cls = mod.SubAtomicEngineImpl
         assert hasattr(cls, "resilient_mutation"), "SubAtomicEngineImpl must have resilient_mutation method"
 
-    def test_fence_prompt_exists(self):
+    def test_fence_prompt_removed(self):
         mod = importlib.import_module(self.MODULE)
         cls = mod.SubAtomicEngineImpl
-        assert hasattr(cls, "_fence_prompt"), "SubAtomicEngineImpl must have _fence_prompt method"
+        assert not hasattr(cls, "_fence_prompt"), (
+            "SubAtomicEngineImpl must NOT have _fence_prompt stopgap "
+            "(replaced by PromptAssembler wiring in P2/W2.3)"
+        )
 
-    def test_fence_prompt_produces_xml_tags(self):
-        mod = importlib.import_module(self.MODULE)
-        cls = mod.SubAtomicEngineImpl
-        result = cls._fence_prompt("You are a coder.", "Fix this bug.")
-        assert "<SYSTEM_PRIME>" in result
-        assert "</SYSTEM_PRIME>" in result
-        assert "<CONTEXT_DATA>" in result
-        assert "</CONTEXT_DATA>" in result
-        assert "You are a coder." in result
-        assert "Fix this bug." in result
-
-    def test_fence_prompt_empty_system_returns_user_prompt(self):
-        mod = importlib.import_module(self.MODULE)
-        cls = mod.SubAtomicEngineImpl
-        result = cls._fence_prompt("", "Just a user prompt.")
-        assert result == "Just a user prompt."
+    def test_uses_prompt_assembler_import(self):
+        src = (
+            REPO_ROOT / "agentic_core" / "L3_orchestration" / "engines" / "sub_atomic_engine_impl.py"
+        ).read_text(encoding="utf-8")
+        assert "from agentic_core.prompt_governance.core.prompt_assembler import" in src, (
+            "sub_atomic_engine_impl.py must import from prompt_assembler"
+        )
 
 
 # ── 2. SovereignLLMGateway ──────────────────────────────────────────────
@@ -334,10 +328,16 @@ class TestNoNaiveConcatRegression:
 
     def test_fencing_mechanism_present(self):
         src = self._read_source()
-        has_fence_prompt = "_fence_prompt(" in src
         has_assemble_prompt = "assemble_prompt(" in src
         has_prompt_assembler = "PromptAssembler" in src
-        assert has_fence_prompt or has_assemble_prompt or has_prompt_assembler, (
-            "sub_atomic_engine_impl.py must use a fencing mechanism: "
-            "_fence_prompt(), assemble_prompt(), or PromptAssembler"
+        assert has_assemble_prompt or has_prompt_assembler, (
+            "sub_atomic_engine_impl.py must use PromptAssembler fencing: "
+            "assemble_prompt() or PromptAssembler (stopgap _fence_prompt is forbidden)"
+        )
+
+    def test_no_stopgap_fence_prompt(self):
+        src = self._read_source()
+        assert "_fence_prompt" not in src, (
+            "sub_atomic_engine_impl.py must not contain the _fence_prompt stopgap "
+            "(replaced by PromptAssembler in P2/W2.3)"
         )
