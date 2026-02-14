@@ -20,7 +20,10 @@ if not project_root:
     sys.exit(1)
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+    assert_no_persistent_write,
+    safe_shutil_rmtree,
+)
 
 try:
     from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
@@ -154,10 +157,7 @@ def main() -> Any:
                     ]
                     if not remaining:
                         try:
-                            assert_no_persistent_write(
-                                "L0", "shutil.mutate"
-                            )  # G-12-1: mutation prohibition guard
-                            shutil.rmtree(legacy_path)
+                            safe_shutil_rmtree(legacy_path, layer="L0")
                             print(f"   [CLEAN] Purged legacy folder: {legacy_path.relative_to(project_root)}")
                         # guardian: allow-silent-swallow
                         except Exception as e:

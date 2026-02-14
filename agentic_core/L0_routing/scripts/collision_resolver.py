@@ -8,13 +8,14 @@ Rationale:
 """
 
 import ast
-import os
 import sys
 from collections import defaultdict
 from pathlib import Path
 
 # SSOT Integration
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+    safe_os_remove,
+)
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -190,10 +191,7 @@ class CollisionResolver:
                     for i, src in enumerate(sources):
                         if i != idx and src.exists():
                             print(f"  DELETING: {src.name}")
-                            assert_no_persistent_write(
-                                "L0", "os.mutate"
-                            )  # G-12-1: mutation prohibition guard
-                            os.remove(src)
+                            safe_os_remove(src, layer="L0")
 
                     # Rename winner to target if needed
                     if winner.name != target_path.name and winner.exists():

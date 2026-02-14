@@ -10,7 +10,10 @@ import json
 import shutil
 from pathlib import Path
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+    assert_no_persistent_write,
+    safe_shutil_move,
+)
 
 
 class CoreSynthesisExecutor:
@@ -141,10 +144,7 @@ class CoreSynthesisExecutor:
                             # Archive original after successful synthesis
                             archive_dest = self.archives_path / "synthesized" / file_info["file_path"]
                             archive_dest.parent.mkdir(parents=True, exist_ok=True)
-                            assert_no_persistent_write(
-                                "L0", "shutil.mutate"
-                            )  # G-12-1: mutation prohibition guard
-                            shutil.move(str(file_path), str(archive_dest))
+                            safe_shutil_move(file_path, archive_dest, layer="L0")
                         else:
                             print(f"❌ Failed to synthesize {file_info['file_path']}")
                             return False

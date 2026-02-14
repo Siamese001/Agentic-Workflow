@@ -20,7 +20,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     SCRIPTS_DIR,
     TESTS_DIR,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+    safe_write_text,
+)
 
 
 def find_corruption(content: str) -> int:
@@ -82,10 +84,7 @@ def main():
                             # Truncate at corruption point
                             clean = content[:idx].rstrip() + "\n"
                             if is_valid_python(clean):
-                                assert_no_persistent_write(
-                                    "L0", "write_text"
-                                )  # G-12-1: mutation prohibition guard
-                                py_file.write_text(clean, encoding="utf-8")
+                                safe_write_text(py_file, clean, layer="L0", encoding="utf-8")
                                 fixed_files.append(py_file)
                                 print(f"FIXED: {py_file}")
                             else:
