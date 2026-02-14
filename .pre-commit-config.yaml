@@ -79,6 +79,7 @@ repos:
         entry: python ops_scripts/ci/check_anti_patterns.py
         language: system
         types: [python]
+        pass_filenames: true
         require_serial: true
         # Relocated legacy test-only agent fixtures; production gates enforce 0 L6 *Agent.py.
         exclude: (ops_scripts/ci/check_anti_patterns\.py|tests/support/l6_observability/.*)
