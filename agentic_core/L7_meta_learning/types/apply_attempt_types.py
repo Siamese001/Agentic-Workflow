@@ -8,7 +8,6 @@ NO automatic application.  Explicit invoke only.
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
@@ -16,6 +15,10 @@ from typing import Any, Literal
 from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
+)
+from agentic_core.L7_meta_learning.enforcement.determinism import (
+    deterministic_json,
+    stable_sha256_json,
 )
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     _canonical_payload_json,
@@ -71,7 +74,7 @@ class MetaLearningApplyAttemptArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 def build_apply_attempt(
@@ -104,7 +107,7 @@ def build_apply_attempt(
         "target_component": target_component,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningApplyAttemptArtifact(
         artifact_type="META_LEARNING_APPLY_ATTEMPT",

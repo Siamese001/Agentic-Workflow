@@ -9,12 +9,12 @@ NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L7_meta_learning.enforcement.determinism import deterministic_json
 from agentic_core.L7_meta_learning.types.app_signal_types import (
     AppSignalAggregateArtifact,
     AppSignalEventArtifact,
@@ -217,4 +217,4 @@ def render_offline_replay_bundle(bundle: OfflineReplayBundle) -> str:
         "proposal": bundle.proposal.to_dict(),
         "rollout_plan": bundle.rollout_plan.to_dict() if bundle.rollout_plan else None,
     }
-    return json.dumps(d, sort_keys=True, separators=(",", ":"))
+    return deterministic_json(d)

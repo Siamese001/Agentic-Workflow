@@ -14,7 +14,6 @@ NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
@@ -22,6 +21,10 @@ from typing import Any, Literal
 from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
+)
+from agentic_core.L7_meta_learning.enforcement.determinism import (
+    deterministic_json,
+    stable_sha256_json,
 )
 
 # =============================================================================
@@ -80,8 +83,8 @@ class ProposedChange:
     def from_dicts(cls, before: dict, after: dict) -> ProposedChange:
         """Build from plain dicts — canonicalizes on construction."""
         return cls(
-            before_canonical=json.dumps(before, sort_keys=True, separators=(",", ":")),
-            after_canonical=json.dumps(after, sort_keys=True, separators=(",", ":")),
+            before_canonical=deterministic_json(before),
+            after_canonical=deterministic_json(after),
         )
 
 
@@ -138,7 +141,7 @@ class MetaLearningProposalArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 # =============================================================================
@@ -149,7 +152,7 @@ class MetaLearningProposalArtifact:
 def _canonical_payload_json(payload: dict) -> str:
     """Canonical JSON of payload excluding trace_id."""
     filtered = {k: v for k, v in payload.items() if k != "trace_id"}
-    return json.dumps(filtered, sort_keys=True, separators=(",", ":"))
+    return deterministic_json(filtered)
 
 
 def build_meta_learning_proposal(
@@ -211,7 +214,7 @@ def build_meta_learning_proposal(
         "target_component": target_component,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningProposalArtifact(
         artifact_type="META_LEARNING_PROPOSAL",
@@ -297,7 +300,7 @@ class MetaLearningEvaluationArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 def build_meta_learning_evaluation(
@@ -353,7 +356,7 @@ def build_meta_learning_evaluation(
         "verdict": verdict,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningEvaluationArtifact(
         artifact_type="META_LEARNING_EVALUATION",
@@ -419,7 +422,7 @@ class MetaLearningApprovalArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 def build_meta_learning_approval(
@@ -461,7 +464,7 @@ def build_meta_learning_approval(
         "semantic_clock": evaluation.semantic_clock.to_dict(),
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningApprovalArtifact(
         artifact_type="META_LEARNING_APPROVAL",
@@ -553,7 +556,7 @@ class MetaLearningDecisionArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 # =============================================================================
@@ -582,7 +585,7 @@ def _build_reject_decision(
         "semantic_clock": semantic_clock.to_dict(),
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
     return MetaLearningDecisionArtifact(
         artifact_type="META_LEARNING_DECISION",
         semantic_clock=semantic_clock,
@@ -676,7 +679,7 @@ def build_meta_learning_decision(
         "semantic_clock": semantic_clock.to_dict(),
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningDecisionArtifact(
         artifact_type="META_LEARNING_DECISION",
@@ -757,7 +760,7 @@ class MetaLearningChangePackageArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 # =============================================================================
@@ -824,7 +827,7 @@ def build_meta_learning_change_package(
         raise ValueError("POLICY_HASH_MISMATCH")
 
     # --- Canonicalize change_spec ---
-    canonical_spec_str = json.dumps(change_spec, sort_keys=True, separators=(",", ":"))
+    canonical_spec_str = deterministic_json(change_spec)
     canonical_spec: dict[str, Any] = json.loads(canonical_spec_str)
 
     # --- Build trace_id ---
@@ -840,7 +843,7 @@ def build_meta_learning_change_package(
         "target_component": target_component,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return MetaLearningChangePackageArtifact(
         artifact_type="META_LEARNING_CHANGE_PACKAGE",

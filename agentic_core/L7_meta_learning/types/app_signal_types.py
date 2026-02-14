@@ -11,7 +11,6 @@ NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from collections.abc import Callable, Sequence
@@ -21,6 +20,10 @@ from typing import Literal
 from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
+)
+from agentic_core.L7_meta_learning.enforcement.determinism import (
+    deterministic_json,
+    stable_sha256_json,
 )
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     _canonical_payload_json,
@@ -156,7 +159,7 @@ class AppSignalEventArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 def build_app_signal_event(
@@ -218,7 +221,7 @@ def build_app_signal_event(
         "timestamp_utc": timestamp_utc,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return AppSignalEventArtifact(
         artifact_type="APP_SIGNAL_EVENT",
@@ -298,7 +301,7 @@ class AppSignalAggregateArtifact:
 
     def to_json(self) -> str:
         """Deterministic JSON string (sort_keys=True, compact separators)."""
-        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return deterministic_json(self.to_dict())
 
 
 def build_app_signal_aggregate(
@@ -361,7 +364,7 @@ def build_app_signal_aggregate(
         "window_id": window_id,
     }
     canonical = _canonical_payload_json(temp_payload)
-    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    trace_id = stable_sha256_json(json.loads(canonical))
 
     return AppSignalAggregateArtifact(
         artifact_type="APP_SIGNAL_AGGREGATE",
