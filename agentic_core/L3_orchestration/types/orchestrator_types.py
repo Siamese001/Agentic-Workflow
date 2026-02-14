@@ -53,12 +53,19 @@ class ExecutionContext:
 
     dry_run: bool = True
     execute: bool = False
+    # guardian: allow-magic-config
     max_depth: int = 3
     current_depth: int = 0
     phase: ExecutionPhase = ExecutionPhase.PLANNING
     call_path: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     accumulated_context: dict[str, Any] = field(default_factory=dict)
+
+    # §P4.1 — Semantic handoff fields (additive, default None)
+    task_description: str | None = None
+    input_data: dict | None = None
+    expected_output_schema: dict | None = None
+    upstream_summary: str | None = None
 
     def with_depth(self, new_depth: int) -> ExecutionContext:
         """Create new context with updated depth."""
@@ -71,6 +78,10 @@ class ExecutionContext:
             call_path=self.call_path.copy(),
             metadata=self.metadata.copy(),
             accumulated_context=self.accumulated_context.copy(),
+            task_description=self.task_description,
+            input_data=self.input_data,
+            expected_output_schema=self.expected_output_schema,
+            upstream_summary=self.upstream_summary,
         )
 
     def with_phase(self, new_phase: ExecutionPhase) -> ExecutionContext:
@@ -84,6 +95,10 @@ class ExecutionContext:
             call_path=self.call_path.copy(),
             metadata=self.metadata.copy(),
             accumulated_context=self.accumulated_context.copy(),
+            task_description=self.task_description,
+            input_data=self.input_data,
+            expected_output_schema=self.expected_output_schema,
+            upstream_summary=self.upstream_summary,
         )
 
     def with_accumulated_context(self, new_context: dict[str, Any]) -> ExecutionContext:
@@ -99,6 +114,10 @@ class ExecutionContext:
             call_path=self.call_path.copy(),
             metadata=self.metadata.copy(),
             accumulated_context=merged,
+            task_description=self.task_description,
+            input_data=self.input_data,
+            expected_output_schema=self.expected_output_schema,
+            upstream_summary=self.upstream_summary,
         )
 
     def get_successor_chain(self) -> list[str]:
@@ -275,6 +294,7 @@ class IHealable(Protocol):
         The **kwargs ensures backward compatibility with legacy callers.
     """
 
+    # guardian: allow-magic-config
     def heal_repository(
         self,
         dry_run: bool = True,

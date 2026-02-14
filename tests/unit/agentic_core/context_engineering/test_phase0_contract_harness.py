@@ -435,3 +435,81 @@ class TestInstructionalInjectionIntegration:
 
         # LLM returned the stub
         assert result == "stub-response"
+
+
+# ── 11. L3 ExecutionContext Semantic Handoff Fields ──────────────────────
+
+
+class TestExecutionContextSemanticFields:
+    """Verify that L3 ExecutionContext carries additive semantic handoff
+    fields (P4/W4.1) and that builder methods preserve them.
+    """
+
+    SEMANTIC_FIELDS = (
+        "task_description",
+        "input_data",
+        "expected_output_schema",
+        "upstream_summary",
+    )
+
+    def _make_context(self, **overrides):
+        from agentic_core.L3_orchestration.types.orchestrator_types import (
+            ExecutionContext,
+        )
+
+        return ExecutionContext(**overrides)
+
+    def test_fields_exist_on_class(self):
+        import dataclasses
+
+        from agentic_core.L3_orchestration.types.orchestrator_types import (
+            ExecutionContext,
+        )
+
+        field_names = {f.name for f in dataclasses.fields(ExecutionContext)}
+        for name in self.SEMANTIC_FIELDS:
+            assert name in field_names, f"ExecutionContext must have field '{name}' (P4/W4.1)"
+
+    def test_defaults_are_none(self):
+        ctx = self._make_context()
+        for name in self.SEMANTIC_FIELDS:
+            assert getattr(ctx, name) is None, f"ExecutionContext.{name} must default to None"
+
+    def test_with_depth_preserves_fields(self):
+        ctx = self._make_context(
+            task_description="td",
+            input_data={"k": 1},
+            expected_output_schema={"type": "object"},
+            upstream_summary="us",
+        )
+        clone = ctx.with_depth(2)
+        for name in self.SEMANTIC_FIELDS:
+            assert getattr(clone, name) == getattr(ctx, name), f"with_depth must preserve {name}"
+
+    def test_with_phase_preserves_fields(self):
+        from agentic_core.L3_orchestration.types.orchestrator_types import (
+            ExecutionPhase,
+        )
+
+        ctx = self._make_context(
+            task_description="td",
+            input_data={"k": 1},
+            expected_output_schema={"type": "object"},
+            upstream_summary="us",
+        )
+        clone = ctx.with_phase(ExecutionPhase.EXECUTION)
+        for name in self.SEMANTIC_FIELDS:
+            assert getattr(clone, name) == getattr(ctx, name), f"with_phase must preserve {name}"
+
+    def test_with_accumulated_context_preserves_fields(self):
+        ctx = self._make_context(
+            task_description="td",
+            input_data={"k": 1},
+            expected_output_schema={"type": "object"},
+            upstream_summary="us",
+        )
+        clone = ctx.with_accumulated_context({"extra": True})
+        for name in self.SEMANTIC_FIELDS:
+            assert getattr(clone, name) == getattr(ctx, name), (
+                f"with_accumulated_context must preserve {name}"
+            )
