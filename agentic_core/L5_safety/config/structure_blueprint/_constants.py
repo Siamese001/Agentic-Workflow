@@ -926,6 +926,17 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         },
     }
 
+    territories["dev_tools"] = {
+        "depth": 2,
+        "purpose": "Developer utility scripts for L0 maintenance and analysis.",
+        "subfolders": {
+            "l0_scripts": {"purpose": "L0-level utility scripts for discovery, analysis, and maintenance"},
+        },
+        "volatile": True,
+        "no_cross_layer_imports": True,
+        "allowed_extensions": [".py"],
+    }
+
     territories["archives"] = {
         "depth": 3,
         "purpose": "Canonical repository for deprecated agents and transaction artifacts. Allows flexible recursive subfolders.",
