@@ -30,6 +30,7 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 TOOL_ID = "l0_execute"
 
@@ -91,6 +92,7 @@ def _run_dispatcher(
         delete=False,
         encoding="utf-8",
     ) as f:
+        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
         json.dump(guardian_aggregate, f, indent=2)
         agg_path = Path(f.name)
 

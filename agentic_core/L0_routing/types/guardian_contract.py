@@ -24,6 +24,8 @@ from enum import Enum
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # ---------------------------------------------------------------------------
 # V15 Enforcement Infrastructure
 # ---------------------------------------------------------------------------
@@ -931,6 +933,7 @@ def write_guardian_result(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / filename
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     out_path.write_text(result.to_json(), encoding="utf-8")
     return out_path
 

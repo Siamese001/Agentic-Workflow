@@ -14,6 +14,8 @@ from collections import defaultdict
 from pathlib import Path
 
 # SSOT Integration
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 except ImportError:
@@ -188,6 +190,9 @@ class CollisionResolver:
                     for i, src in enumerate(sources):
                         if i != idx and src.exists():
                             print(f"  DELETING: {src.name}")
+                            assert_no_persistent_write(
+                                "L0", "os.mutate"
+                            )  # G-12-1: mutation prohibition guard
                             os.remove(src)
 
                     # Rename winner to target if needed

@@ -38,6 +38,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
 # ==============================================================================
@@ -314,6 +316,7 @@ def get_git_commit(root: Path) -> str:
 def atomic_write(path: Path, data: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     tmp.write_text(data, encoding="utf-8")
     os.replace(tmp, path)
 

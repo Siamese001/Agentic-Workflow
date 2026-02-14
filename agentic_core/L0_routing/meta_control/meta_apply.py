@@ -28,6 +28,7 @@ from agentic_core.L0_routing.types.v15_p2_types import (
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L7_meta_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
     build_apply_attempt,
@@ -136,6 +137,7 @@ def _atomic_write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     content = json.dumps(data, sort_keys=True, indent=2, separators=(",", ": "))
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     tmp.write_text(content, encoding="utf-8")
     if path.exists():
         os.replace(str(tmp), str(path))

@@ -23,6 +23,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     TEST_TYPE_SIGNALS,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 @dataclass
@@ -557,6 +558,7 @@ class RootCustomsAgent(SovereignBaseAgent):
             target_dir.mkdir(parents=True, exist_ok=True)
 
             # Move the file
+            assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
             shutil.move(str(source), str(target_file))
             print(f"✅ Moved: {source.name} → {decision.destination}/")
             return True

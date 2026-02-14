@@ -10,6 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Protocol
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -108,6 +110,7 @@ class Historian:
         # Save file history
         try:
             with open(self.file_history_file, "w") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(self.file_history, f, indent=2)
         except Exception as e:
             LOGGER.error(f"Failed to save file history: {e}")

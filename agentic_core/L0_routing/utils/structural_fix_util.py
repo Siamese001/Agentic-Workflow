@@ -8,6 +8,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 root: Any = Path("C:/Git/Agentic-Workflow")
@@ -65,12 +67,14 @@ def fix_structural_violations() -> Any:
         target_dir: Any = ROOT / "apps_rg/agents"
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file: Any = target_dir / "analysis.py"
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(analysis_file), str(target_file))
         print("  ✓ Moved: analysis.py from agentic_core to apps_rg/agents")
     print("\n[PHASE 4] Fixing apps_shared -> apps_rg dependency...")
     verify_file: Any = ROOT / "apps_shared/verify_hardening.py"
     if verify_file.exists():
         target_file: Any = ROOT / "apps_rg/verify_hardening.py"
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(verify_file), str(target_file))
         print("  ✓ Moved: verify_hardening.py from apps_shared to apps_rg")
     print("\n[PHASE 5] Handling test script violations...")
@@ -85,6 +89,7 @@ def fix_structural_violations() -> Any:
         src: Any = ROOT / test_file
         if src.exists():
             dest: Any = tests_dir / src.name
+            assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
             shutil.move(str(src), str(dest))
             print(f"  ✓ Moved: {src.name} to tests/integration")
     print("\n[OK] STRUCTURAL FIX COMPLETE")

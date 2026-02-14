@@ -3,6 +3,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 ARCHIVE_BASE = PROJECT_ROOT / "archives" / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
@@ -42,6 +44,7 @@ def main():
             dest_path = ARCHIVE_BASE / f"{parent_name}_{filename}"
         if source_path.exists():
             try:
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(source_path), str(dest_path))
                 moved_count += 1
             # guardian: allow-silent-swallow

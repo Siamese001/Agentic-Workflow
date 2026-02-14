@@ -36,6 +36,8 @@ from pathlib import Path
 from typing import Any
 
 # SSOT discovery - replaces rglob
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 
@@ -1276,6 +1278,7 @@ def main():
         for stale_path in {CANONICAL_JSON, LEGACY_JSON, MISTAKE_JSON, MISTAKE_JSON_2}:
             try:
                 if stale_path.exists():
+                    assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
                     os.remove(stale_path)
                     log.info(f"[FRESH] Deleted stale {stale_path.name}")
             # guardian: allow-silent-swallow
@@ -1655,6 +1658,7 @@ def main():
     try:
         tmp_json = OUTPUT_JSON.with_suffix(".tmp")
         json_text = json.dumps(agents, indent=2)
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         tmp_json.write_text(json_text, encoding="utf-8")
         # Verify written JSON
         test_load = json.loads(json_text)
@@ -1676,6 +1680,7 @@ def main():
     try:
         tmp_manifest = MANIFEST_JSON.with_suffix(".tmp")
         manifest_text = json.dumps(manifest, indent=2)
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         tmp_manifest.write_text(manifest_text, encoding="utf-8")
         # Verify manifest
         json.loads(manifest_text)  # Raises if invalid

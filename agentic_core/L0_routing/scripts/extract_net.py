@@ -8,12 +8,15 @@ from pathlib import Path
 "Brief description of functionality and purpose."
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 def extract_net_incremental() -> None:
     """Extract files that don't exist in sovereign codebase."""
     source_dir: Any = Path("archives/legacy_lic")
     staging_dir: Any = Path("archive_code")
     if staging_dir.exists():
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.rmtree(staging_dir)
     staging_dir.mkdir()
     existing_files: Any = get_existing_files()

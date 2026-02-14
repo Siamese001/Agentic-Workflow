@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent
@@ -37,6 +38,7 @@ def fix_tunnel_violations() -> Any:
                 target_file: Any = target_dir / f"{prefix}_{filename}"
             try:
                 target_dir.mkdir(parents=True, exist_ok=True)
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(py_file), str(target_file))
                 print(f"  [✓] Flattened: {py_file.relative_to(CORE)} -> {target_file.relative_to(CORE)}")
                 fixed += 1

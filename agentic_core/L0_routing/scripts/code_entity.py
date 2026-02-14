@@ -22,6 +22,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # ============================================================================
 # DATA STRUCTURES
 # ============================================================================
@@ -535,6 +537,7 @@ def main():
 
     # Save to file
     report_path = Path("docs/ARCHIVE_ANALYSIS_REPORT.md")
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     report_path.write_text(report_text, encoding="utf-8")
     print(f"\n\nReport saved to: {report_path}")
 

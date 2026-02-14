@@ -10,6 +10,8 @@ import json
 import shutil
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 class CoreSynthesisExecutor:
     """Executes zero-loss synthesis and restructure operations."""
@@ -91,6 +93,7 @@ class CoreSynthesisExecutor:
                 archive_dest.parent.mkdir(parents=True, exist_ok=True)
 
                 try:
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(file_path), str(archive_dest))
                     print(f"📦 Archived: {file_info['file_path']}")
                     archived_count += 1
@@ -138,6 +141,9 @@ class CoreSynthesisExecutor:
                             # Archive original after successful synthesis
                             archive_dest = self.archives_path / "synthesized" / file_info["file_path"]
                             archive_dest.parent.mkdir(parents=True, exist_ok=True)
+                            assert_no_persistent_write(
+                                "L0", "shutil.mutate"
+                            )  # G-12-1: mutation prohibition guard
                             shutil.move(str(file_path), str(archive_dest))
                         else:
                             print(f"❌ Failed to synthesize {file_info['file_path']}")
@@ -237,6 +243,7 @@ class CoreSynthesisExecutor:
 
             # Write back
             target_content = "\n".join(lines)
+            assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
             target_path.write_text(target_content, encoding="utf-8")
 
             return True
@@ -270,6 +277,7 @@ class CoreSynthesisExecutor:
             try:
                 # Move to utils
                 dest = self.utils_path / file_path.name
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(file_path), str(dest))
                 print(f"🔧 Evicted to utils: {file_path.name}")
                 evicted_count += 1

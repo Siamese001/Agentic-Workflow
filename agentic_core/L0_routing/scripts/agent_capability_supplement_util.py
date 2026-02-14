@@ -29,6 +29,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     PROJECT_ROOT,
     SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # Add scripts directory to path for import
 # guardian: allow-global-mutation
@@ -403,6 +404,7 @@ def analyze_supplementation():
         recommendations,
     )
     report_path = PROJECT_ROOT / "agent_supplementation_report.md"
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     report_path.write_text(md_report, encoding="utf-8")
     print(f"\n[SAVED] Detailed markdown report: {report_path}")
 

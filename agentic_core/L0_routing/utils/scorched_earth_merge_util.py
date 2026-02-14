@@ -12,6 +12,8 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"
 approved_root_folders: Any = [
@@ -79,6 +81,7 @@ def scorched_earth_merge() -> Any:
             dest_path: Any = target_dest / f"{item.stem}_{ts}{item.suffix}"
             logging.warning(f"    Collision! Renaming to {dest_path.name}")
         try:
+            assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
             shutil.move(str(item), str(dest_path))
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -87,6 +90,7 @@ def scorched_earth_merge() -> Any:
         if item.is_dir() and item.name not in APPROVED_ROOT_FOLDERS:
             try:
                 if not any(item.iterdir()):
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.rmtree(item)
                     logging.info(f"[✓] Purged empty unapproved shell: {item.name}")
             # guardian: allow-silent-swallow

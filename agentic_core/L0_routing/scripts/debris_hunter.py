@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 
 # SSOT Integration
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 try:
     from agentic_core.L5_safety.config.structure_blueprint_config import get_python_files
 except ImportError:
@@ -87,6 +89,7 @@ class DebrisHunter:
         deleted = 0
         for path in self.debris_found:
             try:
+                assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
                 os.remove(path)
                 print(f"[DELETED] {path.name}")
                 deleted += 1

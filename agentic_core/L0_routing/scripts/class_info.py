@@ -18,6 +18,7 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -732,6 +733,7 @@ def main():
 
     json_path = PROJECT_ROOT / "archive_migration_data.json"
     with open(json_path, "w", encoding="utf-8") as f:
+        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
         json.dump(json_data, f, indent=2)
 
     print(f"JSON data saved to: {json_path}")

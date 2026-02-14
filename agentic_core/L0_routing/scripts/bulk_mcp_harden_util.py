@@ -13,6 +13,7 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -59,6 +60,7 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
                 new_content = content[: match2.start(2)] + "(MCPHardenedMixin)" + content[match2.start(2) :]
                 # Add import
                 new_content = add_import(new_content)
+                assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
                 file_path.write_text(new_content, encoding="utf-8")
                 return True
             return False
@@ -76,6 +78,7 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
         # Add import
         new_content = add_import(new_content)
 
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         file_path.write_text(new_content, encoding="utf-8")
         return True
 

@@ -9,6 +9,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -302,6 +304,7 @@ class ThinkActObserveEngine:
         import json
 
         with open(path, "w") as f:
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
             json.dump(self.state.to_dict(), f, indent=2, default=str)
         if self.enable_logging:
             LOGGER.info("state_saved", extra={"path": path})

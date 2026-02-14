@@ -13,6 +13,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
     safe_path_join,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
@@ -48,9 +49,11 @@ def fix_depth_violations() -> Any:
             stage_path.mkdir(exist_ok=True)
             stage_init: Any = stage_path / "__init__.py"
             if not stage_init.exists():
+                assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
                 stage_init.write_text('"""Stage module."""\n')
             target: Any = stage_path / py_file.name
             if not target.exists():
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(py_file), str(target))
                 print(f"  [✓] Moved: {py_file.relative_to(CORE)} -> {target.relative_to(CORE)}")
                 moved += 1

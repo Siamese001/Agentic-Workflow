@@ -13,6 +13,7 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 def main():
@@ -55,6 +56,7 @@ def main():
                 archive_target = archive_dir / relative_path
                 archive_target.parent.mkdir(parents=True, exist_ok=True)
 
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(dup), str(archive_target))
                 print(f"✅ Archived: {relative_path}")
                 archived += 1

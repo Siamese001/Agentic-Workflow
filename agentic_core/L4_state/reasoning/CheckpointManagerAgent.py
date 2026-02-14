@@ -38,6 +38,7 @@ from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 Logger = logging.getLogger(__name__)
 
@@ -278,6 +279,7 @@ class CheckpointManagerAgent(SovereignBaseAgent):
 
         try:
             with open(file_path, "w", encoding="utf-8") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(checkpoint.to_dict(), f, indent=2, default=str)
 
             self.checkpoints[checkpoint_id] = checkpoint
@@ -582,6 +584,7 @@ class CheckpointManagerAgent(SovereignBaseAgent):
 
         try:
             with open(index_path, "w", encoding="utf-8") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(index_data, f, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:

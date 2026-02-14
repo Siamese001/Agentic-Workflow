@@ -25,6 +25,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 Logger = logging.getLogger(__name__)
 
 
@@ -386,6 +388,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     if self.dry_run:
                         Logger.info(f"[DRY RUN] Would update imports in: {py_file}")
                     else:
+                        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
                         py_file.write_text(new_content, encoding="utf-8")
                         Logger.info(f"Updated imports in: {py_file}")
 

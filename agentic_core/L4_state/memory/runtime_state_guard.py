@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint_config import RUNTIME_STATE_JSON
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 class RuntimeStateGuard:
@@ -79,6 +80,7 @@ class RuntimeStateGuard:
         try:
             # 1. Write to temp
             with open(temp_path, "w") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(self._state_cache, f, indent=4)
 
             # 2. Create backup of current valid state
@@ -90,4 +92,5 @@ class RuntimeStateGuard:
         except Exception as e:
             print(f"[StateGuard] PERSISTENCE FAILURE: {e}")
             if temp_path.exists():
+                assert_no_persistent_write("L4", "os.mutate")  # G-12-1: mutation prohibition guard
                 os.remove(temp_path)

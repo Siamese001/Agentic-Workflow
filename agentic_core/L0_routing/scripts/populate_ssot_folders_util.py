@@ -25,6 +25,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 core_root = project_root / "agentic_core"
 
@@ -140,6 +141,7 @@ def main():
             init_path = l2_path / "__init__.py"
             # Overwrite if empty or very small (low signal)
             if not init_path.exists() or init_path.stat().st_size < 200:
+                assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
                 init_path.write_text(generate_init_content(l1, l2), encoding="utf-8")
                 print(f"   [SMART POPULATED] {l2_path.relative_to(project_root)}/__init__.py")
                 populated += 1
@@ -149,6 +151,7 @@ def main():
                 if depth3.is_dir() and depth3.name not in {"__pycache__"}:
                     d3_init = depth3 / "__init__.py"
                     if not d3_init.exists() or d3_init.stat().st_size < 200:
+                        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
                         d3_init.write_text(generate_init_content(l1, l2, depth3.name), encoding="utf-8")
                         print(f"   [SMART POPULATED] {depth3.relative_to(project_root)}/__init__.py")
                         populated += 1

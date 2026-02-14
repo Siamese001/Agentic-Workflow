@@ -14,6 +14,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ARTIFACT_PATTERNS = ["*.heal_tmp", "*.temp", "*.tmp", ".pytest_cache", "__pycache__"]
@@ -110,6 +111,7 @@ def remove_artifacts(artifacts: list[Path]) -> tuple[int, list[str]]:
                 path.unlink()
                 removed += 1
             elif path.is_dir():
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.rmtree(path)
                 removed += 1
         # guardian: allow-silent-swallow

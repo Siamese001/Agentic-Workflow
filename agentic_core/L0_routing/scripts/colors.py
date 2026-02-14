@@ -22,6 +22,8 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
 )
 
 # Color-coded terminal output for progress visibility
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 try:
     from agentic_core.utils.terminal_colors import (
         Colors,
@@ -147,6 +149,7 @@ def _save_runtime_state(project_root_path: Path):
     """Persist runtime state to JSON for dashboard polling."""
     try:
         state_path = project_root_path / RUNTIME_STATE_FILE
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         state_path.write_text(_json.dumps(_runtime_state, indent=2, default=str), encoding="utf-8")
     # guardian: allow-silent-swallow
     except Exception:

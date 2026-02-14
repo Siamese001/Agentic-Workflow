@@ -9,6 +9,8 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"
 heavy_airlocks: Any = [
@@ -48,6 +50,7 @@ def aggressive_trim(init_file: Any) -> Any:
                 condensed.append(line)
         new_lines: Any = condensed
     content: Any = "\n".join(new_lines) + "\n"
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     init_file.write_text(content, encoding="utf-8")
     return len(new_lines)
 

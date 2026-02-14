@@ -8,6 +8,8 @@ import json
 import re
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 project_root = Path(__file__).parent.parent
 discovery_file = project_root / "agent_discovery_full.json"
 
@@ -141,6 +143,7 @@ for agent in no_tests:
             content = content[:insert_pos] + test_method + content[insert_pos:]
 
         if content != original_content:
+            assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
             agent_path.write_text(content, encoding="utf-8")
             modified.append(class_name)
             print(f"✅ Modified: {class_name}")

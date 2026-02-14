@@ -12,6 +12,8 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"
 excluded_zones: Any = ["data", "archives", "tests", ".git", ".venv", "__pycache__"]
@@ -47,12 +49,14 @@ def force_annexation() -> Any:
                 target_item: Any = destination / f"{item.stem}_{timestamp}{item.suffix}"
                 logging.warning(f"      Collision! Renaming to {target_item.name}")
             try:
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(item), str(target_item))
             # guardian: allow-silent-swallow
             except Exception as e:
                 logging.error(f"      Failed to move {item.name}: {e}")
         try:
             if old_path.exists() and (not any(old_path.iterdir())):
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.rmtree(old_path)
                 logging.info(f"  [✓] Purged old root folder: {old_name}")
         # guardian: allow-silent-swallow

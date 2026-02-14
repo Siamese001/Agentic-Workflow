@@ -11,6 +11,7 @@ from typing import Any
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 root: Any = Path.cwd()
 core: Any = ROOT / AGENTIC_CORE_DIR
@@ -28,8 +29,10 @@ def align_territory() -> Any:
             dest_path.mkdir(parents=True, exist_ok=True)
             for item in src_path.iterdir():
                 if item.is_file():
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(item), str(dest_path / item.name))
                 elif item.is_dir():
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(item), str(dest_path / item.name))
             try:
                 src_path.rmdir()

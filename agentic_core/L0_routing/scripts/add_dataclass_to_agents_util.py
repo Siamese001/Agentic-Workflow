@@ -13,6 +13,8 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 
@@ -113,6 +115,7 @@ def add_dataclass_to_file(file_path: Path) -> bool:
                 break
 
         if source != original_source:
+            assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
             file_path.write_text(source, encoding="utf-8")
             return True
 

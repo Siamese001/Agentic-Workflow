@@ -13,6 +13,8 @@ import json
 import re
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (
         AGENT_DISCOVERY_JSON,
@@ -90,6 +92,7 @@ def add_logging_to_file(file_path: Path) -> bool:
 
     if modified:
         try:
+            assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
             file_path.write_text(source, encoding="utf-8")
             return True
         except Exception as e:
@@ -143,6 +146,7 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
 
     if count > 0:
         try:
+            assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
             file_path.write_text(new_source, encoding="utf-8")
             return True
         except Exception as e:

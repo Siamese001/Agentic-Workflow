@@ -23,6 +23,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 class ExperienceBuffer:
     """
@@ -54,6 +56,7 @@ class ExperienceBuffer:
 
         # Initialize file if Missing
         if not self.path.exists():
+            assert_no_persistent_write("L4", "write_text")  # G-12-1: mutation prohibition guard
             self.path.write_text("")  # Empty JSONL file
             self.Logger.info(f"Created new experience buffer at {self.path}")
 
@@ -67,6 +70,7 @@ class ExperienceBuffer:
 
         # Append to file
         with self.path.open("a", encoding="utf-8") as f:
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
             json.dump(entry, f)
             f.write("\n")
 
@@ -92,6 +96,7 @@ class ExperienceBuffer:
         if len(lines) > self.max_entries:
             kept = lines[-self.max_entries :]
             try:
+                assert_no_persistent_write("L4", "write_text")  # G-12-1: mutation prohibition guard
                 self.path.write_text("".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             except Exception as e:

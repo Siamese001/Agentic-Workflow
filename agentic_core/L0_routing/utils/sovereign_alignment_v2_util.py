@@ -10,6 +10,8 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 root: Any = Path.cwd()
 core: Any = ROOT / "agentic_core"
 migration_map: Any = {
@@ -33,6 +35,7 @@ def flush_and_align() -> Any:
                 if dest_item.exists():
                     print(f"      [!] Skipping {item.name} (already exists at destination)")
                     continue
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(item), str(dest_item))
             try:
                 src_path.rmdir()

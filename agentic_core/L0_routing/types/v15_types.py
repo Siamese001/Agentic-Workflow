@@ -17,6 +17,9 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L5_safety.enforcement.artifact_emission_prohibition import (
+    assert_layer_may_emit,
+)
 
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact
@@ -158,6 +161,10 @@ class ResultArtifact:
     execution_outcome: str
     final_state_hash: str
     artifact_class: str
+    emitting_layer: str = "L2"
+
+    def __post_init__(self) -> None:
+        assert_layer_may_emit("RESULT", self.emitting_layer, self.trace_id)
 
 
 # =============================================================================
@@ -292,7 +299,10 @@ class HealingPlan:
     semantic_clock_tick: int
     policy_liaison_node: str
 
+    emitting_layer: str = "L2"
+
     def __post_init__(self) -> None:
+        assert_layer_may_emit("HEALING_PLAN", self.emitting_layer, self.trace_id)
         if not self.trace_id:
             raise ValueError("HealingPlan: trace_id must be non-empty")
         if not self.plan_id:

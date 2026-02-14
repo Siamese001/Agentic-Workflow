@@ -38,6 +38,8 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 def _optional_v15_runtime_guard():
     """Lazy import to avoid import-time failure in bootstrap contexts.
@@ -1127,6 +1129,7 @@ class RuntimeStateManager:
 
             # Create temp file
             with tempfile.NamedTemporaryFile("w", dir=str(temp_dir), delete=False, encoding="utf-8") as tf:
+                assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(self.state, tf, indent=2, default=str)
                 temp_name = tf.name
 
@@ -1143,6 +1146,7 @@ class RuntimeStateManager:
             try:
                 # guardian: allow-path-string
                 if "temp_name" in locals() and os.path.exists(temp_name):
+                    assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
                     os.remove(temp_name)
             # guardian: allow-silent-swallow
             except:
@@ -1276,6 +1280,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                     dir=str(project_root),
                     encoding="utf-8",
                 ) as tf:
+                    assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
                     json.dump(discovery_data, tf, indent=2)
                     temp_name = tf.name
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
@@ -1286,6 +1291,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                 logger.warning(f"Failed to cache agent discovery: {cache_err}")
                 # guardian: allow-path-string
                 if temp_name and os.path.exists(temp_name):
+                    assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
                     os.remove(temp_name)
         except ImportError:
             logger.warning("Live discovery unavailable - Full_Agent_discovery not found")
@@ -2094,6 +2100,7 @@ def save_comprehensive_reports(
         md_path = reports_dir / md_filename
 
         with open(json_path, "w", encoding="utf-8") as f:
+            assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
             json.dump(detailed_cert, f, indent=2, default=str)
 
         # Save Markdown Executive Summary (using the md_path already defined above)

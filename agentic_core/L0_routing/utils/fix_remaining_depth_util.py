@@ -7,6 +7,8 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"
 
@@ -19,6 +21,7 @@ def move_remaining() -> Any:
     if knowledge_dir.exists():
         stage: Any = knowledge_dir / "P1_core"
         stage.mkdir(exist_ok=True)
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         (stage / "__init__.py").write_text('"""Stage module."""\n')
         # Phase 6.8: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -27,6 +30,7 @@ def move_remaining() -> Any:
             if f.name != "__init__.py" and f.parent == knowledge_dir:
                 target: Any = stage / f.name
                 if not target.exists():
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(f), str(target))
                     print(f"  [✓] Moved: {f.relative_to(CORE)}")
                     moved += 1
@@ -34,6 +38,7 @@ def move_remaining() -> Any:
     if thought_nodes.exists():
         stage: Any = thought_nodes / "P1_core"
         stage.mkdir(exist_ok=True)
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         (stage / "__init__.py").write_text('"""Stage module."""\n')
         # Phase 6.8: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -42,6 +47,7 @@ def move_remaining() -> Any:
             if f.name != "__init__.py" and f.parent == thought_nodes:
                 target: Any = stage / f.name
                 if not target.exists():
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(f), str(target))
                     print(f"  [✓] Moved: {f.relative_to(CORE)}")
                     moved += 1

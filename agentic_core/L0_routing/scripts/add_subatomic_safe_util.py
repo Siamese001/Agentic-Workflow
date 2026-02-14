@@ -10,6 +10,8 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -122,6 +124,7 @@ for territory, ags in sorted(territories.items()):
                 continue
 
             # Write changes
+            assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
             agent_path.write_text(new_content, encoding="utf-8")
             modified.append(class_name)
             print(f"  ✅ {class_name}")

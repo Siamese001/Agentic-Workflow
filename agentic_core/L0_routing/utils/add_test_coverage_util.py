@@ -12,6 +12,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 TEST_METHOD = '''
     def _run_self_tests(self) -> dict:
@@ -69,6 +70,7 @@ def add_test_to_file(filepath: Path, class_name: str) -> bool:
 
     # Insert the test method
     new_content = content[:insert_pos] + "\n" + indented_test + "\n" + content[insert_pos:]
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     filepath.write_text(new_content, encoding="utf-8")
     return True
 
@@ -430,6 +432,7 @@ def add_test_method_to_class(filepath: Path, class_name: str) -> bool:
             lines.insert(insert_pos + i, "")
 
     # Write back
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     filepath.write_text("\n".join(lines), encoding="utf-8")
     print(f"  [ADDED] _run_self_tests to {class_name}")
     return True

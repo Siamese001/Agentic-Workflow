@@ -14,6 +14,8 @@ import os
 import shutil
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
@@ -90,6 +92,7 @@ def safe_write_file(path: str | Path, content: str, encoding: str = "utf-8", bac
     # Write to temporary file first, then atomic rename
     temp_path = path.with_suffix(f"{path.suffix}.tmp")
     try:
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         temp_path.write_text(content, encoding=encoding)
         temp_path.replace(path)
         return True
@@ -189,6 +192,7 @@ def safe_move_file(src: str | Path, dst: str | Path, backup: bool = True) -> boo
     ensure_directory(dst.parent)
 
     try:
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(src), str(dst))
         return True
     except OSError as e:

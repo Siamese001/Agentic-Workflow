@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 Logger = logging.getLogger(__name__)
 
@@ -208,6 +209,7 @@ class GravityStateAgent(SovereignBaseAgent):
         try:
             self.state["metadata"]["last_updated"] = datetime.now().isoformat()
             with open(self.state_file, "w", encoding="utf-8") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(self.state, f, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -349,6 +351,7 @@ class GravityStateAgent(SovereignBaseAgent):
 
         try:
             with open(checkpoint_file, "w", encoding="utf-8") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(self.state, f, indent=2)
 
             self.logger.info(f"Created checkpoint: {checkpoint_file.name}")

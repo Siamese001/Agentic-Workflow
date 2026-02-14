@@ -14,6 +14,8 @@ from pathlib import Path
 
 import networkx as nx
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 class Disposition(Enum):
     """File disposition for synthesis analysis."""
@@ -454,6 +456,7 @@ def main():
         )
 
     with open("core_refinery_analysis_results.json", "w") as f:
+        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
         json.dump(detailed_results, f, indent=2)
 
     print("\n" + "=" * 80)

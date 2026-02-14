@@ -20,6 +20,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     APPS_SHARED_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # Fix UTF-8 encoding for Windows console (emoji support)
 if sys.platform == "win32":
@@ -825,6 +826,7 @@ class DashboardGenerator:
                 return False
 
             # Only write if validation passes
+            assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
             self.dashboard_path.write_text(new_html, encoding="utf-8")
             print(f"✅ Updated {self.dashboard_path}")
             return True

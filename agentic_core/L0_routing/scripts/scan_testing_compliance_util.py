@@ -21,6 +21,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
@@ -340,6 +341,7 @@ def main():
 
     report_path = PROJECT_ROOT / "testing_compliance_report.json"
     with open(report_path, "w", encoding="utf-8") as f:
+        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
         json.dump(report, f, indent=2)
 
     print(f"Detailed report saved to: {report_path}")

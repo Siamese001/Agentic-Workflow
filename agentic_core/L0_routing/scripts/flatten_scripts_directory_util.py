@@ -14,6 +14,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"
@@ -51,6 +52,7 @@ def flatten_scripts() -> Any:
                 target: Any = SCRIPTS_DIR / f"{path_prefix}_{counter}_{py_file.stem}{py_file.suffix}"
                 counter += 1
             try:
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(py_file), str(target))
                 print(f"  [✓] {rel_path} -> {target.relative_to(CORE)}")
                 moved += 1

@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.enforcement.registry_verification import (
     RegistryVerifier,
     VerificationResult,
@@ -381,6 +382,7 @@ class AgentIntegrityReporter:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         report_content = self.generate_markdown_report(result)
+        assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
         output_path.write_text(report_content, encoding="utf-8")
 
         return output_path

@@ -31,6 +31,7 @@ sys.path.insert(0, str(REPO))
 
 from agentic_core.base_agents.ssot_scanner import SSOTScanner
 from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # ARCHIVED: ssot_relocator import removed # SSOTRelocator
 
@@ -163,6 +164,7 @@ def cmd_validate(args) -> int:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_path = REPO / f"SSOT_Health_Report_{timestamp}.md"
 
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         output_path.write_text(report.to_markdown(), encoding="utf-8")
         print(f"\n📄 Report saved: {output_path}")
 

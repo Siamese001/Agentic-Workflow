@@ -8,6 +8,8 @@ import json
 import re
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # Load agent discovery data
 with open("agent_discovery_full.json") as f:
     agents = json.load(f)
@@ -107,6 +109,7 @@ for agent in agents_without_tests:
                             + content
                         )
 
+            assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
             agent_path.write_text(content, encoding="utf-8")
             modified_count += 1
             print(f"✅ Modified: {agent_path}")

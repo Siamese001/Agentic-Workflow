@@ -11,6 +11,8 @@ Rationale:
 import shutil
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 # SSOT Constants
 ROOT_MARKERS = ["agentic_core", "pyproject.toml"]
 
@@ -52,6 +54,7 @@ def enforce_root_hygiene():
                         action = "RELOCATE (Ops)"
 
                     print(f"  - {item.name} -> {action}")
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.move(str(item), str(target))
                 # guardian: allow-silent-swallow
                 except Exception as e:
@@ -63,7 +66,9 @@ def enforce_root_hygiene():
                 target = ops_scripts / item.name
                 print(f"  - DIR {item.name}/ -> RELOCATE (Ops)")
                 if target.exists():
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                     shutil.rmtree(target)  # Force overwrite logic for dirs
+                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
                 shutil.move(str(item), str(target))
 
         # Cleanup empty dir
@@ -84,9 +89,11 @@ def enforce_root_hygiene():
         reports_cov.parent.mkdir(exist_ok=True)
 
         if reports_cov.exists():
+            assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
             shutil.rmtree(reports_cov)
 
         print("  - Moving to reports/coverage_html")
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(cov_html), str(reports_cov))
         print("[SUCCESS] Coverage report relocated.")
     else:
@@ -100,6 +107,7 @@ def enforce_root_hygiene():
         maint_script_dir.mkdir(exist_ok=True)
         target = maint_script_dir / "purge_cache.py"
         print("\n[REFILE] Organizing purge_cache.py -> ops_scripts/maintenance/")
+        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(purge_script), str(target))
 
 

@@ -14,6 +14,8 @@ import time
 from pathlib import Path
 from typing import Any, Protocol
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -94,7 +96,9 @@ class LocalDiskAdapter:
         if metadata:
             meta_path: Any = target_path.with_suffix(".meta.json")
             with open(meta_path, "w") as f:
+                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(metadata, f)
+        assert_no_persistent_write("L4", "shutil.mutate")  # G-12-1: mutation prohibition guard
         shutil.move(str(temp_path), str(target_path))
         checksum: Any = hashlib.md5(data).hexdigest()
         LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")

@@ -20,6 +20,8 @@ Output:
 
 import re
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 
 @dataclass
 class AgentAnalysis:
@@ -302,5 +304,6 @@ if __name__ == "__main__":
     # Also save to file
     report_path = project_root / "agentic_core" / "L0_routing" / "reports" / "cache_first_hardening.txt"
     report_path.parent.mkdir(parents=True, exist_ok=True)
+    assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     report_path.write_text(report, encoding="utf-8")
     # [HYGIENE] Removed debug print: print(f"\nReport saved to: {report_path}")

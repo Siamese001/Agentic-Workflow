@@ -13,6 +13,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+
 SCHEMA_VERSION = "1.0.0"
 
 
@@ -75,4 +77,5 @@ class ResultEnvelope:
     def write_json(self, path: Path) -> None:
         """Write deterministic JSON bytes to file."""
         path.parent.mkdir(parents=True, exist_ok=True)
+        assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
         path.write_text(self.to_json(), encoding="utf-8")

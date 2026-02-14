@@ -15,6 +15,7 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.utils.security import safe_execute
 
 
@@ -178,6 +179,7 @@ class CCMeasurement:
             }
 
             with open(output_file, "w") as f:
+                assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
                 json.dump(report, f, indent=2)
 
             print(f"\nReport saved to: {output_file}")
