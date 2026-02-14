@@ -17,7 +17,7 @@ from typing import Any
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
 Logger: Any = logging.getLogger(__name__)

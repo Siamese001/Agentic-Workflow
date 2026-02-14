@@ -85,10 +85,9 @@ except ImportError:
 # ----------------------------------------------------------------------
 # NEW: Hybrid Interactive Discovery (Cached JSON ↔ Live Scan)
 # ----------------------------------------------------------------------
-try:
-    from ops_scripts.full_agent_discovery import discover_all_agents
-except ImportError:
-    discover_all_agents = None
+# NOTE: discover_all_agents was previously imported from ops_scripts (layer boundary violation).
+# Callers must inject this dependency or import it themselves from ops_scripts.
+discover_all_agents = None
 
 # [ETERNAL UTF-8] Force Windows consoles to handle unicode symbols
 if sys.platform.startswith("win"):

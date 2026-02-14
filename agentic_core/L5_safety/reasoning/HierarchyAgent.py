@@ -30,7 +30,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth

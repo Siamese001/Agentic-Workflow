@@ -132,6 +132,41 @@ Critical-integrity triggers:
 Integrity propagation rule:
 * If abort triggered, you MUST NOT compute compliance percentages in Section 3.
 
+
+### 0.7 Application Domain Boundary (agentic_core vs `apps_*`) (STRICT)
+
+This contract must explicitly separate the **control spine** (`agentic_core`) from **application domains** (`apps_*`).
+
+#### 0.7.1 Ownership (Non-Overlapping)
+
+**`agentic_core` owns (control spine / governance / enforcement):**
+* `prompt_governance` (template registry + prompt composition + policy/safety/tool prologues)
+* routing + boundary validation + capability-gated L2 execution
+* typed artifact schemas + validation + signature/replay gates
+* policy evaluation, HIL gates, and meta-learning promotion pipeline (§16)
+
+**`apps_*` owns (domain integration only):**
+* domain prompt fragments and presentation formatting (no policy/safety/tool governance)
+* domain I/O adapters (UI/API) that submit requests into the L0 entrypoint
+* domain-specific data mappings and post-processing (read-only unless capability-gated execution approves mutation)
+
+#### 0.7.2 Prompt Ownership Rules (Enforced)
+
+| Prompt Content Type | Owner | Hard Constraint (Fail-Closed) |
+|---------------------|-------|-------------------------------|
+| system prologue / safety guardrails / policy markers | `agentic_core/prompt_governance` | MUST NOT exist in `apps_*` |
+| tool instructions / tool schemas / tool allowlists | `agentic_core/prompt_governance` | MUST NOT be authored or overridden in `apps_*` |
+| routing prompt logic / escalation policy prompts | `agentic_core/prompt_governance` | MUST NOT be duplicated in `apps_*` |
+| domain instructions / business rules / output formatting | `apps_*` | MUST be composed through `prompt_governance` (no direct provider calls) |
+| examples / few-shots / domain glossaries | `apps_*` | MUST be deterministic assets; changes must be traceable via `prompt_hash` lineage |
+
+#### 0.7.3 Boundary Evidence Expectations (Mandatory in Sections A–D)
+
+If any `apps_*` surface exists in the repo:
+* Section A MUST explicitly include the `apps_*` → `agentic_core` integration boundary as a capability row (P6).
+* Section A MUST show where `prompt_governance` composes prompts and how `apps_*` domain fragments are represented in deterministic `prompt_hash` lineage (P4/P6).
+* Any evidence of `apps_*` bypassing `prompt_governance` or calling the LLM/provider directly is a **FAIL** and a **P0** gap (P5.1/P6).
+
 ---
 
 # PHASE 0 — CURRENT STATE DISCOVERY (MANDATORY) + SCOPE FREEZE
@@ -152,6 +187,13 @@ Before producing **any** Gap or Plan, you **MUST**:
    Where `<repo_root>` MUST equal `meta.root_path` from the discovery JSON (do not assume OS-specific paths).
 
 This script (verified) is the **sole authority** for defining the *Environment Under Test*.
+
+3. **Determine `apps_*` surface (boundary-only):**
+   * Run a deterministic repo-tracked check (no directory narration):
+     ```bash
+     git ls-files "apps_*" | python -c "import sys; print(sum(1 for _ in sys.stdin))"
+     ```
+   * If the count is `> 0`, treat `apps_*` as **in-scope only for boundary compliance** (0.7, P6) and enforce the prompt ownership rules in 0.7.2.
 
 ---
 
@@ -202,7 +244,9 @@ Strict ingestion assertion:
 * **ZOMBIE** state (Discovery says `ACTIVE` but `file_path` does not exist on disk)
   → **IMMEDIATE FAIL**. Discovery integrity is compromised; agent must be listed in the FAIL table with reason `ZOMBIE: file_path not found`.
 
-No agent, class, file, or behavior **not present** in the discovery JSON may be referenced.
+No agent, class, file, or behavior **not present** in the discovery JSON may be referenced **as an agent scope item**.
+
+Exception (boundary-only, deterministic): `apps_*` files surfaced by repo-tracked scans (`git ls-files "apps_*"`) may be referenced **only** to prove boundary compliance (prompt ownership + L0/L2 chokepoints). They MUST NOT be treated as agents or used to infer missing capabilities.
 
 ---
 
@@ -253,6 +297,7 @@ Planning constraints (v5.3):
 
 * Only execution path may mutate external state; planning/knowledge/observability must be physically incapable of writes.
 * No implicit writes: any side-effect not registered in the Side-Effect Registry is an abort.
+* `apps_*` code MUST NOT mutate external state or governed repos/config; it is treated as an untrusted caller and must traverse the same L2 chokepoint + capability tokens.
 
 ## P4. Immutable Traceability (GLOBAL)
 
@@ -279,6 +324,7 @@ This requirement is a prerequisite for any governed improvement activation in §
 
 * Layer APIs are typed and versioned; cross-layer calls must conform to schemas.
 * Health is binary; unknown health treated as unhealthy.
+* `apps_*` folders are outside the control spine: they may consume `agentic_core` only through typed public entrypoints (routing + prompt composition). Direct reach into internal enforcement/policy/prompt-governance internals is forbidden (P6).
 
 ---
 
@@ -860,13 +906,27 @@ You MUST derive these from the repository (discovery JSON + deterministic scans;
 | Layer | Component | Exists? | Enforced? | Entry Controlled? | Evidence |
 |------|-----------|---------|-----------|-------------------|----------|
 
+Mandatory inclusions (boundary clarity; if unknown, mark as MISSING/FAIL with evidence):
+* `agentic_core/**/prompt_governance` (registry + composition chokepoint)
+* `apps_*` → `agentic_core` entry boundary (no direct L2/LLM/provider calls)
+* prompt ownership enforcement (0.7.2) as a P6 boundary check
+
 ### A2. CURRENT ARTIFACT MATRIX (FLOW-BOUND)
 | Artifact | Schema Locked? | Validated? | Emitted By | Allowed Layer | Evidence |
 |---------|-----------------|------------|------------|---------------|----------|
 
+Mandatory inclusions (prompt ownership must be traceable):
+* `TokenControl` (or equivalent pre-guard token/budget artifact) MUST include a deterministic `prompt_hash` (0.7.3, §6.3)
+* `RouteDecision` (or equivalent) MUST bind to `policy_hash` / config pointer and show the prompt composition source
+* Any `apps_*` prompt assets MUST be represented as inputs to the composed prompt lineage (no opaque string concatenation)
+
 ### A3. CURRENT MUTATION SURFACE
 | Mutation Source | Gated? | Approval Required? | Sandbox Guard? | Evidence |
 |----------------|--------|--------------------|----------------|----------|
+
+Mandatory inclusions:
+* any write/mutation path originating from `apps_*` (expected: NONE; otherwise FAIL/P0)
+* prompt template mutation in `agentic_core/**/prompt_governance` (must be gated + traceable)
 
 ## SECTION B — TARGET STATE (PNG/V15-ALIGNED)
 
@@ -878,6 +938,7 @@ You MUST express the target using the capability list in §1–§16 and the foll
 4) **All artifacts are schema-locked + layer-legal**
 5) **Phase ordering is deterministic + test-locked**
 6) **Apply mode is idempotent**
+7) **Prompt ownership boundary:** `apps_*` may contribute only domain fragments; `agentic_core/**/prompt_governance` composes the final prompt and MUST emit deterministic `prompt_hash` lineage captured in boundary artifacts (0.7, P4/P6)
 
 ### B1. TARGET CAPABILITY MATRIX
 ### B2. TARGET ARTIFACT MATRIX
@@ -890,7 +951,7 @@ For every mismatch between Section A and Section B, output:
 | GAP_ID | Category | Severity | Current Evidence | Target Requirement (capability refs) |
 |-------|----------|----------|------------------|--------------------------------------|
 
-Category ∈ {Boundary, Artifact, Enforcement, Ordering, Mutation, Routing}
+Category ∈ {Boundary, PromptOwnership, Artifact, Enforcement, Ordering, Mutation, Routing}
 Severity ∈ {Critical, High, Medium, Low}
 
 Severity mapping rule (deterministic):
@@ -1094,13 +1155,14 @@ PATCH (v5.4.2) — Explicit P0 inclusions (non-exhaustive, but mandatory when pr
 * §9.1–§9.3 Separation-of-responsibility enforcement (runtime/scanner evidence)
 * §11.2 Route Recovery (TokenOverflow)
 * §12.3 Read-only boundary enforcement for L0/L4/L6 (comprehensive mutation lock)
+* 0.7 / P6 app boundary enforcement (no `apps_*` policy/safety/tool prompts; no direct provider calls)
 * P5.1 Capability-gated L2 execution boundary
 * §16.7 Meta-learning safety invariants (when §16 is in-scope)
 
 ### 17.2 Wave Ordering
 Order waves strictly:
 1) **Wave 0:** Discovery integrity + SSOT hash match gates
-2) **Wave 1:** Typed artifact schemas required for P4/P6 traceability at boundaries
+2) **Wave 1:** Typed artifact schemas required for P4/P6 traceability at boundaries (including prompt ownership lineage: `prompt_governance` + `apps_*` inputs → `prompt_hash`)
 3) **Wave 2:** Guardian Physics (signature + replay + aggregate gate) and boundary validation gates
 4) **Wave 3:** Validator–Healer symmetric pipe ordering + rollback correctness
 5) **Wave 4:** Control Plane routing + EvidencePack + PolicyUpdateProposal

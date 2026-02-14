@@ -19,7 +19,7 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.base_agents.timeout_decorator import timeout

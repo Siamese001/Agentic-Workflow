@@ -23,7 +23,7 @@ from typing import Any
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
     build_hil_evidence_pack,
 )

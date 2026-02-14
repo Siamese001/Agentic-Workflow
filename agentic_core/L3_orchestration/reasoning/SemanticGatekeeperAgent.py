@@ -23,7 +23,7 @@ from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30

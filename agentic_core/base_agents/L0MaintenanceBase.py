@@ -37,7 +37,7 @@ except ImportError:
         pass
 
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )

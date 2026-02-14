@@ -18,7 +18,7 @@ Extracted: 2026-01-06 (Surgical Extraction)
 """
 
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 
 @dataclass

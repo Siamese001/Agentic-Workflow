@@ -364,7 +364,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        from agentic_core.base_agents.decorators import standard_heal
+        from agentic_core.utils.decorators import standard_heal
 
         @standard_heal
         def _heal_structure_violation(self, violation: dict) -> dict:

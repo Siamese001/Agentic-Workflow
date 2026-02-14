@@ -110,7 +110,7 @@ class DagExecutionResult:
         }
 
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 LOGGER = logging.getLogger(__name__)
 

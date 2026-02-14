@@ -43,12 +43,11 @@ def demo_cli_functionality():
     # Test 3: Test main function signature
     print("\n3. Testing main function with territory parameter:")
     try:
-        from ops_scripts.execute_ssot_compliance_protocol import main_util  # noqa: F401
-
-        print("✅ main() function accepts target_territory parameter")
-        print("   Function signature: main(target_territory=None)")
-    except ImportError as e:
-        print(f"❌ Import failed: {e}")
+        # Layer boundary: agentic_core must not import ops_scripts.
+        # Import ops_scripts.execute_ssot_compliance_protocol from caller context instead.
+        print("⚠️  Skipped: ops_scripts import not allowed from agentic_core (layer boundary)")
+    except Exception as e:
+        print(f"❌ Failed: {e}")
 
     print("\n" + "=" * 60)
     print("🎉 CLI HARDENING IMPLEMENTATION COMPLETE!")

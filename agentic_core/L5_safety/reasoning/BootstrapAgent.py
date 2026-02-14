@@ -7,7 +7,7 @@ BootstrapAgent: Sovereign Boot Integrity.
 from dataclasses import dataclass
 from pathlib import Path
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
 
 

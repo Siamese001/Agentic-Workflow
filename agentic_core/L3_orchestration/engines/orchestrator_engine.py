@@ -38,7 +38,7 @@ from typing import Any
 # [PHASE 2] SSOT Discovery Integration
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L0_routing.enforcement.v15_runtime_guard import (

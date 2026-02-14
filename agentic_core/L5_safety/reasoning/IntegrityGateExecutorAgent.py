@@ -292,7 +292,7 @@ class DeepResearchOutput:
 # --- End Inlined Type Definitions ---
 
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

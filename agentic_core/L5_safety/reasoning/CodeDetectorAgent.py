@@ -21,7 +21,7 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators import standard_heal
 
 # [HARDENED] Single inheritance source to prevent MRO conflicts
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
