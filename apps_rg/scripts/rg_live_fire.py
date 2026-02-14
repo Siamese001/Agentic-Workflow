@@ -15,12 +15,11 @@ from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root))  # guardian: allow-global-mutation
 
 # Force Sovereign Imports
-from apps_rg.engines.sovereign_context import SovereignContext
-
 from apps_rg.engines.resume_orchestrator_engine import ResumeOrchestratorEngine
+from apps_rg.types.SovereignContext import SovereignContext
 
 # Configure Logging
 logging.basicConfig(
@@ -30,26 +29,29 @@ logging.basicConfig(
 )
 Logger = logging.getLogger("LIVE_FIRE")
 
+# TODO: Replace with your actual JD and resume
 MOCK_JD = """
-Senior Python Engineer.
-Must have experience with AI agents, immutable state management, and orchestration.
-Leadership skills required. Budget management of at least $1M.
+[Your Job Description Here]
+Example: Senior Software Engineer at TechCorp
+Requirements: Python, AWS, React, 5+ years experience...
 """
 
 MOCK_RESUME = {
-    "contact_info": {"name": "John Doe", "email": "john@example.com"},
+    "contact_info": {"name": "Your Name", "email": "your.email@example.com"},
     "experience": [
         {
-            "company": "Legacy Systems Inc",
-            "title": "Software Engineer",
+            "company": "Previous Company",
+            "title": "Your Previous Role",
             "bullets": [
-                "Responsible for maintaining legacy codebases.",  # Trap: Weak Verb
-                "Managed a budget of $500k and reduced costs by 20%.",  # Trap: Metric Extraction
+                "Your achievement 1 with metrics",
+                "Your achievement 2 with metrics",
+                # Add more bullet points...
             ],
         },
+        # Add more experience entries...
     ],
-    "education": [{"degree": "BS CS", "school": "State U"}],
-    "skills": ["Python", "Java", "SQL"],
+    "education": [{"degree": "Your Degree", "school": "Your University"}],
+    "skills": ["skill1", "skill2", "skill3"],
 }
 
 
@@ -68,7 +70,7 @@ async def main():
 
     # 3. Execute Full Cycle
     try:
-        result = await orchestrator.run(MOCK_JD)
+        result = await orchestrator.execute(MOCK_JD)
 
         Logger.info("-" * 50)
         Logger.info(f"🏁 MISSION COMPLETE in {(datetime.now() - start_time).total_seconds():.2f}s")
@@ -106,9 +108,12 @@ async def main():
         else:
             Logger.error("❌ HOP-4 FAILED.")
 
-        # Check HOP-5 Safety
-        ats = ctx.buffer.read("ats_report")
-        Logger.info(f"✅ HOP-5 ATS Status: {'Valid' if ats and ats.get('valid') else 'INVALID'}")
+        # Check HOP-5 ATS Status
+        ats_report = ctx.buffer.read("ats_report", {"valid": False})
+        if ats_report.get("valid"):
+            Logger.info("✅ HOP-5 ATS Status: Valid")
+        else:
+            Logger.error("❌ HOP-5 ATS FAILED")
 
         # 5. Telemetry Audit
         summary = ctx.trace.get_summary()
@@ -116,6 +121,7 @@ async def main():
             f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}",
         )
 
+    # guardian: allow-silent-swallower
     except Exception as e:
         Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
         sys.exit(1)

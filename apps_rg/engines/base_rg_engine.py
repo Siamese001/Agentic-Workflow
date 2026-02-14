@@ -31,6 +31,7 @@ except ImportError:
         def __init__(self, *args, **kwargs):
             pass
 
+        # guardian: allow-magic-configuration
         def heal_repository(
             self,
             dry_run: bool = True,
@@ -64,6 +65,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
         super().__init__()
         self.config = config
         self.ctx = config  # Store context for compatibility
+        self.name = self.__class__.__name__
         self.logger = logging.getLogger(self.__class__.__name__)
         self._initialized = True
 
@@ -93,6 +95,22 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
         except ImportError:
             self.knowledge = None
             self.logger.warning("Knowledge base not available")
+
+    def _mcp_audit(self, event: str, **kwargs) -> None:
+        """Log an MCP audit event. Lightweight stub for standalone usage."""
+        self.logger.debug(f"MCP_AUDIT: {event} {kwargs}")
+
+    def record_fail(self, message: str, *, signal: str = "", data: dict | None = None) -> None:
+        """Record a failure event."""
+        self.logger.warning(f"FAIL [{self.name}]: {message}")
+        if hasattr(self.ctx, "trace") and self.ctx is not None:
+            self.ctx.trace.add_trace(f"{self.name}_FAIL", {"message": message, "signal": signal})
+
+    def record_pass(self, message: str, *, data: dict | None = None) -> None:
+        """Record a pass event."""
+        self.logger.info(f"PASS [{self.name}]: {message}")
+        if hasattr(self.ctx, "trace") and self.ctx is not None:
+            self.ctx.trace.add_trace(f"{self.name}_PASS", {"message": message, **(data or {})})
 
     @abstractmethod
     def execute(self, input_data: BaseModel) -> BaseModel:

@@ -11,6 +11,35 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
+class SimpleBuffer:
+    """Simple buffer for staging data."""
+
+    def __init__(self):
+        self._data: dict[str, Any] = {}
+
+    def write(self, key: str, value: Any, source_agent: str = None) -> None:
+        self._data[key] = value
+
+    def read(self, key: str, default: Any = None) -> Any:
+        return self._data.get(key, default)
+
+
+class SimpleTrace:
+    """Simple trace registry."""
+
+    def __init__(self):
+        self._traces: list[dict[str, Any]] = []
+
+    def add_trace(self, event: str, data: dict[str, Any] = None) -> None:
+        self._traces.append({"event": event, "data": data or {}})
+
+    def get_summary(self) -> dict[str, Any]:
+        return {
+            "total_spans": len(self._traces),
+            "failures": len([t for t in self._traces if "ERROR" in t.get("event", "").upper()]),
+        }
+
+
 class SovereignContext:
     """
     Manages application state with transactional integrity.
@@ -24,6 +53,10 @@ class SovereignContext:
         self._airlock: dict[str, Any] = {}
         # Audit Trail
         self._transaction_log: list[dict[str, Any]] = []
+
+        # Buffer and trace for compatibility
+        self.buffer = SimpleBuffer()
+        self.trace = SimpleTrace()
 
     def write_to_airlock(self, key: str, value: Any) -> None:
         """
@@ -56,6 +89,13 @@ class SovereignContext:
         keys_cleared = list(self._airlock.keys())
         self._airlock.clear()
         logger.warning(f"Airlock rolled back. Discarded keys: {keys_cleared}")
+
+    def add_signal(self, signal: str) -> None:
+        """Register a signal for downstream engines to consume."""
+        if not hasattr(self, "_signals"):
+            self._signals: list[str] = []
+        self._signals.append(signal)
+        logger.debug(f"Signal raised: {signal}")
 
     def get(self, key: str, default: Any = None) -> Any:
         """

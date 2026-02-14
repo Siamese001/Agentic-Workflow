@@ -13,8 +13,8 @@ import logging
 import re
 from typing import Any
 
-from apps_rg.engines.BaseRGEngine import BaseRGEngine
-from apps_rg.engines.hallucination_detector_validator import HallucinationDetector
+from apps_rg.engines.base_rg_engine import BaseRGEngine
+from apps_rg.engines.hallucination_detector import HallucinationDetector
 
 Logger = logging.getLogger(__name__)
 
