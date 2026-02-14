@@ -49,7 +49,6 @@ class SubAtomicEngineImpl:
         injected_prompt = injection_mixin.inject_all_layers(
             prompt,
             goal=system_prompt or "Execute mutation",
-            mode="analytical",
         )
 
         full_prompt = assemble_prompt(

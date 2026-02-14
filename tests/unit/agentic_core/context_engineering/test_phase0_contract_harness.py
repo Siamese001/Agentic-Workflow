@@ -342,6 +342,15 @@ class TestNoNaiveConcatRegression:
             "(replaced by PromptAssembler in P2/W2.3)"
         )
 
+    def test_no_mode_in_injection_call(self):
+        src = self._read_source()
+        for line in src.splitlines():
+            if "inject_all_layers(" in line:
+                assert "mode=" not in line, (
+                    "inject_all_layers call must not contain mode= "
+                    "(provider-steering flags are forbidden on the deterministic hot path)"
+                )
+
 
 # ── 10. InstructionalInjection Integration (monkeypatch) ────────────────
 
@@ -406,6 +415,16 @@ class TestInstructionalInjectionIntegration:
         )
         # The original prompt was passed in
         assert inject_calls[0][0] == "Fix this bug."
+
+        # kwargs must contain goal
+        call_kwargs = inject_calls[0][1]
+        assert "goal" in call_kwargs, "inject_all_layers must receive goal="
+
+        # kwargs must NOT contain mode (provider-steering forbidden)
+        assert "mode" not in call_kwargs, (
+            "inject_all_layers must NOT receive mode= on the deterministic hot path "
+            "(provider-steering flags are forbidden)"
+        )
 
         # assemble_prompt received the injected text
         assert len(assemble_args) == 1
