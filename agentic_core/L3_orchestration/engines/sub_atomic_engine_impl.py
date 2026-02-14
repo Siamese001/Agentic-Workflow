@@ -8,6 +8,7 @@ import logging
 import os
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
+from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
 from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
 from agentic_core.prompt_governance.security.injection_scan_util import scan_untrusted_text
 
@@ -43,10 +44,18 @@ class SubAtomicEngineImpl:
         system_prompt = kwargs.get("system_prompt", None)
         fission_active = kwargs.get("fission_active", False)
 
+        # §P3.1 — Apply instructional injection patterns before assembly
+        injection_mixin = get_instructional_injection_mixin()
+        injected_prompt = injection_mixin.inject_all_layers(
+            prompt,
+            goal=system_prompt or "Execute mutation",
+            mode="analytical",
+        )
+
         full_prompt = assemble_prompt(
             role="SubAtomicEngine",
             objective=system_prompt or "Execute mutation",
-            context_data=prompt,
+            context_data=injected_prompt,
             injections=[],
         )
 

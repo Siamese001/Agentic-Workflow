@@ -341,3 +341,78 @@ class TestNoNaiveConcatRegression:
             "sub_atomic_engine_impl.py must not contain the _fence_prompt stopgap "
             "(replaced by PromptAssembler in P2/W2.3)"
         )
+
+
+# ── 10. InstructionalInjection Integration (monkeypatch) ────────────────
+
+
+class TestInstructionalInjectionIntegration:
+    """Verify that InstructionalInjectionMixin.inject_all_layers executes
+    exactly once on the subatomic hot path, BEFORE assemble_prompt receives
+    the prompt text.
+
+    All external I/O (LLM gateway, embedding gateway) is stubbed out.
+    """
+
+    SENTINEL = "<<INJECTED>>"
+
+    def test_injection_runs_before_assembly(self, monkeypatch):
+        import asyncio
+
+        from agentic_core.L3_orchestration.engines import sub_atomic_engine_impl as mod
+
+        sentinel = self.SENTINEL
+
+        # ── track inject_all_layers calls ──
+        inject_calls: list[tuple] = []
+
+        class _StubMixin:
+            def inject_all_layers(self_, prompt, **kwargs):
+                inject_calls.append((prompt, kwargs))
+                return prompt + sentinel
+
+        monkeypatch.setattr(mod, "get_instructional_injection_mixin", lambda: _StubMixin())
+
+        # ── capture what assemble_prompt receives (stub — no real assembler) ──
+        assemble_args: list[dict] = []
+
+        def _spy_assemble(**kwargs):
+            assemble_args.append(kwargs)
+            return f"<ASSEMBLED>{kwargs.get('context_data', '')}</ASSEMBLED>"
+
+        monkeypatch.setattr(mod, "assemble_prompt", _spy_assemble)
+
+        # ── stub async LLM gateway ──
+        class _StubGateway:
+            async def generate(self_, **kwargs):
+                return {"content": "stub-response"}
+
+        # ── stub async embedding gateway ──
+        class _StubEmbedding:
+            async def get_embedding(self_, text, provider=None):
+                return [0.0] * 768
+
+        # Bypass __init__ side-effects by constructing manually
+        engine = object.__new__(mod.SubAtomicEngineImpl)
+        engine.llm_gateway = _StubGateway()
+        engine.embedding_gateway = _StubEmbedding()
+        engine.redis_client = None
+
+        result = asyncio.run(engine.resilient_mutation(prompt="Fix this bug."))
+
+        # inject_all_layers was called exactly once
+        assert len(inject_calls) == 1, (
+            f"inject_all_layers must be called exactly once; got {len(inject_calls)}"
+        )
+        # The original prompt was passed in
+        assert inject_calls[0][0] == "Fix this bug."
+
+        # assemble_prompt received the injected text
+        assert len(assemble_args) == 1
+        assert sentinel in assemble_args[0]["context_data"], (
+            "assemble_prompt must receive the output of inject_all_layers "
+            "(sentinel not found in context_data)"
+        )
+
+        # LLM returned the stub
+        assert result == "stub-response"
