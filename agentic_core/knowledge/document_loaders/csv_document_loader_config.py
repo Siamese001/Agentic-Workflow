@@ -72,3 +72,8 @@ class CsvDocumentLoader:
             return df.to_dict(orient="records")
         except Exception as e:
             raise ValueError(f"CSV sample load failed: {e}")
+
+
+CSVDocumentLoader = CsvDocumentLoader
+
+__all__ = ["CsvDocumentLoader", "CSVDocumentLoader"]

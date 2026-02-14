@@ -31,3 +31,13 @@ def test_rag_import_contract_no_side_effects(monkeypatch):
     from agentic_core.knowledge.research_cache.cache_store_util import ResearchCache as B
 
     assert A is B
+
+    # --- CSV alias is identity in canonical module ---
+    from agentic_core.knowledge.document_loaders.csv_document_loader_config import (
+        CSVDocumentLoader as CanonicalCSV,
+    )
+    from agentic_core.knowledge.document_loaders.csv_document_loader_config import (
+        CsvDocumentLoader,
+    )
+
+    assert CanonicalCSV is CsvDocumentLoader
