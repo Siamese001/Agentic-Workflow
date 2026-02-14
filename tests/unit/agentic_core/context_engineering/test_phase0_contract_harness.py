@@ -16,17 +16,17 @@ import pytest
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[4]
 
 
-def _importorskip_robust(module_name: str, reason: str = "pre-existing import chain issue"):
-    """Like pytest.importorskip but also catches NameError/AttributeError
-    from broken transitive import chains (not just ImportError)."""
+def _importorskip_strict(module_name: str, reason: str = "optional dependency missing"):
+    """Skip on ImportError/ModuleNotFoundError only; re-raise everything else.
+
+    Unlike pytest.importorskip this is a strict policy: NameError,
+    AttributeError, or any other runtime exception during import is a
+    genuine contract breach and must surface as a test FAILURE.
+    """
     try:
         return importlib.import_module(module_name)
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         pytest.skip(f"{reason}: ImportError importing {module_name}")
-    except NameError as exc:
-        pytest.skip(f"{reason}: NameError importing {module_name} — {exc}")
-    except AttributeError as exc:
-        pytest.skip(f"{reason}: AttributeError importing {module_name} — {exc}")
 
 
 # ── 1. SubAtomicEngineImpl ──────────────────────────────────────────────
@@ -104,7 +104,7 @@ class TestPromptAssemblerContract:
     MODULE = "agentic_core.prompt_governance.core.prompt_assembler"
 
     def _import(self):
-        return _importorskip_robust(self.MODULE)
+        return _importorskip_strict(self.MODULE)
 
     def test_module_importable(self):
         mod = self._import()
@@ -189,7 +189,7 @@ class TestPromptInjectionLoaderContract:
     MODULE = "agentic_core.runtime.config.prompt_injection_loader_config"
 
     def _import(self):
-        return _importorskip_robust(self.MODULE)
+        return _importorskip_strict(self.MODULE)
 
     def test_module_importable(self):
         mod = self._import()
@@ -301,3 +301,46 @@ class TestInstructionalInjectionPatternDataContract:
         content = self.META_PROMPT.read_text(encoding="utf-8")
         for layer in ["Framing Layer", "Context Layer", "Reasoning Layer"]:
             assert layer in content, f"Meta-prompt must reference '{layer}'"
+
+
+# ── 9. No-Naive-Concat Regression Guard ─────────────────────────────────
+
+
+class TestNoNaiveConcatRegression:
+    """Deterministic regression guard: sub_atomic_engine_impl.py must never
+    revert to naive f-string concatenation of system_prompt + user prompt.
+
+    Reads the source file from disk (no import needed) and asserts:
+      - forbidden concat patterns are absent
+      - a recognised fencing mechanism is present
+    """
+
+    SOURCE = REPO_ROOT / "agentic_core" / "L3_orchestration" / "engines" / "sub_atomic_engine_impl.py"
+
+    def _read_source(self) -> str:
+        assert self.SOURCE.is_file(), f"Missing: {self.SOURCE.relative_to(REPO_ROOT)}"
+        return self.SOURCE.read_text(encoding="utf-8")
+
+    def test_no_fstring_concat(self):
+        src = self._read_source()
+        forbidden = 'f"{system_prompt}\\n\\n{prompt}"'
+        assert forbidden not in src, (
+            "sub_atomic_engine_impl.py must not contain naive f-string "
+            "concatenation of system_prompt and prompt"
+        )
+
+    def test_no_plus_concat(self):
+        src = self._read_source()
+        assert "system_prompt +" not in src, (
+            "sub_atomic_engine_impl.py must not concatenate system_prompt with '+' operator"
+        )
+
+    def test_fencing_mechanism_present(self):
+        src = self._read_source()
+        has_fence_prompt = "_fence_prompt(" in src
+        has_assemble_prompt = "assemble_prompt(" in src
+        has_prompt_assembler = "PromptAssembler" in src
+        assert has_fence_prompt or has_assemble_prompt or has_prompt_assembler, (
+            "sub_atomic_engine_impl.py must use a fencing mechanism: "
+            "_fence_prompt(), assemble_prompt(), or PromptAssembler"
+        )
