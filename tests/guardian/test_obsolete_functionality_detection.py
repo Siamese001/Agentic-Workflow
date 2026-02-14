@@ -393,7 +393,7 @@ class TestObsoleteFunctionalityDetection:
             result["phase_number"] = int(phase_match.group(1))
 
             # Extract base name (remove phase suffix)
-            result["base_name"] = re.sub(r"_phase\d+[a-z]?(_[a-z_]+)?$", "", filename)
+            result["base_name"] = re.sub(r"_phase\d+[a-z]?", "", filename)
 
             # Phase files should be consolidated
             result["should_consolidate"] = True
