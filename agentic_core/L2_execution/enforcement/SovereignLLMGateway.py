@@ -362,7 +362,6 @@ class SovereignLLMGateway:
                             "[LLM Gateway] Output injection detected: %s",
                             _p3_sve,
                         )
-                    # guardian: allow-silent-swallow
                     except Exception as _p3_exc:
                         Logger.exception(
                             "[LLM Gateway] Output scan failed (swallowed): %s",
