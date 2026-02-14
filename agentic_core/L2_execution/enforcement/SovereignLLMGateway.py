@@ -339,6 +339,36 @@ class SovereignLLMGateway:
                             )
                         result = retry_result
 
+                # §P3 — Post-call output injection scan (warn-mode)
+                _response_content = (
+                    result.get("content") if isinstance(result, dict) else None
+                )
+                if _response_content:
+                    from agentic_core.runtime.exceptions.sovereign_errors import (
+                        SecurityViolationError as _SVE_P3,
+                    )
+
+                    try:
+                        from agentic_core.prompt_governance.security import (
+                            injection_scan_util as _isu,
+                        )
+
+                        _isu.scan_untrusted_text(
+                            _response_content, source="llm_response_output"
+                        )
+                    # guardian: allow-silent-swallow
+                    except _SVE_P3 as _p3_sve:
+                        Logger.warning(
+                            "[LLM Gateway] Output injection detected: %s",
+                            _p3_sve,
+                        )
+                    # guardian: allow-silent-swallow
+                    except Exception as _p3_exc:
+                        Logger.exception(
+                            "[LLM Gateway] Output scan failed (swallowed): %s",
+                            _p3_exc,
+                        )
+
                 return result
 
             # guardian: allow-silent-swallow
