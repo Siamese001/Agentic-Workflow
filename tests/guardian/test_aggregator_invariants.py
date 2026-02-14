@@ -37,7 +37,7 @@ pytestmark = pytest.mark.guardian
 
 
 @pytest.fixture
-def clean_repo(tmp_path: Path) -> Path:
+def clean_repo(robust_tmp_path: Path) -> Path:
     """Minimal sandboxed repo with full SOVEREIGN_TERRITORIES structure."""
     from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (
         _get_l3_subfolders,
@@ -50,7 +50,7 @@ def clean_repo(tmp_path: Path) -> Path:
     # Each dir gets __init__.py + README.md to avoid init_only_folders
     # without triggering classification/location violations from .py stubs.
     for root_name, root_def in SOVEREIGN_TERRITORIES.items():
-        root_dir = tmp_path / root_name
+        root_dir = robust_tmp_path / root_name
         root_dir.mkdir(exist_ok=True)
         (root_dir / "__init__.py").write_text("", encoding="utf-8")
         (root_dir / "README.md").write_text("stub", encoding="utf-8")
@@ -71,7 +71,7 @@ def clean_repo(tmp_path: Path) -> Path:
                 l3_dir.mkdir(exist_ok=True)
                 (l3_dir / "__init__.py").write_text("", encoding="utf-8")
                 (l3_dir / "README.md").write_text("stub", encoding="utf-8")
-    return tmp_path
+    return robust_tmp_path
 
 
 class TestDeterministicOrdering:

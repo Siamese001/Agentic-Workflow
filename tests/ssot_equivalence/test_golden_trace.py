@@ -20,12 +20,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
+from tests._helpers.robust_fs import robust_subprocess_run
 from tests.ssot_equivalence._sandbox_repo import (
     create_sandbox,
     destroy_sandbox,
@@ -45,29 +45,6 @@ MAX_CAPTURE = 2000
 
 
 # ── Helpers ───────────────────────────────────────────────────────
-
-_SUBPROCESS_RETRIES = 3
-
-
-def _robust_subprocess_run(
-    cmd: list[str],
-    **kwargs: object,
-) -> subprocess.CompletedProcess[str]:
-    """Wrapper around subprocess.run that retries on FileNotFoundError.
-
-    §Wave5.0.5: On Windows, subprocess.run can transiently fail with
-    WinError 2 (FileNotFoundError) when many processes are spawned
-    concurrently during batch test runs.  Immediate retry resolves the
-    transient OS-level scheduling failure without introducing timing
-    non-determinism.
-    """
-    last_exc: FileNotFoundError | None = None
-    for _ in range(_SUBPROCESS_RETRIES):
-        try:
-            return subprocess.run(cmd, **kwargs)  # type: ignore[arg-type]
-        except FileNotFoundError as exc:
-            last_exc = exc
-    raise last_exc  # type: ignore[misc]
 
 
 def _sha256(filepath: Path) -> str:
@@ -114,7 +91,7 @@ def _run_legacy_subprocess(
         "--legacy",
         *extra_args,
     ]
-    result = _robust_subprocess_run(
+    result = robust_subprocess_run(
         cmd,
         capture_output=True,
         text=True,
@@ -151,7 +128,7 @@ def _run_guardians_subprocess(
         "--correlation-id",
         "ssot-equivalence-harness",
     ]
-    result = _robust_subprocess_run(
+    result = robust_subprocess_run(
         cmd,
         capture_output=True,
         text=True,
@@ -198,7 +175,7 @@ def _run_dispatcher_dry_run(
         "--created-utc",
         DISPATCHER_FIXED_UTC,
     ]
-    result = _robust_subprocess_run(
+    result = robust_subprocess_run(
         cmd,
         capture_output=True,
         text=True,
@@ -354,7 +331,7 @@ class TestLegacyPlanModeTrace:
 
     def test_plan_mode_no_repo_mutations(self) -> None:
         """Verify --plan mode does not create tracked diffs."""
-        porcelain_before = _robust_subprocess_run(
+        porcelain_before = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -363,7 +340,7 @@ class TestLegacyPlanModeTrace:
 
         _run_legacy_subprocess("--plan")
 
-        porcelain_after = _robust_subprocess_run(
+        porcelain_after = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -447,7 +424,7 @@ class TestLegacyFullExecution:
 
     @staticmethod
     def _primary_porcelain() -> str:
-        return _robust_subprocess_run(
+        return robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -588,7 +565,7 @@ class TestDispatcherDryRunTrace:
         assert not errors, f"CombinedHealResult schema errors: {errors}"
 
     def test_primary_repo_unchanged(self, tmp_path: Path) -> None:
-        porcelain_before = _robust_subprocess_run(
+        porcelain_before = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -601,7 +578,7 @@ class TestDispatcherDryRunTrace:
             dispatcher_dir = tmp_path / "dispatcher_artifacts"
             _run_dispatcher_dry_run(agg_path, dispatcher_dir)
 
-        porcelain_after = _robust_subprocess_run(
+        porcelain_after = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -713,7 +690,7 @@ class TestSubCheckReachabilityGolden:
                 )
 
     def test_no_repo_mutation(self, tmp_path: Path) -> None:
-        porcelain_before = _robust_subprocess_run(
+        porcelain_before = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
@@ -741,7 +718,7 @@ class TestSubCheckReachabilityGolden:
             enriched.write_text(json.dumps(agg_data), encoding="utf-8")
             _run_dispatcher_dry_run(enriched, tmp_path / "disp_out")
 
-        porcelain_after = _robust_subprocess_run(
+        porcelain_after = robust_subprocess_run(
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,

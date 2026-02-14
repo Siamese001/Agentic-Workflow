@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -22,25 +21,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from tests._helpers.robust_fs import robust_subprocess_run
+
 pytestmark = pytest.mark.ssot_equivalence
 
 FIXED_UTC = "2000-01-01T00:00:00Z"
-
-_SUBPROCESS_RETRIES = 3
-
-
-def _robust_subprocess_run(
-    cmd: list[str],
-    **kwargs: object,
-) -> subprocess.CompletedProcess[str]:
-    """§Wave5.0.5: Retry on transient WinError 2 (FileNotFoundError)."""
-    last_exc: FileNotFoundError | None = None
-    for _ in range(_SUBPROCESS_RETRIES):
-        try:
-            return subprocess.run(cmd, **kwargs)  # type: ignore[arg-type]
-        except FileNotFoundError as exc:
-            last_exc = exc
-    raise last_exc  # type: ignore[misc]
 
 
 @pytest.fixture(autouse=True)
@@ -127,7 +112,7 @@ class TestCLI:
     """Test the CLI entry point via subprocess."""
 
     def test_scan_cli_exits_cleanly(self) -> None:
-        result = _robust_subprocess_run(
+        result = robust_subprocess_run(
             [
                 sys.executable,
                 "-m",
@@ -152,7 +137,7 @@ class TestCLI:
         assert data["mode"] == "scan"
 
     def test_summary_format(self) -> None:
-        result = _robust_subprocess_run(
+        result = robust_subprocess_run(
             [
                 sys.executable,
                 "-m",

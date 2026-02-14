@@ -7,11 +7,13 @@ the primary working tree.
 
 from __future__ import annotations
 
+import hashlib
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+from tests._helpers.robust_fs import robust_rmtree, robust_subprocess_run
 
 # ── Configuration constants ────────────────────────────────────────
 MAX_CAPTURE: int = 2000
@@ -33,7 +35,7 @@ def run_cmd(
     """Run a command and return ``(returncode, stdout_head, stderr_head)``."""
     merged_env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1", **(env or {})}
     try:
-        result = subprocess.run(
+        result = robust_subprocess_run(
             cmd,
             capture_output=True,
             text=True,
@@ -58,17 +60,34 @@ def _git_available(repo_root: Path) -> bool:
     return rc == 0
 
 
-def create_sandbox(repo_root: Path, sandbox_root: Path) -> Path:
+def _sandbox_dir_name(node_id: str = "") -> str:
+    """Derive a deterministic unique directory name from *node_id*.
+
+    Uses sha256 truncated to 16 hex chars so parallel tests never
+    collide on the same worktree path (fixes WinError 183).
+    """
+    tag = node_id or "default"
+    return "ssot_sandbox_" + hashlib.sha256(tag.encode()).hexdigest()[:16]
+
+
+def create_sandbox(
+    repo_root: Path,
+    sandbox_root: Path,
+    node_id: str = "",
+) -> Path:
     """Create an isolated sandbox of *repo_root* under *sandbox_root*.
 
     Tries strategies in order:
       A) ``git worktree add --detach`` (fastest, shares objects)
       B) ``git clone --local`` (independent, hardlinked objects)
 
+    *node_id* is used to derive a unique sandbox directory name so that
+    parallel fixtures never collide (§Wave5.0.6).
+
     Returns the sandbox repo path.
     Raises ``RuntimeError`` if all strategies fail.
     """
-    sandbox_path = sandbox_root / "ssot_sandbox"
+    sandbox_path = sandbox_root / _sandbox_dir_name(node_id)
 
     # Strategy A: git worktree (fastest)
     rc, _, err_a = run_cmd(
@@ -107,8 +126,7 @@ def destroy_sandbox(repo_root: Path, sandbox_path: Path) -> None:
         pass
 
     # Force-remove directory if still present
-    if sandbox_path.exists():
-        shutil.rmtree(sandbox_path, ignore_errors=True)
+    robust_rmtree(sandbox_path)
 
 
 def run_legacy_in_sandbox(

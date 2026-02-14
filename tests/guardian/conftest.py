@@ -26,9 +26,12 @@ All tests in this directory are automatically marked with @pytest.mark.guardian
 """
 
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
+
+from tests._helpers.robust_fs import robust_rmtree
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -183,6 +186,19 @@ def _v15_default_off(monkeypatch):
     ``monkeypatch.setenv`` or ``@patch.dict``.
     """
     monkeypatch.setenv("V15_ENFORCEMENT", "0")
+
+
+@pytest.fixture
+def robust_tmp_path(request: pytest.FixtureRequest) -> Path:
+    """§Wave5.0.6: Temp directory with robust_rmtree cleanup.
+
+    Replaces tmp_path for fixtures that create deep directory trees
+    on Windows, where shutil.rmtree can transiently fail with
+    WinError 2 / 32 during batch test runs.
+    """
+    d = Path(tempfile.mkdtemp(prefix=f"guardian_{request.node.name[:20]}_"))
+    yield d
+    robust_rmtree(d)
 
 
 @pytest.fixture(scope="session", autouse=True)
