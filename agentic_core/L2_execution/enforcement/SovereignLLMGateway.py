@@ -214,6 +214,12 @@ class SovereignLLMGateway:
                     artifact=fail_artifact,
                 )
 
+        # §P1 — Pre-call injection scan on final prompt payload
+        from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
+
+        _injection_scanner = InjectionDetector()
+        _injection_scanner.scan(prompt)
+
         fallback_providers = fallback_providers or ["anthropic", "google"]
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
 
