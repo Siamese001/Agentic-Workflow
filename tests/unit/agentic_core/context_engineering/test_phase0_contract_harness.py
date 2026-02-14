@@ -103,24 +103,21 @@ class TestPromptAssemblerContract:
 
     MODULE = "agentic_core.prompt_governance.core.prompt_assembler"
 
-    def _import(self):
-        return _importorskip_strict(self.MODULE)
-
     def test_module_importable(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert mod is not None
 
     def test_class_exists(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert hasattr(mod, "PromptAssembler"), f"{self.MODULE} must export PromptAssembler"
 
     def test_get_prompt_assembler_exists(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert hasattr(mod, "get_prompt_assembler"), f"{self.MODULE} must export get_prompt_assembler"
         assert callable(mod.get_prompt_assembler), "get_prompt_assembler must be callable"
 
     def test_assemble_prompt_exists(self):
-        mod = self._import()
+        mod = importlib.import_module(self.MODULE)
         assert hasattr(mod, "assemble_prompt"), f"{self.MODULE} must export assemble_prompt"
         assert callable(mod.assemble_prompt), "assemble_prompt must be callable"
 
