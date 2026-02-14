@@ -14,10 +14,13 @@ import pytest
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.meta_learning_types import (
     IMMUTABLE_COMPONENTS,
+    MetaLearningApprovalArtifact,
     MetaLearningEvaluationArtifact,
     MetaLearningProposalArtifact,
     ObjectiveSignal,
     ProposedChange,
+    apply_meta_learning_proposal,
+    build_meta_learning_approval,
     build_meta_learning_evaluation,
     build_meta_learning_proposal,
 )
@@ -255,3 +258,61 @@ class TestEvaluationJsonDeterminism:
         a = _build_eval_sample()
         b = _build_eval_sample()
         assert a.to_json() == b.to_json()
+
+
+# =============================================================================
+# §8 — Approval Contract (Wave 7.0.4)
+# =============================================================================
+
+
+def _build_approval_sample(
+    decision: str = "APPROVE",
+    **overrides,
+) -> MetaLearningApprovalArtifact:
+    """Build a sample approval from a default evaluation."""
+    ev = _build_eval_sample()
+    defaults = {
+        "evaluation": ev,
+        "approver": "human_reviewer",
+        "decision": decision,
+        "rationale": "Metric improvement confirmed on holdout set.",
+        "policy_config_hash": None,
+    }
+    defaults.update(overrides)
+    return build_meta_learning_approval(**defaults)
+
+
+class TestApprovalSemanticClock:
+    def test_approval_missing_semantic_clock_rejected(self) -> None:
+        """Raises ValueError when semantic_clock is None."""
+        with pytest.raises(ValueError, match="semantic_clock is required"):
+            MetaLearningApprovalArtifact(
+                artifact_type="META_LEARNING_APPROVAL",
+                semantic_clock=None,  # type: ignore[arg-type]
+                trace_id="dummy",
+                proposal_trace_id="dummy",
+                evaluation_trace_id="dummy",
+                approver="test",
+                decision="APPROVE",
+                rationale="n/a",
+                policy_config_hash=None,
+            )
+
+
+class TestApprovalTraceId:
+    def test_approval_trace_id_deterministic(self) -> None:
+        """Same inputs → identical trace_id."""
+        a = _build_approval_sample()
+        b = _build_approval_sample()
+        assert a.trace_id == b.trace_id
+        assert len(a.trace_id) == 64
+
+
+class TestApplyProhibited:
+    def test_apply_prohibited_raises_stable_error(self) -> None:
+        """apply_meta_learning_proposal() always raises RuntimeError."""
+        with pytest.raises(RuntimeError, match="META_LEARNING_APPLY_PROHIBITED"):
+            apply_meta_learning_proposal()
+
+        with pytest.raises(RuntimeError, match="META_LEARNING_APPLY_PROHIBITED"):
+            apply_meta_learning_proposal("any", "args", key="value")

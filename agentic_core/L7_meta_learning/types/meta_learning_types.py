@@ -1,8 +1,9 @@
-"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 (Schema Lock Only).
+"""Meta-Learning Contracts — Waves 7.0.1 / 7.0.3 / 7.0.4 (Schema Lock Only).
 
 Defines schema-locked, frozen artifacts for the meta-learning subsystem:
-  - MetaLearningProposalArtifact  (Wave 7.0.1)
+  - MetaLearningProposalArtifact   (Wave 7.0.1)
   - MetaLearningEvaluationArtifact (Wave 7.0.3)
+  - MetaLearningApprovalArtifact   (Wave 7.0.4)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -362,3 +363,120 @@ def build_meta_learning_evaluation(
         evidence_hash=evidence_hash,
         policy_config_hash=policy_config_hash,
     )
+
+
+# =============================================================================
+# §Wave7.0.4 — MetaLearningApprovalArtifact
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class MetaLearningApprovalArtifact:
+    """Frozen, schema-locked approval decision.
+
+    Rules
+    -----
+    - semantic_clock required (ValueError if missing).
+    - decision is explicit (no inference).
+    - No "apply" fields, no file paths, no code payloads.
+    - canonical serialization (sort_keys=True).
+    """
+
+    artifact_type: Literal["META_LEARNING_APPROVAL"]
+    semantic_clock: SemanticClockSnapshot
+    trace_id: str
+    proposal_trace_id: str
+    evaluation_trace_id: str
+    approver: str
+    decision: Literal["APPROVE", "REJECT"]
+    rationale: str
+    policy_config_hash: str | None
+
+    def __post_init__(self) -> None:
+        validate_semantic_clock(self.semantic_clock, "MetaLearningApprovalArtifact")
+        if self.artifact_type != "META_LEARNING_APPROVAL":
+            raise ValueError(
+                f"artifact_type must be 'META_LEARNING_APPROVAL', got {self.artifact_type!r}",
+            )
+
+    def to_dict(self) -> dict[str, object]:
+        """Canonical, deterministic serialization (keys sorted alphabetically)."""
+        return {
+            "approver": self.approver,
+            "artifact_type": self.artifact_type,
+            "decision": self.decision,
+            "evaluation_trace_id": self.evaluation_trace_id,
+            "policy_config_hash": self.policy_config_hash,
+            "proposal_trace_id": self.proposal_trace_id,
+            "rationale": self.rationale,
+            "semantic_clock": self.semantic_clock.to_dict(),
+            "trace_id": self.trace_id,
+        }
+
+    def to_json(self) -> str:
+        """Deterministic JSON string (sort_keys=True, compact separators)."""
+        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+
+
+def build_meta_learning_approval(
+    *,
+    evaluation: MetaLearningEvaluationArtifact,
+    approver: str,
+    decision: Literal["APPROVE", "REJECT"],
+    rationale: str,
+    policy_config_hash: str | None = None,
+) -> MetaLearningApprovalArtifact:
+    """Build a MetaLearningApprovalArtifact with deterministic trace_id.
+
+    Parameters
+    ----------
+    evaluation : MetaLearningEvaluationArtifact
+        The evaluation being approved or rejected.
+    approver : str
+        Identifier of the approving entity.
+    decision : "APPROVE" | "REJECT"
+        Explicit decision (no inference).
+    rationale : str
+        Human-readable justification.
+    policy_config_hash : str | None
+        Optional hash of the governing policy config.
+
+    Returns
+    -------
+    MetaLearningApprovalArtifact
+        Frozen, deterministic approval artifact.
+    """
+    temp_payload = {
+        "approver": approver,
+        "artifact_type": "META_LEARNING_APPROVAL",
+        "decision": decision,
+        "evaluation_trace_id": evaluation.trace_id,
+        "policy_config_hash": policy_config_hash,
+        "proposal_trace_id": evaluation.proposal_trace_id,
+        "rationale": rationale,
+        "semantic_clock": evaluation.semantic_clock.to_dict(),
+    }
+    canonical = _canonical_payload_json(temp_payload)
+    trace_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    return MetaLearningApprovalArtifact(
+        artifact_type="META_LEARNING_APPROVAL",
+        semantic_clock=evaluation.semantic_clock,
+        trace_id=trace_id,
+        proposal_trace_id=evaluation.proposal_trace_id,
+        evaluation_trace_id=evaluation.trace_id,
+        approver=approver,
+        decision=decision,
+        rationale=rationale,
+        policy_config_hash=policy_config_hash,
+    )
+
+
+# =============================================================================
+# §Wave7.0.4 — Apply Prohibited Guard
+# =============================================================================
+
+
+def apply_meta_learning_proposal(*args, **kwargs) -> None:  # noqa: ARG001
+    """Deliberate guardrail: proposals cannot be applied by any L7 code path in v5.4."""
+    raise RuntimeError("META_LEARNING_APPLY_PROHIBITED")
