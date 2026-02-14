@@ -16,6 +16,7 @@ from agentic_core.L0_routing.scripts.run_all_guardians import (
 )
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L7_meta_learning.types.app_signal_types import (
+    APP_SIGNAL_CATALOG,
     build_app_signal_aggregate,
     build_app_signal_event,
 )
@@ -721,7 +722,7 @@ class TestAppSignalEvent:
                 app_id="apps_rg",
                 run_id="run_001",
                 message_id="msg_001",
-                metric_name="response_rate",
+                metric_name="resume_message_response_rate",
                 metric_value=0.85,
                 semantic_clock=None,  # type: ignore[arg-type]
             )
@@ -732,7 +733,7 @@ class TestAppSignalEvent:
             "app_id": "apps_rg",
             "run_id": "run_001",
             "message_id": "msg_001",
-            "metric_name": "response_rate",
+            "metric_name": "resume_message_response_rate",
             "metric_value": 0.85,
             "semantic_clock": _CLOCK,
         }
@@ -747,7 +748,7 @@ class TestAppSignalEvent:
             "app_id": "apps_rg",
             "run_id": "run_001",
             "message_id": "msg_001",
-            "metric_name": "response_rate",
+            "metric_name": "resume_message_response_rate",
             "semantic_clock": _CLOCK,
         }
         with pytest.raises(ValueError, match="metric_value_NOT_FINITE"):
@@ -764,7 +765,7 @@ class TestAppSignalAggregate:
         kwargs = {
             "app_id": "apps_rg",
             "window_id": "w_2026_02",
-            "metric_name": "response_rate",
+            "metric_name": "resume_message_response_rate",
             "baseline_value": 0.80,
             "candidate_value": 0.85,
             "n": 100,
@@ -782,7 +783,7 @@ class TestAppSignalAggregate:
         kwargs = {
             "app_id": "apps_lic",
             "window_id": "w_2026_02",
-            "metric_name": "match_score",
+            "metric_name": "conversion_to_interview_rate",
             "baseline_value": 0.70,
             "candidate_value": 0.75,
             "n": 50,
@@ -795,3 +796,65 @@ class TestAppSignalAggregate:
         parsed = json.loads(a1.to_json())
         assert parsed["artifact_type"] == "APP_SIGNAL_AGGREGATE"
         assert parsed["delta"] == 0.75 - 0.70
+
+
+# =============================================================================
+# §13 — APP Signal Catalog Enforcement (Wave 7.0.10)
+# =============================================================================
+
+
+class TestAppSignalCatalog:
+    def test_rejects_unknown_metric_name(self) -> None:
+        """Builder rejects metric_name not in APP_SIGNAL_CATALOG."""
+        with pytest.raises(ValueError, match="METRIC_NAME_NOT_IN_CATALOG"):
+            build_app_signal_event(
+                app_id="apps_rg",
+                run_id="run_001",
+                message_id="msg_001",
+                metric_name="unknown_metric_xyz",
+                metric_value=0.5,
+                semantic_clock=_CLOCK,
+            )
+
+    def test_rejects_out_of_bounds_rate(self) -> None:
+        """Builder rejects rate metric_value > 1.0."""
+        with pytest.raises(ValueError, match="metric_value_ABOVE_MAX"):
+            build_app_signal_event(
+                app_id="apps_rg",
+                run_id="run_001",
+                message_id="msg_001",
+                metric_name="resume_message_response_rate",
+                metric_value=1.5,
+                semantic_clock=_CLOCK,
+            )
+        with pytest.raises(ValueError, match="metric_value_BELOW_MIN"):
+            build_app_signal_event(
+                app_id="apps_rg",
+                run_id="run_001",
+                message_id="msg_001",
+                metric_name="resume_message_response_rate",
+                metric_value=-0.1,
+                semantic_clock=_CLOCK,
+            )
+
+    def test_accepts_valid_rate_at_boundary(self) -> None:
+        """Builder accepts rate metric at 0.0 and 1.0 boundaries."""
+        for val in (0.0, 1.0):
+            evt = build_app_signal_event(
+                app_id="apps_rg",
+                run_id="run_001",
+                message_id="msg_001",
+                metric_name="resume_message_response_rate",
+                metric_value=val,
+                semantic_clock=_CLOCK,
+            )
+            assert evt.metric_value == val
+
+    def test_catalog_structural_completeness(self) -> None:
+        """Every catalog entry has direction, aggregation, bounds, unit, recommended_window."""
+        required_keys = {"direction", "aggregation", "bounds", "unit", "recommended_window"}
+        for name, entry in APP_SIGNAL_CATALOG.items():
+            missing = required_keys - set(entry.keys())
+            assert not missing, f"{name} missing keys: {missing}"
+            assert entry["direction"] in ("MAXIMIZE", "MINIMIZE"), f"{name} bad direction"
+            assert entry["aggregation"] in ("rate", "mean", "median"), f"{name} bad aggregation"

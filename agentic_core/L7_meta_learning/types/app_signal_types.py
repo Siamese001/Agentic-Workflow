@@ -1,8 +1,9 @@
-"""APP Signal Contracts — Wave 7.0.8 (Schema Lock Only).
+"""APP Signal Contracts — Waves 7.0.8–7.0.10 (Schema Lock Only).
 
 Defines schema-locked, frozen artifacts for measurable APP outcome signals:
   - AppSignalEventArtifact     (individual signal event)
   - AppSignalAggregateArtifact (aggregated window summary)
+  - APP_SIGNAL_CATALOG         (allowlist of optimizable metrics, Wave 7.0.10)
 
 NO runtime behavior changes.  NO mutation logic.  NO automatic application.
 """
@@ -32,6 +33,67 @@ def _validate_finite(value: float, field_name: str) -> None:
     """Raise ValueError if *value* is NaN, +inf, or -inf."""
     if not math.isfinite(value):
         raise ValueError(f"{field_name}_NOT_FINITE")
+
+
+# =============================================================================
+# §Wave7.0.10 — APP Signal Catalog (guarded target signals)
+# =============================================================================
+
+APP_SIGNAL_CATALOG: dict[str, dict[str, object]] = {
+    "resume_message_response_rate": {
+        "direction": "MAXIMIZE",
+        "bounds": {"min": 0.0, "max": 1.0},
+        "unit": "rate",
+        "aggregation": "rate",
+        "recommended_window": "28d",
+    },
+    "resume_message_positive_reply_rate": {
+        "direction": "MAXIMIZE",
+        "bounds": {"min": 0.0, "max": 1.0},
+        "unit": "rate",
+        "aggregation": "rate",
+        "recommended_window": "28d",
+    },
+    "resume_message_reject_rate": {
+        "direction": "MINIMIZE",
+        "bounds": {"min": 0.0, "max": 1.0},
+        "unit": "rate",
+        "aggregation": "rate",
+        "recommended_window": "28d",
+    },
+    "time_to_first_reply_hours": {
+        "direction": "MINIMIZE",
+        "bounds": {"min": 0.0},
+        "unit": "hours",
+        "aggregation": "median",
+        "recommended_window": "28d",
+    },
+    "conversion_to_interview_rate": {
+        "direction": "MAXIMIZE",
+        "bounds": {"min": 0.0, "max": 1.0},
+        "unit": "rate",
+        "aggregation": "rate",
+        "recommended_window": "28d",
+    },
+}
+
+
+def _validate_catalog_bounds(metric_name: str, value: float, field_name: str) -> None:
+    """Validate *value* against APP_SIGNAL_CATALOG bounds for *metric_name*."""
+    entry = APP_SIGNAL_CATALOG.get(metric_name)
+    if entry is None:
+        raise ValueError(f"METRIC_NAME_NOT_IN_CATALOG: {metric_name!r}")
+    bounds = entry.get("bounds", {})
+    lo = bounds.get("min")  # type: ignore[union-attr]
+    hi = bounds.get("max")  # type: ignore[union-attr]
+    if lo is not None and value < lo:
+        raise ValueError(
+            f"{field_name}_BELOW_MIN: {value} < {lo} for {metric_name!r}",
+        )
+    if hi is not None and value > hi:
+        raise ValueError(
+            f"{field_name}_ABOVE_MAX: {value} > {hi} for {metric_name!r}",
+        )
 
 
 # =============================================================================
@@ -139,6 +201,7 @@ def build_app_signal_event(
     if not metric_name:
         raise ValueError("METRIC_NAME_EMPTY")
     _validate_finite(metric_value, "metric_value")
+    _validate_catalog_bounds(metric_name, metric_value, "metric_value")
 
     temp_payload = {
         "app_id": app_id,
@@ -274,6 +337,8 @@ def build_app_signal_aggregate(
     validate_semantic_clock(semantic_clock, "build_app_signal_aggregate")
     _validate_finite(baseline_value, "baseline_value")
     _validate_finite(candidate_value, "candidate_value")
+    _validate_catalog_bounds(metric_name, baseline_value, "baseline_value")
+    _validate_catalog_bounds(metric_name, candidate_value, "candidate_value")
     if n < 1:
         raise ValueError("N_LESS_THAN_ONE")
     if not evidence_hash:
