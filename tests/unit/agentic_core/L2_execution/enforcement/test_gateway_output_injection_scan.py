@@ -3,9 +3,9 @@ Test: §P3 Post-call LLM output injection scan (warn-mode).
 
 Proves:
   1. scan_untrusted_text is called on response content after provider call.
-  2. When scan raises, generate() still returns the response (warn-mode).
-  3. A WARNING log with stable prefix is emitted on detection.
-  4. When response content is empty/missing, scan is NOT called.
+  2. When scan raises SecurityViolationError, generate() still returns (warn-mode, WARNING log).
+  3. When scan raises unexpected Exception, generate() still returns (ERROR log).
+  4. When response content is empty/missing/None, scan is NOT called.
 
 No network calls — provider is fully stubbed.
 No coupling to specific signature lists — scan behaviour is controlled via monkeypatch.

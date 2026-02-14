@@ -342,15 +342,14 @@ class SovereignLLMGateway:
                 # §P3 — Post-call output injection scan (warn-mode)
                 _response_content = result.get("content")
                 if _response_content:
+                    from agentic_core.prompt_governance.security import (
+                        injection_scan_util as _isu,
+                    )
                     from agentic_core.runtime.exceptions.sovereign_errors import (
                         SecurityViolationError as _SVE_P3,
                     )
 
                     try:
-                        from agentic_core.prompt_governance.security import (
-                            injection_scan_util as _isu,
-                        )
-
                         _isu.scan_untrusted_text(
                             _response_content, source="llm_response_output"
                         )
