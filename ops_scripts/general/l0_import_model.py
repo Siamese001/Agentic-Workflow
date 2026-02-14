@@ -262,6 +262,21 @@ def _find_cycles(edges: list[dict[str, Any]]) -> list[list[str]]:
     return normalized
 
 
+def count_l0_targeting_edges(upward_edges: list[dict[str, Any]]) -> int:
+    """Count upward-import edges whose imported module resides in L0_routing.
+
+    Checks the target_module field for the dotted prefix 'agentic_core.L0_routing'.
+    This is a pure function suitable for unit testing with synthetic data.
+    """
+    prefix_dot = "agentic_core.L0_routing."
+    prefix_exact = "agentic_core.L0_routing"
+    return sum(
+        1
+        for e in upward_edges
+        if e.get("target_module", "").startswith(prefix_dot) or e.get("target_module", "") == prefix_exact
+    )
+
+
 # ── Main builder ──
 
 
@@ -380,6 +395,8 @@ def build_model(
             encoding="utf-8",
         )
 
+    l0_targeting_count = count_l0_targeting_edges(upward_edges)
+
     summary = {
         "files_parsed": files_parsed,
         "parse_errors": len(all_parse_errors),
@@ -387,6 +404,7 @@ def build_model(
         "total_nodes": len(nodes_sorted),
         "cycle_count": len(cycles),
         "upward_import_count": len(upward_edges),
+        "l0_targeting_count": l0_targeting_count,
     }
     return summary
 
