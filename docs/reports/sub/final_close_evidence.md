@@ -80,3 +80,16 @@ tests/unit/apps_rg/test_resume_assembly_agent.py
 git status --porcelain
 AM docs/reports/sub/final_close_evidence.md
 ```
+
+## F) Final Commit Proof
+
+```bash
+git add docs/reports/sub/final_close_evidence.md
+git commit -m "docs: finalize capstone evidence"
+git rev-parse HEAD
+9e9ad8495152e938c884e653b86dc5264cc5c108
+git --no-pager show --name-only --oneline HEAD
+9e9ad8495 (HEAD -> agentic-v5.5) capstone: final close (evidence-locked)
+docs/reports/sub/final_close_evidence.md
+git status --porcelain
+```
