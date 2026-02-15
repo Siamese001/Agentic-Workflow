@@ -90,6 +90,8 @@ TYPES_SUFFIX_ALLOWLIST = {
     "v15_p2_contracts.py",
     "v15_artifact_types.py",
     "v15_artifact_validation_types.py",
+    "v15_artifact_typed.py",
+    "v15_artifact_validate.py",
     "healer_registry.py",
     "heal_contract.py",
     "l2_phase_spec.py",
