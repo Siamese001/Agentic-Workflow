@@ -382,6 +382,12 @@ Status: DEPRECATED - Do not use in production
 # """
 
 # LEGACY CODE BELOW - COMMENTED OUT
+# """LEGACY FILE - Moved to legacy during Terminal Alignment Command
+# This file has fundamental architectural issues that require complete rewrite.
+# Status: DEPRECATED - Do not use in production
+# """
+
+# LEGACY CODE BELOW - COMMENTED OUT
 # from __future__ import annotations
 
 # from typing import Any
