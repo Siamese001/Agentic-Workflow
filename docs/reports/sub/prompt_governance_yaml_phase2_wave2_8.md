@@ -112,13 +112,13 @@ T3c: Reject Tracked Generated Artifacts..................................Passed
 T3e: Pycache Purge.......................................................Passed
 T3f: Module Collision Guard..............................................Passed
 
-[main <hash>] fix(phase2): restore pytest truthfulness by adjusting authoritative testpaths
- X files changed, Y insertions(+), Z deletions(-)
+[main 8a58ddd5e] fix(phase2): restore pytest truthfulness by adjusting authoritative testpaths
+ 6 files changed, 667 insertions(+), 1 deletion(-)
 ```
 
-### Step 11: git show --name-only <hash>
+### Step 11: git show --name-only 8a58ddd5e
 ```
-<hash> fix(phase2): restore pytest truthfulness by adjusting authoritative testpaths
+8a58ddd5e fix(phase2): restore pytest truthfulness by adjusting authoritative testpaths
  pytest.ini
  docs/rules/governance.md
  docs/reports/sub/pytest_phase2_wave2_8_failures.txt
@@ -188,7 +188,7 @@ T3f: Module Collision Guard..............................................Passed
 
 ## Final State
 
-- **Commit Hash**: <to be populated after commit>
+- **Commit Hash**: 8a58ddd5e2214738ba39cace10b954cda3f9b052
 - **Working Tree**: Clean (no uncommitted changes)
 - **pytest Status**: 19/19 passed in authoritative suite
 - **Pre-commit Status**: All default-stage hooks pass
