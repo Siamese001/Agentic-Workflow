@@ -65,7 +65,7 @@ def test_update_gate_enforcement():
 
     # Verify directories is a list
     assert isinstance(manifest["directories"], list)
-    
+
     # Verify python_files is a list
     assert isinstance(manifest["python_files"], list)
 
