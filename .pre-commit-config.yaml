@@ -35,6 +35,7 @@ repos:
         name: "T0: Trailing Whitespace"
       - id: end-of-file-fixer
         name: "T0: End-of-File Fixer"
+        exclude: ^artifacts/migration/
       - id: mixed-line-ending
         name: "T0: Enforce LF Line Endings"
         args: [--fix=lf]
