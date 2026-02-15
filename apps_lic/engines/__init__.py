@@ -9,9 +9,11 @@ importable directly from their modules, e.g.:
 from .ExecutiveStrategyAgent import ExecutiveStrategyAgent
 from .HOPPipelineExecutor import HOPPipelineExecutor
 from .LICValidationExecutor import LICValidationExecutor
+from .OutreachMessageAgent import OutreachMessageAgent
 
 __all__ = [
     "ExecutiveStrategyAgent",
     "HOPPipelineExecutor",
     "LICValidationExecutor",
+    "OutreachMessageAgent",
 ]
