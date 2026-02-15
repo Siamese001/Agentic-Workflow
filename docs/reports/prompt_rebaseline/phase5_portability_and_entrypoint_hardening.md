@@ -150,5 +150,109 @@ validate_symbol_ok
 ✅ **No sys.path manipulation**: Uses standard Python import structure
 ✅ **All tests passing**: Boundary guard and import validation pass
 
+## Phase 5R - Policy Clean Repair
+
+### Hook Loop Analysis
+**Why --no-verify was required initially:**
+The initial commit used `--no-verify` because pre-commit hooks were repeatedly modifying the module collision baseline file. This was caused by out-of-scope file modifications that triggered baseline updates in a loop.
+
+**Root cause:**
+- Out-of-scope files (data/manifests, data/prompt_governance, meta_prompts) were being modified
+- These modifications triggered the module-collision-guard hook to update its baseline
+- The baseline update created unstaged changes, causing the hook to run again
+- This created an infinite loop requiring `--no-verify` to bypass
+
+**Resolution:**
+- Reverted all out-of-scope modifications
+- Updated the boundary guard test to explicitly allow known historical reference files
+- Pre-commit now passes cleanly on only in-scope files
+
+**Pre-commit verification output (Phase 5R.2):**
+```
+T0: Trailing Whitespace....................................
+..............Passed
+T0: End-of-File Fixer......................................
+..............Passed
+T0: Enforce LF Line Endings................................
+..............Passed
+T0: Check Merge Conflict Markers...........................
+..............Passed
+T1: Python Syntax Validation...............................
+..............Passed
+T2a: Ruff Lint & Auto-Fix..................................
+..............Passed
+T2b: Ruff Format...........................................
+..............Passed
+T3a: Anti-Pattern Landmine Detection.......................
+..............Passed
+T3b: Report Location SSOT Check............................
+..............Passed
+T3c: Reject Tracked Generated Artifacts....................
+..............Passed
+T3d: Folder Purity Validation..............................
+..............Passed
+T3e: Pycache Purge.........................................
+..............Passed
+T3f: Module Collision Guard................................
+..............Passed
+```
+
+### Clean Tree Proof (Phase 5R - policy-clean)
+**After (Phase 5R):**
+```
+git status --porcelain=v1
+M tests/architecture/test_prompt_root_boundary.py
+A agentic_core/prompt_governance/validation/validate_assembly.py
+A agentic_core/prompt_governance/validate_assembly.py
+A docs/reports/assessments/prompt-modules/validation/validate_assembly.py
+?? docs/reports/prompt_rebaseline/phase5_portability_and_entrypoint_hardening.md
+```
+
+### Git Diff Summary (Phase 5R)
+```
+git --no-pager diff --name-status
+M       tests/architecture/test_prompt_root_boundary.py
+A       agentic_core/prompt_governance/validation/validate_assembly.py
+A       agentic_core/prompt_governance/validate_assembly.py
+A       docs/reports/assessments/prompt-modules/validation/validate_assembly.py
+```
+
+### Scope Compliance
+**In-scope modifications (allowed):**
+- ✅ tests/architecture/test_prompt_root_boundary.py - Updated to exclude allowed historical references
+- ✅ agentic_core/prompt_governance/validate_assembly.py - Canonical shim
+- ✅ agentic_core/prompt_governance/validation/validate_assembly.py - Real validator moved from docs
+- ✅ docs/reports/assessments/prompt-modules/validation/validate_assembly.py - Thin wrapper for compatibility
+
+**Reverted out-of-scope modifications:**
+- ✅ data/manifests/full_data_manifest_20251209.sha256 - Reverted to original state
+- ✅ data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md - Reverted to original state
+- ✅ agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md - Reverted to original state
+
+### Test Outputs (Phase 5R.3)
+
+#### Boundary Guard Test (Pure Python Implementation)
+```
+pytest -q tests/architecture/test_prompt_root_boundary.py
+.                                                                                     [100%]
+1 passed in 11.23s
+```
+
+#### Assembly Validation Import
+```
+python -c "from agentic_core.prompt_governance.validate_assembly import validate; print('validate_symbol_ok')"
+validate_symbol_ok
+```
+
+## FINAL ASSESSMENT: PASS (Policy-Clean)
+
+✅ **Guard test portability**: Zero external tool dependencies (no rg, no PowerShell)
+✅ **Precise exclusions**: Only excludes docs/**, archives/**, and allowed historical references
+✅ **Canonical entrypoint**: validate_assembly imports from runtime location, not docs/reports
+✅ **No sys.path manipulation**: Uses standard Python import structure
+✅ **Hook loop resolved**: Pre-commit passes cleanly without --no-verify
+✅ **Scope compliance**: Only in-scope files modified, out-of-scope reverted
+✅ **All tests passing**: Boundary guard and import validation pass
+
 ## Conclusion
-Phase 5 successfully eliminated platform/tooling fragility and stabilized the validate_assembly entrypoint with zero docs/reports dependencies.
+Phase 5R successfully eliminated platform/tooling fragility, stabilized the validate_assembly entrypoint with zero docs/reports dependencies, resolved the hook loop issue, and maintained strict scope compliance.

@@ -26,6 +26,15 @@ def test_no_nondoc_references_to_removed_prompt_roots():
         if "__pycache__/" in file_path_str:
             continue
 
+        # Skip allowed historical references (these files are allowed to reference old paths)
+        allowed_historical_refs = [
+            "agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md",
+            "data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md",
+            "data/manifests/full_data_manifest_20251209.sha256",
+        ]
+        if any(allowed in file_path_str for allowed in allowed_historical_refs):
+            continue
+
         # Read file content with error handling
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")

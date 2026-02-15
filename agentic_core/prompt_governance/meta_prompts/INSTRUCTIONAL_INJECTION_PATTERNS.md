@@ -6,7 +6,7 @@ Do not add new documents here
 
 # L1 Cognition — Instructional Injection Patterns
 
-> **Source:** `data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md`
+> **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
 > **Layer Focus:** Framing, Context, and Reasoning patterns for L1 planning operations
 
 ---
@@ -100,6 +100,6 @@ From `Dependency & Prompt Injection Patterns.md`:
 
 ## Cross-Reference
 
-- Full patterns: `data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md`
-- DI patterns: `data/prompt_governance/prompt_injections/Dependency & Prompt Injection Patterns.md`
+- Full patterns: `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
+- DI patterns: `06_data/prompt_libraries/injections/Dependency & Prompt Injection Patterns.md`
 - Safety rules: `01_agentic_core/L5_safety/`
