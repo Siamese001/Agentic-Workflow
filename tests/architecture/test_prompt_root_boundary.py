@@ -1,67 +1,54 @@
 """Test guard to prevent reintroduction of removed prompt roots."""
 
-import subprocess
-import sys
 from pathlib import Path
 
 
 def test_no_nondoc_references_to_removed_prompt_roots():
-    """Fail if any NON-DOC files reference data/prompts/ or data/prompt_libraries/."""
+    """Fail if any NON-DOC files reference removed prompt roots."""
     repo_root = Path(__file__).parent.parent.parent
 
-    # Search for references to removed roots, excluding docs and archives
-    patterns = ["data/prompts/", "data/prompt_libraries/"]
+    # Construct patterns from parts to avoid self-matching in docstring
+    forbidden_patterns = ["data/" + "prompts/", "data/" + "prompt_libraries/"]
 
-    all_matches = []
+    violations = []
 
-    for pattern in patterns:
-        # Use PowerShell on Windows for deterministic search
-        if sys.platform == "win32":
-            cmd = [
-                "powershell",
-                "-Command",
-                "Get-ChildItem -Recurse | "
-                "Where-Object { $_.FullName -notlike '*docs*' -and $_.FullName -notlike '*archives*' -and $_.FullName -notlike '*test*' -and $_.FullName -notlike '*__pycache__*' -and $_.FullName -notlike '*meta_prompts*' -and $_.FullName -notlike '*data/manifests*' -and $_.FullName -notlike '*data/prompt_governance/prompt_injections*' } | "
-                f"Select-String -Pattern '{pattern}' | "
-                "Select-Object @{Name='Path';Expression={$_.Path.Replace((Get-Location).Path + '\\', '').Replace('\\', '/')}}, LineNumber, Line",
-            ]
-        else:
-            # Use ripgrep on Unix systems
-            excluded_dirs = ["docs/**", "archives/**", "tests/**"]
-            cmd = ["rg", "-n", pattern, "--type", "text"] + [f"--glob=!{d}" for d in excluded_dirs]
+    # Walk repository files deterministically
+    for file_path in repo_root.rglob("*"):
+        if not file_path.is_file():
+            continue
 
-        result = subprocess.run(cmd, cwd=repo_root, capture_output=True, text=True)
+        # Skip ONLY docs and archives (including all subdirectories)
+        file_path_str = str(file_path).replace("\\", "/")
+        if "docs/" in file_path_str or "archives/" in file_path_str:
+            continue
 
-        if result.stdout.strip():
-            matches = result.stdout.strip().split("\n")
-            for match in matches:
-                if match.strip() and not match.startswith("Path") and not match.startswith("----"):
-                    # Filter out any remaining docs references
-                    if not any(
-                        excl in match
-                        for excl in [
-                            "docs/",
-                            "meta_prompts/",
-                            "data/manifests/",
-                            "data/prompt_governance/prompt_injections/",
-                        ]
-                    ):
-                        all_matches.append(f"{pattern}: {match}")
+        # Skip __pycache__ directories
+        if "__pycache__/" in file_path_str:
+            continue
 
-    if all_matches:
-        # Group by pattern for clearer output
-        by_pattern = {}
-        for match in all_matches:
-            pattern = match.split(":")[0]
-            if pattern not in by_pattern:
-                by_pattern[pattern] = []
-            by_pattern[pattern].append(match)
+        # Read file content with error handling
+        try:
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+        except (OSError, UnicodeDecodeError):
+            continue
 
-        error_msg = "Found non-doc references to removed prompt roots:\n"
-        for pattern, matches in by_pattern.items():
-            error_msg += f"\n{pattern} references:\n"
-            for match in matches:
-                error_msg += f"  {match.split(':', 1)[1]}\n"
+        # Check each line for forbidden patterns
+        for line_num, line in enumerate(content.splitlines(), 1):
+            for pattern in forbidden_patterns:
+                if pattern in line:
+                    # Get relative path from repo root
+                    rel_path = str(file_path.relative_to(repo_root)).replace("\\", "/")
+                    # Truncate line to first 200 chars for display
+                    display_line = line[:200] + "..." if len(line) > 200 else line
+                    violations.append(
+                        {"file": rel_path, "line": line_num, "pattern": pattern, "content": display_line}
+                    )
 
-        error_msg += "\nThese references must be removed to maintain SSOT boundary integrity."
+    if violations:
+        error_msg = "Found references to removed prompt roots in non-doc files:\n\n"
+        for violation in violations:
+            error_msg += f"{violation['file']}:{violation['line']} - {violation['pattern']}\n"
+            error_msg += f"  Content: {violation['content']}\n\n"
+
+        error_msg += "These references must be removed to maintain SSOT boundary integrity."
         raise AssertionError(error_msg)
