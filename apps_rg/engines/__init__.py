@@ -6,10 +6,12 @@ importable directly from their modules, e.g.:
     from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 """
 
+from .ResumeAssemblyAgent import ResumeAssemblyAgent
 from .RGStrategyExecutor import RGStrategyExecutor
 from .RGValidationExecutor import RGValidationExecutor
 
 __all__ = [
     "RGStrategyExecutor",
     "RGValidationExecutor",
+    "ResumeAssemblyAgent",
 ]
