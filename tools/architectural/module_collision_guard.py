@@ -64,17 +64,21 @@ def should_exclude(path: Path) -> bool:
     return False
 
 
-def scan_directory(root: Path, repo_root: Path) -> dict[str, list[Path]]:
+def scan_directory(root: Path, repo_root: Path | None = None) -> dict[str, list[Path]]:
     """Scan directory for Python files and map logical paths to physical files."""
     logical_map = defaultdict(list)
+
+    if repo_root is None:
+        repo_root = Path.cwd().resolve()
 
     for py_file in root.rglob("*.py"):
         if should_exclude(py_file):
             continue
 
         logical_path = compute_logical_import_path(py_file, root)
-        # Store relative path from repo root
-        relative_path = py_file.relative_to(repo_root)
+        # Store relative path from repo root, resolve first for Windows compatibility
+        py_file_resolved = py_file.resolve()
+        relative_path = py_file_resolved.relative_to(repo_root)
         logical_map[logical_path].append(relative_path)
 
     return logical_map
