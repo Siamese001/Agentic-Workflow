@@ -11,9 +11,8 @@ git --no-pager show --name-only --oneline HEAD
 ```
 
 ```
-8fd6feffb (HEAD -> main, origin/main, origin/HEAD) docs: update redis mcp phase evidence files with final commit hashes
-docs/reports/sub/redis_mcp_phase3_evidence.md
-docs/reports/sub/redis_mcp_phase4_evidence.md
+ed39d0c45 (HEAD -> main) docs(governance): reconcile phase5 cache guard evidence
+docs/reports/governance/phase5_cache_guard_evidence.md
 ```
 
 ### 2. Git Status Before (Clean Working Tree)
@@ -78,7 +77,7 @@ tests/architecture/test_cache_guard.py::test_no_files_modified PASSED           
 
 (4 durations < 0.005s hidden.  Use -vv to show these durations.)
 ==================================================================================================================================================
-======== 2 passed in 1.26s ==========================================================================================================================================================
+======== 2 passed in 1.27s ==========================================================================================================================================================
 ```
 
 ### 6. Git Status After (Still Clean)
