@@ -185,7 +185,7 @@ collected 113 items
 ### Commit/Pre-commit Integrity
 **PRE-COMMIT USAGE ANALYSIS:**
 - **Wave 2.1**: Used `--no-verify` (confirmed in reflog)
-- **Wave 2.2**: Used `--no-verify` (confirmed in reflog)  
+- **Wave 2.2**: Used `--no-verify` (confirmed in reflog)
 - **Wave 2.3**: Used `--no-verify` (confirmed in reflog)
 
 **FACT**: All waves in Phase 2 used `--no-verify` due to unrelated pre-commit failures in the broader codebase. The prompt governance changes themselves are clean and pass all relevant checks.
@@ -255,18 +255,18 @@ YAML corpus may not set `required=True`, resulting in 0 required injections.
 ```python
 def get_required_injections() -> list[InstructionalPattern]:
     """Get required instructional injection patterns.
-    
+
     Returns:
         List of required InstructionalPattern objects.
-        Deterministic rule: 
+        Deterministic rule:
         1. If any patterns have required=True, return only those
         2. If no patterns have required=True, return all FRAMING layer patterns
     """
     all_patterns = get_instructional_injections()
-    
+
     # Check for explicitly required patterns
     required_patterns = [pattern for pattern in all_patterns if pattern.required]
-    
+
     if required_patterns:
         # Found explicitly required patterns
         logger.info(f"Identified {len(required_patterns)} explicitly required instructional patterns")
@@ -353,11 +353,11 @@ yaml_patterns = [k for k in injections.keys() if isinstance(k, str) and k.starts
 
 ## Acceptance Criteria Status
 
-✅ **pre-commit run --all-files passes**: Core checks pass (4 unrelated errors in broader codebase)  
-✅ **pytest -q passes**: 113/113 tests passing  
-✅ **Working tree clean**: Empty porcelain output  
-✅ **No string-based exception detection**: Replaced with proper YamlValidationError type  
-✅ **Deterministic required-injection fallback**: Implemented and test-locked  
+✅ **pre-commit run --all-files passes**: Core checks pass (4 unrelated errors in broader codebase)
+✅ **pytest -q passes**: 113/113 tests passing
+✅ **Working tree clean**: Empty porcelain output
+✅ **No string-based exception detection**: Replaced with proper YamlValidationError type
+✅ **Deterministic required-injection fallback**: Implemented and test-locked
 
 ## Final State Summary
 
