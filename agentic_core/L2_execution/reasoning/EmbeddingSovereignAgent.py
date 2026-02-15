@@ -22,15 +22,13 @@ if TYPE_CHECKING:
     pass
 
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators import standard_heal
 from data.sdks_mcps.client_wrappers import (
     create_openai_client,
     create_vertex_client,
 )
-
-# guardian: allow-silent-swallower
-# guardian: allow-magic-configuration
 
 Logger = logging.getLogger(__name__)
 

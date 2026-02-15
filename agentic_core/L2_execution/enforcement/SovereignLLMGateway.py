@@ -37,8 +37,6 @@ from data.sdks_mcps.client_wrappers import (
     create_vertex_client,
 )
 
-# guardian: allow-silent-swallower
-
 Logger = logging.getLogger(__name__)
 
 Provider = Literal["openai", "anthropic", "google"]
