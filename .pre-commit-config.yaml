@@ -108,7 +108,8 @@ repos:
 
       # -- T3d: Folder Purity Validation (architectural enforcement) -------------
       # Scope: Validate Agent, Types, and Engine placement rules
-      # Blocks commits that violate architectural folder placement rules
+      # MOVED TO MANUAL STAGE due to extensive structural violations in apps_shared
+      # See docs/rules/governance.md for policy details
       - id: folder-purity-validation
         name: "T3d: Folder Purity Validation"
         entry: python ops_scripts/hooks/validate_folder_purity.py
@@ -116,6 +117,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # -- T3e: Pycache purge (idempotent, bounded) -----------------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.

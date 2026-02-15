@@ -20,6 +20,7 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -231,8 +232,14 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    # If writing baseline, scan all Python files in project
+    # If writing baseline, require explicit authorization
     if args.write_baseline:
+        if os.environ.get("ALLOW_LANDMINE_BASELINE_WRITE") != "1":
+            print("[ERROR] --write-baseline requires ALLOW_LANDMINE_BASELINE_WRITE=1 environment variable")
+            print("        This prevents accidental baseline dilution in CI/automation")
+            print("        To authorize: ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --write-baseline")
+            return 1
+
         all_python_files = list(PROJECT_ROOT.rglob("*.py"))
         # Skip tests, __pycache__, .nox, and other non-source directories
         exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup", "ops_scripts"]
