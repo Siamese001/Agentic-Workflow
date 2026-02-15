@@ -14,6 +14,7 @@ import ast
 from pathlib import Path
 
 import pytest
+
 from agentic_core.L0_routing.types.v15_artifact_validate import (
     make_healing_plan_from_dataclass,
     make_result_artifact_from_dataclass,
@@ -26,7 +27,6 @@ from agentic_core.L0_routing.types.v15_artifact_validate import (
     validate_result_artifact,
     validate_stale_write_incident,
 )
-
 from agentic_core.L0_routing.types.v15_types import (
     HealingPlan,
     IncidentArtifact,

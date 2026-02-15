@@ -68,9 +68,8 @@ class TestBaseAgentsPurity:
 
     def test_no_utility_files_in_base_agents(self) -> None:
         violations = _scan_non_class_files()
-        assert not violations, (
-            "base_agents/ contains non-class utility files:\n"
-            + "\n".join(f"  {v}" for v in violations)
+        assert not violations, "base_agents/ contains non-class utility files:\n" + "\n".join(
+            f"  {v}" for v in violations
         )
 
     def test_shims_are_pure_reexports(self) -> None:
@@ -80,9 +79,8 @@ class TestBaseAgentsPurity:
             shim_path = BASE_AGENTS / shim_name
             if shim_path.exists() and not _is_shim(shim_path):
                 violations.append(f"{shim_name}: not a pure shim (contains definitions)")
-        assert not violations, (
-            "Shims in base_agents/ contain non-shim code:\n"
-            + "\n".join(f"  {v}" for v in violations)
+        assert not violations, "Shims in base_agents/ contain non-shim code:\n" + "\n".join(
+            f"  {v}" for v in violations
         )
 
     def test_no_residual_legacy_decorators_import_in_production(self) -> None:

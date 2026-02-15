@@ -8,8 +8,6 @@ import sys
 import types
 from unittest.mock import MagicMock
 
-import pytest
-
 
 def test_no_direct_sdk_imports_in_embedding_sovereign_agent():
     """AST-based test that EmbeddingSovereignAgent has no direct SDK imports."""
@@ -76,7 +74,9 @@ def test_embedding_sovereign_agent_uses_wrapper_factories():
     try:
         # Now import and reload the module to ensure it uses our shim
         import importlib
+
         import agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent as module
+
         importlib.reload(module)
 
         # Test that we can import the class without errors
@@ -95,7 +95,9 @@ def test_embedding_sovereign_agent_uses_wrapper_factories():
         async def test_embeddings():
             # Mock the return values for the embedding methods
             sentinel_vertex.embed_content.return_value = {"embedding": [0.1, 0.2, 0.3, 0.4, 0.5]}
-            sentinel_openai.embeddings.create.return_value = MagicMock(data=[MagicMock(embedding=[0.1, 0.2, 0.3, 0.4, 0.5])])
+            sentinel_openai.embeddings.create.return_value = MagicMock(
+                data=[MagicMock(embedding=[0.1, 0.2, 0.3, 0.4, 0.5])]
+            )
 
             # Test Gemini embedding method
             gemini_result = await mock_agent._get_gemini_embedding("test content")
@@ -109,8 +111,12 @@ def test_embedding_sovereign_agent_uses_wrapper_factories():
         asyncio.run(test_embeddings())
 
         # Verify factory functions were called
-        assert len(vertex_calls) >= 1, f"create_vertex_client should be called at least once, was called {len(vertex_calls)} times"
-        assert len(openai_calls) >= 1, f"create_openai_client should be called at least once, was called {len(openai_calls)} times"
+        assert len(vertex_calls) >= 1, (
+            f"create_vertex_client should be called at least once, was called {len(vertex_calls)} times"
+        )
+        assert len(openai_calls) >= 1, (
+            f"create_openai_client should be called at least once, was called {len(openai_calls)} times"
+        )
 
         # Verify the mock clients were used
         sentinel_vertex.embed_content.assert_called()

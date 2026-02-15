@@ -10,11 +10,13 @@ import yaml
 
 class PromptLoadError(Exception):
     """Raised when prompt file cannot be loaded."""
+
     pass
 
 
 class PromptSchemaError(Exception):
     """Raised when prompt file schema is invalid."""
+
     pass
 
 
@@ -77,7 +79,7 @@ class PromptLoader:
                 raise PromptLoadError(f"Path is not a file: {prompt_file}")
 
             try:
-                with open(prompt_file, encoding='utf-8') as f:
+                with open(prompt_file, encoding="utf-8") as f:
                     data = yaml.safe_load(f)
             except yaml.YAMLError as e:
                 raise PromptLoadError(f"Invalid YAML in {prompt_file}: {e}")
@@ -88,10 +90,10 @@ class PromptLoader:
             if not isinstance(data, dict):
                 raise PromptSchemaError(f"Prompt must be a dict: {prompt_file}")
 
-            if 'template' not in data:
+            if "template" not in data:
                 raise PromptSchemaError(f"Missing required 'template' key: {prompt_file}")
 
-            if not isinstance(data['template'], str):
+            if not isinstance(data["template"], str):
                 raise PromptSchemaError(f"'template' must be a string: {prompt_file}")
 
             self._prompt_cache[cache_key] = data
@@ -138,7 +140,4 @@ class PromptLoader:
 
     def cache_info(self) -> dict[str, int]:
         """Get cache statistics for testing and monitoring."""
-        return {
-            "cached_items": len(self._prompt_cache),
-            "cache_keys": list(self._prompt_cache.keys())
-        }
+        return {"cached_items": len(self._prompt_cache), "cache_keys": list(self._prompt_cache.keys())}
