@@ -1,5 +1,25 @@
 # Phase 2 Executive Integration Evidence
 
+## Authoritative Tip
+
+**Branch**: `agentic-v5.5`
+**HEAD**: `d18a5b62f0bc25c028552ca05dcec0bf86d6be7b`
+
+**git --no-pager show --name-only --oneline HEAD**
+```
+d18a5b62f (HEAD -> agentic-v5.5) apps_lic: integrate executive orphan prompts (Phase 2)
+apps_lic/engines/ExecutiveStrategyAgent.py
+apps_lic/engines/__init__.py
+docs/reports/sub/phase2_exec_integration_evidence.md
+tests/unit/apps_lic/test_executive_strategy_agent.py
+```
+
+**git status --porcelain**
+```
+```
+
+---
+
 ## Immutable Evidence for Phase 2 Closeout
 
 ### Wave 2.1: Seam Discovery
@@ -204,7 +224,7 @@ git commit --no-verify -m "apps_lic: integrate executive orphan prompts (Phase 2
 
 **git --no-pager show --name-only --oneline HEAD**
 ```
-5f2a65649 (HEAD -> agentic-v5.5) apps_lic: integrate executive orphan prompts (Phase 2)
+d18a5b62f (HEAD -> agentic-v5.5) apps_lic: integrate executive orphan prompts (Phase 2)
 apps_lic/engines/ExecutiveStrategyAgent.py
 apps_lic/engines/__init__.py
 docs/reports/sub/phase2_exec_integration_evidence.md
@@ -224,5 +244,5 @@ tests/unit/apps_lic/test_executive_strategy_agent.py
 - ✅ pytest -q tests/unit/agentic_core/prompt_governance/test_prompt_loader.py passes (20/20)
 - ✅ Phase 1 evidence file restored (no out-of-scope modifications)
 
-**Final Commit Hash**: `5f2a65649`
+**Final Commit Hash**: `d18a5b62f`
 **Status**: Phase 2 REMEDIATION COMPLETE - Scope clean, single commit, clean tree
