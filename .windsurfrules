@@ -385,6 +385,28 @@ Phase must not:
 
 ---
 
+## 34. Markdown Lint Exception for Evidence Files
+
+Markdown lint errors in evidence files (`docs/reports/governance/*_evidence.md`) are explicitly exempt from fix cycles.
+
+**Rationale:**
+- Evidence files are raw output captures, not production documentation
+- Lint errors don't affect guard functionality or test validity
+- Cycling over formatting issues wastes time without governance value
+- Primary objective is guard implementation, not documentation formatting
+
+**Allowed:**
+- Ignore MD035 (hr-style), MD022 (blanks-around-headings), MD032 (blanks-around-lists) in evidence files
+- Focus on guard functionality, test results, and git hygiene
+- Move forward when acceptance criteria are met regardless of formatting
+
+**Forbidden:**
+- Endless lint fix cycles on evidence files
+- Blocking guard implementation on formatting issues
+- Treating evidence files as production documentation
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
