@@ -36,8 +36,18 @@ def is_excluded_directory(dir_path: Path) -> bool:
         ".venv",
         "venv",
         "env",
+        "data",
+        "docs",
     }
     return dir_path.name in excluded_dirs
+
+
+def is_in_excluded_directory(file_path: Path) -> bool:
+    """Check if file is in any excluded directory."""
+    for parent in file_path.parents:
+        if is_excluded_directory(parent):
+            return True
+    return False
 
 
 def is_allowed_location(file_path: Path, root_path: Path) -> bool:
@@ -45,11 +55,11 @@ def is_allowed_location(file_path: Path, root_path: Path) -> bool:
     relative_path = file_path.relative_to(root_path)
 
     # Check if file is under any allowed root directory
-    allowed_roots = {"artifacts/logs/", "artifacts/outputs/", "logs/", "output/", "outputs/"}
+    allowed_roots = {"artifacts/logs", "artifacts/outputs", "logs", "output", "outputs"}
 
     # Build path string for each possible prefix using pathlib
     for i in range(len(relative_path.parts)):
-        prefix_path = Path(*relative_path.parts[: i + 1]) / ""
+        prefix_path = Path(*relative_path.parts[: i + 1])
         prefix_str = str(prefix_path).replace("\\", "/")
         if prefix_str in allowed_roots:
             return True
@@ -99,6 +109,10 @@ def scan_logs_and_outputs(root_path: Path) -> dict[str, Any]:
     for item_path in all_files:
         # Skip excluded directories
         if item_path.is_dir() and is_excluded_directory(item_path):
+            continue
+
+        # Skip files in excluded directories
+        if item_path.is_file() and is_in_excluded_directory(item_path):
             continue
 
         # Check if this is a log/output file or in a log/output directory
