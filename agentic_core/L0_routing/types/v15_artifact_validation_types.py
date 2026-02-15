@@ -15,7 +15,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Any
 
-from agentic_core.L0_routing.types.v15_artifact_typed import (
+from agentic_core.L0_routing.types.v15_artifact_types import (
     HealingPlanTD,
     IncidentArtifactTD,
     ResultArtifactTD,

@@ -395,3 +395,9 @@ X apps_shared/utils/resource_manager_types.py: Functions: ['get_resource_manager
 X apps_shared/utils/resource_manager_types.py: Implementation classes: ['ResourceNamespace', 'ResourceKey', 'ResourceManager']
 X apps_shared/utils/unified_executor.py: Executor must be in engines/
 X apps_shared/utils/vector_memory_types.py: Implementation classes: ['VectorMemoryStore']
+
+  X agentic_core/L0_routing/types/v15_artifact_types.py: Implementation classes: ['ResultArtifactTD', 'HealingPlanTD', 'IncidentArtifactTD', 'StaleWriteIncidentTD', 'RouteDecisionArtifactTD', 'TokenCapArtifactTD', 'SelfHealingTriggerTD', 'AggregateArtifactTD']
+  X agentic_core/L0_routing/types/v15_artifact_validation_types.py: Functions: ['_to_raw_dict', '_require_str', '_require_int', '_require_sequence_of_str', '_coerce_enum_to_str', '_coerce_tuple_to_list', 'validate_result_artifact', 'to_result_artifact_dict', 'validate_healing_plan', 'to_healing_plan_dict', 'validate_incident_artifact', 'to_incident_artifact_dict', 'validate_stale_write_incident', 'to_stale_write_incident_dict', 'make_result_artifact_from_dataclass', 'make_healing_plan_from_dataclass']
+
+X agentic_core/L0_routing/types/v15_artifact_types.py: Implementation classes: ['ResultArtifactTD', 'HealingPlanTD', 'IncidentArtifactTD', 'StaleWriteIncidentTD', 'RouteDecisionArtifactTD', 'TokenCapArtifactTD', 'SelfHealingTriggerTD', 'AggregateArtifactTD']
+X agentic_core/L0_routing/types/v15_artifact_validation_types.py: Functions: ['_to_raw_dict', '_require_str', '_require_int', '_require_sequence_of_str', '_coerce_enum_to_str', '_coerce_tuple_to_list', 'validate_result_artifact', 'to_result_artifact_dict', 'validate_healing_plan', 'to_healing_plan_dict', 'validate_incident_artifact', 'to_incident_artifact_dict', 'validate_stale_write_incident', 'to_stale_write_incident_dict', 'make_result_artifact_from_dataclass', 'make_healing_plan_from_dataclass']
