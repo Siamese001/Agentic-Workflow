@@ -49,10 +49,8 @@ def test_minimum_behavioral_bar():
 
             # Check for minimum requirements
             has_module_import = False
-            uses_importlib = False
             assertion_count = 0
             test_functions = 0
-            importlib_module_name = None
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
@@ -71,11 +69,9 @@ def test_minimum_behavioral_bar():
                         and node.func.value.id == "importlib"
                         and node.func.attr == "import_module"
                     ):
-                        uses_importlib = True
                         # Check if the argument is a module path
                         if node.args and isinstance(node.args[0], ast.Constant):
                             module_name = node.args[0].value
-                            importlib_module_name = module_name
                             # Verify it matches the expected module from file path
                             if any(part in module_name for part in ["agentic_core", "apps_"]):
                                 has_module_import = True

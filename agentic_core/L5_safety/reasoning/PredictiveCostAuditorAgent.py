@@ -26,9 +26,10 @@ from typing import Any
 
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
 
+from agentic_core.base_agents.timeout_decorator import timeout
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.decorators import standard_heal
-from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
 

@@ -15,9 +15,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple
 
-from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 from pydantic import BaseModel
 
+from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 from agentic_core.prompt_governance.security.output_schema_validator import validate_against_schema
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export

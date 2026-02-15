@@ -1,6 +1,8 @@
 """Legacy compatibility shim — aliases CsvDocumentLoader as CSVDocumentLoader."""
 
-from agentic_core.knowledge.document_loaders.csv_document_loader_config import CsvDocumentLoader as _CsvDocumentLoader
+from agentic_core.knowledge.document_loaders.csv_document_loader_config import (
+    CsvDocumentLoader as _CsvDocumentLoader,
+)
 
 
 class CSVDocumentLoader(_CsvDocumentLoader):

@@ -9,8 +9,7 @@ def test_html_loader_extracts_visible_text(tmp_path: Path):
     """Visible text is extracted and HTML tags are stripped."""
     html_file = tmp_path / "sample.html"
     html_file.write_text(
-        "<html><head><title>T</title></head>"
-        "<body><h1>Hello</h1><p>World</p></body></html>",
+        "<html><head><title>T</title></head><body><h1>Hello</h1><p>World</p></body></html>",
         encoding="utf-8",
     )
     result = HTMLDocumentLoader.load_file(html_file)
@@ -23,11 +22,7 @@ def test_html_loader_strips_script_and_style(tmp_path: Path):
     """Script and style blocks are removed from output."""
     html_file = tmp_path / "scripted.html"
     html_file.write_text(
-        "<html><body>"
-        "<script>var x = 1;</script>"
-        "<style>.a{color:red}</style>"
-        "<p>Visible</p>"
-        "</body></html>",
+        "<html><body><script>var x = 1;</script><style>.a{color:red}</style><p>Visible</p></body></html>",
         encoding="utf-8",
     )
     result = HTMLDocumentLoader.load_file(html_file)
@@ -46,7 +41,7 @@ def test_html_loader_handles_entities(tmp_path: Path):
     """HTML entities are unescaped to their character equivalents."""
     html_file = tmp_path / "entities.html"
     html_file.write_text(
-        '<html><body><p>&amp; hello &quot;world&quot;</p></body></html>',
+        "<html><body><p>&amp; hello &quot;world&quot;</p></body></html>",
         encoding="utf-8",
     )
     result = HTMLDocumentLoader.load_file(html_file)

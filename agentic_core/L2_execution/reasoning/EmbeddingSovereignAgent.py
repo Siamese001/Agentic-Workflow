@@ -21,9 +21,9 @@ from typing import TYPE_CHECKING, Any, Literal
 if TYPE_CHECKING:
     pass
 
-from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.utils.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

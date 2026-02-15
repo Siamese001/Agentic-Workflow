@@ -12,10 +12,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
 from agentic_core.knowledge.document_loaders.text_loader import TextDocumentLoader
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 class SovereignRAGManager(SovereignBaseAgent):
