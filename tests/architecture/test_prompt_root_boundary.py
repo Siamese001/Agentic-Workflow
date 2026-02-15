@@ -17,22 +17,14 @@ def test_no_nondoc_references_to_removed_prompt_roots():
         if not file_path.is_file():
             continue
 
-        # Skip ONLY docs and archives (including all subdirectories)
+        # Skip ONLY directory classes defined in policy
         file_path_str = str(file_path).replace("\\", "/")
-        if "docs/" in file_path_str or "archives/" in file_path_str:
-            continue
-
-        # Skip __pycache__ directories
-        if "__pycache__/" in file_path_str:
-            continue
-
-        # Skip allowed historical references (these files are allowed to reference old paths)
-        allowed_historical_refs = [
-            "agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md",
-            "data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md",
-            "data/manifests/full_data_manifest_20251209.sha256",
-        ]
-        if any(allowed in file_path_str for allowed in allowed_historical_refs):
+        if (
+            "docs/" in file_path_str
+            or "archives/" in file_path_str
+            or "data/manifests/" in file_path_str
+            or "__pycache__/" in file_path_str
+        ):
             continue
 
         # Read file content with error handling
