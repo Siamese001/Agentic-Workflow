@@ -57,7 +57,19 @@ def write_baseline(violations: list) -> None:
     # Create deterministic violation signatures
     signatures = []
     for v in violations:
-        signature = f"{v.file_path}:{v.line_number}:{v.category.value}:{v.message}"
+        # Normalize path to repo-relative POSIX path
+        if isinstance(v.file_path, Path):
+            if v.file_path.is_absolute():
+                rel_path = v.file_path.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = v.file_path.as_posix()
+        else:
+            path_obj = Path(v.file_path)
+            if path_obj.is_absolute():
+                rel_path = path_obj.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = path_obj.as_posix()
+        signature = f"{rel_path}:{v.line_number}:{v.category.value}:{v.message}"
         signatures.append(signature)
 
     # Sort for determinism
@@ -79,8 +91,26 @@ def check_files(file_paths: list[str]) -> int:
     Returns:
         Exit code: 0 if passed, 1 if violations found
     """
-    # Filter to only Python files
-    python_files = [Path(f) for f in file_paths if f.endswith(".py") and Path(f).exists()]
+    # If no files specified (pre-commit --all-files), scan all Python files
+    if not file_paths:
+        all_python_files = list(PROJECT_ROOT.rglob("*.py"))
+        # Skip tests, __pycache__, .nox, and other non-source directories
+        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup"]
+        python_files = [
+            f for f in all_python_files
+            if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)
+        ]
+    else:
+        # Filter to only Python files
+        python_files = []
+        for f in file_paths:
+            if f.endswith(".py"):
+                path_obj = Path(f)
+                # Try relative to current directory first, then project root
+                if not path_obj.exists():
+                    path_obj = PROJECT_ROOT / path_obj
+                if path_obj.exists():
+                    python_files.append(path_obj)
 
     if not python_files:
         return 0
@@ -102,13 +132,41 @@ def check_files(file_paths: list[str]) -> int:
     # Create signatures for current violations
     current_signatures = set()
     for v in current_violations:
-        signature = f"{v.file_path}:{v.line_number}:{v.category.value}:{v.message}"
+        # Normalize path to repo-relative POSIX path
+        if isinstance(v.file_path, Path):
+            if v.file_path.is_absolute():
+                rel_path = v.file_path.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = v.file_path.as_posix()
+        else:
+            # If it's already a string, make sure it's repo-relative
+            path_obj = Path(v.file_path)
+            if path_obj.is_absolute():
+                rel_path = path_obj.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = path_obj.as_posix()
+        signature = f"{rel_path}:{v.line_number}:{v.category.value}:{v.message}"
         current_signatures.add(signature)
 
     # New violations = current - baseline
     new_signatures = current_signatures - baseline
-    new_violations = [v for v in current_violations
-                      if f"{v.file_path}:{v.line_number}:{v.category.value}:{v.message}" in new_signatures]
+    new_violations = []
+    for v in current_violations:
+        # Normalize path for signature comparison
+        if isinstance(v.file_path, Path):
+            if v.file_path.is_absolute():
+                rel_path = v.file_path.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = v.file_path.as_posix()
+        else:
+            path_obj = Path(v.file_path)
+            if path_obj.is_absolute():
+                rel_path = path_obj.relative_to(PROJECT_ROOT).as_posix()
+            else:
+                rel_path = path_obj.as_posix()
+        signature = f"{rel_path}:{v.line_number}:{v.category.value}:{v.message}"
+        if signature in new_signatures:
+            new_violations.append(v)
 
     if not new_violations:
         # No new violations, check passed
@@ -163,10 +221,11 @@ def main() -> int:
     # If writing baseline, scan all Python files in project
     if args.write_baseline:
         all_python_files = list(PROJECT_ROOT.rglob("*.py"))
-        # Skip tests and __pycache__
+        # Skip tests, __pycache__, .nox, and other non-source directories
+        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup"]
         all_python_files = [
             f for f in all_python_files
-            if "tests" not in str(f) and "__pycache__" not in str(f)
+            if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)
         ]
 
         scanner = AntiPatternScanner(
