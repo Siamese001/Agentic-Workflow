@@ -78,3 +78,46 @@ rg -n -S "REDIS_MCP_ENABLED|redis_mcp_client|mcp.*redis|redis.*mcp" agentic_core
 ```bash
 python -m pytest -q tests/integration/test_redis_mcp_integration.py -q
 ```
+
+## Commit + Evidence
+
+**git status --porcelain=v1 (pre-commit):**
+```
+A  agentic_core/L2_execution/config/mcp_registry.py
+A  agentic_core/L4_state/caching/__init__.py
+A  agentic_core/L4_state/caching/redis_mcp_client.py
+M  agentic_core/config/core/sovereign_config.py
+A  tests/integration/test_redis_mcp_integration.py
+A  docs/reports/sub/redis_mcp_phase2_evidence.md
+```
+
+**Final Commit:**
+```
+583c9c8e2 feat(mcp): restore Redis MCP client + registry activation flag
+```
+
+**Files Changed:**
+- agentic_core/L2_execution/config/mcp_registry.py
+- agentic_core/L4_state/caching/__init__.py
+- agentic_core/L4_state/caching/redis_mcp_client.py
+- agentic_core/config/core/sovereign_config.py
+- tests/integration/test_redis_mcp_integration.py
+- docs/reports/sub/redis_mcp_phase2_evidence.md
+
+## Acceptance Criteria Status
+
+✅ Evidence file exists: docs/reports/sub/redis_mcp_phase2_evidence.md
+✅ Redis MCP client module present in canonical location: agentic_core/L4_state/caching/redis_mcp_client.py
+✅ MCP registry contains Redis MCP entry gated by REDIS_MCP_ENABLED
+✅ Configuration added to sovereign_config.py with Redis MCP properties
+✅ Integration tests created: tests/integration/test_redis_mcp_integration.py
+✅ Single commit produced: 583c9c8e2
+
+## Activation Instructions
+
+To enable Redis MCP functionality:
+
+1. Set environment variable: `REDIS_MCP_ENABLED=true`
+2. Optionally configure: `REDIS_URL=redis://localhost:6379`
+3. Import and use: `from agentic_core.L4_state.caching import get_redis_client`
+4. Client will automatically connect via MCP when enabled

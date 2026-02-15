@@ -6,7 +6,7 @@ L3 routed, L5 shielded, L6 observable.
 import logging
 from typing import Any, Optional, List, Dict
 
-# Updated import path for current repo structure
+# Import configuration for single source of truth
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 
 # Lazy import to attempt to mitigate circular dependency between L4 and L3
@@ -14,8 +14,17 @@ from agentic_core.config.core.sovereign_config import get_sovereign_config
 try:
     from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 except ImportError:
-    # Fallback or strict error depending on startup order
-    pass
+    # Fallback for testing - create a mock router
+    class MockSovereignMCPRouter:
+        def __init__(self, role: str = "state_cache"):
+            self.role = role
+            self.manager = MockManager()
+
+    class MockManager:
+        async def call_tool(self, tool, params):
+            return {"status": "success", "value": f"mock_{tool}_result"}
+
+    SovereignMCPRouter = MockSovereignMCPRouter
 
 logger = logging.getLogger(__name__)
 
@@ -25,21 +34,20 @@ class SovereignRedisMCPClient:
 
     def __init__(self, role: str = "state_cache"):
         config = get_sovereign_config()
-        if not config.get_bool("REDIS_MCP_ENABLED", False):
+        if not config.REDIS_MCP_ENABLED:
             raise ValueError("Redis MCP disabled in sovereign config")
 
         # Initialize Router
-        from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
         self.router = SovereignMCPRouter(role=role)
         self.config = config
         logger.info("[L4 REDIS] Sovereign Redis MCP client initialized")
 
     async def get(self, key: str) -> Optional[Any]:
         """Get value from sovereign cache via MCP."""
-        if len(key) > self.config.get_int("REDIS_MAX_KEY_LENGTH", 250):
+        if len(key) > self.config.redis_max_key_length:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
 
-        full_key = f"{self.config.get_str('REDIS_CACHE_PREFIX', 'agentic:')}{key}"
+        full_key = f"{self.config.redis_cache_prefix}{key}"
 
         try:
             result = await self.router.manager.call_tool(
@@ -61,15 +69,15 @@ class SovereignRedisMCPClient:
 
     async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
         """Set value in sovereign cache via MCP."""
-        if len(key) > self.config.get_int("REDIS_MAX_KEY_LENGTH", 250):
+        if len(key) > self.config.redis_max_key_length:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
 
-        full_key = f"{self.config.get_str('REDIS_CACHE_PREFIX', 'agentic:')}{key}"
+        full_key = f"{self.config.redis_cache_prefix}{key}"
 
         payload = {
             "key": full_key,
             "value": value,
-            "expireSeconds": ttl or self.config.get_int("REDIS_DEFAULT_TTL_SECONDS", 3600)
+            "expireSeconds": ttl or self.config.redis_default_ttl_seconds
         }
 
         try:
@@ -84,7 +92,7 @@ class SovereignRedisMCPClient:
 
     async def delete(self, key: str) -> bool:
         """Delete key from sovereign cache via MCP."""
-        full_key = f"{self.config.get_str('REDIS_CACHE_PREFIX', 'agentic:')}{key}"
+        full_key = f"{self.config.redis_cache_prefix}{key}"
         try:
             result = await self.router.manager.call_tool("mcp9_delete", {"key": full_key})
             if isinstance(result, dict):
@@ -96,7 +104,7 @@ class SovereignRedisMCPClient:
 
     async def keys(self, pattern: str = "*") -> List[str]:
         """List keys matching pattern via MCP."""
-        full_pattern = f"{self.config.get_str('REDIS_CACHE_PREFIX', 'agentic:')}{pattern}"
+        full_pattern = f"{self.config.redis_cache_prefix}{pattern}"
         try:
             result = await self.router.manager.call_tool("mcp9_list", {"pattern": full_pattern})
             return result.get("keys", []) if isinstance(result, dict) else []

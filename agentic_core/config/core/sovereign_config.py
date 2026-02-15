@@ -111,7 +111,14 @@ class SovereignConfigManager:
     # Redis MCP Configuration
     @property
     def redis_mcp_enabled(self) -> bool:
+        """Redis MCP enablement - single source of truth from REDIS_MCP_ENABLED env var."""
         return self.get_bool("REDIS_MCP_ENABLED", False)
+
+    # Compatibility alias for exact env var name
+    @property
+    def REDIS_MCP_ENABLED(self) -> bool:
+        """Compatibility alias - exact env var name mapping."""
+        return self.redis_mcp_enabled
 
     @property
     def redis_url(self) -> str:
