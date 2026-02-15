@@ -90,6 +90,17 @@ These violations are systemic across the apps_shared module and represent archit
 - Windows compatibility considerations
 - Evidence must capture encoding-related errors
 
+### Third-Party Code Exclusions
+
+**Policy**: Third-party and vendored code must be explicitly excluded from governance scans with architectural rationale.
+
+**Requirements**:
+- Exclude patterns in .pre-commit-config.yaml must specify third-party paths
+- ops_scripts/ directory must be excluded from anti-pattern scans
+- Exclusions must reference architectural considerations, not convenience
+
+**Rationale**: Prevents governance violations from third-party code while maintaining visibility into architectural decisions.
+
 ### Authorization
 
 This policy was established incrementally through Phases 2.6-2.8 to address compliance struggles while maintaining truthful gates and documented governance.

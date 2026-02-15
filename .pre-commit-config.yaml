@@ -140,3 +140,14 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+      # -- T3g: Governance Policy Validation (policy enforcement) ---------------
+      # Scope: Validate that governance changes are properly documented
+      # Enforces that configuration changes have corresponding policy updates
+      - id: governance-policy-validation
+        name: "T3g: Governance Policy Validation"
+        entry: python ops_scripts/hooks/validate_governance_policy.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
