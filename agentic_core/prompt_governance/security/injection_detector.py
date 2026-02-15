@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import logging
 import re
+from typing import Any
 
 from agentic_core.prompt_governance.security.normalization_util import normalize_and_decode
 from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
@@ -200,3 +201,40 @@ class InjectionDetector:
                     message=f"Detected potential prompt injection (sig_id='{sig_id}')",
                     violation_type="PROMPT_INJECTION",
                 )
+
+    def check_regression_compliance(
+        self,
+        current_metrics: dict[str, Any],
+        baseline_metrics: dict[str, Any],
+        thresholds: dict[str, float] | None = None,
+    ) -> bool:
+        """Check if current injection metrics comply with baseline thresholds.
+
+        Args:
+            current_metrics: Current injection evaluation metrics
+            baseline_metrics: Baseline injection evaluation metrics
+            thresholds: Optional custom thresholds (max_attack_success_rate_increase, max_high_risk_count_increase_ratio)
+
+        Returns:
+            True if compliant (no regression), False otherwise
+        """
+        try:
+            from agentic_core.L5_safety.security.injection_regression_gate import (
+                RegressionThresholds,
+                evaluate_against_baseline,
+            )
+
+            # Convert dict thresholds to RegressionThresholds if provided
+            gate_thresholds = None
+            if thresholds:
+                gate_thresholds = RegressionThresholds(
+                    max_attack_success_rate_increase=thresholds.get("max_attack_success_rate_increase", 0.05),
+                    max_high_risk_count_increase_ratio=thresholds.get(
+                        "max_high_risk_count_increase_ratio", 0.20
+                    ),
+                )
+
+            evaluate_against_baseline(current_metrics, baseline_metrics, gate_thresholds)
+            return True
+        except Exception:
+            return False
