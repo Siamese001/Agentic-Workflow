@@ -714,6 +714,76 @@ All policy decisions must be documented in `docs/rules/governance.md`.
 
 ---
 
+## 40. Phase Completion Truthfulness
+
+A phase cannot be declared complete until all authoritative gates pass without exceptions.
+
+**Forbidden:**
+- Declaring phase complete when pytest -q fails
+- Using "pre-existing failures" as excuse without documented testpaths adjustment
+- Moving to next phase while working tree has uncommitted changes
+- Bypassing gates with --no-verify or SKIP variables
+
+**Required for Phase Completion:**
+1. pytest -q must pass (0 failed) on authoritative suite
+2. pre-commit run --all-files must pass on default-stage hooks
+3. git status --porcelain=v1 must be empty
+4. All evidence files must contain raw outputs, not summaries
+5. Any test exclusions must be documented in governance policy with rationale
+
+**Phase Evidence Requirements:**
+- Raw command outputs for all verification steps
+- Exact commit hashes and file change lists
+- Links to all supporting evidence files
+- No "..." truncation within documented scope
+
+---
+
+## 41. Baseline and Anti-Pattern Governance
+
+Anti-pattern detection baselines are immutable landmines requiring explicit authorization.
+
+**Baseline Lock Protocol:**
+- `ALLOW_LANDMINE_BASELINE_WRITE=1` environment variable required for rewrites
+- CI/automation must exit non-zero on unauthorized rewrite attempts
+- Evidence must demonstrate both lock failure and authorized success
+- Baseline files are version-controlled artifacts, not temporary outputs
+
+**Third-Party Code Exclusions:**
+- ops_scripts/ directory must be excluded from anti-pattern scans
+- Third-party paths require explicit documentation in .pre-commit-config.yaml
+- Exclusions must have architectural rationale, not convenience justifications
+
+**UTF-8 Encoding Requirements:**
+- All Python file processing must handle UTF-8 encoding
+- Windows compatibility requires explicit encoding specifications
+- Evidence files must capture encoding-related errors if they occur
+
+---
+
+## 42. Testpaths and Authoritative Suite Management
+
+pytest.ini testpaths define the authoritative suite for phase completion.
+
+**Testpaths Adjustment Protocol:**
+1. Document all failures with raw output capture
+2. Classify failures: regressions vs pre-existing vs mis-scoped
+3. Create triage document with bucket assignments
+4. Update governance policy with rationale for exclusions
+5. Adjust testpaths only after documentation is complete
+
+**Forbidden Testpaths Changes:**
+- Silent removal of failing tests without evidence
+- Claiming "suite passes" when testpaths were narrowed
+- Excluding tests without governance policy documentation
+
+**Required Documentation:**
+- Exact failure lists before and after adjustment
+- Rationale for each excluded test/directory
+- Reversibility conditions for future phases
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
