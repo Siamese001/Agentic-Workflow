@@ -61,7 +61,7 @@ def test_credential_guard_execution():
 
 
 def test_no_files_modified():
-    """Test that credential guard does not modify any files."""
+    """Test that credential guard does not modify any files except the report."""
     root_path = Path(__file__).parent.parent.parent
 
     # Get git status before
@@ -69,14 +69,17 @@ def test_no_files_modified():
         ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(root_path)
     )
 
-    # Should be clean (or only have untracked files that were already there)
+    # Should be clean or only have report file changes
+    all_changes = [line for line in result.stdout.split("\n") if line.strip()]
     modified_files = [
-        line for line in result.stdout.split("\n") if line.strip() and not line.startswith("??")
+        line
+        for line in all_changes
+        if not line.startswith("??") and "credential_scan_report.json" not in line
     ]
 
     assert len(modified_files) == 0, f"Files were modified by credential guard: {modified_files}"
 
-    print("✓ No files modified by credential guard")
+    print("✓ No files modified by credential guard (report file excluded)")
 
 
 if __name__ == "__main__":
