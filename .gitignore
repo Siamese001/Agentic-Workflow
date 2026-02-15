@@ -24,11 +24,14 @@ data/**/*.bin
 
 # Python artifacts
 __pycache__/
+**/__pycache__/
 *.pyc
+*.pyo
 .mypy_cache/
 .pytest_cache/
 .pytest_tmp/
 .ruff_cache/
+.nox/
 
 # Virtual environments
 .venv/
