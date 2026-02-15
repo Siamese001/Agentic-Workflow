@@ -37,8 +37,8 @@ class TestYamlInjectionLoader:
         assert files1 == files2
         assert [f.name for f in files1] == ["a_safety.yaml", "m_reasoning.yaml", "z_framing.yaml"]
 
-    def test_missing_required_keys_is_handled_gracefully(self, tmp_path):
-        """Test that missing required keys are handled gracefully by skipping patterns."""
+    def test_missing_required_keys_skipped_with_warning(self, tmp_path, caplog):
+        """Test that missing required keys are skipped with warning logged."""
         # Create YAML file missing required keys
         invalid_content = {
             "v5_framing_injections": {
@@ -48,22 +48,25 @@ class TestYamlInjectionLoader:
                 }
             }
         }
-
+        
         yaml_file = tmp_path / "invalid.yaml"
         yaml_file.write_text(yaml.dump(invalid_content))
-
+        
         loader = YamlInjectionLoader(tmp_path)
-
+        
         # Should not raise an error, but should skip the invalid pattern
         patterns = loader.load_all_patterns()
-
+        
         # Should have empty patterns for framing layer since the only pattern was invalid
         framing_patterns = patterns.get("framing", [])
         assert len(framing_patterns) == 0, "Invalid pattern should be skipped"
-
+        
         # Should still have other layers initialized as empty lists
         assert "framing" in patterns
         assert "safety" in patterns
+        
+        # Check that warning was logged
+        assert "Skipped 1 invalid patterns" in caplog.text
 
     def test_yaml_parse_failure_includes_filename(self, tmp_path):
         """Test that YAML parse failure includes filename and doesn't crash unrelated loads."""

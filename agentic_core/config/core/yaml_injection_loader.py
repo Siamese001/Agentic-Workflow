@@ -177,8 +177,8 @@ class YamlInjectionLoader:
         return patterns
 
     def _extract_patterns_from_dict(
-        self, root_key: str, pattern_dict: dict[str, Any], yaml_file: Path
-    ) -> list[InstructionalPattern]:
+        self, root_key: str, pattern_dict: Dict[str, Any], yaml_file: Path
+    ) -> List[InstructionalPattern]:
         """Extract patterns from a dictionary structure.
 
         Args:
@@ -199,6 +199,7 @@ class YamlInjectionLoader:
         # Sort pattern names for deterministic ID assignment
         sorted_pattern_names = sorted(pattern_dict.keys())
         pattern_id = 1
+        skipped_count = 0
 
         for pattern_name in sorted_pattern_names:
             pattern_data = pattern_dict[pattern_name]
@@ -214,6 +215,7 @@ class YamlInjectionLoader:
                 logger.debug(
                     f"Skipping pattern {pattern_name} in {yaml_file}: missing description or prompt_template"
                 )
+                skipped_count += 1
                 continue
 
             # Extract required fields
@@ -222,14 +224,18 @@ class YamlInjectionLoader:
 
             # Validate field types
             if not isinstance(description, str):
-                raise YamlValidationError(
-                    filename=str(yaml_file), parse_error=f"{pattern_name}.description must be a string"
+                logger.debug(
+                    f"Skipping pattern {pattern_name} in {yaml_file}: description not a string"
                 )
+                skipped_count += 1
+                continue
 
             if not isinstance(prompt_template, str):
-                raise YamlValidationError(
-                    filename=str(yaml_file), parse_error=f"{pattern_name}.prompt_template must be a string"
+                logger.debug(
+                    f"Skipping pattern {pattern_name} in {yaml_file}: prompt_template not a string"
                 )
+                skipped_count += 1
+                continue
 
             # Create InstructionalPattern
             pattern = InstructionalPattern(
@@ -243,6 +249,10 @@ class YamlInjectionLoader:
 
             patterns.append(pattern)
             pattern_id += 1
+
+        # Log warning if patterns were skipped
+        if skipped_count > 0:
+            logger.warning(f"Skipped {skipped_count} invalid patterns in {yaml_file}")
 
         return patterns
 

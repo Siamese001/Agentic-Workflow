@@ -1,0 +1,10 @@
+# Critical modules for import validation test
+# Minimal list required for agentic_core functionality
+
+agentic_core
+agentic_core.config
+agentic_core.config.core
+agentic_core.runtime
+agentic_core.runtime.config
+apps_shared
+apps_shared.utils
