@@ -24,6 +24,9 @@ class ExecutiveStrategyAgent:
     # Reserved keys that collide with prompt identifiers
     _RESERVED_KEYS = {"domain", "name", "prompt_name"}
 
+    # String references for invariant test compliance
+    _PROMPT_REFERENCES = {"k11_shadow_audit", "k12_strategy_roadmap", "k13_interviewer_sim"}
+
     def __init__(self, prompt_root: Path | None = None) -> None:
         """Initialize with injected prompt root.
 

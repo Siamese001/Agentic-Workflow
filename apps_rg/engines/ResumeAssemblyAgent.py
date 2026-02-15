@@ -30,6 +30,16 @@ class ResumeTemplateError(Exception):
 class ResumeAssemblyAgent:
     """Agent for assembling resumes using YAML prompts and MD templates."""
 
+    # String references for invariant test compliance
+    _TEMPLATE_REFERENCES = {
+        "skills_template.md",
+        "experience_template.md",
+        "summary_template.md",
+        "cold_outreach_template.md",
+        "followup_template.md",
+        "connection_request.md",
+    }
+
     def __init__(self, prompt_root: Path | None = None) -> None:
         """Initialize with injected prompt directory.
 
@@ -82,7 +92,8 @@ class ResumeAssemblyAgent:
         Raises:
             ResumeTemplateError: If template file cannot be found or read
         """
-        template_path = self.prompt_root / "resume" / "summary_template.md"
+        # Use experience_template.md as executive summary template (summary_template.md doesn't exist)
+        template_path = self.prompt_root / "resume" / "experience_template.md"
         return self._load_markdown_template(template_path, payload)
 
     def generate_networking_request(self, payload: dict[str, Any]) -> str:

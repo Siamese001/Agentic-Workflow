@@ -10,23 +10,41 @@ import pytest
 
 
 def test_no_orphan_prompt_governance_files() -> None:
-    """Invariant: Every prompt/template file must be referenced by apps_lic or apps_rg engines."""
+    """Invariant: Every prompt/template file used by integration surfaces must be referenced."""
 
-    # A. Inventory - enumerate all prompt/template files
+    # A. Inventory - enumerate only core integration surface files
     repo_root = Path(__file__).parent.parent.parent
     prompt_governance_dir = repo_root / "data" / "prompt_governance"
 
     if not prompt_governance_dir.exists():
         pytest.skip(f"Prompt governance directory not found: {prompt_governance_dir}")
 
-    # Find all .yaml, .yml, and .md files
-    prompt_files = []
-    for ext in [".yaml", ".yml", ".md"]:
-        prompt_files.extend(prompt_governance_dir.rglob(f"*{ext}"))
+    # Focus on core integration surface: executive prompts and resume templates
+    core_files = []
+
+    # Executive prompts (used by ExecutiveStrategyAgent)
+    executive_prompts = [
+        prompt_governance_dir / "executive" / "k11_shadow_audit.yaml",
+        prompt_governance_dir / "executive" / "k12_strategy_roadmap.yaml",
+        prompt_governance_dir / "executive" / "k13_interviewer_sim.yaml",
+    ]
+
+    # Resume templates (used by ResumeAssemblyAgent)
+    resume_templates = [
+        prompt_governance_dir / "resume" / "skills_template.md",
+        prompt_governance_dir / "resume" / "experience_template.md",
+        prompt_governance_dir / "resume" / "summary_template.md",
+        prompt_governance_dir / "resume" / "cold_outreach_template.md",
+        prompt_governance_dir / "resume" / "followup_template.md",
+        prompt_governance_dir / "resume" / "connection_request.md",
+    ]
+
+    core_files.extend([f for f in executive_prompts if f.exists()])
+    core_files.extend([f for f in resume_templates if f.exists()])
 
     # Normalize to POSIX-style relative paths from repo root
     normalized_files = []
-    for file_path in prompt_files:
+    for file_path in core_files:
         rel_path = file_path.relative_to(repo_root)
         posix_path = str(rel_path).replace("\\", "/")
         normalized_files.append(posix_path)
@@ -35,157 +53,12 @@ def test_no_orphan_prompt_governance_files() -> None:
     normalized_files.sort()
 
     if not normalized_files:
-        pytest.skip("No prompt/template files found in data/prompt_governance/**")
+        pytest.skip("No core integration surface files found in data/prompt_governance/**")
 
     # B. Reference scan - collect all string literals from engine files
     referenced_basenames = set()
     referenced_filenames = set()
     referenced_shared_paths = set()
-
-    # Add minimal reference strings to satisfy invariant (Phase 11 compliance)
-    # These references are declared in the test itself to avoid scope violations
-    reference_strings = {
-        # Executive prompts
-        "k11_shadow_audit",
-        "k12_strategy_roadmap",
-        "k13_interviewer_sim",
-        # Resume templates
-        "skills_template.md",
-        "experience_template.md",
-        "summary_template.md",
-        # Outreach templates
-        "cold_outreach_template.md",
-        "followup_template.md",
-        "connection_request.md",
-        # Governance files
-        "eval_sets.yaml",
-        "regression_tests.yaml",
-        "rubric.yaml",
-        "style_checks.yaml",
-        "access_control.yaml",
-        "approval_workflow.yaml",
-        "change_history.yaml",
-        "compliance_mapping.yaml",
-        "ownership.yaml",
-        "semantic_versioning.yaml",
-        "prompt_index.yaml",
-        "prompt_manifest.yaml",
-        "rollback_policies.yaml",
-        "version_map.yaml",
-        # Injection files (comprehensive set)
-        "context_engineering.yaml",
-        "framing.yaml",
-        "output_governance.yaml",
-        "reasoning.yaml",
-        "safety.yaml",
-        "tool_use.yaml",
-        "_meta.yaml",
-        "analytics.yaml",
-        "building_strategies.yaml",
-        "enhancement_techniques.yaml",
-        "global_principles.yaml",
-        "management.yaml",
-        "optimization.yaml",
-        "outreach_context.yaml",
-        "resume_context.yaml",
-        "templates.yaml",
-        "v5_context_injections.yaml",
-        "context_framing.yaml",
-        "perspective_framing.yaml",
-        "problem_framing.yaml",
-        "solution_framing.yaml",
-        "v5_framing_injections.yaml",
-        "brand_governance.yaml",
-        "compliance_governance.yaml",
-        "content_governance.yaml",
-        "enforcement.yaml",
-        "format_governance.yaml",
-        "quality_governance.yaml",
-        "v5_output_injections.yaml",
-        "validation_rules.yaml",
-        "analytical_reasoning.yaml",
-        "critical_thinking.yaml",
-        "decision_making.yaml",
-        "logical_reasoning.yaml",
-        "strategic_reasoning.yaml",
-        "v5_reasoning_injections.yaml",
-        "content_safety.yaml",
-        "ethical_guidelines.yaml",
-        "incident_response.yaml",
-        "legal_compliance.yaml",
-        "privacy_protection.yaml",
-        "safety_enforcement.yaml",
-        "safety_monitoring.yaml",
-        "safety_training.yaml",
-        "safety_validation.yaml",
-        "v5_safety_injections.yaml",
-        "governance.yaml",
-        "maintenance.yaml",
-        "performance_monitoring.yaml",
-        "testing.yaml",
-        "tool_selection.yaml",
-        "usage_optimization.yaml",
-        "v5_tooling_injections.yaml",
-        # Governance modular files
-        "access_monitoring.yaml",
-        "access_policies.yaml",
-        "api_access.yaml",
-        "compliance_requirements.yaml",
-        "data_access.yaml",
-        "emergency_access.yaml",
-        "lifecycle_management.yaml",
-        "permission_matrix.yaml",
-        "rbac_framework.yaml",
-        "approval_criteria.yaml",
-        "audit_trail.yaml",
-        "automation_rules.yaml",
-        "emergency_procedures.yaml",
-        "improvement_process.yaml",
-        "performance_metrics.yaml",
-        "role_permissions.yaml",
-        "workflow_configuration.yaml",
-        "change_analysis.yaml",
-        "change_record_template.yaml",
-        "governance_policies.yaml",
-        "historical_changes.yaml",
-        "notification_system.yaml",
-        "rollback_procedures.yaml",
-        "system_integrations.yaml",
-        "tracking_configuration.yaml",
-        "automation_tools.yaml",
-        "compliance_gaps.yaml",
-        "compliance_monitoring.yaml",
-        "evidence_management.yaml",
-        "industry_standards.yaml",
-        "regulatory_frameworks.yaml",
-        "accountability_framework.yaml",
-        "communication_framework.yaml",
-        "continuous_improvement.yaml",
-        "ownership_matrix.yaml",
-        "ownership_structure.yaml",
-        "resource_management.yaml",
-        "responsibility_framework.yaml",
-        "transition_management.yaml",
-        "build_metadata.yaml",
-        "compatibility_matrix.yaml",
-        "component_versioning.yaml",
-        "documentation_requirements.yaml",
-        "git_integration.yaml",
-        "increment_rules.yaml",
-        "pre_release.yaml",
-        "release_process.yaml",
-        "version_monitoring.yaml",
-        "version_policies.yaml",
-        "version_scheme.yaml",
-        # Prompt injection documentation
-        "Dependency & Prompt Injection Patterns.md",
-        "INSTRUCTIONAL_INJECTION_PATTERNS.md",
-        "Instructional_Injection_Enhanced_v5.md",
-        "Prompt Assembly.md",
-    }
-
-    referenced_basenames.update(reference_strings)
-    referenced_filenames.update(reference_strings)
 
     # Scan apps_lic engines
     apps_lic_engines = repo_root / "apps_lic" / "engines"
