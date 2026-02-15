@@ -30,7 +30,21 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Mapping
 from pathlib import Path
+
+
+def can_update_golden(env: Mapping[str, str]) -> bool:
+    """
+    Check if golden update gate is satisfied.
+
+    Args:
+        env: Environment variable mapping (e.g., os.environ)
+
+    Returns:
+        True if STRUCTURE_GOLDEN_UPDATE=1, False otherwise
+    """
+    return env.get("STRUCTURE_GOLDEN_UPDATE", "") == "1"
 
 
 def validate_manifest(project_root: Path) -> int:
@@ -112,8 +126,7 @@ def update_golden(project_root: Path) -> int:
     )
 
     # Check gate
-    gate_value = os.environ.get("STRUCTURE_GOLDEN_UPDATE", "")
-    if gate_value != "1":
+    if not can_update_golden(os.environ):
         print("ERROR: Golden update requires STRUCTURE_GOLDEN_UPDATE=1 environment variable")
         print(
             "Example: STRUCTURE_GOLDEN_UPDATE=1 python -m ops_scripts.ci.structure_drift_validator --update-golden"
