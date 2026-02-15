@@ -1,3 +1,9 @@
+"""
+DEPRECATED: Documentation-only; NOT runtime-loaded
+Runtime SSOT: data/prompt_governance
+Do not add new documents here
+"""
+
 from __future__ import annotations
 
 """

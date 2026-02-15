@@ -1,3 +1,9 @@
+<!--
+DEPRECATED: Documentation-only; NOT runtime-loaded
+Runtime SSOT: data/prompt_governance
+Do not add new documents here
+-->
+
 # L1 Cognition — Instructional Injection Patterns
 
 > **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`

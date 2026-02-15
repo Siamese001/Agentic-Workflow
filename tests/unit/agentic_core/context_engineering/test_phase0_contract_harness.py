@@ -244,17 +244,9 @@ class TestInstructionalInjectionPatternDataContract:
     and contain all 30 patterns across 6 layers.
 
     Sources:
-      - agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md
       - data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
     """
 
-    META_PROMPT = (
-        REPO_ROOT
-        / "agentic_core"
-        / "prompt_governance"
-        / "meta_prompts"
-        / "INSTRUCTIONAL_INJECTION_PATTERNS.md"
-    )
     V5_DATA = (
         REPO_ROOT
         / "data"
@@ -272,9 +264,6 @@ class TestInstructionalInjectionPatternDataContract:
         "Output Layer",
     ]
 
-    def test_meta_prompt_file_exists(self):
-        assert self.META_PROMPT.is_file(), f"Missing: {self.META_PROMPT.relative_to(REPO_ROOT)}"
-
     def test_v5_data_file_exists(self):
         assert self.V5_DATA.is_file(), f"Missing: {self.V5_DATA.relative_to(REPO_ROOT)}"
 
@@ -287,11 +276,6 @@ class TestInstructionalInjectionPatternDataContract:
         content = self.V5_DATA.read_text(encoding="utf-8")
         for layer in self.EXPECTED_LAYERS:
             assert layer in content, f"Layer '{layer}' missing from v5 data file"
-
-    def test_meta_prompt_references_framing_context_reasoning(self):
-        content = self.META_PROMPT.read_text(encoding="utf-8")
-        for layer in ["Framing Layer", "Context Layer", "Reasoning Layer"]:
-            assert layer in content, f"Meta-prompt must reference '{layer}'"
 
 
 # ── 9. No-Naive-Concat Regression Guard ─────────────────────────────────

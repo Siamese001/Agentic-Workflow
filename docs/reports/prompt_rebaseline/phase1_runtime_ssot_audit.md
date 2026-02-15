@@ -29,7 +29,7 @@ agentic_core/prompt_governance/templates/resume/k7_assembly_agent.yaml:2:source:
 agentic_core/prompt_governance/templates/resume/skills_template.md:1:repository: data/prompt_governance
 agentic_core/prompt_governance/templates/resume/skills_template.md:2:source: data/prompt_governance/resume/skills_template.md
 agentic_core/prompt_governance/templates/resume/summary_template.md:1:repository: data/prompt_governance
-agentic_core/povernance/templates/resume/summary_template.md:2:source: data/prompt_governance/resume/summary_template.md
+agentic_core/prompt_governance/templates/resume/summary_template.md:2:source: data/prompt_governance/resume/summary_template.md
 apps_lic/engines/OutreachMessageAgent.py:22:        template_path = Path("data/prompt_governance/shared/connection_request.md")
 apps_lic/engines/OutreachMessageAgent.py:32:        return Path("data/prompt_governance") / rel_path
 apps_rg/engines/ResumeAssemblyAgent.py:26:        skills_template = Path("data/prompt_governance/resume/skills_template.md")
@@ -54,7 +54,7 @@ tests/architecture/test_prompt_governance/no_orphans_baseline.txt:1:data/prompt_
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:2:data/prompt_governance/prompt_injections/Prompt Assembly.md
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:3:data/prompt_governance/prompt_injections/Dependency & Prompt Injection Patterns.md
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:4:data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md
-tests/architecture/test_prompt_governance/no_orphans_baseline.txt:5:data/pprompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
+tests/architecture/test_prompt_governance/no_orphans_baseline.txt:5:data/prompt_governance/prompt_injections/Instructional_Injection_Enhanced_v5.md
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:6:data/prompt_governance/prompt_injections/Prompt Assembly.md
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:7:data/prompt_governance/prompt_injections/Dependency & Prompt Injection Patterns.md
 tests/architecture/test_prompt_governance/no_orphans_baseline.txt:8:data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md
