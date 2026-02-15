@@ -1,0 +1,17 @@
+agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md:9 - data/prompt_libraries/
+  Content: > **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
+
+agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md:103 - data/prompt_libraries/
+  Content: - Full patterns: `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
+
+agentic_core/prompt_governance/meta_prompts/INSTRUCTIONAL_INJECTION_PATTERNS.md:104 - data/prompt_libraries/
+  Content: - DI patterns: `06_data/prompt_libraries/injections/Dependency & Prompt Injection Patterns.md`
+
+data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md:3 - data/prompt_libraries/
+  Content: > **Source:** `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
+
+data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md:128 - data/prompt_libraries/
+  Content: - Full patterns: `06_data/prompt_libraries/injections/Instructional_Injection_Enhanced_v5.md`
+
+data/prompt_governance/prompt_injections/INSTRUCTIONAL_INJECTION_PATTERNS.md:129 - data/prompt_libraries/
+  Content: - DI patterns: `06_data/prompt_libraries/injections/Dependency & Prompt Injection Patterns.md`
