@@ -167,4 +167,14 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+
+      # -- T3h: Guard apps_shared instructional_layer (regression prevention) --
+      # Scope: Prevent new imports of deprecated apps_shared.utils.instructional_layer
+      # Blocks commits that reintroduce the duplicate implementation
+      - id: guard-apps-shared-instructional-layer
+        name: "T3h: Guard apps_shared instructional layer imports"
+        entry: python ops_scripts/hooks/guard_apps_shared_instructional_layer.py
+        language: system
+        pass_filenames: false
+        always_run: true
         require_serial: true
