@@ -3,20 +3,19 @@
 ## Authoritative Tip
 
 **Branch**: `agentic-v5.5`
-**HEAD**: `d18a5b62f0bc25c028552ca05dcec0bf86d6be7b`
+**HEAD**: `8c95ae0e61d9d30d598d91e9ba63208a6e0125a4`
 
 **git --no-pager show --name-only --oneline HEAD**
 ```
-d18a5b62f (HEAD -> agentic-v5.5) apps_lic: integrate executive orphan prompts (Phase 2)
-apps_lic/engines/ExecutiveStrategyAgent.py
-apps_lic/engines/__init__.py
+8c95ae0e6 (HEAD -> agentic-v5.5) docs: annotate Phase 2 authoritative tip
 docs/reports/sub/phase2_exec_integration_evidence.md
-tests/unit/apps_lic/test_executive_strategy_agent.py
 ```
 
 **git status --porcelain**
 ```
 ```
+
+**Superseded**: d1a33aa01, 6223fbf63, 5f2a65649, d18a5b62f (superseded by HEAD)
 
 ---
 
