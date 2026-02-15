@@ -50,6 +50,7 @@ Thumbs.db
 *.log
 outputs/
 artifacts/security/credential_scan_report.json
+artifacts/governance/docs_structure_report.json
 logs/                # Unauthorized root folder - strictly ignored
 cache/               # Unauthorized root folder - strictly ignored
 
