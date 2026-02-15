@@ -150,6 +150,29 @@ This governance requirement remains in effect indefinitely to protect test suite
 
 **Rationale**: Prevents governance violations from third-party code while maintaining visibility into architectural decisions.
 
+### Structural Test Suite Contract (Phase 2.10)
+
+**Policy**: Structural audit tests are non-blocking for Phase 2 completion and must be separately tracked.
+
+**Definition**:
+- **Authoritative Suite**: `pytest -q` (integration tests with `integration_full_deps` marker)
+- **Structural Audit Suite**: `pytest -m unit_min_deps -q` (governance enforcement tests)
+
+**Execution Requirements**:
+1. Default `pytest -q` runs only functional integration tests
+2. Structural suite accessible via marker: `pytest -m unit_min_deps -q`
+3. Structural failures are tracked separately, not blocking Phase 2
+
+**Rationale**:
+- Structural tests enforce architectural contracts but may have pre-existing violations
+- Separation allows functional development while maintaining governance visibility
+- Failures are documented and tracked for future remediation
+
+**Required Commands**:
+- Functional verification: `pytest -q`
+- Structural audit: `pytest -m unit_min_deps -q`
+- Expected structural failures: Documented in debt tracking
+
 ### Authorization
 
-This policy was established incrementally through Phases 2.6-2.8 to address compliance struggles while maintaining truthful gates and documented governance.
+This policy was established incrementally through Phases 2.6-2.10 to address compliance struggles while maintaining truthful gates and documented governance.

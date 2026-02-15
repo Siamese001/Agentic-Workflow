@@ -134,8 +134,29 @@ def guardian_config() -> dict:
 
 def pytest_collection_modifyitems(config, items):
     """
+    Default to integration tests only when no marker specified.
     Track guardian test counts for reporting.
     """
+    # Get the marker expression from config
+    marker_expr = config.getoption("-m", default="")
+
+    # If no marker specified, default to integration_full_deps only
+    if not marker_expr:
+        deselected = []
+        selected = []
+        for item in items:
+            if item.get_closest_marker("integration_full_deps"):
+                selected.append(item)
+            else:
+                deselected.append(item)
+
+        # Replace items list with selected only
+        items[:] = selected
+
+        # Store deselected count for reporting
+        config._deselected_count = len(deselected)
+
+    # Track guardian test counts for reporting
     guardian_tests = [item for item in items if "guardian" in item.nodeid]
     if guardian_tests:
         config._guardian_test_count = len(guardian_tests)
