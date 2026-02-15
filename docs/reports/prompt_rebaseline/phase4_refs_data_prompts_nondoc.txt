@@ -1,6 +1,0 @@
-
-Path                                        LineNumber Line
-----                                        ---------- ----
-artifacts/structure/structure_manifest.json        213     "data/prompts/executive",
-artifacts/structure/structure_manifest.json        214     "data/prompts/outreach",
-artifacts/structure/structure_manifest.json        215     "data/prompts/resume",

@@ -28,16 +28,12 @@ def is_excluded_directory(dir_path: Path) -> bool:
     """Check if directory should be excluded from scanning."""
     excluded_dirs = {
         ".git",
+        ".nox",
+        ".venv",
         ".pytest_cache",
         ".ruff_cache",
         "__pycache__",
         ".mypy_cache",
-        ".nox",
-        ".venv",
-        "venv",
-        "env",
-        "data",
-        "docs",
     }
     return dir_path.name in excluded_dirs
 
@@ -60,7 +56,7 @@ def is_allowed_location(file_path: Path, root_path: Path) -> bool:
     # Build path string for each possible prefix using pathlib
     for i in range(len(relative_path.parts)):
         prefix_path = Path(*relative_path.parts[: i + 1])
-        prefix_str = str(prefix_path).replace("\\", "/")
+        prefix_str = str(prefix_path).replace("\\", "/").casefold()
         if prefix_str in allowed_roots:
             return True
 
