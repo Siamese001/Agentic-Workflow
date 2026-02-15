@@ -169,7 +169,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                     latency = (time.time() - start) * 1000
                     self._audit(provider, True, True, latency)
                     return cached
-            except Exception as e:
+            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
                 Logger.warning(f"Redis cache lookup failed: {e}")
 
         # Generate embedding
@@ -190,7 +190,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             if use_cache:
                 try:
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
-                except Exception as e:
+                except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
                     Logger.warning(f"Redis cache set failed: {e}")
 
             latency = (time.time() - start) * 1000
@@ -246,7 +246,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        max_depth: int = 3,
+        max_depth: int | None = None,
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """
@@ -259,6 +259,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         """
         if _call_path is None:
             _call_path = set()
+
+        if max_depth is None:
+            max_depth = self.config.max_healing_attempts
 
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
@@ -291,7 +294,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 else:
                     metrics["violations"] += 1
                     Logger.warning("Redis cache methods not available")
-            except Exception as e:
+            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:
                 metrics["violations"] += 1
                 Logger.warning(f"Redis cache connectivity test failed: {e}")
 
@@ -301,7 +304,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 if not expected_dims or not isinstance(expected_dims, dict):
                     metrics["violations"] += 1
                     Logger.warning("Expected dimensions configuration invalid")
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, RuntimeError) as e:
                 metrics["violations"] += 1
                 Logger.warning(f"Dimensions validation failed: {e}")
 
@@ -309,9 +312,18 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 metrics["fixed"] = 1
                 Logger.info("EmbeddingSovereignAgent validation passed")
 
-        except Exception as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            RuntimeError,
+            ConnectionError,
+            TimeoutError,
+            OSError,
+        ) as e:
             Logger.error(f"EmbeddingSovereignAgent healing failed: {e}")
             metrics["errors"] += 1
+            return metrics
         finally:
             _call_path.discard(agent_name)
 

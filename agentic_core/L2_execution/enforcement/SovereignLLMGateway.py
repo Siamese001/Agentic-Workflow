@@ -351,6 +351,7 @@ class SovereignLLMGateway:
                             "[LLM Gateway] Output scan failed (swallowed): %s",
                             _p3_exc,
                         )
+                        raise
 
                 return result
 
