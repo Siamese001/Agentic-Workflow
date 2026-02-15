@@ -36,16 +36,53 @@ def load_manifest() -> dict:
 
 
 def assemble_modules(manifest: dict) -> bytes:
-    """Concatenate modules in strict order field ascending. No extra normalization."""
+    """Concatenate modules in strict order field ascending. Handle MODULE sentinels in canonical skeleton."""
     modules = sorted(manifest["modules"], key=lambda m: m["order"])
-    assembled = b""
+
+    # Check if canonical skeleton is present (last module)
+    canonical_skeleton = None
     for module in modules:
-        module_path = REPO_ROOT / module["path"]
-        if not module_path.exists():
-            print(f"FAIL: Module not found: {module['path']}")
-            sys.exit(1)
-        assembled += module_path.read_bytes()
-    return assembled
+        if module.get("classification") == "canonical-skeleton":
+            canonical_skeleton = module
+            break
+
+    if canonical_skeleton:
+        # Canonical skeleton mode: process sentinels
+        skeleton_path = REPO_ROOT / canonical_skeleton["path"]
+        skeleton_content = skeleton_path.read_text(encoding="utf-8")
+
+        # Build module lookup by path
+        module_lookup = {m["path"]: m for m in modules}
+
+        # Replace MODULE sentinels
+        lines = skeleton_content.splitlines(keepends=True)
+        assembled_lines = []
+        for line in lines:
+            if line.strip().startswith("<!-- MODULE: ") and line.strip().endswith(" -->"):
+                # Extract module path from sentinel
+                module_rel_path = line.strip()[13:-4].strip()  # Remove <!-- MODULE: and -->
+                if module_rel_path not in module_lookup:
+                    print(f"FAIL: MODULE sentinel references unknown module: {module_rel_path}")
+                    sys.exit(1)
+                module_path = REPO_ROOT / module_rel_path
+                module_content = module_path.read_text(encoding="utf-8")
+                assembled_lines.append(module_content)
+                if not module_content.endswith("\n"):
+                    assembled_lines.append("\n")
+            else:
+                assembled_lines.append(line)
+
+        return "".join(assembled_lines).encode("utf-8")
+    else:
+        # Legacy mode: simple concatenation
+        assembled = b""
+        for module in modules:
+            module_path = REPO_ROOT / module["path"]
+            if not module_path.exists():
+                print(f"FAIL: Module not found: {module['path']}")
+                sys.exit(1)
+            assembled += module_path.read_bytes()
+        return assembled
 
 
 def verify_mode(manifest: dict) -> int:
@@ -71,6 +108,39 @@ def verify_mode(manifest: dict) -> int:
                 f"  manifest: {module['sha256']}\n"
                 f"  actual:   {actual_hash}"
             )
+
+    # Check if canonical skeleton mode and validate MODULE sentinels
+    canonical_skeleton = None
+    for module in modules:
+        if module.get("classification") == "canonical-skeleton":
+            canonical_skeleton = module
+            break
+
+    if canonical_skeleton:
+        skeleton_path = REPO_ROOT / canonical_skeleton["path"]
+        skeleton_content = skeleton_path.read_text(encoding="utf-8")
+
+        # Find all MODULE sentinels
+        referenced_modules = set()
+        for line in skeleton_content.splitlines():
+            line_stripped = line.strip()
+            if line_stripped.startswith("<!-- MODULE: ") and line_stripped.endswith(" -->"):
+                module_rel_path = line_stripped[13:-4].strip()
+                referenced_modules.add(module_rel_path)
+
+        # Validate all referenced modules exist in manifest
+        manifest_paths = {m["path"] for m in modules}
+        for ref in referenced_modules:
+            if ref not in manifest_paths:
+                errors.append(f"MODULE sentinel references unknown module: {ref}")
+
+        # Validate all non-main modules are referenced (except canonical-skeleton itself)
+        expected_refs = {
+            m["path"] for m in modules if m.get("classification") not in ("main", "canonical-skeleton")
+        }
+        unreferenced = expected_refs - referenced_modules
+        if unreferenced:
+            errors.append(f"Modules not referenced by any MODULE sentinel: {unreferenced}")
 
     # Assemble and verify
     assembled = assemble_modules(manifest)

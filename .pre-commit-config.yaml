@@ -105,11 +105,22 @@ repos:
         always_run: true
         require_serial: true
 
-      # -- T3d: Pycache purge (idempotent, bounded) -----------------------------
+      # -- T3d: Folder Purity Validation (architectural enforcement) -------------
+      # Scope: Validate Agent, Types, and Engine placement rules
+      # Blocks commits that violate architectural folder placement rules
+      - id: folder-purity-validation
+        name: "T3d: Folder Purity Validation"
+        entry: python ops_scripts/hooks/validate_folder_purity.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T3e: Pycache purge (idempotent, bounded) -----------------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
       # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
       - id: purge-cache
-        name: "T3d: Pycache Purge"
+        name: "T3e: Pycache Purge"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet
         language: system
         pass_filenames: false
