@@ -100,20 +100,6 @@ class ResumeAssemblyAgent:
         template_path = self.prompt_root / "shared" / "connection_request.md"
         return self._load_markdown_template(template_path, payload)
 
-    # Reference to executive summary_template.md to prevent orphan status
-    _EXECUTIVE_SUMMARY_REF = "summary_template.md"
-
-    # References to outreach templates to prevent orphan status
-    _OUTREACH_REFS = {"cold_outreach_template.md", "followup_template.md", "shared/connection_request.md"}
-
-    # References to prompt injection files to prevent orphan status
-    _PROMPT_INJECTION_REFS = {
-        "Dependency & Prompt Injection Patterns.md",
-        "INSTRUCTIONAL_INJECTION_PATTERNS.md",
-        "Instructional_Injection_Enhanced_v5.md",
-        "Prompt Assembly.md",
-    }
-
     def _load_markdown_template(self, template_path: Path, payload: dict[str, Any]) -> str:
         """Load and format a markdown template.
 
