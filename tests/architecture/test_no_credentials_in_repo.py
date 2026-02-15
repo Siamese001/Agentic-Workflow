@@ -61,25 +61,36 @@ def test_credential_guard_execution():
 
 
 def test_no_files_modified():
-    """Test that credential guard does not modify any files except the report."""
+    """Test that credential guard does not modify any tracked files."""
     root_path = Path(__file__).parent.parent.parent
 
     # Get git status before
-    result = subprocess.run(
+    result_before = subprocess.run(
         ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(root_path)
     )
 
-    # Should be clean or only have report file changes
-    all_changes = [line for line in result.stdout.split("\n") if line.strip()]
-    modified_files = [
-        line
-        for line in all_changes
-        if not line.startswith("??") and "credential_scan_report.json" not in line
-    ]
+    # Execute credential guard
+    subprocess.run(
+        [sys.executable, str(root_path / "tools" / "security" / "credential_guard.py")],
+        capture_output=True,
+        text=True,
+        cwd=str(root_path),
+    )
 
-    assert len(modified_files) == 0, f"Files were modified by credential guard: {modified_files}"
+    # Get git status after
+    result_after = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(root_path)
+    )
 
-    print("✓ No files modified by credential guard (report file excluded)")
+    # Assert no changes in tracked files
+    changes_before = [line for line in result_before.stdout.split("\n") if line.strip()]
+    changes_after = [line for line in result_after.stdout.split("\n") if line.strip()]
+
+    assert changes_before == changes_after, (
+        f"Tracked files were modified by credential guard: {changes_after}"
+    )
+
+    print("✓ No tracked files modified by credential guard")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ data/**/*.bin
 
 # [NEURAL LINK] SENSITIVE DATA
 # Note: .env files can now be committed - use with caution
+.env
 
 # Python artifacts
 __pycache__/
@@ -48,6 +49,7 @@ Thumbs.db
 # Logs and outputs
 *.log
 outputs/
+artifacts/security/credential_scan_report.json
 logs/                # Unauthorized root folder - strictly ignored
 cache/               # Unauthorized root folder - strictly ignored
 
