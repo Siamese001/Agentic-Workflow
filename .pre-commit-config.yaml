@@ -144,6 +144,23 @@ repos:
       # -- T3g: Governance Policy Validation (policy enforcement) ---------------
       # Scope: Validate that governance changes are properly documented
       # Enforces that configuration changes have corresponding policy updates
+      - id: validate-evidence-contract
+        name: "T3h: Evidence Contract Validator"
+        entry: python ops_scripts/ci/validate_evidence_contract.py
+        language: system
+        pass_filenames: true
+        types_or: [markdown]
+        files: ^docs/reports/sub/.*\.md$
+        require_serial: true
+
+      - id: guard-pytest-ini-scope
+        name: "T3i: Guard pytest.ini scope changes"
+        entry: python ops_scripts/ci/guard_pytest_ini_scope.py
+        language: system
+        pass_filenames: true
+        files: ^pytest\.ini$
+        require_serial: true
+
       - id: governance-policy-validation
         name: "T3g: Governance Policy Validation"
         entry: python ops_scripts/hooks/validate_governance_policy.py

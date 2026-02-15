@@ -1,6 +1,6 @@
 # Repository Governance Policies
 
-## Folder Purity Validation (T3d)
+## Folder Purity Validation (folder-purity-validation)
 
 ### Status: MANUAL-ONLY
 
@@ -15,6 +15,29 @@ The folder purity validator identifies the following categories of violations:
 - Executors outside engines/ folders
 
 These violations are systemic across the apps_shared module and represent architectural debt that requires coordinated refactoring beyond the scope of individual commits.
+
+### Scope
+
+Applies to all Python files in the repository, specifically targeting:
+- Agent placement violations (agents must be in reasoning/ folders)
+- Executor placement violations (executors must be in engines/ folders)
+- Type file purity (no implementation code in _types.py files)
+
+### Reversibility
+
+The hook can be re-enabled by changing `stages: [manual]` to `stages: [commit]` in .pre-commit-config.yaml once the structural debt is resolved. This should be done only after a comprehensive refactoring that addresses the identified violations.
+
+### Owner
+
+Architecture governance team - maintains structural integrity of the codebase
+
+### Sunset Criteria
+
+This manual-stage configuration will be sunset when:
+1. All folder purity violations in apps_shared are resolved
+2. A comprehensive refactoring plan is executed
+3. The codebase passes the folder purity validation with 0 violations
+4. The change is approved via a governance policy update
 
 ### Policy
 
@@ -37,6 +60,32 @@ These violations are systemic across the apps_shared module and represent archit
 - Prompt governance functionality is verified by the integration tests in the remaining testpath
 
 **Reversibility**: `tests/unit_min_deps` can be re-added to testpaths when the structural debt is resolved, or when a future phase specifically targets structural governance remediation.
+
+## Pytest Authoritative Suite
+
+### Rationale
+
+The pytest configuration defines the authoritative test suite for the repository. Changes to testpaths, addopts, or scope controls must be documented to ensure test suite integrity and prevent silent suite contraction.
+
+### Scope
+
+Applies to any changes in pytest.ini that affect:
+- testpaths configuration
+- addopts flags (including --ignore patterns)
+- test selection filters (-k, -m)
+- file discovery patterns (python_files, norecursedirs)
+
+### Reversibility
+
+Any pytest.ini scope changes must be reversible with documented rollback procedures. The governance documentation must include the previous configuration and the specific conditions for reverting the change.
+
+### Owner
+
+Test infrastructure team - maintains test suite integrity and coverage
+
+### Sunset Criteria
+
+This governance requirement remains in effect indefinitely to protect test suite integrity.
 
 ### Baseline Write Protection (Phase 2.7)
 
