@@ -345,7 +345,7 @@ class TestSSOTCompliance:
                 "apps_rg/scripts/test_engine.py",
                 "apps_rg/scripts/test_input.py",
                 "apps_rg/scripts/test_run_grand_unification_tests.py",
-                "data/prompt_governance/misc/test_tests_golden_state_test_datasets.py",
+                "tests/guardian/data_prompt_governance/test_tests_golden_state_test_datasets.py",
                 "ops_scripts/general/test_territory_mirror_enforcer.py",
                 "ops_scripts/general/test_validate_ssot_hardening.py",
                 "ops_scripts/maintenance/test_validate_migration_guardian.py",
