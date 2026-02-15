@@ -47,9 +47,16 @@ def can_update_golden(env: Mapping[str, str]) -> bool:
     return env.get("STRUCTURE_GOLDEN_UPDATE", "") == "1"
 
 
-def validate_manifest(project_root: Path) -> int:
+def validate_manifest_bytes(project_root: Path, golden_json_bytes: bytes, golden_hash: str) -> int:
     """
-    Validate current manifest against golden artifacts.
+    Validate current manifest against provided golden bytes and hash.
+
+    Pure validation function without file I/O.
+
+    Args:
+        project_root: Path to project root
+        golden_json_bytes: Golden manifest bytes (canonical JSON + newline)
+        golden_hash: Expected SHA-256 hash string
 
     Returns:
         0 if validation passes, 1 if drift detected
@@ -60,6 +67,47 @@ def validate_manifest(project_root: Path) -> int:
         manifest_hash,
     )
 
+    # Generate current manifest
+    agentic_core = project_root / "agentic_core"
+    current_manifest = generate_manifest(agentic_core)
+    current_bytes = canonical_manifest_bytes(current_manifest)
+    current_hash = manifest_hash(current_manifest)
+
+    # Compare bytes (canonical form)
+    if current_bytes != golden_json_bytes:
+        # Count utils files for summary
+        golden_manifest = __import__("json").loads(golden_json_bytes.decode("utf-8"))
+        expected_count = sum(len(layer["utils_files"]) for layer in golden_manifest.values())
+        actual_count = sum(len(layer["utils_files"]) for layer in current_manifest.values())
+
+        print("FAIL: Structure drift detected")
+        print(f"  expected_hash={golden_hash}")
+        print(f"  actual_hash={current_hash}")
+        print(f"  expected_utils_file_count={expected_count}")
+        print(f"  actual_utils_file_count={actual_count}")
+        return 1
+
+    # Compare hash
+    if current_hash != golden_hash:
+        print("FAIL: Hash mismatch (bytes match but hash differs - should not happen)")
+        print(f"  expected_hash={golden_hash}")
+        print(f"  actual_hash={current_hash}")
+        return 1
+
+    print("PASS: Structure manifest matches golden")
+    print(f"  hash={current_hash}")
+    return 0
+
+
+def validate_manifest(project_root: Path) -> int:
+    """
+    Validate current manifest against golden artifacts.
+
+    IO wrapper that reads golden files and calls validate_manifest_bytes.
+
+    Returns:
+        0 if validation passes, 1 if drift detected
+    """
     golden_json = project_root / "artifacts" / "structure" / "structure_manifest.json"
     golden_sha = project_root / "artifacts" / "structure" / "structure_manifest.sha256"
 
@@ -78,36 +126,7 @@ def validate_manifest(project_root: Path) -> int:
     golden_json_bytes = golden_json.read_bytes()
     golden_hash_content = golden_sha.read_text(encoding="utf-8").strip()
 
-    # Generate current manifest
-    agentic_core = project_root / "agentic_core"
-    current_manifest = generate_manifest(agentic_core)
-    current_bytes = canonical_manifest_bytes(current_manifest)
-    current_hash = manifest_hash(current_manifest)
-
-    # Compare bytes (canonical form)
-    if current_bytes != golden_json_bytes:
-        # Count utils files for summary
-        golden_manifest = __import__("json").loads(golden_json_bytes.decode("utf-8"))
-        expected_count = sum(len(layer["utils_files"]) for layer in golden_manifest.values())
-        actual_count = sum(len(layer["utils_files"]) for layer in current_manifest.values())
-
-        print("FAIL: Structure drift detected")
-        print(f"  expected_hash={golden_hash_content}")
-        print(f"  actual_hash={current_hash}")
-        print(f"  expected_utils_file_count={expected_count}")
-        print(f"  actual_utils_file_count={actual_count}")
-        return 1
-
-    # Compare hash
-    if current_hash != golden_hash_content:
-        print("FAIL: Hash mismatch (bytes match but hash differs - should not happen)")
-        print(f"  expected_hash={golden_hash_content}")
-        print(f"  actual_hash={current_hash}")
-        return 1
-
-    print("PASS: Structure manifest matches golden")
-    print(f"  hash={current_hash}")
-    return 0
+    return validate_manifest_bytes(project_root, golden_json_bytes, golden_hash_content)
 
 
 def update_golden(project_root: Path) -> int:

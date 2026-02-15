@@ -112,12 +112,32 @@ def test_structure_drift_validator_integration():
 
     CRITICAL: This test must fail if structure drift is detected.
     """
-    from ops_scripts.ci.structure_drift_validator import validate_manifest
+    from ops_scripts.ci.structure_drift_validator import validate_manifest, validate_manifest_bytes
 
     project_root = Path(__file__).resolve().parents[2]
-    exit_code = validate_manifest(project_root)
 
+    # Test 1: Current tree must match golden (IO wrapper)
+    exit_code = validate_manifest(project_root)
     assert exit_code == 0, (
         "Structure drift detected! Current layer topology does not match golden manifest. "
         "Run: python -m ops_scripts.ci.structure_drift_validator for details."
+    )
+
+    # Test 2: Negative proof - altered golden bytes must fail (pure function)
+    golden_json = project_root / "artifacts" / "structure" / "structure_manifest.json"
+    golden_sha = project_root / "artifacts" / "structure" / "structure_manifest.sha256"
+
+    # Read current golden artifacts (read-only)
+    golden_json_bytes = golden_json.read_bytes()
+    golden_hash_content = golden_sha.read_text(encoding="utf-8").strip()
+
+    # Validate with correct golden bytes (must pass)
+    exit_code_correct = validate_manifest_bytes(project_root, golden_json_bytes, golden_hash_content)
+    assert exit_code_correct == 0, "Validation with correct golden bytes must pass"
+
+    # Validate with altered golden bytes (must fail) - MECHANICAL NEGATIVE PROOF
+    altered_bytes = golden_json_bytes + b" "  # Add space to create mismatch
+    exit_code_altered = validate_manifest_bytes(project_root, altered_bytes, golden_hash_content)
+    assert exit_code_altered == 1, (
+        "Validation with altered golden bytes must fail - this proves byte-compare is enforced"
     )
