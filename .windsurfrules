@@ -651,6 +651,69 @@ Test failures must not block unrelated structural work.
 
 ---
 
+## 37. Pre-commit Hook Governance Compliance
+
+All pre-commit hooks must either pass or be formally disabled with documented policy.
+
+**Forbidden:**
+- Skipping hooks with SKIP environment variable without documented policy
+- Claiming "pre-commit passes" when hooks are skipped
+- Generating new baselines to mask violations without explicit authorization
+- Excluding directories from scans without documented architectural rationale
+
+**Required for Hook Disabling:**
+1. Document in `docs/rules/governance.md` with specific rationale
+2. Set hook to `stages: [manual]` in `.pre-commit-config.yaml`
+3. Evidence must show hook name and reason for manual-only status
+4. Policy must reference the specific violations or architectural debt
+
+**Baseline Write Protection:**
+- Anti-pattern baselines cannot be rewritten without `ALLOW_LANDMINE_BASELINE_WRITE=1`
+- CI/automation must exit non-zero if attempting unauthorized baseline writes
+- Evidence must show both lock failure and authorized success scenarios
+
+---
+
+## 38. pytest Truthfulness Requirement
+
+`pytest -q` must run the authoritative suite defined in `pytest.ini` testpaths.
+
+**Forbidden:**
+- Narrowing pytest scope to hide failures
+- Running subset of tests while claiming full suite passes
+- Excluding test directories without updating pytest.ini
+
+**Required:**
+- Run full suite as defined by pytest.ini testpaths
+- Document all failures honestly in evidence
+- If pre-existing failures exist, clearly label them as such
+- Prompt_gov or feature-specific tests may be run additionally, not as replacement
+
+**Test Failure Documentation:**
+- Evidence must show exact count: "X failed, Y passed"
+- Failure categories must be identified (e.g., "pre-existing structural issues")
+- No truncation of failure lists with "..." unless explicitly documented
+
+---
+
+## 39. Governance Documentation Requirements
+
+All policy decisions must be documented in `docs/rules/governance.md`.
+
+**Required Content:**
+- Specific rule or hook being modified
+- Exact rationale with reference to violations or architectural debt
+- Authorization date and stakeholder
+- Conditions for re-enforcement (if applicable)
+- Manual execution instructions for disabled hooks
+
+**Forbidden:**
+- Silent policy changes without documentation
+- Referencing non-existent policy documents
+- Generic rationales without specific violation details
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
