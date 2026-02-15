@@ -102,3 +102,22 @@ def test_update_gate_enforcement():
     # Gate present
     env_present = {"STRUCTURE_GOLDEN_UPDATE": "1"}
     assert can_update_golden(env_present), "Gate must accept correct value"
+
+
+def test_structure_drift_validator_integration():
+    """Guardian integration: validate current structure against golden manifest.
+
+    This test enforces that the layer topology has not drifted from the golden
+    manifest. It runs the structure drift validator in read-only mode.
+
+    CRITICAL: This test must fail if structure drift is detected.
+    """
+    from ops_scripts.ci.structure_drift_validator import validate_manifest
+
+    project_root = Path(__file__).resolve().parents[2]
+    exit_code = validate_manifest(project_root)
+
+    assert exit_code == 0, (
+        "Structure drift detected! Current layer topology does not match golden manifest. "
+        "Run: python -m ops_scripts.ci.structure_drift_validator for details."
+    )
