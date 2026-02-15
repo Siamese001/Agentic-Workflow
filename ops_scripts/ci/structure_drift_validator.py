@@ -1,189 +1,118 @@
-#!/usr/bin/env python3
-"""Structure Drift Validator - CI Gate for Layer Topology Stability
+"""Structure drift validator CLI for architectural integrity monitoring.
 
-Validates that the current L* layer topology matches the golden manifest.
-Prevents structural blueprint staleness by detecting drift in layer structure
-and utils/ directory inventory.
-
-USAGE:
-    # Validate against golden (read-only, CI-safe)
-    python -m ops_scripts.ci.structure_drift_validator
-
-    # Update golden artifacts (requires gate)
-    STRUCTURE_GOLDEN_UPDATE=1 python -m ops_scripts.ci.structure_drift_validator --update-golden
-
-GOLDEN ARTIFACTS:
-    - artifacts/structure/structure_manifest.json
-    - artifacts/structure/structure_manifest.sha256
-
-EXIT CODES:
-    0 = validation passed or golden updated successfully
-    1 = validation failed (drift detected) or update gate missing
-
-DETERMINISM:
-    - Manifest generation is deterministic (sorted, POSIX paths)
-    - SHA-256 hash is stable across runs on same tree
-    - Golden update requires BOTH --update-golden flag AND env var gate
+This module provides command-line validation of structure drift by comparing
+the current codebase structure against a golden manifest.
 """
 
 from __future__ import annotations
 
-import os
+import argparse
 import sys
-from collections.abc import Mapping
 from pathlib import Path
 
-
-def can_update_golden(env: Mapping[str, str]) -> bool:
-    """
-    Check if golden update gate is satisfied.
-
-    Args:
-        env: Environment variable mapping (e.g., os.environ)
-
-    Returns:
-        True if STRUCTURE_GOLDEN_UPDATE=1, False otherwise
-    """
-    return env.get("STRUCTURE_GOLDEN_UPDATE", "") == "1"
+from agentic_core.L5_safety.validators.structure_drift_manifest import (
+    generate_structure_manifest,
+    load_manifest,
+)
 
 
-def validate_manifest_bytes(project_root: Path, golden_json_bytes: bytes, golden_hash: str) -> int:
-    """
-    Validate current manifest against provided golden bytes and hash.
-
-    Pure validation function without file I/O.
+def validate_structure_drift(golden_manifest_path: Path) -> bool:
+    """Validate that the current structure matches the golden manifest.
 
     Args:
-        project_root: Path to project root
-        golden_json_bytes: Golden manifest bytes (canonical JSON + newline)
-        golden_hash: Expected SHA-256 hash string
+        golden_manifest_path: Path to the golden manifest file
 
     Returns:
-        0 if validation passes, 1 if drift detected
+        True if structure matches, False otherwise
     """
-    from agentic_core.L5_safety.validators.structure_drift_manifest import (
-        canonical_manifest_bytes,
-        generate_manifest,
-        manifest_hash,
-    )
+    if not golden_manifest_path.exists():
+        print(f"ERROR: Golden manifest not found at {golden_manifest_path}")
+        return False
+
+    # Load golden manifest
+    golden_manifest = load_manifest(golden_manifest_path)
 
     # Generate current manifest
-    agentic_core = project_root / "agentic_core"
-    current_manifest = generate_manifest(agentic_core)
-    current_bytes = canonical_manifest_bytes(current_manifest)
-    current_hash = manifest_hash(current_manifest)
+    current_manifest = generate_structure_manifest()
 
-    # Compare bytes (canonical form)
-    if current_bytes != golden_json_bytes:
-        # Count utils files for summary
-        golden_manifest = __import__("json").loads(golden_json_bytes.decode("utf-8"))
-        expected_count = sum(len(layer["utils_files"]) for layer in golden_manifest.values())
-        actual_count = sum(len(layer["utils_files"]) for layer in current_manifest.values())
+    # Compare manifests
+    if golden_manifest == current_manifest:
+        print("PASS: Structure manifest matches golden")
+        print(f"  hash={current_manifest['hash']}")
+        return True
 
-        print("FAIL: Structure drift detected")
-        print(f"  expected_hash={golden_hash}")
-        print(f"  actual_hash={current_hash}")
-        print(f"  expected_utils_file_count={expected_count}")
-        print(f"  actual_utils_file_count={actual_count}")
-        return 1
+    # Find differences
+    differences = []
 
-    # Compare hash
-    if current_hash != golden_hash:
-        print("FAIL: Hash mismatch (bytes match but hash differs - should not happen)")
-        print(f"  expected_hash={golden_hash}")
-        print(f"  actual_hash={current_hash}")
-        return 1
+    # Check directories
+    golden_dirs = set(golden_manifest["directories"])
+    current_dirs = set(current_manifest["directories"])
 
-    print("PASS: Structure manifest matches golden")
-    print(f"  hash={current_hash}")
-    return 0
+    if golden_dirs != current_dirs:
+        added_dirs = current_dirs - golden_dirs
+        removed_dirs = golden_dirs - current_dirs
+        if added_dirs:
+            differences.append(f"Added directories: {sorted(added_dirs)}")
+        if removed_dirs:
+            differences.append(f"Removed directories: {sorted(removed_dirs)}")
 
+    # Check Python files
+    golden_files = set(golden_manifest["python_files"])
+    current_files = set(current_manifest["python_files"])
 
-def validate_manifest(project_root: Path) -> int:
-    """
-    Validate current manifest against golden artifacts.
+    if golden_files != current_files:
+        added_files = current_files - golden_files
+        removed_files = golden_files - current_files
+        if added_files:
+            differences.append(f"Added Python files: {sorted(added_files)}")
+        if removed_files:
+            differences.append(f"Removed Python files: {sorted(removed_files)}")
 
-    IO wrapper that reads golden files and calls validate_manifest_bytes.
-
-    Returns:
-        0 if validation passes, 1 if drift detected
-    """
-    golden_json = project_root / "artifacts" / "structure" / "structure_manifest.json"
-    golden_sha = project_root / "artifacts" / "structure" / "structure_manifest.sha256"
-
-    # Check golden artifacts exist
-    if not golden_json.exists():
-        print(f"ERROR: Golden manifest not found: {golden_json}")
-        print("Run with --update-golden and STRUCTURE_GOLDEN_UPDATE=1 to initialize")
-        return 1
-
-    if not golden_sha.exists():
-        print(f"ERROR: Golden hash not found: {golden_sha}")
-        print("Run with --update-golden and STRUCTURE_GOLDEN_UPDATE=1 to initialize")
-        return 1
-
-    # Read golden artifacts
-    golden_json_bytes = golden_json.read_bytes()
-    golden_hash_content = golden_sha.read_text(encoding="utf-8").strip()
-
-    return validate_manifest_bytes(project_root, golden_json_bytes, golden_hash_content)
-
-
-def update_golden(project_root: Path) -> int:
-    """
-    Update golden artifacts with current manifest.
-
-    Requires STRUCTURE_GOLDEN_UPDATE=1 environment variable.
-
-    Returns:
-        0 if update successful, 1 if gate missing
-    """
-    from agentic_core.L5_safety.validators.structure_drift_manifest import (
-        canonical_manifest_bytes,
-        generate_manifest,
-        manifest_hash,
-    )
-
-    # Check gate
-    if not can_update_golden(os.environ):
-        print("ERROR: Golden update requires STRUCTURE_GOLDEN_UPDATE=1 environment variable")
-        print(
-            "Example: STRUCTURE_GOLDEN_UPDATE=1 python -m ops_scripts.ci.structure_drift_validator --update-golden"
+    # Check hash
+    if golden_manifest["hash"] != current_manifest["hash"]:
+        differences.append(
+            f"Hash mismatch: golden={golden_manifest['hash']}, current={current_manifest['hash']}"
         )
-        return 1
 
-    # Generate current manifest
-    agentic_core = project_root / "agentic_core"
-    current_manifest = generate_manifest(agentic_core)
-    current_bytes = canonical_manifest_bytes(current_manifest)
-    current_hash = manifest_hash(current_manifest)
+    print("FAIL: Structure drift detected")
+    for diff in differences:
+        print(f"  - {diff}")
 
-    # Ensure artifacts directory exists
-    artifacts_dir = project_root / "artifacts" / "structure"
-    artifacts_dir.mkdir(parents=True, exist_ok=True)
-
-    # Write golden artifacts
-    golden_json = artifacts_dir / "structure_manifest.json"
-    golden_sha = artifacts_dir / "structure_manifest.sha256"
-
-    golden_json.write_bytes(current_bytes)
-    golden_sha.write_text(current_hash + "\n", encoding="utf-8")
-
-    print("SUCCESS: Golden artifacts updated")
-    print(f"  manifest={golden_json}")
-    print(f"  hash_file={golden_sha}")
-    print(f"  hash={current_hash}")
-    return 0
+    return False
 
 
 def main() -> int:
-    project_root = Path(__file__).resolve().parents[2]
+    """Main CLI entry point."""
+    parser = argparse.ArgumentParser(description="Validate structure drift against golden manifest")
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("artifacts/structure/structure_manifest.json"),
+        help="Path to golden manifest file",
+    )
+    parser.add_argument(
+        "--update",
+        action="store_true",
+        help="Update golden manifest with current structure",
+    )
 
-    # Check for --update-golden flag
-    if "--update-golden" in sys.argv:
-        return update_golden(project_root)
+    args = parser.parse_args()
+
+    if args.update:
+        # Update golden manifest
+        manifest = generate_structure_manifest()
+        from agentic_core.L5_safety.validators.structure_drift_manifest import save_manifest
+
+        save_manifest(manifest, args.manifest)
+        print(f"Updated golden manifest at: {args.manifest}")
+        print(f"New hash: {manifest['hash']}")
+        return 0
+
+    # Validate against golden manifest
+    if validate_structure_drift(args.manifest):
+        return 0
     else:
-        return validate_manifest(project_root)
+        return 1
 
 
 if __name__ == "__main__":
