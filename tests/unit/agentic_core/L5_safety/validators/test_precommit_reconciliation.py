@@ -251,12 +251,12 @@ class TestSecretDetection:
         from agentic_core.L4_state.memory.semantic_cache_manager_config import PII_Sanitizer
 
         # Test content with API key
-        content = "API_KEY=sk-abc123456789012345678901234567890123456789"
+        content = "API_KEY=sk-EXAMPLE_NOT_A_REAL_KEY_FOR_TESTING_ONLY"
 
         sanitized = PII_Sanitizer.sanitize(content)
 
         # Should redact the key
-        assert "sk-abc123456789012345678901234567890123456789" not in sanitized
+        assert "sk-EXAMPLE_NOT_A_REAL_KEY_FOR_TESTING_ONLY" not in sanitized
         assert "[REDACTED_OPENAI_KEY]" in sanitized
 
 

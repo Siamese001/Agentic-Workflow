@@ -139,7 +139,7 @@ BRAVE_API_KEY=your_brave_api_key
 GOOGLE_MAPS_API_KEY=your_google_maps_key
 
 # Slack
-SLACK_BOT_TOKEN=xoxb-your-token
+SLACK_BOT_TOKEN=EXAMPLE_SLACK_TOKEN_NOT_REAL
 SLACK_TEAM_ID=your_team_id
 
 # Sentry

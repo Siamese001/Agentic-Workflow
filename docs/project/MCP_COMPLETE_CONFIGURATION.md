@@ -251,7 +251,7 @@ PINECONE_API_KEY=your_pinecone_key
 CHROMA_URL=http://localhost:8000
 
 # Communication
-SLACK_BOT_TOKEN=xoxb-your-token
+SLACK_BOT_TOKEN=EXAMPLE_SLACK_TOKEN_NOT_REAL
 SLACK_TEAM_ID=your_team_id
 DISCORD_BOT_TOKEN=your_discord_token
 SENDGRID_API_KEY=SG.your_sendgrid_key
