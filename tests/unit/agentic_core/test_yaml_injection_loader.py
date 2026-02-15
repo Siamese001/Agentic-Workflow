@@ -48,23 +48,23 @@ class TestYamlInjectionLoader:
                 }
             }
         }
-        
+
         yaml_file = tmp_path / "invalid.yaml"
         yaml_file.write_text(yaml.dump(invalid_content))
-        
+
         loader = YamlInjectionLoader(tmp_path)
-        
+
         # Should not raise an error, but should skip the invalid pattern
         patterns = loader.load_all_patterns()
-        
+
         # Should have empty patterns for framing layer since the only pattern was invalid
         framing_patterns = patterns.get("framing", [])
         assert len(framing_patterns) == 0, "Invalid pattern should be skipped"
-        
+
         # Should still have other layers initialized as empty lists
         assert "framing" in patterns
         assert "safety" in patterns
-        
+
         # Check that warning was logged
         assert "Skipped 1 invalid patterns" in caplog.text
 

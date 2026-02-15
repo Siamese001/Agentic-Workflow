@@ -11,6 +11,7 @@ import json
 import sys
 from pathlib import Path
 
+
 def test_mcp_config_has_sequential_thinking():
     """Test 1: Verify sequential-thinking is in MCP config."""
     print("\n" + "="*60)

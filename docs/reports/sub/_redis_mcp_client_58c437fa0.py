@@ -4,7 +4,8 @@ Replaces all direct redis-py operations with official Redis MCP integration.
 L3 routed, L5 shielded, L6 observable.
 """
 import logging
-from typing import Any, Optional, List, Dict
+from typing import Any
+
 from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
 # Lazy import to attempt to mitigate circular dependency between L4 and L3
@@ -30,7 +31,7 @@ class SovereignRedisMCPClient:
         self.router = SovereignMCPRouter(role=role)
         logger.info("[L4 REDIS] Sovereign Redis MCP client initialized")
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from sovereign cache via MCP."""
         if len(key) > config.REDIS_MAX_KEY_LENGTH:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
@@ -55,7 +56,7 @@ class SovereignRedisMCPClient:
             logger.error(f"[L4 REDIS] Cache GET failed for {key}: {e}")
             return None
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in sovereign cache via MCP."""
         if len(key) > config.REDIS_MAX_KEY_LENGTH:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
@@ -90,7 +91,7 @@ class SovereignRedisMCPClient:
             logger.error(f"[L4 REDIS] Cache DELETE failed for {key}: {e}")
             return False
 
-    async def keys(self, pattern: str = "*") -> List[str]:
+    async def keys(self, pattern: str = "*") -> list[str]:
         """List keys matching pattern via MCP."""
         full_pattern = f"{config.REDIS_CACHE_PREFIX}{pattern}"
         try:
@@ -102,7 +103,7 @@ class SovereignRedisMCPClient:
 
 
 # Singleton instance
-_redis_client: Optional[SovereignRedisMCPClient] = None
+_redis_client: SovereignRedisMCPClient | None = None
 
 
 def get_redis_client() -> SovereignRedisMCPClient:

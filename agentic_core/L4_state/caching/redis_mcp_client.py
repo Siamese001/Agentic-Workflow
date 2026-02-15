@@ -4,7 +4,7 @@ Replaces all direct redis-py operations with official Redis MCP integration.
 L3 routed, L5 shielded, L6 observable.
 """
 import logging
-from typing import Any, Optional, List, Dict
+from typing import Any
 
 # Import configuration for single source of truth
 from agentic_core.config.core.sovereign_config import get_sovereign_config
@@ -14,37 +14,37 @@ logger = logging.getLogger(__name__)
 
 class SovereignRedisMCPClient:
     """Official Redis MCP client for sovereign caching operations."""
-    
+
     def __init__(self, role: str = "state_cache"):
         config = get_sovereign_config()
         if not config.REDIS_MCP_ENABLED:
             raise ValueError("Redis MCP disabled in sovereign config")
-        
+
         # Check for redis package availability
         try:
             import redis
         except ImportError as e:
             raise RuntimeError("Redis package required when REDIS_MCP_ENABLED is true") from e
-        
+
         self.config = config
         self.role = role
         self._redis_client = None
         logger.info("[L4 REDIS] Sovereign Redis MCP client initialized")
-    
+
     def _get_redis_client(self):
         """Lazy initialization of Redis client."""
         if self._redis_client is None:
             import redis
             self._redis_client = redis.from_url(self.config.redis_url)
         return self._redis_client
-    
-    async def get(self, key: str) -> Optional[Any]:
+
+    async def get(self, key: str) -> Any | None:
         """Get value from sovereign cache via Redis."""
         if len(key) > self.config.redis_max_key_length:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
-        
+
         full_key = f"{self.config.redis_cache_prefix}{key}"
-        
+
         try:
             client = self._get_redis_client()
             result = client.get(full_key)
@@ -55,14 +55,14 @@ class SovereignRedisMCPClient:
         except Exception as e:
             logger.error(f"[L4 REDIS] Cache GET failed for {key}: {e}")
             return None
-    
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in sovereign cache via Redis."""
         if len(key) > self.config.redis_max_key_length:
             raise ValueError(f"Key exceeds sovereign limit: {len(key)}")
-        
+
         full_key = f"{self.config.redis_cache_prefix}{key}"
-        
+
         try:
             client = self._get_redis_client()
             expire_time = ttl or self.config.redis_default_ttl_seconds
@@ -71,7 +71,7 @@ class SovereignRedisMCPClient:
         except Exception as e:
             logger.error(f"[L4 REDIS] Cache SET failed for {key}: {e}")
             return False
-    
+
     async def delete(self, key: str) -> bool:
         """Delete key from sovereign cache via Redis."""
         full_key = f"{self.config.redis_cache_prefix}{key}"
@@ -82,8 +82,8 @@ class SovereignRedisMCPClient:
         except Exception as e:
             logger.error(f"[L4 REDIS] Cache DELETE failed for {key}: {e}")
             return False
-    
-    async def keys(self, pattern: str = "*") -> List[str]:
+
+    async def keys(self, pattern: str = "*") -> list[str]:
         """List keys matching pattern via Redis."""
         full_pattern = f"{self.config.redis_cache_prefix}{pattern}"
         try:
@@ -104,7 +104,7 @@ class SovereignRedisMCPClient:
 
 
 # Singleton instance
-_redis_client: Optional[SovereignRedisMCPClient] = None
+_redis_client: SovereignRedisMCPClient | None = None
 
 
 def get_redis_client() -> SovereignRedisMCPClient:

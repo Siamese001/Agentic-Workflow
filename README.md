@@ -1,22 +1,22 @@
 Most AI agent systems fail in production due to:
 
-- Implicit aggregation logic  
-- Identifier-coupled validation  
-- Silent fallback behavior  
-- Untested invariants  
-- Non-deterministic healing  
-- Weak observability 
+- Implicit aggregation logic
+- Identifier-coupled validation
+- Silent fallback behavior
+- Untested invariants
+- Non-deterministic healing
+- Weak observability
 ---
 
 ## What This Is (30-Second Context)
 
 A layered L0–L6 agentic system that enforces execution correctness through:
 
-- Schema-validated artifacts  
-- Runtime guard decorators  
-- Explicit aggregation contracts  
-- Negative invariant testing  
-- Immutable execution logs  
+- Schema-validated artifacts
+- Runtime guard decorators
+- Explicit aggregation contracts
+- Negative invariant testing
+- Immutable execution logs
 
 No heuristic shortcuts. No silent failures. No identifier-coupled logic.
 
@@ -46,16 +46,15 @@ No heuristic shortcuts. No silent failures. No identifier-coupled logic.
 | **L5** | Human approval gating |
 | **L6** | Immutable observability layer |
 
-Execution flows down. Validation signals flow up.  
+Execution flows down. Validation signals flow up.
 No layer bypasses contract enforcement.
 
 ---
 
 ## Core Guarantees
 
-- Aggregate artifacts **must** include index  
-- Individual artifacts **cannot** include index  
-- Invalid artifacts rejected at boundary  
-- No magic identifiers anywhere in validation logic  
-- Deterministic outputs given identical inputs  
-
+- Aggregate artifacts **must** include index
+- Individual artifacts **cannot** include index
+- Invalid artifacts rejected at boundary
+- No magic identifiers anywhere in validation logic
+- Deterministic outputs given identical inputs
