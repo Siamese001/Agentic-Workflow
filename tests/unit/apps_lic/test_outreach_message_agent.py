@@ -22,10 +22,10 @@ class TestOutreachMessageAgent:
 
     def test_generate_connection_request_success(self, tmp_path: Path) -> None:
         """Test successful connection request generation from markdown template."""
-        # Create outreach directory and template
-        (tmp_path / "outreach").mkdir()
+        # Create shared directory and template
+        (tmp_path / "shared").mkdir()
         template_content = "Hello {name}, I'd like to connect with you."
-        (tmp_path / "outreach" / "connection_request.md").write_text(template_content)
+        (tmp_path / "shared" / "connection_request.md").write_text(template_content)
 
         agent = OutreachMessageAgent(prompt_root=tmp_path)
         result = agent.generate_connection_request({"name": "John"})
@@ -88,10 +88,10 @@ class TestOutreachMessageAgent:
 
     def test_missing_template_variable_raises_error(self, tmp_path: Path) -> None:
         """Test that missing template variable raises OutreachTemplateError."""
-        # Create outreach directory and template with missing variable
-        (tmp_path / "outreach").mkdir()
+        # Create shared directory and template with missing variable
+        (tmp_path / "shared").mkdir()
         template_content = "Hello {missing_var}, this won't work."
-        (tmp_path / "outreach" / "connection_request.md").write_text(template_content)
+        (tmp_path / "shared" / "connection_request.md").write_text(template_content)
 
         agent = OutreachMessageAgent(prompt_root=tmp_path)
 
@@ -121,9 +121,9 @@ class TestOutreachMessageAgent:
 
     def test_template_read_error_raises_outreach_template_error(self, tmp_path: Path, monkeypatch) -> None:
         """Test that file read errors raise OutreachTemplateError."""
-        # Create outreach directory
-        (tmp_path / "outreach").mkdir()
-        template_path = tmp_path / "outreach" / "connection_request.md"
+        # Create shared directory
+        (tmp_path / "shared").mkdir()
+        template_path = tmp_path / "shared" / "connection_request.md"
         template_path.write_text("test content")
 
         # Mock Path.read_text to raise OSError

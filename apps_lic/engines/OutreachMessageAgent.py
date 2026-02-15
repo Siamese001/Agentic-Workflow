@@ -53,7 +53,7 @@ class OutreachMessageAgent:
         Raises:
             OutreachTemplateError: If template file cannot be found or read
         """
-        template_path = self.prompt_root / "outreach" / "connection_request.md"
+        template_path = self.prompt_root / "shared" / "connection_request.md"
         return self._load_markdown_template(template_path, payload)
 
     def generate_cold_outreach(self, payload: dict[str, Any]) -> str:

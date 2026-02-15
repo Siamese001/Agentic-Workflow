@@ -97,7 +97,7 @@ class ResumeAssemblyAgent:
         Raises:
             ResumeTemplateError: If template file cannot be found or read
         """
-        template_path = self.prompt_root / "resume" / "connection_request.md"
+        template_path = self.prompt_root / "shared" / "connection_request.md"
         return self._load_markdown_template(template_path, payload)
 
     def _load_markdown_template(self, template_path: Path, payload: dict[str, Any]) -> str:

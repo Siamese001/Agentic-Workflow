@@ -72,10 +72,10 @@ class TestResumeAssemblyAgent:
 
     def test_generate_networking_request_success(self, tmp_path: Path) -> None:
         """Test successful networking request generation from markdown template."""
-        # Create resume directory and template
-        (tmp_path / "resume").mkdir()
+        # Create shared directory and template
+        (tmp_path / "shared").mkdir()
         template_content = "Dear {recipient},\n\nI hope this message finds you well. I'm reaching out regarding {opportunity}.\n\nBest regards,\n{sender}"
-        (tmp_path / "resume" / "connection_request.md").write_text(template_content)
+        (tmp_path / "shared" / "connection_request.md").write_text(template_content)
 
         agent = ResumeAssemblyAgent(prompt_root=tmp_path)
         result = agent.generate_networking_request(
