@@ -444,4 +444,20 @@ No narrative — only artifacts.
 Enforcement Principle:
 If evidence does not prove it, it did not happen.
 
+---
+
+## Pre-commit Bypass Exception (Narrow)
+`--no-verify` is FORBIDDEN by default.
+
+`--no-verify` is ALLOWED ONLY when:
+1) Change set is limited to governance/config files (e.g., `.gitattributes`, `.windsurfrules`, `.editorconfig`, `.gitignore`) AND
+2) Pre-commit fails due to repo-wide "unrelated violations" not touched by the change AND
+3) The failing hook output is captured verbatim in an evidence file AND
+4) The evidence file explicitly lists the unrelated paths reported by the hook AND
+5) A follow-on remediation issue/phase is opened (recorded in the evidence file as a short note).
+
+If any condition above is missing, the wave must STOP and not commit.
+
+---
+
 C:\Users\amita\.codeium\windsurf\memories\global_rules.md
