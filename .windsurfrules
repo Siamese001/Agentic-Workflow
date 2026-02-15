@@ -63,6 +63,31 @@ Allowed response content at phase end (ONLY):
 
 ---
 
+## 1B. Agent Invocation Lock (FUNCTION-ONLY, NO DUPLICATE SCRIPTS)
+When an agent is executed (discovery, validation, enforcement, healing, classification, etc.), it MUST be invoked via a Python function call into the canonical agent implementation.
+
+Hard rules:
+- DO NOT create new standalone scripts that duplicate agent behavior or reimplement agent logic.
+- CLI/runner entrypoints are allowed ONLY as thin wrappers that:
+  - import the canonical agent/module
+  - parse args
+  - call a single exported Python function
+  - contain ZERO business logic beyond wiring/logging/exit codes
+
+If new automation is needed:
+- Prefer adding/using a function in the existing agent module (or its canonical helper), then call it.
+- Any new script/entrypoint MUST be explicitly justified in the phase plan and MUST demonstrate it delegates to the canonical function without duplicating logic.
+
+Violations are IMMEDIATE FAIL:
+- Any new file whose primary purpose is to run an agent by copying logic.
+- Any parallel implementation of an existing agent workflow in `tools/`, `scripts/`, `apps_*`, or notebooks.
+
+Evidence requirement (per phase where agents are touched):
+- Show the exact call-site (function) used to invoke the agent.
+- `rg -n "<agent class/function>"` demonstrating no duplicate runner logic was introduced.
+
+---
+
 # ================================================================
 # SSOT & STRUCTURAL GOVERNANCE
 # ================================================================
