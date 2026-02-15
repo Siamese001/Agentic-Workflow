@@ -126,3 +126,14 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+      # -- T3f: Module Collision Guard (architectural enforcement) ----------------
+      # Scope: Detect duplicate modules, logical import paths, case collisions
+      # Blocks commits that violate architectural module integrity
+      - id: module-collision-guard
+        name: "T3f: Module Collision Guard"
+        entry: python tools/architectural/module_collision_guard.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        require_serial: true
