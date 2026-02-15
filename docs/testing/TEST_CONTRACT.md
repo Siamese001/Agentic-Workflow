@@ -12,10 +12,27 @@ Collects **only** from the explicit `testpaths` in `pytest.ini`:
 
 | Testpath | Description |
 |---|---|
-| `tests/unit_min_deps` | Contract/structural tests — stdlib + pytest only, zero optional deps |
 | `tests/integration/agentic_core` | Integration tests for agentic_core agents — may require pydantic |
 
 No other directories are collected by default. `--strict-markers` is enforced.
+
+## Structural Audit Suite
+
+```bash
+pytest -m unit_min_deps -q
+```
+
+Executes structural governance enforcement tests:
+
+| Marker | Description |
+|---|---|
+| `unit_min_deps` | Structural audit tests — stdlib + pytest only, zero optional deps |
+
+**Purpose**: Enforces architectural contracts, import boundaries, and structural governance.
+
+**Design**: Marker-based isolation to prevent collection errors from structural violations.
+
+**Execution**: Run separately from functional tests to maintain clean separation of concerns.
 
 ## Nox Sessions
 
