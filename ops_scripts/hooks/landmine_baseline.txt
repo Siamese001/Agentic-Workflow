@@ -5408,7 +5408,7 @@ C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\truth_keeper_valida
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\transform_config.py:267:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\transform_config.py:429:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\transform_config.py:478:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py:362:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py:360:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manager.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\sovereign_filesystem_mcp.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\batch_embedding_service.py:103:magic_configuration:Magic configuration: Hardcoded max_workers=4
@@ -5765,20 +5765,20 @@ C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\LocationHealerAgent.py:
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PreCommitSovereignAgent.py:102:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PreCommitSovereignAgent.py:112:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PreCommitSovereignAgent.py:211:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:115:type_erasure:Type erasure: PredictiveCostAuditorAgent.execute returns Any instead of structured type
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:381:magic_configuration:Magic configuration: Hardcoded max_depth=3
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:411:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:116:type_erasure:Type erasure: PredictiveCostAuditorAgent.execute returns Any instead of structured type
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:382:magic_configuration:Magic configuration: Hardcoded max_depth=3
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\PredictiveCostAuditorAgent.py:412:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedSentinelAgent.py:149:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedSentinelAgent.py:216:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedSentinelAgent.py:252:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedSentinelAgent.py:264:magic_configuration:Magic configuration: Hardcoded max_depth=3
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedSentinelAgent.py:294:type_erasure:Type erasure: RedSentinelAgent.heal returns dict instead of structured type
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:140:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:195:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:205:magic_configuration:Magic configuration: Hardcoded max_depth=3
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:313:type_erasure:Type erasure: RedTeamAgent.heal returns dict instead of structured type
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:139:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:194:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:204:magic_configuration:Magic configuration: Hardcoded max_depth=3
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:280:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RedTeamAgent.py:312:type_erasure:Type erasure: RedTeamAgent.heal returns dict instead of structured type
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RegressionOracleAgent.py:162:magic_configuration:Magic configuration: Hardcoded max_depth=3
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RegressionOracleAgent.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\RegressionOracleAgent.py:239:magic_configuration:Magic configuration: Hardcoded max_actions=50

@@ -46,9 +46,7 @@ class TestRootHygiene:
     """Hard gate: root directory must match approved manifest."""
 
     def test_manifest_exists(self) -> None:
-        assert MANIFEST_PATH.exists(), (
-            f"Root manifest not found at {MANIFEST_PATH.relative_to(ROOT)}"
-        )
+        assert MANIFEST_PATH.exists(), f"Root manifest not found at {MANIFEST_PATH.relative_to(ROOT)}"
 
     def test_no_unapproved_root_files(self) -> None:
         extra_files, _ = _scan_root_drift()
@@ -77,9 +75,7 @@ class TestRootHygiene:
             "approved_files": ["README.md"],
             "approved_directories": [],
         }
-        (manifest_dir / "root_manifest.json").write_text(
-            json.dumps(manifest), encoding="utf-8"
-        )
+        (manifest_dir / "root_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
         (fake_root / "README.md").write_text("ok", encoding="utf-8")
         (fake_root / "rogue_script.py").write_text("bad", encoding="utf-8")
 
@@ -90,6 +86,4 @@ class TestRootHygiene:
             if entry.is_file() and entry.name not in approved:
                 extra_files.append(entry.name)
 
-        assert "rogue_script.py" in extra_files, (
-            "Scanner failed to detect synthetic unapproved root file"
-        )
+        assert "rogue_script.py" in extra_files, "Scanner failed to detect synthetic unapproved root file"

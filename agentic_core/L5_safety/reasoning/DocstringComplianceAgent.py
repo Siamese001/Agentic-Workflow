@@ -14,8 +14,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.decorators import standard_heal
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30

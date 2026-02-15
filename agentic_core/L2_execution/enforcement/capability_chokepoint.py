@@ -11,13 +11,13 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable, TypeVar
 
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityDecisionArtifact,
     CapabilityEnforcer,
     CapabilityTokenArtifact,
     build_capability_decision,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 
 logger = logging.getLogger(__name__)
 
@@ -94,9 +94,7 @@ class CapabilityChokepoint:
                 tool_name,
                 action,
             )
-            raise PermissionError(
-                "CAPABILITY_CHOKEPOINT_FAIL_CLOSED: no CapabilityTokenArtifact provided"
-            )
+            raise PermissionError("CAPABILITY_CHOKEPOINT_FAIL_CLOSED: no CapabilityTokenArtifact provided")
 
         # FAIL-CLOSED: invalid token type
         if not isinstance(token, CapabilityTokenArtifact):
@@ -134,8 +132,7 @@ class CapabilityChokepoint:
             )
             self._decisions.append(decision)
             raise PermissionError(
-                f"CAPABILITY_CHOKEPOINT_FAIL_CLOSED: artifact_type mismatch "
-                f"'{token.artifact_type}'"
+                f"CAPABILITY_CHOKEPOINT_FAIL_CLOSED: artifact_type mismatch '{token.artifact_type}'"
             )
 
         # Delegate to CapabilityEnforcer for permission/path/quota checks

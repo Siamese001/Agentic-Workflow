@@ -8,7 +8,6 @@ Guardian hard gate per §28 Layer Boundary Enforcement Lock.
 from __future__ import annotations
 
 import ast
-import tempfile
 import textwrap
 from pathlib import Path
 
@@ -35,14 +34,10 @@ def _scan_boundary_violations() -> list[str]:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     if alias.name and alias.name.startswith("ops_scripts"):
-                        violations.append(
-                            f"{rel}:{node.lineno}: import {alias.name}"
-                        )
+                        violations.append(f"{rel}:{node.lineno}: import {alias.name}")
             elif isinstance(node, ast.ImportFrom):
                 if node.module and node.module.startswith("ops_scripts"):
-                    violations.append(
-                        f"{rel}:{node.lineno}: from {node.module} import ..."
-                    )
+                    violations.append(f"{rel}:{node.lineno}: from {node.module} import ...")
     return violations
 
 
@@ -51,9 +46,8 @@ class TestAgenticCoreOpsScriptsBoundary:
 
     def test_no_agentic_core_imports_ops_scripts(self) -> None:
         violations = _scan_boundary_violations()
-        assert not violations, (
-            f"Found {len(violations)} agentic_core → ops_scripts import(s):\n"
-            + "\n".join(f"  {v}" for v in violations)
+        assert not violations, f"Found {len(violations)} agentic_core → ops_scripts import(s):\n" + "\n".join(
+            f"  {v}" for v in violations
         )
 
     def test_synthetic_violation_detected(self, tmp_path: Path) -> None:

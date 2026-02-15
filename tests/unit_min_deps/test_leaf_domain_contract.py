@@ -7,8 +7,6 @@ Guardian hard gate per LEAF_DOMAINS_NO_LCD in ssot.py.
 
 from __future__ import annotations
 
-import os
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -44,9 +42,7 @@ def _scan_leaf_domain_violations() -> list[str]:
                 # Check if this subdirectory is declared in the domain's own structure
                 # (e.g., prompt_governance has declared subfolders like meta_prompts)
                 # We need to check the blueprint for optional_subfolders
-                violations.append(
-                    f"{domain}/{entry.name}: illegal subdirectory in LEAF_DOMAIN"
-                )
+                violations.append(f"{domain}/{entry.name}: illegal subdirectory in LEAF_DOMAIN")
     return violations
 
 
@@ -111,9 +107,7 @@ class TestLeafDomainNoSubdirs:
         (illegal_sub / "__init__.py").write_text("", encoding="utf-8")
 
         subdirs = [
-            e.name
-            for e in fake_domain.iterdir()
-            if e.is_dir() and e.name not in ALWAYS_ALLOWED_SUBDIRS
+            e.name for e in fake_domain.iterdir() if e.is_dir() and e.name not in ALWAYS_ALLOWED_SUBDIRS
         ]
         assert subdirs, "Scanner failed to detect synthetic illegal subdirectory"
         assert "illegal_subdir" in subdirs

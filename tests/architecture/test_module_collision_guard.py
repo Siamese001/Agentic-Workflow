@@ -3,7 +3,6 @@ Architectural integrity tests for module collision prevention.
 """
 
 import os
-import pytest
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -25,7 +24,7 @@ class TestModuleCollisionGuard:
 
         # Run guard in default mode (no baseline update)
         # Should pass since we have the baseline file
-        with patch('sys.exit') as mock_exit:
+        with patch("sys.exit") as mock_exit:
             main()
             mock_exit.assert_called_once_with(0)
 
@@ -36,7 +35,12 @@ class TestModuleCollisionGuard:
         sys.path.insert(0, str(tools_path))
 
         try:
-            from module_collision_guard import detect_collisions, scan_directory, check_against_baseline, load_baseline
+            from module_collision_guard import (
+                check_against_baseline,
+                detect_collisions,
+                load_baseline,
+                scan_directory,
+            )
         finally:
             sys.path.remove(str(tools_path))
 
@@ -68,16 +72,23 @@ class TestModuleCollisionGuard:
             mock_collisions["duplicate_filenames"] = []
 
         # Add a new collision that's not in baseline
-        mock_collisions["duplicate_filenames"].append((
-            "agentic_core:new_collision_file",
-            [("agentic_core", Path("agentic_core/fake1.py")), ("agentic_core", Path("agentic_core/fake2.py"))]
-        ))
+        mock_collisions["duplicate_filenames"].append(
+            (
+                "agentic_core:new_collision_file",
+                [
+                    ("agentic_core", Path("agentic_core/fake1.py")),
+                    ("agentic_core", Path("agentic_core/fake2.py")),
+                ],
+            )
+        )
 
         # Check against baseline - should detect new collision
         violations = check_against_baseline(mock_collisions, baseline)
 
         assert len(violations) > 0, "Should detect new collision growth"
-        assert any("NEW filename collision: new_collision_file" in v for v in violations), "Should identify the new collision"
+        assert any("NEW filename collision: new_collision_file" in v for v in violations), (
+            "Should identify the new collision"
+        )
 
     def test_guard_baseline_update_mode(self):
         """Test baseline update mode works correctly."""
@@ -88,7 +99,9 @@ class TestModuleCollisionGuard:
         try:
             # Import the module fresh to avoid side effects
             import importlib
+
             import module_collision_guard
+
             importlib.reload(module_collision_guard)
             from module_collision_guard import main
         finally:
@@ -96,7 +109,7 @@ class TestModuleCollisionGuard:
 
         # Run guard in update mode
         with patch.dict(os.environ, {"MODULE_COLLISION_UPDATE_BASELINE": "1"}):
-            with patch('sys.exit') as mock_exit:
+            with patch("sys.exit") as mock_exit:
                 main()
                 # Should be called at least once with exit code 0
                 assert mock_exit.call_count >= 1

@@ -19,7 +19,6 @@ from agentic_core.L2_execution.enforcement.healer_pipe_order import (
     enforce_healer_pipe_order,
 )
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -200,9 +199,7 @@ class TestStructural:
 
     def test_gateway_calls_enforce(self):
         """v15_execution_gateway.py must call enforce_healer_pipe_order."""
-        gw_path = pathlib.Path(
-            "agentic_core/L0_routing/enforcement/v15_execution_gateway.py"
-        )
+        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/v15_execution_gateway.py")
         assert gw_path.exists(), f"Gateway not found: {gw_path}"
         content = gw_path.read_text(encoding="utf-8", errors="ignore")
         assert "enforce_healer_pipe_order" in content, (
@@ -224,7 +221,6 @@ class TestRuntimeWiring:
         enforce call. A spy on enforce records the invocation.
         """
         import hashlib
-        from dataclasses import dataclass
         from unittest.mock import MagicMock
 
         from agentic_core.L0_routing.types.v15_p2_types import (
@@ -251,11 +247,13 @@ class TestRuntimeWiring:
         call_log: list[dict] = []
 
         def spy_enforce(expected_steps, observed_steps, trace_id=None):
-            call_log.append({
-                "expected": expected_steps,
-                "observed": list(observed_steps),
-                "trace_id": trace_id,
-            })
+            call_log.append(
+                {
+                    "expected": expected_steps,
+                    "observed": list(observed_steps),
+                    "trace_id": trace_id,
+                }
+            )
 
         gw_mod = "agentic_core.L0_routing.enforcement.v15_execution_gateway"
         with (
@@ -286,8 +284,7 @@ class TestRuntimeWiring:
                 pass
 
         assert len(call_log) >= 1, (
-            "enforce_healer_pipe_order was NOT called during gateway execution — "
-            "gate wiring is broken"
+            "enforce_healer_pipe_order was NOT called during gateway execution — gate wiring is broken"
         )
         assert call_log[0]["trace_id"] == "wiring-test"
         assert call_log[0]["observed"] == list(HEALER_PIPE_ORDER)
@@ -295,9 +292,7 @@ class TestRuntimeWiring:
     def test_gate_removal_causes_test_failure(self):
         """Prove that if we replace enforce with a no-op, the structural test
         still catches it (the function must exist in the source)."""
-        gw_path = pathlib.Path(
-            "agentic_core/L0_routing/enforcement/v15_execution_gateway.py"
-        )
+        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/v15_execution_gateway.py")
         content = gw_path.read_text(encoding="utf-8", errors="ignore")
         assert "enforce_healer_pipe_order(HEALER_PIPE_ORDER, observed_steps" in content, (
             "The enforce_healer_pipe_order call site was removed from the gateway"

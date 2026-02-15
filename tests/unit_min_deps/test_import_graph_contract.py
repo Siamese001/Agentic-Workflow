@@ -95,9 +95,7 @@ class TestImportGraphContract:
                 "hash": _hash_edges(edges),
             }
             SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-            SNAPSHOT_PATH.write_text(
-                json.dumps(snapshot, indent=2) + "\n", encoding="utf-8"
-            )
+            SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")
         data = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
         assert "edge_count" in data
         assert "forbidden_edge_count" in data
@@ -111,9 +109,7 @@ class TestImportGraphContract:
         ceiling = snapshot["forbidden_edge_count"]
         edges = _extract_import_edges()
         current = len(_compute_forbidden_edges(edges))
-        assert current <= ceiling, (
-            f"Forbidden edge count grew: {current} > {ceiling} (ceiling from snapshot)"
-        )
+        assert current <= ceiling, f"Forbidden edge count grew: {current} > {ceiling} (ceiling from snapshot)"
 
     def test_synthetic_forbidden_edge_detected(self, tmp_path: Path) -> None:
         """Negative test: prove scanner catches a synthetic forbidden edge."""

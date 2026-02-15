@@ -350,9 +350,7 @@ class SovereignLLMGateway:
                     )
 
                     try:
-                        _isu.scan_untrusted_text(
-                            _response_content, source="llm_response_output"
-                        )
+                        _isu.scan_untrusted_text(_response_content, source="llm_response_output")
                     # guardian: allow-silent-swallow
                     except _SVE_P3 as _p3_sve:
                         Logger.warning(

@@ -88,7 +88,7 @@ def test_no_additional_contract_gate_modules_without_update():
     untracked = potential_contract_modules - set(CONTRACT_GATE_TEST_MODULES)
 
     if untracked:
-        assert False, (
+        raise AssertionError(
             f"Found potential contract gate modules not in SSOT list: {sorted(untracked)}\n"
             f"If these are contract gate modules, update CONTRACT_GATE_TEST_MODULES in _contract_gate_ssot.py.\n"
             f"If not, consider renaming to avoid confusion."
@@ -237,13 +237,6 @@ class TestSyntheticRegistryFlip:
 
         This test verifies the meta-guardian invariant catches vacuous gates.
         """
-        # Simulate empty meta-guardian coverage
-        simulated_mapping = {
-            k: v for k, v in GUARDIAN_ID_TO_TEST_MODULES.items() if k not in META_GUARDIAN_IDS
-        }
-
-        simulated_meta_covered = META_GUARDIAN_IDS & set(simulated_mapping.keys())
-
         # If we removed all meta-guardians, this would be empty
         # The actual mapping should NOT be empty
         actual_meta_covered = META_GUARDIAN_IDS & set(GUARDIAN_ID_TO_TEST_MODULES.keys())

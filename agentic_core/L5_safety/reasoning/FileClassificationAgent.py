@@ -67,9 +67,9 @@ from agentic_core.core.classification_kernel import (
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
-    from agentic_core.utils.decorators import standard_heal
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin  # noqa: F401
+    from agentic_core.utils.decorators import standard_heal
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True

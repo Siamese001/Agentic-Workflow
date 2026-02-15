@@ -20,9 +20,9 @@ from typing import Any
 import redis
 from redis.connection import ConnectionPool
 
-from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.core.env_loader import get_env
+from agentic_core.utils.decorators import standard_heal
 
 
 # NAMING FIXED: RedisSovereignAgent → redis_sovereign_agent

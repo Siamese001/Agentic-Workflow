@@ -26,7 +26,10 @@ Phase 11: Configurable Implementation Factory
 from typing import Any
 
 try:
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    import importlib.util
+
+    spec = importlib.util.find_spec("agentic_core.base_agents.SovereignBaseAgent")
+    _ = spec  # Mark as used
 except ImportError:
     L2ExecutionBase = None
 MockL2ExecutionBase = None  # Stub
