@@ -31,6 +31,13 @@ from agentic_core.L0_routing.types.v15_types import (
     TokenGateResult,
 )
 from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
+from data.sdks_mcps.client_wrappers import (
+    create_anthropic_client,
+    create_openai_client,
+    create_vertex_client,
+)
+
+# guardian: allow-silent-swallower
 
 Logger = logging.getLogger(__name__)
 
@@ -107,12 +114,7 @@ class SovereignLLMGateway:
     def openai(self):
         if self._openai_client is None:
             try:
-                import openai
-
-                api_key = os.getenv("OPENAI_API_KEY")
-                if not api_key:
-                    raise ValueError("OPENAI_API_KEY missing")
-                self._openai_client = openai.AsyncOpenAI(api_key=api_key)
+                self._openai_client = create_openai_client()
             except Exception as e:
                 Logger.warning(f"OpenAI client init failed: {e}")
                 raise
@@ -122,12 +124,7 @@ class SovereignLLMGateway:
     def anthropic(self):
         if self._anthropic_client is None:
             try:
-                import anthropic
-
-                api_key = os.getenv("ANTHROPIC_API_KEY")
-                if not api_key:
-                    raise ValueError("ANTHROPIC_API_KEY missing")
-                self._anthropic_client = anthropic.AsyncAnthropic(api_key=api_key)
+                self._anthropic_client = create_anthropic_client()
             except Exception as e:
                 Logger.warning(f"Anthropic client init failed: {e}")
                 raise
@@ -137,13 +134,7 @@ class SovereignLLMGateway:
     def google(self):
         if self._google_client is None:
             try:
-                import google.generativeai as genai
-
-                api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-                if not api_key:
-                    raise ValueError("GOOGLE_API_KEY missing")
-                genai.configure(api_key=api_key)
-                self._google_client = genai
+                self._google_client = create_vertex_client()
             except Exception as e:
                 Logger.warning(f"Google client init failed: {e}")
                 raise

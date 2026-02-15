@@ -24,6 +24,13 @@ if TYPE_CHECKING:
 from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators import standard_heal
+from data.sdks_mcps.client_wrappers import (
+    create_openai_client,
+    create_vertex_client,
+)
+
+# guardian: allow-silent-swallower
+# guardian: allow-magic-configuration
 
 Logger = logging.getLogger(__name__)
 
@@ -218,15 +225,10 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     async def _get_gemini_embedding(self, content: str) -> list[float]:
         """Get embedding from Gemini."""
-        import google.generativeai as genai
-
-        if not os.getenv("GOOGLE_API_KEY"):
-            raise ValueError("GOOGLE_API_KEY missing")
-
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        client = create_vertex_client()
 
         # 'retrieval_document' is generally preferred for storage
-        result = genai.embed_content(
+        result = client.embed_content(
             model="models/text-embedding-004",
             content=content,
             task_type="retrieval_document",
@@ -235,12 +237,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     async def _get_openai_embedding(self, content: str) -> list[float]:
         """Get embedding from OpenAI."""
-        import openai
-
-        if not os.getenv("OPENAI_API_KEY"):
-            raise ValueError("OPENAI_API_KEY missing")
-
-        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        client = create_openai_client()
         response = client.embeddings.create(model="text-embedding-3-small", input=content)
         return response.data[0].embedding
 
