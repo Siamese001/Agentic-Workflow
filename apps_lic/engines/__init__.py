@@ -6,10 +6,12 @@ importable directly from their modules, e.g.:
     from apps_lic.engines.OutreachSignalRouterAgent import OutreachSignalRouterAgent
 """
 
+from .ExecutiveStrategyAgent import ExecutiveStrategyAgent
 from .HOPPipelineExecutor import HOPPipelineExecutor
 from .LICValidationExecutor import LICValidationExecutor
 
 __all__ = [
+    "ExecutiveStrategyAgent",
     "HOPPipelineExecutor",
     "LICValidationExecutor",
 ]
