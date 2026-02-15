@@ -50,13 +50,13 @@ class ExecutiveStrategyAgent:
         """
         # Filter out reserved keys to prevent collisions
         filtered_vars = {k: v for k, v in template_vars.items() if k not in self._RESERVED_KEYS}
-        
+
         # Load structured prompt data
         prompt_data = self._prompt_loader.load_prompt(domain, prompt_name)
-        
+
         # Render template
         rendered = self._prompt_loader.get_template(domain, prompt_name, **filtered_vars)
-        
+
         # Add constraints prefix if present
         constraints = prompt_data.get("constraints")
         if constraints:
@@ -64,9 +64,9 @@ class ExecutiveStrategyAgent:
                 constraints_text = "\n".join(f"- {c}" for c in constraints)
             else:
                 constraints_text = str(constraints)
-            
+
             return f"CONSTRAINTS:\n{constraints_text}\n\n{rendered}"
-        
+
         return rendered
 
     def conduct_shadow_audit(self, payload: dict[str, Any]) -> str:
@@ -113,3 +113,46 @@ class ExecutiveStrategyAgent:
             PromptSchemaError: If template formatting fails
         """
         return self._render("executive", "k13_interviewer_sim", payload)
+
+
+# Minimal dispatch functions for reachability
+def get_exec_shadow_audit(payload: dict[str, Any], *, prompt_root: Path | None = None) -> str:
+    """Dispatch function for executive shadow audit.
+
+    Args:
+        payload: Dictionary of template variables
+        prompt_root: Optional prompt directory override
+
+    Returns:
+        Formatted shadow audit prompt
+    """
+    agent = ExecutiveStrategyAgent(prompt_root=prompt_root)
+    return agent.conduct_shadow_audit(payload)
+
+
+def get_exec_strategy_roadmap(payload: dict[str, Any], *, prompt_root: Path | None = None) -> str:
+    """Dispatch function for executive strategy roadmap.
+
+    Args:
+        payload: Dictionary of template variables
+        prompt_root: Optional prompt directory override
+
+    Returns:
+        Formatted strategy roadmap prompt
+    """
+    agent = ExecutiveStrategyAgent(prompt_root=prompt_root)
+    return agent.generate_strategy_roadmap(payload)
+
+
+def get_exec_interviewer_profile(payload: dict[str, Any], *, prompt_root: Path | None = None) -> str:
+    """Dispatch function for executive interviewer profiling.
+
+    Args:
+        payload: Dictionary of template variables
+        prompt_root: Optional prompt directory override
+
+    Returns:
+        Formatted interviewer profile prompt
+    """
+    agent = ExecutiveStrategyAgent(prompt_root=prompt_root)
+    return agent.profile_interviewer(payload)
