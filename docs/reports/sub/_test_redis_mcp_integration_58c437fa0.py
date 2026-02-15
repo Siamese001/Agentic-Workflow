@@ -2,10 +2,10 @@
 Integration Tests for Phase 16A: Redis MCP Client
 Validates sovereign caching operations through MCP architecture.
 """
-import asyncio
 import pytest
-from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client, SovereignRedisMCPClient
 from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
+
+from agentic_core.L4_state.caching.redis_mcp_client import SovereignRedisMCPClient, get_redis_client
 
 
 class TestRedisMCPIntegration:

@@ -7,6 +7,7 @@ maintaining agentic_core boundary integrity.
 import logging
 
 from agentic_core.config.core.injection_layer_config import InjectionLayer, InstructionalPattern
+from agentic_core.config.core.yaml_injection_loader import YamlValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +39,11 @@ def get_instructional_injections() -> list[InstructionalPattern]:
     except FileNotFoundError as e:
         logger.warning(f"YAML corpus not found, falling back to markdown: {e}")
         return _get_markdown_injections()
-    except Exception as e:
-        # Check if it's a YAML validation error
-        if "YamlValidationError" in str(type(e)):
-            logger.warning(f"YAML validation failed, falling back to markdown: {e}")
-            return _get_markdown_injections()
-        # Any other exception should propagate
-        raise
+    except YamlValidationError as e:
+        logger.warning(f"YAML validation failed, falling back to markdown: {e}")
+        return _get_markdown_injections()
+    # Any other exception should propagate
+    raise
 
 
 def get_required_injections() -> list[InstructionalPattern]:
@@ -52,15 +51,24 @@ def get_required_injections() -> list[InstructionalPattern]:
 
     Returns:
         List of required InstructionalPattern objects.
-        Deterministic rule: All patterns with required=True are included.
+        Deterministic rule:
+        1. If any patterns have required=True, return only those
+        2. If no patterns have required=True, return all FRAMING layer patterns
     """
     all_patterns = get_instructional_injections()
 
-    # Deterministic rule: filter by required attribute
+    # Check for explicitly required patterns
     required_patterns = [pattern for pattern in all_patterns if pattern.required]
 
-    logger.info(f"Identified {len(required_patterns)} required instructional patterns")
-    return required_patterns
+    if required_patterns:
+        # Found explicitly required patterns
+        logger.info(f"Identified {len(required_patterns)} explicitly required instructional patterns")
+        return required_patterns
+    else:
+        # No explicitly required patterns - fallback to FRAMING layer deterministically
+        framing_patterns = [pattern for pattern in all_patterns if pattern.layer == InjectionLayer.FRAMING]
+        logger.info(f"No explicit required patterns found; using FRAMING layer fallback: {len(framing_patterns)} patterns")
+        return framing_patterns
 
 
 def _get_markdown_injections() -> list[InstructionalPattern]:

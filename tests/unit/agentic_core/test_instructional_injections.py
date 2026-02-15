@@ -1,9 +1,11 @@
 """Unit tests for instructional injections module."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.config.core.injection_layer_config import InjectionLayer, InstructionalPattern
+from agentic_core.config.core.yaml_injection_loader import YamlValidationError
 from agentic_core.runtime.config.instructional_injections import (
     _get_markdown_injections,
     get_instructional_injections,
@@ -88,3 +90,58 @@ class TestInstructionalInjections:
 
             assert len(required1) == len(required2), "Required count should be consistent"
             assert len(required1) == 5, "Should always have 5 required patterns"
+
+    def test_yaml_validation_error_handled_gracefully(self):
+        """Test that YamlValidationError is handled gracefully with fallback."""
+        mock_loader = MagicMock()
+        mock_loader.load_all_patterns.side_effect = YamlValidationError(
+            filename="test.yaml",
+            missing_key="description"
+        )
+
+        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+            patterns = get_instructional_injections()
+            assert len(patterns) == 30, "Should fall back to 30 markdown patterns"
+
+    def test_required_injections_with_explicit_required(self):
+        """Test that explicit required=True patterns are returned when present."""
+        # Create mock patterns with some required=True
+        mock_patterns = [
+            InstructionalPattern(1, "test1", InjectionLayer.CONTEXT, "desc", "template", required=True),
+            InstructionalPattern(2, "test2", InjectionLayer.REASONING, "desc", "template", required=False),
+            InstructionalPattern(3, "test3", InjectionLayer.SAFETY, "desc", "template", required=True),
+        ]
+
+        mock_loader = MagicMock()
+        mock_loader.load_all_patterns.return_value = {"test": mock_patterns}
+
+        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+            required = get_required_injections()
+
+            # Should return only the explicitly required patterns
+            assert len(required) == 2
+            required_ids = {p.id for p in required}
+            assert required_ids == {1, 3}
+
+    def test_required_injections_fallback_to_framing_when_none_required(self):
+        """Test FRAMING layer fallback when no patterns have required=True."""
+        # Create mock patterns with none required=True
+        mock_patterns = [
+            InstructionalPattern(1, "framing1", InjectionLayer.FRAMING, "desc", "template", required=False),
+            InstructionalPattern(2, "context1", InjectionLayer.CONTEXT, "desc", "template", required=False),
+            InstructionalPattern(3, "framing2", InjectionLayer.FRAMING, "desc", "template", required=False),
+            InstructionalPattern(4, "reasoning1", InjectionLayer.REASONING, "desc", "template", required=False),
+        ]
+
+        mock_loader = MagicMock()
+        mock_loader.load_all_patterns.return_value = {"test": mock_patterns}
+
+        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+            required = get_required_injections()
+
+            # Should return only FRAMING layer patterns as fallback
+            assert len(required) == 2
+            required_ids = {p.id for p in required}
+            assert required_ids == {1, 3}
+            for p in required:
+                assert p.layer == InjectionLayer.FRAMING

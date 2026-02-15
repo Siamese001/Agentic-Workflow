@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .instructional_injections import get_instructional_injections, get_required_injections
+from .instructional_injections import get_instructional_injections
 
 try:
     from agentic_core.L5_safety.validators.prompt_governance_types import (
@@ -114,7 +114,7 @@ class PromptInjectionLoader:
 
     def _load_instructional_injections(self) -> None:
         """Load all 30 instructional injection patterns."""
-        
+
         # Try YAML loader if enabled
         if self.config.enable_yaml_loader:
             try:
@@ -122,20 +122,20 @@ class PromptInjectionLoader:
                 return
             except Exception as e:
                 logger.warning(f"YAML loader failed, falling back to markdown: {e}")
-        
+
         # Fallback to markdown-based loading
         self._load_instructional_injections_from_markdown()
-    
+
     def _load_instructional_injections_from_yaml(self) -> None:
         """Load instructional injections from YAML corpus."""
         try:
             from agentic_core.config.core.yaml_injection_loader import get_yaml_loader
         except ImportError:
             raise ImportError("YAML loader not available")
-        
+
         yaml_loader = get_yaml_loader()
         all_patterns = yaml_loader.load_all_patterns()
-        
+
         for layer_name, patterns in all_patterns.items():
             for pattern in patterns:
                 # Convert to our InjectionPattern format
@@ -150,10 +150,10 @@ class PromptInjectionLoader:
                     priority=5,
                     enabled=pattern.enabled,
                 )
-                
+
                 self.injections[injection_pattern.id] = injection_pattern
                 logger.debug(f"Loaded YAML instructional injection {injection_pattern.id}")
-    
+
     def _load_instructional_injections_from_markdown(self) -> None:
         """Load instructional injections from markdown (original behavior)."""
         instructional_injections = get_instructional_injections()
@@ -200,7 +200,7 @@ class PromptInjectionLoader:
                 "priority": 7,
             },
         ]
-        
+
         for injection_data in builtin_injections:
             # Create simple injection pattern
             pattern = InjectionPattern(
@@ -214,7 +214,7 @@ class PromptInjectionLoader:
                 priority=injection_data["priority"],
                 enabled=True,
             )
-            
+
             self.injections[injection_data["id"]] = pattern
 
     def save_injection(self, injection_id: str, injection: InjectionPattern) -> None:
@@ -242,19 +242,19 @@ class PromptInjectionLoader:
             List of matching injection patterns
         """
         cache_key = f"{hop_type}:{stage}:{hash(str(context))}"
-        
+
         if self.config.enable_caching and cache_key in self.cache:
             return self.cache[cache_key]
 
         matches = []
-        
+
         for injection_id, injection in self.injections.items():
             if not injection.enabled:
                 continue
-                
+
             # Simple matching logic - can be enhanced
             confidence = self._calculate_match_confidence(injection, hop_type, stage, context, content)
-            
+
             if confidence > 0.5:
                 match = InjectionMatch(
                     pattern=injection_id,
@@ -262,13 +262,13 @@ class PromptInjectionLoader:
                     confidence=confidence,
                 )
                 matches.append(match)
-        
+
         # Sort by confidence
         matches.sort(key=lambda m: m.confidence, reverse=True)
-        
+
         if self.config.enable_caching:
             self.cache[cache_key] = matches
-        
+
         return matches
 
     def _calculate_match_confidence(
@@ -292,16 +292,16 @@ class PromptInjectionLoader:
             Confidence score between 0.0 and 1.0
         """
         confidence = 0.0
-        
+
         # Basic matching logic
         if hasattr(injection, 'scope') and injection.scope == hop_type:
             confidence += 0.3
-            
+
         if hasattr(injection, 'type') and injection.type == "instructional":
             confidence += 0.2
-            
+
         # Add more sophisticated matching logic here
-        
+
         return min(confidence, 1.0)
 
     def apply_injections(
@@ -325,25 +325,25 @@ class PromptInjectionLoader:
             Enhanced prompt with injections applied
         """
         matches = self.find_matching_injections(hop_type, stage, context, content)
-        
+
         enhanced_prompt = base_prompt
-        
+
         for match in matches:
             if match.matched and match.confidence > 0.7:
                 injection = self.injections[match.pattern]
                 if hasattr(injection, 'template'):
                     enhanced_prompt += f"\n\n{injection.template}"
-        
+
         return enhanced_prompt
 
 
 # Convenience function
 def get_injection_loader(config: InjectionConfig | None = None) -> PromptInjectionLoader:
     """Get a configured injection loader instance.
-    
+
     Args:
         config: Optional configuration
-        
+
     Returns:
         Configured PromptInjectionLoader instance
     """

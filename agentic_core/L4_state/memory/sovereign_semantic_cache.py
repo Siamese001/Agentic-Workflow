@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
-
 from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

@@ -25,11 +25,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.decorators import standard_heal
-
 # 2. THIRDPARTY (Gravity-ordered)
 # [Note: No thirdparty needed for base logic to prevent bootstrap failure]
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.decorators import standard_heal
 
 
 # NAMING CANON ETERNAL — renamed for sovereign discovery — Phase 3 — 2025-12-30
