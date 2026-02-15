@@ -26,6 +26,7 @@
 *.cfg text eol=lf
 .gitignore text eol=lf
 .gitattributes text eol=lf
+.windsurfrules text eol=lf
 # Binary files - no normalization
 *.png binary
 *.jpg binary
