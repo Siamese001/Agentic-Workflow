@@ -103,7 +103,7 @@ M docs/reports/sub/redis_mcp_phase4_evidence.md
 
 **Final Commit:**
 ```
-[Will be updated after commit]
+0e8f76ec7 test(mcp): reload sovereign_config via env toggle for deterministic redis mcp tests
 ```
 
 ## Acceptance Criteria Status

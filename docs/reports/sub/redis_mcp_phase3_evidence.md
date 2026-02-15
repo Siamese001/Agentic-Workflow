@@ -107,7 +107,9 @@ M agentic_core/L4_state/caching/redis_mcp_client.py
 ```
 
 **Final Commit:**
-[Will be updated after commit]
+```
+9c0ca2f37 fix(mcp): align REDIS_MCP_ENABLED gating + proof-grade evidence
+```
 
 **Files Changed:**
 - agentic_core/config/core/sovereign_config.py
