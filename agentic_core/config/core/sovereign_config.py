@@ -108,6 +108,27 @@ class SovereignConfigManager:
     def google_pro_model(self) -> str:
         return self.get_str("GEMINI_PRO_MODEL", self.DEFAULT_GOOGLE_PRO_MODEL)
 
+    # Redis MCP Configuration
+    @property
+    def redis_mcp_enabled(self) -> bool:
+        return self.get_bool("REDIS_MCP_ENABLED", False)
+
+    @property
+    def redis_url(self) -> str:
+        return self.get_str("REDIS_URL", "redis://localhost:6379")
+
+    @property
+    def redis_cache_prefix(self) -> str:
+        return self.get_str("REDIS_CACHE_PREFIX", "agentic:")
+
+    @property
+    def redis_max_key_length(self) -> int:
+        return self.get_int("REDIS_MAX_KEY_LENGTH", 250)
+
+    @property
+    def redis_default_ttl_seconds(self) -> int:
+        return self.get_int("REDIS_DEFAULT_TTL_SECONDS", 3600)
+
 
 # Singleton Accessor
 def get_sovereign_config() -> SovereignConfigManager:
