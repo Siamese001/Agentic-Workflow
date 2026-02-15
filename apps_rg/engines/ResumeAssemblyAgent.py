@@ -122,3 +122,30 @@ class ResumeAssemblyAgent:
             raise ResumeTemplateError(f"Error reading template file {template_path}: {e}")
         except KeyError as e:
             raise ResumeTemplateError(f"Missing template variable {e} in {template_path}")
+
+
+# Minimal dispatch functions for reachability
+def get_resume_skills_section(payload: dict[str, Any]) -> str:
+    """Dispatch function for generating resume skills section.
+
+    Args:
+        payload: Dictionary of template variables
+
+    Returns:
+        Formatted skills section
+    """
+    agent = ResumeAssemblyAgent()
+    return agent.generate_skills_section(payload)
+
+
+def get_resume_executive_summary(payload: dict[str, Any]) -> str:
+    """Dispatch function for generating resume executive summary.
+
+    Args:
+        payload: Dictionary of template variables
+
+    Returns:
+        Formatted executive summary
+    """
+    agent = ResumeAssemblyAgent()
+    return agent.generate_executive_summary(payload)

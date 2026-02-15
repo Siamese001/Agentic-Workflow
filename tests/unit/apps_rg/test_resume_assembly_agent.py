@@ -218,3 +218,75 @@ Experienced software engineer with expertise in full-stack development.
 ## Education
 B.S. Computer Science, Stanford University"""
         assert result == expected
+
+    def test_dispatch_functions_reachable_via_registry(self, tmp_path: Path) -> None:
+        """Test that dispatch functions are reachable via apps_rg.engines registry."""
+        # Create resume directory and templates
+        (tmp_path / "resume").mkdir()
+        skills_content = "## Skills\n\n- {skill1}\n- {skill2}"
+        summary_content = "## Summary\n\n{summary}"
+        (tmp_path / "resume" / "skills_template.md").write_text(skills_content)
+        (tmp_path / "resume" / "summary_template.md").write_text(summary_content)
+
+        # Import dispatch functions via registry (minimal import)
+        from apps_rg.engines import get_resume_executive_summary, get_resume_skills_section
+
+        # Test skills section dispatch
+        skills_payload = {"skill1": "Python", "skill2": "Machine Learning"}
+        skills_result = get_resume_skills_section(skills_payload)
+        assert skills_result == "## Skills\n\n- Python\n- Machine Learning"
+
+        # Test executive summary dispatch
+        summary_payload = {"summary": "Results-driven professional"}
+        summary_result = get_resume_executive_summary(summary_payload)
+        assert summary_result == "## Summary\n\nResults-driven professional"
+
+    def test_dispatch_functions_missing_template_error(self, tmp_path: Path) -> None:
+        """Test that dispatch functions raise ResumeTemplateError for missing templates."""
+        # Import dispatch functions via registry
+        from apps_rg.engines import get_resume_executive_summary, get_resume_skills_section
+
+        # Test skills section missing template
+        with pytest.raises(ResumeTemplateError) as exc_info:
+            get_resume_skills_section({"skill1": "Python"})
+        assert "Template file not found" in str(exc_info.value)
+        assert "skills_template.md" in str(exc_info.value)
+
+        # Test executive summary missing template
+        with pytest.raises(ResumeTemplateError) as exc_info:
+            get_resume_executive_summary({"summary": "Test"})
+        assert "Template file not found" in str(exc_info.value)
+        assert "summary_template.md" in str(exc_info.value)
+
+    def test_dispatch_functions_template_formatting(self, tmp_path: Path) -> None:
+        """Test that dispatch functions handle complex template formatting."""
+        # Create resume directory and templates with multiple variables
+        (tmp_path / "resume").mkdir()
+        skills_content = "## Technical Skills\n\n**Programming**: {languages}\n**Frameworks**: {frameworks}\n**Tools**: {tools}"
+        summary_content = "# {name}\n\n**Professional Summary**: {summary}\n\n**Experience**: {years} years\n\n**Specialization**: {specialization}"
+        (tmp_path / "resume" / "skills_template.md").write_text(skills_content)
+        (tmp_path / "resume" / "summary_template.md").write_text(summary_content)
+
+        # Import dispatch functions via registry
+        from apps_rg.engines import get_resume_executive_summary, get_resume_skills_section
+
+        # Test complex skills formatting
+        skills_payload = {
+            "languages": "Python, JavaScript, Go",
+            "frameworks": "React, Django, FastAPI",
+            "tools": "Docker, Kubernetes, Git",
+        }
+        skills_result = get_resume_skills_section(skills_payload)
+        expected_skills = "## Technical Skills\n\n**Programming**: Python, JavaScript, Go\n**Frameworks**: React, Django, FastAPI\n**Tools**: Docker, Kubernetes, Git"
+        assert skills_result == expected_skills
+
+        # Test complex summary formatting
+        summary_payload = {
+            "name": "Jane Smith",
+            "summary": "Senior software engineer with full-stack expertise",
+            "years": "8",
+            "specialization": "Cloud-native applications",
+        }
+        summary_result = get_resume_executive_summary(summary_payload)
+        expected_summary = "# Jane Smith\n\n**Professional Summary**: Senior software engineer with full-stack expertise\n\n**Experience**: 8 years\n\n**Specialization**: Cloud-native applications"
+        assert summary_result == expected_summary
