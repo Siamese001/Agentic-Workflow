@@ -1,5 +1,4 @@
-================================================================================
-ARCHIVE RESTORATION FINDINGS & RECOMMENDATIONS
+# ARCHIVE RESTORATION FINDINGS & RECOMMENDATIONS
 ================================================================================
 
 Analysis Date: 2026-01-20

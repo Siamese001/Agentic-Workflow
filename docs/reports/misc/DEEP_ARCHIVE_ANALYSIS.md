@@ -1,5 +1,4 @@
-================================================================================
-DEEP ARCHIVE ANALYSIS - FINDINGS & RECOMMENDATIONS
+# DEEP ARCHIVE ANALYSIS - FINDINGS & RECOMMENDATIONS
 ================================================================================
 
 Total files scanned: 5900
