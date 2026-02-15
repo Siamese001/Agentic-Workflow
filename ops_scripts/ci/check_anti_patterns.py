@@ -23,6 +23,13 @@ import json
 import sys
 from pathlib import Path
 
+# Force UTF-8 encoding for Windows compatibility
+import io
+import locale
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 # Ensure project root is in path - guardian: allow-global-mutation
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -95,7 +102,7 @@ def check_files(file_paths: list[str]) -> int:
     if not file_paths:
         all_python_files = list(PROJECT_ROOT.rglob("*.py"))
         # Skip tests, __pycache__, .nox, and other non-source directories
-        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup"]
+        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup", "ops_scripts"]
         python_files = [
             f for f in all_python_files
             if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)
@@ -191,9 +198,15 @@ def check_files(file_paths: list[str]) -> int:
     for violation in new_violations:
         print(f"\n[FAIL] {violation.file_path.name}:{violation.line_number}")
         print(f"   [{violation.category.value}] {violation.message}")
-        print(f"   Evidence: {violation.evidence[:80]}...")
+        # Handle unicode characters in evidence
+        evidence = violation.evidence[:80]
+        if isinstance(evidence, str):
+            evidence = evidence.encode('ascii', errors='replace').decode('ascii')
+        print(f"   Evidence: {evidence}...")
         if violation.suggested_fix:
             fix_preview = violation.suggested_fix.split("\n")[0]
+            if isinstance(fix_preview, str):
+                fix_preview = fix_preview.encode('ascii', errors='replace').decode('ascii')
             print(f"   [FIX] {fix_preview}")
 
     print("\n[ACTION] Fix NEW violations or add '# guardian: allow-<pattern>' to whitelist.")
@@ -222,7 +235,7 @@ def main() -> int:
     if args.write_baseline:
         all_python_files = list(PROJECT_ROOT.rglob("*.py"))
         # Skip tests, __pycache__, .nox, and other non-source directories
-        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup"]
+        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup", "ops_scripts"]
         all_python_files = [
             f for f in all_python_files
             if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)

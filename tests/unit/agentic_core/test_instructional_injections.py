@@ -95,11 +95,12 @@ class TestInstructionalInjections:
         """Test that YamlValidationError is handled gracefully with fallback."""
         mock_loader = MagicMock()
         mock_loader.load_all_patterns.side_effect = YamlValidationError(
-            filename="test.yaml",
-            missing_key="description"
+            filename="test.yaml", missing_key="description"
         )
 
-        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+        with patch(
+            "agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader
+        ):
             patterns = get_instructional_injections()
             assert len(patterns) == 30, "Should fall back to 30 markdown patterns"
 
@@ -115,7 +116,9 @@ class TestInstructionalInjections:
         mock_loader = MagicMock()
         mock_loader.load_all_patterns.return_value = {"test": mock_patterns}
 
-        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+        with patch(
+            "agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader
+        ):
             required = get_required_injections()
 
             # Should return only the explicitly required patterns
@@ -130,13 +133,17 @@ class TestInstructionalInjections:
             InstructionalPattern(1, "framing1", InjectionLayer.FRAMING, "desc", "template", required=False),
             InstructionalPattern(2, "context1", InjectionLayer.CONTEXT, "desc", "template", required=False),
             InstructionalPattern(3, "framing2", InjectionLayer.FRAMING, "desc", "template", required=False),
-            InstructionalPattern(4, "reasoning1", InjectionLayer.REASONING, "desc", "template", required=False),
+            InstructionalPattern(
+                4, "reasoning1", InjectionLayer.REASONING, "desc", "template", required=False
+            ),
         ]
 
         mock_loader = MagicMock()
         mock_loader.load_all_patterns.return_value = {"test": mock_patterns}
 
-        with patch("agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader):
+        with patch(
+            "agentic_core.config.core.yaml_injection_loader.get_yaml_loader", return_value=mock_loader
+        ):
             required = get_required_injections()
 
             # Should return only FRAMING layer patterns as fallback

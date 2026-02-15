@@ -67,7 +67,9 @@ def get_required_injections() -> list[InstructionalPattern]:
     else:
         # No explicitly required patterns - fallback to FRAMING layer deterministically
         framing_patterns = [pattern for pattern in all_patterns if pattern.layer == InjectionLayer.FRAMING]
-        logger.info(f"No explicit required patterns found; using FRAMING layer fallback: {len(framing_patterns)} patterns")
+        logger.info(
+            f"No explicit required patterns found; using FRAMING layer fallback: {len(framing_patterns)} patterns"
+        )
         return framing_patterns
 
 

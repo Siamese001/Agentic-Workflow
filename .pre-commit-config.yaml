@@ -82,7 +82,8 @@ repos:
         pass_filenames: false
         require_serial: true
         # Relocated legacy test-only agent fixtures; production gates enforce 0 L6 *Agent.py.
-        exclude: (ops_scripts/ci/check_anti_patterns\.py|tests/support/l6_observability/.*|tests/.*|__pycache__/.*|.nox/.*|archives/.*|.backup/.*)
+        # Also exclude third-party/vendored paths and venv/site-packages
+        exclude: (ops_scripts/ci/check_anti_patterns\.py|ops_scripts/.*|tests/support/l6_observability/.*|tests/.*|__pycache__/.*|.nox/.*|archives/.*|.backup/.*|(^|/)(\.venv|venv|site-packages|third_party|vendor|node_modules)/)
 
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location

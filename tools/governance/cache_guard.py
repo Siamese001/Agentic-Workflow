@@ -119,19 +119,23 @@ def scan_cache_directories(root_path: Path) -> dict[str, Any]:
 
         # Check 1: Tracked cache violation
         if has_tracked_files(item_path, root_path):
-            violations.append({
-                "path": str(relative_path),
-                "type": "tracked_cache",
-                "detail": f"Cache directory contains tracked files: {relative_path}",
-            })
+            violations.append(
+                {
+                    "path": str(relative_path),
+                    "type": "tracked_cache",
+                    "detail": f"Cache directory contains tracked files: {relative_path}",
+                }
+            )
 
         # Check 2: Forbidden location violation
         if is_forbidden_location(item_path, root_path):
-            violations.append({
-                "path": str(relative_path),
-                "type": "cache_in_core_or_apps",
-                "detail": f"Cache directory in forbidden location: {relative_path}",
-            })
+            violations.append(
+                {
+                    "path": str(relative_path),
+                    "type": "cache_in_core_or_apps",
+                    "detail": f"Cache directory in forbidden location: {relative_path}",
+                }
+            )
 
         # Build inventory entry
         inventory_item = {

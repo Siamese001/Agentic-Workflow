@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from .injection_layer_config import InjectionLayer, InstructionalPattern
 
 logger = logging.getLogger(__name__)

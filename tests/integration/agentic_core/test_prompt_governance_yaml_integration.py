@@ -1,6 +1,5 @@
 """Integration tests for YAML-backed PromptInjectionLoader with markdown fallback."""
 
-
 import pytest
 import yaml
 
@@ -50,7 +49,7 @@ class TestYamlIntegration:
             known_yaml_patterns = [
                 "yaml_framing_1",  # cost_latency_targets
                 "yaml_framing_2",  # global_goal_state
-                "yaml_safety_1",   # constitutional_guardrails
+                "yaml_safety_1",  # constitutional_guardrails
             ]
 
             found_known = any(p in yaml_patterns for p in known_yaml_patterns)
@@ -105,8 +104,12 @@ class TestYamlIntegration:
         assert len(loader_enabled.injections) > 0
 
         # Check for different pattern sources
-        disabled_yaml = [k for k in loader_disabled.injections.keys() if isinstance(k, str) and k.startswith("yaml_")]
-        enabled_yaml = [k for k in loader_enabled.injections.keys() if isinstance(k, str) and k.startswith("yaml_")]
+        disabled_yaml = [
+            k for k in loader_disabled.injections.keys() if isinstance(k, str) and k.startswith("yaml_")
+        ]
+        enabled_yaml = [
+            k for k in loader_enabled.injections.keys() if isinstance(k, str) and k.startswith("yaml_")
+        ]
 
         # Disabled should not have YAML patterns
         assert len(disabled_yaml) == 0, "Disabled loader should not have YAML patterns"
@@ -115,6 +118,14 @@ class TestYamlIntegration:
         # If not, both should have markdown patterns
         if not enabled_yaml:
             # Both should have same markdown patterns
-            disabled_ids = {k for k in loader_disabled.injections.keys() if not (isinstance(k, str) and k.startswith("yaml_"))}
-            enabled_ids = {k for k in loader_enabled.injections.keys() if not (isinstance(k, str) and k.startswith("yaml_"))}
+            disabled_ids = {
+                k
+                for k in loader_disabled.injections.keys()
+                if not (isinstance(k, str) and k.startswith("yaml_"))
+            }
+            enabled_ids = {
+                k
+                for k in loader_enabled.injections.keys()
+                if not (isinstance(k, str) and k.startswith("yaml_"))
+            }
             assert disabled_ids == enabled_ids, "Should have same markdown patterns when YAML unavailable"

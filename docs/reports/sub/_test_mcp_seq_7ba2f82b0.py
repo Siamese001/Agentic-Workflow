@@ -7,6 +7,7 @@ This script:
 3. Verifies the response structure
 4. Reports 100% pass/fail status
 """
+
 import json
 import sys
 from pathlib import Path
@@ -14,9 +15,9 @@ from pathlib import Path
 
 def test_mcp_config_has_sequential_thinking():
     """Test 1: Verify sequential-thinking is in MCP config."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: MCP Config Contains Sequential-Thinking")
-    print("="*60)
+    print("=" * 60)
 
     config_path = Path.home() / "AppData/Roaming/Windsurf/config/mcp_config.json"
 
@@ -57,9 +58,9 @@ def test_mcp_config_has_sequential_thinking():
 
 def test_mcp_registry_has_sequential_thinking():
     """Test 2: Verify sequential-thinking is in SOVEREIGN_MCP_REGISTRY."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: SOVEREIGN_MCP_REGISTRY Contains Sequential-Thinking")
-    print("="*60)
+    print("=" * 60)
 
     try:
         sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -85,9 +86,9 @@ def test_mcp_registry_has_sequential_thinking():
 
 def test_mcp_tool_availability():
     """Test 3: Check if mcp10_sequentialthinking tool is available."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: MCP Sequential-Thinking Tool Availability")
-    print("="*60)
+    print("=" * 60)
 
     # This test checks if the tool would be available in the Cascade environment
     # We can't directly call it from this script, but we can verify the setup
@@ -99,9 +100,9 @@ def test_mcp_tool_availability():
 
 def main():
     """Run all tests and report results."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("MCP SEQUENTIAL-THINKING CONFIGURATION TEST SUITE")
-    print("="*70)
+    print("=" * 70)
 
     tests = [
         ("MCP Config", test_mcp_config_has_sequential_thinking),
@@ -119,9 +120,9 @@ def main():
             results.append((test_name, False))
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TEST SUMMARY")
-    print("="*70)
+    print("=" * 70)
 
     passed_count = sum(1 for _, passed in results if passed)
     total_count = len(results)
@@ -130,7 +131,7 @@ def main():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"{status}: {test_name}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"TOTAL: {passed_count}/{total_count} tests passed")
 
     if passed_count == total_count:

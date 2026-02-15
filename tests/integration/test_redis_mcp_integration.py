@@ -2,6 +2,7 @@
 Integration tests for Redis MCP client functionality.
 Tests the sovereign Redis MCP client with real Redis operations.
 """
+
 import importlib
 from unittest.mock import MagicMock, patch
 
@@ -17,10 +18,12 @@ def _set_redis_mcp_enabled(monkeypatch, enabled: bool):
 
     # reload sovereign_config first
     import agentic_core.config.core.sovereign_config as sc
+
     importlib.reload(sc)
 
     # reload redis_mcp_client which imports/reads sovereign_config
     import agentic_core.L4_state.caching.redis_mcp_client as rmc
+
     importlib.reload(rmc)
 
     return sc, rmc
@@ -53,8 +56,8 @@ class TestRedisMCPIntegration:
         """Test client initialization fails when redis package not available."""
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
-        with patch.dict('sys.modules', {'redis': None}):
-            with patch('builtins.__import__', side_effect=ImportError("No module named 'redis'")):
+        with patch.dict("sys.modules", {"redis": None}):
+            with patch("builtins.__import__", side_effect=ImportError("No module named 'redis'")):
                 with pytest.raises(RuntimeError, match="Redis package required"):
                     rmc.SovereignRedisMCPClient()
 
@@ -64,9 +67,11 @@ class TestRedisMCPIntegration:
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
         # Mock config defaults
-        with patch.object(sc.SovereignConfigManager, 'redis_cache_prefix', 'test:'), \
-             patch.object(sc.SovereignConfigManager, 'redis_max_key_length', 250), \
-             patch('redis.from_url') as mock_redis_from_url:
+        with (
+            patch.object(sc.SovereignConfigManager, "redis_cache_prefix", "test:"),
+            patch.object(sc.SovereignConfigManager, "redis_max_key_length", 250),
+            patch("redis.from_url") as mock_redis_from_url,
+        ):
             mock_redis_client = MagicMock()
             mock_redis_client.get.return_value = b"test_value"
             mock_redis_from_url.return_value = mock_redis_client
@@ -83,10 +88,12 @@ class TestRedisMCPIntegration:
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
         # Mock config defaults
-        with patch.object(sc.SovereignConfigManager, 'redis_cache_prefix', 'test:'), \
-             patch.object(sc.SovereignConfigManager, 'redis_max_key_length', 250), \
-             patch.object(sc.SovereignConfigManager, 'redis_default_ttl_seconds', 3600), \
-             patch('redis.from_url') as mock_redis_from_url:
+        with (
+            patch.object(sc.SovereignConfigManager, "redis_cache_prefix", "test:"),
+            patch.object(sc.SovereignConfigManager, "redis_max_key_length", 250),
+            patch.object(sc.SovereignConfigManager, "redis_default_ttl_seconds", 3600),
+            patch("redis.from_url") as mock_redis_from_url,
+        ):
             mock_redis_client = MagicMock()
             mock_redis_client.setex.return_value = True
             mock_redis_from_url.return_value = mock_redis_client
@@ -103,9 +110,11 @@ class TestRedisMCPIntegration:
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
         # Mock config defaults
-        with patch.object(sc.SovereignConfigManager, 'redis_cache_prefix', 'test:'), \
-             patch.object(sc.SovereignConfigManager, 'redis_max_key_length', 250), \
-             patch('redis.from_url') as mock_redis_from_url:
+        with (
+            patch.object(sc.SovereignConfigManager, "redis_cache_prefix", "test:"),
+            patch.object(sc.SovereignConfigManager, "redis_max_key_length", 250),
+            patch("redis.from_url") as mock_redis_from_url,
+        ):
             mock_redis_client = MagicMock()
             mock_redis_client.delete.return_value = 1
             mock_redis_from_url.return_value = mock_redis_client
@@ -122,9 +131,11 @@ class TestRedisMCPIntegration:
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
         # Mock config defaults
-        with patch.object(sc.SovereignConfigManager, 'redis_cache_prefix', 'test:'), \
-             patch.object(sc.SovereignConfigManager, 'redis_max_key_length', 250), \
-             patch('redis.from_url') as mock_redis_from_url:
+        with (
+            patch.object(sc.SovereignConfigManager, "redis_cache_prefix", "test:"),
+            patch.object(sc.SovereignConfigManager, "redis_max_key_length", 250),
+            patch("redis.from_url") as mock_redis_from_url,
+        ):
             mock_redis_client = MagicMock()
             mock_redis_client.keys.return_value = [b"test:key1", b"test:key2"]
             mock_redis_from_url.return_value = mock_redis_client
@@ -141,8 +152,10 @@ class TestRedisMCPIntegration:
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
         # Mock config with small max length
-        with patch.object(sc.SovereignConfigManager, 'redis_max_key_length', 10), \
-             patch('redis.from_url') as mock_redis_from_url:
+        with (
+            patch.object(sc.SovereignConfigManager, "redis_max_key_length", 10),
+            patch("redis.from_url") as mock_redis_from_url,
+        ):
             mock_redis_from_url.return_value = MagicMock()
 
             client = rmc.SovereignRedisMCPClient()
@@ -155,7 +168,7 @@ class TestRedisMCPIntegration:
         """Test error handling in Redis operations."""
         sc, rmc = _set_redis_mcp_enabled(monkeypatch, True)
 
-        with patch('redis.from_url') as mock_redis_from_url:
+        with patch("redis.from_url") as mock_redis_from_url:
             mock_redis_client = MagicMock()
             mock_redis_client.get.side_effect = Exception("Redis error")
             mock_redis_from_url.return_value = mock_redis_client

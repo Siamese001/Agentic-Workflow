@@ -2,6 +2,7 @@
 Integration Tests for Phase 16A: Redis MCP Client
 Validates sovereign caching operations through MCP architecture.
 """
+
 import pytest
 from agentic_core.config.blueprint_sovereign.environments.sovereign_config import config
 
@@ -133,7 +134,7 @@ class TestRedisMCPIntegration:
         client = get_redis_client()
 
         # Verify router is initialized
-        assert hasattr(client, 'router'), "Client should have router"
+        assert hasattr(client, "router"), "Client should have router"
         assert client.router is not None, "Router should be initialized"
 
         # Verify router role

@@ -3,6 +3,7 @@ Sovereign Redis MCP Client – Phase 16A (Dec 27, 2025)
 Replaces all direct redis-py operations with official Redis MCP integration.
 L3 routed, L5 shielded, L6 observable.
 """
+
 import logging
 from typing import Any
 
@@ -22,7 +23,7 @@ class SovereignRedisMCPClient:
 
         # Check for redis package availability
         try:
-            import redis
+            import redis  # noqa: F401
         except ImportError as e:
             raise RuntimeError("Redis package required when REDIS_MCP_ENABLED is true") from e
 
@@ -35,6 +36,7 @@ class SovereignRedisMCPClient:
         """Lazy initialization of Redis client."""
         if self._redis_client is None:
             import redis
+
             self._redis_client = redis.from_url(self.config.redis_url)
         return self._redis_client
 
@@ -50,7 +52,7 @@ class SovereignRedisMCPClient:
             result = client.get(full_key)
             # Redis returns bytes, decode if needed
             if isinstance(result, bytes):
-                result = result.decode('utf-8')
+                result = result.decode("utf-8")
             return result
         except Exception as e:
             logger.error(f"[L4 REDIS] Cache GET failed for {key}: {e}")
@@ -94,9 +96,9 @@ class SovereignRedisMCPClient:
             prefix = self.config.redis_cache_prefix
             for key in keys:
                 if isinstance(key, bytes):
-                    key = key.decode('utf-8')
+                    key = key.decode("utf-8")
                 if key.startswith(prefix):
-                    result.append(key[len(prefix):])
+                    result.append(key[len(prefix) :])
             return result
         except Exception as e:
             logger.error(f"[L4 REDIS] Cache KEYS failed: {e}")

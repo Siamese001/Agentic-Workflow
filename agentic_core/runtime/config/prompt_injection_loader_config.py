@@ -294,10 +294,10 @@ class PromptInjectionLoader:
         confidence = 0.0
 
         # Basic matching logic
-        if hasattr(injection, 'scope') and injection.scope == hop_type:
+        if hasattr(injection, "scope") and injection.scope == hop_type:
             confidence += 0.3
 
-        if hasattr(injection, 'type') and injection.type == "instructional":
+        if hasattr(injection, "type") and injection.type == "instructional":
             confidence += 0.2
 
         # Add more sophisticated matching logic here
@@ -331,7 +331,7 @@ class PromptInjectionLoader:
         for match in matches:
             if match.matched and match.confidence > 0.7:
                 injection = self.injections[match.pattern]
-                if hasattr(injection, 'template'):
+                if hasattr(injection, "template"):
                     enhanced_prompt += f"\n\n{injection.template}"
 
         return enhanced_prompt

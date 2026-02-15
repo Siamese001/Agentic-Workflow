@@ -3,6 +3,7 @@ Sovereign Redis MCP Client – Phase 16A (Dec 27, 2025)
 Replaces all direct redis-py operations with official Redis MCP integration.
 L3 routed, L5 shielded, L6 observable.
 """
+
 import logging
 from typing import Any
 
@@ -11,7 +12,9 @@ from agentic_core.config.blueprint_sovereign.environments.sovereign_config impor
 # Lazy import to attempt to mitigate circular dependency between L4 and L3
 # if L3 imports L4 state components.
 try:
-    from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+    from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import (
+        SovereignMCPRouter,  # noqa: F401
+    )
 except ImportError:
     # Fallback or strict error depending on startup order
     pass
@@ -28,6 +31,7 @@ class SovereignRedisMCPClient:
 
         # Initialize Router
         from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
+
         self.router = SovereignMCPRouter(role=role)
         logger.info("[L4 REDIS] Sovereign Redis MCP client initialized")
 
@@ -39,10 +43,7 @@ class SovereignRedisMCPClient:
         full_key = f"{config.REDIS_CACHE_PREFIX}{key}"
 
         try:
-            result = await self.router.manager.call_tool(
-                "mcp9_get",
-                {"key": full_key}
-            )
+            result = await self.router.manager.call_tool("mcp9_get", {"key": full_key})
             # Handle MCP tool result structure
             if not result:
                 return None
@@ -63,11 +64,7 @@ class SovereignRedisMCPClient:
 
         full_key = f"{config.REDIS_CACHE_PREFIX}{key}"
 
-        payload = {
-            "key": full_key,
-            "value": value,
-            "expireSeconds": ttl or config.REDIS_DEFAULT_TTL_SECONDS
-        }
+        payload = {"key": full_key, "value": value, "expireSeconds": ttl or config.REDIS_DEFAULT_TTL_SECONDS}
 
         try:
             result = await self.router.manager.call_tool("mcp9_set", payload)
