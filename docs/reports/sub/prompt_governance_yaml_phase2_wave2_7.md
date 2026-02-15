@@ -132,14 +132,14 @@ T3c: Reject Tracked Generated Artifacts..................................Passed
 T3e: Pycache Purge.......................................................Passed
 T3f: Module Collision Guard..............................................Passed
 
-[main <hash>] fix(governance): lock baseline writes + normalize folder purity + restore pytest truth
- X files changed, Y insertions(+), Z deletions(-)
+[main a8f149aac] fix(governance): lock baseline writes + normalize folder purity + restore pytest truth
+ 5 files changed, 542 insertions(+), 2 deletions(-)
  create mode 100644 docs/rules/governance.md
 ```
 
-### Step 8: git show --name-only <hash>
+### Step 8: git show --name-only a8f149aac
 ```
-<hash> fix(governance): lock baseline writes + normalize folder purity + restore pytest truth
+a8f149aac fix(governance): lock baseline writes + normalize folder purity + restore pytest truth
  .pre-commit-config.yaml
  ops_scripts/ci/check_anti_patterns.py
  ops_scripts/hooks/landmine_baseline.txt
@@ -220,7 +220,7 @@ T3f: Module Collision Guard..............................................Passed
 
 ## Final State
 
-- **Commit Hash**: <to be populated after commit>
+- **Commit Hash**: a8f149aaccbd2c35de8ee1bcb4f1adc47bacc8c0
 - **Working Tree**: Clean (no uncommitted changes)
 - **Pre-commit Status**: All hooks pass (T3d manual-only per policy)
 - **Test Status**: Full suite: 24 failed, 89 passed (pre-existing); Prompt_gov: 22 passed
