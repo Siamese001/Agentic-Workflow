@@ -1,0 +1,357 @@
+Running Folder Purity Validation...
+
+FOLDER PURITY VIOLATIONS DETECTED (342 NEW):
+
+  X Agent in config/: agentic_core/config/core/base_entity_config.py
+  X Agent in config/: agentic_core/config/core/gateway_config.py
+  X Agent in config/: agentic_core/config/core/non_conforming_agent_finder_config.py
+  X Agent in config/: apps_lic/config/archetype_indicator_config.py
+  X Agent in types/: agentic_core/L1_cognition/types/capability_types.py
+  X Agent in types/: agentic_core/L3_orchestration/types/orchestrator_types.py
+  X Agent in types/: agentic_core/L5_safety/types/core_contracts_types.py
+  X Agent in types/: agentic_core/runtime/types/state_types.py
+  X Agent in types/: apps_lic/types/app_content_validator_agent_types.py
+  X Agent in types/: apps_lic/types/lic_models_types.py
+  X Agent in types/: apps_rg/types/gap_closure_architect_agent_types.py
+  X Agent in validators/: agentic_core/L5_safety/validators/agentthoughtprocess_validator.py
+  X Agent not in reasoning/: agentic_core/L0_routing/scripts/forensic_discovery_prep.py
+  X Agent not in reasoning/: agentic_core/base_agents/L3OrchestrationBase.py
+  X Agent not in reasoning/: agentic_core/base_agents/LightweightBase.py
+  X Agent not in reasoning/: agentic_core/base_agents/SovereignBaseAgent.py
+  X Agent not in reasoning/: agentic_core/interfaces/IOrchestratorProtocol.py
+  X Agent not in reasoning/: agentic_core/mixins/atomic_execution_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/audit_trail_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/batching_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/caching_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/circuit_breaker_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/configuration_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/context_management_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/cost_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/domain_agent_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/embedding_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/hallucination_detection_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/healing_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/hitl_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/infrastructure_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/inspection_capability_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/instructional_injection_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/lifecycle_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/llm_provider_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/mcp_operation_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/meta_learning_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/metrics_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/performance_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/pinecone_vector_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/redis_cache_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/runtime_safety_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/semantic_cache_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/tool_reliability_mixin.py
+  X Agent not in reasoning/: agentic_core/mixins/tracing_mixin.py
+  X Agent not in reasoning/: agentic_core/runtime/exceptions/runtime_exceptions.py
+  X Agent not in reasoning/: agentic_core/runtime/exceptions/workflow_exceptions.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L1_cognition__reasoning__StrategistAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L2_execution__reasoning__RgStrategicPlannerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L2_execution__reasoning__UiValidationAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L3_orchestration__reasoning__DagRuntimeInspectorAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L4_state__reasoning__CartographerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__DependencyDiplomatAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__GlobalComplianceAggregatorAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__OmniContextAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__SemanticMapperAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__SemanticTerritoryMapperAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__SignatureVerifierAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L5_safety__reasoning__TokenBudgetInspectorAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__CoordinateObservabilityOperationsAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__DeadlockDetectorAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__DebateSynthesisAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__StrategicObservationAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__TrackObservabilityCostAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__CampaignBalanceAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__DeliverabilityAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__HOP3SenderGroundingAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__HOP5GenerationAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__HOP8QAReportAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__HOP9IntegrationAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__Hop1ProfileAnalysisAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__Hop6ValidationAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__IntelligenceLibrarianAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__LeadQualityAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__LicReflectionAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__LicTemplateOptimizerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__MessageArchitectAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__MessageComplianceAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__OutreachLearningAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_lic__engines__OutreachProactiveAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__ATSCompatibilityAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__BrandComplianceAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__CampaignPlannerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__ContentStrategyAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__FactCheckAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__RgStrategicPlannerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__RgTemplateOptimizerAgent.py
+  X Agent not in reasoning/: artifacts/consolidation/backups/apps_rg__reasoning__SectionBalanceAgent.py
+  X agentic_core/L0_routing/meta_control/config_store_types.py: Functions: ['canonical_json', 'stable_sha256', 'validate_component_allowed', 'build_config_snapshot', 'build_config_delta']
+  X agentic_core/L0_routing/meta_control/config_store_types.py: Implementation classes: ['ConfigSnapshotArtifact', 'ConfigDeltaArtifact']
+  X agentic_core/L0_routing/types/v15_p2_types.py: Functions: ['validate_semantic_clock']
+  X agentic_core/L0_routing/types/v15_p2_types.py: Implementation classes: ['FixConstraint', 'SurgicalManifest', 'CanonicalASTResult', 'SemanticClock', 'StateCommitInvalid', 'SemanticClockSnapshot', 'BoundarySnapshotArtifact', 'EpisodicMemoryQueryResult', 'TrajectoryReuseConstraint', 'MemoryHypostate', 'EpisodicSemanticLink', 'ForensicTraceBuffer']
+  X agentic_core/L0_routing/types/v15_p3_types.py: Implementation classes: ['RouteDecisionRef', 'PolicySnapshot', 'EvidencePack', 'ExceptionScope', 'PolicyExceptionArtifact', 'ProposalStatus', 'HILOutcome', 'ChangeAction', 'ProposedPolicyChange', 'PolicyUpdateProposal']
+  X agentic_core/L0_routing/types/v15_p4_types.py: Functions: ['validate_trace_id', 'compute_error_signature_hash']
+  X agentic_core/L0_routing/types/v15_p4_types.py: Implementation classes: ['ErrorSignature', 'PolicyConfigPin', 'PlanProvenance', 'RetrievalQuery', 'RetrievedChunk', 'RerankScore', 'CitationEntry', 'CitationBundle', 'CognitiveDiffBundle', 'KnowledgeDirective', 'KnowledgeAdvisoryConstraint']
+  X agentic_core/L0_routing/types/v15_p5_types.py: Implementation classes: ['KeyStatus', 'SigningAlgorithm', 'KeyRecord', 'TrustRoot', 'SignatureEnvelope', 'SignedGuardianArtifact', 'HumanResolution', 'SignedModify', 'HashMismatchTracker', 'SignatureEnclave', 'DeterministicTestEnclave']
+  X agentic_core/L0_routing/types/v15_p6_types.py: Implementation classes: ['SSOTBinding', 'ContextRetrievalRequest', 'SchemaValidationStatus', 'BoundarySchemaDescriptor', 'InvariantSeverity', 'InvariantViolation', 'InvariantCheck', 'MetaInvariantReport', 'SideEffectRegistry', 'V15DiscoverySchema']
+  X agentic_core/L0_routing/types/v15_types.py: Implementation classes: ['RoutingRationale', 'RoutePath', 'RouteDecisionArtifact', 'TokenGateResult', 'TokenCapArtifact', 'PermsArtifact', 'SeverityEnum', 'SelfHealingTrigger', 'AggregateArtifact', 'ResultArtifact', 'IncidentArtifact', 'TokenControlArtifact', 'VigilanceTier', 'CapabilityDepletionTracker', 'PolicyConfigSnapshot', 'HealingPlan', 'StaleWriteIncident']
+  X agentic_core/L1_cognition/types/action_request_types.py: Implementation classes: ['ActionRequest', 'ActionResult', 'PlanningRequest', 'PlanningResult']
+  X agentic_core/L1_cognition/types/cache_types.py: Implementation classes: ['EvictionPolicy']
+  X agentic_core/L1_cognition/types/capability_types.py: Implementation classes: ['AgentCapability', 'AgentStatus']
+  X agentic_core/L1_cognition/types/client_types.py: Implementation classes: ['HealingPattern', 'CacheEntry']
+  X agentic_core/L1_cognition/types/cognitive_types.py: Implementation classes: ['CognitiveCapability', 'PlanningRequest', 'PlanningResult', 'ICognitivePlane']
+  X agentic_core/L1_cognition/types/domain_types.py: Implementation classes: ['SharingPolicy', 'DomainContext']
+  X agentic_core/L1_cognition/types/execution_phase_types.py: Implementation classes: ['ExecutionPhase', 'ExecutionContext', 'ExecutionResult']
+  X agentic_core/L1_cognition/types/identity_type_types.py: Implementation classes: ['IdentityType', 'TrustDomain', 'AgentIdentity', 'IdentityVerificationResult']
+  X agentic_core/L1_cognition/types/memory_types.py: Implementation classes: ['ViolationSignature']
+  X agentic_core/L1_cognition/types/research_hop_phase_types.py: Implementation classes: ['ResearchHopPhase', 'ValidationRejectionReason']
+  X agentic_core/L1_cognition/types/result_types.py: Implementation classes: ['ResultParser']
+  X agentic_core/L2_execution/types/bullet_format_types.py: Implementation classes: ['BulletFormat', 'ProvenanceType']
+  X agentic_core/L2_execution/types/capability_token_types.py: Functions: ['_canonical_json', '_compute_trace_id', 'build_capability_token', 'build_capability_decision', 'issue_capability_token']
+  X agentic_core/L2_execution/types/capability_token_types.py: Implementation classes: ['CapabilityTokenSubject', 'CapabilityConstraints', 'CapabilityTokenArtifact', 'CapabilityDecisionArtifact', 'CapabilityEnforcer']
+  X agentic_core/L2_execution/types/ephemeral_vm_types.py: Functions: ['create_ephemeral_vm']
+  X agentic_core/L2_execution/types/ephemeral_vm_types.py: Implementation classes: ['IsolationLevel', 'IsolationConfig', 'ExecutionResult', 'EphemeralVm']
+  X agentic_core/L2_execution/types/keyword_classification_types.py: Implementation classes: ['KeywordClassification']
+  X agentic_core/L2_execution/types/mcp_client_types.py: Implementation classes: ['MCPClient', 'MCPClientSpec', 'MCPClientStub', 'MCPClientRegistry']
+  X agentic_core/L2_execution/types/mcp_security_types.py: Implementation classes: ['MCPSecurityGuardrail']
+  X agentic_core/L2_execution/types/mcp_tool_types.py: Functions: ['get_mcp_server', 'register_default_tools', 'create_mcp_server', 'execute_tool_with_capability', 'execute_tool_calls']
+  X agentic_core/L2_execution/types/mcp_tool_types.py: Implementation classes: ['MCPTool', 'MCPToolServer']
+  X agentic_core/L2_execution/types/self_healing_trigger_types.py: Functions: ['_compute_trigger_trace_id', 'is_healing_authorized', 'emit_self_healing_trigger']
+  X agentic_core/L2_execution/types/self_healing_trigger_types.py: Implementation classes: ['L2SelfHealingTrigger']
+  X agentic_core/L2_execution/types/token_enforcement_types.py: Functions: ['get_token_budget_store', 'set_token_budget_store', 'estimate_prompt_tokens', 'build_token_enforcement_artifact']
+  X agentic_core/L2_execution/types/token_enforcement_types.py: Implementation classes: ['TokenEnforcementOutcome', 'TokenEnforcementArtifact', 'TokenBudgetExceeded', 'TokenBudgetStore']
+  X agentic_core/L2_execution/types/tool_args_types.py: Implementation classes: ['ReadFileArgs', 'WriteFileArgs', 'ListFilesArgs', 'MoveFileArgs', 'DeleteFileArgs', 'CreateDirectoryArgs', 'ExecuteCommandArgs']
+  X agentic_core/L2_execution/types/tool_enforcement_types.py: Implementation classes: ['LawSlotOutcome', 'ToolEnforcementArtifact', 'ToolPolicyBlocked']
+  X agentic_core/L2_execution/types/vm_status_types.py: Implementation classes: ['VmStatus', 'VmProvider', 'VmConfig', 'VmInstance']
+  X agentic_core/L3_orchestration/types/cognitive_diff_types.py: Functions: ['compute_cognitive_diff', '_compute_bundle_trace_id', 'emit_cognitive_diff_bundle']
+  X agentic_core/L3_orchestration/types/cognitive_diff_types.py: Implementation classes: ['CognitiveStateSnapshot', 'DiffOp', 'L3CognitiveDiffBundle']
+  X agentic_core/L3_orchestration/types/context_pruning_types.py: Implementation classes: ['ContextPruningStrategy', 'AdaptiveDepthManager']
+  X agentic_core/L3_orchestration/types/execution_phase_signal_types.py: Implementation classes: ['ExecutionPhaseSignal']
+  X agentic_core/L3_orchestration/types/forward_rolling_types.py: Implementation classes: ['ExecutionMode', 'RolloutStage', 'ForwardRollingConfig']
+  X agentic_core/L3_orchestration/types/healer_types.py: Implementation classes: ['LegacyAgentAdapter']
+  X agentic_core/L3_orchestration/types/hop_status_types.py: Implementation classes: ['HopStatus', 'GateDecision']
+  X agentic_core/L3_orchestration/types/injection_result_types.py: Functions: ['_score_prompt', 'detect_injection', 'validate_safety_threshold']
+  X agentic_core/L3_orchestration/types/orchestrator_types.py: Implementation classes: ['ExecutionPhase', 'ExecutionContext', 'AgentResult', 'MissionResult', 'IOrchestratorAgent', 'IHealable']
+  X agentic_core/L3_orchestration/types/permission_scope_types.py: Implementation classes: ['PermissionScope', 'PermissionAction', 'Permission', 'PermissionCheck']
+  X agentic_core/L3_orchestration/types/rag_provider_types.py: Implementation classes: ['IRagProvider']
+  X agentic_core/L3_orchestration/types/recursion_monitor_types.py: Implementation classes: ['HealthStatus', 'AlertSeverity', 'RecursionMonitor']
+  X agentic_core/L3_orchestration/types/recursive_orchestration_types.py: Implementation classes: ['RecursiveOrchestrator']
+  X agentic_core/L3_orchestration/types/route_decision_artifact_types.py: Functions: ['build_l3_route_decision_artifact']
+  X agentic_core/L3_orchestration/types/route_decision_artifact_types.py: Implementation classes: ['ChosenRoute', 'CandidateEntry', 'PolicyContext', 'DeterminismContext', 'L3RouteDecisionArtifact']
+  X agentic_core/L3_orchestration/types/route_type_types.py: Implementation classes: ['RouteType', 'ArchetypeType']
+  X agentic_core/L3_orchestration/types/scenario_type_types.py: Implementation classes: ['ScenarioType', 'PerformanceLevel', 'TrainingScenario', 'BenchmarkResult', 'TrainingSession']
+  X agentic_core/L3_orchestration/types/telepathy_interface_types.py: Functions: ['get_telepathy_interface', 'process_telepathy_instructions']
+  X agentic_core/L3_orchestration/types/telepathy_interface_types.py: Implementation classes: ['TelepathyInterface']
+  X agentic_core/L3_orchestration/types/workflow_loader_types.py: Functions: ['create_workflow_loader']
+  X agentic_core/L3_orchestration/types/workflow_loader_types.py: Implementation classes: ['WordCountConstraints', 'WorkflowLoader']
+  X agentic_core/L3_orchestration/types/workflow_types.py: Implementation classes: ['WorkflowType']
+  X agentic_core/L4_state/types/context_priority_types.py: Implementation classes: ['ContextPriority', 'ContextType', 'ContextChunk', 'ContextWindow']
+  X agentic_core/L4_state/types/cycle_types.py: Implementation classes: ['CycleConfig', 'CycleState', 'ThinkActObserveEngine']
+  X agentic_core/L4_state/types/memory_item_types.py: Implementation classes: ['MemoryItem', 'MemoryQuery']
+  X agentic_core/L4_state/types/micro_stage_types.py: Implementation classes: ['MicroStage', 'HopState', 'RetryPolicy', 'MicroCheckpoint', 'StageTransition']
+  X agentic_core/L4_state/types/validation_context_types.py: Functions: ['get_historian', 'initialize_historian', 'should_skip_file', 'record_validation_result']
+  X agentic_core/L4_state/types/validation_context_types.py: Implementation classes: ['IValidationContextManager', 'Historian']
+  X agentic_core/L4_state/types/vector_store_types.py: Implementation classes: ['BaseVectorStore']
+  X agentic_core/L5_safety/reasoning/InspectorExecutor.py: Executor must be in engines/
+  X agentic_core/L5_safety/types/constitutional_governance_types.py: Implementation classes: ['ConstitutionalPrinciple', 'ConstitutionalGovernanceGuardrail']
+  X agentic_core/L5_safety/types/core_contracts_types.py: Implementation classes: ['RetryPolicy', 'HopSpec', 'AgentContract']
+  X agentic_core/L5_safety/types/cst_transformers_types.py: Functions: ['create_type_hint_inserter', 'create_trailing_whitespace_fixer', 'create_blank_line_normalizer', 'create_import_remover', 'create_docstring_inserter', 'create_bare_except_fixer', 'create_future_import_inserter']
+  X agentic_core/L5_safety/types/cst_transformers_types.py: Implementation classes: ['SurgicalImportRemover', 'SurgicalDocstringInserter', 'SurgicalBareExceptFixer', 'SurgicalFutureImportInserter', 'SurgicalTrailingWhitespaceFixer', 'SurgicalBlankLineNormalizer', 'SurgicalTypeHintInserter']
+  X agentic_core/L5_safety/types/file_health_score_types.py: Functions: ['get_blackboard']
+  X agentic_core/L5_safety/types/file_health_score_types.py: Implementation classes: ['FileHealthScore', 'HealingLease', 'AtomicBlackboard']
+  X agentic_core/L5_safety/types/healing_orchestration_types.py: Functions: ['get_healing_suite', 'run_healing_operation']
+  X agentic_core/L5_safety/types/healing_orchestration_types.py: Implementation classes: ['HealingOrchestrationSuite']
+  X agentic_core/L5_safety/types/health_status_types.py: Implementation classes: ['HealthStatus', 'AlertSeverity', 'health_metrics', 'HealthAlert']
+  X agentic_core/L5_safety/types/integrity_validation_types.py: Implementation classes: ['IntegrityValidationGuardrail']
+  X agentic_core/L5_safety/types/learning_types.py: Functions: ['create_adaptive_learning_engine']
+  X agentic_core/L5_safety/types/learning_types.py: Implementation classes: ['HealingPattern', 'AdaptiveLearningEngine']
+  X agentic_core/L5_safety/types/meta_learning_types.py: Implementation classes: ['LearningContext']
+  X agentic_core/L5_safety/types/rag_validation_result_types.py: Functions: ['with_data', 'clear']
+  X agentic_core/L5_safety/types/rag_validation_result_types.py: Implementation classes: ['ValidationResult', 'ThematicAnalysis', 'RagState', 'ImmutableStagingBuffer']
+  X agentic_core/L5_safety/types/resource_management_types.py: Implementation classes: ['ResourceType', 'ResourceQuota', 'ResourceManagementGuardrail']
+  X agentic_core/L5_safety/types/rule_types.py: Functions: ['review_content']
+  X agentic_core/L5_safety/types/rule_types.py: Implementation classes: ['RuleType', 'RuleSeverity', 'ViolationType', 'ConstitutionalAISystem']
+  X agentic_core/L5_safety/types/safety_profile_types.py: Implementation classes: ['SafetyProfile']
+  X agentic_core/L5_safety/types/safety_types.py: Functions: ['create_self_updating_safety_engine']
+  X agentic_core/L5_safety/types/safety_types.py: Implementation classes: ['ThreatLevel', 'RuleType', 'ThreatPattern', 'SafetyRule', 'SelfUpdatingSafetyEngine']
+  X agentic_core/L5_safety/types/security_validation_types.py: Functions: ['get_security_suite', 'run_security_validation']
+  X agentic_core/L5_safety/types/security_validation_types.py: Implementation classes: ['RedTeamValidationSuite']
+  X agentic_core/L5_safety/types/simulation_schemas_types.py: Implementation classes: ['SimScenario', 'SimOutcome']
+  X agentic_core/L5_safety/types/sovereign_base_model_types.py: Implementation classes: ['SovereignBaseModel', 'Territory']
+  X agentic_core/L5_safety/types/specificity_prose_types.py: Functions: ['create_specificity_prose_engine']
+  X agentic_core/L5_safety/types/specificity_prose_types.py: Implementation classes: ['SpecificityProseEngine']
+  X agentic_core/L5_safety/types/ssot_relocator_types.py: Implementation classes: ['EnforcementReport', 'SSOTRelocator']
+  X agentic_core/L5_safety/types/surgical_context_types.py: Implementation classes: ['SurgicalContext', 'SurgicalContextBuilder']
+  X agentic_core/L5_safety/types/validation_result_types.py: Functions: ['create_executive_title_composer']
+  X agentic_core/L5_safety/types/validation_result_types.py: Implementation classes: ['ValidationResult', 'AdaptiveRecoveryLoop', 'executive_title_composer']
+  X agentic_core/L6_observability/reasoning/ObservabilityProbeExecutor.py: Executor must be in engines/
+  X agentic_core/L6_observability/types/vigilance_event_types.py: Functions: ['build_deterministic_trace_id']
+  X agentic_core/L6_observability/types/vigilance_event_types.py: Implementation classes: ['VigilanceSeverity', 'VigilanceEventArtifact']
+  X agentic_core/L7_meta_learning/types/app_signal_types.py: Functions: ['_validate_finite', '_validate_catalog_bounds', 'build_app_signal_event', 'build_app_signal_aggregate', '_deterministic_mean', '_deterministic_median', 'aggregate_app_signals']
+  X agentic_core/L7_meta_learning/types/app_signal_types.py: Implementation classes: ['AppSignalEventArtifact', 'AppSignalAggregateArtifact']
+  X agentic_core/L7_meta_learning/types/apply_attempt_types.py: Functions: ['build_apply_attempt']
+  X agentic_core/L7_meta_learning/types/apply_attempt_types.py: Implementation classes: ['MetaLearningApplyAttemptArtifact']
+  X agentic_core/L7_meta_learning/types/meta_learning_types.py: Functions: ['_canonical_payload_json', 'build_meta_learning_proposal', '_derive_verdict', 'build_meta_learning_evaluation', 'build_meta_learning_approval', 'apply_meta_learning_proposal', '_build_reject_decision', 'build_meta_learning_decision', 'build_meta_learning_change_package']
+  X agentic_core/L7_meta_learning/types/meta_learning_types.py: Implementation classes: ['ObjectiveSignal', 'ProposedChange', 'MetaLearningProposalArtifact', 'MetaLearningEvaluationArtifact', 'MetaLearningApprovalArtifact', 'MetaLearningDecisionArtifact', 'MetaLearningChangePackageArtifact']
+  X agentic_core/L7_meta_learning/types/offline_replay_types.py: Functions: ['replay_app_signals_to_aggregate', 'replay_aggregate_to_rollout', 'render_offline_replay_bundle']
+  X agentic_core/L7_meta_learning/types/offline_replay_types.py: Implementation classes: ['OfflineReplayBundle']
+  X agentic_core/L7_meta_learning/types/rollout_types.py: Functions: ['build_meta_learning_rollout_plan', 'build_meta_learning_rollback']
+  X agentic_core/L7_meta_learning/types/rollout_types.py: Implementation classes: ['MetaLearningRolloutPlanArtifact', 'MetaLearningRollbackArtifact']
+  X agentic_core/knowledge/document_loaders/source_document_types.py: Implementation classes: ['SourceDocument', 'KnowledgeChunk']
+  X agentic_core/prompt_governance/prompt_entry_types.py: Functions: ['_build_prompt_registry', '_build_directive_templates', '_build_persona_registry', 'get_constitution', 'get_prompt', 'get_template', 'get_persona']
+  X agentic_core/prompt_governance/prompt_entry_types.py: Implementation classes: ['PromptEntry', 'PromptConstitution']
+  X agentic_core/runtime/config/capability_gap_types.py: Implementation classes: ['CapabilityGapType', 'RecommendationType', 'CapabilityGap', 'Recommendation', 'AnalysisReport']
+  X agentic_core/runtime/config/reasoning_types.py: Implementation classes: ['ModelProvider', 'ModelConfig', 'RAGConfig', 'GovernorConfig', 'ReasoningConfig']
+  X agentic_core/runtime/types/cache_entry_types.py: Functions: ['create_semantic_cache']
+  X agentic_core/runtime/types/cache_entry_types.py: Implementation classes: ['CacheEntry', 'semantic_cache']
+  X agentic_core/runtime/types/circuit_breaker_types.py: Functions: ['get_breaker']
+  X agentic_core/runtime/types/circuit_breaker_types.py: Implementation classes: ['CircuitBreakerState']
+  X agentic_core/runtime/types/claim_type_types.py: Functions: ['create_claim_scorer']
+  X agentic_core/runtime/types/claim_type_types.py: Implementation classes: ['ClaimType', 'ConfidenceLevel', 'ClaimConfidenceScorer']
+  X agentic_core/runtime/types/cost_governor_types.py: Functions: ['get_global_cost_governor', 'track_api_call']
+  X agentic_core/runtime/types/cost_governor_types.py: Implementation classes: ['CostGovernor', 'CostGovernorManager']
+  X agentic_core/runtime/types/expansion_strategy_types.py: Implementation classes: ['ExpansionStrategy', 'HyDeDocument', 'HyDeProcessor']
+  X agentic_core/runtime/types/recovery_types.py: Implementation classes: ['RecoveryStrategy']
+  X agentic_core/runtime/types/sovereign_events_types.py: Implementation classes: ['SovereignEvent', 'event_emission_mixin']
+  X agentic_core/runtime/types/state_types.py: Implementation classes: ['AgentMessage', 'AgentState']
+  X apps_lic/types/action_call_generator_types.py: Functions: ['create_action_call_generator']
+  X apps_lic/types/action_call_generator_types.py: Implementation classes: ['RouteType', 'ActionCallGenerator']
+  X apps_lic/types/app_content_validator_agent_types.py: Functions: ['create_legacy_contact_validator', 'create_legacy_content_cleanliness_validator', 'create_legacy_message_diversity_validator']
+  X apps_lic/types/app_content_validator_agent_types.py: Implementation classes: ['ContentViolationType', 'ContentViolation', 'ContentValidationReport', 'AppContentValidatorAgent']
+  X apps_lic/types/k1_router_types.py: Implementation classes: ['K1Router']
+  X apps_lic/types/lic_models_types.py: Implementation classes: ['Route', 'Archetype', 'EventType', 'AgentStatus', 'ValidationSeverity', 'CircuitState', 'FailureClassification', 'QAReport']
+  X apps_lic/types/message_route_types.py: Functions: ['create_router', 'get_route_config', 'get_archetype_tone']
+  X apps_lic/types/message_route_types.py: Implementation classes: ['MessageRoute', 'RecipientArchetype', 'SignatureFormat', 'CTAFormat', 'LICRouter']
+  X apps_lic/types/message_type_types.py: Implementation classes: ['MessageType', 'ResidualValidationResult', 'ReasoningConfig', 'HopStatus', 'GateDecision', 'ValidationSeverity', 'CircuitState']
+  X apps_lic/types/qa_block_type_types.py: Implementation classes: ['QaBlockType']
+  X apps_lic/types/recipient_archetype_types.py: Functions: ['create_template_manager', 'get_archetype_template', 'get_signature_template']
+  X apps_lic/types/recipient_archetype_types.py: Implementation classes: ['RecipientArchetype', 'ArchetypeTemplateManager']
+  X apps_lic/types/route_types.py: Functions: ['get_route_config', 'get_archetype_config', 'classify_archetype', 'get_validation_rules']
+  X apps_lic/types/route_types.py: Implementation classes: ['Route', 'Archetype', 'ValidationSeverity', 'CharLimitConstraint', 'WordLimitConstraint']
+  X apps_lic/types/validation_result_types.py: Functions: ['score_quality', 'validate_schema_policy', 'check_content_compliance']
+  X apps_lic/types/validation_result_types.py: Implementation classes: ['ValidationResult', 'Draft', 'DraftPackage']
+  X apps_lic/types/validation_severity_types.py: Functions: ['create_lic_validator', 'get_error_code', 'get_signal_config', 'get_claim_config']
+  X apps_lic/types/validation_severity_types.py: Implementation classes: ['ValidationSeverity', 'LICValidator']
+  X apps_rg/types/gap_closure_architect_agent_types.py: Implementation classes: ['GapClosureArchitectAgent']
+  X apps_rg/types/provenance_pattern_types.py: Implementation classes: ['ProvenancePattern', 'BulletSynthesizerConfig']
+  X apps_rg/types/resume_analysis_plan_types.py: Implementation classes: ['RGPlanner']
+  X apps_rg/types/resume_section_node_types.py: Implementation classes: ['ResumeSectionNode']
+  X apps_rg/types/rg_flow_router_types.py: Implementation classes: ['RGFlowRouter']
+  X apps_rg/types/routing_tier_types.py: Implementation classes: ['RoutingTier', 'ProviderType']
+  X apps_rg/types/skill_extractor_node_types.py: Implementation classes: ['SkillExtractorNode']
+  X apps_rg/types/state_transaction_types.py: Implementation classes: ['StateTransaction', 'ImmutableStagingBuffer']
+  X apps_rg/types/thematic_analysis_node_types.py: Implementation classes: ['ThematicAnalysisNode']
+  X apps_rg/types/trace_registry_types.py: Implementation classes: ['AgentTrace', 'TraceRegistry']
+  X apps_rg/types/two_phase_generation_node_types.py: Implementation classes: ['TwoPhaseGenerationNode']
+  X apps_rg/types/validation_result_types.py: Functions: ['create_section_scope_integrator']
+  X apps_rg/types/validation_result_types.py: Implementation classes: ['ValidationResult', 'AdaptiveRecoveryLoop', 'SectionScopeIntegrator']
+  X apps_shared/types/adaptive_recovery_loop_types.py: Functions: ['create_adaptive_recovery_loop']
+  X apps_shared/types/adaptive_recovery_loop_types.py: Implementation classes: ['FailureType', 'RecoveryAction', 'AdaptiveRecoveryLoop']
+  X apps_shared/types/app_config_types.py: Functions: ['_load_json_config']
+  X apps_shared/types/app_config_types.py: Implementation classes: ['ArtistConfig', 'ValidatorConfig', 'PromptsConfig', 'RAGConfig']
+  X apps_shared/types/checkpoint_manager_types.py: Functions: ['get_checkpoint_manager']
+  X apps_shared/types/checkpoint_manager_types.py: Implementation classes: ['CheckpointStorage', 'CheckpointConfig', 'CheckpointStorageBackend', 'FileCheckpointStorage', 'RedisCheckpointStorage', 'MemoryCheckpointStorage', 'CheckpointManager']
+  X apps_shared/types/config_format_types.py: Functions: ['create_config_model_converter', 'convert_to_config_model']
+  X apps_shared/types/config_format_types.py: Implementation classes: ['ConfigFormat', 'ConversionMode', 'ConfigModelConverter']
+  X apps_shared/types/config_type_types.py: Functions: ['create_config_load_planner', 'plan_config_load']
+  X apps_shared/types/config_type_types.py: Implementation classes: ['ConfigType', 'ConfigFormat', 'ConfigScope', 'ConfigLoadPlanner']
+  X apps_shared/types/context_match_type_types.py: Functions: ['create_schema_context_matcher', 'match_schema_context']
+  X apps_shared/types/context_match_type_types.py: Implementation classes: ['ContextMatchType', 'SchemaContextMatcher']
+  X apps_shared/types/cost_alert_level_types.py: Functions: ['create_cost_tracker']
+  X apps_shared/types/cost_alert_level_types.py: Implementation classes: ['CostAlertLevel', 'CostMetrics', 'CostAlert', 'CostTracker']
+  X apps_shared/types/dead_letter_queue_types.py: Functions: ['get_dead_letter_queue', 'dead_letter_handler']
+  X apps_shared/types/dead_letter_queue_types.py: Implementation classes: ['FailureReason', 'DeadLetterStatus', 'DeadLetterItem', 'DeadLetterStorage', 'FileDeadLetterStorage', 'DeadLetterQueue']
+  X apps_shared/types/engine_type_types.py: Functions: ['get_shared_infrastructure', 'assess_resume_signal', 'assess_outreach_signal']
+  X apps_shared/types/engine_type_types.py: Implementation classes: ['EngineType', 'DomainValidator', 'ResumeValidator', 'OutreachValidator', 'SharedSignalInfrastructure']
+  X apps_shared/types/event_bus_types.py: Functions: ['create_event_bus', 'get_event_bus', 'publish_event', 'event_publisher']
+  X apps_shared/types/event_bus_types.py: Implementation classes: ['EventType', 'SystemEvent', 'EventBus', 'MemoryEventBus', 'RedisEventBus']
+  X apps_shared/types/execution_orchestrator_types.py: Functions: ['create_execution_orchestrator']
+  X apps_shared/types/execution_orchestrator_types.py: Implementation classes: ['ExecutionOrchestrator']
+  X apps_shared/types/execution_type_types.py: Functions: ['create_observability_tool_executor', 'tool_use_observability_execution']
+  X apps_shared/types/execution_type_types.py: Implementation classes: ['ExecutionType', 'ToolStatus', 'ObservabilityToolExecutor']
+  X apps_shared/types/feedback_loop_orchestrator_types.py: Implementation classes: ['ConstraintFailureType', 'RegenerationCheckpoint', 'RegenerationResult', 'FeedbackLoopOrchestrator']
+  X apps_shared/types/feedback_loop_types.py: Functions: ['get_feedback_loop']
+  X apps_shared/types/feedback_loop_types.py: Implementation classes: ['FeedbackType', 'AdaptiveThresholds', 'FeedbackLoop']
+  X apps_shared/types/golden_state_evaluator_types.py: Functions: ['load_golden_cases', 'evaluate_case_output']
+  X apps_shared/types/golden_state_evaluator_types.py: Implementation classes: ['GoldenCase', 'EvaluationReport', 'GoldenStateEvaluator']
+  X apps_shared/types/hardened_gemini_executor_types.py: Functions: ['create_hardened_gemini_executor', 'create_agent_executor']
+  X apps_shared/types/hardened_gemini_executor_types.py: Implementation classes: ['HardenedGeminiConfig', 'CircuitBreaker', 'HardenedGeminiExecutor']
+  X apps_shared/types/health_status_types.py: Functions: ['get_health_registry', 'initialize_system_health_checks']
+  X apps_shared/types/health_status_types.py: Implementation classes: ['HealthStatus', 'ComponentType', 'HealthCheckResult', 'HealthChecker', 'BulkheadHealthChecker', 'CircuitBreakerHealthChecker', 'DeadLetterQueueHealthChecker', 'CheckpointManagerHealthChecker', 'HealthCheckRegistry']
+  X apps_shared/types/history_action_types.py: Functions: ['create_schema_history_fetcher', 'fetch_schema_history']
+  X apps_shared/types/history_action_types.py: Implementation classes: ['HistoryAction', 'SchemaHistoryFetcher']
+  X apps_shared/types/hybrid_scorer_types.py: Implementation classes: ['BM25Scorer', 'HybridScorer']
+  X apps_shared/types/integration_layer_types.py: Functions: ['get_integration_bridge']
+  X apps_shared/types/integration_layer_types.py: Implementation classes: ['AppDomain', 'ServiceEndpoint', 'ServiceRegistry', 'ConfigurationLoader', 'IntegrationBridge']
+  X apps_shared/types/invocation_type_types.py: Functions: ['create_observability_tool_invoker', 'invoke_observability_tool']
+  X apps_shared/types/invocation_type_types.py: Implementation classes: ['InvocationType', 'ResponseFormat', 'ObservabilityToolInvoker']
+  X apps_shared/types/json_exporter_types.py: Functions: ['export_data']
+  X apps_shared/types/json_exporter_types.py: Implementation classes: ['BaseExporter', 'JsonExporter']
+  X apps_shared/types/judge_evaluator_types.py: Functions: ['create_judge_evaluator']
+  X apps_shared/types/judge_evaluator_types.py: Implementation classes: ['JudgmentCriterion', 'JudgmentScore', 'JudgeVerdict', 'JudgeEvaluationResult', 'JudgeEvaluator']
+  X apps_shared/types/k_node_type_types.py: Functions: ['get_kx_registry', 'get_resume_kx_node', 'get_outreach_kx_node']
+  X apps_shared/types/k_node_type_types.py: Implementation classes: ['KNodeType', 'ReasoningStrategy', 'KXNodeRegistry']
+  X apps_shared/types/kx_execution_context_types.py: Functions: ['execute_kx_node']
+  X apps_shared/types/kx_execution_context_types.py: Implementation classes: ['KXNodeExecutor']
+  X apps_shared/types/memory_manager_types.py: Functions: ['get_memory_manager', 'cleanup_all_managers', 'memory_bound']
+  X apps_shared/types/memory_manager_types.py: Implementation classes: ['PruningStrategy', 'MemoryManager']
+  X apps_shared/types/model_router_types.py: Functions: ['get_model_router', 'route_and_generate']
+  X apps_shared/types/model_router_types.py: Implementation classes: ['ModelTier', 'TaskType', 'ModelRouter', 'FallbackClient', 'LLMClient', 'OpenAIClient', 'AnthropicClient']
+  X apps_shared/types/operation_category_types.py: Functions: ['create_observability_operation_adapter', 'perform_observability_operation']
+  X apps_shared/types/operation_category_types.py: Implementation classes: ['OperationCategory', 'OperationScope', 'ObservabilityOperationAdapter']
+  X apps_shared/types/operation_mode_types.py: Functions: ['create_observability_operation_performer', 'tool_perform_observability_operation']
+  X apps_shared/types/operation_mode_types.py: Implementation classes: ['OperationMode', 'OperationScope', 'ObservabilityOperationPerformer']
+  X apps_shared/types/otlp_exporter_types.py: Functions: ['export_data']
+  X apps_shared/types/otlp_exporter_types.py: Implementation classes: ['BaseExporter', 'OtlpExporter']
+  X apps_shared/types/pipeline_stage_status_types.py: Implementation classes: ['PipelineStageStatus', 'PayloadType', 'PayloadBase', 'ResumeData', 'OutreachData', 'RawText', 'DictData', 'ErrorPayload', 'StageResult', 'SignalEnvelope', 'EnvelopeFactory']
+  X apps_shared/types/prompt_optimizer_types.py: Implementation classes: ['PromptOptimizer']
+  X apps_shared/types/prompt_type_types.py: Functions: ['__post_init__', 'validate_prompt']
+  X apps_shared/types/prompt_type_types.py: Implementation classes: ['PromptType']
+  X apps_shared/types/rate_limiter_types.py: Functions: ['get_rate_limit_manager', 'rate_limit', 'init_default_rate_limits']
+  X apps_shared/types/rate_limiter_types.py: Implementation classes: ['RateLimitStrategy', 'RateLimitExceeded', 'ClientState', 'RateLimiter', 'TokenBucketRateLimiter', 'SlidingWindowRateLimiter', 'RateLimitManager']
+  X apps_shared/types/risk_level_types.py: Functions: ['create_temperature_engine', 'analyze_temperature']
+  X apps_shared/types/risk_level_types.py: Implementation classes: ['RiskLevel', 'SentimentMood', 'DepthScore', 'MicroHook', 'SentimentProfile', 'WarmthSetting', 'DepthScorer', 'MicroHookGenerator', 'SentimentAnalyzer', 'WarmthManager', 'TemperatureEngine']
+  X apps_shared/types/schema_search_mode_types.py: Functions: ['create_schema_vector_searcher', 'search_schema_vectors']
+  X apps_shared/types/schema_search_mode_types.py: Implementation classes: ['SchemaSearchMode', 'SchemaSimilarityType', 'SchemaVectorSearcher']
+  X apps_shared/types/schema_type_types.py: Functions: ['create_internal_schema_converter', 'convert_to_internal_schema']
+  X apps_shared/types/schema_type_types.py: Implementation classes: ['SchemaType', 'ConversionStrategy', 'InternalSchemaConverter']
+  X apps_shared/types/self_healing_formatter_types.py: Functions: ['get_self_healing_formatter', 'format_with_healing']
+  X apps_shared/types/self_healing_formatter_types.py: Implementation classes: ['RepairStrategy', 'FormatRepair', 'JSONRepairStrategy', 'MarkdownStripStrategy', 'RegexExtractStrategy', 'SchemaFillStrategy', 'FallbackTextStrategy', 'SelfHealingFormatter']
+  X apps_shared/types/service_container_types.py: Functions: ['get_default_container', 'register_default', 'resolve_default']
+  X apps_shared/types/service_container_types.py: Implementation classes: ['ServiceContainer', 'Service']
+  X apps_shared/types/similarity_method_types.py: Functions: ['create_schema_similarity_retriever', 'retrieve_schema_similarity']
+  X apps_shared/types/similarity_method_types.py: Implementation classes: ['SimilarityMethod', 'CompatibilityLevel', 'SchemaSimilarityRetriever']
+  X apps_shared/types/sovereign_severity_types.py: Implementation classes: ['sovereign_severity', 'sovereign_event_type', 'sovereign_base_model_types', 'territory', 'agent_message', 'read_file_args', 'write_file_args', 'move_file_args', 'list_files_args', 'execute_command_args', 'delete_file_args', 'create_directory_args', 'agent_thought_process', 'code_generation_result', 'research_result', 'consensus_verdict', 'model_opinion', 'agent_plan', 'tone_type', 'style_profile', 'generation_config', 'micro_stage', 'hop_state', 'retry_policy', 'micro_checkpoint', 'stage_transition', 'injection_type', 'injection_scope', 'injection_pattern', 'thermal_profile', 'hard_state', 'soft_state', 'thermal_config', 'signal_context', 'safety_profile_types', 'sim_scenario', 'sim_outcome', 'hypothesis', 'metacognition_report', 'golden_case', 'golden_output', 'budget_profile', 'message_type', 'residual_validation_result', 'reasoning_config', 'hop_status', 'gate_decision', 'validation_severity', 'circuit_state', 'prompts_config', 'financial_metric', 'technical_implementation', 'strategic_layer', 'technical_layer', 'leadership_layer', 'citation_map', 'deep_research_output', 'integrity_gate_result', 'immutable_staging_buffer', 'voice_type', 'provenance_strategy', 'message_route', 'recipient_archetype', 'signature_format', 'cta_format', 'word_count_constraint', 'char_count_constraint', 'mission_priority', 'mission_status', 'mission_phase', 'mission_plan', 'thinking_step', 'revision_step', 'thought_chain', 'constitutional_violation', 'healing_action', 'healing_cycle', 'healing_report', 'sovereign_event']
+  X apps_shared/types/standard_type_types.py: Functions: ['get_quality_standards', 'evaluate_content_quality', 'get_engine_quality_gates']
+  X apps_shared/types/standard_type_types.py: Implementation classes: ['StandardType', 'QualityDimension', 'QualityStandard', 'EngineQualityProfile', 'CrossEngineQualityStandards']
+  X apps_shared/types/state_operation_types.py: Implementation classes: ['StateOperation', 'StateEventType', 'StatePath', 'StateTransition', 'StateSnapshot']
+  X apps_shared/types/tone_model_types.py: Functions: ['create_tone_model', 'analyze_tone', 'adapt_to_tone']
+  X apps_shared/types/tone_model_types.py: Implementation classes: ['ToneType', 'StyleProfile', 'GenerationConfig', 'ToneAnalyzer', 'ToneAdapter', 'ToneModel']
+  X apps_shared/types/tool_category_types.py: Functions: ['create_observability_tool_invoker', 'tool_invoke_observability_tool']
+  X apps_shared/types/tool_category_types.py: Implementation classes: ['ToolCategory', 'ObservabilityToolInvoker']
+  X apps_shared/types/tool_type_types.py: Functions: ['create_observability_tool_executor', 'tool_execute_observability_execution']
+  X apps_shared/types/tool_type_types.py: Implementation classes: ['ToolType', 'ExecutionMode', 'ObservabilityToolExecutor']
+  X apps_shared/types/unified_formatter_types.py: Functions: ['get_unified_formatter', 'format_data', 'format_resume_bullets', 'format_outreach_message']
+  X apps_shared/types/unified_formatter_types.py: Implementation classes: ['FormatType', 'FormatResult', 'FormatterStrategy', 'DefaultFormatter', 'ResumeBulletFormatter', 'ResumeSectionFormatter', 'OutreachMessageFormatter', 'OutreachSubjectFormatter', 'JSONFormatter', 'UnifiedFormatter']
+  X apps_shared/types/validation_status_types.py: Implementation classes: ['ValidationStatus', 'ValidationAction', 'ValidationResult', 'ValidationGateExecutor']
+  X apps_shared/types/vector_similarity_result_types.py: Implementation classes: ['CacheEntry', 'EnhancedSemanticCache']
+
+Required Actions:
+  ò Move Agent files to reasoning/ folders
+  ò Move _types files to types/ folders
+  ò Split mixed _types files (implementation -> engines/)
+  ò Remove functions from _types files
+  ò Place apps_* Executors in engines/ folders
+
+For help, see: docs/architecture/adr-001-folder-purity.md
+
+Commit blocked. Fix violations and try again.

@@ -24,7 +24,7 @@ REPO_ROOT = PROMPT_MODULES_DIR.parents[3]  # docs/reports/assessments/prompt-mod
 MANIFEST_PATH = PROMPT_MODULES_DIR / "modules.json"
 
 # Directories allowed to exist in prompt-modules/ without being in the manifest
-ALLOWED_DIRS = {"validation", "schemas"}
+ALLOWED_DIRS = {"validation", "schemas", "prompt-core", "target-state", "execution"}
 # Files allowed at prompt-modules/ root without being in the manifest
 ALLOWED_ROOT_FILES = {"modules.json"}
 
@@ -90,14 +90,54 @@ def validate() -> int:
             )
 
     # --- Assemble and verify assembled_sha256 ---
-    assembled = b""
+    # Use the same assembly logic as assemble.py (handle MODULE sentinels)
+    modules = sorted(manifest["modules"], key=lambda m: m["order"])
     assembly_ok = True
-    for module in sorted_modules:
-        module_path = REPO_ROOT / module["path"]
-        if not module_path.exists():
-            assembly_ok = False
+
+    # Check if canonical skeleton is present (last module)
+    canonical_skeleton = None
+    for module in modules:
+        if module.get("classification") == "canonical-skeleton":
+            canonical_skeleton = module
             break
-        assembled += module_path.read_bytes()
+
+    if canonical_skeleton:
+        # Canonical skeleton mode: process sentinels
+        skeleton_path = REPO_ROOT / canonical_skeleton["path"]
+        skeleton_content = skeleton_path.read_text(encoding="utf-8")
+
+        # Build module lookup by path
+        module_lookup = {m["path"]: m for m in modules}
+
+        # Replace MODULE sentinels
+        lines = skeleton_content.splitlines(keepends=True)
+        assembled_lines = []
+        for line in lines:
+            if line.strip().startswith("<!-- MODULE: ") and line.strip().endswith(" -->"):
+                # Extract module path from sentinel
+                module_rel_path = line.strip()[13:-4].strip()  # Remove <!-- MODULE: and -->
+                if module_rel_path not in module_lookup:
+                    errors.append(f"MODULE sentinel references unknown module: {module_rel_path}")
+                    assembly_ok = False
+                    break
+                module_path = REPO_ROOT / module_rel_path
+                module_content = module_path.read_text(encoding="utf-8")
+                assembled_lines.append(module_content)
+                if not module_content.endswith("\n"):
+                    assembled_lines.append("\n")
+            else:
+                assembled_lines.append(line)
+
+        assembled = "".join(assembled_lines).encode("utf-8") if assembly_ok else b""
+    else:
+        # Legacy mode: simple concatenation
+        assembled = b""
+        for module in modules:
+            module_path = REPO_ROOT / module["path"]
+            if not module_path.exists():
+                assembly_ok = False
+                break
+            assembled += module_path.read_bytes()
 
     if assembly_ok:
         assembled_hash = sha256_bytes(assembled)
