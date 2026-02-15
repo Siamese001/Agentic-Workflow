@@ -8,9 +8,10 @@ and messages.
 import json
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .instructional_injections import get_instructional_injections, get_required_injections
+from apps_shared.utils.instructional_layer import get_instructional_injections, get_required_injections
 
 try:
     from agentic_core.L5_safety.validators.prompt_governance_types import (
@@ -25,9 +26,12 @@ except ImportError:
     # Fallback classes
     @dataclass
     class InjectionConfig:
-        pattern: str
-        type: str
-        scope: str
+        pattern: str = "default"
+        type: str = "instructional"
+        scope: str = "all"
+        injection_dir: Path = Path("data/injections")
+        enable_yaml_loader: bool = False
+        enable_caching: bool = True
 
     @dataclass
     class InjectionMatch:
@@ -98,6 +102,48 @@ class PromptInjectionLoader:
 
     def _load_instructional_injections(self) -> None:
         """Load all 30 instructional injection patterns."""
+
+        # Try YAML loader if enabled
+        if self.config.enable_yaml_loader:
+            try:
+                self._load_instructional_injections_from_yaml()
+                return
+            except Exception as e:
+                logger.warning(f"YAML loader failed, falling back to markdown: {e}")
+
+        # Fallback to markdown-based loading
+        self._load_instructional_injections_from_markdown()
+
+    def _load_instructional_injections_from_yaml(self) -> None:
+        """Load instructional injections from YAML corpus."""
+        try:
+            from agentic_core.config.core.yaml_injection_loader import get_yaml_loader
+        except ImportError:
+            raise ImportError("YAML loader not available")
+
+        yaml_loader = get_yaml_loader()
+        all_patterns = yaml_loader.load_all_patterns()
+
+        for layer_name, patterns in all_patterns.items():
+            for pattern in patterns:
+                # Convert to our InjectionPattern format
+                injection_pattern = InjectionPattern(
+                    id=f"yaml_{layer_name}_{pattern.id}",
+                    name=pattern.name,
+                    type=InjectionType.INSTRUCTIONAL,
+                    description=pattern.description,
+                    template=pattern.template,
+                    variables=[],  # YAML patterns don't have explicit variables
+                    scope=InjectionScope(hop_types=["*"], stages=[], contexts={"layer": layer_name}),
+                    priority=5,
+                    enabled=pattern.enabled,
+                )
+
+                self.injections[injection_pattern.id] = injection_pattern
+                logger.debug(f"Loaded YAML instructional injection {injection_pattern.id}")
+
+    def _load_instructional_injections_from_markdown(self) -> None:
+        """Load instructional injections from markdown (original behavior)."""
         instructional_injections = get_instructional_injections()
 
         for injection in instructional_injections:
@@ -121,7 +167,7 @@ class PromptInjectionLoader:
             )
 
             self.injections[injection.id] = pattern
-            logger.debug(f"Loaded instructional injection {injection.id}")
+            logger.debug(f"Loaded markdown instructional injection {injection.id}")
 
     def _create_builtin_injections(self) -> None:
         """Create built-in injection patterns."""
