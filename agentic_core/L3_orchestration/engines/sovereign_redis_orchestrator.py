@@ -23,10 +23,9 @@ from typing import Any
 # 2. THIRDPARTY
 import redis
 
-from agentic_core.utils.decorators import standard_heal
-
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
 from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.decorators import standard_heal
 
 
 @dataclass

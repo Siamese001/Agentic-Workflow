@@ -36,9 +36,9 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.decorators import standard_heal
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.utils.decorators import standard_heal
 
 Logger = logging.getLogger(__name__)
 

@@ -11,13 +11,13 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable, TypeVar
 
+from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityDecisionArtifact,
     CapabilityEnforcer,
     CapabilityTokenArtifact,
     build_capability_decision,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 
 logger = logging.getLogger(__name__)
 

@@ -7,8 +7,6 @@ Guardian hard gate per LEAF_DOMAINS_NO_LCD in ssot.py.
 
 from __future__ import annotations
 
-import os
-import tempfile
 from pathlib import Path
 
 import pytest

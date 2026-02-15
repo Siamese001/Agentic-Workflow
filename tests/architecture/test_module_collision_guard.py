@@ -3,7 +3,6 @@ Architectural integrity tests for module collision prevention.
 """
 
 import os
-import pytest
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -36,7 +35,12 @@ class TestModuleCollisionGuard:
         sys.path.insert(0, str(tools_path))
 
         try:
-            from module_collision_guard import detect_collisions, scan_directory, check_against_baseline, load_baseline
+            from module_collision_guard import (
+                check_against_baseline,
+                detect_collisions,
+                load_baseline,
+                scan_directory,
+            )
         finally:
             sys.path.remove(str(tools_path))
 
@@ -88,6 +92,7 @@ class TestModuleCollisionGuard:
         try:
             # Import the module fresh to avoid side effects
             import importlib
+
             import module_collision_guard
             importlib.reload(module_collision_guard)
             from module_collision_guard import main

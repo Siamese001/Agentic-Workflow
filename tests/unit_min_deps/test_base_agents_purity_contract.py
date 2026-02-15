@@ -10,8 +10,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parents[2]
 BASE_AGENTS = ROOT / "agentic_core" / "base_agents"
 
@@ -71,7 +69,7 @@ class TestBaseAgentsPurity:
     def test_no_utility_files_in_base_agents(self) -> None:
         violations = _scan_non_class_files()
         assert not violations, (
-            f"base_agents/ contains non-class utility files:\n"
+            "base_agents/ contains non-class utility files:\n"
             + "\n".join(f"  {v}" for v in violations)
         )
 
@@ -83,7 +81,7 @@ class TestBaseAgentsPurity:
             if shim_path.exists() and not _is_shim(shim_path):
                 violations.append(f"{shim_name}: not a pure shim (contains definitions)")
         assert not violations, (
-            f"Shims in base_agents/ contain non-shim code:\n"
+            "Shims in base_agents/ contain non-shim code:\n"
             + "\n".join(f"  {v}" for v in violations)
         )
 

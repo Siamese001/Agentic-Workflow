@@ -19,7 +19,6 @@ from agentic_core.L2_execution.enforcement.healer_pipe_order import (
     enforce_healer_pipe_order,
 )
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -224,7 +223,6 @@ class TestRuntimeWiring:
         enforce call. A spy on enforce records the invocation.
         """
         import hashlib
-        from dataclasses import dataclass
         from unittest.mock import MagicMock
 
         from agentic_core.L0_routing.types.v15_p2_types import (

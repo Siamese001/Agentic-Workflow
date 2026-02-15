@@ -8,7 +8,6 @@ Guardian hard gate per §28 Layer Boundary Enforcement Lock.
 from __future__ import annotations
 
 import ast
-import tempfile
 import textwrap
 from pathlib import Path
 

@@ -13,7 +13,6 @@ import pytest
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
-    CapabilityChokepoint,
     authorize_and_execute,
     get_chokepoint,
     reset_chokepoint,
@@ -24,7 +23,6 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenSubject,
     build_capability_token,
 )
-
 
 # =============================================================================
 # Fixtures

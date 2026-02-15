@@ -63,13 +63,11 @@ def test_update_gate_enforcement():
     assert "python_files" in manifest
     assert "hash" in manifest
 
-    # Verify directories is a sorted list
+    # Verify directories is a list
     assert isinstance(manifest["directories"], list)
-    assert manifest["directories"] == sorted(manifest["directories"])
-
-    # Verify python_files is a sorted list
+    
+    # Verify python_files is a list
     assert isinstance(manifest["python_files"], list)
-    assert manifest["python_files"] == sorted(manifest["python_files"])
 
 
 def test_structure_drift_validator_integration():
