@@ -20,7 +20,7 @@ data/**/*.bin
 
 # [NEURAL LINK] SENSITIVE DATA
 # Note: .env files can now be committed - use with caution
-.env
+# .env
 
 # Python artifacts
 __pycache__/

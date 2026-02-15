@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 Sovereign MCP Registry – Phase 13 (Dec 26, 2025)
 Canonical SSOT for all MCP server configurations across L0-L6.
@@ -10,11 +11,13 @@ This registry enforces:
 - Constitutional compliance for all integrations
 """
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 # Import configuration for gating
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+
 
 class McpServerMode(str, Enum):
     """Deployment mode for MCP servers."""
@@ -30,15 +33,15 @@ class McpServerConfig(BaseModel):
     name: str = Field(..., description='Unique MCP server identifier')
     target_layer: str = Field(..., description='Primary L0-L6 layer assignment')
     mode: McpServerMode = Field(default=McpServerMode.LOCAL, description='Deployment mode')
-    capabilities: List[str] = Field(default_factory=list, description='Sovereign capabilities provided')
+    capabilities: list[str] = Field(default_factory=list, description='Sovereign capabilities provided')
     command: str = Field(..., description='Execution command (npx, python, etc.)')
-    args: List[str] = Field(default_factory=list, description='Command arguments')
-    env: Dict[str, str] = Field(default_factory=dict, description='Environment variables')
-    description: Optional[str] = Field(None, description='Human-readable purpose')
-    sovereignty_impact: Optional[str] = Field(None, description='Impact on system sovereignty')
+    args: list[str] = Field(default_factory=list, description='Command arguments')
+    env: dict[str, str] = Field(default_factory=dict, description='Environment variables')
+    description: str | None = Field(None, description='Human-readable purpose')
+    sovereignty_impact: str | None = Field(None, description='Impact on system sovereignty')
 
 # Base registry without conditional entries
-_BASE_MCP_REGISTRY: Dict[str, McpServerConfig] = {
+_BASE_MCP_REGISTRY: dict[str, McpServerConfig] = {
     'pinecone': McpServerConfig(
         name='pinecone',
         target_layer='L4',
@@ -123,7 +126,7 @@ _BASE_MCP_REGISTRY: Dict[str, McpServerConfig] = {
     )
 }
 
-def get_mcp_registry() -> Dict[str, McpServerConfig]:
+def get_mcp_registry() -> dict[str, McpServerConfig]:
     """Get the full MCP registry with conditional entries."""
     config = get_sovereign_config()
     registry = _BASE_MCP_REGISTRY.copy()
@@ -147,17 +150,17 @@ def get_mcp_registry() -> Dict[str, McpServerConfig]:
 # Legacy property for backward compatibility
 SOVEREIGN_MCP_REGISTRY = get_mcp_registry()
 
-def get_mcps_by_layer(layer: str) -> List[McpServerConfig]:
+def get_mcps_by_layer(layer: str) -> list[McpServerConfig]:
     """Get all MCP servers assigned to a specific layer."""
     return [mcp for mcp in get_mcp_registry().values() if mcp.target_layer == layer]
 
-def get_mcp_by_capability(capability: str) -> List[McpServerConfig]:
+def get_mcp_by_capability(capability: str) -> list[McpServerConfig]:
     """Find MCP servers providing a specific capability."""
     return [mcp for mcp in get_mcp_registry().values() if capability in mcp.capabilities]
 
 VALID_LAYERS: Any = {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'}
 
-def validate_mcp_registry() -> List[str]:
+def validate_mcp_registry() -> list[str]:
     """Validate MCP registry for constitutional compliance."""
     violations: Any = []
     for name, config in get_mcp_registry().items():
