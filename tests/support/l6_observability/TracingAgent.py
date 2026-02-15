@@ -5,7 +5,6 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 """
 TracingAgent: Sovereign Distributed Tracing System
@@ -120,7 +119,7 @@ class Span:
 Span = Span
 
 
-class TracingAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class TracingAgent(SovereignBaseAgent):
     """
     Autonomous distributed tracing agent.
     Manages trace context and Span lifecycle.

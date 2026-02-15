@@ -13,23 +13,24 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.types.health_status_types import (
     AlertSeverity,
     HealthAlert,
     HealthStatus,
     health_metrics,
 )
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.base_agents.decorators import standard_heal
+
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class AutonomicMonitorAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class AutonomicMonitorAgent(SovereignBaseAgent):
     """Autonomic immune system for agent health monitoring.
 
     Features:

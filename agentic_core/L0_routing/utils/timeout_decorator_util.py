@@ -12,8 +12,9 @@ Canonical location: agentic_core/base_agents/timeout_decorator.py
 
 from __future__ import annotations
 
-from agentic_core.base_agents.timeout_decorator import timeout  # noqa: F401
+from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout  # noqa: F401
 
 __all__ = [
     "timeout",
+    "TimeoutError",
 ]

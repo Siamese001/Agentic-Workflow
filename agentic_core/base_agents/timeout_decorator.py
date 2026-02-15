@@ -1,12 +1,12 @@
 """
-Backward-compatibility shim for timeout decorator imports.
+Timeout decorator for execution time limits.
 
-DEPRECATED: Import from agentic_core.L0_routing.utils.timeout_decorator instead.
-Canonical location: agentic_core/L0_routing/utils/timeout_decorator.py
+This module provides a timeout decorator to prevent functions from running
+indefinitely. It's used across the agentic system for safety and reliability.
 """
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.utils.timeout_decorator_util import timeout  # noqa: F401
+from .timeout_decorator_impl import TimeoutError, timeout  # noqa: F401
 
-__all__ = ["timeout"]
+__all__ = ["timeout", "TimeoutError"]

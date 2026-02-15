@@ -38,13 +38,12 @@ from threading import Lock
 from typing import Any
 
 from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MetricsAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class MetricsAgent(SovereignBaseAgent):
     """
     MetricsAgent: Sovereign quantitative state and alert governor.
     Thread-safe, in-memory Metric store with alerting rule generation.

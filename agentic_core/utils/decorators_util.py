@@ -25,6 +25,8 @@ import traceback
 from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
+from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
+
 Logger = logging.getLogger(__name__)
 
 # Type variable for decorated functions
@@ -272,4 +274,6 @@ __all__ = [
     "standard_heal",
     "standard_heal_async",
     "HEAL_RESULT_SCHEMA",
+    "timeout",
+    "TimeoutError",
 ]

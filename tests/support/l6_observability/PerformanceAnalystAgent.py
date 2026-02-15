@@ -27,8 +27,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 L6ObservabilityBase = object  # Stub for archived import
 AgentPerformanceMetrics = None
 CritiqueReport = None
-from agentic_core.base_agents.decorators import standard_heal
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+
+Logger = logging.getLogger(__name__)
 
 
 # [SOVEREIGN FACTORY]
@@ -38,7 +38,7 @@ def get_performance_analyst(project_root: Path) -> "PerformanceAnalystAgent":
 
 
 @dataclass
-class PerformanceAnalystAgent(AtomicExecutionMixin, SovereignBaseAgent):
+class PerformanceAnalystAgent(SovereignBaseAgent):
     """
     The Performance Critic - Skeptical analyst for agent performance.
 
