@@ -53,6 +53,7 @@ artifacts/security/credential_scan_report.json
 artifacts/governance/docs_structure_report.json
 artifacts/governance/artifacts_guard_report.json
 artifacts/governance/logs_guard_report.json
+artifacts/governance/cache_guard_report.json
 logs/                # Unauthorized root folder - strictly ignored
 cache/               # Unauthorized root folder - strictly ignored
 
