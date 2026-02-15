@@ -15,13 +15,6 @@ from __future__ import annotations
 import dataclasses
 from typing import Any
 
-from agentic_core.L0_routing.types.v15_artifact_types import (
-    HealingPlanTD,
-    IncidentArtifactTD,
-    ResultArtifactTD,
-    StaleWriteIncidentTD,
-)
-
 # ─────────────────────────────────────────────────────────────────────
 # Internal helpers
 # ─────────────────────────────────────────────────────────────────────
@@ -95,7 +88,7 @@ def _coerce_tuple_to_list(d: dict[str, Any], key: str) -> None:
 _RESULT_ARTIFACT_REQUIRED_FIELDS = ("trace_id", "execution_outcome", "final_state_hash", "artifact_class")
 
 
-def validate_result_artifact(obj: object) -> ResultArtifactTD:
+def validate_result_artifact(obj: object) -> dict[str, Any]:
     """Validate and normalize a ResultArtifact to TypedDict shape.
 
     Accepts dict or frozen dataclass. Returns plain dict.
@@ -111,13 +104,13 @@ def validate_result_artifact(obj: object) -> ResultArtifactTD:
         d["emitting_layer"] = "L2"
     _require_str(d, "emitting_layer", "RESULT_ARTIFACT")
 
-    return ResultArtifactTD(
-        trace_id=d["trace_id"],
-        execution_outcome=d["execution_outcome"],
-        final_state_hash=d["final_state_hash"],
-        artifact_class=d["artifact_class"],
-        emitting_layer=d["emitting_layer"],
-    )
+    return {
+        "trace_id": d["trace_id"],
+        "execution_outcome": d["execution_outcome"],
+        "final_state_hash": d["final_state_hash"],
+        "artifact_class": d["artifact_class"],
+        "emitting_layer": d["emitting_layer"],
+    }
 
 
 def to_result_artifact_dict(x: object) -> dict[str, Any]:
@@ -132,7 +125,7 @@ def to_result_artifact_dict(x: object) -> dict[str, Any]:
 _HEALING_PLAN_REQUIRED_STR_FIELDS = ("trace_id", "plan_id", "policy_liaison_node")
 
 
-def validate_healing_plan(obj: object) -> HealingPlanTD:
+def validate_healing_plan(obj: object) -> dict[str, Any]:
     """Validate and normalize a HealingPlan to TypedDict shape.
 
     Accepts dict or frozen dataclass. Returns plain dict.
@@ -154,14 +147,14 @@ def validate_healing_plan(obj: object) -> HealingPlanTD:
         d["emitting_layer"] = "L2"
     _require_str(d, "emitting_layer", "HEALING_PLAN")
 
-    return HealingPlanTD(
-        trace_id=d["trace_id"],
-        plan_id=d["plan_id"],
-        manifests=d["manifests"],
-        semantic_clock_tick=d["semantic_clock_tick"],
-        policy_liaison_node=d["policy_liaison_node"],
-        emitting_layer=d["emitting_layer"],
-    )
+    return {
+        "trace_id": d["trace_id"],
+        "plan_id": d["plan_id"],
+        "manifests": d["manifests"],
+        "semantic_clock_tick": d["semantic_clock_tick"],
+        "policy_liaison_node": d["policy_liaison_node"],
+        "emitting_layer": d["emitting_layer"],
+    }
 
 
 def to_healing_plan_dict(x: object) -> dict[str, Any]:
@@ -176,7 +169,7 @@ def to_healing_plan_dict(x: object) -> dict[str, Any]:
 _INCIDENT_REQUIRED_STR_FIELDS = ("trace_id", "incident_id", "correlation_hash")
 
 
-def validate_incident_artifact(obj: object) -> IncidentArtifactTD:
+def validate_incident_artifact(obj: object) -> dict[str, Any]:
     """Validate and normalize an IncidentArtifact to TypedDict shape."""
     d = _to_raw_dict(obj)
 
@@ -189,13 +182,13 @@ def validate_incident_artifact(obj: object) -> IncidentArtifactTD:
     _coerce_tuple_to_list(d, "telemetry_events")
     _require_sequence_of_str(d, "telemetry_events", "INCIDENT_ARTIFACT")
 
-    return IncidentArtifactTD(
-        trace_id=d["trace_id"],
-        incident_id=d["incident_id"],
-        correlation_hash=d["correlation_hash"],
-        severity_enum=d["severity_enum"],
-        telemetry_events=d["telemetry_events"],
-    )
+    return {
+        "trace_id": d["trace_id"],
+        "incident_id": d["incident_id"],
+        "correlation_hash": d["correlation_hash"],
+        "severity_enum": d["severity_enum"],
+        "telemetry_events": d["telemetry_events"],
+    }
 
 
 def to_incident_artifact_dict(x: object) -> dict[str, Any]:
@@ -210,7 +203,7 @@ def to_incident_artifact_dict(x: object) -> dict[str, Any]:
 _STALE_WRITE_REQUIRED_STR_FIELDS = ("trace_id", "target_path", "expected_hash", "actual_hash")
 
 
-def validate_stale_write_incident(obj: object) -> StaleWriteIncidentTD:
+def validate_stale_write_incident(obj: object) -> dict[str, Any]:
     """Validate and normalize a StaleWriteIncident to TypedDict shape."""
     d = _to_raw_dict(obj)
 
@@ -219,13 +212,13 @@ def validate_stale_write_incident(obj: object) -> StaleWriteIncidentTD:
 
     _require_int(d, "semantic_clock_tick", "STALE_WRITE_INCIDENT", min_val=0)
 
-    return StaleWriteIncidentTD(
-        trace_id=d["trace_id"],
-        target_path=d["target_path"],
-        expected_hash=d["expected_hash"],
-        actual_hash=d["actual_hash"],
-        semantic_clock_tick=d["semantic_clock_tick"],
-    )
+    return {
+        "trace_id": d["trace_id"],
+        "target_path": d["target_path"],
+        "expected_hash": d["expected_hash"],
+        "actual_hash": d["actual_hash"],
+        "semantic_clock_tick": d["semantic_clock_tick"],
+    }
 
 
 def to_stale_write_incident_dict(x: object) -> dict[str, Any]:
@@ -238,12 +231,12 @@ def to_stale_write_incident_dict(x: object) -> dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────
 
 
-def make_result_artifact_from_dataclass(dc: object) -> ResultArtifactTD:
+def make_result_artifact_from_dataclass(dc: object) -> dict[str, Any]:
     """Factory: validate a ResultArtifact dataclass and return TD-shaped dict."""
     return validate_result_artifact(dc)
 
 
-def make_healing_plan_from_dataclass(dc: object) -> HealingPlanTD:
+def make_healing_plan_from_dataclass(dc: object) -> dict[str, Any]:
     """Factory: validate a HealingPlan dataclass and return TD-shaped dict."""
     return validate_healing_plan(dc)
 
