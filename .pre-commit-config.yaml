@@ -22,7 +22,7 @@ default_language_version:
   python: python3.12
 
 # Global exclude — applied to every hook. Individual hooks may extend this.
-exclude: ^(archives/.*|\.sovereign_healing_backup/.*)
+exclude: ^(archives/.*|\.sovereign_healing_backup/.*|artifacts/migration/.*)
 
 repos:
   # ============================================================================
@@ -35,7 +35,6 @@ repos:
         name: "T0: Trailing Whitespace"
       - id: end-of-file-fixer
         name: "T0: End-of-File Fixer"
-        exclude: ^artifacts/migration/
       - id: mixed-line-ending
         name: "T0: Enforce LF Line Endings"
         args: [--fix=lf]
