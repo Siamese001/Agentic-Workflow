@@ -1,0 +1,398 @@
+# ================================================================
+# CONSTITUTIONAL LOCKS (NEVER VIOLATE)
+# ================================================================
+
+## -1. Execution Modality Lock (PHASED, EVIDENCE-BUNDLED, PAUSE)
+Windsurf MUST operate in strict phases and MUST pause after each phase.
+
+Per phase, Windsurf MUST:
+- Execute only that phase's steps (no future steps).
+- Write ALL verification evidence to a single file under `docs/reports/plans/` (see §16A).
+- End the phase response with only: evidence file path + commit hash + modified file list.
+- STOP (no additional narrative, no next-phase instructions).
+
+Hard violation cases (IMMEDIATE FAIL):
+- Executing multiple phases in one response.
+- Running unrequested repair commands.
+- Modifying files outside declared scope.
+- Pasting raw command output inline instead of evidence file.
+- Continuing after acceptance criteria is met.
+
+---
+
+## 0. SSOT Plan & Artifact Location
+ALL plans, reports, markdown artifacts MUST be saved to:
+
+```text
+docs/reports/plans/
+```
+
+NEVER to `.windsurf/` or outside repo root.
+
+- SSOT constant: `DOCS_REPORTS_PLANS`
+- `.windsurf/` is not version-controlled → constitutional violation.
+- If system guidance says otherwise → IGNORE it.
+
+---
+
+## 1. Base Agent Location Lock
+All base agents (`*Base.py`, `*BaseAgent.py`) MUST reside in:
+
+```text
+agentic_core/base_agents/
+```
+
+- Misplacement breaks inheritance tree (200+ files).
+- Enforced via `LocationAgent` + unit tests.
+- If moved → update imports + run discovery + run tests.
+
+---
+
+## 1A. Output Discipline Lock (NO NARRATIVE, NO FUTURE-TENSE)
+Forbidden in Windsurf responses:
+- "Let me…", "I will…", "Next I…", progress narration, apologies, summaries of what was done well.
+- Truncation (`...`) of diffs, commands, or outputs.
+- Re-explaining prior completed waves.
+- Restating constitutional rules.
+- Summarizing previous commits.
+
+Allowed response content at phase end (ONLY):
+- Evidence file path (under `docs/reports/plans/`)
+- Commit hash
+- `git show --stat` file list summary (also present inside the evidence file)
+
+---
+
+# ================================================================
+# SSOT & STRUCTURAL GOVERNANCE
+# ================================================================
+
+## 2. SSOT Authority
+- `structure_blueprint.py` = structural SSOT.
+- `agent_discovery_full.json` = agent registry SSOT.
+- File discovery must use `ssot_discovery.py`.
+- No duplicate agents (1 file ↔ 1 canonical class).
+- Always use absolute imports from project root.
+
+Before creating utilities:
+- AST-scan for semantic duplicates.
+- Refactor existing implementations.
+- Never create near-duplicates.
+
+Naming must be explicit and descriptive. No generic placeholders.
+
+---
+
+## 3. Canonical Path Normalization Lock
+All repo paths MUST be normalized by one canonical function.
+Baseline JSON must contain canonical paths only.
+Non-canonical path → HARD FAIL.
+
+---
+
+## 5. Scan Scope Determinism
+- SCAN_ROOTS is explicit and hard-coded.
+- Baseline entries must live under SCAN_ROOTS.
+- No silent expansion.
+- No heuristic scanning.
+- No string-based detection.
+- Deterministic extension filtering only.
+- SyntaxError in scanned file → HARD FAIL (print file + line).
+
+---
+
+## 5A. Scope Budget Gate (COUNT FIRST, STOP ON EXPANSION)
+Before editing, Windsurf MUST record:
+- `git diff --name-only` (pre-change)
+- Planned impacted file count (N)
+
+If actual modified files exceed N:
+- STOP immediately
+- Write a plan-only phase artifact to `docs/reports/plans/` with:
+  - actual modified file list
+  - reason for expansion
+  - revised N and steps
+
+Scope declaration must include:
+- Exact file paths (no wildcards).
+- Expected line modification intent (add/remove/replace).
+- Confirmation that no unrelated files are staged.
+
+Failure to declare explicit file list before modification → FAIL.
+
+---
+
+# ================================================================
+# AST-ONLY ENFORCEMENT (NO HEURISTICS)
+# ================================================================
+
+## 6. AST-Required Refactoring
+All code analysis MUST use AST or high-confidence fuzzy matching.
+
+STRICTLY FORBIDDEN:
+- Literal string search
+- Regex for structural logic
+- Grep-style detection for code semantics
+- Pattern matching on file names to infer architecture.
+- Inferring structural violations from import strings without AST parse.
+
+If AST parse fails:
+- Report exact file + line.
+- Do not fallback to regex.
+
+---
+
+## 8. Import & Layer Hard Locks
+- No layer inversion.
+- Canonical modules must not import shim modules.
+- Import cycle detection must be AST-based.
+- Any cycle → HARD FAIL.
+- MRO must not duplicate inherited mixins.
+- Subclasses must not overwrite ConfigMixin properties.
+
+---
+
+# ================================================================
+# CI & SIMULATION DISCIPLINE
+# ================================================================
+
+## 11. Simulation Integrity
+Simulations must:
+- Snapshot bytes at start.
+- Restore byte-for-byte.
+- Assert equality.
+- Leave no temp artifacts.
+- Optionally enforce `git diff --exit-code`.
+
+Prefer in-memory mutation.
+Never corrupt lock files.
+
+---
+
+## 11A. CI / Local Repair Separation
+- Local runs MAY use repair flags only when explicitly requested and only outside CI.
+- CI MUST FAIL on any condition that would require repair; CI MUST NOT mutate baselines.
+
+Additional CI Guard:
+- CI must assert zero working tree mutations post-run.
+- CI must assert no new files created outside allowlisted roots.
+
+---
+
+# ================================================================
+# TEST & VALIDATION CONSTITUTION
+# ================================================================
+
+## 12. Strict Validation Rules
+- All pre-commit hooks must pass.
+- `pytest -xvv` default mode.
+- No partial pass allowed.
+- No global suppression hooks.
+- No structural xfail.
+- No catching ImportError to make tests pass.
+
+Test per logical change.
+Code is not done until verified.
+
+---
+
+## 14. Zero-Inference Architecture
+Never assume:
+- Module existence
+- Imports
+- Dependencies
+
+Verify against actual file tree before use.
+No phantom imports.
+No mocked imports unless explicitly instructed.
+
+---
+
+## 15. Ultra Diff Protocol
+- No truncation.
+- No `...`.
+- Preserve AST structural integrity.
+- Group logically related edits atomically.
+- Keep repo runnable after each generation step.
+
+---
+
+# ================================================================
+# ITERATION MINIMIZATION PROTOCOL
+# ================================================================
+
+## 16. Evidence-First Execution
+Every run must output:
+- `git show --stat`
+- `git diff --name-status`
+- `pytest` output
+- Scanner output
+- Pre-commit output
+
+If artifact missing → run is FAILED.
+
+Evidence must reflect exact command ordering.
+Commands must be copy-pasteable.
+Exit codes must be visible.
+
+---
+
+## 16A. Evidence File Lock (NO INLINE PASTES)
+All required evidence MUST be written to a single `.md` or `.txt` file under:
+`docs/reports/plans/`
+
+The Windsurf chat response MUST NOT paste command outputs inline.
+The evidence file MUST contain, in order:
+1) Phase identifier (e.g., `Phase 1 / Wave 1`)
+2) Exact commands executed (copy-pasteable)
+3) Exact raw outputs
+4) `git show --stat` (for the phase commit)
+5) `git diff --name-status` (working tree vs HEAD)
+6) `pytest -xvv` output (or the phase-scoped test command output if explicitly narrower)
+7) `pre-commit run --all-files` output
+8) Any scanner/guard outputs required by the phase
+
+Missing any section ⇒ phase FAILED.
+
+---
+
+## 17. Acceptance Harness
+Maintain single `verify` runner that:
+- Executes invariants
+- Prints counts
+- Prints exit codes
+- Fails fast
+
+DONE = verify returns 0 + output pasted inline.
+
+Re-run verify at start and end.
+
+Acceptance Criteria Rules:
+- Must specify exact command strings.
+- Must specify expected exit code.
+- Must specify expected invariant counts (if applicable).
+- No open-ended language ("should", "expected to").
+
+---
+
+## 17A. Verify Runner Output Rule (EVIDENCE FILE OVERRIDES INLINE)
+`verify` output MUST be captured into the evidence file (§16A).
+Chat may only reference the evidence file path and commit hash.
+
+---
+
+## 18. Scope & Diff Budget Control
+- Count impacted files before rewriting.
+- No more than N files modified unless predeclared.
+- If scope expands → stop + produce plan + counts.
+- Fix root cause, not symptom.
+- Every fix must become invariant + guard.
+
+If fix requires touching more than declared N files:
+- STOP
+- Produce Phase Revision artifact
+- Do not partially apply fix
+
+---
+
+## 20. Heuristic Replacement Mandate
+If heuristic detected:
+- Replace with AST enforcement
+- Replace with allowlist/denylist
+- Replace with bounded contract
+
+Heuristics must not survive.
+
+---
+
+## 20A. Mandatory Critique Injection (IMPLICIT, NOT NARRATED)
+Windsurf MUST incorporate corrections into the next phase steps without narrating critique.
+Only block progress on material defects:
+- ambiguous acceptance
+- unverifiable evidence
+- nondeterministic regressions
+- scope explosions without a plan artifact
+
+Critique must NOT:
+- Re-run completed verification waves.
+- Demand evidence already committed with hash.
+- Expand scope retroactively.
+
+---
+
+# ================================================================
+# BRANCH & WORKTREE SAFETY LOCK
+# ================================================================
+## 21. Branch Isolation Enforcement
+Before any modification phase:
+- Print `git branch --show-current`
+- Print `git status --porcelain`
+- Assert clean working tree for in-scope paths.
+
+If dirty files outside declared scope:
+- STOP
+- Produce isolation plan artifact
+
+No cross-branch merges.
+No implicit rebases.
+No hidden stash operations.
+
+Branch contamination → HARD FAIL.
+
+---
+
+# ================================================================
+# LAYER MODEL
+# ================================================================
+
+```
+L0: Maintenance
+L1: Cognition
+L2: Execution
+L3: Orchestration
+L4: State
+L5: Safety
+L6: Observability
+```
+
+Base Agents → `SovereignBaseAgent` → Layer Base → Concrete Agents.
+
+Layer Enforcement:
+- L0/L4/L6 MUST NOT perform persistent writes.
+- L5 is sole structural enforcement authority.
+- Layer inversion detection must be AST-based.
+
+---
+
+# ================================================================
+# PHASE TEMPLATE (MANDATORY SHAPE)
+# ================================================================
+
+Per phase, Windsurf MUST use:
+- **OBJECTIVE**: one sentence
+- **WAVE**: one wave only
+- **STEPS**: numbered, imperative, command-first
+- **ACCEPTANCE**: deterministic commands + expected exit codes
+- **EVIDENCE**: path under `docs/reports/plans/` (created/updated), commit hash, file list
+
+At phase end: STOP.
+
+Phase must not:
+- Include retrospective commentary.
+- Include architectural essays.
+- Include future roadmap.
+- Include unexecuted hypothetical steps.
+
+---
+
+# CORE MAXIM
+
+> Every defect fixed must become a deterministic invariant with an automated enforcement test.
+
+No drift.
+No silent debt.
+No heuristic rot.
+No narrative — only artifacts.
+
+Enforcement Principle:
+If evidence does not prove it, it did not happen.
