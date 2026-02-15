@@ -1,10 +1,9 @@
 # Critical modules for import validation test
 # Minimal list required for agentic_core functionality
+# Boundary: ONLY agentic_core modules - NO apps_shared
 
 agentic_core
 agentic_core.config
 agentic_core.config.core
 agentic_core.runtime
 agentic_core.runtime.config
-apps_shared
-apps_shared.utils

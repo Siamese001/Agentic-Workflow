@@ -224,16 +224,12 @@ class YamlInjectionLoader:
 
             # Validate field types
             if not isinstance(description, str):
-                logger.debug(
-                    f"Skipping pattern {pattern_name} in {yaml_file}: description not a string"
-                )
+                logger.debug(f"Skipping pattern {pattern_name} in {yaml_file}: description not a string")
                 skipped_count += 1
                 continue
 
             if not isinstance(prompt_template, str):
-                logger.debug(
-                    f"Skipping pattern {pattern_name} in {yaml_file}: prompt_template not a string"
-                )
+                logger.debug(f"Skipping pattern {pattern_name} in {yaml_file}: prompt_template not a string")
                 skipped_count += 1
                 continue
 
@@ -245,6 +241,7 @@ class YamlInjectionLoader:
                 description=description,
                 template=prompt_template,
                 enabled=pattern_data.get("enabled", True),
+                required=pattern_data.get("required", False),
             )
 
             patterns.append(pattern)

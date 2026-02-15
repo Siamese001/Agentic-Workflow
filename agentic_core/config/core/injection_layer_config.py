@@ -44,6 +44,7 @@ class InstructionalPattern:
     description: str
     template: str
     enabled: bool = True
+    required: bool = False
 
 
 # All 30 instructional injection patterns from v5
