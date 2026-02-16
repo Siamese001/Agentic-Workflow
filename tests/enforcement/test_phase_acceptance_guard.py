@@ -17,7 +17,7 @@ import pytest
 project_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(project_root))
 
-from tools.enforcement.phase_acceptance_guard import PhaseAcceptanceGuard
+from agentic_core.L5_safety.enforcement.phase_acceptance_guard import PhaseAcceptanceGuard
 
 pytestmark = pytest.mark.unit_min_deps
 

@@ -61,7 +61,13 @@ EXPECTED_SUMMARY_KEYS = {"total_agents", "missing_heal", "missing_heal_repositor
 
 def run_audit_cli(format_type: str = "json", out_path: Path | None = None) -> dict[str, Any]:
     """Run the audit CLI and return parsed output."""
-    cmd = [sys.executable, "-m", "tools.governance.agent_heal_audit", "--format", format_type]
+    cmd = [
+        sys.executable,
+        "-m",
+        "agentic_core.L5_safety.enforcement.governance.agent_heal_audit",
+        "--format",
+        format_type,
+    ]
 
     if out_path:
         cmd.extend(["--out", str(out_path)])
@@ -203,7 +209,7 @@ class TestEnumerationIntegrity:
 
         # Import and use scanner directly
         sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-        from tools.governance.agent_heal_audit import AgentHealAuditScanner
+        from agentic_core.L5_safety.enforcement.governance.agent_heal_audit import AgentHealAuditScanner
 
         scanner = AgentHealAuditScanner(tmp_path)
         results = scanner.scan_agent_file(fixture_file)
@@ -253,7 +259,14 @@ class TestNoRuntimeImports:
 
     def test_source_code_imports(self):
         """Inspect source code for forbidden imports."""
-        audit_file = Path(__file__).parent.parent.parent / "tools" / "governance" / "agent_heal_audit.py"
+        audit_file = (
+            Path(__file__).parent.parent.parent
+            / "agentic_core"
+            / "L5_safety"
+            / "enforcement"
+            / "governance"
+            / "agent_heal_audit.py"
+        )
         source = audit_file.read_text()
 
         # Parse AST to find imports
@@ -276,7 +289,14 @@ class TestNoRuntimeImports:
 
     def test_stdlib_only_imports(self):
         """Verify only standard library imports are used."""
-        audit_file = Path(__file__).parent.parent.parent / "tools" / "governance" / "agent_heal_audit.py"
+        audit_file = (
+            Path(__file__).parent.parent.parent
+            / "agentic_core"
+            / "L5_safety"
+            / "enforcement"
+            / "governance"
+            / "agent_heal_audit.py"
+        )
         source = audit_file.read_text()
 
         # Parse AST to find imports
