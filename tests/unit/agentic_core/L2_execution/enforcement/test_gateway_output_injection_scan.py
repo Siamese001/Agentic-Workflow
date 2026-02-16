@@ -21,7 +21,7 @@ import pytest
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
     SovereignLLMGateway,
 )
-from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
+from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 # ---------------------------------------------------------------------------
 # Fixtures

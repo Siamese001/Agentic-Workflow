@@ -318,7 +318,7 @@ class SovereignLLMGateway:
                         retry_content = retry_result.get("content", "")
                         ok2, code2, details2 = validate_against_schema(retry_content, response_schema)
                         if not ok2:
-                            from agentic_core.runtime.exceptions.sovereign_errors import (
+                            from agentic_core.runtime.exceptions.SovereignError import (
                                 SecurityViolationError,
                             )
 
@@ -334,7 +334,7 @@ class SovereignLLMGateway:
                     from agentic_core.prompt_governance.security import (
                         injection_scan_util as _isu,
                     )
-                    from agentic_core.runtime.exceptions.sovereign_errors import (
+                    from agentic_core.runtime.exceptions.SovereignError import (
                         SecurityViolationError as _SVE_P3,
                     )
 
@@ -360,7 +360,7 @@ class SovereignLLMGateway:
                 from agentic_core.L2_execution.types.token_enforcement_types import (
                     TokenBudgetExceeded,
                 )
-                from agentic_core.runtime.exceptions.sovereign_errors import (
+                from agentic_core.runtime.exceptions.SovereignError import (
                     SecurityViolationError as _SVE,
                 )
 

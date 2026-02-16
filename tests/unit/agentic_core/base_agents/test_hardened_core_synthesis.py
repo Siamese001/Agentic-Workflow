@@ -13,7 +13,7 @@ class TestHardenedCoreSynthesis:
     def test_domain_exceptions_exist(self):
         """Test that domain exceptions hierarchy exists and is correct."""
         try:
-            from agentic_core.runtime.exceptions.sovereign_errors import (
+            from agentic_core.runtime.exceptions.SovereignError import (
                 CircularDependencyError,
                 ConfigurationError,
                 HealerError,
@@ -91,7 +91,7 @@ class TestHardenedCoreSynthesis:
             assert "get_sovereign_capabilities" in content, "Missing get_sovereign_capabilities method"
 
             # Test proper imports
-            assert "from agentic_core.runtime.exceptions.sovereign_errors import" in content, (
+            assert "from agentic_core.runtime.exceptions.SovereignError import" in content, (
                 "Missing sovereign errors import"
             )
 
@@ -284,7 +284,7 @@ class TestHardenedCoreSynthesis:
             from agentic_core.mixins.structural_healing_mixin import (
                 structural_healing_mixin,  # noqa: F401
             )
-            from agentic_core.runtime.exceptions.sovereign_errors import (  # noqa: F401
+            from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
                 HealerError,
                 HygieneError,
                 StructuralError,

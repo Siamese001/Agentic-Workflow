@@ -21,7 +21,7 @@ from agentic_core.prompt_governance.security.utils.normalization_util import (
     MAX_URL_DECODE_PASSES,
     normalize_and_decode,
 )
-from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
+from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 

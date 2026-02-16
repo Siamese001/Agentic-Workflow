@@ -20,7 +20,7 @@ from agentic_core.prompt_governance.security.detectors.injection_detector import
     INJECTION_SIGNATURES_V2,
     InjectionDetector,
 )
-from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
+from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 
 @pytest.fixture

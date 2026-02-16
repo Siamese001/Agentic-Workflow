@@ -20,7 +20,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.exceptions.sovereign_errors import StructuralError
+from agentic_core.runtime.exceptions.SovereignError import StructuralError
 
 
 def relocate_file(

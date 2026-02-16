@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
-from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
+from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 Logger = logging.getLogger(__name__)
 

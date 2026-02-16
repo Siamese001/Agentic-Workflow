@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.exceptions.sovereign_errors import HygieneError
+from agentic_core.runtime.exceptions.SovereignError import HygieneError
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 

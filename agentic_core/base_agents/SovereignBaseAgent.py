@@ -65,7 +65,7 @@ from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
-from agentic_core.runtime.exceptions.sovereign_errors import SovereignError
+from agentic_core.runtime.exceptions.SovereignError import SovereignError
 
 logger = logging.getLogger(__name__)
 

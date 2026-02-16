@@ -44,18 +44,37 @@ def _collect_py_files_in_folder(folder_path: Path) -> list[Path]:
 
 
 def _find_governed_folders(root: Path, folder_key: str) -> list[Path]:
-    """Find all instances of a governed folder under a territory root."""
+    """Find all instances of a governed folder under a territory root.
+    
+    Searches:
+    1. L* layer directories (e.g., L0_routing/reasoning/)
+    2. Root-level folders (e.g., config/agent_configs/, prompt_governance/)
+    3. Runtime subfolders (e.g., runtime/config/, runtime/engine/)
+    """
     folders = []
     if root.name.startswith("apps_"):
         candidate = root / folder_key
         if candidate.exists() and candidate.is_dir():
             folders.append(candidate)
     else:
+        # Search L* layer directories
         for layer_dir in root.iterdir():
             if layer_dir.is_dir() and layer_dir.name.startswith("L"):
                 candidate = layer_dir / folder_key
                 if candidate.exists() and candidate.is_dir():
                     folders.append(candidate)
+        
+        # Search root-level folders (config/, prompt_governance/, runtime/)
+        for root_folder in ["config", "prompt_governance", "runtime"]:
+            root_candidate = root / root_folder / folder_key
+            if root_candidate.exists() and root_candidate.is_dir():
+                folders.append(root_candidate)
+        
+        # Search direct root-level governed folders (e.g., base_agents/, mixins/)
+        direct_candidate = root / folder_key
+        if direct_candidate.exists() and direct_candidate.is_dir():
+            folders.append(direct_candidate)
+    
     return folders
 
 
