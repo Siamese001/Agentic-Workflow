@@ -37,19 +37,19 @@ from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
-from agentic_core.L7_meta_learning.types.app_signal_types import (
+from system_learning.types.app_signal_types import (
     AppSignalEventArtifact,
     aggregate_app_signals,
 )
-from agentic_core.L7_meta_learning.types.apply_attempt_types import (
+from system_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
 )
-from agentic_core.L7_meta_learning.types.offline_replay_types import (
+from system_learning.types.offline_replay_types import (
     OfflineReplayBundle,
     render_offline_replay_bundle,
     replay_aggregate_to_rollout,
 )
-from agentic_core.L7_meta_learning.types.rollout_types import (
+from system_learning.types.rollout_types import (
     MetaLearningRollbackArtifact,
 )
 

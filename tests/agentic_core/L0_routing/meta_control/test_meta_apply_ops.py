@@ -26,14 +26,14 @@ from agentic_core.L0_routing.meta_control.meta_apply_ops import (
     rollback_meta_learning_rollout,
 )
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,
     build_meta_learning_decision,
     build_meta_learning_evaluation,
     build_meta_learning_proposal,
 )
-from agentic_core.L7_meta_learning.types.rollout_types import (
+from system_learning.types.rollout_types import (
     build_meta_learning_rollout_plan,
 )
 

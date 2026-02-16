@@ -20,7 +20,7 @@ from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     MUTABLE_COMPONENTS,
 )
 

@@ -29,15 +29,15 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
 from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L7_meta_learning.types.apply_attempt_types import (
+from system_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
     build_apply_attempt,
 )
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     MUTABLE_COMPONENTS,
     MetaLearningChangePackageArtifact,
 )
-from agentic_core.L7_meta_learning.types.rollout_types import (
+from system_learning.types.rollout_types import (
     MetaLearningRolloutPlanArtifact,
 )
 

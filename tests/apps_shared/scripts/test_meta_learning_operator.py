@@ -29,13 +29,13 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenSubject,
     build_capability_token,
 )
-from agentic_core.L7_meta_learning.types.app_signal_types import (
-    AppSignalEventArtifact,
-    build_app_signal_event,
-)
 from apps_shared.scripts.meta_learning_operator import (
     render_meta_learning_audit_pack,
     run_meta_learning_operator,
+)
+from system_learning.types.app_signal_types import (
+    AppSignalEventArtifact,
+    build_app_signal_event,
 )
 
 _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))

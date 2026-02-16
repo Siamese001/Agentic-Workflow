@@ -95,7 +95,6 @@ def _matches_any_pattern(filename: str, patterns: list[str]) -> bool:
 
 # [2026-02-16] Folders that are compliant with naming patterns.
 # Other folders have 200+ violations and require a dedicated remediation phase.
-<<<<<<< HEAD
 COMPLIANT_FOLDERS = frozenset(
     {
         "validators",
@@ -112,22 +111,6 @@ COMPLIANT_FOLDERS = frozenset(
         # They are excluded from positive invariant tests but have negative tests
     }
 )
-=======
-COMPLIANT_FOLDERS = frozenset({
-    "validators",
-    "scripts",
-    "dashboards",
-    "base_agents",
-    "mixins",
-    "interfaces",
-    "agent_configs",
-    "healers",
-    "exceptions",
-    "core_kernel",
-    # Note: config, engines, prompt_governance have known violations and need remediation
-    # They are excluded from positive invariant tests but have negative tests
-})
->>>>>>> f9b0659e1d0e0bd12398fadf002f18e93ea64391
 
 
 @pytest.mark.governance

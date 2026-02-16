@@ -16,19 +16,19 @@ import json
 from pathlib import Path
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.app_signal_types import (
-    build_app_signal_event,
-)
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
-    build_meta_learning_approval,
-    build_meta_learning_change_package,
-    build_meta_learning_decision,
-    build_meta_learning_evaluation,
-)
 from apps_shared.scripts.meta_learning_bridge import (
     emit_app_signal_aggregate,
     emit_app_signal_event,
     propose_from_signal_aggregate,
+)
+from system_learning.types.app_signal_types import (
+    build_app_signal_event,
+)
+from system_learning.types.meta_learning_types import (
+    build_meta_learning_approval,
+    build_meta_learning_change_package,
+    build_meta_learning_decision,
+    build_meta_learning_evaluation,
 )
 
 _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))

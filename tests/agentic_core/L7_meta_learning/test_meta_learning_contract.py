@@ -11,16 +11,18 @@ import json
 
 import pytest
 
+pytestmark = pytest.mark.unit_min_deps
+
 from agentic_core.L0_routing.scripts.run_all_guardians import (
     render_meta_learning_change_package,
 )
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.app_signal_types import (
+from system_learning.types.app_signal_types import (
     APP_SIGNAL_CATALOG,
     build_app_signal_aggregate,
     build_app_signal_event,
 )
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     DENY_REASONS,
     IMMUTABLE_COMPONENTS,
     MetaLearningApprovalArtifact,

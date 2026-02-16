@@ -23,11 +23,11 @@ from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from agentic_core.L7_meta_learning.types.apply_attempt_types import (
+from system_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
     build_apply_attempt,
 )
-from agentic_core.L7_meta_learning.types.rollout_types import (
+from system_learning.types.rollout_types import (
     MetaLearningRollbackArtifact,
     MetaLearningRolloutPlanArtifact,
     build_meta_learning_rollback,

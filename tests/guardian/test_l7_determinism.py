@@ -15,14 +15,14 @@ import re
 
 import pytest
 
-from agentic_core.L7_meta_learning.enforcement.determinism import (
+from system_learning.enforcement.determinism import (
     FORBIDDEN_PATTERNS,
     assert_no_nondeterminism,
     deterministic_json,
     stable_sha256_json,
 )
 
-L7_ROOT = pathlib.Path("agentic_core/L7_meta_learning")
+L7_ROOT = pathlib.Path("system_learning")
 
 # ============================================================================
 # §1 — Forbidden Call Scan (static)
@@ -178,7 +178,7 @@ class TestStructural:
                 continue
             src = p.read_text(encoding="utf-8", errors="ignore")
             if "stable_sha256_json" in src or "deterministic_json" in src:
-                if "from agentic_core.L7_meta_learning.enforcement.determinism" not in src:
+                if "from system_learning.enforcement.determinism" not in src:
                     missing.append(str(p))
         assert missing == [], f"Type files using determinism helpers but not importing from SSOT: {missing}"
 

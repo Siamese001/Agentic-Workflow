@@ -21,7 +21,7 @@ from agentic_core.L0_routing.meta_control.config_store_types import (
     validate_component_allowed,
 )
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,
     build_meta_learning_decision,

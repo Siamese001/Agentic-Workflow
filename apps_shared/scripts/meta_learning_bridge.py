@@ -16,13 +16,13 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.app_signal_types import (
+from system_learning.types.app_signal_types import (
     AppSignalAggregateArtifact,
     AppSignalEventArtifact,
     aggregate_app_signals,
     build_app_signal_event,
 )
-from agentic_core.L7_meta_learning.types.meta_learning_types import (
+from system_learning.types.meta_learning_types import (
     MetaLearningProposalArtifact,
     build_meta_learning_proposal,
 )

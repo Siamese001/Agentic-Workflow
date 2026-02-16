@@ -10,12 +10,16 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
+pytestmark = pytest.mark.unit_min_deps
+
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-from agentic_core.L7_meta_learning.types.app_signal_types import (
+from system_learning.types.app_signal_types import (
     AppSignalEventArtifact,
     build_app_signal_event,
 )
-from agentic_core.L7_meta_learning.types.offline_replay_types import (
+from system_learning.types.offline_replay_types import (
     OfflineReplayBundle,
     render_offline_replay_bundle,
     replay_aggregate_to_rollout,

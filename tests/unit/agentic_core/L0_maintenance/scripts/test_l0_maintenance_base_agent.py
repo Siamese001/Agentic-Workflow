@@ -36,8 +36,8 @@ class TestL0RoutingBaseAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.base_agents.l0_maintenance_base_agent import (
-                L0RoutingBaseAgent,
+            from agentic_core.base_agents.L0RoutingBase import (
+                L0RoutingBase as L0RoutingBaseAgent,
             )
 
             return L0RoutingBaseAgent
@@ -91,8 +91,8 @@ class TestL0RoutingBaseAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.base_agents.l0_maintenance_base_agent import (
-                    L0RoutingBaseAgent,  # noqa: F401
+                from agentic_core.base_agents.L0RoutingBase import (
+                    L0RoutingBase as L0RoutingBaseAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass
