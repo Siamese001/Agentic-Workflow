@@ -209,6 +209,7 @@ def standard_heal(func: F) -> F:
             )
 
             # Phase 4: Escalation flag hook (default-off)
+            routed_model_id: str | None = None
             if _select_reasoning_tier_enabled():
                 Logger.debug(
                     f"[heal_policy] escalation_enabled=1 selected_tier={policy_decision.tier.name}",
@@ -219,10 +220,12 @@ def standard_heal(func: F) -> F:
 
                 # Phase 6: Model routing seam (no SDK/executor imports)
                 if _HEAL_MODEL_ROUTER is not None:
-                    model_id = _HEAL_MODEL_ROUTER(policy_decision.tier)
-                    Logger.debug(f"[heal_policy] routed_model={model_id}")
+                    routed_model_id = _HEAL_MODEL_ROUTER(policy_decision.tier)
+                    Logger.debug(f"[heal_policy] routed_model={routed_model_id}")
                 else:
                     Logger.debug("[heal_policy] routed_model=NONE")
+
+                remaining_kwargs["_heal_routed_model_id"] = routed_model_id
 
             result = func(
                 self,
