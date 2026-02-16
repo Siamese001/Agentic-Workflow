@@ -26,6 +26,10 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
 from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
+from agentic_core.L5_safety.types.heal_policy_types import (
+    HealEscalationInputs,
+    decide_reasoning_tier,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -170,6 +174,20 @@ def standard_heal(func: F) -> F:
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} "
                 f"(dry_run={dry_run}, execute={execute}, depth={depth})",
+            )
+
+            # Phase 3: Compute heal policy decision (no behavior change)
+            policy_inputs = HealEscalationInputs(
+                task_complexity=5,
+                confidence=0.75,
+                safety_risk=3,
+                retry_count=0,
+                cost_budget=None,
+                latency_budget=None,
+            )
+            policy_decision = decide_reasoning_tier(policy_inputs)
+            Logger.debug(
+                f"[heal_policy] tier={policy_decision.tier.name} threshold={policy_decision.threshold_used}",
             )
 
             result = func(
