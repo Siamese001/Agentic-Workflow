@@ -890,6 +890,47 @@ pytest.ini testpaths define the authoritative suite for phase completion.
 
 ---
 
+## 46. Testpaths Contract Synchronization Lock
+
+Any modification to pytest.ini testpaths MUST update corresponding contract tests.
+
+Requirements:
+- If testpaths is modified, tests/unit_min_deps/test_testpaths_contract.py MUST be updated in the same commit
+- No orphaned testpaths configuration - every testpath entry must have corresponding contract validation
+- Contract tests must reflect actual pytest.ini content, not idealized expectations
+
+Violation: HARD FAIL
+
+---
+
+## 47. Pre-existing vs New Issue Evidence Mandate
+
+When test failures occur during phase acceptance, evidence MUST distinguish between pre-existing and newly introduced failures.
+
+Requirements:
+- Evidence must include git history analysis of failing tests
+- Must identify which commits introduced failing test files
+- Must provide deterministic command set that proves new functionality works
+- Cannot claim "pytest -q passes" when failures exist in unrelated code
+
+Violation: HARD FAIL
+
+---
+
+## 48. Evidence Raw Capture Protocol
+
+All evidence files must contain raw, untruncated command outputs for acceptance determination.
+
+Requirements:
+- Evidence must show full command output, not "..." truncations
+- Must include exit codes for all test runs
+- Must capture git status and commit hashes for reproducibility
+- Must distinguish between collection and execution phases
+
+Violation: HARD FAIL
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
