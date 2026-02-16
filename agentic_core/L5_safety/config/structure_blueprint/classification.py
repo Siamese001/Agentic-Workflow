@@ -194,6 +194,57 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
         r".*\.json$",
         r".*\.py$",
     ],
+    "engines": [
+        r".*_engine\.py$",
+        r".*_executor\.py$",
+        r".*_task\.py$",
+        r".*_registry\.py$",
+        r".*_impl\.py$",
+        r".*_orchestrator\.py$",
+        r".*_router\.py$",
+        r".*_service\.py$",
+        r".*_client\.py$",
+        r".*_node\.py$",
+        r".*_manager\.py$",
+        r".*_cache\.py$",
+        r".*_planner\.py$",
+        r".*_analyzer\.py$",
+        r".*_mapper\.py$",
+        r".*_embedder\.py$",
+        r".*_scanner\.py$",
+        r".*_pattern\.py$",
+        r"^[A-Z][a-zA-Z0-9]*\.py$",
+    ],
+    "tools": [
+        r".*_tool\.py$",
+        r".*_impl\.py$",
+        r".*_client\.py$",
+        r".*_executor\.py$",
+        r"^[A-Z][a-zA-Z0-9]*\.py$",
+        r"^[a-z][a-z0-9_]*\.py$",
+    ],
+}
+
+
+# ============================================================================
+# FOLDER PURITY DISALLOWED RULES (files that MUST NOT be in these folders)
+# ============================================================================
+
+FOLDER_PURITY_DISALLOWED: Final[Mapping[str, Sequence[str]]] = {
+    "engines": [
+        r".*_types\.py$",
+        r".*_util\.py$",
+        r".*_validator\.py$",
+        r".*_config\.py$",
+    ],
+    "tools": [
+        r".*_types\.py$",
+        r".*_util\.py$",
+        r".*_validator\.py$",
+        r".*_config\.py$",
+        r".*Strategy\.py$",
+        r".*_strategy\.py$",
+    ],
 }
 
 
@@ -349,6 +400,14 @@ def get_compound_suffix_patterns_compiled() -> list[tuple[Pattern, str, str, str
 def get_folder_purity_patterns_compiled() -> dict[str, list[Pattern]]:
     """Compile and cache folder purity patterns."""
     return {folder: [re.compile(p) for p in patterns] for folder, patterns in FOLDER_PURITY_RULES.items()}
+
+
+@lru_cache(maxsize=1)
+def get_folder_purity_disallowed_compiled() -> dict[str, list[Pattern]]:
+    """Compile and cache folder purity disallowed patterns."""
+    return {
+        folder: [re.compile(p) for p in patterns] for folder, patterns in FOLDER_PURITY_DISALLOWED.items()
+    }
 
 
 @lru_cache(maxsize=1)

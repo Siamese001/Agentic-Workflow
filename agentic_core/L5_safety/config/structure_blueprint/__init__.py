@@ -121,6 +121,7 @@ def __getattr__(name: str):
         "DOMAIN_CONTENT_SIGNALS",
         "DUPLICATE_DETECTION_EXEMPT",
         "FILETYPE_TO_FOLDER",
+        "FOLDER_PURITY_DISALLOWED",
         "FOLDER_PURITY_RULES",
         "FORBIDDEN_COMPOUND_PATTERNS",
         "GLOBAL_INTERFACES_FOLDER",
@@ -133,6 +134,7 @@ def __getattr__(name: str):
         "SUFFIX_TO_FOLDER",
         "get_classification_suffix_patterns_compiled",
         "get_compound_suffix_patterns_compiled",
+        "get_folder_purity_disallowed_compiled",
         "get_folder_purity_patterns_compiled",
         "get_forbidden_compound_patterns_compiled",
     }:
@@ -315,6 +317,7 @@ __all__ = [
     "EXERCISER_REGISTRY",
     "FILETYPE_TO_FOLDER",
     "FLAT_DIRECTORIES",
+    "FOLDER_PURITY_DISALLOWED",
     "FOLDER_PURITY_RULES",
     "FORBIDDEN_APP_MODULES",
     "FORBIDDEN_BACKUP_PATTERNS",
