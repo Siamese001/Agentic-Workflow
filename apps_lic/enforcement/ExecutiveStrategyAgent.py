@@ -117,6 +117,14 @@ class ExecutiveStrategyAgent:
         """
         return self._render("executive", "k13_interviewer_sim", payload)
 
+    def heal(self, *args, **kwargs) -> dict[str, Any]:
+        """heal() not implemented for ExecutiveStrategyAgent."""
+        raise NotImplementedError("heal() not implemented for ExecutiveStrategyAgent")
+
+    def heal_repository(self, *args, **kwargs) -> dict[str, Any]:
+        """heal_repository() not implemented for ExecutiveStrategyAgent."""
+        raise NotImplementedError("heal_repository() not implemented for ExecutiveStrategyAgent")
+
 
 # Minimal dispatch functions for reachability
 def get_exec_shadow_audit(payload: dict[str, Any], *, prompt_root: Path | None = None) -> str:

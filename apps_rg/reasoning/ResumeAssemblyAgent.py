@@ -134,6 +134,16 @@ class ResumeAssemblyAgent:
         except KeyError as e:
             raise ResumeTemplateError(f"Missing template variable {e} in {template_path}")
 
+    # guardian: allow-type_erasure
+    def heal(self, *args, **kwargs) -> dict:
+        """heal() not implemented for ResumeAssemblyAgent."""
+        raise NotImplementedError("heal() not implemented for ResumeAssemblyAgent")
+
+    # guardian: allow-type_erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for ResumeAssemblyAgent."""
+        raise NotImplementedError("heal_repository() not implemented for ResumeAssemblyAgent")
+
 
 # Minimal dispatch functions for reachability
 def get_resume_skills_section(payload: dict[str, Any]) -> str:

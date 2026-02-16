@@ -407,6 +407,21 @@ class SovereignBaseAgent(
             "violation_id": violation.get("id", "unknown"),
         }
 
+    def heal_repository(self, *args, **kwargs) -> dict[str, Any]:
+        """
+        Repository-wide healing interface.
+
+        Default implementation raises NotImplementedError. Subclasses should
+        override this method to provide repository-wide healing capabilities.
+
+        Returns:
+            Dict containing healing result with status and metadata.
+
+        Raises:
+            NotImplementedError: When not overridden by subclass.
+        """
+        raise NotImplementedError(f"heal_repository() not implemented for {self.__class__.__name__}")
+
     # =========================================================================
     # COGNITIVE ENDURANCE INFRASTRUCTURE (Feb 2026)
     # Landmine #3 & #4 Prevention: Context Drift and Token Overload

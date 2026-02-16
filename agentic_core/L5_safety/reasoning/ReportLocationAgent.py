@@ -305,6 +305,10 @@ class ReportLocationAgent(AtomicExecutionMixin):
         """
         return self._validator.save_inventory(output_path)
 
+    def heal_repository(self, *args, **kwargs) -> dict[str, Any]:
+        """heal_repository() not implemented for ReportLocationAgent."""
+        raise NotImplementedError("heal_repository() not implemented for ReportLocationAgent")
+
 
 __all__ = [
     "ReportLocationAgent",

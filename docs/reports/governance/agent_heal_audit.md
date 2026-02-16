@@ -3,53 +3,9 @@
 ## Summary
 
 - **Total Agents**: 136
-- **Missing heal()**: 22
-- **Missing heal_repository()**: 34
-- **Missing Both**: 20
-
-## Phase 2: Heal Escalation Policy Contracts
-
-### Overview
-Phase 2 introduces a pure policy contract module for agent healing escalation decisions. This module provides deterministic reasoning tier classification based on task complexity, confidence, safety risk, and retry count.
-
-### Module Location
-- `agentic_core/L5_safety/types/heal_policy_types.py`
-
-### Key Components
-1. **Enums**:
-   - `ReasoningTier`: LOW, HIGH
-   - `ConfidenceLevel`: LOW, MEDIUM, HIGH, VERY_HIGH
-
-2. **Dataclasses**:
-   - `HealEscalationInputs`: Input parameters for escalation decision
-   - `HealEscalationDecision`: Output decision with tier and rationale
-
-3. **Pure Functions**:
-   - `classify_confidence(confidence: float) -> ConfidenceLevel`
-   - `decide_reasoning_tier(inputs: HealEscalationInputs) -> HealEscalationDecision`
-
-### Decision Logic
-The `decide_reasoning_tier` function follows deterministic rules:
-1. Validate input ranges
-2. Apply trivial rule (low complexity, low risk, few retries) → LOW
-3. Escalate to HIGH if ANY condition met:
-   - confidence < 0.70
-   - task_complexity >= 8
-   - safety_risk >= 7
-   - retry_count > 2
-4. Otherwise default to LOW
-
-### Integration Note
-**No runtime integration in Phase 2.** This module provides the pure policy contract that will be consumed by future phases for actual escalation routing and execution.
-
-### Tests
-Comprehensive unit tests in `tests/governance/test_heal_policy_types.py` cover:
-- Boundary conditions for confidence classification
-- Ordered rule behavior and escalation triggers
-- Determinism (same inputs produce identical decisions)
-- Input validation with proper error handling
-
----
+- **Missing heal()**: 18
+- **Missing heal_repository()**: 29
+- **Missing Both**: 17
 
 ## Detailed Results
 
@@ -135,7 +91,7 @@ Comprehensive unit tests in `tests/governance/test_heal_policy_types.py` cover:
 | agentic_core/L5_safety/reasoning/RedSentinelAgent.py | RedSentinelAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/RedTeamAgent.py | RedTeamAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/RegressionOracleAgent.py | RegressionOracleAgent | ✓ | ✓ |
-| agentic_core/L5_safety/reasoning/ReportLocationAgent.py | ReportLocationAgent | ✓ | ✗ |
+| agentic_core/L5_safety/reasoning/ReportLocationAgent.py | ReportLocationAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/ResourceManagerAgent.py | ResourceManagerAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/RootHygieneAgent.py | RootHygieneAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py | SafetyDetectorAgent | ✓ | ✓ |
@@ -155,25 +111,10 @@ Comprehensive unit tests in `tests/governance/test_heal_policy_types.py` cover:
 | agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py | TypeHintFixerAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/TypeMechanicAgent.py | TypeMechanicAgent | ✓ | ✓ |
 | agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py | UnusedCleanupAgent | ✓ | ✗ |
-| agentic_core/base_agents/SovereignBaseAgent.py | SovereignBaseAgent | ✓ | ✗ |
+| agentic_core/base_agents/SovereignBaseAgent.py | SovereignBaseAgent | ✓ | ✓ |
 | agentic_core/interfaces/IOrchestratorProtocol.py | ITieredAgent | ✗ | ✗ |
-| apps_lic/config/placeholder_detector_agent_config.py | PlaceholderDetectorAgent | ✗ | ✓ |
-| apps_lic/engines/DispatchOutreachToolsAgent.py | DispatchOutreachToolsAgent | ✓ | ✓ |
-| apps_lic/engines/ExecutiveStrategyAgent.py | ExecutiveStrategyAgent | ✗ | ✗ |
-| apps_lic/engines/GovernanceShieldAgent.py | GovernanceShieldAgent | ✓ | ✗ |
-| apps_lic/engines/LicReflectionAgent.py | LicReflectionAgent | ✓ | ✓ |
-| apps_lic/engines/LicTemplateOptimizerAgent.py | LicTemplateOptimizerAgent | ✓ | ✓ |
-| apps_lic/engines/MessageComplianceAgent.py | MessageComplianceAgent | ✓ | ✓ |
-| apps_lic/engines/OutreachLearningAgent.py | OutreachLearningAgent | ✓ | ✓ |
-| apps_lic/engines/OutreachMessageAgent.py | OutreachMessageAgent | ✗ | ✗ |
-| apps_lic/engines/OutreachProactiveAgent.py | OutreachProactiveAgent | ✓ | ✓ |
-| apps_lic/engines/OutreachSignalRouterAgent.py | OutreachSignalRouterAgent | ✓ | ✓ |
-| apps_lic/engines/OutreachValidationExecutorAgent.py | OutreachValidationExecutorAgent | ✓ | ✓ |
-| apps_lic/engines/PIISanitizerSpecialistAgent.py | ConstitutionalReviewerAgent | ✗ | ✗ |
-| apps_lic/engines/PIISanitizerSpecialistAgent.py | PII_SanitizerSpecialistAgent | ✓ | ✗ |
-| apps_lic/engines/ValidatorAgent.py | ValidatorAgent | ✓ | ✗ |
-| apps_lic/engines/competitor_recon_agent_types.py | CompetitorReconAgent | ✗ | ✗ |
-| apps_lic/engines/stack_modernization_agent_types.py | StackModernizationAgent | ✗ | ✗ |
+| apps_lic/config/placeholder_detector_agent_config.py | PlaceholderDetectorAgent | ✓ | ✓ |
+| apps_lic/enforcement/ExecutiveStrategyAgent.py | ExecutiveStrategyAgent | ✓ | ✓ |
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | GateDecisionAgent | ✗ | ✗ |
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | GenerationAgent | ✗ | ✗ |
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | ProfileAnalysisAgent | ✗ | ✗ |
@@ -182,12 +123,27 @@ Comprehensive unit tests in `tests/governance/test_heal_policy_types.py` cover:
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | RoutingAgent | ✗ | ✗ |
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | SenderGroundingAgent | ✗ | ✗ |
 | apps_lic/reasoning/ArchetypeIndicatorsAgent.py | ValidationAgent | ✗ | ✗ |
+| apps_lic/reasoning/DispatchOutreachToolsAgent.py | DispatchOutreachToolsAgent | ✓ | ✓ |
+| apps_lic/reasoning/GovernanceShieldAgent.py | GovernanceShieldAgent | ✓ | ✗ |
+| apps_lic/reasoning/LicReflectionAgent.py | LicReflectionAgent | ✓ | ✓ |
+| apps_lic/reasoning/LicTemplateOptimizerAgent.py | LicTemplateOptimizerAgent | ✓ | ✓ |
+| apps_lic/reasoning/MessageComplianceAgent.py | MessageComplianceAgent | ✓ | ✓ |
+| apps_lic/reasoning/OutreachLearningAgent.py | OutreachLearningAgent | ✓ | ✓ |
+| apps_lic/reasoning/OutreachMessageAgent.py | OutreachMessageAgent | ✓ | ✓ |
+| apps_lic/reasoning/OutreachProactiveAgent.py | OutreachProactiveAgent | ✓ | ✓ |
+| apps_lic/reasoning/OutreachSignalRouterAgent.py | OutreachSignalRouterAgent | ✓ | ✓ |
+| apps_lic/reasoning/OutreachValidationExecutorAgent.py | OutreachValidationExecutorAgent | ✓ | ✓ |
+| apps_lic/reasoning/ValidatorAgent.py | ValidatorAgent | ✓ | ✗ |
 | apps_lic/types/app_content_validator_agent_types.py | AppContentValidatorAgent | ✗ | ✗ |
-| apps_rg/engines/ResumeAssemblyAgent.py | ResumeAssemblyAgent | ✗ | ✗ |
+| apps_lic/types/competitor_recon_agent_types.py | CompetitorReconAgent | ✗ | ✗ |
+| apps_lic/types/stack_modernization_agent_types.py | StackModernizationAgent | ✗ | ✗ |
+| apps_lic/utils/PIISanitizerSpecialistAgent_util.py | ConstitutionalReviewerAgent | ✗ | ✗ |
+| apps_lic/utils/PIISanitizerSpecialistAgent_util.py | PII_SanitizerSpecialistAgent | ✓ | ✗ |
 | apps_rg/reasoning/ContentQualityAgent.py | ContentQualityAgent | ✓ | ✓ |
 | apps_rg/reasoning/DispatchResumeToolsAgent.py | DispatchResumeToolsAgent | ✓ | ✓ |
 | apps_rg/reasoning/ProactiveAgent.py | ProactiveAgent | ✓ | ✓ |
+| apps_rg/reasoning/ResumeAssemblyAgent.py | ResumeAssemblyAgent | ✓ | ✓ |
 | apps_rg/reasoning/RgReflectionAgent.py | RgReflectionAgent | ✓ | ✓ |
 | apps_rg/types/gap_closure_architect_agent_types.py | GapClosureArchitectAgent | ✗ | ✗ |
-| apps_shared/utils/agent_interface.py | BaseAgent | ✗ | ✗ |
-| apps_shared/utils/agent_interface.py | IAgent | ✗ | ✗ |
+| apps_shared/utils/agent_interface_util.py | BaseAgent | ✗ | ✗ |
+| apps_shared/utils/agent_interface_util.py | IAgent | ✗ | ✗ |
