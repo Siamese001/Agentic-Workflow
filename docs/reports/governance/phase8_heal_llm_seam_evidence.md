@@ -162,6 +162,43 @@ Note: 1 unrelated test failure in `tests/enforcement/test_pytest_config_guard.py
 
 ✅ Evidence contains raw diffs, raw pytest outputs, and commit proof
 
+---
+
+## Wave 8.2 — Authoritative Baseline Validation + Fix
+
+### Step 1: Lock Current State
+
+#### git --no-pager log -1 --oneline
+
+```text
+b011f1f03 (HEAD -> main) docs(evidence): phase8 heal llm seam invocation closeout
+```
+
+#### pytest -q
+
+```text
+======================== 153 passed in 20.06s ========================
+```
+
+Exit code: 0
+
+**STATUS**: Baseline is GREEN. All 153 tests pass. No failures detected.
+
+### Step 5: Closeout (Required)
+
+#### git status --porcelain=v1
+
+```text
+```
+
+(Clean working tree)
+
+#### Evidence Append Complete
+
+All raw outputs captured above. No failures to fix. Baseline validation complete.
+
+---
+
 ## Phase 8 Complete
 
-Heal LLM seam invocation implemented deterministically. Default-off behavior preserved. All governance tests pass.
+Heal LLM seam invocation implemented deterministically. Default-off behavior preserved. All 153 governance tests pass. Baseline is green.
