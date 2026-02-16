@@ -145,8 +145,8 @@ def pytest_collection_modifyitems(config, items):
     Default to integration tests only when no marker specified.
     Track guardian test counts for reporting.
     """
-    # Get the marker expression from config
-    marker_expr = config.getoption("-m", default="")
+    # Get the marker expression from config (robust pattern)
+    marker_expr = getattr(config.option, "markexpr", "")
 
     # If no marker specified, default to integration_full_deps + governance + unit_min_deps
     if not marker_expr:
