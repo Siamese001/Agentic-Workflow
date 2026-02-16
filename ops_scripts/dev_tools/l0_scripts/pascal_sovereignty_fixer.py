@@ -9,7 +9,6 @@ Rationale:
 """
 
 import ast
-import os
 import platform
 import re
 import sys
@@ -24,19 +23,12 @@ def get_python_files_fast(root: Path) -> list[Path]:
     Optimized repository scanner that prunes heavy/irrelevant directories
     before they enter the pipeline.
     """
-    python_files = []
-    # Prune list based on project-specific 'slow' directories
-    # Critical Analysis: Excluding .git and archives prevents the scanner
-    # from wasting cycles on version history or dead code.
-    exclude_dirs = {".git", "archives", "__pycache__", "node_modules", "venv", ".env"}
+    from agentic_core.utils.fs_utils import get_python_files_fast as canonical_get_python_files
 
-    for dirpath, dirnames, filenames in os.walk(root):
-        # In-place directory pruning for os.walk prevents recursion into excluded paths
-        dirnames[:] = [d for d in dirnames if d not in exclude_dirs]
-        for filename in filenames:
-            if filename.endswith(".py"):
-                python_files.append(Path(dirpath) / filename)
-    return python_files
+    # Domain-specific exclude directories for L0 maintenance
+    exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env"]
+
+    return list(canonical_get_python_files(root, exclude_dirs=exclude_dirs))
 
 
 FileType = Literal["AGENT", "CLASS", "MIXIN", "UTILITY", "IGNORE"]

@@ -36,13 +36,22 @@ except ImportError:
 # Use SovereignBaseAgent from agentic_core.base_agents instead
 
 
-class PlannerAssessment:
+class DomainPlannerOutput:
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
     def model_dump(self):
         return self.__dict__
+
+
+class PlannerAssessment:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    # Reuse model_dump from DomainPlannerOutput
+    model_dump = DomainPlannerOutput.model_dump
 
 
 class ScenarioSimulationResult:
@@ -50,8 +59,8 @@ class ScenarioSimulationResult:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def model_dump(self):
-        return self.__dict__
+    # Reuse model_dump from DomainPlannerOutput
+    model_dump = DomainPlannerOutput.model_dump
 
 
 class StrategyPlan:

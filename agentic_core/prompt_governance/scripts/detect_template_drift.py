@@ -6,21 +6,11 @@ Detects if a template has been modified on disk without a corresponding
 version bump in the Registry (Instruction Drift detection).
 """
 
-import hashlib
 import json
 import sys
 from pathlib import Path
 
-
-def calculate_file_hash(file_path: Path) -> str:
-    """Calculate SHA256 hash of file content."""
-    try:
-        with open(file_path, "rb") as f:
-            content = f.read()
-        return hashlib.sha256(content).hexdigest()
-    except Exception as e:
-        print(f"ERROR: Could not hash {file_path}: {e}")
-        return ""
+from agentic_core.utils.fs_utils import calculate_file_hash
 
 
 def load_registry(registry_path: Path) -> dict:

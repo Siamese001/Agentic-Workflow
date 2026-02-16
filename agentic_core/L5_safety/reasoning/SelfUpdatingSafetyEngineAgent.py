@@ -15,12 +15,12 @@ Automatically adapts to new attack patterns and security vulnerabilities.
 import json
 import logging
 import os
-import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from agentic_core.base_agents.mixins.safety_mixins import SafetyAnalysisMixin
 from agentic_core.base_agents.timeout_decorator import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class SafetyRule:
         if not self.enabled:
             return False
         if self.RuleType == RuleType.PATTERN_MATCH:
-            return bool(re.search(self.pattern, text, re.IGNORECASE))
+            return SafetyAnalysisMixin.matches(self.pattern, text)
         return False
 
     def to_dict(self) -> dict[str, Any]:
@@ -367,24 +367,26 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
 
     def _compare_threat_levels(self, level1: ThreatLevel, level2: ThreatLevel) -> int:
         """Compare two threat levels."""
-        order = {
-            ThreatLevel.LOW: 1,
-            ThreatLevel.MEDIUM: 2,
-            ThreatLevel.HIGH: 3,
-            ThreatLevel.CRITICAL: 4,
-        }
-        return order[level1] - order[level2]
+        return SafetyAnalysisMixin._compare_threat_levels(level1.value, level2.value)
 
     def _generate_recommendations(self, matched_rules: list[SafetyRule]) -> list[str]:
         """Generate recommendations based on matched rules."""
         recommendations = []
         for rule in matched_rules:
-            if rule.ThreatLevel == ThreatLevel.CRITICAL:
-                recommendations.append(f"CRITICAL: {rule.description} - Immediate action required")
-            elif rule.ThreatLevel == ThreatLevel.HIGH:
-                recommendations.append(f"HIGH: {rule.description} - Review and fix urgently")
-            elif rule.ThreatLevel == ThreatLevel.MEDIUM:
-                recommendations.append(f"MEDIUM: {rule.description} - Should be addressed")
+            context = {
+                "rule_description": rule.description,
+                "rule_id": rule.rule_id,
+                "auto_generated": rule.auto_generated,
+            }
+            rule_recommendations = SafetyAnalysisMixin._generate_recommendations(
+                rule.ThreatLevel.value, context
+            )
+            recommendations.extend(
+                [
+                    f"{rule.ThreatLevel.value.upper()}: {rule.description} - {rec}"
+                    for rec in rule_recommendations
+                ]
+            )
         return recommendations
 
     def escalate_threat_level(self, rule_id: str) -> Any:

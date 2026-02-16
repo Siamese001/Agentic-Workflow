@@ -29,8 +29,10 @@ except ImportError:
     HAS_SOVEREIGN_BASE = False
     SovereignBaseAgent = object
 
+    # Use canonical standard_heal from HealingMixin
+
     def standard_heal(func):
-        """Fallback decorator when full infrastructure unavailable."""
+        """Simple fallback that preserves function."""
         return func
 
 

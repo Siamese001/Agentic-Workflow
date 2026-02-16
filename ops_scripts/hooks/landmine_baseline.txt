@@ -4283,9 +4283,9 @@ agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:228:silent_swa
 agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:234:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:242:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:344:type_erasure:Type erasure: SelfUpdatingSafetyEngineAgent.report_false_positive returns Any instead of structured type
-agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:390:type_erasure:Type erasure: SelfUpdatingSafetyEngineAgent.escalate_threat_level returns Any instead of structured type
-agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:458:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:477:type_erasure:Type erasure: SelfUpdatingSafetyEngineAgent.heal returns dict instead of structured type
+agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:392:type_erasure:Type erasure: SelfUpdatingSafetyEngineAgent.escalate_threat_level returns Any instead of structured type
+agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:460:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py:479:type_erasure:Type erasure: SelfUpdatingSafetyEngineAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py:114:type_erasure:Type erasure: SprawlInspectorAgent.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py:367:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4324,12 +4324,12 @@ agentic_core/L5_safety/types/resource_management_types.py:83:magic_configuration
 agentic_core/L5_safety/types/resource_management_types.py:88:magic_configuration:Magic configuration: Hardcoded limit=10000 in function call
 agentic_core/L5_safety/types/resource_management_types.py:93:magic_configuration:Magic configuration: Hardcoded limit=100.0 in function call
 agentic_core/L5_safety/types/resource_management_types.py:94:magic_configuration:Magic configuration: Hardcoded limit=1024 in function call
-agentic_core/L5_safety/types/safety_types.py:145:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-agentic_core/L5_safety/types/safety_types.py:146:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-agentic_core/L5_safety/types/safety_types.py:211:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-agentic_core/L5_safety/types/safety_types.py:225:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/types/safety_types.py:231:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
-agentic_core/L5_safety/types/safety_types.py:242:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/types/safety_types.py:146:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+agentic_core/L5_safety/types/safety_types.py:147:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+agentic_core/L5_safety/types/safety_types.py:212:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/types/safety_types.py:226:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/types/safety_types.py:232:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+agentic_core/L5_safety/types/safety_types.py:243:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/security_validation_types.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/capability_extractor_util.py:104:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4421,6 +4421,7 @@ agentic_core/base_agents/L0MaintenanceBase.py:87:magic_configuration:Magic confi
 agentic_core/base_agents/L3OrchestrationBase.py:62:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/L4StateBase.py:46:type_erasure:Type erasure: L4StateBase.get_state returns Any instead of structured type
+agentic_core/base_agents/mixins/safety_mixins.py:162:magic_configuration:Magic configuration: Hardcoded failure_threshold=3
 agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/config/core/reflection_config.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:279:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4502,17 +4503,13 @@ agentic_core/prompt_governance/core/sovereign_prompt_renderer.py:246:silent_swal
 agentic_core/prompt_governance/scripts/audit_registry_linkages.py:19:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/audit_registry_linkages.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/detect_template_drift.py:21:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/prompt_governance/scripts/detect_template_drift.py:31:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/dry_run_compiler.py:26:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/import_violation_visitor.py:95:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:117:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:21:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:31:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py:33:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/template_render_visitor.py:161:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/template_render_visitor.py:37:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/runtime/config/prompt_injection_loader_config.py:109:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/runtime/config/prompt_injection_loader_config.py:123:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/runtime/config/reasoning_types.py:280:magic_configuration:Magic configuration: Hardcoded safety_threshold=0.95
 agentic_core/runtime/types/cache_entry_types.py:284:magic_configuration:Magic configuration: Hardcoded max_entries=10000
 agentic_core/runtime/types/cache_entry_types.py:37:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.92
@@ -4523,7 +4520,7 @@ agentic_core/runtime/types/cost_governor_types.py:32:magic_configuration:Magic c
 agentic_core/runtime/types/expansion_strategy_types.py:64:magic_configuration:Magic configuration: Hardcoded max_retries=2
 agentic_core/runtime/utils/file_cache_util.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/runtime/utils/main_util.py:45:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/runtime/utils/sovereign_dependency_error_util.py:305:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/runtime/utils/sovereign_dependency_error_util.py:309:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/runtime/utils/trait_system_util.py:215:magic_configuration:Magic configuration: Hardcoded _max_batch_queues=50
 agentic_core/utils/meta_learning_engine.py:112:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine.py:145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

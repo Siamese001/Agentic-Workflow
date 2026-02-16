@@ -52,13 +52,9 @@ def get_canonical_path(duplicate_path: Path) -> tuple[Path, str | None]:
     Returns:
         Tuple of (canonical_path, matched_suffix)
     """
-    stem = duplicate_path.stem
-    for suffix in PROBLEMATIC_SUFFIXES:
-        if stem.endswith(suffix):
-            canonical_stem = stem[: -len(suffix)]
-            canonical_path = duplicate_path.parent / f"{canonical_stem}.py"
-            return (canonical_path, suffix)
-    return (duplicate_path, None)
+    from agentic_core.utils.fs_utils import remove_duplicate_suffix_path
+
+    return remove_duplicate_suffix_path(duplicate_path, PROBLEMATIC_SUFFIXES)
 
 
 def analyze_duplicates(

@@ -6,21 +6,11 @@ Updates content_hash in registry.json to match current template state.
 This resolves the "healthy" drift detected after Phase 4 header injection.
 """
 
-import hashlib
 import json
 import sys
 from pathlib import Path
 
-
-def calculate_file_hash(file_path: Path) -> str:
-    """Calculate SHA256 hash of file content."""
-    try:
-        with open(file_path, "rb") as f:
-            content = f.read()
-        return hashlib.sha256(content).hexdigest()
-    except Exception as e:
-        print(f"ERROR: Could not hash {file_path}: {e}")
-        return ""
+from agentic_core.utils.fs_utils import calculate_file_hash
 
 
 def load_registry(registry_path: Path) -> dict:
@@ -29,6 +19,7 @@ def load_registry(registry_path: Path) -> dict:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
+        # guardian: allow-silent-swallower
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)
 
@@ -124,6 +115,7 @@ def main():
         print(f"📋 Backup created: {backup_path}")
         print()
     except Exception as e:
+        # guardian: allow-silent-swallower
         print(f"WARNING: Could not create backup: {e}")
         print()
 
