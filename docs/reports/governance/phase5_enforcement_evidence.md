@@ -138,3 +138,56 @@ tests/governance/test_heal_escalation_flag_contract.py::TestObserverSeamSafety::
 Exit code: 0
 
 **WAVE 5.3 ACCEPTANCE**: All tests pass. Flag + observer safety contracts enforced.
+
+---
+
+## PHASE 5 CLOSEOUT
+
+### Final Commits
+
+**Wave 5.1**:
+```text
+dbcb63a50 test(governance): heal policy purity contract
+```
+
+**Wave 5.2**:
+```text
+44eb87e8d test(governance): ban routing/executor calls in standard_heal
+```
+
+**Wave 5.3**:
+```text
+f46c08a53 test(governance): escalation flag + observer safety contracts
+```
+
+### Clean Tree Proof
+
+```bash
+git status --porcelain=v1
+```
+
+```text
+(empty - clean working tree)
+```
+
+---
+
+## PHASE 5 ACCEPTANCE STATUS: COMPLETE
+
+**All acceptance criteria met:**
+
+- ✓ `pytest -q` exits 0 (136 passed)
+- ✓ New contracts fail if:
+  - Policy module gains routing/executor imports
+  - standard_heal gains routing/executor calls
+  - Observer seam is set by default or reassigned at module scope
+  - Flag behavior changes from default-off
+- ✓ Only allowed files changed:
+  - `tests/governance/test_heal_policy_purity_contract.py`
+  - `tests/governance/test_standard_heal_no_routing_contract.py`
+  - `tests/governance/test_heal_escalation_flag_contract.py`
+  - `docs/reports/governance/phase5_enforcement_evidence.md`
+- ✓ Evidence contains raw outputs (no truncation)
+- ✓ Clean working tree
+
+**Phase 5 is CLOSED.**
