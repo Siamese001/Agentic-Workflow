@@ -100,3 +100,41 @@ tests/governance/test_standard_heal_no_routing_contract.py::TestStandardHealNoRo
 Exit code: 0
 
 **WAVE 5.2 ACCEPTANCE**: All tests pass. Routing ban contract enforced.
+
+---
+
+## Wave 5.3 — Flag + Observer Safety Contract
+
+### Test File
+
+`tests/governance/test_heal_escalation_flag_contract.py`
+
+### Tests
+
+**TestFlagDefaultOff**:
+1. `test_no_escalation_log_without_env_var` — Without env var, no 'escalation_enabled=1' log appears
+2. `test_observer_not_invoked_without_env_var` — Without env var, observer is not invoked
+
+**TestObserverSeamSafety**:
+3. `test_observer_default_is_none_at_import` — Observer seam must be None at import time
+4. `test_observer_not_reassigned_at_module_scope` — Observer seam must not be reassigned at module scope (AST check)
+
+### pytest -q tests/governance/test_heal_escalation_flag_contract.py
+
+```text
+tests/governance/test_heal_escalation_flag_contract.py::TestFlagDefaultOff::test_no_escalation_log_without_env_var PASSED
+tests/governance/test_heal_escalation_flag_contract.py::TestFlagDefaultOff::test_observer_not_invoked_without_env_var PASSED
+tests/governance/test_heal_escalation_flag_contract.py::TestObserverSeamSafety::test_observer_default_is_none_at_import PASSED
+tests/governance/test_heal_escalation_flag_contract.py::TestObserverSeamSafety::test_observer_not_reassigned_at_module_scope PASSED
+====================== 4 passed in 0.03s =======================
+```
+
+### pytest -q (full suite)
+
+```text
+===================== 136 passed in 20.34s =====================
+```
+
+Exit code: 0
+
+**WAVE 5.3 ACCEPTANCE**: All tests pass. Flag + observer safety contracts enforced.
