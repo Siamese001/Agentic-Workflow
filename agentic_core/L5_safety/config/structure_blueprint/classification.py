@@ -309,6 +309,21 @@ FOLDER_ALIASES: Final[Mapping[str, str]] = {
 
 
 # ============================================================================
+# NO ROOT FILES FOLDERS (governed folders that forbid direct root files)
+# Only __init__.py allowed at root; all other files must be in subfolders
+# ============================================================================
+
+NO_ROOT_FILES_FOLDERS: Final[frozenset[str]] = frozenset({
+    "security",  # prompt_governance/security - utils must be in security/utils/
+})
+
+# Approved subfolders for NO_ROOT_FILES_FOLDERS
+APPROVED_SUBFOLDERS: Final[Mapping[str, frozenset[str]]] = {
+    "security": frozenset({"utils", "detectors", "schemas", "validators", "adversarial"}),
+}
+
+
+# ============================================================================
 # FOLDER PURITY DISALLOWED RULES (files that MUST NOT be in these folders)
 # ============================================================================
 

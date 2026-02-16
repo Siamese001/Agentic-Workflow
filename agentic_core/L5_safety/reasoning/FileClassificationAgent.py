@@ -2197,9 +2197,11 @@ class FileClassificationAgent(*BASE_CLASSES):
             None if file is in a valid folder, or violation dict with eviction target.
         """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
+            APPROVED_SUBFOLDERS,
             FOLDER_ALIASES,
             FOLDER_PURITY_RULES,
             INFRASTRUCTURE_PROFILES,
+            NO_ROOT_FILES_FOLDERS,
             NON_PYTHON_FOLDER_ROUTES,
             SUFFIX_TO_FOLDER,
         )
@@ -2210,6 +2212,19 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         folder_name = path.parent.name
         path_str = str(path)
+
+        # [GOVERNANCE: NO ROOT FILES FOLDERS]
+        # For folders in NO_ROOT_FILES_FOLDERS, files must be in approved subfolders
+        if folder_name in NO_ROOT_FILES_FOLDERS:
+            # This file is directly under a no-root-files folder => FAIL
+            approved = APPROVED_SUBFOLDERS.get(folder_name, frozenset())
+            return {
+                "type": "NO_ROOT_FILES_VIOLATION",
+                "filename": filename,
+                "current_folder": folder_name,
+                "reason": f"Root files forbidden in {folder_name}/; move to subfolder: {sorted(approved)}",
+                "approved_subfolders": sorted(approved),
+            }
 
         # [GOVERNANCE: FOLDER ALIASES]
         # Resolve folder aliases before checking rules
