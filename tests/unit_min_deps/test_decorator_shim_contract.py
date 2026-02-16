@@ -71,14 +71,16 @@ class TestCanonicalTimeoutContract:
         decorator = timeout(30)
         assert callable(decorator)
 
-    def test_timeout_decorator_is_passthrough(self) -> None:
+    def test_timeout_decorator_wraps_function(self) -> None:
         from agentic_core.base_agents.timeout_decorator import timeout
 
         def sample_func():
             return 42
 
         decorated = timeout(10)(sample_func)
-        assert decorated is sample_func
+        # Decorated function should be callable and return same result
+        assert callable(decorated)
+        assert decorated() == 42
 
     def test_dunder_all_matches_exports(self) -> None:
         import agentic_core.base_agents.timeout_decorator as mod
@@ -206,10 +208,10 @@ class TestShimAllowlist:
     TIMEOUT_SHIM = ROOT / "agentic_core/L0_routing/utils/timeout_decorator_util.py"
 
     def test_decorators_shim_imports_only_base_agents(self) -> None:
-        """decorators_util.py must import ONLY from base_agents.decorators."""
+        """decorators_util.py must import ONLY from utils.decorators_util (canonical)."""
         violations = self._check_shim_imports(
             self.DECORATORS_SHIM,
-            allowed="agentic_core.base_agents.decorators",
+            allowed="agentic_core.utils.decorators_util",
         )
         assert not violations, "decorators_util.py imports from non-canonical locations:\n" + "\n".join(
             f"  {v}" for v in violations

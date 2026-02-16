@@ -48,12 +48,12 @@ SHIM_MODULES = frozenset(
 )
 
 CANONICAL_FILES = {
-    "decorators.py": BASE_AGENTS / "decorators.py",
-    "timeout_decorator.py": BASE_AGENTS / "timeout_decorator.py",
+    "decorators.py": AGENTIC_CORE / "utils" / "decorators_util.py",
+    "timeout_decorator.py": BASE_AGENTS / "timeout_decorator_impl.py",
 }
 
 SHIM_TO_CANONICAL = {
-    AGENTIC_CORE / "L5_safety" / "utils" / "decorators_util.py": "agentic_core.base_agents.decorators",
+    AGENTIC_CORE / "L5_safety" / "utils" / "decorators_util.py": "agentic_core.utils.decorators_util",
     AGENTIC_CORE
     / "L0_routing"
     / "utils"

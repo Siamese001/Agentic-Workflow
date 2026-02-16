@@ -147,25 +147,25 @@
       "re_enable": "Generate dashboard HTML artifacts before running"
     },
     {
-      "path": "tests/_quarantine/integration/agentic_core/L0_routing_dir/test_execute_ssot_comprehensive.py",
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_comprehensive.py",
       "category": "assertion_rot",
       "primary_dep": "execute_ssot_api",
       "re_enable": "Update assertions to match current execute_ssot API"
     },
     {
-      "path": "tests/_quarantine/integration/agentic_core/L0_routing_dir/test_execute_ssot_hardened.py",
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_hardened.py",
       "category": "assertion_rot",
       "primary_dep": "execute_ssot_api",
       "re_enable": "Update assertions to match current execute_ssot API"
     },
     {
-      "path": "tests/_quarantine/integration/agentic_core/L0_routing_dir/test_execute_ssot_lifecycle.py",
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py",
       "category": "assertion_rot",
       "primary_dep": "execute_ssot_api",
       "re_enable": "Update assertions to match current execute_ssot API"
     },
     {
-      "path": "tests/_quarantine/integration/agentic_core/L0_routing_dir/test_ssot_orchestration.py",
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_ssot_orchestration.py",
       "category": "assertion_rot",
       "primary_dep": "execute_ssot_api",
       "re_enable": "Update assertions to match current execute_ssot API"
