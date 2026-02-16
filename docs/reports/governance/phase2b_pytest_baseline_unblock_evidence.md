@@ -391,3 +391,69 @@ M       tests/unit_min_deps/test_config_property_contract.py
 M       tests/unit_min_deps/test_decorator_shim_contract.py
 M       tests/unit_min_deps/test_decorator_timeout_layer_constraints.py
 ```
+
+---
+
+## AUTHORITATIVE POST-COMMIT PROOF — Batch Close
+
+### 1) HEAD + File List
+
+```bash
+git --no-pager show --name-only --oneline HEAD
+```
+
+Output:
+```
+2a4c9f1e1 (HEAD -> main, origin/main, origin/HEAD) test(pytest): unblock baseline (contracts + manifests + allowlists)
+agentic_core/L5_safety/utils/decorators_util.py
+docs/reports/governance/phase2b_pytest_baseline_unblock_evidence.md
+tests/_quarantine/QUARANTINE_MANIFEST.json
+tests/integration/test_prompt_governance_yaml_integration.py
+tests/integration/test_redis_mcp_integration.py
+tests/unit_min_deps/test_config_property_contract.py
+tests/unit_min_deps/test_decorator_shim_contract.py
+tests/unit_min_deps/test_decorator_timeout_layer_constraints.py
+```
+
+**Commit Hash**: `2a4c9f1e1`
+
+---
+
+### 2) Clean Tree Proof
+
+```bash
+git status --porcelain=v1
+```
+
+Output:
+```
+(empty - clean working tree)
+```
+
+---
+
+### 3) Full Suite at HEAD
+
+```bash
+pytest -q
+```
+
+Exit code: 0
+
+Output:
+```
+===================== 119 passed in 20.38s =====================
+```
+
+---
+
+## PHASE 2B ACCEPTANCE STATUS: COMPLETE
+
+**All acceptance criteria met:**
+- ✓ `pytest -q` exits 0 (119 passed)
+- ✓ No failures
+- ✓ Commit hash captured: `2a4c9f1e1`
+- ✓ File list captured (8 files)
+- ✓ Clean working tree
+
+**Phase 2B is CLOSED.**
