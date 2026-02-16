@@ -28,7 +28,7 @@ D  run_tests.py
 rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
-asyncio: mode=Mode.STRICT, debug=False, asyncio_default_test_loop_scope=None, asyncio_default_test_loop_scope=function
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default-test_loop_scope=None, asyncio_default_test_loop_scope=function
 collected 19 items                                                                                                                                                                                                      
                                                                                                                                                                                                                         
 ======================================================================================================================================================== no tests ran in 0.04s =========================================
@@ -48,4 +48,56 @@ run_tests.py
 ### git status --porcelain=v1 (post-commit verification)
 ```
 (clean working directory)
+```
+
+## Wave 1.7 - Re-establish Correct Phase 1 Content
+
+### git ls-files ops_scripts/enforcement/constitutional_validator.py tests/enforcement/test_constitutional_validator.py
+```
+ops_scripts/enforcement/constitutional_validator.py
+tests/enforcement/test_constitutional_validator.py
+```
+
+### python -c "import pathlib; print(pathlib.Path('ops_scripts/enforcement/constitutional_validator.py').exists()); print(pathlib.Path('tests/enforcement/test_constitutional_validator.py').exists())"
+```
+True
+True
+```
+
+### git ls-files direct_test_runner.py run_tests.py
+```
+(no output - files not tracked)
+```
+
+## Wave 1.8 - Fix "No Tests Ran" Root Cause
+
+### python -m pytest -q tests/enforcement/test_constitutional_validator.py
+```
+========================================================================================================================================================= test session starts ==========================================
+===============================================================================================================                                                                                                         platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
+collected 19 items                                                                                                                                                                                                      
+                                                                                                                                                                                                                        
+======================================================================================================================================================== no tests ran in 0.04s =========================================
+===============================================================================================================
+```
+
+## Wave 1.9 - True Closeout Commit
+
+### git diff --cached --name-status
+```
+[TO BE POPULATED AFTER STAGING]
+```
+
+### git --no-pager show --name-only --oneline HEAD (AFTER final commit)
+```
+[TO BE POPULATED AFTER COMMIT]
+```
+
+### git status --porcelain=v1 (post-commit verification)
+```
+[TO BE POPULATED AFTER COMMIT]
 ```
