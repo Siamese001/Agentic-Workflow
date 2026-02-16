@@ -2,12 +2,6 @@
 
 from __future__ import annotations
 
-from apps_shared.config.config_loader_util import (
-    ConfigLoader,
-    ConfigLoadResult,
-    get_config_loader,
-    load_agent_config,
-)
 from apps_shared.config.operational_config import (
     OPERATIONAL_ALLOWED_DUPLICATES,
     OPERATIONAL_EXCLUDED_DIRS,
@@ -15,6 +9,12 @@ from apps_shared.config.operational_config import (
     is_allowed_duplicate,
     is_excluded_path,
     should_scan_directory,
+)
+from apps_shared.utils.config_loader_util import (
+    ConfigLoader,
+    ConfigLoadResult,
+    get_config_loader,
+    load_agent_config,
 )
 
 __all__ = [

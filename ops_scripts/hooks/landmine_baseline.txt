@@ -3841,7 +3841,6 @@ agentic_core/L1_cognition/config/react_config.py:155:silent_swallower:Silent exc
 agentic_core/L1_cognition/config/react_config.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:268:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:310:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/engines/CognitiveNode.py:305:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/CognitiveNode.py:322:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/CognitiveNode.py:348:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/cache_manager.py:100:magic_configuration:Magic configuration: Hardcoded max_cache_size=5000 in function call
@@ -3884,9 +3883,6 @@ agentic_core/L1_cognition/validators/dark_reasoning_visitor_validator.py:83:sile
 agentic_core/L1_cognition/validators/reasoningnode_validator.py:166:magic_configuration:Magic configuration: Hardcoded min_confidence=0.6
 agentic_core/L1_cognition/validators/spiffe_validator.py:274:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L1_cognition/validators/truth_keeper_validator.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/config/transform_config.py:267:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/config/transform_config.py:429:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/config/transform_config.py:478:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/firecracker_manager.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/batch_embedding_service.py:103:magic_configuration:Magic configuration: Hardcoded max_workers=4
@@ -3911,14 +3907,11 @@ agentic_core/L2_execution/tools/time_utils_impl.py:39:silent_swallower:Silent ex
 agentic_core/L2_execution/tools/time_utils_impl.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/time_utils_impl.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/time_utils_impl.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/tools/tool_chain_executor.py:72:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/tool_verifier_impl.py:307:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/web_search_client.py:55:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/web_search_client.py:79:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/types/ephemeral_vm_types.py:150:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/types/ephemeral_vm_types.py:232:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/types/ephemeral_vm_types.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/types/ephemeral_vm_types.py:328:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/utils/analysis_ops_util.py:233:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/utils/analysis_ops_util.py:36:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/utils/analysis_ops_util.py:58:magic_configuration:Magic configuration: Hardcoded timeout=30 in function call
@@ -3966,7 +3959,6 @@ agentic_core/L3_orchestration/types/injection_result_types.py:117:magic_configur
 agentic_core/L3_orchestration/types/recursion_monitor_types.py:132:magic_configuration:Magic configuration: Hardcoded _failure_threshold=5
 agentic_core/L3_orchestration/types/recursion_monitor_types.py:443:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/types/recursion_monitor_types.py:99:magic_configuration:Magic configuration: Hardcoded health_check_interval_sec=30
-agentic_core/L3_orchestration/types/recursive_orchestration_types.py:188:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/types/recursive_orchestration_types.py:32:magic_configuration:Magic configuration: Hardcoded default_max_depth=50
 agentic_core/L3_orchestration/types/recursive_orchestration_types.py:478:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L3_orchestration/types/recursive_orchestration_types.py:531:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4081,9 +4073,6 @@ agentic_core/L5_safety/config/structure_blueprint/_verify.py:901:path_fragility:
 agentic_core/L5_safety/config/structure_blueprint/enforcement/import_graph.py:100:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/config/structure_blueprint/enforcement/volatile_rules.py:53:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/enforcement/AdapterBase.py:259:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/AdapterBase.py:324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/AdapterBase.py:342:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/AdapterBase.py:367:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/agent_info.py:263:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/agent_info.py:296:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/agent_info.py:307:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4194,7 +4183,6 @@ agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:69:magic_configuratio
 agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:141:type_erasure:Type erasure: DocumentationAgent.heal_repository returns dict instead of structured type
-agentic_core/L5_safety/reasoning/DynamicSealAgent.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:144:type_erasure:Type erasure: GitHygieneAgent.execute returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:195:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4314,7 +4302,6 @@ agentic_core/L5_safety/types/cst_transformers_types.py:589:magic_configuration:M
 agentic_core/L5_safety/types/file_health_score_types.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/file_health_score_types.py:141:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/file_health_score_types.py:91:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/types/healing_orchestration_types.py:150:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/learning_types.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/learning_types.py:149:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/learning_types.py:155:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
@@ -4463,8 +4450,6 @@ agentic_core/mixins/domain_agent_mixin.py:196:magic_configuration:Magic configur
 agentic_core/mixins/feature_flagged_agent_mixin.py:116:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/mixins/feature_flagged_agent_mixin.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/mixins/feature_flagged_agent_mixin.py:260:magic_configuration:Magic configuration: Hardcoded timeout_seconds=3600
-agentic_core/mixins/feature_flagged_agent_mixin.py:383:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/mixins/feature_flagged_agent_mixin.py:406:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/mixins/feature_flagged_agent_mixin.py:547:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/mixins/golden_context_mixin.py:119:magic_configuration:Magic configuration: Hardcoded threshold=10
 agentic_core/mixins/hardening_mixin.py:104:magic_configuration:Magic configuration: Hardcoded timeout=2.5 in function call
@@ -4530,22 +4515,8 @@ agentic_core/utils/meta_learning_engine.py:215:silent_swallower:Silent exception
 agentic_core/utils/meta_learning_engine.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
-apps_lic/config/retry_policy.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/config/retry_policy.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/config/retry_policy.py:391:magic_configuration:Magic configuration: Hardcoded max_attempts=3
-apps_lic/config/retry_policy.py:394:magic_configuration:Magic configuration: Hardcoded max_delay=60.0
-apps_lic/config/retry_policy.py:465:magic_configuration:Magic configuration: Hardcoded base_delay=0.5 in function call
-apps_lic/config/retry_policy.py:465:magic_configuration:Magic configuration: Hardcoded max_attempts=5 in function call
-apps_lic/config/retry_policy.py:465:magic_configuration:Magic configuration: Hardcoded max_delay=30.0 in function call
-apps_lic/config/retry_policy.py:471:magic_configuration:Magic configuration: Hardcoded base_delay=2.0 in function call
-apps_lic/config/retry_policy.py:471:magic_configuration:Magic configuration: Hardcoded max_attempts=3 in function call
-apps_lic/config/retry_policy.py:471:magic_configuration:Magic configuration: Hardcoded max_delay=60.0 in function call
-apps_lic/config/retry_policy.py:477:magic_configuration:Magic configuration: Hardcoded base_delay=0.1 in function call
-apps_lic/config/retry_policy.py:477:magic_configuration:Magic configuration: Hardcoded max_attempts=3 in function call
-apps_lic/config/retry_policy.py:477:magic_configuration:Magic configuration: Hardcoded max_delay=5.0 in function call
-apps_lic/config/retry_policy.py:483:magic_configuration:Magic configuration: Hardcoded base_delay=5.0 in function call
-apps_lic/config/retry_policy.py:483:magic_configuration:Magic configuration: Hardcoded max_attempts=5 in function call
-apps_lic/config/retry_policy.py:483:magic_configuration:Magic configuration: Hardcoded max_delay=300.0 in function call
+apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/engines/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4
 apps_lic/engines/LicCodeInterpreter.py:324:magic_configuration:Magic configuration: Hardcoded min_word_length=4
 apps_lic/engines/LicReflectionAgent.py:64:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
@@ -4599,6 +4570,25 @@ apps_lic/tools/BuildPersonalizationQuery.py:21:magic_configuration:Magic configu
 apps_lic/tools/ExtractContactInfo.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_lic/tools/analyze_duplicates_detailed.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 apps_lic/tools/analyze_duplicates_detailed.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:100:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:161:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:167:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:24:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:278:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:313:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:324:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:330:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:73:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:89:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/fix_duplicate_imports.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/tools/query_past_campaigns.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_lic/tools/run_workflow.py:16:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_lic/tools/run_workflow_lic.py:220:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4606,25 +4596,6 @@ apps_lic/tools/run_workflow_lic.py:235:silent_swallower:Silent exception swallow
 apps_lic/tools/run_workflow_lic.py:27:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_lic/tools/run_workflow_lic.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/tools/run_workflow_lic.py:29:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:100:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:161:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:167:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:24:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:278:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:313:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:324:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:330:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:73:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_clean_duplicates_enhanced.py:89:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/utilities_fix_duplicate_imports.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_lic/types/app_content_validator_agent_types.py:486:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.9 in function call
@@ -4638,8 +4609,6 @@ apps_lic/types/route_types.py:389:magic_configuration:Magic configuration: Hardc
 apps_lic/types/route_types.py:453:magic_configuration:Magic configuration: Hardcoded threshold=0.92 in function call
 apps_lic/types/route_types.py:472:magic_configuration:Magic configuration: Hardcoded threshold=0.95 in function call
 apps_lic/types/route_types.py:482:magic_configuration:Magic configuration: Hardcoded threshold=0.92 in function call
-apps_rg/config/ReasoningToggles.py:52:magic_configuration:Magic configuration: Hardcoded min_tot_depth=3 in function call
-apps_rg/config/sovereign_config_loader_config.py:64:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
@@ -4689,7 +4658,7 @@ apps_rg/tools/ResumeGenerator.py:81:silent_swallower:Silent exception swallower:
 apps_rg/tools/RetrieveResumeHistory.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_rg/tools/fetch_user_preferences.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_rg/tools/query_past_generations.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
-apps_rg/tools/text_utils.py:19:magic_configuration:Magic configuration: Hardcoded max_words=5
+apps_rg/tools/text_util.py:19:magic_configuration:Magic configuration: Hardcoded max_words=5
 apps_rg/types/AllProvidersDownError.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/AllProvidersDownError.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/AllProvidersDownError.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4711,32 +4680,11 @@ apps_rg/types/routing_tier_types.py:63:magic_configuration:Magic configuration: 
 apps_rg/types/routing_tier_types.py:69:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
 apps_rg/types/skill_extractor_node_types.py:268:magic_configuration:Magic configuration: Hardcoded exact_match_threshold=0.9
 apps_rg/types/skill_extractor_node_types.py:269:magic_configuration:Magic configuration: Hardcoded partial_match_threshold=0.7
-apps_rg/utils/authenticity_patterns.py:502:magic_configuration:Magic configuration: Hardcoded max_attempts=3
-apps_rg/utils/deep_brain_harvester.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-apps_rg/utils/deep_brain_harvester.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/utils/deep_brain_harvester.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/utils/authenticity_patterns_util.py:502:magic_configuration:Magic configuration: Hardcoded max_attempts=3
+apps_rg/utils/deep_brain_harvester_util.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/utils/deep_brain_harvester_util.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/utils/deep_brain_harvester_util.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/validators/validation_result_validator.py:66:magic_configuration:Magic configuration: Hardcoded max_attempts=3
-apps_shared/config/config_loader_config.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/graph_rag_fusion_config.py:357:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/graph_rag_fusion_config.py:408:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/input_guardrail_config.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/input_guardrail_config.py:456:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/input_guardrail_config.py:470:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/input_validator_config.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/metric_augmenter_config.py:182:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/metric_augmenter_config.py:249:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/metric_augmenter_config.py:345:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/metric_augmenter_config.py:492:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/prompt_enhancer_config.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/prompt_registry_config.py:247:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/prompt_registry_config.py:270:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/settings_config.py:60:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:356:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:408:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:436:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/config/signal_weighter_config.py:469:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4788,31 +4736,30 @@ apps_shared/reasoning/l5_autonomous_orchestrator_wrapper.py:29:magic_configurati
 apps_shared/reasoning/restore_app_agents.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/restore_app_agents.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/update_orchestrator_imports.py:131:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/scripts/assess_dependencies.py:20:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_shared/scripts/assess_dependencies.py:23:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_shared/scripts/assess_dependencies.py:28:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 apps_shared/scripts/benchmark_consolidation_performance.py:25:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_shared/scripts/find_long_lines.py:23:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/scripts/find_long_lines.py:36:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/scripts/fix_all_indentation_errors.py:56:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/scripts/fix_all_violations.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/scripts/fix_global_variables.py:48:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_shared/scripts/fix_mcp_hardening_smart.py:139:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/scripts/fix_mcp_hardening_smart.py:45:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+apps_shared/scripts/fix_specific_long_lines.py:173:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_shared/scripts/fix_structural_debt.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_shared/scripts/fix_structural_debt.py:108:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_shared/scripts/fix_structural_debt.py:130:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/scripts/fix_syntax_errors.py:101:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+apps_shared/scripts/fix_syntax_errors.py:105:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+apps_shared/scripts/fix_syntax_errors.py:111:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/scripts/fix_syntax_errors.py:91:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/scripts/fix_whitespace_in_container.py:32:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_shared/scripts/run_hardened_job.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/scripts/run_hardened_job.py:199:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/scripts/run_hardened_job.py:211:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/scripts/script_bridge.py:75:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/scripts/update_validator_imports.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/scripts/utilities_assess_dependencies.py:20:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-apps_shared/scripts/utilities_assess_dependencies.py:23:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-apps_shared/scripts/utilities_assess_dependencies.py:28:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-apps_shared/scripts/utilities_find_long_lines.py:23:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/scripts/utilities_find_long_lines.py:36:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/scripts/utilities_fix_all_indentation_errors.py:56:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_all_violations.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/scripts/utilities_fix_global_variables.py:48:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_specific_long_lines.py:173:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_structural_debt.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_structural_debt.py:108:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_structural_debt.py:130:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_syntax_errors.py:101:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
-apps_shared/scripts/utilities_fix_syntax_errors.py:105:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
-apps_shared/scripts/utilities_fix_syntax_errors.py:111:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/scripts/utilities_fix_syntax_errors.py:91:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/scripts/utilities_fix_whitespace_in_container.py:32:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_shared/types/adaptive_recovery_loop_types.py:76:magic_configuration:Magic configuration: Hardcoded max_attempts=3
 apps_shared/types/adaptive_recovery_loop_types.py:79:magic_configuration:Magic configuration: Hardcoded creative_max_temp=0.9
 apps_shared/types/adaptive_recovery_loop_types.py:80:magic_configuration:Magic configuration: Hardcoded mechanical_max_temp=0.7
@@ -4849,7 +4796,6 @@ apps_shared/types/checkpoint_manager_types.py:517:magic_configuration:Magic conf
 apps_shared/types/checkpoint_manager_types.py:87:magic_configuration:Magic configuration: Hardcoded limit=100
 apps_shared/types/config_format_types.py:146:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/config_format_types.py:334:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/config_type_types.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/context_match_type_types.py:151:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/context_match_type_types.py:491:magic_configuration:Magic configuration: Hardcoded min_score=0.5
 apps_shared/types/cost_alert_level_types.py:99:magic_configuration:Magic configuration: Hardcoded alert_threshold_percent=0.8
@@ -4972,7 +4918,6 @@ apps_shared/types/risk_level_types.py:509:silent_swallower:Silent exception swal
 apps_shared/types/schema_search_mode_types.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/schema_search_mode_types.py:543:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.7
 apps_shared/types/schema_search_mode_types.py:563:magic_configuration:Magic configuration: Hardcoded threshold=0.7
-apps_shared/types/self_healing_formatter_types.py:382:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/self_healing_formatter_types.py:538:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/self_healing_formatter_types.py:586:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/self_healing_formatter_types.py:590:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -5012,13 +4957,7 @@ apps_shared/types/tool_type_types.py:167:silent_swallower:Silent exception swall
 apps_shared/types/tool_type_types.py:324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/tool_type_types.py:540:magic_configuration:Magic configuration: Hardcoded timeout=30.0
 apps_shared/types/tool_type_types.py:541:magic_configuration:Magic configuration: Hardcoded retry_count=3
-apps_shared/types/unified_formatter_types.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/unified_formatter_types.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/unified_formatter_types.py:382:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/unified_formatter_types.py:470:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/unified_formatter_types.py:525:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/unified_formatter_types.py:539:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/unified_formatter_types.py:99:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/validation_status_types.py:397:magic_configuration:Magic configuration: Hardcoded threshold=0.85
 apps_shared/types/validation_status_types.py:399:magic_configuration:Magic configuration: Hardcoded threshold=0.7
 apps_shared/types/validation_status_types.py:401:magic_configuration:Magic configuration: Hardcoded threshold=0.85
@@ -5032,122 +4971,120 @@ apps_shared/types/validation_status_types.py:640:magic_configuration:Magic confi
 apps_shared/types/validation_status_types.py:642:magic_configuration:Magic configuration: Hardcoded min_authentic=2
 apps_shared/types/vector_similarity_result_types.py:48:magic_configuration:Magic configuration: Hardcoded max_size=1000
 apps_shared/types/vector_similarity_result_types.py:50:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.8
-apps_shared/utils/ContextualCompressor.py:232:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
-apps_shared/utils/ContextualCompressor.py:241:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/ContextualCompressor.py:307:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
-apps_shared/utils/ContextualCompressor.py:37:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
-apps_shared/utils/ETLPipeline.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/ETLPipeline.py:212:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/ETLPipeline.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/ETLPipeline.py:300:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/ETLPipeline.py:38:magic_configuration:Magic configuration: Hardcoded min_success_count=10
-apps_shared/utils/ETLPipeline.py:39:magic_configuration:Magic configuration: Hardcoded max_patterns=50
-apps_shared/utils/InjectionPatterns.py:59:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/LateInteractionReranker.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/LateInteractionReranker.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/LateInteractionReranker.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/RetrievalGrader.py:236:magic_configuration:Magic configuration: Hardcoded max_results=5
-apps_shared/utils/RetrievalGrader.py:236:magic_configuration:Magic configuration: Hardcoded timeout=5.0
-apps_shared/utils/RetrievalGrader.py:49:magic_configuration:Magic configuration: Hardcoded relevance_threshold=0.5
-apps_shared/utils/RetrievalGrader.py:50:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.7
-apps_shared/utils/RetrievalGrader.py:52:magic_configuration:Magic configuration: Hardcoded max_docs_to_grade=10
-apps_shared/utils/SecureConfigManager.py:152:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/StatePersistenceError.py:150:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/StatePersistenceError.py:236:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/StatePersistenceError.py:54:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-apps_shared/utils/StatePersistenceError.py:54:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/utils/TitaniumRAGPipeline.py:448:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/TitaniumRAGPipeline.py:80:magic_configuration:Magic configuration: Hardcoded max_retrieved_docs=50
-apps_shared/utils/ToneVoice.py:114:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=10.0 in function call
-apps_shared/utils/ToneVoice.py:114:magic_configuration:Magic configuration: Hardcoded max_sentence_length=20 in function call
-apps_shared/utils/ToneVoice.py:126:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=15.0 in function call
-apps_shared/utils/ToneVoice.py:126:magic_configuration:Magic configuration: Hardcoded max_sentence_length=25 in function call
-apps_shared/utils/ToneVoice.py:138:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=20.0 in function call
-apps_shared/utils/ToneVoice.py:138:magic_configuration:Magic configuration: Hardcoded max_sentence_length=30 in function call
-apps_shared/utils/ToneVoice.py:150:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=5.0 in function call
-apps_shared/utils/ToneVoice.py:150:magic_configuration:Magic configuration: Hardcoded max_sentence_length=25 in function call
-apps_shared/utils/ToneVoice.py:162:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=25.0 in function call
-apps_shared/utils/ToneVoice.py:162:magic_configuration:Magic configuration: Hardcoded max_sentence_length=30 in function call
-apps_shared/utils/agent_interface.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/agent_interface.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/agent_interface.py:270:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/agent_interface.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/analysis_mixin.py:236:magic_configuration:Magic configuration: Hardcoded threshold=2.0
-apps_shared/utils/async_coordinator.py:227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/async_coordinator.py:237:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/async_coordinator.py:363:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/async_coordinator.py:395:magic_configuration:Magic configuration: Hardcoded max_concurrent=100
-apps_shared/utils/async_coordinator.py:45:magic_configuration:Magic configuration: Hardcoded max_concurrent=100
-apps_shared/utils/autonomous_sovereign_core.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/bulkhead_manager.py:106:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.5 in function call
-apps_shared/utils/bulkhead_manager.py:106:magic_configuration:Magic configuration: Hardcoded timeout=60.0 in function call
-apps_shared/utils/bulkhead_manager.py:322:magic_configuration:Magic configuration: Hardcoded max_concurrency=5 in function call
-apps_shared/utils/bulkhead_manager.py:327:magic_configuration:Magic configuration: Hardcoded max_concurrency=10 in function call
-apps_shared/utils/bulkhead_manager.py:332:magic_configuration:Magic configuration: Hardcoded max_concurrency=2 in function call
-apps_shared/utils/bulkhead_manager.py:337:magic_configuration:Magic configuration: Hardcoded max_concurrency=3 in function call
-apps_shared/utils/bulkhead_manager.py:337:magic_configuration:Magic configuration: Hardcoded timeout_seconds=60.0 in function call
-apps_shared/utils/config_environment.py:165:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/context_manager.py:158:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
-apps_shared/utils/context_manager.py:26:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
-apps_shared/utils/file_io.py:15:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/file_io.py:36:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_shared/utils/file_io.py:66:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
-apps_shared/utils/health_check_types.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/health_check_types.py:214:magic_configuration:Magic configuration: Hardcoded socket_timeout=2 in function call
-apps_shared/utils/health_check_types.py:227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/health_check_types.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/health_check_types.py:274:magic_configuration:Magic configuration: Hardcoded max_percent=90.0
-apps_shared/utils/health_check_types.py:304:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/json_parser_validator.py:48:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/l1_health_benchmark.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-apps_shared/utils/math_operations.py:64:magic_configuration:Magic configuration: Hardcoded max_val=100.0
-apps_shared/utils/metric_type.py:195:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/metric_type.py:304:magic_configuration:Magic configuration: Hardcoded max_spans_per_trace=1000 in function call
-apps_shared/utils/metric_type.py:321:magic_configuration:Magic configuration: Hardcoded threshold=0.05 in function call
-apps_shared/utils/metric_type.py:332:magic_configuration:Magic configuration: Hardcoded threshold=1000.0 in function call
-apps_shared/utils/metric_type.py:345:magic_configuration:Magic configuration: Hardcoded threshold=0.99 in function call
-apps_shared/utils/metric_type.py:356:magic_configuration:Magic configuration: Hardcoded threshold=1000.0 in function call
-apps_shared/utils/model_visitor.py:65:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/mutation_phase.py:243:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/observability_type.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/observability_type.py:259:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/observability_type.py:402:magic_configuration:Magic configuration: Hardcoded default_timeout=10.0
-apps_shared/utils/orchestration_mixin.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/orchestration_mixin.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/orchestration_mixin.py:170:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/orchestration_mixin.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/performance_monitor_types.py:193:magic_configuration:Magic configuration: Hardcoded _default_threshold_ms=1000.0
-apps_shared/utils/providers_google_genai_client.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/request_type.py:216:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/resource_manager.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/resource_manager.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/resource_manager.py:326:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/resource_manager.py:360:magic_configuration:Magic configuration: Hardcoded max_resources=1000
-apps_shared/utils/resource_manager.py:390:magic_configuration:Magic configuration: Hardcoded max_connections=10
-apps_shared/utils/resource_manager.py:49:magic_configuration:Magic configuration: Hardcoded max_resources=1000
-apps_shared/utils/resource_manager_types.py:120:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/resource_manager_types.py:372:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/subatomic_hop.py:117:magic_configuration:Magic configuration: Hardcoded failure_threshold=3 in function call
-apps_shared/utils/subatomic_hop.py:117:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0 in function call
-apps_shared/utils/subatomic_hop.py:117:magic_configuration:Magic configuration: Hardcoded timeout=30.0 in function call
-apps_shared/utils/subatomic_hop.py:368:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/subatomic_hop.py:502:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/subatomic_hop.py:591:magic_configuration:Magic configuration: Hardcoded timeout=15.0 in function call
-apps_shared/utils/subatomic_hop.py:746:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/subatomic_hop.py:772:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/subatomic_hop.py:805:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/unified_executor.py:109:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
-apps_shared/utils/unified_executor.py:109:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60 in function call
-apps_shared/utils/unified_executor.py:162:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/unified_executor.py:243:magic_configuration:Magic configuration: Hardcoded timeout=30.0
-apps_shared/utils/unified_executor.py:252:magic_configuration:Magic configuration: Hardcoded failure_threshold=3 in function call
-apps_shared/utils/unified_executor.py:252:magic_configuration:Magic configuration: Hardcoded recovery_timeout=30 in function call
-apps_shared/utils/unified_executor.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/unified_executor.py:374:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/validation_mixin.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/vector_memory_types.py:138:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/vector_memory_types.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/utils/vector_memory_types.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/agent_interface_util.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/agent_interface_util.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/agent_interface_util.py:270:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/agent_interface_util.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/analysis_mixin_util.py:236:magic_configuration:Magic configuration: Hardcoded threshold=2.0
+apps_shared/utils/async_coordinator_util.py:227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/async_coordinator_util.py:237:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/async_coordinator_util.py:363:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/async_coordinator_util.py:395:magic_configuration:Magic configuration: Hardcoded max_concurrent=100
+apps_shared/utils/async_coordinator_util.py:45:magic_configuration:Magic configuration: Hardcoded max_concurrent=100
+apps_shared/utils/autonomous_sovereign_core_util.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/bulkhead_manager_util.py:106:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.5 in function call
+apps_shared/utils/bulkhead_manager_util.py:106:magic_configuration:Magic configuration: Hardcoded timeout=60.0 in function call
+apps_shared/utils/bulkhead_manager_util.py:322:magic_configuration:Magic configuration: Hardcoded max_concurrency=5 in function call
+apps_shared/utils/bulkhead_manager_util.py:327:magic_configuration:Magic configuration: Hardcoded max_concurrency=10 in function call
+apps_shared/utils/bulkhead_manager_util.py:332:magic_configuration:Magic configuration: Hardcoded max_concurrency=2 in function call
+apps_shared/utils/bulkhead_manager_util.py:337:magic_configuration:Magic configuration: Hardcoded max_concurrency=3 in function call
+apps_shared/utils/bulkhead_manager_util.py:337:magic_configuration:Magic configuration: Hardcoded timeout_seconds=60.0 in function call
+apps_shared/utils/context_manager_util.py:158:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
+apps_shared/utils/context_manager_util.py:26:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
+apps_shared/utils/contextual_compressor_util.py:232:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
+apps_shared/utils/contextual_compressor_util.py:241:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/contextual_compressor_util.py:307:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
+apps_shared/utils/contextual_compressor_util.py:37:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
+apps_shared/utils/etl_pipeline_util.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/etl_pipeline_util.py:212:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/etl_pipeline_util.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/etl_pipeline_util.py:300:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/etl_pipeline_util.py:38:magic_configuration:Magic configuration: Hardcoded min_success_count=10
+apps_shared/utils/etl_pipeline_util.py:39:magic_configuration:Magic configuration: Hardcoded max_patterns=50
+apps_shared/utils/file_io_util.py:15:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/file_io_util.py:36:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/utils/file_io_util.py:66:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_shared/utils/health_check_types_util.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/health_check_types_util.py:214:magic_configuration:Magic configuration: Hardcoded socket_timeout=2 in function call
+apps_shared/utils/health_check_types_util.py:227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/health_check_types_util.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/health_check_types_util.py:274:magic_configuration:Magic configuration: Hardcoded max_percent=90.0
+apps_shared/utils/health_check_types_util.py:304:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/l1_health_benchmark_util.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_shared/utils/late_interaction_reranker_util.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/late_interaction_reranker_util.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/late_interaction_reranker_util.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/math_operations_util.py:64:magic_configuration:Magic configuration: Hardcoded max_val=100.0
+apps_shared/utils/metric_type_util.py:304:magic_configuration:Magic configuration: Hardcoded max_spans_per_trace=1000 in function call
+apps_shared/utils/metric_type_util.py:321:magic_configuration:Magic configuration: Hardcoded threshold=0.05 in function call
+apps_shared/utils/metric_type_util.py:332:magic_configuration:Magic configuration: Hardcoded threshold=1000.0 in function call
+apps_shared/utils/metric_type_util.py:345:magic_configuration:Magic configuration: Hardcoded threshold=0.99 in function call
+apps_shared/utils/metric_type_util.py:356:magic_configuration:Magic configuration: Hardcoded threshold=1000.0 in function call
+apps_shared/utils/model_visitor_util.py:65:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/mutation_phase_util.py:243:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/observability_type_util.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/observability_type_util.py:402:magic_configuration:Magic configuration: Hardcoded default_timeout=10.0
+apps_shared/utils/orchestration_mixin_util.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/orchestration_mixin_util.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/orchestration_mixin_util.py:170:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/orchestration_mixin_util.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/performance_monitor_types_util.py:193:magic_configuration:Magic configuration: Hardcoded _default_threshold_ms=1000.0
+apps_shared/utils/providers_google_genai_client_util.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_types_util.py:120:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_types_util.py:372:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_util.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_util.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_util.py:326:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/resource_manager_util.py:360:magic_configuration:Magic configuration: Hardcoded max_resources=1000
+apps_shared/utils/resource_manager_util.py:390:magic_configuration:Magic configuration: Hardcoded max_connections=10
+apps_shared/utils/resource_manager_util.py:49:magic_configuration:Magic configuration: Hardcoded max_resources=1000
+apps_shared/utils/retrieval_grader_util.py:236:magic_configuration:Magic configuration: Hardcoded max_results=5
+apps_shared/utils/retrieval_grader_util.py:236:magic_configuration:Magic configuration: Hardcoded timeout=5.0
+apps_shared/utils/retrieval_grader_util.py:49:magic_configuration:Magic configuration: Hardcoded relevance_threshold=0.5
+apps_shared/utils/retrieval_grader_util.py:50:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.7
+apps_shared/utils/retrieval_grader_util.py:52:magic_configuration:Magic configuration: Hardcoded max_docs_to_grade=10
+apps_shared/utils/secure_config_manager_util.py:152:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/security_config_util.py:104:magic_configuration:Magic configuration: Hardcoded max_length=255
+apps_shared/utils/security_config_util.py:154:magic_configuration:Magic configuration: Hardcoded max_length=10000
+apps_shared/utils/security_config_util.py:235:magic_configuration:Magic configuration: Hardcoded max_requests=100
+apps_shared/utils/security_config_util.py:65:magic_configuration:Magic configuration: Hardcoded max_length=10000
+apps_shared/utils/state_persistence_error_util.py:150:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/state_persistence_error_util.py:236:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/state_persistence_error_util.py:54:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+apps_shared/utils/state_persistence_error_util.py:54:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_shared/utils/subatomic_hop_util.py:117:magic_configuration:Magic configuration: Hardcoded failure_threshold=3 in function call
+apps_shared/utils/subatomic_hop_util.py:117:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0 in function call
+apps_shared/utils/subatomic_hop_util.py:117:magic_configuration:Magic configuration: Hardcoded timeout=30.0 in function call
+apps_shared/utils/subatomic_hop_util.py:368:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/subatomic_hop_util.py:502:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/subatomic_hop_util.py:591:magic_configuration:Magic configuration: Hardcoded timeout=15.0 in function call
+apps_shared/utils/subatomic_hop_util.py:746:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/subatomic_hop_util.py:772:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/subatomic_hop_util.py:805:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/titanium_rag_pipeline_util.py:448:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/titanium_rag_pipeline_util.py:80:magic_configuration:Magic configuration: Hardcoded max_retrieved_docs=50
+apps_shared/utils/tone_voice_util.py:114:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=10.0 in function call
+apps_shared/utils/tone_voice_util.py:114:magic_configuration:Magic configuration: Hardcoded max_sentence_length=20 in function call
+apps_shared/utils/tone_voice_util.py:126:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=15.0 in function call
+apps_shared/utils/tone_voice_util.py:126:magic_configuration:Magic configuration: Hardcoded max_sentence_length=25 in function call
+apps_shared/utils/tone_voice_util.py:138:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=20.0 in function call
+apps_shared/utils/tone_voice_util.py:138:magic_configuration:Magic configuration: Hardcoded max_sentence_length=30 in function call
+apps_shared/utils/tone_voice_util.py:150:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=5.0 in function call
+apps_shared/utils/tone_voice_util.py:150:magic_configuration:Magic configuration: Hardcoded max_sentence_length=25 in function call
+apps_shared/utils/tone_voice_util.py:162:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=25.0 in function call
+apps_shared/utils/tone_voice_util.py:162:magic_configuration:Magic configuration: Hardcoded max_sentence_length=30 in function call
+apps_shared/utils/unified_executor_util.py:109:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
+apps_shared/utils/unified_executor_util.py:109:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60 in function call
+apps_shared/utils/unified_executor_util.py:162:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/unified_executor_util.py:243:magic_configuration:Magic configuration: Hardcoded timeout=30.0
+apps_shared/utils/unified_executor_util.py:252:magic_configuration:Magic configuration: Hardcoded failure_threshold=3 in function call
+apps_shared/utils/unified_executor_util.py:252:magic_configuration:Magic configuration: Hardcoded recovery_timeout=30 in function call
+apps_shared/utils/unified_executor_util.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/unified_executor_util.py:374:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/validation_mixin_util.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/vector_memory_types_util.py:138:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/vector_memory_types_util.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/vector_memory_types_util.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/cache_entry_validator.py:185:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/cache_entry_validator.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/cache_entry_validator.py:407:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -5184,7 +5121,6 @@ apps_shared/validators/talent_signal_enhancer_validator.py:285:silent_swallower:
 apps_shared/validators/talent_signal_enhancer_validator.py:416:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/validation_context_manager_validator.py:60:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/validation_context_manager_validator.py:68:magic_configuration:Magic configuration: Hardcoded max_depth=3
-apps_shared/validators/validation_validator.py:59:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 artifacts/consolidation/backups/agentic_core__L1_cognition__reasoning__StrategistAgent.py:48:type_erasure:Type erasure: StrategistAgent.heal_repository returns dict instead of structured type
 artifacts/consolidation/backups/agentic_core__L2_execution__reasoning__RgStrategicPlannerAgent.py:115:magic_configuration:Magic configuration: Hardcoded max_attempts=2 in function call
 artifacts/consolidation/backups/agentic_core__L2_execution__reasoning__RgStrategicPlannerAgent.py:173:type_erasure:Type erasure: RgStrategicPlannerAgent.heal_repository returns dict instead of structured type

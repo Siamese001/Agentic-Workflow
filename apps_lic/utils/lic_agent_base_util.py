@@ -1,11 +1,10 @@
 """
-apps_rg/shared/core/agent_base.py - Resume Generation Sovereign Bridge
+apps_lic/shared/core/agent_base.py - Linked-In Canonical Sovereign Bridge
 
 PHASE 3 META-LEARNING (Feb 2026):
-- MetaLearningClientMixin activation for RG domain
-- Domain-specific healing pattern memory (similarity_threshold=0.85)
-- Resume quality pattern learning and ATS compatibility memory
-- Redis/Pinecone integration for content optimization
+- MetaLearningClientMixin activation for LIC domain
+- Domain-specific healing pattern memory (similarity_threshold=0.92)
+- Campaign pattern learning and compliance rule memory
 
 PHASE 1.1 GUARDRAILS INTEGRATION (Feb 2026):
 - MetaLearningGuardrails integration for security and safety
@@ -25,6 +24,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+# CORE SOCKETING: Align with Phase 2A Unified Base Class
+from apps_shared.utils.AppBase import AppBase
+
 from agentic_core.L1_cognition.engines.meta_client import (
     MetaLearningClient,
     get_meta_learning_client,
@@ -39,16 +41,31 @@ from agentic_core.L1_cognition.utils.guardrails import (
     get_guardrails,
 )
 
-# CORE SOCKETING: Align with Phase 2A Unified Base Class
-from apps_shared.utils.AppBase import AppBase
-
 Logger = logging.getLogger(__name__)
+
+# Import mixins with fallbacks
+try:
+    from agentic_core.L1_cognition.reasoning.meta_learning_mixin import (
+        MetaLearningMixin,
+    )
+except ImportError:
+
+    class MetaLearningMixin:
+        pass
+
+
+try:
+    from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
+except ImportError:
+
+    class HealerMixin:
+        pass
 
 
 @dataclass
-class RGAgentBase(AppBase):
+class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
     """
-    RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
+    LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 
     Inherits from AppBase for unified app-level capabilities.
 
@@ -56,59 +73,62 @@ class RGAgentBase(AppBase):
     - Integrated MetaLearningGuardrails for security
     - Cache poisoning protection via input validation
     - Healing depth tracking to prevent infinite loops
-    - Domain isolation enforcement for apps_rg
+    - Domain isolation enforcement for apps_lic
+    - Higher similarity threshold (0.92) for stricter LIC compliance
     """
 
-    # Domain-specific RG configuration
-    domain_root: Path = field(default_factory=lambda: Path("apps_rg"))
-    _rg_version: Final[str] = "2.5.0"
+    # Domain-specific LIC configuration
+    domain_root: Path = field(default_factory=lambda: Path("apps_lic"))
+    _lic_version: Final[str] = "2.5.0-hardened"
 
-    # [PHASE 25] Infrastructure Config
-    _namespace: str = field(default="apps_rg", init=False)
-    _similarity_threshold: float = field(default=0.85, init=False)
-    _resource_prefix: str = field(default="rg", init=False)
+    # [PHASE 25] Infrastructure Config (STRICTER)
+    _namespace: str = field(default="apps_lic", init=False)
+    _similarity_threshold: float = field(default=0.92, init=False)
+    _resource_prefix: str = field(default="lic", init=False)
+
+    # [PHASE 3] Meta-Learning Domain Override
+    _ml_domain: str = field(default="apps_lic", init=False)
 
     # [PHASE 1.1] Guardrails Integration
     _guardrails: MetaLearningGuardrails = field(default=None, init=False)
-    _rg_ttl: int = field(default=3600, init=False)  # 1 hour for RG domain
+    _lic_ttl: int = field(default=7200, init=False)  # 2 hours for LIC domain (longer campaigns)
 
     # [PHASE 2.1] MetaLearningClient Integration
     _meta_client: MetaLearningClient = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         """
-        Initialize RG-specific capabilities after Core hardening.
+        Initialize LIC capabilities after Core hardening.
         """
-        # CRITICAL: Trigger Core Security Validation via AppBase
+        # CRITICAL: Trigger Core Security Validation
         super().__post_init__()
 
-        # RG Domain Validation
+        # LIC Domain Integrity Check
         if not self.domain_root.exists():
-            # Create if missing to ensure domain integrity
             self.domain_root.mkdir(parents=True, exist_ok=True)
 
-        # [PHASE 1.1] Initialize Guardrails with RG-specific configuration
+        # [PHASE 1.1] Initialize Guardrails with LIC-specific configuration
         self._initialize_guardrails()
 
         # [PHASE 2.1] Initialize MetaLearningClient
         self._initialize_meta_client()
 
         Logger.debug(
-            f"[{self.__class__.__name__}] RG Meta-Learning activated with guardrails and MetaLearningClient",
+            f"[{self.__class__.__name__}] LIC Meta-Learning activated with guardrails and MetaLearningClient",
         )
 
     def _initialize_guardrails(self) -> None:
-        """Initialize guardrails with RG-specific configuration."""
+        """Initialize guardrails with LIC-specific configuration (stricter thresholds)."""
         self._guardrails = get_guardrails()
-        # Configure RG-specific thresholds
+        # Configure LIC-specific thresholds (stricter than RG)
         self._guardrails.guardrails.default_similarity_threshold = self._similarity_threshold
-        self._guardrails.guardrails.default_ttl = self._rg_ttl
+        self._guardrails.guardrails.default_ttl = self._lic_ttl
         Logger.debug(
             f"[{self.__class__.__name__}] Guardrails initialized (threshold={self._similarity_threshold})",
         )
 
     def _initialize_meta_client(self) -> None:
-        """Initialize MetaLearningClient with RG-specific configuration."""
+        """Initialize MetaLearningClient with LIC-specific configuration."""
         self._meta_client = get_meta_learning_client()
         Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
 
@@ -133,10 +153,10 @@ class RGAgentBase(AppBase):
             self._initialize_meta_client()
 
         # Validate with guardrails
-        if not self.validate_domain_pattern({"domain": "apps_rg", **violation}):
+        if not self.validate_domain_pattern({"domain": "apps_lic", **violation}):
             return None
 
-        return self._meta_client.store_healing_pattern(violation, healing_result, domain="apps_rg")
+        return self._meta_client.store_healing_pattern(violation, healing_result, domain="apps_lic")
 
     def retrieve_healing_patterns(
         self,
@@ -158,7 +178,7 @@ class RGAgentBase(AppBase):
 
         return self._meta_client.retrieve_healing_patterns(
             violation,
-            domain="apps_rg",
+            domain="apps_lic",
             top_k=top_k,
             min_similarity=self._similarity_threshold,
         )
@@ -217,11 +237,10 @@ class RGAgentBase(AppBase):
 
         return self._meta_client.get_stats()
 
-    def get_rg_context(self) -> dict[str, Any]:
-        """Return RG-specific context wrapper."""
+    def get_lic_context(self) -> dict[str, Any]:
         return {
-            "domain": "apps_rg",
-            "version": self._rg_version,
+            "domain": "apps_lic",
+            "version": self._lic_version,
             "capabilities": self.get_sovereign_capabilities(),
             "meta_learning_domain": self._ml_domain,
         }
@@ -239,7 +258,7 @@ class RGAgentBase(AppBase):
         Cache a pattern with full metadata for enhanced learning.
 
         Args:
-            pattern_type: Type of pattern (resume_quality, ats_compat, etc.)
+            pattern_type: Type of pattern (campaign, compliance, etc.)
             pattern_id: Unique pattern identifier
             pattern_data: Pattern data
             success_count: Number of successful applications
@@ -260,7 +279,7 @@ class RGAgentBase(AppBase):
             **pattern_data,
             "_metadata": {
                 "pattern_type": pattern_type,
-                "domain": "apps_rg",
+                "domain": "apps_lic",
                 "created_at": time.time(),
                 "success_count": success_count,
                 "similarity_threshold": self._similarity_threshold,
@@ -335,129 +354,98 @@ class RGAgentBase(AppBase):
 
         return self.cache_pattern_with_metadata(pattern_type, pattern_id, pattern, metadata["success_count"])
 
-    # ==================== RG-SPECIFIC META-LEARNING ====================
+    # ==================== LIC-SPECIFIC META-LEARNING ====================
 
-    def ml_cache_resume_quality_pattern(
+    def ml_cache_campaign_pattern(
         self,
-        pattern_id: str,
+        campaign_id: str,
         pattern_data: dict[str, Any],
     ) -> bool:
         """
-        Cache a successful resume quality pattern for future recall.
+        Cache a successful campaign pattern for future recall.
 
         Args:
-            pattern_id: Unique pattern identifier
-            pattern_data: Quality pattern data (structure, content, etc.)
+            campaign_id: Unique campaign identifier
+            pattern_data: Campaign pattern data (templates, timing, etc.)
 
         Returns:
             True if cached successfully
         """
-        cache_key = f"resume_quality:{pattern_id}"
+        cache_key = f"campaign_pattern:{campaign_id}"
         return self.ml_cache_set(cache_key, pattern_data)
 
-    def ml_recall_resume_quality_pattern(self, pattern_id: str) -> dict[str, Any] | None:
+    def ml_recall_campaign_pattern(self, campaign_id: str) -> dict[str, Any] | None:
         """
-        Recall a cached resume quality pattern.
+        Recall a cached campaign pattern.
 
         Args:
-            pattern_id: Unique pattern identifier
+            campaign_id: Unique campaign identifier
 
         Returns:
             Cached pattern data or None
         """
-        cache_key = f"resume_quality:{pattern_id}"
+        cache_key = f"campaign_pattern:{campaign_id}"
         return self.ml_cache_get(cache_key)
 
-    def ml_cache_ats_compatibility(
+    def ml_cache_compliance_rule(
         self,
-        ats_system: str,
-        compatibility_data: dict[str, Any],
+        rule_id: str,
+        rule_data: dict[str, Any],
     ) -> bool:
         """
-        Cache ATS compatibility requirements for future reference.
+        Cache a compliance rule resolution for future reference.
 
         Args:
-            ats_system: ATS system identifier
-            compatibility_data: Compatibility requirements and fixes
+            rule_id: Unique rule identifier
+            rule_data: Rule resolution data
 
         Returns:
             True if cached successfully
         """
-        cache_key = f"ats_compat:{ats_system}"
-        return self.ml_cache_set(cache_key, compatibility_data)
+        cache_key = f"compliance_rule:{rule_id}"
+        return self.ml_cache_set(cache_key, rule_data)
 
-    def ml_recall_ats_compatibility(self, ats_system: str) -> dict[str, Any] | None:
+    def ml_recall_compliance_rule(self, rule_id: str) -> dict[str, Any] | None:
         """
-        Recall cached ATS compatibility requirements.
+        Recall a cached compliance rule resolution.
 
         Args:
-            ats_system: ATS system identifier
+            rule_id: Unique rule identifier
 
         Returns:
-            Cached compatibility data or None
+            Cached rule data or None
         """
-        cache_key = f"ats_compat:{ats_system}"
-        return self.ml_cache_get(cache_key)
-
-    def ml_cache_section_balance(
-        self,
-        job_type: str,
-        balance_data: dict[str, Any],
-    ) -> bool:
-        """
-        Cache optimal section balance for a job type.
-
-        Args:
-            job_type: Job type identifier
-            balance_data: Section balance recommendations
-
-        Returns:
-            True if cached successfully
-        """
-        cache_key = f"section_balance:{job_type}"
-        return self.ml_cache_set(cache_key, balance_data)
-
-    def ml_recall_section_balance(self, job_type: str) -> dict[str, Any] | None:
-        """
-        Recall cached section balance recommendations.
-
-        Args:
-            job_type: Job type identifier
-
-        Returns:
-            Cached balance data or None
-        """
-        cache_key = f"section_balance:{job_type}"
+        cache_key = f"compliance_rule:{rule_id}"
         return self.ml_cache_get(cache_key)
 
     # ==================== PHASE 1.2: DOMAIN ISOLATION ====================
 
     def get_namespaced_cache_key(self, key: str) -> str:
         """
-        Generate a namespaced cache key for RG domain isolation.
+        Generate a namespaced cache key for LIC domain isolation.
 
         Args:
             key: Base cache key
 
         Returns:
-            Namespaced key with apps_rg prefix
+            Namespaced key with apps_lic prefix
         """
-        return f"apps_rg:{self._resource_prefix}:{key}"
+        return f"apps_lic:{self._resource_prefix}:{key}"
 
     def validate_domain_pattern(self, pattern: dict[str, Any]) -> bool:
         """
-        Validate that a pattern belongs to the RG domain.
+        Validate that a pattern belongs to the LIC domain.
 
         Args:
             pattern: Pattern to validate
 
         Returns:
-            True if pattern is valid for RG domain
+            True if pattern is valid for LIC domain
         """
         # Check domain field if present (both "domain" and "_domain" metadata)
         domain_value = pattern.get("domain") or pattern.get("_domain")
         if domain_value:
-            if domain_value != "apps_rg":
+            if domain_value != "apps_lic":
                 Logger.warning(f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}")
                 return False
         return True
@@ -492,7 +480,7 @@ class RGAgentBase(AppBase):
 
             # Add domain metadata
             if isinstance(value, dict):
-                value["_domain"] = "apps_rg"
+                value["_domain"] = "apps_lic"
                 value["_namespace"] = self._namespace
 
         return (True, namespaced_key)
@@ -512,7 +500,7 @@ class RGAgentBase(AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        allowed = self._guardrails.check_rate_limit("apps_rg", operation)
+        allowed = self._guardrails.check_rate_limit("apps_lic", operation)
         if not allowed:
             Logger.warning(f"[{self.__class__.__name__}] Rate limit exceeded for {operation}")
         return allowed
@@ -527,7 +515,7 @@ class RGAgentBase(AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        return self._guardrails.check_cache_size_limit("apps_rg")
+        return self._guardrails.check_cache_size_limit("apps_lic")
 
     def update_cache_metrics(self, delta: int = 1) -> None:
         """
@@ -539,7 +527,7 @@ class RGAgentBase(AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        self._guardrails.update_cache_size("apps_rg", delta)
+        self._guardrails.update_cache_size("apps_lic", delta)
 
     def safe_cache_set(
         self,
@@ -617,10 +605,10 @@ class RGAgentBase(AppBase):
 
         stats = self._guardrails.get_stats()
         return {
-            "domain": "apps_rg",
-            "cache_size": stats.get("cache_sizes", {}).get("apps_rg", 0),
-            "request_rate": stats.get("request_rates", {}).get("apps_rg", 0),
-            "pattern_rate": stats.get("pattern_rates", {}).get("apps_rg", 0),
+            "domain": "apps_lic",
+            "cache_size": stats.get("cache_sizes", {}).get("apps_lic", 0),
+            "request_rate": stats.get("request_rates", {}).get("apps_lic", 0),
+            "pattern_rate": stats.get("pattern_rates", {}).get("apps_lic", 0),
             "active_healing_cycles": len(stats.get("depth_trackers", {}).get(self.__class__.__name__, {})),
             "healthy": True,
         }
@@ -702,11 +690,11 @@ class RGAgentBase(AppBase):
             pattern: Pattern to validate
 
         Returns:
-            True if pattern is valid for apps_rg domain, False otherwise
+            True if pattern is valid for apps_lic domain, False otherwise
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.validate_domain_isolation("apps_rg", pattern)
+        return self._guardrails.validate_domain_isolation("apps_lic", pattern)
 
     def guardrails_sanitize_violation(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -734,7 +722,7 @@ class RGAgentBase(AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.check_rate_limit("apps_rg", operation)
+        return self._guardrails.check_rate_limit("apps_lic", operation)
 
     def guardrails_get_stats(self) -> dict[str, Any]:
         """Get guardrails statistics for monitoring."""
