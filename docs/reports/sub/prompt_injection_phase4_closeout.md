@@ -77,14 +77,19 @@ git status --porcelain=v1
 | 4.5 | evidence-only | Governance hard lock - strengthen enforcement perimeter |
 | 4.6 | (normalization) | Final consistency audit + evidence normalization |
 
-### Evidence Files Created
+### Evidence Files Consolidated
 
-- `docs/reports/sub/prompt_injection_phase4_wave4_1.md` - YAML-only hard enforcement
-- `docs/reports/sub/prompt_injection_phase4_wave4_2.md` - Behavioral equivalence proof
-- `docs/reports/sub/prompt_injection_phase4_wave4_3.md` - Cross-app runtime validation
-- `docs/reports/sub/prompt_injection_phase4_wave4_4.md` - Structural suite resolution
-- `docs/reports/sub/prompt_injection_phase4_wave4_5.md` - Governance hard lock
-- `docs/reports/sub/prompt_injection_phase4_closeout.md` - Final consistency audit
+Wave-specific evidence files (4.1-4.6) have been consolidated into this single closeout markdown.
+Removed files:
+- `docs/reports/sub/prompt_injection_phase4_wave4_1.md`
+- `docs/reports/sub/prompt_injection_phase4_wave4_2.md`
+- `docs/reports/sub/prompt_injection_phase4_wave4_3.md`
+- `docs/reports/sub/prompt_injection_phase4_wave4_4.md`
+- `docs/reports/sub/prompt_injection_phase4_wave4_5.md`
+- `docs/reports/sub/prompt_injection_phase4_wave4_6_normalization.md`
+
+Single authoritative Phase 4 evidence file:
+- `docs/reports/sub/prompt_injection_phase4_closeout.md` - Complete Phase 4 evidence
 
 ### Guard Implementation
 
