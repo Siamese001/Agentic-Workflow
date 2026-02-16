@@ -4517,24 +4517,21 @@ agentic_core/utils/meta_learning_engine.py:70:silent_swallower:Silent exception 
 apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/engines/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4
-apps_lic/engines/LicCodeInterpreter.py:324:magic_configuration:Magic configuration: Hardcoded min_word_length=4
-apps_lic/engines/LicReflectionAgent.py:64:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
-apps_lic/engines/LicTemplateOptimizerAgent.py:61:type_erasure:Type erasure: LicTemplateOptimizerAgent.heal_repository returns dict instead of structured type
-apps_lic/engines/MessageComplianceAgent.py:88:type_erasure:Type erasure: MessageComplianceAgent.heal_repository returns dict instead of structured type
-apps_lic/engines/MessageDiversityValidator.py:31:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
-apps_lic/engines/MessageDiversityValidator.py:82:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
-apps_lic/engines/OutreachLearningAgent.py:177:magic_configuration:Magic configuration: Hardcoded limit=10
-apps_lic/engines/OutreachLearningAgent.py:275:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/engines/OutreachLearningAgent.py:282:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/engines/OutreachLearningAgent.py:365:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
-apps_lic/engines/OutreachLearningAgent.py:369:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
-apps_lic/engines/OutreachLearningAgent.py:379:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
-apps_lic/engines/OutreachLearningAgent.py:388:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
-apps_lic/engines/OutreachSignalRouterAgent.py:176:type_erasure:Type erasure: OutreachSignalRouterAgent.heal_repository returns dict instead of structured type
-apps_lic/engines/OutreachSignalRouterAgent.py:346:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/engines/OutreachSignalRouterAgent.py:442:magic_configuration:Magic configuration: Hardcoded max_cycles=5
-apps_lic/engines/PersonaPlannerValidator.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4
+apps_lic/reasoning/LicCodeInterpreter.py:324:magic_configuration:Magic configuration: Hardcoded min_word_length=4
+apps_lic/reasoning/LicReflectionAgent.py:64:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/LicTemplateOptimizerAgent.py:61:type_erasure:Type erasure: LicTemplateOptimizerAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/MessageComplianceAgent.py:88:type_erasure:Type erasure: MessageComplianceAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:177:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/reasoning/OutreachLearningAgent.py:275:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:282:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:365:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:369:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:379:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:388:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachSignalRouterAgent.py:177:type_erasure:Type erasure: OutreachSignalRouterAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachSignalRouterAgent.py:347:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachSignalRouterAgent.py:443:magic_configuration:Magic configuration: Hardcoded max_cycles=5
 apps_lic/scripts/migrate_agents.py:10:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/scripts/migrate_agents.py:11:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/scripts/migrate_agents.py:15:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -4609,6 +4606,9 @@ apps_lic/types/stack_modernization_agent_types.py:181:silent_swallower:Silent ex
 apps_lic/types/stack_modernization_agent_types.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/types/stack_modernization_agent_types.py:252:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/types/stack_modernization_agent_types.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/validators/MessageDiversityValidator.py:31:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
+apps_lic/validators/MessageDiversityValidator.py:82:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
+apps_lic/validators/PersonaPlannerValidator.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
