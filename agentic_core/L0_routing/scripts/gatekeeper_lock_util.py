@@ -22,6 +22,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.utils.ast_fuzzy import normalize_path
+
 PROTECTED_FILES = ["agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py"]
 OVERRIDE_TOKEN = "[SECURITY-OVERRIDE]"
 BYPASS_ENV_VAR = "GATEKEEPER_BYPASS"
@@ -56,11 +58,6 @@ def check_env_bypass() -> bool:
 def check_commit_message_override(commit_message: str) -> bool:
     """Check if commit message contains override token."""
     return OVERRIDE_TOKEN in commit_message
-
-
-def normalize_path(path: str) -> str:
-    """Normalize path separators for comparison."""
-    return path.replace("\\", "/").strip()
 
 
 def main() -> int:

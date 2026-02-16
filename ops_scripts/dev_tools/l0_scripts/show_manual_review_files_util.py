@@ -4,7 +4,6 @@ Shows file differences, locations, and specific recommendations.
 """
 
 import difflib
-import hashlib
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -12,20 +11,11 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
+from agentic_core.utils.ast_fuzzy import compute_file_hash
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-
-
-def compute_file_hash(file_path: Path) -> str:
-    """Compute SHA-256 hash of file content."""
-    try:
-        with open(file_path, "rb") as f:
-            return hashlib.sha256(f.read()).hexdigest()
-    # guardian: allow-silent-swallow
-    except Exception:
-        return "ERROR"
 
 
 def read_file_content(file_path: Path) -> str:
