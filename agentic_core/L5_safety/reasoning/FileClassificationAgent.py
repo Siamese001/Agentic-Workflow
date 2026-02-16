@@ -2249,14 +2249,37 @@ class FileClassificationAgent(*BASE_CLASSES):
                 correct_folder = "enforcement"
 
         # Compute target path
+        # First try agentic_core layer roots (L0_*, L1_*, etc.)
         layer_root = None
         for part_idx, part in enumerate(path.parts):
             if part.startswith("L") and "_" in part:
                 layer_root = Path(*path.parts[: part_idx + 1])
                 break
 
+        # [APPS HARDENING 2026-02-16] Fallback to apps_* root detection
+        # apps_* folders don't have L*_ layer structure but still need target_path
+        if layer_root is None:
+            for part_idx, part in enumerate(path.parts):
+                if part.startswith("apps_"):
+                    layer_root = Path(*path.parts[: part_idx + 1])
+                    break
+
         target_folder = correct_folder or "enforcement"
-        target_path = layer_root / target_folder / filename if layer_root else None
+
+        # [FAIL-LOUD] If we detected a violation but cannot compute target_path,
+        # this is a bug in the routing logic — raise instead of returning None silently
+        if layer_root is None:
+            self.logger.error(
+                f"[FOLDER_PURITY_BUG] Cannot compute target_path for {path}. "
+                f"File is in governed folder '{folder_name}' but no layer_root found. "
+                f"This is a routing logic bug — healing cannot proceed.",
+            )
+            raise RuntimeError(
+                f"_enforce_folder_purity: Cannot compute target_path for {path}. "
+                f"No layer_root (L*_ or apps_*) found in path parts: {path.parts}",
+            )
+
+        target_path = layer_root / target_folder / filename
 
         return {
             "type": "FOLDER_PURITY_VIOLATION",
