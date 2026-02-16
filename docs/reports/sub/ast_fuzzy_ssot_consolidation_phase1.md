@@ -2,7 +2,11 @@
 
 **Status:** COMPLETE
 **Date:** 2026-02-16
-**Commit Hash (Phase 1 remediation):** `9281a2d90`
+
+## Evidence File Commit Chain
+
+- **Phase 1 remediation commit:** `9281a2d90`
+- **Evidence repair commit:** `2c6321ef0`
 
 ## Execution Summary
 
@@ -209,27 +213,30 @@ Exit code: 0
 
 **Mechanical Derivation Algorithm:**
 
-1. Load callsites.json and extract all symbols with inbound_ref_count
-2. Sort symbols by inbound_ref_count in descending order
-3. Filter symbols by keyword match (case-insensitive):
-   - Symbol name must contain at least one of: `parse`, `ast`, `dump`, `hash`, `normalize`, `token`, `similarity`, `fuzzy`, `match`, `compare`
-4. Exclude dunder names (e.g., `__init__`, `__post_init__`)
-5. For each filtered symbol, verify it has a definition in inventory.json candidates
-6. Select top 10 by inbound_ref_count
-7. For each candidate, record: name, inbound_ref_count, definition location (path:line)
+1. Load callsites.json: extract (symbol -> inbound_ref_count, definitions[])
+2. Sort symbols by inbound_ref_count DESC, then symbol ASC for tie-break
+3. Filter symbol name contains (case-insensitive) any: `parse`, `ast`, `dump`, `hash`, `normalize`, `token`, `similarity`, `fuzzy`, `match`, `compare`
+4. Exclude dunder names matching `^__.*__$`
+5. Definition validation gate:
+   - Symbol must have at least 1 definition entry in callsites.json
+   - AND symbol must appear as candidate name in inventory.json (exact match)
+6. Select top 10 passing the gate
+7. Record: name, inbound_ref_count, definition location from callsites.json definitions[0]
 
-**Resulting Central Candidates:**
+**Total valid candidates passing gate:** 239
 
-1. **`matches`** (319 refs) — Definition: agentic_core/L5_safety/reasoning/CodeHealerAgent.py:355
-2. **`token`** (150 refs) — Definition: agentic_core/L2_execution/config/hybrid_retriever_config.py:27
-3. **`file_hash`** (58 refs) — Definition: agentic_core/L0_routing/scripts/execute_ssot.py:360
-4. **`normalize_repo_path`** (49 refs) — Definition: agentic_core/L5_safety/types/surgical_context_types.py:17
-5. **`CapabilityTokenArtifact`** (33 refs) — Definition: agentic_core/L2_execution/config/hybrid_retriever_config.py:171
-6. **`ASTValidatorAgent`** (25 refs) — Definition: agentic_core/L0_routing/reasoning/RootCustomsAgent.py:43
-7. **`ASTCoordinate`** (23 refs) — Definition: agentic_core/L5_safety/types/surgical_context_types.py:17
-8. **`get_file_hash`** (23 refs) — Definition: agentic_core/L0_routing/scripts/execute_ssot.py:360
-9. **`state_hash_fn`** (22 refs) — Definition: ops_scripts/general/architecture_gap_analyzer.py:305
-10. **`unparse`** (22 refs) — Definition: agentic_core/L2_execution/config/hybrid_retriever_config.py:27
+**Resulting Central Candidates (Top 10):**
+
+1. **`matches`** (319 refs) — agentic_core/L3_orchestration/types/permission_scope_types.py:54
+2. **`token`** (150 refs) — agentic_core/L2_execution/types/capability_token_types.py:299
+3. **`file_hash`** (58 refs) — agentic_core/L0_routing/scripts/compare_archive_to_current_util.py:8
+4. **`normalize_repo_path`** (49 refs) — agentic_core/L0_routing/types/guardian_contract.py:604
+5. **`CapabilityTokenArtifact`** (33 refs) — agentic_core/L2_execution/types/capability_token_types.py:98
+6. **`ASTValidatorAgent`** (25 refs) — agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py:60
+7. **`ASTCoordinate`** (23 refs) — agentic_core/L5_safety/types/surgical_context_types.py:17
+8. **`get_file_hash`** (23 refs) — agentic_core/L0_routing/scripts/investigate_overlaps_util.py:14
+9. **`state_hash_fn`** (22 refs) — agentic_core/base_agents/SovereignBaseAgent.py:313
+10. **`unparse`** (22 refs) — agentic_core/L0_routing/scripts/hardened_anti_pattern_visitor.py:17
 
 ### Call-Site Output Artifact
 
@@ -325,8 +332,19 @@ tools/tmp_ok/scan_ast_fuzzy_defs.py
 
 ### Repository Status at Remediation
 
+Command: `git status --porcelain=v1`
+
 ```text
-(clean - no uncommitted changes)
+(no output - clean working tree)
+```
+
+### Evidence File Edit Commit
+
+Command: `git --no-pager show --name-only --oneline 2c6321ef0`
+
+```text
+2c6321ef0 docs(sub): phase1 evidence repair (remediation proofs, contradictions fixed, mechanical central candidates)
+docs/reports/sub/ast_fuzzy_ssot_consolidation_phase1.md
 ```
 
 ### Pre-Commit Hook Verification
