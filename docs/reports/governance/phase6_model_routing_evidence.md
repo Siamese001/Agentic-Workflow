@@ -201,3 +201,55 @@ tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingEnable
 Exit code: 0
 
 **WAVE 6.3 ACCEPTANCE**: All tests pass. Enabled-path model routing contract proven.
+
+---
+
+## PHASE 6 CLOSEOUT
+
+### Final Commits
+
+**Wave 6.1**:
+```text
+85e0c9be1 feat(heal): add enabled-path model router seam (no sdk)
+```
+
+**Wave 6.2**:
+```text
+36a7abb83 feat(heal): add tier→model id map (pure)
+```
+
+**Wave 6.3**:
+```text
+6ec8e30ff test(heal): enabled-path model routing contract
+```
+
+### Clean Tree Proof
+
+```bash
+git status --porcelain=v1
+```
+
+```text
+(empty - clean working tree)
+```
+
+---
+
+## PHASE 6 ACCEPTANCE STATUS: COMPLETE
+
+**All acceptance criteria met:**
+
+- ✓ `pytest -q` exits 0 (142 passed)
+- ✓ Phase 5 governance bans remain satisfied (no routing/executor imports/calls in standard_heal)
+- ✓ Default-off behavior unchanged (no routing without env var)
+- ✓ Enabled path invokes router seam deterministically and logs routed model id
+- ✓ Only allowed files changed:
+  - `agentic_core/utils/decorators_util.py`
+  - `agentic_core/L5_safety/types/heal_model_map.py`
+  - `tests/governance/test_heal_model_routing_enabled_path.py`
+  - `tests/governance/test_standard_heal_no_routing_contract.py` (Phase 5 contract updated)
+  - `docs/reports/governance/phase6_model_routing_evidence.md`
+- ✓ Evidence contains raw diffs, raw pytest outputs, and commit proofs
+- ✓ Clean working tree
+
+**Phase 6 is CLOSED.**
