@@ -27,6 +27,10 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
 from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
+from agentic_core.L5_safety.types.heal_llm_seam import (
+    DEFAULT_HEAL_LLM_CALLER,
+    HealLlmRequest,
+)
 from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationInputs,
     ReasoningTier,
@@ -226,6 +230,16 @@ def standard_heal(func: F) -> F:
                     Logger.debug("[heal_policy] routed_model=NONE")
 
                 remaining_kwargs["_heal_routed_model_id"] = routed_model_id
+
+                # Phase 8: Invoke heal LLM seam probe (default-off)
+                if routed_model_id is not None and DEFAULT_HEAL_LLM_CALLER is not None:
+                    request = HealLlmRequest(
+                        prompt="heal_policy_probe",
+                        model_id=routed_model_id,
+                        metadata={"source": "standard_heal"},
+                    )
+                    _ = DEFAULT_HEAL_LLM_CALLER(request)
+                    Logger.debug(f"[heal_policy] llm_probe=CALLED model_id={routed_model_id}")
 
             result = func(
                 self,
