@@ -6492,9 +6492,26 @@
         "ast": [],
         "fuzzy": []
       },
-      "candidates": [],
-      "parse_status": "failed",
-      "parse_error": "SyntaxError at line 395: expected an indented block after 'if' statement on line 394"
+      "candidates": [
+        {
+          "kind": "function",
+          "name": "_state_hash",
+          "line": 191,
+          "keywords": [
+            "hash"
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "_check_past_failures",
+          "line": 332,
+          "keywords": [
+            "ast"
+          ]
+        }
+      ],
+      "parse_status": "ok",
+      "parse_error": null
     },
     {
       "path": "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
@@ -11193,7 +11210,7 @@
         {
           "kind": "function",
           "name": "_compare_threat_levels",
-          "line": 395,
+          "line": 398,
           "keywords": [
             "compare"
           ]
@@ -11201,7 +11218,7 @@
         {
           "kind": "function",
           "name": "_generate_recommendations",
-          "line": 399,
+          "line": 404,
           "keywords": [
             "match"
           ]
@@ -18238,7 +18255,7 @@
         {
           "kind": "class",
           "name": "PascalSovereigntyFixer",
-          "line": 37,
+          "line": 39,
           "keywords": [
             "ast"
           ]

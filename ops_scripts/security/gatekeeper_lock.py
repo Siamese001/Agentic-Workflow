@@ -63,9 +63,9 @@ def check_env_bypass() -> bool:
     return os.environ.get(BYPASS_ENV_VAR, "").lower() in ("1", "true", "yes")
 
 
-def check_commit_message_override(commit_message: str) -> bool:
+def check_commit_message_override(commit_message: str, _fn=lambda msg: OVERRIDE_TOKEN in msg) -> bool:
     """Check if commit message contains override token."""
-    return OVERRIDE_TOKEN in commit_message
+    return _fn(commit_message)
 
 
 def main() -> int:

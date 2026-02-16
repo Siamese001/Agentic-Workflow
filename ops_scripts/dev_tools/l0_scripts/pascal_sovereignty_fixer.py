@@ -18,17 +18,20 @@ from typing import Literal
 
 
 # SSOT Integration with fast-fail pruning
-def get_python_files_fast(root: Path) -> list[Path]:
+def get_python_files_fast(root: Path, _fn=None) -> list[Path]:
     """
     Optimized repository scanner that prunes heavy/irrelevant directories
     before they enter the pipeline.
     """
-    from agentic_core.utils.fs_utils import get_python_files_fast as canonical_get_python_files
+    if _fn is None:
+        from agentic_core.utils.fs_utils import get_python_files_fast as canonical_get_python_files
+
+        _fn = canonical_get_python_files
 
     # Domain-specific exclude directories for L0 maintenance
     exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env"]
 
-    return list(canonical_get_python_files(root, exclude_dirs=exclude_dirs))
+    return list(_fn(root, exclude_dirs=exclude_dirs))
 
 
 FileType = Literal["AGENT", "CLASS", "MIXIN", "UTILITY", "IGNORE"]

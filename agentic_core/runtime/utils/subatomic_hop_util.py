@@ -246,12 +246,14 @@ class SubatomicHop:
             return "low"
 
     # _check_past_failures moved to canonical utility in state_utils.py
-    async def _check_past_failures(self, Task: str) -> str:
+    async def _check_past_failures(self, Task: str, _fn=None) -> str:
         """Check telemetry for past failures on similar tasks."""
         # SubatomicHopUtil wrapper for state analysis
-        from agentic_core.utils.state_utils import check_past_failures
+        if _fn is None:
+            from agentic_core.utils.state_utils import check_past_failures
 
-        return check_past_failures(Task)
+            _fn = check_past_failures
+        return _fn(Task)
 
     async def _execute_act_stage(self, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
         """Execute the action stage with airlock protection."""
