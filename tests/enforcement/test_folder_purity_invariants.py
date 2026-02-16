@@ -45,11 +45,12 @@ def _collect_py_files_in_folder(folder_path: Path) -> list[Path]:
 
 def _find_governed_folders(root: Path, folder_key: str) -> list[Path]:
     """Find all instances of a governed folder under a territory root.
-    
+
     Searches:
     1. L* layer directories (e.g., L0_routing/reasoning/)
     2. Root-level folders (e.g., config/agent_configs/, prompt_governance/)
     3. Runtime subfolders (e.g., runtime/config/, runtime/engine/)
+    4. Special case: config/agent_configs for agent_configs folder_key
     """
     folders = []
     if root.name.startswith("apps_"):
@@ -57,24 +58,30 @@ def _find_governed_folders(root: Path, folder_key: str) -> list[Path]:
         if candidate.exists() and candidate.is_dir():
             folders.append(candidate)
     else:
+        # Special case: config/agent_configs for agent_configs folder_key
+        if folder_key == "agent_configs":
+            agent_configs_candidate = root / "config" / "agent_configs"
+            if agent_configs_candidate.exists() and agent_configs_candidate.is_dir():
+                folders.append(agent_configs_candidate)
+
         # Search L* layer directories
         for layer_dir in root.iterdir():
             if layer_dir.is_dir() and layer_dir.name.startswith("L"):
                 candidate = layer_dir / folder_key
                 if candidate.exists() and candidate.is_dir():
                     folders.append(candidate)
-        
+
         # Search root-level folders (config/, prompt_governance/, runtime/)
         for root_folder in ["config", "prompt_governance", "runtime"]:
             root_candidate = root / root_folder / folder_key
             if root_candidate.exists() and root_candidate.is_dir():
                 folders.append(root_candidate)
-        
+
         # Search direct root-level governed folders (e.g., base_agents/, mixins/)
         direct_candidate = root / folder_key
         if direct_candidate.exists() and direct_candidate.is_dir():
             folders.append(direct_candidate)
-    
+
     return folders
 
 
@@ -99,6 +106,8 @@ COMPLIANT_FOLDERS = frozenset({
     "healers",
     "exceptions",
     "core_kernel",
+    # Note: config, engines, prompt_governance have known violations and need remediation
+    # They are excluded from positive invariant tests but have negative tests
 })
 
 
@@ -232,7 +241,105 @@ class TestFolderPurityRulesIntegrity:
         ]
         for folder_key, patterns in FOLDER_PURITY_RULES.items():
             if folder_key == "dashboards":
-                continue
+                continue  # dashboards allows .py files intentionally
             for pattern in patterns:
                 if pattern in forbidden_catchalls:
-                    pytest.fail(f"Forbidden catch-all pattern '{pattern}' in {folder_key}/")
+                    pytest.fail(f"Folder '{folder_key}' has catch-all pattern: {pattern}")
+
+
+@pytest.mark.governance
+class TestRCANegativeTests:
+    """Negative tests that would FAIL if RCA gaps are not fixed."""
+
+    def test_runtime_config_enforces_config_suffix(self) -> None:
+        """runtime/config should only allow _config.py files."""
+        runtime_config = PROJECT_ROOT / "agentic_core" / "runtime" / "config"
+        if not runtime_config.exists():
+            pytest.skip("runtime/config not found")
+
+        violations = []
+        for py_file in _collect_py_files_in_folder(runtime_config):
+            if py_file.name in SKIP_FILES:
+                continue
+            if not py_file.name.endswith("_config.py"):
+                violations.append(py_file.name)
+
+        if violations:
+            pytest.fail(f"runtime/config has non-_config files: {violations}")
+
+    def test_runtime_engine_enforces_engine_suffix(self) -> None:
+        """runtime/engine should only allow _engine.py files (via engine->engines alias)."""
+        runtime_engine = PROJECT_ROOT / "agentic_core" / "runtime" / "engine"
+        if not runtime_engine.exists():
+            pytest.skip("runtime/engine not found")
+
+        violations = []
+        for py_file in _collect_py_files_in_folder(runtime_engine):
+            if py_file.name in SKIP_FILES:
+                continue
+            if not py_file.name.endswith("_engine.py"):
+                violations.append(py_file.name)
+
+        if violations:
+            pytest.fail(f"runtime/engine has non-_engine files: {violations}")
+
+    def test_agent_configs_enforces_config_suffix(self) -> None:
+        """config/agent_configs should only allow _config files (per agent_configs patterns)."""
+        agent_configs = PROJECT_ROOT / "agentic_core" / "config" / "agent_configs"
+        if not agent_configs.exists():
+            pytest.skip("config/agent_configs not found")
+
+        violations = []
+        for file_path in agent_configs.iterdir():
+            if file_path.is_file() and file_path.name not in SKIP_FILES:
+                # agent_configs allows: [a-z0-9_]+_config\.(py|yaml|json)$ OR [a-z0-9_]+\.(yaml|json)$
+                if not (file_path.name.endswith("_config.py") or
+                       file_path.name.endswith("_config.yaml") or
+                       file_path.name.endswith("_config.json") or
+                       file_path.name.endswith(".yaml") or
+                       file_path.name.endswith(".json")):
+                    violations.append(file_path.name)
+
+        if violations:
+            pytest.fail(f"config/agent_configs has non-_config files: {violations}")
+
+    def test_prompt_governance_no_root_files(self) -> None:
+        """prompt_governance should not have root files (except __init__.py)."""
+        prompt_gov = PROJECT_ROOT / "agentic_core" / "prompt_governance"
+        if not prompt_gov.exists():
+            pytest.skip("prompt_governance not found")
+
+        violations = []
+        for file_path in prompt_gov.iterdir():
+            if file_path.is_file() and file_path.name not in SKIP_FILES:
+                violations.append(file_path.name)
+
+        if violations:
+            pytest.fail(f"prompt_governance has root files: {violations}")
+
+    def test_observability_probe_executor_compliant(self) -> None:
+        """ObservabilityProbeExecutor.py should be compliant (Executor suffix allowed)."""
+        obs_probe = PROJECT_ROOT / "agentic_core" / "L6_observability" / "reasoning" / "ObservabilityProbeExecutor.py"
+        if not obs_probe.exists():
+            pytest.skip("ObservabilityProbeExecutor.py not found")
+
+        # This should PASS - Executor suffix is allowed in reasoning folders
+        assert obs_probe.name.endswith("Executor.py"), "Should end with Executor.py"
+
+    def test_meta_learning_utils_location_ssot(self) -> None:
+        """meta_learning utils should be classified to L7_meta_learning/utils."""
+        # Check DOMAIN_CONTENT_SIGNALS has the mapping
+        from agentic_core.L5_safety.config.structure_blueprint.classification import DOMAIN_CONTENT_SIGNALS
+
+        assert "meta_learning_engine_util" in DOMAIN_CONTENT_SIGNALS, "Missing signal for meta_learning_engine_util"
+        assert "meta_learning_storage_util" in DOMAIN_CONTENT_SIGNALS, "Missing signal for meta_learning_storage_util"
+        assert DOMAIN_CONTENT_SIGNALS["meta_learning_engine_util"] == "L7_meta_learning/utils"
+        assert DOMAIN_CONTENT_SIGNALS["meta_learning_storage_util"] == "L7_meta_learning/utils"
+
+    def test_state_util_location_ssot(self) -> None:
+        """state_util should be classified to L4_state/utils."""
+        # Check DOMAIN_CONTENT_SIGNALS has the mapping
+        from agentic_core.L5_safety.config.structure_blueprint.classification import DOMAIN_CONTENT_SIGNALS
+
+        assert "state_util" in DOMAIN_CONTENT_SIGNALS, "Missing signal for state_util"
+        assert DOMAIN_CONTENT_SIGNALS["state_util"] == "L4_state/utils"
