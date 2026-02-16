@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
-from re import Pattern
+from pathlib import Path
 from typing import Final
 
 # ============================================================================
@@ -146,6 +146,49 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
 # ============================================================================
 # FOLDER PURITY RULES (Strings - Compiled Lazily)
 # ============================================================================
+#
+# Canonical summary (documentation only): patterns below are the source of truth.
+#
+# A) FOLDER_PURITY_RULES (allowed patterns per folder)
+# ├── reasoning:       .*Agent\.py$ | .*Executor\.py$ | .*Orchestrator\.py$ | .*Inspector\.py$ | .*Healer\.py$ | .*Guardian\.py$
+# ├── validators:      .*_validator\.py$ | .*Validator\.py$
+# ├── config:          .*_config\.(py|yaml|json)$
+# ├── types:           .*_types\.py$ | .*_protocol\.py$ | I[A-Z].*Protocol\.py$ | .*Error\.py$ | .*Exception\.py$
+# ├── utils:           .*_util\.py$ | .*_helper\.py$
+# ├── scripts:         ^[a-z][a-z0-9_]*\.py$
+# ├── enforcement:
+# │   ├── .*_(guardrail|enforcer|gate|strategy)\.py$
+# │   └── .*Strategy\.py$ | .*Adapter\.py$ | .*Monitor\.py$ | .*Factory\.py$ | .*Gateway\.py$
+# ├── dashboards:      .*\.(html|js|css|yaml|json|py)$
+# ├── engines:         .*_(engine|executor|task|impl|router|service|client|node|cache|planner|analyzer|mapper|embedder|scanner|core|system|composer|scorer|detector|builder|normalizer)\.py$
+# └── tools:           .*_(tool|impl|client)\.py$
+#
+# A1) GLOBAL FOLDER PURITY (agentic_core root-level folders)
+# ├── base_agents:     ^L[0-9][A-Za-z]+Base\.py$ | ^SovereignBaseAgent\.py$ | ^LightweightBase\.py$
+# ├── mixins:          ^[a-z0-9_]+_mixin\.py$
+# ├── interfaces:      ^I[A-Z][A-Za-z0-9]+\.py$
+# └── agent_configs:   ^[a-z0-9_]+_config\.py$ | ^[a-z0-9_]+\.yaml$ | ^[a-z0-9_]+\.json$
+#
+# A2) LAYER-SPECIFIC FOLDER PURITY (within L* folders)
+# ├── healers:           .*_healer\.py$ | .*Healer\.py$
+# ├── caching:           .*_cache\.py$ | .*_cacher\.py$ | .*Cache\.py$
+# ├── memory:            .*_memory\.py$ | .*_store\.py$ | .*Memory\.py$
+# ├── security:          .*_security\.py$ | .*Security\.py$ | .*_guard\.py$
+# ├── golden_evaluation: .*_eval\.py$ | .*_evaluation\.py$ | .*Evaluator\.py$
+# ├── exceptions:        .*Error\.py$ | .*Exception\.py$ | .*_exceptions\.py$
+# └── core_kernel:       .*_kernel\.py$ | .*_core\.py$
+#
+# B) INFRASTRUCTURE_PROFILES (permissive): runtime, meta_control, policy => .*\.py$
+# C) FOLDER_ALIASES: knowledge -> reasoning; validation -> validators
+# D) NO_ROOT_FILES_FOLDERS: security (only approved subfolders; no root files except __init__.py)
+#
+# E) FOLDER_PURITY_DISALLOWED (forbidden-in-folder patterns)
+# ├── engines: forbids Agent/Orchestrator/Strategy/Validator/types/util/config patterns
+# └── tools:   forbids Agent/Strategy/Validator/types/util/config patterns
+#
+# F) FORBIDDEN_COMPOUND_PATTERNS: *_types_config.py, *_validator_util.py, *_types_validator.py, *_config_util.py
+#
+# NOTE: L5_ENFORCEMENT_ALLOWED_SUFFIXES is governance (suffix allowlist), not folder purity.
 
 FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
     "reasoning": [
@@ -305,6 +348,8 @@ FOLDER_ALIASES: Final[Mapping[str, str]] = {
     "knowledge": "reasoning",
     # prompt_governance/validation aligns to validators treatment
     "validation": "validators",
+    # runtime/engine maps to engines rules
+    "engine": "engines",
 }
 
 
@@ -315,11 +360,13 @@ FOLDER_ALIASES: Final[Mapping[str, str]] = {
 
 NO_ROOT_FILES_FOLDERS: Final[frozenset[str]] = frozenset({
     "security",  # prompt_governance/security - utils must be in security/utils/
+    "prompt_governance",  # prompt_governance root - files must be in approved subfolders
 })
 
 # Approved subfolders for NO_ROOT_FILES_FOLDERS
 APPROVED_SUBFOLDERS: Final[Mapping[str, frozenset[str]]] = {
     "security": frozenset({"utils", "detectors", "schemas", "validators", "adversarial"}),
+    "prompt_governance": frozenset({"core", "meta_prompts", "optimization", "registry", "scripts", "security", "templates", "utils", "validation"}),
 }
 
 
@@ -458,6 +505,10 @@ NON_PYTHON_FOLDER_ROUTES: Final[Mapping[str, str]] = {
 DOMAIN_CONTENT_SIGNALS: Final[Mapping[str, str]] = {
     "dashboard": "L6_observability/dashboards",
     "playwright": "L6_observability/dashboards",
+    # Location SSOT signals for misclassified utility files
+    "meta_learning_engine_util": "L7_meta_learning/utils",
+    "meta_learning_storage_util": "L7_meta_learning/utils",
+    "state_util": "L4_state/utils",
 }
 
 
@@ -518,3 +569,39 @@ def get_folder_purity_disallowed_compiled() -> dict[str, list[Pattern]]:
 def get_forbidden_compound_patterns_compiled() -> list[Pattern]:
     """Compile and cache forbidden compound patterns."""
     return [re.compile(p) for p in FORBIDDEN_COMPOUND_PATTERNS]
+
+
+def get_folder_key_for_path(path: Path) -> str:
+    """
+    Get the folder purity key for a given path.
+
+    Handles special cases:
+    - config/agent_configs -> agent_configs
+    - runtime/engine -> engines (via alias)
+    - runtime/config -> config
+    - prompt_governance -> prompt_governance
+    - L*/subfolder -> subfolder
+    """
+    parts = path.relative_to("agentic_core").parts
+
+    # Special case: config/agent_configs
+    if len(parts) >= 3 and parts[0] == "config" and parts[1] == "agent_configs":
+        return "agent_configs"
+
+    # Special case: runtime subfolders
+    if len(parts) >= 2 and parts[0] == "runtime":
+        return parts[1]  # e.g., "config", "engine"
+
+    # Special case: prompt_governance root
+    if len(parts) >= 1 and parts[0] == "prompt_governance":
+        return "prompt_governance"
+
+    # L* subfolders
+    if len(parts) >= 2 and parts[0].startswith("L") and parts[0][1].isdigit():
+        return parts[1]
+
+    # Root-level folders
+    if len(parts) >= 1:
+        return parts[0]
+
+    return ""
