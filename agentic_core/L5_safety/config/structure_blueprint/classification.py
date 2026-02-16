@@ -291,10 +291,20 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
 
 INFRASTRUCTURE_PROFILES: Final[Mapping[str, Sequence[str]]] = {
     "runtime": [r".*\.py$"],
-    "knowledge": [r".*\.py$"],
-    "prompt_governance": [r".*\.py$"],
     "meta_control": [r".*\.py$"],
     "policy": [r".*\.py$"],
+}
+
+
+# ============================================================================
+# FOLDER ALIASES (folders that inherit rules from another folder)
+# ============================================================================
+
+FOLDER_ALIASES: Final[Mapping[str, str]] = {
+    # knowledge/reasoning aliases to reasoning (PascalCase agents allowed)
+    "knowledge": "reasoning",
+    # prompt_governance/validation aligns to validators treatment
+    "validation": "validators",
 }
 
 

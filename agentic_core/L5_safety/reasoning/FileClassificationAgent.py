@@ -2197,6 +2197,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             None if file is in a valid folder, or violation dict with eviction target.
         """
         from agentic_core.L5_safety.config.structure_blueprint_config import (
+            FOLDER_ALIASES,
             FOLDER_PURITY_RULES,
             INFRASTRUCTURE_PROFILES,
             NON_PYTHON_FOLDER_ROUTES,
@@ -2209,6 +2210,10 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         folder_name = path.parent.name
         path_str = str(path)
+
+        # [GOVERNANCE: FOLDER ALIASES]
+        # Resolve folder aliases before checking rules
+        resolved_folder = FOLDER_ALIASES.get(folder_name, folder_name)
 
         # [GOVERNANCE: L0-L6 ENFORCEMENT/ RULES]
         # For any folder path matching agentic_core/L[0-6]_*/*/enforcement/:
@@ -2238,18 +2243,18 @@ class FileClassificationAgent(*BASE_CLASSES):
                         }
 
         # [FAIL-CLOSED ENFORCEMENT 2026-02-16]
-        # Check if folder is governed by FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES
+        # Check if folder (or its alias) is governed by FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES
         # If not in either, this is an ungoverned folder - fail closed
-        if folder_name not in FOLDER_PURITY_RULES and folder_name not in INFRASTRUCTURE_PROFILES:
+        if resolved_folder not in FOLDER_PURITY_RULES and resolved_folder not in INFRASTRUCTURE_PROFILES:
             # Ungoverned folder - return None to skip (legacy behavior for now)
             # TODO: Enable hard failure once all folders are governed
             return None
 
         # Get allowed patterns from FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES
-        if folder_name in FOLDER_PURITY_RULES:
-            allowed_patterns = FOLDER_PURITY_RULES[folder_name]
+        if resolved_folder in FOLDER_PURITY_RULES:
+            allowed_patterns = FOLDER_PURITY_RULES[resolved_folder]
         else:
-            allowed_patterns = INFRASTRUCTURE_PROFILES[folder_name]
+            allowed_patterns = INFRASTRUCTURE_PROFILES[resolved_folder]
 
         # Check if filename matches ANY allowed pattern for this folder
         for pattern in allowed_patterns:
