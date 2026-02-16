@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from apps_rg.config.ReasoningToggles import ReasoningToggles, get_toggles
+
 from apps_rg.types.SovereignContext import ImmutableStagingBuffer, TraceRegistry
 
 
