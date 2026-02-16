@@ -128,3 +128,33 @@ def safe_unparse(node: ast.AST) -> str | None:
         return ast.unparse(node)
     except (AttributeError, TypeError, ValueError):
         return None
+
+
+def compute_file_hash(path: str) -> str:
+    """Compute SHA256 hash of a file.
+
+    Args:
+        path: File path to hash
+
+    Returns:
+        SHA256 hex digest
+    """
+    import hashlib
+
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def normalize_path(path: str) -> str:
+    """Normalize file path to forward slashes.
+
+    Args:
+        path: File path (may contain backslashes on Windows)
+
+    Returns:
+        Normalized path with forward slashes
+    """
+    return path.replace("\\", "/").replace("//", "/")
