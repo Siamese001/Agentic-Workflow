@@ -20,6 +20,7 @@ from agentic_core.L2_execution.types.heal_contract import (
     HealCheckResult,
     HealStatus,
 )
+from agentic_core.utils.ast_fuzzy import parse_evidence as _parse_evidence
 
 
 def heal_guardian_drift_detection(
