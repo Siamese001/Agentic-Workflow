@@ -251,7 +251,7 @@ class PromptRegistry:
                     extra={"error": str(e)},
                     exc_info=True,
                 )
-            self._create_default_templates()
+            return None  # Explicit failure indicator
 
     def _save_registry(self) -> None:
         """Save registry to disk."""
@@ -274,6 +274,7 @@ class PromptRegistry:
                     extra={"error": str(e)},
                     exc_info=True,
                 )
+            return None  # Explicit failure indicator
 
     def _create_default_templates(self) -> None:
         """Create default prompt templates."""

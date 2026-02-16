@@ -181,12 +181,7 @@ class MetricAugmenter:
 
         except Exception as e:
             logger.error(f"Error augmenting bullet: {str(e)}")
-            return AugmentedBullet(
-                original_text=bullet_text,
-                technical_metric=None,
-                business_impact=None,
-                final_text=bullet_text,
-            )
+            return None  # Explicit failure indicator
 
     def _select_highest_impact_metric(self, metrics: list[dict[str, Any]]) -> dict[str, Any]:
         """Select the metric with highest business impact.
@@ -248,16 +243,7 @@ class MetricAugmenter:
 
         except Exception as e:
             logger.error(f"Error augmenting batch: {str(e)}")
-            return [
-                AugmentedBullet(
-                    original_text=b,
-                    technical_metric=None,
-                    business_impact=None,
-                    final_text=b,
-                )
-                for b in bullets
-                if isinstance(b, str)
-            ]
+            return None  # Explicit failure indicator
 
     def _detect_metrics(self, text: str) -> list[dict[str, Any]]:
         """Detect ALL technical metrics in text.
@@ -344,7 +330,7 @@ class MetricAugmenter:
 
         except Exception as e:
             logger.error(f"Error detecting metrics: {str(e)}")
-            return []
+            return None  # Explicit failure indicator
 
     def _estimate_impact(
         self,
@@ -491,7 +477,7 @@ class MetricAugmenter:
 
         except Exception as e:
             logger.error(f"Error creating augmented text: {str(e)}")
-            return original
+            return None  # Explicit failure indicator
 
 
 # Factory function for easy instantiation

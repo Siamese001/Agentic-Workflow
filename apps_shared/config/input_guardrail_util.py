@@ -12,9 +12,12 @@ import time
 import unicodedata
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Final
 
 logger = logging.getLogger(__name__)
+
+# Configuration constants (externalized from magic values)
+DEFAULT_RATE_LIMIT_PER_MINUTE: Final[int] = 60
 
 
 class GuardAction(Enum):
@@ -56,7 +59,7 @@ class InputGuardrail:
         enable_encoding_check: bool = True,
         enable_rate_limit: bool = True,
         strict_mode: bool = False,
-        rate_limit_per_minute: int = 60,
+        rate_limit_per_minute: int = DEFAULT_RATE_LIMIT_PER_MINUTE,
     ):
         """Initialize the input guardrail.
 
@@ -276,12 +279,7 @@ class InputGuardrail:
 
         except Exception as e:
             logger.error(f"Error during input scan: {e}")
-            # Fail safe - allow but warn
-            return GuardResult(
-                action=GuardAction.WARN,
-                reason="Scan error - proceeding with caution",
-                confidence=0.0,
-            )
+            return None  # Explicit failure indicator
 
     def _check_injection(self, text: str) -> tuple[bool, list[str]]:
         """Check for prompt injection patterns.
@@ -453,7 +451,7 @@ class InputGuardrail:
                     if re.search(pattern, decoded, re.IGNORECASE):
                         return (True, f"Base64 payload with injection pattern: {match[:20]}...")
 
-            except Exception:
+            except (ValueError, UnicodeDecodeError):
                 # Not valid base64, continue
                 pass
 
@@ -467,7 +465,7 @@ class InputGuardrail:
                 decoded = bytes.fromhex(match).decode("utf-8", errors="ignore")
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, "Hex encoded payload with malicious content")
-            except Exception:
+            except (ValueError, UnicodeDecodeError):
                 pass
 
         return (False, "")

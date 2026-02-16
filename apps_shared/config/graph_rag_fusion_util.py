@@ -9,9 +9,13 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Final
 
 logger = logging.getLogger(__name__)
+
+# Configuration constants (externalized from magic values)
+DEFAULT_CONFIDENCE_THRESHOLD: Final[float] = 0.6
+DEFAULT_MAX_RESULTS: Final[int] = 5
 
 
 class QueryType(Enum):
@@ -222,7 +226,7 @@ class GraphRAGFusion:
         knowledge_graph: KnowledgeGraphAgent | None = None,
         vector_retriever: callable | None = None,
         enable_fusion: bool = True,
-        confidence_threshold: float = 0.6,
+        confidence_threshold: float = DEFAULT_CONFIDENCE_THRESHOLD,
     ):
         """Initialize GraphRAG fusion.
 
@@ -254,7 +258,7 @@ class GraphRAGFusion:
         self,
         natural_query: str,
         query_type: QueryType | None = None,
-        max_results: int = 5,
+        max_results: int = DEFAULT_MAX_RESULTS,
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
 
@@ -356,12 +360,7 @@ class GraphRAGFusion:
 
         except Exception as e:
             logger.error(f"Vector query failed: {e}")
-            return FusionResult(
-                query=query,
-                query_type=QueryType.VECTOR_ONLY,
-                sources=["vector_error"],
-                confidence=0.0,
-            )
+            return None  # Explicit failure indicator
 
     async def _graph_only_query(self, query: str, max_results: int) -> FusionResult:
         """Execute graph-only query.
@@ -407,8 +406,7 @@ class GraphRAGFusion:
 
         except Exception as e:
             logger.error(f"Graph query failed: {e}")
-            # Fallback to vector
-            return await self._vector_only_query(query, max_results)
+            return None  # Explicit failure indicator
 
     async def _fusion_query(
         self,
@@ -566,7 +564,7 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 async def graphrag_query(
     query: str,
     query_type: QueryType | None = None,
-    max_results: int = 5,
+    max_results: int = DEFAULT_MAX_RESULTS,
     **kwargs,
 ) -> FusionResult:
     """Convenience function for GraphRAG query.

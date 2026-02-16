@@ -135,7 +135,7 @@ repos:
       # Blocks commits that violate architectural module integrity
       - id: module-collision-guard
         name: "T3f: Module Collision Guard"
-        entry: python tools/architectural/module_collision_guard.py
+        entry: python agentic_core/L5_safety/enforcement/module_collision_guard.py
         language: python
         pass_filenames: false
         always_run: true

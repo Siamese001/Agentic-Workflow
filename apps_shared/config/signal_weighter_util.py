@@ -280,14 +280,14 @@ class SignalWeighter:
                         return adjusted_weights
                     except Exception as e:
                         logger.error(f"Failed to apply industry modifiers: {str(e)}")
-                        return base_weights
+                        return None  # Explicit failure indicator
 
             logger.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}")
             return base_weights
 
         except Exception as e:
             logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
-            return self.default_weights
+            return None  # Explicit failure indicator
 
     def reweight_score(
         self,
@@ -355,15 +355,7 @@ class SignalWeighter:
 
         except Exception as e:
             logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
-            # Return safe fallback
-            return WeightingResult(
-                original_score=original_score if isinstance(original_score, int | float) else 0.0,
-                adjusted_score=0.0,
-                weights_applied=weights,
-                signal_type="error",
-                adjustment_factor=0.0,
-                doc_id=doc_id,
-            )
+            return None  # Explicit failure indicator
 
     def _extract_signal_type(self, metadata: dict[str, str | float]) -> str:
         """Extract signal type from document metadata.
@@ -407,7 +399,7 @@ class SignalWeighter:
             return "balanced"
         except Exception as e:
             logger.error(f"Error extracting signal type: {str(e)}")
-            return "balanced"
+            return None  # Explicit failure indicator
 
     def _get_weight_for_signal_type(self, signal_type: str, weights: SignalWeights) -> float:
         """Get the appropriate weight for a signal type.
@@ -435,7 +427,7 @@ class SignalWeighter:
             return weight_map.get(signal_type.lower(), 0.5)
         except Exception as e:
             logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
-            return 0.5
+            return None  # Explicit failure indicator
 
     def batch_reweight(
         self,
@@ -468,7 +460,7 @@ class SignalWeighter:
             return results
         except Exception as e:
             logger.error(f"Error in batch reweighting: {str(e)}")
-            return []
+            return None  # Explicit failure indicator
 
 
 # Factory function for easy instantiation

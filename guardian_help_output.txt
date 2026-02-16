@@ -1,0 +1,17 @@
+usage: run_all_guardians.py [-h] [--write-artifacts WRITE_ARTIFACTS]
+                            [--format {json,text}] [--json] [--strict]
+                            [--include-disabled] [--timestamp TIMESTAMP]
+                            [--correlation-id CORRELATION_ID]
+
+Run All Guardians (Aggregated)
+
+options:
+  -h, --help            show this help message and exit
+  --write-artifacts WRITE_ARTIFACTS
+                        Repo-relative directory to write result JSON
+  --format {json,text}
+  --json                Shorthand for --format json
+  --strict
+  --include-disabled    Include disabled-by-default guardians in aggregation
+  --timestamp TIMESTAMP
+  --correlation-id CORRELATION_ID

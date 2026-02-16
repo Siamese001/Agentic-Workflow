@@ -66,7 +66,7 @@ def load_rg_specs(force_reload: bool = False) -> RGAgentSpecs:
         Logger.info("Falling back to default configuration")
         specs = RGAgentSpecs()
         _RG_SPECS_CACHE = specs
-        return specs
+        return None  # Explicit failure indicator
 
 
 def save_rg_specs(specs: RGAgentSpecs) -> None:

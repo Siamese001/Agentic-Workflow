@@ -10,11 +10,20 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Final
 
 from pydantic import BaseModel, validator
 
 logger = logging.getLogger(__name__)
+
+# Validation configuration constants (externalized from magic values)
+HOP_ID_MAX_LENGTH: Final[int] = 100
+CONTEXT_DATA_MAX_KEYS: Final[int] = 1000
+RETRY_COUNT_MAX: Final[int] = 10
+TIMEOUT_MIN_SECONDS: Final[float] = 0.1
+TIMEOUT_MAX_SECONDS: Final[float] = 300.0
+JSON_PAYLOAD_MAX_LENGTH: Final[int] = 10000
+XML_CONTENT_MAX_LENGTH: Final[int] = 50000
 
 
 class ValidationType(Enum):
@@ -274,7 +283,7 @@ class InputValidator:
                     # Try ISO format first
                     try:
                         return datetime.fromisoformat(value)
-                    except Exception:
+                    except ValueError:
                         # Try timestamp
                         return datetime.fromtimestamp(float(value))
                 elif isinstance(value, int | float):
@@ -402,47 +411,47 @@ class InputValidator:
         return value
 
 
-# Predefined validation rules
+# Predefined validation rules (using module-level constants)
 COMMON_RULES = {
     "hop_id": ValidationRule(
         "hop_id",
         ValidationType.STRING,
         required=True,
         min_length=1,
-        max_length=100,
+        max_length=HOP_ID_MAX_LENGTH,
         pattern=r"^[a-zA-Z0-9_-]+$",
     ),
     "context_data": ValidationRule(
         "context_data",
         ValidationType.DICT,
         required=False,
-        max_length=1000,  # Max 1000 keys
+        max_length=CONTEXT_DATA_MAX_KEYS,
     ),
     "retry_count": ValidationRule(
         "retry_count",
         ValidationType.INTEGER,
         required=False,
         min_value=0,
-        max_value=10,
+        max_value=RETRY_COUNT_MAX,
     ),
     "timeout": ValidationRule(
         "timeout",
         ValidationType.FLOAT,
         required=False,
-        min_value=0.1,
-        max_value=300.0,
+        min_value=TIMEOUT_MIN_SECONDS,
+        max_value=TIMEOUT_MAX_SECONDS,
     ),
     "json_payload": ValidationRule(
         "json_payload",
         ValidationType.JSON,
         required=False,
-        max_length=10000,  # Max 10KB
+        max_length=JSON_PAYLOAD_MAX_LENGTH,
     ),
     "xml_content": ValidationRule(
         "xml_content",
         ValidationType.XML,
         required=False,
-        max_length=50000,  # Max 50KB
+        max_length=XML_CONTENT_MAX_LENGTH,
     ),
 }
 

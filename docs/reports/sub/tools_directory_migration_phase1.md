@@ -129,7 +129,36 @@ no tools references
 ```
 
 ## Final Commit Hash
-[TO BE FILLED AFTER COMMIT]
+68513324e2970ac4cc43ff4a51c49347de0e651c
 
 ## Changed Paths
-[TO BE FILLED AFTER COMMIT]
+agentic_core/L5_safety/enforcement/__init__.py
+agentic_core/L5_safety/enforcement/governance/__init__.py
+agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
+agentic_core/L5_safety/enforcement/governance/artifacts_guard.py
+agentic_core/L5_safety/enforcement/governance/cache_guard.py
+agentic_core/L5_safety/enforcement/governance/docs_structure_guard.py
+agentic_core/L5_safety/enforcement/governance/logs_guard.py
+agentic_core/L5_safety/enforcement/module_collision_guard.py
+agentic_core/L5_safety/enforcement/phase_acceptance_guard.py
+agentic_core/L5_safety/enforcement/pytest_config_guard.py
+agentic_core/L5_safety/enforcement/security/__init__.py
+agentic_core/L5_safety/enforcement/security/credential_guard.py
+tests/enforcement/test_phase_acceptance_guard.py
+tests/enforcement/test_pytest_config_guard.py
+tests/governance/test_agent_heal_audit.py
+tools/architectural/module_collision_guard.py
+tools/enforcement/phase_acceptance_guard.py
+tools/enforcement/pytest_config_guard.py
+tools/governance/agent_heal_audit.py
+tools/governance/artifacts_guard.py
+tools/governance/cache_guard.py
+tools/governance/docs_structure_guard.py
+tools/governance/logs_guard.py
+tools/security/credential_guard.py
+tools/tmp_ok/analyze_clusters_phase3.py
+tools/tmp_ok/analyze_exact_dupes.py
+tools/tmp_ok/callsite_ast_fuzzy_defs.py
+tools/tmp_ok/cluster_ast_fuzzy_defs.py
+tools/tmp_ok/derive_central_candidates.py
+tools/tmp_ok/scan_ast_fuzzy_defs.py

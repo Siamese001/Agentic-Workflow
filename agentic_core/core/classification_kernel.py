@@ -55,12 +55,27 @@ FileType = Literal[
     "VALIDATOR",
     "FACTORY",
     "CONFIG",
+    "CONFIG_WITH_LOGIC",  # CONFIG file containing executable methods (violation)
     "ADAPTER",
     "STRATEGY",
     "EXCEPTION",
     "SERVICE",
     "IGNORE",
 ]
+
+# Classification conflict tracking for governance hardening
+_classification_conflicts: list[dict] = []
+
+
+def get_classification_conflicts() -> list[dict]:
+    """Return list of dual-tag/ambiguity conflicts detected during classification."""
+    return _classification_conflicts.copy()
+
+
+def clear_classification_conflicts() -> None:
+    """Clear the conflict tracking list."""
+    global _classification_conflicts
+    _classification_conflicts = []
 
 
 # ============================================================================
@@ -255,6 +270,30 @@ def _classify_impl(path: Path) -> FileType:
     is_adapter = any(primary_name.endswith(s) for s in ("Adapter", "Wrapper", "Bridge"))
     is_factory = primary_name.endswith("Factory")
 
+    # --- DUAL-TAG CONFLICT DETECTION (governance hardening) ---
+    top_tier_signals = []
+    if is_agent:
+        top_tier_signals.append("AGENT")
+    if is_orchestrator:
+        top_tier_signals.append("ORCHESTRATOR")
+    if is_mixin:
+        top_tier_signals.append("MIXIN")
+    if is_protocol:
+        top_tier_signals.append("PROTOCOL")
+    if is_strategy:
+        top_tier_signals.append("STRATEGY")
+
+    if len(top_tier_signals) > 1:
+        # Track dual-tag conflict for governance reporting
+        _classification_conflicts.append(
+            {
+                "path": str(path),
+                "conflict_type": "DUAL_TAG",
+                "signals": top_tier_signals,
+                "message": f"Multiple top-tier signals detected: {', '.join(top_tier_signals)}",
+            }
+        )
+
     # --- Priority execution ---
     # PRIORITY 6: EXCEPTION
     if is_exception:
@@ -294,9 +333,35 @@ def _classify_impl(path: Path) -> FileType:
             if isinstance(item.target, ast.Name) and item.target.id == "_instance":
                 return "SERVICE"
 
-    # PRIORITY 14: CONFIG
+    # PRIORITY 14: CONFIG (with logic detection for governance hardening)
     config_keywords = {"config", "blueprint", "settings", "manifest"}
     if any(k in path.stem.lower() for k in config_keywords):
+        # Check if CONFIG file contains executable methods (violation)
+        has_executable_methods = False
+        for node in class_nodes:
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef):
+                    # Skip __init__, __post_init__, property getters, and dunder methods
+                    if not (
+                        item.name.startswith("__")
+                        or item.name.startswith("_")
+                        or any(isinstance(d, ast.Name) and d.id == "property" for d in item.decorator_list)
+                    ):
+                        has_executable_methods = True
+                        break
+            if has_executable_methods:
+                break
+
+        if has_executable_methods:
+            # Track conflict for governance reporting
+            _classification_conflicts.append(
+                {
+                    "path": str(path),
+                    "conflict_type": "CONFIG_WITH_LOGIC",
+                    "message": f"CONFIG file {path.name} contains executable methods",
+                }
+            )
+            return "CONFIG_WITH_LOGIC"
         return "CONFIG"
 
     # PRIORITY 15: VALIDATOR

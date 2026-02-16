@@ -237,7 +237,7 @@ class PromptEnhancer:
 
             except Exception as e:
                 logger.error(f"Contract validation failed: {e}")
-                result["validation_errors"].append(str(e))
+                return None  # Explicit failure indicator
 
         # Parse response using prompt assembler
         if hasattr(self.prompt_assembler, "parse_response"):

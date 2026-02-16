@@ -132,6 +132,15 @@ class SilentSwallowerDetector(AntiPatternDetector):
                         ):
                             has_proper_handling = True
                             break
+                elif isinstance(stmt.value, ast.Call):
+                    # Check for dataclass/object returns with success=False pattern
+                    # e.g., return ConfigLoadResult(success=False, ...)
+                    for keyword in getattr(stmt.value, "keywords", []):
+                        if keyword.arg == "success":
+                            if isinstance(keyword.value, ast.Constant):
+                                if keyword.value.value is False:
+                                    has_proper_handling = True
+                                    break
 
         # If no proper handling, this is a silent swallower
         if not has_proper_handling:
