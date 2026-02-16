@@ -73,9 +73,9 @@ git status --porcelain=v1
 | 4.1 | 64e21fb12 | YAML-only hard enforcement - remove markdown fallback |
 | 4.2 | 9823e8237 | Behavioral equivalence proof - verify YAML-only matches prior behavior |
 | 4.3 | d5466a2e2 | Cross-app runtime validation - verify apps_rg, apps_lic, apps_shared |
-| 4.4 | (pending) | Structural suite resolution - lock debt with governance |
-| 4.5 | (pending) | Governance hard lock - strengthen enforcement perimeter |
-| 4.6 | (pending) | Final consistency audit + stop discipline |
+| 4.4 | evidence-only | Structural suite resolution - lock debt with governance |
+| 4.5 | evidence-only | Governance hard lock - strengthen enforcement perimeter |
+| 4.6 | (normalization) | Final consistency audit + evidence normalization |
 
 ### Evidence Files Created
 
