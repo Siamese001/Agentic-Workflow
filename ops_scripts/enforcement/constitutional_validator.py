@@ -10,6 +10,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class ValidationResult:
     """Immutable validation result with deterministic representation."""
+
     is_valid: bool
     violations: list[str]
 
