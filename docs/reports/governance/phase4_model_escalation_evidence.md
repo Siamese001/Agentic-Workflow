@@ -108,3 +108,41 @@ index 3d10fa94d..d6661844b 100644
 Exit code: 0
 
 **WAVE 4.2 ACCEPTANCE**: All tests pass. Observer seam added (no external calls).
+
+---
+
+## Wave 4.3 — Governance Tests (Flag + Observer)
+
+### Test File
+
+`tests/governance/test_heal_policy_model_escalation_flag.py`
+
+### Tests
+
+**TestEscalationFlagDefaultOff**:
+1. `test_no_escalation_log_when_disabled` — Without env var, no "escalation_enabled=1" log appears
+2. `test_observer_not_invoked_when_disabled` — Without env var, observer is not invoked
+
+**TestEscalationFlagEnabled**:
+3. `test_escalation_log_when_enabled` — With env var set to "1", log contains escalation message
+4. `test_observer_invoked_when_enabled` — With env var set to "1", observer is called exactly once
+
+### pytest -q tests/governance/test_heal_policy_model_escalation_flag.py
+
+```text
+tests/governance/test_heal_policy_model_escalation_flag.py::TestEscalationFlagDefaultOff::test_no_escalation_log_when_disabled PASSED
+tests/governance/test_heal_policy_model_escalation_flag.py::TestEscalationFlagDefaultOff::test_observer_not_invoked_when_disabled PASSED
+tests/governance/test_heal_policy_model_escalation_flag.py::TestEscalationFlagEnabled::test_escalation_log_when_enabled PASSED
+tests/governance/test_heal_policy_model_escalation_flag.py::TestEscalationFlagEnabled::test_observer_invoked_when_enabled PASSED
+====================== 4 passed in 0.03s =======================
+```
+
+### pytest -q (full suite)
+
+```text
+===================== 126 passed in 20.51s =====================
+```
+
+Exit code: 0
+
+**WAVE 4.3 ACCEPTANCE**: All tests pass. Flag + observer contract proven.
