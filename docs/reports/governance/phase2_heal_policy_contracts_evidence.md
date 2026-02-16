@@ -133,19 +133,21 @@ Note: Governance tests continue to execute normally after documentation update.
 
 ---
 
-## Phase 2 Complete Summary
+## Phase 2 Summary (Pre-Closeout)
 
 **Commits:**
 - Wave 2.1: `88d34dced` - Pure policy types + decision function
 - Wave 2.2: `85821c21f` - CI-grade unit tests (19 passed)
 - Wave 2.3: `5f518b33f` - Documentation stub
 
-**Acceptance Criteria Met:**
+**Acceptance Criteria Assessment (Superseded by Wave 2.4):**
 ✓ Pure stdlib-only module with no routing/executor imports
 ✓ Unit tests cover boundaries, triggers, validation, determinism
-✓ `pytest -q` passes and governance tests execute
+✗ `pytest -q` passes — **FAILED** (16 pre-existing failures)
 ✓ Evidence file contains raw command outputs for each wave
 ✓ Only scoped files modified per wave
+
+**NOTE**: This section is superseded by Wave 2.4 final status below.
 
 ---
 
@@ -264,9 +266,43 @@ The 16 failing tests are NOT related to Phase 2 changes:
 - All failures are in pre-existing tests with pre-existing issues
 - Phase 2 tests execute correctly under plain `pytest -q`
 
-**DETERMINISTIC COMMAND SET FOR PHASE 2**:
+**DETERMINISTIC VERIFICATION COMMAND FOR PHASE 2 SCOPE**:
 ```bash
 pytest -q tests/governance/test_heal_policy_types.py  # Exit 0, 19 passed
 ```
 
-This command set is guaranteed in CI and proves Phase 2 functionality works correctly.
+This command verifies Phase 2 functionality works correctly. CI integration requires explicit job definition updates.
+
+---
+
+## Wave 2.4 Final Commit
+
+```bash
+git --no-pager show --name-only --oneline HEAD
+```
+
+Output (captured after Wave 2.4 evidence commit):
+```
+49af9ca56 governance(heal-policy): phase2 closeout evidence
+docs/reports/governance/phase2_heal_policy_contracts_evidence.md
+```
+
+---
+
+## AUTHORITATIVE FINAL STATUS
+
+**PHASE 2 STATUS: BLOCKED**
+
+Phase 2 cannot be declared complete because:
+1. Original acceptance criteria required `pytest -q` to exit 0
+2. `pytest -q` exits non-zero due to 16 pre-existing failures
+3. Acceptance criteria cannot be changed midstream
+
+**Phase 2 Deliverables (All Working)**:
+- `agentic_core/L5_safety/types/heal_policy_types.py` - Pure policy contract module
+- `tests/governance/test_heal_policy_types.py` - 19 tests, all pass
+- `docs/reports/governance/agent_heal_audit.md` - Documentation stub
+
+**Unblocking Requires**:
+- Fix 16 pre-existing test failures in tests/unit_min_deps/
+- OR: New phase with revised acceptance criteria (not allowed for Phase 2)

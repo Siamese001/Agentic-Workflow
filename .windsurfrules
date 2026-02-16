@@ -931,6 +931,62 @@ Violation: HARD FAIL
 
 ---
 
+## 49. Evidence Consistency Lock (No Contradictory Claims)
+
+Evidence files MUST NOT contain contradictory statements about acceptance status.
+
+Requirements:
+- If any section claims "✓ pytest -q passes", the evidence must show exit 0
+- If pytest exits non-zero, all prior "passes" claims must be struck/superseded
+- Final status section is authoritative; earlier sections must be marked as superseded
+- Incremental evidence appending must reconcile with prior claims
+
+Violation: HARD FAIL
+
+---
+
+## 50. Midstream Acceptance Criteria Lock
+
+Acceptance criteria CANNOT be changed after phase execution begins.
+
+Requirements:
+- Original acceptance criteria is immutable once phase starts
+- If criteria cannot be met, phase status is BLOCKED (not "complete with caveats")
+- New criteria requires a new phase definition
+- Evidence must explicitly state when criteria is not met
+
+Violation: HARD FAIL
+
+---
+
+## 51. Evidence Commit Hash Continuity
+
+Evidence files MUST include the actual HEAD commit hash after evidence is committed.
+
+Requirements:
+- Wave evidence must capture HEAD at time of capture
+- Final evidence section must include HEAD after the evidence commit itself
+- Commit references must be verifiable via `git show`
+- No orphaned commit references (all referenced commits must exist)
+
+Violation: HARD FAIL
+
+---
+
+## 52. No Unverified CI Guarantees
+
+Statements about CI behavior MUST be verifiable against actual CI job definitions.
+
+Requirements:
+- "Guaranteed in CI" requires citation of CI workflow file
+- Use "verification command" not "CI guarantee" unless CI is controlled
+- CI integration claims require explicit job definition updates
+- Assumptions about CI behavior must be stated as assumptions
+
+Violation: HARD FAIL
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
