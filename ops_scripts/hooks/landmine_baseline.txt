@@ -4689,48 +4689,48 @@ apps_shared/config/titanium_search_tool_config.py:137:silent_swallower:Silent ex
 apps_shared/config/titanium_search_tool_config.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:269:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/DecomposedqueryagentStrategy.py:140:magic_configuration:Magic configuration: Hardcoded max_tokens=200 in function call
-apps_shared/reasoning/DecomposedqueryagentStrategy.py:153:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/DecomposedqueryagentStrategy.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/DecomposedqueryagentStrategy.py:303:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/DecomposedqueryagentStrategy.py:54:magic_configuration:Magic configuration: Hardcoded max_sub_queries=4
-apps_shared/reasoning/FewshotregistryStrategy.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/FewshotregistryStrategy.py:323:magic_configuration:Magic configuration: Hardcoded max_examples=3
-apps_shared/reasoning/FewshotregistryStrategy.py:359:magic_configuration:Magic configuration: Hardcoded max_examples=2 in function call
-apps_shared/reasoning/FewshotregistryStrategy.py:68:magic_configuration:Magic configuration: Hardcoded max_examples=3
-apps_shared/reasoning/GlobalcacheStrategy.py:141:magic_configuration:Magic configuration: Hardcoded max_size=10000
-apps_shared/reasoning/GlobalcacheStrategy.py:191:magic_configuration:Magic configuration: Hardcoded threshold=0.92
-apps_shared/reasoning/GlobalcacheStrategy.py:192:magic_configuration:Magic configuration: Hardcoded max_results=5
-apps_shared/reasoning/GlobalcacheStrategy.py:323:magic_configuration:Magic configuration: Hardcoded semantic_threshold=0.92
-apps_shared/reasoning/GlobalcacheStrategy.py:544:magic_configuration:Magic configuration: Hardcoded threshold=0.92
-apps_shared/reasoning/GlobalcacheStrategy.py:54:magic_configuration:Magic configuration: Hardcoded max_size=1000
-apps_shared/reasoning/HardenedeventbusStrategy.py:167:magic_configuration:Magic configuration: Hardcoded max_concurrency=10 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:175:magic_configuration:Magic configuration: Hardcoded max_concurrency=20 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.5 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded timeout=30.0 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.3 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded failure_threshold=10 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded timeout=60.0 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded base_delay=0.5 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded max_attempts=3 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded max_delay=5.0 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:215:magic_configuration:Magic configuration: Hardcoded max_attempts=5 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:215:magic_configuration:Magic configuration: Hardcoded max_delay=10.0 in function call
-apps_shared/reasoning/HardenedeventbusStrategy.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/DecomposedqueryagentStrategy.py:140:magic_configuration:Magic configuration: Hardcoded max_tokens=200 in function call
+apps_shared/enforcement/DecomposedqueryagentStrategy.py:153:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/DecomposedqueryagentStrategy.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/DecomposedqueryagentStrategy.py:303:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/DecomposedqueryagentStrategy.py:54:magic_configuration:Magic configuration: Hardcoded max_sub_queries=4
+apps_shared/enforcement/FewshotregistryStrategy.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/FewshotregistryStrategy.py:323:magic_configuration:Magic configuration: Hardcoded max_examples=3
+apps_shared/enforcement/FewshotregistryStrategy.py:359:magic_configuration:Magic configuration: Hardcoded max_examples=2 in function call
+apps_shared/enforcement/FewshotregistryStrategy.py:68:magic_configuration:Magic configuration: Hardcoded max_examples=3
+apps_shared/enforcement/GlobalcacheStrategy.py:141:magic_configuration:Magic configuration: Hardcoded max_size=10000
+apps_shared/enforcement/GlobalcacheStrategy.py:191:magic_configuration:Magic configuration: Hardcoded threshold=0.92
+apps_shared/enforcement/GlobalcacheStrategy.py:192:magic_configuration:Magic configuration: Hardcoded max_results=5
+apps_shared/enforcement/GlobalcacheStrategy.py:323:magic_configuration:Magic configuration: Hardcoded semantic_threshold=0.92
+apps_shared/enforcement/GlobalcacheStrategy.py:544:magic_configuration:Magic configuration: Hardcoded threshold=0.92
+apps_shared/enforcement/GlobalcacheStrategy.py:54:magic_configuration:Magic configuration: Hardcoded max_size=1000
+apps_shared/enforcement/HardenedeventbusStrategy.py:167:magic_configuration:Magic configuration: Hardcoded max_concurrency=10 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:175:magic_configuration:Magic configuration: Hardcoded max_concurrency=20 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.5 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:191:magic_configuration:Magic configuration: Hardcoded timeout=30.0 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded failure_rate_threshold=0.3 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded failure_threshold=10 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:197:magic_configuration:Magic configuration: Hardcoded timeout=60.0 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded base_delay=0.5 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded max_attempts=3 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:209:magic_configuration:Magic configuration: Hardcoded max_delay=5.0 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:215:magic_configuration:Magic configuration: Hardcoded max_attempts=5 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:215:magic_configuration:Magic configuration: Hardcoded max_delay=10.0 in function call
+apps_shared/enforcement/HardenedeventbusStrategy.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/ProvenancetrackerStrategy.py:232:magic_configuration:Magic configuration: Hardcoded min_words=3
+apps_shared/enforcement/ProvenancetrackerStrategy.py:322:magic_configuration:Magic configuration: Hardcoded limit=100
+apps_shared/enforcement/ProvenancetrackerStrategy.py:353:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/execution_strategy.py:176:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/enforcement/execution_strategy.py:544:magic_configuration:Magic configuration: Hardcoded default_timeout=30.0
+apps_shared/enforcement/execution_strategy.py:545:magic_configuration:Magic configuration: Hardcoded max_concurrent_executions=10
+apps_shared/enforcement/execution_strategy.py:566:magic_configuration:Magic configuration: Hardcoded timeout=30.0
 apps_shared/reasoning/InfrastructureOrchestrator.py:226:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureOrchestrator.py:245:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureOrchestrator.py:269:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:138:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:99:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/ProvenancetrackerStrategy.py:232:magic_configuration:Magic configuration: Hardcoded min_words=3
-apps_shared/reasoning/ProvenancetrackerStrategy.py:322:magic_configuration:Magic configuration: Hardcoded limit=100
-apps_shared/reasoning/ProvenancetrackerStrategy.py:353:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/execution_strategy.py:176:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/execution_strategy.py:544:magic_configuration:Magic configuration: Hardcoded default_timeout=30.0
-apps_shared/reasoning/execution_strategy.py:545:magic_configuration:Magic configuration: Hardcoded max_concurrent_executions=10
-apps_shared/reasoning/execution_strategy.py:566:magic_configuration:Magic configuration: Hardcoded timeout=30.0
 apps_shared/reasoning/l5_autonomous_orchestrator_wrapper.py:28:magic_configuration:Magic configuration: Hardcoded max_cycles=5
 apps_shared/reasoning/l5_autonomous_orchestrator_wrapper.py:29:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
 apps_shared/reasoning/restore_app_agents.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
