@@ -18,7 +18,7 @@ from typing import Any, NamedTuple
 from pydantic import BaseModel
 
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
-from agentic_core.prompt_governance.security.output_schema_validator import validate_against_schema
+from agentic_core.prompt_governance.security.validators.output_schema_validator import validate_against_schema
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
 __all__ = [

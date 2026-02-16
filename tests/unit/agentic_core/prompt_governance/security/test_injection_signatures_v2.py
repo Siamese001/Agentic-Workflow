@@ -15,7 +15,7 @@ import re
 
 import pytest
 
-from agentic_core.prompt_governance.security.injection_detector import (
+from agentic_core.prompt_governance.security.detectors.injection_detector import (
     _REGEX_SIGNATURES,
     INJECTION_SIGNATURES_V2,
     InjectionDetector,

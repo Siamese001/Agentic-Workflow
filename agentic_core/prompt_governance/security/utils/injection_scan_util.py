@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 
-from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
+from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 
 Logger = logging.getLogger(__name__)
 

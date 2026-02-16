@@ -69,3 +69,55 @@ if is_governed:
 tests/enforcement/test_folder_purity_governance.py - 15 passed in 0.03s
 ```
 
+---
+
+## Wave 1.3 — Apply to prompt_governance/security (Domain-Pure Remediation)
+
+### 1. Files Moved
+
+```bash
+git mv injection_detector.py -> detectors/injection_detector.py
+git mv pii_scrubber.py -> detectors/pii_scrubber.py
+git mv output_schema_validator.py -> validators/output_schema_validator.py
+```
+
+### 2. Created __init__.py files
+
+- `agentic_core/prompt_governance/security/detectors/__init__.py`
+- `agentic_core/prompt_governance/security/validators/__init__.py`
+
+### 3. Imports Updated (10 files)
+
+- agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+- agentic_core/prompt_governance/core/governance_hub.py
+- agentic_core/prompt_governance/core/prompt_assembler.py
+- agentic_core/prompt_governance/security/utils/injection_scan_util.py
+- tests/agentic_core/prompt_governance/security/test_injection_detector.py
+- tests/agentic_core/prompt_governance/security/test_pii_scrubber.py
+- tests/unit/agentic_core/prompt_governance/security/test_injection_normalization_util.py
+- tests/unit/agentic_core/prompt_governance/security/test_injection_signatures_v2.py
+- tests/unit/agentic_core/prompt_governance/security/test_injection_wiring_non_fenced_joinpoints.py
+- tests/unit/agentic_core/prompt_governance/security/test_output_schema_validation_gate.py
+
+### 4. Verification: prompt_governance/security root contains directories only
+
+```
+__init__.py (allowed)
+adversarial/
+detectors/
+utils/
+validators/
+```
+
+### 5. rg proof: No remaining old import paths
+
+```
+grep "prompt_governance\.security\.(injection_detector|pii_scrubber|output_schema_validator)" -> No results found
+```
+
+### 6. Test Results (15 passed)
+
+```
+tests/enforcement/test_folder_purity_governance.py - 15 passed in 0.03s
+```
+

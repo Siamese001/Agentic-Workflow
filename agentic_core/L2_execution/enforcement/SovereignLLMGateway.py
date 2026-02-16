@@ -30,7 +30,7 @@ from agentic_core.L0_routing.types.v15_types import (
     TokenCapArtifact,
     TokenGateResult,
 )
-from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
+from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
@@ -293,7 +293,7 @@ class SovereignLLMGateway:
 
                 # §P2 — Bounded schema validation retry (max 1)
                 if response_schema is not None:
-                    from agentic_core.prompt_governance.security.output_schema_validator import (
+                    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
                         validate_against_schema,
                     )
 

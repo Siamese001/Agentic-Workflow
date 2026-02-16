@@ -16,7 +16,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.prompt_governance.security.output_schema_validator import (
+from agentic_core.prompt_governance.security.validators.output_schema_validator import (
     validate_against_schema,
 )
 from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError

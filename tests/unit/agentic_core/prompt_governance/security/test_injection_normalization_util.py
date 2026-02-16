@@ -14,7 +14,7 @@ import base64
 
 import pytest
 
-from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
+from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from agentic_core.prompt_governance.security.utils.normalization_util import (
     MAX_DECODED_CHARS,
     MAX_INPUT_CHARS,
