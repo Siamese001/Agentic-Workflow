@@ -182,10 +182,62 @@ FOLDER_PURITY_RULES = {
 
 ## Wave 2: Extend Ruleset (engines/ + tools/)
 
-(To be appended after Wave 2 execution)
+### Commit
+
+```text
+0d82faf38c246bc58089fe8ae66c3013dbc1006f
+governance(folder-purity): add strict engines/tools rules + disallowed guards
+```
+
+### Files Changed
+
+- `agentic_core/L5_safety/config/structure_blueprint/__init__.py`
+- `agentic_core/L5_safety/config/structure_blueprint/classification.py`
+- `docs/reports/sub/apps_folder_purity_phase1.md`
+
+### Rules Added
+
+**engines/** allow-list:
+- `.*_engine\.py$`, `.*_executor\.py$`, `.*_task\.py$`, `.*_registry\.py$`, `.*_impl\.py$`
+- `.*_orchestrator\.py$`, `.*_router\.py$`, `.*_service\.py$`, `.*_client\.py$`, `.*_node\.py$`
+- `.*_manager\.py$`, `.*_cache\.py$`, `.*_planner\.py$`, `.*_analyzer\.py$`, `.*_mapper\.py$`
+- `.*_embedder\.py$`, `.*_scanner\.py$`, `.*_pattern\.py$`, `.*_observability\.py$`, `.*_writer\.py$`
+- `.*_core\.py$`, `.*_marketplace\.py$`, `.*_system\.py$`, `.*_plane\.py$`, `.*_composer\.py$`
+- `.*_item\.py$`, `.*_scorer\.py$`, `.*_calibrator\.py$`, `.*_detector\.py$`, `.*_matcher\.py$`
+- `.*_builder\.py$`, `.*_normalizer\.py$`, `^[A-Z][a-zA-Z0-9]*\.py$`
+
+**tools/** allow-list:
+- `.*_tool\.py$`, `.*_impl\.py$`, `.*_client\.py$`, `.*_executor\.py$`
+- `^[A-Z][a-zA-Z0-9]*\.py$`, `^[a-z][a-z0-9_]*\.py$`
+
+**FOLDER_PURITY_DISALLOWED** (negative invariants):
+- engines: `.*_types\.py$`, `.*_util\.py$`, `.*_validator\.py$`, `.*_config\.py$`
+- tools: `.*_types\.py$`, `.*_util\.py$`, `.*_validator\.py$`, `.*_config\.py$`, `.*Strategy\.py$`, `.*_strategy\.py$`
 
 ---
 
 ## Wave 3: Architecture Tests
 
-(To be appended after Wave 3 execution)
+### Commit
+
+```text
+624948408a34a443a773daeeda5ed23774c97429
+tests(architecture): enforce folder purity invariants across all governed folders
+```
+
+### Files Changed
+
+- `tests/architecture/test_folder_purity_invariants.py`
+
+### Test Classes
+
+1. **TestFolderPurityPositiveInvariants** - Verifies files in governed folders match allowed patterns
+2. **TestFolderPurityNegativeInvariants** - Verifies files in engines/tools do NOT match disallowed patterns
+3. **TestFolderPurityCoverage** - Ensures all existing folders are governed
+4. **TestFolderPurityRulesIntegrity** - Validates rules structure (no catch-all patterns)
+
+### Test Output
+
+```text
+16 passed in 0.05s
+```
