@@ -2,7 +2,7 @@
 
 **Status:** PARTIAL - OBJECTIVE NOT MET
 **Date:** 2026-02-16
-**Commit Hash (Phase 5):** `pending`
+**Commit Hash (Phase 5):** `da8ef1ff8`
 
 ## Execution Summary
 
@@ -76,7 +76,7 @@ Exit code: 0
 | --- | --- | --- | --- |
 | Exact duplicate clusters | 7 | 6 | -1 (14% reduction) |
 | Near-duplicate pairs | 222 | 230 | +8 |
-| Parse failures | 0 | 1 | +1 |
+| Parse failures | 0 | 1 | +1 ⚠️ REGRESSION |
 | Files scanned | 1292 | 1293 | +1 |
 
 ### Determinism Confirmation
@@ -104,7 +104,7 @@ Output is deterministic and reproducible from clean tree.
 | `aa687b3bdd3ed38a59dafba12d422bc3739728a19ec991d5efad861f227e2693` | `discover_all_agents`/`_check_forbidden_patterns` (2) | DOMAIN-COUPLED | Different semantic domains |
 | `b6d267efe80a3dbcf2f2d67e21d8c15783a2f031427f827d43b6222fe9c4bf02` | `build_class_bases_map`/`_detect_validator_patterns` (2) | DOMAIN-COUPLED | Different semantic domains |
 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` | Mixed functions (19) | RESIDUAL | Large cluster of various functions - requires separate analysis |
-| `218f7285e3fb74fb8656c89057af273a976b514bb901caed83aa62d2c37d9faa` | FileClassificationAgent functions (3) | RESIDUAL | New cluster discovered during Phase 5 |
+| `218f7285e3fb74fb8656c89057af273a976b514bb901caed83aa62d2c37d9faa` | FileClassificationAgent functions (3) | RESIDUAL | ⚠️ NEW cluster discovered during Phase 5 (REGRESSION) |
 
 **Note:** Only 1 cluster actually eliminated out of 7 initial clusters. The structural rewrite approach had limited success due to the difficulty of creating truly different AST structures while maintaining functionality.
 
@@ -130,4 +130,4 @@ Output is deterministic and reproducible from clean tree.
 - **Structural edits:** Limited success due to AST identicality challenges
 - **Deterministic artifacts:** All outputs reproducible with SHA256 verification
 
-**Phase 5 Status:** BELOW CONVERGENCE THRESHOLD - Objective not met. Only 14% cluster reduction achieved despite full governance compliance. The structural rewrite approach proved insufficient for eliminating complex duplicate patterns.
+**Phase 5 Status:** BELOW CONVERGENCE THRESHOLD - Objective not met. Only 14% cluster reduction achieved despite full governance compliance. The structural rewrite approach proved insufficient for eliminating complex duplicate patterns. ⚠️ REGRESSION DETECTED: 1 new parse failure and 1 new cluster introduced during Phase 5.
