@@ -2213,22 +2213,32 @@ class FileClassificationAgent(*BASE_CLASSES):
         folder_name = path.parent.name
         path_str = str(path)
 
-        # [GOVERNANCE: NO ROOT FILES FOLDERS]
-        # For folders in NO_ROOT_FILES_FOLDERS, files must be in approved subfolders
-        if folder_name in NO_ROOT_FILES_FOLDERS:
-            # This file is directly under a no-root-files folder => FAIL
+        # [GOVERNANCE: FOLDER ALIASES]
+        # Resolve folder aliases before checking rules
+        resolved_folder = FOLDER_ALIASES.get(folder_name, folder_name)
+
+        # [GOVERNANCE: GLOBAL NO ROOT FILES INVARIANT]
+        # Compute the set of governed folder roots:
+        # 1) Direct keys in FOLDER_PURITY_RULES
+        # 2) Resolved via FOLDER_ALIASES
+        # 3) Designated in INFRASTRUCTURE_PROFILES
+        # For ANY governed folder root, FAIL if any direct child is a file.
+        is_governed = (
+            resolved_folder in FOLDER_PURITY_RULES
+            or resolved_folder in INFRASTRUCTURE_PROFILES
+            or folder_name in FOLDER_ALIASES
+        )
+        if is_governed:
+            # This file is directly under a governed folder root => FAIL
             approved = APPROVED_SUBFOLDERS.get(folder_name, frozenset())
             return {
                 "type": "NO_ROOT_FILES_VIOLATION",
                 "filename": filename,
                 "current_folder": folder_name,
-                "reason": f"Root files forbidden in {folder_name}/; move to subfolder: {sorted(approved)}",
-                "approved_subfolders": sorted(approved),
+                "resolved_folder": resolved_folder,
+                "reason": f"Root files forbidden in governed folder '{folder_name}/'; move to approved subfolder",
+                "approved_subfolders": sorted(approved) if approved else ["utils", "core", "impl"],
             }
-
-        # [GOVERNANCE: FOLDER ALIASES]
-        # Resolve folder aliases before checking rules
-        resolved_folder = FOLDER_ALIASES.get(folder_name, folder_name)
 
         # [GOVERNANCE: L0-L6 ENFORCEMENT/ RULES]
         # For any folder path matching agentic_core/L[0-6]_*/*/enforcement/:

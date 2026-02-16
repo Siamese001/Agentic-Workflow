@@ -141,12 +141,29 @@ class TestAgentConfigsFileSuffixCompliance:
             )
 
 
-class TestNoRootFilesGovernance:
-    """Test NO_ROOT_FILES_FOLDERS governance rules."""
+class TestGlobalNoRootFilesInvariant:
+    """Test global no-root-files invariant for ALL governed folder roots."""
 
-    def test_security_in_no_root_files_folders(self) -> None:
-        """Verify security folder is in NO_ROOT_FILES_FOLDERS."""
-        assert "security" in NO_ROOT_FILES_FOLDERS
+    def test_folder_purity_rules_governed(self) -> None:
+        """Verify FOLDER_PURITY_RULES keys are governed."""
+        assert "reasoning" in FOLDER_PURITY_RULES
+        assert "validators" in FOLDER_PURITY_RULES
+        assert "enforcement" in FOLDER_PURITY_RULES
+        assert "engines" in FOLDER_PURITY_RULES
+        assert "utils" in FOLDER_PURITY_RULES
+
+    def test_folder_aliases_governed(self) -> None:
+        """Verify FOLDER_ALIASES keys resolve to governed folders."""
+        assert "knowledge" in FOLDER_ALIASES
+        assert FOLDER_ALIASES["knowledge"] == "reasoning"
+        assert "validation" in FOLDER_ALIASES
+        assert FOLDER_ALIASES["validation"] == "validators"
+
+    def test_infrastructure_profiles_governed(self) -> None:
+        """Verify INFRASTRUCTURE_PROFILES keys are governed."""
+        assert "runtime" in INFRASTRUCTURE_PROFILES
+        assert "meta_control" in INFRASTRUCTURE_PROFILES
+        assert "policy" in INFRASTRUCTURE_PROFILES
 
     def test_security_has_approved_subfolders(self) -> None:
         """Verify security folder has approved subfolders defined."""
@@ -155,24 +172,18 @@ class TestNoRootFilesGovernance:
         assert "utils" in approved
         assert "adversarial" in approved
 
-    def test_no_root_files_violation_detected(self) -> None:
-        """Verify purity engine detects root files in NO_ROOT_FILES_FOLDERS."""
-        from pathlib import Path
-        from unittest.mock import MagicMock
+    def test_global_invariant_covers_all_governed_roots(self) -> None:
+        """Verify global invariant applies to all governed folder roots."""
+        # Compute total governed folder roots
+        governed_roots = set(FOLDER_PURITY_RULES.keys())
+        governed_roots.update(FOLDER_ALIASES.keys())
+        governed_roots.update(INFRASTRUCTURE_PROFILES.keys())
 
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-            FileClassificationAgent,
-        )
+        # Should have at least 25 governed roots
+        assert len(governed_roots) >= 25, f"Expected >= 25 governed roots, got {len(governed_roots)}"
 
-        # Create a mock agent
-        agent = MagicMock(spec=FileClassificationAgent)
-        agent.classify_file = MagicMock(return_value="CLASS")
-        agent.logger = MagicMock()
-
-        # Simulate a file directly under security/ (should FAIL)
-        test_path = Path("agentic_core/prompt_governance/security/some_util.py")
-
-        # Call the actual method (need to instantiate properly)
-        # For this test, we verify the rule exists and is correctly configured
-        assert "security" in NO_ROOT_FILES_FOLDERS
-        assert "utils" in APPROVED_SUBFOLDERS.get("security", frozenset())
+        # Verify key folders are in the set
+        assert "reasoning" in governed_roots
+        assert "enforcement" in governed_roots
+        assert "knowledge" in governed_roots  # alias
+        assert "runtime" in governed_roots  # infra
