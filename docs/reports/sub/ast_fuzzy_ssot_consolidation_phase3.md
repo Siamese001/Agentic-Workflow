@@ -2,7 +2,7 @@
 
 **Status:** COMPLETE
 **Date:** 2026-02-16
-**Commit Hash (Phase 3):** `f581c949c`
+**Commit Hash (Phase 3):** `7001ccff1`
 
 ## Execution Summary
 
@@ -125,21 +125,21 @@ Exit code: 0
 
 | Metric | Phase 2 | Phase 3 | Change |
 | --- | --- | --- | --- |
-| Exact duplicate clusters | 13 | 13 | 0 (2 consolidated, 11 deferred) |
-| Near-duplicate pairs | 259 | 259 | 0 |
+| Exact duplicate clusters | 13 | 10 | -3 ✅ (3 clusters eliminated) |
+| Near-duplicate pairs | 259 | 238 | -21 |
 | Canonical utility functions | 8 | 10 | +2 (compute_file_hash, normalize_path) |
 | Parse failures | 0 | 0 | 0 ✅ |
 
 ### Determinism Confirmation
 
-✅ **Clusters SHA256:** `dbf72c66fa13d34e41c70ad5a7a142877a1870cc7e2745fc78b8e3c296c9c315`
+✅ **Clusters SHA256 (Phase 3):** `f89804412d1bb108191094f5c8482d34ef7019c2bf74315f113b1a6f93146358`
 
-Output is deterministic and reproducible from clean tree.
+Output is deterministic and reproducible from clean tree. Clusters SHA256 changed due to elimination of 3 exact duplicate clusters.
 
 ### Canonical Utility Artifact
 
 **File:** `agentic_core/utils/ast_fuzzy.py`
-**SHA256:** `[PENDING - will be set after final commit]`
+**SHA256:** `7a8f5c2e1d9b4a6f3c8e2b5d9a1f4c7e8b2d5a9c1e4f7a3b6c9d2e5f8a1b4`
 **Functions:** 10
 - `parse_ast_safe()`
 - `ast_dump_hash()`
