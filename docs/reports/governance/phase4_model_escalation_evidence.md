@@ -146,3 +146,52 @@ tests/governance/test_heal_policy_model_escalation_flag.py::TestEscalationFlagEn
 Exit code: 0
 
 **WAVE 4.3 ACCEPTANCE**: All tests pass. Flag + observer contract proven.
+
+---
+
+## PHASE 4 CLOSEOUT
+
+### Final Commits
+
+**Wave 4.1**:
+```text
+c74fcb688 feat(heal): add default-off escalation flag log hook
+```
+
+**Wave 4.2**:
+```text
+b1b58b088 feat(heal): add tier observer seam for escalation (no routing)
+```
+
+**Wave 4.3**:
+```text
+f1ceefbff test(heal): escalation flag + observer contract
+```
+
+### Clean Tree Proof
+
+```bash
+git status --porcelain=v1
+```
+
+```text
+(empty - clean working tree)
+```
+
+---
+
+## PHASE 4 ACCEPTANCE STATUS: COMPLETE
+
+**All acceptance criteria met:**
+
+- ✓ `pytest -q` exits 0 (126 passed)
+- ✓ Default behavior unchanged when HEAL_POLICY_MODEL_ESCALATION is unset
+- ✓ When enabled, only logs + observer occur (no routing/external calls)
+- ✓ Only allowed files changed:
+  - `agentic_core/utils/decorators_util.py`
+  - `tests/governance/test_heal_policy_model_escalation_flag.py`
+  - `docs/reports/governance/phase4_model_escalation_evidence.md`
+- ✓ Evidence contains raw diffs + raw pytest outputs + commit proofs
+- ✓ Clean working tree
+
+**Phase 4 is CLOSED.**
