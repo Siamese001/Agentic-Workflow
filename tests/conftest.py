@@ -140,9 +140,9 @@ def pytest_collection_modifyitems(config, items):
     # Get the marker expression from config
     marker_expr = config.getoption("-m", default="")
 
-    # If no marker specified, default to integration_full_deps + governance
+    # If no marker specified, default to integration_full_deps + governance + unit_min_deps
     if not marker_expr:
-        default_markers = ("integration_full_deps", "governance")
+        default_markers = ("integration_full_deps", "governance", "unit_min_deps")
         deselected = []
         selected = []
         for item in items:

@@ -30,7 +30,7 @@ Per phase, Windsurf MUST:
 
 Hard violation cases (IMMEDIATE FAIL):
 - Evidence not captured via Tee-Object (2>&1)
-- pytest output shows "no tests ran" 
+- pytest output shows "no tests ran"
 - Multiple evidence files per phase
 - Chat includes narrative beyond required outputs
 
@@ -812,6 +812,73 @@ pytest.ini testpaths define the authoritative suite for phase completion.
 - Exact failure lists before and after adjustment
 - Rationale for each excluded test/directory
 - Reversibility conditions for future phases
+
+---
+
+## 43. Pytest Conftest Hook Transparency (HARDENING)
+
+**RCA LESSON**: `pytest_collection_modifyitems` hooks can silently deselect tests after collection, making testpaths ineffective.
+
+**Forbidden:**
+- Silent test deselection in conftest.py hooks without documentation
+- Using conftest hooks to bypass testpaths configuration
+- Implementing marker-based filtering that excludes tests without explicit evidence
+
+**Required:**
+- All `pytest_collection_modifyitems` hooks MUST be documented in evidence files
+- Any test deselection MUST log the deselected count and reason
+- Default marker sets MUST be explicitly declared in pytest.ini comments
+- Hook behavior MUST be verifiable via `pytest --collect-only` vs execution counts
+
+**Evidence Requirements:**
+- Show "collected X items" vs "Y passed" to prove no silent deselection
+- Document exact marker logic in conftest.py hooks
+- Include hook diff when modifying default test selection behavior
+
+---
+
+## 44. Pytest Marker Governance (HARDENING)
+
+**RCA LESSON**: Tests without required markers get silently dropped by default hooks.
+
+**Forbidden:**
+- Adding new test markers without updating conftest.py default selection
+- Creating marker hierarchies that exclude tests by default
+- Using `--strict-markers` without registering all markers in pytest.ini
+
+**Required:**
+- ALL test markers MUST be registered in pytest.ini markers section
+- Default marker sets MUST include all test categories intended for standard execution
+- New test files MUST use appropriate markers from the existing taxonomy
+- Marker changes MUST update both pytest.ini AND conftest.py selection logic
+
+**Validation Protocol:**
+- `pytest -q` must run tests from ALL intended categories
+- `pytest --collect-only` must show expected test count
+- Marker registration must pass `--strict-markers` validation
+
+---
+
+## 45. Pytest Debugging Transparency (HARDENING)
+
+**RCA LESSON**: Pytest issues require checking both collection AND execution phases.
+
+**Required Evidence for Pytest Issues:**
+1. `pytest --collect-only -q` output (shows what's collected)
+2. `pytest -q` output (shows what's executed)
+3. Diff between collected vs executed counts
+4. conftest.py hook logic if counts don't match
+5. pytest.ini testpaths and markers configuration
+
+**Forbidden Debugging:**
+- Only showing execution output when tests are missing
+- Modifying pytest configuration without evidence capture
+- Assuming testpaths changes will work without verifying hook behavior
+
+**Root Cause Protocol:**
+- Always check conftest.py hooks when tests disappear
+- Verify marker registration with `--strict-markers`
+- Document both collection and execution phases in evidence
 
 ---
 

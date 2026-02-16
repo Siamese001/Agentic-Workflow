@@ -62,12 +62,19 @@ collect_ignore_glob = [
 def pytest_collection_modifyitems(config, items):
     """
     Automatically add the guardian marker to all tests in this directory.
+
+    This hook only adds markers, no deselection occurs.
+    All items are retained, so deselection count is 0.
     """
     guardian_marker = pytest.mark.guardian
+    deselected_count = 0
 
     for item in items:
         if "guardian" in str(item.fspath):
             item.add_marker(guardian_marker)
+
+    # Log that no deselection occurred (all items retained)
+    config._guardian_deselected_count = deselected_count
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
