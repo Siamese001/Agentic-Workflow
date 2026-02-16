@@ -19,7 +19,7 @@ import logging
 import threading
 from typing import Any
 
-from agentic_core.utils.meta_learning_storage import MetaLearningStorage
+from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
 Logger = logging.getLogger(__name__)
 

@@ -422,7 +422,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        from agentic_core.utils.decorators import standard_heal
+        from agentic_core.utils.decorators_compat_util import standard_heal
 
         @standard_heal
         def _heal_validation_violation(self, violation: dict) -> dict:

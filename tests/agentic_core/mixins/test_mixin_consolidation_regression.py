@@ -30,7 +30,7 @@ def test_config_compat_can_import():
 
 def test_cache_config_fields():
     """CacheConfig exposes legacy field names with correct defaults."""
-    from agentic_core.mixins._config_compat import CacheConfig
+    from agentic_core.mixins.config_compat_mixin import CacheConfig
 
     cfg = CacheConfig()
     assert cfg.enabled is True
@@ -40,7 +40,7 @@ def test_cache_config_fields():
 
 def test_cache_config_override():
     """CacheConfig fields are overridable."""
-    from agentic_core.mixins._config_compat import CacheConfig
+    from agentic_core.mixins.config_compat_mixin import CacheConfig
 
     cfg = CacheConfig(enabled=False, max_size=500, default_ttl=60.0)
     assert cfg.enabled is False
@@ -55,7 +55,7 @@ def test_cache_config_override():
 
 def test_metrics_config_fields():
     """MetricsConfig exposes legacy field names with correct defaults."""
-    from agentic_core.mixins._config_compat import MetricsConfig
+    from agentic_core.mixins.config_compat_mixin import MetricsConfig
 
     cfg = MetricsConfig()
     assert cfg.enabled is True
@@ -63,7 +63,7 @@ def test_metrics_config_fields():
 
 def test_metrics_config_override():
     """MetricsConfig fields are overridable."""
-    from agentic_core.mixins._config_compat import MetricsConfig
+    from agentic_core.mixins.config_compat_mixin import MetricsConfig
 
     cfg = MetricsConfig(enabled=False)
     assert cfg.enabled is False
@@ -76,7 +76,7 @@ def test_metrics_config_override():
 
 def test_batching_config_fields():
     """BatchingConfig exposes legacy field names with correct defaults."""
-    from agentic_core.mixins._config_compat import BatchingConfig
+    from agentic_core.mixins.config_compat_mixin import BatchingConfig
 
     cfg = BatchingConfig()
     assert cfg.enabled is True
@@ -87,7 +87,7 @@ def test_batching_config_fields():
 
 def test_batching_config_override():
     """BatchingConfig fields are overridable."""
-    from agentic_core.mixins._config_compat import BatchingConfig
+    from agentic_core.mixins.config_compat_mixin import BatchingConfig
 
     cfg = BatchingConfig(enabled=False, max_batch_size=50, max_wait_ms=100, max_history=500)
     assert cfg.enabled is False

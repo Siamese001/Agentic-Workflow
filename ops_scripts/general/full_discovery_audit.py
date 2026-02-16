@@ -18,7 +18,7 @@ DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
 # Sovereign base classes that indicate true agent status
 SOVEREIGN_BASES = {
     "SovereignBaseAgent",
-    "L0MaintenanceBaseAgent",
+    "L0RoutingBaseAgent",
     "L1CognitionBase",
     "L2ExecutionBase",
     "L3OrchestrationBase",

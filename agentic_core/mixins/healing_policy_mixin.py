@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 from agentic_core.runtime.exceptions.healer_exceptions import CircularDependencyError, HealerError
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger = logging.getLogger(__name__)
 

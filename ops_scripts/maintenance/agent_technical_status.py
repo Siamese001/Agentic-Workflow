@@ -62,7 +62,7 @@ class NuclearAuditor:
         # Critical base classes and mixins to check
         self.critical_base_classes = {
             "SovereignBaseAgent",
-            "L0MaintenanceBaseAgent",
+            "L0RoutingBaseAgent",
             "L1CognitionBase",
             "L2ExecutionBase",
             "L3OrchestrationBase",

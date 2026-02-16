@@ -12,8 +12,8 @@ def get_critical_missing_modules() -> list[tuple[pathlib.Path, pathlib.Path]]:
     critical_modules = [
         # Core infrastructure - highest priority
         (
-            "agentic_core/base_agents/L0MaintenanceBase.py",
-            "tests/agentic_core/base_agents/test_L0MaintenanceBase.py",
+            "agentic_core/base_agents/L0RoutingBase.py",
+            "tests/agentic_core/base_agents/test_L0RoutingBase.py",
         ),
         (
             "agentic_core/base_agents/L1CognitionBase.py",

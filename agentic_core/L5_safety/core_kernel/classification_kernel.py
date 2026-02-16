@@ -450,7 +450,7 @@ def classification_cache_context():
 
     Usage::
 
-        from agentic_core.core.classification_kernel import classification_cache_context
+        from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
 
         with classification_cache_context():
             # Run heavy discovery / scan here

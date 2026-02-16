@@ -47,9 +47,9 @@ class TestFilesystemSSOTReconcilerAgent:
         assert agent_class is not None, "FilesystemSSOTReconcilerAgent should exist"
 
     def test_inherits_from_l0_maintenance_base_agent(self, agent_class):
-        """Verify proper inheritance from L0MaintenanceBaseAgent."""
+        """Verify proper inheritance from L0RoutingBaseAgent."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "L0MaintenanceBaseAgent" in mro_names, "Should inherit from L0MaintenanceBaseAgent"
+        assert "L0RoutingBaseAgent" in mro_names, "Should inherit from L0RoutingBaseAgent"
 
     def test_has_run_ci_verification_sync_method(self, agent_class):
         """Verify agent has run_ci_verification_sync method."""

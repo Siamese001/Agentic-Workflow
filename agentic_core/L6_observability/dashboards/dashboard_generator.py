@@ -212,7 +212,7 @@ class DashboardGenerator:
                 # L0 Maintenance subcategories - CHECK BASE FIRST (includes L0SovereignBaseAgent)
                 if (
                     "BaseAgent" in class_name
-                    or class_name == "L0MaintenanceBaseAgent"
+                    or class_name == "L0RoutingBaseAgent"
                     or "base_agent" in path.lower()
                     or "base_class" in path.lower()
                 ):

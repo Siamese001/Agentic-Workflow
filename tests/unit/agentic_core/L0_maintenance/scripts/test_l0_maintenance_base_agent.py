@@ -1,5 +1,5 @@
 """
-Unit tests for L0MaintenanceBaseAgent - Validator in L0.
+Unit tests for L0RoutingBaseAgent - Validator in L0.
 
 
     Consolidated base for L0 Maintenance agents.
@@ -29,24 +29,24 @@ def mock_external_services():
         yield
 
 
-class TestL0MaintenanceBaseAgent:
-    """Unit tests for L0MaintenanceBaseAgent."""
+class TestL0RoutingBaseAgent:
+    """Unit tests for L0RoutingBaseAgent."""
 
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
             from agentic_core.base_agents.l0_maintenance_base_agent import (
-                L0MaintenanceBaseAgent,
+                L0RoutingBaseAgent,
             )
 
-            return L0MaintenanceBaseAgent
+            return L0RoutingBaseAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import L0MaintenanceBaseAgent: {e}")
+            pytest.skip(f"Cannot import L0RoutingBaseAgent: {e}")
 
     def test_class_exists(self, agent_class):
-        """Verify L0MaintenanceBaseAgent exists and is importable."""
-        assert agent_class is not None, "L0MaintenanceBaseAgent should exist"
+        """Verify L0RoutingBaseAgent exists and is importable."""
+        assert agent_class is not None, "L0RoutingBaseAgent should exist"
 
     def test_inherits_from_sovereign_base_agent(self, agent_class):
         """Verify proper inheritance from SovereignBaseAgent."""
@@ -92,7 +92,7 @@ class TestL0MaintenanceBaseAgent:
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
                 from agentic_core.base_agents.l0_maintenance_base_agent import (
-                    L0MaintenanceBaseAgent,  # noqa: F401
+                    L0RoutingBaseAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
                 pass

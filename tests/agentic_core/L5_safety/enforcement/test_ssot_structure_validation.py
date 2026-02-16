@@ -169,7 +169,7 @@ class TestSSOTStructureValidator:
         """Test base agent detection - positive case."""
         validator = SSOTStructureValidator(project_root=PROJECT_ROOT)
         assert validator._is_base_agent("SovereignBaseAgent") is True
-        assert validator._is_base_agent("L0MaintenanceBaseAgent") is True
+        assert validator._is_base_agent("L0RoutingBaseAgent") is True
 
     def test_is_base_agent_false(self):
         """Test base agent detection - negative case."""

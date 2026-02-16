@@ -33,11 +33,11 @@ except ImportError as _err:
 from agentic_core.config.agent_defaults import AgentDefaults
 from pinecone import Pinecone
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.config.core.env_loader import get_env
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
     RedisSovereignAgent,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
 
@@ -576,7 +576,7 @@ class PineconeSovereignAgent(SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        from agentic_core.utils.decorators import standard_heal
+        from agentic_core.utils.decorators_compat_util import standard_heal
 
         @standard_heal
         def _heal_pinecone_violation(self, violation: dict) -> dict:

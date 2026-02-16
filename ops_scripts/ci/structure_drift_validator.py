@@ -10,7 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.structure_drift_manifest import (
+from agentic_core.L5_safety.validators.structure_drift_validator import (
     generate_structure_manifest,
     load_manifest,
 )
@@ -101,7 +101,7 @@ def main() -> int:
     if args.update:
         # Update golden manifest
         manifest = generate_structure_manifest()
-        from agentic_core.L5_safety.validators.structure_drift_manifest import save_manifest
+        from agentic_core.L5_safety.validators.structure_drift_validator import save_manifest
 
         save_manifest(manifest, args.manifest)
         print(f"Updated golden manifest at: {args.manifest}")

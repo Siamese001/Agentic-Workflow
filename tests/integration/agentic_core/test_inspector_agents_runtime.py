@@ -60,6 +60,7 @@ class TestDagRuntimeInspectorAgent:
         from agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
+
         from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = DagRuntimeInspectorAgent()
@@ -135,13 +136,14 @@ class TestDecoratorRuntimeImports:
         assert callable(standard_heal)
 
     def test_timeout_importable_with_full_deps(self) -> None:
-        from agentic_core.base_agents.timeout_decorator import timeout
+        from agentic_core.utils.timeout_decorator_util import timeout
 
         decorator = timeout(30)
         assert callable(decorator)
 
     def test_shim_identity_with_full_deps(self) -> None:
         from agentic_core.base_agents.decorators import standard_heal as canonical
+
         from agentic_core.L5_safety.utils.decorators_util import (
             standard_heal as shim,
         )
@@ -149,10 +151,10 @@ class TestDecoratorRuntimeImports:
         assert shim is canonical
 
     def test_timeout_shim_identity_with_full_deps(self) -> None:
-        from agentic_core.base_agents.timeout_decorator import timeout as canonical
         from agentic_core.L0_routing.utils.timeout_decorator_util import (
             timeout as shim,
         )
+        from agentic_core.utils.timeout_decorator_util import timeout as canonical
 
         assert shim is canonical
 

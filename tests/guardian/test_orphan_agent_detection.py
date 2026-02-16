@@ -117,7 +117,7 @@ class OrphanAgentDetector:
     PROTECTED_AGENTS = frozenset(
         {
             "SovereignBaseAgent",
-            "L0MaintenanceBaseAgent",
+            "L0RoutingBaseAgent",
             "L1CognitionBase",
             "L2ExecutionBase",
             "L3OrchestrationBase",

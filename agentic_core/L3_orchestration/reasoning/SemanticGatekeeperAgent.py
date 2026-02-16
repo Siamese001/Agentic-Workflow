@@ -19,11 +19,11 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 # NAMING CANON COMPLIANCE — renamed to SemanticGatekeeperAgent for discovery and sovereignty — 2025-12-30

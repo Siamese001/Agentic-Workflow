@@ -39,7 +39,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.utils.ast_fuzzy import safe_unparse
+from agentic_core.utils.ast_fuzzy_util import safe_unparse
 
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment

@@ -250,7 +250,7 @@ class SubatomicHop:
         """Check telemetry for past failures on similar tasks."""
         # SubatomicHopUtil wrapper for state analysis
         if _fn is None:
-            from agentic_core.utils.state_utils import check_past_failures
+            from agentic_core.utils.state_util import check_past_failures
 
             _fn = check_past_failures
         return _fn(Task)

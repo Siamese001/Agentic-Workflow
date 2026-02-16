@@ -21,7 +21,7 @@ from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationDecision,
     ReasoningTier,
 )
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 pytestmark = pytest.mark.governance
 

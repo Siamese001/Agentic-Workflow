@@ -14,7 +14,7 @@
 ║ Output: agent_discovery_full.json                                            ║
 ║                                                                              ║
 ║ IMPORTANT: Do NOT add agent classification logic here.                       ║
-║ Use: from agentic_core.core.classification_kernel import is_agent_file       ║
+║ Use: from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -230,7 +230,7 @@ EXCLUDED_PATH_PATTERNS = {
 AGENT_PATH_WHITELIST = {
     # L0 scripts that ARE agents (legitimate placement)
     "agentic_core/L0_routing/scripts/BootstrapAgent.py",
-    "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py",
+    "agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py",
 }
 
 # Paths that indicate infrastructure, not agents (unless whitelisted)
@@ -857,7 +857,7 @@ def check_proper_base(class_node: ast.ClassDef, layer: str) -> bool:
     # Check for canonical architectural patterns
     canonical_patterns = {
         "SovereignBaseAgent",
-        "L0MaintenanceBaseAgent",
+        "L0RoutingBaseAgent",
         "L1CognitionBase",
         "L2Agent",
         "L2ExecutionBase",
@@ -1004,7 +1004,7 @@ def detect_observability(class_node: ast.ClassDef, source: str) -> dict:
 
     # Layer base agents include observability
     base_agents = [
-        "L0MaintenanceBaseAgent",
+        "L0RoutingBaseAgent",
         "L1CognitionBase",
         "L2Agent",
         "L3Agent",
@@ -1116,7 +1116,7 @@ def is_sovereign_agent(class_node: ast.ClassDef, bases: set[str], rel_path: Path
     Returns:
         True if the file is classified as AGENT by the kernel.
     """
-    from agentic_core.core.classification_kernel import is_agent_file
+    from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
 
     if rel_path is None:
         # Without a file path, fall back to name-based heuristic
@@ -1135,7 +1135,7 @@ def is_agent_class(class_node: ast.ClassDef, bases: set[str], rel_path: Path | N
     Now delegates to is_sovereign_agent() which uses the kernel.
 
     Kept as a shim for any internal callers. All new code should use:
-        from agentic_core.core.classification_kernel import is_agent_file
+        from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
     """
     return is_sovereign_agent(class_node, bases, rel_path)
 
@@ -1507,7 +1507,7 @@ def main():
             # MCP hardening detection - MRO-aware (check direct import OR inheritance from hardened base)
             mcp_hardened_bases = {
                 "SovereignBaseAgent",
-                "L0MaintenanceBaseAgent",
+                "L0RoutingBaseAgent",
                 "L1CognitionBase",
                 "L2ExecutionBase",
                 "L3OrchestrationBase",
@@ -1543,7 +1543,7 @@ def main():
             # Phase 3.2: Only canonical *BaseAgent classes are base classes, not L-series alternatives
             # L0SovereignBaseAgent and SovereignBaseAgent are exceptions (they are canonical for their layers)
             is_base_class = node.name.endswith("BaseAgent") or node.name in {
-                "L0MaintenanceBaseAgent",
+                "L0RoutingBaseAgent",
                 "L1CognitionBase",
                 "L6ObservabilityBase",
             }
@@ -1811,7 +1811,7 @@ def check_compliance_gate(agents: list[dict], parse_errors: list[str]) -> int:
     # Check 3: Orphaned agents (no proper base class) - Updated for SSOT
     proper_bases = {
         "SovereignBaseAgent",  # SSOT - All agents should inherit from this
-        "L0MaintenanceBaseAgent",  # Legacy support
+        "L0RoutingBaseAgent",  # Legacy support
     }
 
     orphans = []

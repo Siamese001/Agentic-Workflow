@@ -120,7 +120,7 @@ def test_module_has_minimum_coverage():
     import agentic_core.L5_safety.enforcement.hardcoded_path_refactorer
 
     # Check that module has some content
-    module_dict = agentic_core.base_agents.L0MaintenanceBase.__dict__
+    module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
 
     # Count meaningful items (excluding dunder methods)
     meaningful_items = [

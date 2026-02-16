@@ -7,11 +7,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.utils.timeout_decorator_util import timeout
 
 """
 NervousSystemAgent - Extracted for one-class-per-file pattern.

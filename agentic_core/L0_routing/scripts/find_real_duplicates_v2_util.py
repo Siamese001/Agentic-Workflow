@@ -14,7 +14,7 @@ def is_agent_file(path: Path) -> bool:
 
     [REFACTORED 2026-02-08] Aligned with classification kernel naming rules.
     For full AST-based classification, use:
-        from agentic_core.core.classification_kernel import is_agent_file
+        from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
     """
     if not path.name.endswith("Agent.py"):
         return False

@@ -19,7 +19,7 @@ from agentic_core.runtime.shared_runtime import log_event
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.memory import ValidationContext
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 logger = logging.getLogger(__name__)
 

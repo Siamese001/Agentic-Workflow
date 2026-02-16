@@ -187,7 +187,7 @@ def scan_shadow_functions(
                         rule="SHADOW_FUNCTION",
                         detail=(
                             f"Function '{node.name}()' reimplements classification logic. "
-                            f"Use: from agentic_core.core.classification_kernel import is_agent_file"
+                            f"Use: from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file"
                         ),
                     ),
                 )

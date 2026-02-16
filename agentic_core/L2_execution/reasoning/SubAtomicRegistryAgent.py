@@ -31,7 +31,7 @@ from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSover
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger = logging.getLogger(__name__)
 

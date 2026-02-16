@@ -2,7 +2,7 @@
 Canonical decorator implementations for agent standardization.
 
 This is the SSOT for agent decorators. All imports should use:
-    from agentic_core.utils.decorators import standard_heal, HEAL_RESULT_SCHEMA
+    from agentic_core.utils.decorators_compat_util import standard_heal, HEAL_RESULT_SCHEMA
 
 DECORATORS:
     @standard_heal: Standardizes heal_repository() methods
@@ -26,7 +26,6 @@ import traceback
 from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
-from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
 from agentic_core.L5_safety.types.heal_llm_seam import (
     DEFAULT_HEAL_LLM_CALLER,
     HealLlmRequest,
@@ -36,6 +35,7 @@ from agentic_core.L5_safety.types.heal_policy_types import (
     ReasoningTier,
     decide_reasoning_tier,
 )
+from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 
 Logger = logging.getLogger(__name__)
 

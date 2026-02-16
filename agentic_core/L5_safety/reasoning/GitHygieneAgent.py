@@ -25,8 +25,8 @@ from typing import Any
 from agentic_core.utils.security import safe_git_execute
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 
 @dataclass

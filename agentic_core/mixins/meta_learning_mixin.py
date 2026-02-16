@@ -21,9 +21,9 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.mixins.meta_learning_contract import BaseMetaLearner
-from agentic_core.utils.meta_learning_engine import MetaLearningEngine
-from agentic_core.utils.meta_learning_storage import MetaLearningStorage
+from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
+from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
+from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
 Logger = logging.getLogger(__name__)
 

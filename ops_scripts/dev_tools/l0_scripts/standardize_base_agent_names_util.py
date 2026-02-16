@@ -3,7 +3,7 @@
 Standardize base agent naming with L# prefix throughout codebase.
 
 Current -> New:
-- L0MaintenanceBaseAgent -> L0MaintenanceBaseAgent
+- L0RoutingBaseAgent -> L0RoutingBaseAgent
 - L1CognitionBase -> L1CognitionBase
 - L2ExecutionBase -> (already has L# prefix, keep as is)
 - L3OrchestrationBase -> L3L3OrchestrationBase
@@ -25,13 +25,13 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # Mapping of old names to new names
 RENAME_MAP = {
     # Class name changes - Phase 2: L0 and L1 only
-    "L0MaintenanceBaseAgent": "L0MaintenanceBaseAgent",
+    "L0RoutingBaseAgent": "L0RoutingBaseAgent",
     "L1CognitionBase": "L1CognitionBase",
 }
 
 # File renames (old path -> new path, relative to PROJECT_ROOT)
 FILE_RENAMES = {
-    "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py": "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py",
+    "agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py": "agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py",
     "agentic_core/L1_cognition/thought_engine/L1CognitionBase.py": "agentic_core/L1_cognition/thought_engine/L1CognitionBase.py",
 }
 

@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from .regeneration_engine import RegenerationEngine
+from .regeneration_validator import RegenerationEngine
 from .validation_gate import ValidationGate
 
 logger = logging.getLogger(__name__)

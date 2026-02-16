@@ -32,10 +32,10 @@ from typing import Any
 
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,  # Comprehensive exclusion set (.git, venv, __pycache__, etc.)
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
 # Additional reporting-specific exclusions (stubs, backups)
 SCOPE_SUMMARY_EXCLUSIONS = {
@@ -56,6 +56,7 @@ except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
 from agentic_core.base_agents.decorators import standard_heal
+
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 

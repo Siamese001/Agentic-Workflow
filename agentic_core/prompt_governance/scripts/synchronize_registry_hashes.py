@@ -10,7 +10,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.utils.fs_utils import calculate_file_hash
+from agentic_core.utils.fs_util import calculate_file_hash
 
 
 def load_registry(registry_path: Path) -> dict:

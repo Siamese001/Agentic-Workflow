@@ -27,7 +27,7 @@ class PeerIntelligenceConfig:
         self.differentiator_threshold = 0.3
 
 
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.L2_execution.reasoning.integrity_gate_executor import (
@@ -36,6 +36,7 @@ try:
 except ImportError:
     IntegrityGateExecutorAgent = None  # type: ignore[misc,assignment]
 from agentic_core.base_agents.decorators import standard_heal
+
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 

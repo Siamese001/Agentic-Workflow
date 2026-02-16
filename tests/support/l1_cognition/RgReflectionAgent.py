@@ -16,7 +16,7 @@ import os
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
 

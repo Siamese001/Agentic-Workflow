@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Test suite for L0MaintenanceBase.
+Test suite for L0RoutingBase.
 """
 
-import agentic_core.base_agents.L0MaintenanceBase
+import agentic_core.base_agents.L0RoutingBase
 
 
-def test_l0maintenancebase_can_import():
-    """Test that L0MaintenanceBase can be imported."""
-    assert agentic_core.base_agents.L0MaintenanceBase is not None
+def test_L0RoutingBase_can_import():
+    """Test that L0RoutingBase can be imported."""
+    assert agentic_core.base_agents.L0RoutingBase is not None
 
 
-def test_l0maintenancebase_module_attributes():
+def test_L0RoutingBase_module_attributes():
     """Test that module has expected attributes."""
-    import agentic_core.base_agents.L0MaintenanceBase
+    import agentic_core.base_agents.L0RoutingBase
 
-    module_dict = agentic_core.base_agents.L0MaintenanceBase.__dict__
+    module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
     assert len(module_dict) > 0

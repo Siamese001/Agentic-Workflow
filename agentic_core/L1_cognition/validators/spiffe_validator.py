@@ -22,7 +22,7 @@ from agentic_core.L1_cognition.identity.spiffe_manager_types import (
 )
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 LOGGER = logging.getLogger(__name__)
 

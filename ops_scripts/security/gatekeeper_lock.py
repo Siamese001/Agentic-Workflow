@@ -23,7 +23,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.utils.ast_fuzzy import normalize_path
+from agentic_core.utils.ast_fuzzy_util import normalize_path
 
 # Protected files that require security override
 PROTECTED_FILES = [

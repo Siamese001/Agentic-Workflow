@@ -19,12 +19,12 @@ Simplified policy-focused variant that extends the base NeuralAutoImmuneAgent.
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
     RedisSovereignAgent,
 )
 from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 
 @dataclass

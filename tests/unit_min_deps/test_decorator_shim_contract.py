@@ -61,18 +61,18 @@ class TestCanonicalTimeoutContract:
     """Verify base_agents.timeout_decorator is the canonical SSOT."""
 
     def test_timeout_importable(self) -> None:
-        from agentic_core.base_agents.timeout_decorator import timeout
+        from agentic_core.utils.timeout_decorator_util import timeout
 
         assert callable(timeout)
 
     def test_timeout_returns_decorator(self) -> None:
-        from agentic_core.base_agents.timeout_decorator import timeout
+        from agentic_core.utils.timeout_decorator_util import timeout
 
         decorator = timeout(30)
         assert callable(decorator)
 
     def test_timeout_decorator_wraps_function(self) -> None:
-        from agentic_core.base_agents.timeout_decorator import timeout
+        from agentic_core.utils.timeout_decorator_util import timeout
 
         def sample_func():
             return 42
@@ -83,7 +83,7 @@ class TestCanonicalTimeoutContract:
         assert decorated() == 42
 
     def test_dunder_all_matches_exports(self) -> None:
-        import agentic_core.base_agents.timeout_decorator as mod
+        import agentic_core.utils.timeout_decorator_util as mod
 
         assert hasattr(mod, "__all__")
         for name in mod.__all__:
@@ -96,12 +96,14 @@ class TestBackwardCompatShimIdentity:
     def test_l5_shim_standard_heal_is_canonical(self) -> None:
         """L5 shim must re-export base_agents.decorators.standard_heal."""
         from agentic_core.base_agents.decorators import standard_heal as canonical
+
         from agentic_core.L5_safety.utils.decorators_util import standard_heal as shim
 
         assert shim is canonical, "L5 shim must re-export canonical object"
 
     def test_l5_shim_heal_result_schema_is_canonical(self) -> None:
         from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA as canonical
+
         from agentic_core.L5_safety.utils.decorators_util import (
             HEAL_RESULT_SCHEMA as shim,
         )
@@ -110,10 +112,10 @@ class TestBackwardCompatShimIdentity:
 
     def test_l0_shim_timeout_is_canonical(self) -> None:
         """L0 shim must re-export base_agents.timeout_decorator.timeout."""
-        from agentic_core.base_agents.timeout_decorator import timeout as canonical
         from agentic_core.L0_routing.utils.timeout_decorator_util import (
             timeout as shim,
         )
+        from agentic_core.utils.timeout_decorator_util import timeout as canonical
 
         assert shim is canonical, "L0 shim must re-export canonical object"
 
@@ -221,7 +223,7 @@ class TestShimAllowlist:
         """timeout_decorator_util.py must import ONLY from base_agents.timeout_decorator."""
         violations = self._check_shim_imports(
             self.TIMEOUT_SHIM,
-            allowed="agentic_core.base_agents.timeout_decorator",
+            allowed="agentic_core.utils.timeout_decorator_util",
         )
         assert not violations, (
             "timeout_decorator_util.py imports from non-canonical locations:\n"

@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.core.classification_kernel import is_agent_file
+from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 logger = logging.getLogger(__name__)

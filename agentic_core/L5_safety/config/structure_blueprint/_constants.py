@@ -605,7 +605,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "base_classes": [
                 "SovereignBaseAgent",
                 "CanonBaseAgent",
-                "L0MaintenanceBase",
+                "L0RoutingBase",
                 "L1CognitionBase",
                 "L2ExecutionBase",
                 "L3OrchestrationBase",

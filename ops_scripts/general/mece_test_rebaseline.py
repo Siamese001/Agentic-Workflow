@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 # FileType imported from classification kernel (SSOT)
-from agentic_core.core.classification_kernel import (
+from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,
     classify_file_standalone,
 )

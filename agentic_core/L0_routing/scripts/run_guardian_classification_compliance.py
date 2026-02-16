@@ -161,10 +161,10 @@ def scan_territory_compliance(
     Returns sorted list of violation dicts with keys:
     filename, path, classified_as, current_folder, expected_folder.
     """
-    from agentic_core.core.classification_kernel import classify_file_standalone
     from agentic_core.L5_safety.config.structure_blueprint import (
         FILETYPE_TO_FOLDER,
     )
+    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
 
     if files is None:
         files = _collect_python_files(repo_root)

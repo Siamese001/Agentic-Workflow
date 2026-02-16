@@ -27,7 +27,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     ValidationResult,
     ValidatorStrategy,
 )
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger = logging.getLogger(__name__)
 

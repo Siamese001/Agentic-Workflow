@@ -7,10 +7,10 @@ from agentic_core.base_agents.decorators import standard_heal
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
 """Brief description of functionality and purpose."""
 

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.core.classification_kernel import (
+from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,
     classify_file_standalone,
     is_agent_file,

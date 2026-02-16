@@ -30,7 +30,7 @@ from agentic_core.patterns.agent_roles.autonomy_mixin import AutonomyMixin
 @dataclass
 class MetricsWitnessAgent(
     SubatomicTestingMixin,
-    L0MaintenanceBaseAgent,
+    L0RoutingBaseAgent,
     AutonomyMixin,
     AdaptiveExecutionMixin,
     SelfDiagnosisMixin,
@@ -51,7 +51,7 @@ class MetricsWitnessAgent(
         - Self-diagnosis of MetricsAgent availability.
 
     Inherits:
-        L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin.
+        L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin.
 
     Attributes:
         Logger: Logger instance for this agent.

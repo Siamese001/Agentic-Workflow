@@ -76,10 +76,10 @@ except ImportError:
         pass
 
 
-from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase as L0MaintenanceBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBaseAgent
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import (
@@ -141,11 +141,11 @@ class ReconciliationViolation:
 class FilesystemSSOTReconcilerAgent(
     AutonomyMixin,
     SelfDiagnosisMixin,
-    L0MaintenanceBaseAgent,
+    L0RoutingBaseAgent,
 ):
     """Filesystem-level SSOT enforcer - treats blueprint as the Gospel.
 
-    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     Enforces the SSOT blueprint by aligning the filesystem:
     - Creation: Ensures all folders in sovereign_registry exist.

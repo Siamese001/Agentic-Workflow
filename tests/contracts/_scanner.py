@@ -21,7 +21,7 @@ AGENT_FILENAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]*Agent\.py$")
 KNOWN_SOVEREIGN_BASES = frozenset(
     {
         "SovereignBaseAgent",
-        "L0MaintenanceBase",
+        "L0RoutingBase",
         "L1CognitionBase",
         "L2ExecutionBase",
         "L3OrchestrationBase",

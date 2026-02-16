@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.core.classification_kernel import (
+from agentic_core.L5_safety.core_kernel.classification_kernel import (
     classify_file_standalone,
     clear_classification_cache,
     clear_classification_conflicts,

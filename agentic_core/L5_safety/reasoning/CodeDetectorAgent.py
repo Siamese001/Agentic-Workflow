@@ -23,7 +23,7 @@ from typing import Any
 
 # [HARDENED] Single inheritance source to prevent MRO conflicts
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger = logging.getLogger(__name__)
 

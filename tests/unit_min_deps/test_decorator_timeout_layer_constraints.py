@@ -57,7 +57,7 @@ SHIM_TO_CANONICAL = {
     AGENTIC_CORE
     / "L0_routing"
     / "utils"
-    / "timeout_decorator_util.py": "agentic_core.base_agents.timeout_decorator",
+    / "timeout_decorator_util.py": "agentic_core.utils.timeout_decorator_util",
 }
 
 

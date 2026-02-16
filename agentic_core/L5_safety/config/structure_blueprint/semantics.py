@@ -506,7 +506,7 @@ AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "base_classes": [
             "SovereignBaseAgent",
             "CanonBaseAgent",
-            "L0MaintenanceBase",
+            "L0RoutingBase",
             "L1CognitionBase",
             "L2ExecutionBase",
             "L3OrchestrationBase",

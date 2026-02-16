@@ -24,7 +24,7 @@ def get_python_files_fast(root: Path, _fn=None) -> list[Path]:
     before they enter the pipeline.
     """
     if _fn is None:
-        from agentic_core.utils.fs_utils import get_python_files_fast as canonical_get_python_files
+        from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
         _fn = canonical_get_python_files
 
@@ -60,7 +60,7 @@ class PascalSovereigntyFixer:
         [REFACTORED 2026-02-08] Replaced FCA instantiation with lightweight
         kernel delegation. Maps kernel's rich FileType to PSF's simpler set.
         """
-        from agentic_core.core.classification_kernel import classify_file_standalone
+        from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
 
         kernel_type = classify_file_standalone(path)
 

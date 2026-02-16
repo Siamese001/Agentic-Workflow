@@ -102,7 +102,7 @@ UNREACHABLE_ALLOWLIST = {
     "PIISanitizerAgent": "UNUSED: blocked by string refs in QAConductor + utils",
     "PromptRegistryAgent": "UNUSED: blocked by docstring refs in prompt_entry_types.py",
     "TestCoverageGuardianAgent": "UNUSED: blocked by string ref in decomposition_orchestrator.py",
-    "TestSovereigntyAgent": "UNUSED: blocked by string refs in utils + docstring in L0MaintenanceBase",
+    "TestSovereigntyAgent": "UNUSED: blocked by string refs in utils + docstring in L0RoutingBase",
     # --- BROKEN WIRING (import resolves to None — tracked for fix) ---
     "SafetyInspectorAgent": "BROKEN-WIRING: AgentFactory assigns None; tracked in R1",
     "DuplicateCodeDetectorAgent": "BROKEN-WIRING: import removed in delete_duplicates_util; tracked in R2",

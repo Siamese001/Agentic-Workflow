@@ -5,7 +5,7 @@ Zero-Ambiguity Standard: Protocol interface for all healers
 Category: PROTOCOL (Abstract interface contract)
 
 This protocol defines the contract for any component that can heal violations
-in the codebase. Implementations include L0MaintenanceBase and its subclasses.
+in the codebase. Implementations include L0RoutingBase and its subclasses.
 """
 
 from __future__ import annotations

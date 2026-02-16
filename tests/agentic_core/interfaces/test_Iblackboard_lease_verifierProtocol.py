@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
-Test for Iblackboard_lease_verifierProtocol
+Test for IBlackboardLeaseVerifier
 Generated as part of test structure mirror contract enforcement.
 """
 
 import pytest
 
-import agentic_core.interfaces.Iblackboard_lease_verifierProtocol
+import agentic_core.interfaces.IBlackboardLeaseVerifier
 
 
-def test_Iblackboard_lease_verifierProtocol_can_import():
+def test_IBlackboardLeaseVerifier_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.interfaces.Iblackboard_lease_verifierProtocol is not None
+    assert agentic_core.interfaces.IBlackboardLeaseVerifier is not None
 
 
 def test_blackboard_lease_verifier_exists():
     """Test that blackboard_lease_verifier class exists and can be instantiated."""
     try:
-        cls = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.blackboard_lease_verifier
+        cls = agentic_core.interfaces.IBlackboardLeaseVerifier.blackboard_lease_verifier
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_blackboard_lease_verifier_exists():
 def test_sandbox_violation_error_exists():
     """Test that sandbox_violation_error class exists and can be instantiated."""
     try:
-        cls = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.sandbox_violation_error
+        cls = agentic_core.interfaces.IBlackboardLeaseVerifier.sandbox_violation_error
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -50,7 +50,7 @@ def test_sandbox_violation_error_exists():
 def test_healing_lease_error_exists():
     """Test that healing_lease_error class exists and can be instantiated."""
     try:
-        cls = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.healing_lease_error
+        cls = agentic_core.interfaces.IBlackboardLeaseVerifier.healing_lease_error
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -66,7 +66,7 @@ def test_healing_lease_error_exists():
 def test_preservation_violation_error_exists():
     """Test that preservation_violation_error class exists and can be instantiated."""
     try:
-        cls = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.preservation_violation_error
+        cls = agentic_core.interfaces.IBlackboardLeaseVerifier.preservation_violation_error
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -82,7 +82,7 @@ def test_preservation_violation_error_exists():
 def test_get_project_root_exists():
     """Test that get_project_root function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.get_project_root
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.get_project_root
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_project_root not found in module")
@@ -91,7 +91,7 @@ def test_get_project_root_exists():
 def test_validate_sandbox_exists():
     """Test that validate_sandbox function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.validate_sandbox
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.validate_sandbox
         assert callable(func)
     except AttributeError:
         pytest.skip("Function validate_sandbox not found in module")
@@ -100,7 +100,7 @@ def test_validate_sandbox_exists():
 def test_require_healing_lease_exists():
     """Test that require_healing_lease function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.require_healing_lease
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.require_healing_lease
         assert callable(func)
     except AttributeError:
         pytest.skip("Function require_healing_lease not found in module")
@@ -109,7 +109,7 @@ def test_require_healing_lease_exists():
 def test_read_file_exists():
     """Test that read_file function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.read_file
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.read_file
         assert callable(func)
     except AttributeError:
         pytest.skip("Function read_file not found in module")
@@ -118,7 +118,7 @@ def test_read_file_exists():
 def test_write_file_exists():
     """Test that write_file function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.write_file
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.write_file
         assert callable(func)
     except AttributeError:
         pytest.skip("Function write_file not found in module")
@@ -127,7 +127,7 @@ def test_write_file_exists():
 def test_move_file_exists():
     """Test that move_file function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.move_file
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.move_file
         assert callable(func)
     except AttributeError:
         pytest.skip("Function move_file not found in module")
@@ -136,7 +136,7 @@ def test_move_file_exists():
 def test_list_files_exists():
     """Test that list_files function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.list_files
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.list_files
         assert callable(func)
     except AttributeError:
         pytest.skip("Function list_files not found in module")
@@ -145,7 +145,7 @@ def test_list_files_exists():
 def test_delete_file_exists():
     """Test that delete_file function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.delete_file
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.delete_file
         assert callable(func)
     except AttributeError:
         pytest.skip("Function delete_file not found in module")
@@ -154,7 +154,7 @@ def test_delete_file_exists():
 def test_create_directory_exists():
     """Test that create_directory function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.create_directory
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.create_directory
         assert callable(func)
     except AttributeError:
         pytest.skip("Function create_directory not found in module")
@@ -163,7 +163,7 @@ def test_create_directory_exists():
 def test_verify_healing_lease_exists():
     """Test that verify_healing_lease function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.verify_healing_lease
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.verify_healing_lease
         assert callable(func)
     except AttributeError:
         pytest.skip("Function verify_healing_lease not found in module")
@@ -172,7 +172,7 @@ def test_verify_healing_lease_exists():
 def test_log_security_event_exists():
     """Test that log_security_event function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.log_security_event
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.log_security_event
         assert callable(func)
     except AttributeError:
         pytest.skip("Function log_security_event not found in module")
@@ -181,7 +181,7 @@ def test_log_security_event_exists():
 def test_wrapper_exists():
     """Test that wrapper function exists."""
     try:
-        func = agentic_core.interfaces.Iblackboard_lease_verifierProtocol.wrapper
+        func = agentic_core.interfaces.IBlackboardLeaseVerifier.wrapper
         assert callable(func)
     except AttributeError:
         pytest.skip("Function wrapper not found in module")
@@ -190,10 +190,10 @@ def test_wrapper_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.interfaces.Iblackboard_lease_verifierProtocol
+    import agentic_core.interfaces.IBlackboardLeaseVerifier
 
     # Check that module has some content
-    module_dict = agentic_core.base_agents.L0MaintenanceBase.__dict__
+    module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
 
     # Count meaningful items (excluding dunder methods)
     meaningful_items = [
@@ -202,5 +202,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.interfaces.Iblackboard_lease_verifierProtocol appears to be empty"
+        "Module agentic_core.interfaces.IBlackboardLeaseVerifier appears to be empty"
     )

@@ -48,7 +48,7 @@ from agentic_core.runtime.config.contextual_router_config import (
 )
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):

@@ -22,7 +22,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.utils.ast_fuzzy import normalize_path
+from agentic_core.utils.ast_fuzzy_util import normalize_path
 
 PROTECTED_FILES = ["agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py"]
 OVERRIDE_TOKEN = "[SECURITY-OVERRIDE]"

@@ -2,7 +2,7 @@
 State utilities for common operations across the codebase.
 """
 
-from agentic_core.base_agents.mixins.safety_mixins import StateAnalysisMixin
+from agentic_core.mixins.safety_mixin import StateAnalysisMixin
 
 
 def check_past_failures(task: str) -> str:

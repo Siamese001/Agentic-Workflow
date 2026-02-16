@@ -51,7 +51,7 @@ def classify_file(path: Path) -> str:
     This script's purpose is to flag naming violations, so it wraps the
     kernel result to determine if a file needs renaming or not.
     """
-    from agentic_core.core.classification_kernel import classify_file_standalone
+    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
 
     file_type = classify_file_standalone(path)
 

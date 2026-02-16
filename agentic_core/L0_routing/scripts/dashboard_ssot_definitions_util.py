@@ -195,7 +195,7 @@ L0_HEALING_NA = True
 # MCP-hardened base classes
 MCP_HARDENED_BASES = {
     "SovereignBaseAgent",
-    "L0MaintenanceBaseAgent",
+    "L0RoutingBaseAgent",
     "L1CognitionBase",
     "L2ExecutionBase",
     "L3OrchestrationBase",
@@ -209,7 +209,7 @@ MCP_HARDENED_BASES = {
 HEALER_BASES = {
     "HealerMixin",
     "SovereignBaseAgent",
-    "L0MaintenanceBaseAgent",
+    "L0RoutingBaseAgent",
     "L1CognitionBase",
     "L2ExecutionBase",
     "L3OrchestrationBase",

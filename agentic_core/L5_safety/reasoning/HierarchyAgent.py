@@ -30,8 +30,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
-
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     ALLOWED_DUPLICATE_FILENAMES,
@@ -46,7 +44,8 @@ from agentic_core.L5_safety.enforcement.mission_utils import (
     get_best_target_l1,
     get_best_target_l2,
 )
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)

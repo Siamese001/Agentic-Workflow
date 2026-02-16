@@ -41,7 +41,7 @@ ALLOWLIST: dict[str, int] = {
     "agentic_core.base_agents.SovereignBaseAgent": 200,
     "agentic_core.L5_safety.config.structure_blueprint_config": 200,
     "agentic_core.utils.decorators": 120,
-    "agentic_core.base_agents.timeout_decorator": 80,
+    "agentic_core.utils.timeout_decorator_util": 80,
     "agentic_core.mixins.subatomic_testing_mixin": 60,
     "agentic_core.mixins.atomic_execution_mixin": 40,
     "agentic_core.L5_safety.enforcement.archival_gatekeeper": 20,

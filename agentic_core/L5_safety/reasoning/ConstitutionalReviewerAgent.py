@@ -5,13 +5,13 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 """Constitutional Reviewer Agent - Performs final constitutional review of the output."""
 
 import json
 
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 # ------------------------------------------------------------------
 # REMOVED: Local stub BaseAgent definition (technical debt)

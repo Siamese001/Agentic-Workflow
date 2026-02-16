@@ -40,7 +40,7 @@ from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTVali
 from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance Hook
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
+from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
@@ -56,12 +56,12 @@ class ViolationReport:
     target_layer: str
 
 
-class PreCommitSovereignAgent(SovereignBaseAgent, L0MaintenanceBase):
+class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
     """
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
 
-    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
 
     This agent runs as a git pre-commit hook to prevent new violations from
     entering the codebase. It validates staged files against SSOT gravity laws.

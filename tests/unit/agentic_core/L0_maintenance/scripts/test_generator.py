@@ -126,21 +126,21 @@ def generate_layer_tests():
 
     # L0SovereignBaseAgent
     try:
-        from agentic_core.base_agents.L0MaintenanceBaseAgent import (
-            L0MaintenanceBaseAgent,
+        from agentic_core.base_agents.L0RoutingBaseAgent import (
+            L0RoutingBaseAgent,
         )
 
         tests = generator.generate_agent_tests(
-            L0MaintenanceBaseAgent,
-            "agentic_core.base_agents.L0MaintenanceBaseAgent",
+            L0RoutingBaseAgent,
+            "agentic_core.base_agents.L0RoutingBaseAgent",
         )
         generator.write_test_file(
             "l0_agent",
             tests,
-            ["from agentic_core.base_agents.L0MaintenanceBaseAgent import L0MaintenanceBaseAgent"],
+            ["from agentic_core.base_agents.L0RoutingBaseAgent import L0RoutingBaseAgent"],
         )
     except Exception as e:
-        print(f"⚠️  Could not generate L0MaintenanceBaseAgent tests: {e}")
+        print(f"⚠️  Could not generate L0RoutingBaseAgent tests: {e}")
 
     # SovereignBaseAgent
     try:

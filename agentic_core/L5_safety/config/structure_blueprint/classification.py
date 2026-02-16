@@ -174,7 +174,6 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
     ],
     "utils": [
         r".*_util\.py$",
-        r".*_mixin\.py$",
         r".*_helper\.py$",
     ],
     "scripts": [
@@ -227,6 +226,75 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
         r".*_impl\.py$",
         r".*_client\.py$",
     ],
+    # ========================================================================
+    # GLOBAL FOLDER PURITY RULES (agentic_core root-level folders)
+    # ========================================================================
+    "base_agents": [
+        r"^L[0-9][A-Za-z]+Base\.py$",
+        r"^SovereignBaseAgent\.py$",
+        r"^LightweightBase\.py$",
+    ],
+    "mixins": [
+        r"^[a-z0-9_]+_mixin\.py$",
+    ],
+    "interfaces": [
+        r"^I[A-Z][A-Za-z0-9]+\.py$",
+    ],
+    "agent_configs": [
+        r"^[a-z0-9_]+_config\.py$",
+        r"^[a-z0-9_]+\.yaml$",
+        r"^[a-z0-9_]+\.json$",
+    ],
+    # ========================================================================
+    # LAYER-SPECIFIC FOLDER PURITY RULES (L* subfolders)
+    # ========================================================================
+    "healers": [
+        r".*_healer\.py$",
+        r".*Healer\.py$",
+    ],
+    "caching": [
+        r".*_cache\.py$",
+        r".*_cacher\.py$",
+        r".*Cache\.py$",
+    ],
+    "memory": [
+        r".*_memory\.py$",
+        r".*_store\.py$",
+        r".*Memory\.py$",
+    ],
+    "security": [
+        r".*_security\.py$",
+        r".*Security\.py$",
+        r".*_guard\.py$",
+    ],
+    "golden_evaluation": [
+        r".*_eval\.py$",
+        r".*_evaluation\.py$",
+        r".*Evaluator\.py$",
+    ],
+    "exceptions": [
+        r".*Error\.py$",
+        r".*Exception\.py$",
+        r".*_exceptions\.py$",
+    ],
+    "core_kernel": [
+        r".*_kernel\.py$",
+        r".*_core\.py$",
+    ],
+}
+
+
+# ============================================================================
+# INFRASTRUCTURE PROFILES (folders exempt from strict purity but still tracked)
+# These folders have permissive patterns - any .py file is allowed
+# ============================================================================
+
+INFRASTRUCTURE_PROFILES: Final[Mapping[str, Sequence[str]]] = {
+    "runtime": [r".*\.py$"],
+    "knowledge": [r".*\.py$"],
+    "prompt_governance": [r".*\.py$"],
+    "meta_control": [r".*\.py$"],
+    "policy": [r".*\.py$"],
 }
 
 

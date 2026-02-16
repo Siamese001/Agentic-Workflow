@@ -7,15 +7,15 @@ BootstrapAgent: Sovereign Boot Integrity.
 from dataclasses import dataclass
 from pathlib import Path
 
-from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 @dataclass
-class BootstrapAgent(L0MaintenanceBase):
+class BootstrapAgent(L0RoutingBase):
     """
     Autonomous boot integrity agent - Phase 21.1 Normalized.
-    Inherits from L0MaintenanceBaseAgent which inherits from SovereignBaseAgent.
+    Inherits from L0RoutingBaseAgent which inherits from SovereignBaseAgent.
     """
 
     def __init__(self, project_root: Path) -> None:
@@ -71,7 +71,7 @@ class BootstrapAgent(L0MaintenanceBase):
             critical_files = [
                 "agentic_core/__init__.py",
                 "agentic_core/base_agents/SovereignBaseAgent.py",
-                "agentic_core/L0_routing/scripts/L0MaintenanceBaseAgent.py",
+                "agentic_core/L0_routing/scripts/L0RoutingBaseAgent.py",
             ]
 
             for file_path in critical_files:

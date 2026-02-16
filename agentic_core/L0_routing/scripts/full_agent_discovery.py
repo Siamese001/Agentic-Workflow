@@ -33,7 +33,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentic_core.core.classification_kernel import classification_cache_context
 from agentic_core.L0_routing.utils.ssot_discovery_util import (
     get_healers,
     invalidate_cache,
@@ -57,7 +56,8 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
     validate_path_within_project,
 )
-from agentic_core.utils.ast_fuzzy import safe_unparse
+from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
+from agentic_core.utils.ast_fuzzy_util import safe_unparse
 
 # Standard error logging wrapper configuration
 Logger = logging.getLogger(__name__)
@@ -200,7 +200,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     Performs deep AST analysis on a file to verify it is a legitimate Agent.
 
     [REFACTORED 2026-02-08] Classification decision now delegated to the
-    zero-dependency kernel (agentic_core.core.classification_kernel).
+    zero-dependency kernel (agentic_core.L5_safety.core_kernel.classification_kernel).
     This function still extracts metadata (inheritance, decorators, methods)
     for the integrity report but no longer uses bespoke class_score() logic.
 
@@ -209,7 +209,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     2. AST metadata extraction (inheritance, decorators, methods)
     3. Integrity report generation
     """
-    from agentic_core.core.classification_kernel import classify_file_standalone
+    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
 
     report = AgentIntegrityReport(path=file_path)
 

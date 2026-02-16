@@ -21,8 +21,8 @@ import networkx as nx
 from pydantic import BaseModel, Field, validator
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 if TYPE_CHECKING:
     pass

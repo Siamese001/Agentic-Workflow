@@ -32,8 +32,8 @@ class SovereignDependencyError(Exception):
     pass
 
 
-from agentic_core.base_agents.timeout_decorator import timeout
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 
 # NAMING CANON ABSOLUTE — renamed for eternal sovereign discovery — Phase 4 — 2025-12-30
@@ -331,7 +331,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
 
     async def _check_past_failures(self, Task: str) -> str:
         """Check telemetry for past failures on similar tasks."""
-        from agentic_core.base_agents.mixins.safety_mixins import StateAnalysisMixin
+        from agentic_core.mixins.safety_mixin import StateAnalysisMixin
 
         try:
             # Use canonical state analysis with empty history (placeholder implementation)

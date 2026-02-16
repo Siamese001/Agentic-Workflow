@@ -13,7 +13,7 @@ Canon Key 9 - Retrieval-Augmented Generation integration
 import json
 from pathlib import Path
 
-from agentic_core.base_agents.timeout_decorator import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 # Internal imports referencing the mandated structure
 try:

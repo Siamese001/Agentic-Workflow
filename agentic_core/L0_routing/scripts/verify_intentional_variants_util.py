@@ -13,7 +13,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.utils.ast_fuzzy import compute_file_hash
+from agentic_core.utils.ast_fuzzy_util import compute_file_hash
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation

@@ -24,6 +24,8 @@ from agentic_core.L5_safety.config.structure_blueprint.classification import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+# [2026-02-16] Enable agentic_core one folder at a time.
+# Starting with validators (smallest scope).
 TERRITORY_ROOTS = [
     PROJECT_ROOT / "agentic_core",
     PROJECT_ROOT / "apps_lic",

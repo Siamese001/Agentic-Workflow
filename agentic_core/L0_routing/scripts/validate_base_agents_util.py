@@ -28,7 +28,7 @@ LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 
 # Canonical base agent names per layer
 CANONICAL_BASE_AGENTS = {
-    "L0": "L0MaintenanceBaseAgent",
+    "L0": "L0RoutingBaseAgent",
     "L1": "L1CognitionBase",
     "L2": "L2Agent",
     "L3": "L3Agent",

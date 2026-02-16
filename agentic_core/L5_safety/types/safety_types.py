@@ -14,7 +14,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from agentic_core.base_agents.mixins.safety_mixins import SafetyAnalysisMixin
+from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
 
 Logger = logging.getLogger(__name__)
 

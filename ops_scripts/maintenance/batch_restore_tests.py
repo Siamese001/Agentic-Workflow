@@ -110,7 +110,7 @@ def fix_imports(content: str) -> str:
         "StructuralValidatorAgent": "StructuralValidatorAgent",
         # Base agents
         "SovereignBaseAgent": "sovereign_base_agent",
-        "L0MaintenanceBaseAgent": "l0_maintenance_base_agent",
+        "L0RoutingBaseAgent": "l0_maintenance_base_agent",
         "L1CognitionBase": "l1_cognition_base_agent",
         "L5SafetyBase": "l5_safety_base_agent",
         "L6ObservabilityBase": "l6_observability_base_agent",

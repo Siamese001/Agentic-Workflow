@@ -18,7 +18,7 @@ from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 redis_cache_ttl: Any = 60 * 60 * 24 * 7

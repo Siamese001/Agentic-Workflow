@@ -28,7 +28,7 @@ SAFETY_MIXINS = [
 # Define base agent classes
 BASE_AGENT_CLASSES = [
     "SovereignBaseAgent",
-    "L0MaintenanceBaseAgent",
+    "L0RoutingBaseAgent",
     "L1CognitionBase",
     "L2ExecutionBase",
     "L3OrchestrationBase",

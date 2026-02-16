@@ -21,18 +21,18 @@ from pathlib import Path
 from typing import Any
 
 # PHASE 2.1: L0 Structural Standardization
-from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
+from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 
 
 @dataclass
-class GospelSyncAgent(L0MaintenanceBase):
+class GospelSyncAgent(L0RoutingBase):
     """
     THE SSOT GUARDIAN
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).
     Detects heretical files and missing canonical files to protect Toxic Hubs.
 
-    Inherits from L0MaintenanceBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
     """
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:

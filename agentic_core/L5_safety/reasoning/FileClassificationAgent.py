@@ -61,7 +61,7 @@ from pathlib import Path
 from typing import Any
 
 # SSOT: Import FileType from the zero-dependency classification kernel
-from agentic_core.core.classification_kernel import (
+from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,  # noqa: E402
 )
 
@@ -69,7 +69,7 @@ from agentic_core.core.classification_kernel import (
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin  # noqa: F401
-    from agentic_core.utils.decorators import standard_heal
+    from agentic_core.utils.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
@@ -111,7 +111,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
     Optimized repository scanner that prunes heavy/irrelevant directories
     before they enter the pipeline.
     """
-    from agentic_core.utils.fs_utils import get_python_files_fast as canonical_get_python_files
+    from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
     # Domain-specific exclude directories for safety scanning
     exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env"]
@@ -119,7 +119,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
     return list(canonical_get_python_files(root, exclude_dirs=exclude_dirs))
 
 
-# FileType is now imported from agentic_core.core.classification_kernel (SSOT)
+# FileType is now imported from agentic_core.L5_safety.core_kernel.classification_kernel (SSOT)
 # See: agentic_core/core/classification_kernel.py for the canonical definition.
 # The import is at the top of this file.
 
@@ -2198,6 +2198,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FOLDER_PURITY_RULES,
+            INFRASTRUCTURE_PROFILES,
             NON_PYTHON_FOLDER_ROUTES,
             SUFFIX_TO_FOLDER,
         )
@@ -2207,10 +2208,20 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         folder_name = path.parent.name
-        if folder_name not in FOLDER_PURITY_RULES:
+
+        # [FAIL-CLOSED ENFORCEMENT 2026-02-16]
+        # Check if folder is governed by FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES
+        # If not in either, this is an ungoverned folder - fail closed
+        if folder_name not in FOLDER_PURITY_RULES and folder_name not in INFRASTRUCTURE_PROFILES:
+            # Ungoverned folder - return None to skip (legacy behavior for now)
+            # TODO: Enable hard failure once all folders are governed
             return None
 
-        allowed_patterns = FOLDER_PURITY_RULES[folder_name]
+        # Get allowed patterns from FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES
+        if folder_name in FOLDER_PURITY_RULES:
+            allowed_patterns = FOLDER_PURITY_RULES[folder_name]
+        else:
+            allowed_patterns = INFRASTRUCTURE_PROFILES[folder_name]
 
         # Check if filename matches ANY allowed pattern for this folder
         for pattern in allowed_patterns:
@@ -3092,7 +3103,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Check 2: Inheritance from base agents
         base_agents = {
             "SovereignBaseAgent",
-            "L0MaintenanceBaseAgent",
+            "L0RoutingBaseAgent",
             "L1CognitionBase",
             "L2ExecutionBase",
             "L3OrchestrationBase",
@@ -3893,7 +3904,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         if name == "CanonBaseAgentInterface.py":
             return None
         if stem.startswith("L") and stem.endswith("Base"):
-            return None  # L0MaintenanceBase, L1CognitionBase, etc.
+            return None  # L0RoutingBase, L1CognitionBase, etc.
         if name == "LightweightBase.py":
             return None
         if name.endswith("_mixin.py"):

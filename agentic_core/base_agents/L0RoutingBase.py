@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 """
-L0MaintenanceBase - Consolidated Base for L0 Maintenance Agents
+L0RoutingBase - Consolidated Base for L0 Routing Agents
 
-Zero-Ambiguity Standard: Renamed from L0MaintenanceBaseAgent to L0MaintenanceBase
+Zero-Ambiguity Standard: Renamed from L0RoutingBase to L0RoutingBase
 to clarify this is a CLASS (blueprint), not an active worker agent.
 
 Capabilities:
@@ -40,13 +40,13 @@ except ImportError:
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 @dataclass
-class L0MaintenanceBase(L0DelegationTestingMixin, SovereignBaseAgent):
+class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
     """
-    Consolidated base for L0 Maintenance agents.
+    Consolidated base for L0 Routing agents.
 
     Zero-Ambiguity Standard: This is a CLASS (blueprint), not an active worker agent.
     The "Agent" suffix was removed to clarify its role as a foundational base class.
@@ -71,7 +71,7 @@ class L0MaintenanceBase(L0DelegationTestingMixin, SovereignBaseAgent):
     # Zero-Ambiguity: Mark as foundational class, not runtime agent
     NOT_AN_AGENT: bool = True
 
-    name: str = "L0MaintenanceBase"
+    name: str = "L0RoutingBase"
     layer: str = "L0"
 
     def __post_init__(self) -> None:
@@ -115,7 +115,7 @@ class L0MaintenanceBase(L0DelegationTestingMixin, SovereignBaseAgent):
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
-        Heal violations detected by L0MaintenanceBase.
+        Heal violations detected by L0RoutingBase.
 
         Args:
             violation: Dictionary containing violation details with keys:
@@ -139,21 +139,21 @@ class L0MaintenanceBase(L0DelegationTestingMixin, SovereignBaseAgent):
                 result = self.heal_repository(target_path=file_path)
                 return {
                     "status": "success" if result.get("violations_fixed", 0) > 0 else "skipped",
-                    "details": f"L0MaintenanceBase healed {result.get('violations_fixed', 0)} violations",
+                    "details": f"L0RoutingBase healed {result.get('violations_fixed', 0)} violations",
                     "artifacts": [file_path] if file_path else [],
                     "errors": result.get("errors", []),
                 }
             else:
                 return {
                     "status": "skipped",
-                    "details": f"L0MaintenanceBase heal() not yet implemented for {violation_type}",
+                    "details": f"L0RoutingBase heal() not yet implemented for {violation_type}",
                     "artifacts": [],
                     "errors": [],
                 }
         except Exception as e:
             return {
                 "status": "failed",
-                "details": f"L0MaintenanceBase heal() failed: {str(e)}",
+                "details": f"L0RoutingBase heal() failed: {str(e)}",
                 "artifacts": [],
                 "errors": [str(e)],
             }

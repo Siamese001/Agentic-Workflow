@@ -51,7 +51,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.base_agents.timeout_decorator import timeout
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
@@ -60,7 +59,8 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
-from agentic_core.utils.decorators import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
 

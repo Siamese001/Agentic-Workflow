@@ -3,7 +3,7 @@
 import ast
 import os
 
-from agentic_core.utils.ast_fuzzy import (
+from agentic_core.utils.ast_fuzzy_util import (
     ast_dump_hash,
     normalize_repo_path,
     parse_ast_safe,
