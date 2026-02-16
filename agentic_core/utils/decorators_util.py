@@ -29,6 +29,7 @@ from typing import Any, TypeVar, cast
 from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
 from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationInputs,
+    ReasoningTier,
     decide_reasoning_tier,
 )
 
@@ -56,6 +57,10 @@ def _select_reasoning_tier_enabled() -> bool:
     Returns True iff HEAL_POLICY_MODEL_ESCALATION == "1", else False.
     """
     return os.environ.get("HEAL_POLICY_MODEL_ESCALATION") == "1"
+
+
+# Phase 4: Seam for tier observation (default None, no external calls)
+_HEAL_TIER_OBSERVER: Callable[[ReasoningTier], None] | None = None
 
 
 def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
@@ -204,6 +209,9 @@ def standard_heal(func: F) -> F:
                 Logger.debug(
                     f"[heal_policy] escalation_enabled=1 selected_tier={policy_decision.tier.name}",
                 )
+                # Invoke observer seam if set (for testing/monitoring)
+                if _HEAL_TIER_OBSERVER is not None:
+                    _HEAL_TIER_OBSERVER(policy_decision.tier)
 
             result = func(
                 self,
