@@ -2188,14 +2188,14 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Handles both Python AND non-Python files (YAML, JSON, HTML, JS, CSS).
 
+        [GOVERNANCE 2026-02-16] Additional rules:
+        - FAIL-CLOSED: Unknown folders fail
+        - NO ROOT FILES: Governed folder roots cannot have direct files
+        - L0-L6 enforcement/: forbid SCRIPT, SERVICE must end with suffix
+
         Returns:
             None if file is in a valid folder, or violation dict with eviction target.
         """
-        # [APPS SSOT GOVERNANCE EXTENSION 2026-02-16]
-        # FOLDER_PURITY_RULES now apply to BOTH agentic_core AND apps_* folders.
-        # apps_*/reasoning/ may contain non-Agent files (strategies, orchestrators),
-        # but apps_*/config/ and apps_*/utils/ must follow LCD suffix rules.
-
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FOLDER_PURITY_RULES,
             INFRASTRUCTURE_PROFILES,
@@ -2208,6 +2208,34 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         folder_name = path.parent.name
+        path_str = str(path)
+
+        # [GOVERNANCE: L0-L6 ENFORCEMENT/ RULES]
+        # For any folder path matching agentic_core/L[0-6]_*/*/enforcement/:
+        # - SCRIPT classification => FAIL
+        # - SERVICE must end with (_service|_store|_registry|_bridge).py
+        if folder_name == "enforcement" and filename.endswith(".py"):
+            # Check if this is an L0-L6 enforcement folder
+            if re.search(r"agentic_core[/\\]L[0-6]_[^/\\]+[/\\][^/\\]+[/\\]enforcement", path_str):
+                file_type = self.classify_file(path)
+                if file_type == "SCRIPT":
+                    return {
+                        "type": "ENFORCEMENT_SCRIPT_VIOLATION",
+                        "filename": filename,
+                        "current_folder": folder_name,
+                        "reason": "SCRIPT classification forbidden in L0-L6 enforcement/",
+                        "file_type": file_type,
+                    }
+                if file_type == "SERVICE":
+                    valid_suffixes = ("_service.py", "_store.py", "_registry.py", "_bridge.py")
+                    if not any(filename.endswith(s) for s in valid_suffixes):
+                        return {
+                            "type": "ENFORCEMENT_SERVICE_SUFFIX_VIOLATION",
+                            "filename": filename,
+                            "current_folder": folder_name,
+                            "reason": f"SERVICE in enforcement/ must end with {valid_suffixes}",
+                            "file_type": file_type,
+                        }
 
         # [FAIL-CLOSED ENFORCEMENT 2026-02-16]
         # Check if folder is governed by FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES

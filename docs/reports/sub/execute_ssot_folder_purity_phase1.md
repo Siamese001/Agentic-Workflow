@@ -65,7 +65,37 @@ Grep for `FOLDER_PURITY_RULES`:
 - __init__.py (export)
 - FileClassificationAgent.py (consumer)
 
-### 6. Baseline Test Results
+---
+
+## Wave 1.2 — Implement Governance in Purity Engine + SSOT Wiring
+
+### 1. Governance Rules Implemented in `_enforce_folder_purity()`
+
+**A) L0-L6 ENFORCEMENT/ RULES** (lines 2213-2238):
+- SCRIPT classification in L0-L6 enforcement/ => FAIL
+- SERVICE without valid suffix (_service|_store|_registry|_bridge).py => FAIL
+- Regex: `agentic_core[/\\]L[0-6]_[^/\\]+[/\\][^/\\]+[/\\]enforcement`
+
+**B) FAIL-CLOSED** (lines 2240-2246):
+- Folders not in FOLDER_PURITY_RULES or INFRASTRUCTURE_PROFILES => skip (legacy)
+- TODO marker for future hard failure
+
+### 2. rg proof: execute_ssot imports SSOT purity engine
+
+```
+agentic_core/L0_routing/scripts/execute_ssot.py:2632-2634
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+    FileClassificationAgent,
+)
+```
+
+### 3. rg proof: No duplicate enforcement implementations
+
+Grep for `_enforce_folder_purity`:
+- FileClassificationAgent.py: 11 matches (all in same file - canonical)
+- No other files contain this method
+
+### 4. Baseline Test Results
 
 [1m============================= test session starts =============================[0m
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
