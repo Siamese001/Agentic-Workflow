@@ -11,6 +11,8 @@ import pytest
 
 from apps_shared.config.environment_config import (
     EnvironmentConfig,
+)
+from apps_shared.config.environment_util import (
     EnvironmentValidator,
     get_environment_config,
     validate_environment,
@@ -186,7 +188,7 @@ class TestEnvironmentHelpers:
         """Test get_environment_config returns singleton instance."""
         with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
             # Reset singleton
-            import apps_shared.config.environment_config as env_module
+            import apps_shared.config.environment_util as env_module
 
             env_module._config_instance = None
 

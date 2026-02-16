@@ -501,6 +501,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                     self.logger.warning(
                         f"[{purity_violation['type']}] {path.name}: {purity_violation['message']}",
                     )
+                    # Count violation in statistics
+                    violation_type = purity_violation["type"]
+                    if violation_type in self.stats["violations"]:
+                        self.stats["violations"][violation_type] += 1
+                    else:
+                        # Default to UTILITY violations for MISNAMED_UTILITY
+                        self.stats["violations"]["UTILITY"] += 1
                     # Force reclassification for passive agents
                     if purity_violation["type"] == "PASSIVE_AGENT_NAMING":
                         ftype = "UTILITY"
@@ -508,6 +515,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                 fake_config = self.check_fake_config(path, file_content)
                 if fake_config:
                     self.logger.warning(f"[{fake_config['type']}] {path.name}: {fake_config['message']}")
+                    # Count violation in statistics
+                    violation_type = fake_config["type"]
+                    if violation_type in self.stats["violations"]:
+                        self.stats["violations"][violation_type] += 1
+                    else:
+                        # Default to UTILITY violations for MISNAMED_UTILITY
+                        self.stats["violations"]["UTILITY"] += 1
             # guardian: allow-silent-swallow
             except Exception:
                 pass  # File read failure — skip purity/config check
@@ -516,11 +530,23 @@ class FileClassificationAgent(*BASE_CLASSES):
             ba_violation = self.check_base_agents_purity(path)
             if ba_violation:
                 self.logger.warning(f"[{ba_violation['type']}] {path.name}: {ba_violation['message']}")
+                # Count violation in statistics
+                violation_type = ba_violation["type"]
+                if violation_type in self.stats["violations"]:
+                    self.stats["violations"][violation_type] += 1
+                else:
+                    self.stats["violations"]["UTILITY"] += 1
 
             # [UTILS PURITY] Ban tests, utilities_ prefix, misplaced scripts in core
             utils_violation = self.check_utils_purity(path, file_content)
             if utils_violation:
                 self.logger.warning(f"[{utils_violation['type']}] {path.name}: {utils_violation['message']}")
+                # Count violation in statistics
+                violation_type = utils_violation["type"]
+                if violation_type in self.stats["violations"]:
+                    self.stats["violations"][violation_type] += 1
+                else:
+                    self.stats["violations"]["UTILITY"] += 1
 
             # [DOMAIN ROOT PURITY] Leaf Node Rule + PascalCase in knowledge/
             domain_violation = self.check_domain_root_purity(path)
@@ -528,6 +554,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                 self.logger.warning(
                     f"[{domain_violation['type']}] {path.name}: {domain_violation['message']}",
                 )
+                # Count violation in statistics
+                violation_type = domain_violation["type"]
+                if violation_type in self.stats["violations"]:
+                    self.stats["violations"][violation_type] += 1
+                else:
+                    self.stats["violations"]["UTILITY"] += 1
 
             # [NEW] Territory Enforcement (Move before Rename)
             target_territory_path = self.check_territory_violation(path, ftype)

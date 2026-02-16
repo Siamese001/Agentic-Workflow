@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from apps_shared.config.config_loader_config import (
+from apps_shared.config.config_loader_util import (
     ConfigLoader,
     ConfigLoadResult,
     get_config_loader,

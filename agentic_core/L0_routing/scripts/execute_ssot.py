@@ -716,8 +716,9 @@ class PreFlightValidator:
     Verifies environmental readiness and enforces strict agent signatures/imports.
     """
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, dry_run: bool = False):
         self.project_root = project_root
+        self.dry_run = dry_run
 
     def run_checks(self) -> tuple[bool, list[str]]:
         errors = []
@@ -733,7 +734,12 @@ class PreFlightValidator:
                 )
                 val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if val != 1:
-                    errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
+                    if self.dry_run:
+                        logging.warning(
+                            "Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode"
+                        )
+                    else:
+                        errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
             # guardian: allow-silent-swallow
             except Exception as e:
                 logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
@@ -2506,7 +2512,7 @@ Examples:
         args.dry_run = True
 
     # [HARDENED] 0. Pre-Flight Validation
-    validator = PreFlightValidator(project_root)
+    validator = PreFlightValidator(project_root, dry_run=args.dry_run)
     env_ok, env_errors = validator.run_checks()
     if not env_ok:
         logger.critical("🛑 PRE-FLIGHT CHECK FAILED:")
