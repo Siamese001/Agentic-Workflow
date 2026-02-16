@@ -2128,12 +2128,9 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if compliant, or a dict with 'folder', 'expected_suffixes', 'suggested_name'.
         """
-        # [APPS-AWARE HARDENING 2026-02-08]
-        # LCD suffix rules are for agentic_core layers. apps_* folders have their
-        # own naming conventions (e.g., types files don't always end in _types.py,
-        # utils files don't need _util.py suffix). Skip enforcement for apps.
-        if any(p.startswith("apps_") for p in path.parts):
-            return None
+        # [APPS SSOT GOVERNANCE EXTENSION 2026-02-16]
+        # LCD suffix rules now apply to BOTH agentic_core AND apps_* folders.
+        # This ensures identical naming/purity enforcement across the codebase.
 
         filename = path.name
         parent_name = path.parent.name
@@ -2145,6 +2142,10 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         # Folder-to-allowed-suffix mapping (LCD canonical rules)
+        # Applies to: agentic_core/**/config/, agentic_core/**/utils/,
+        #             apps_shared/**/config/, apps_shared/**/utils/,
+        #             apps_lic/**/config/, apps_lic/**/utils/,
+        #             apps_rg/**/config/, apps_rg/**/utils/
         folder_suffix_rules: dict[str, list[str]] = {
             "types": ["_types.py", "_protocol.py"],
             "utils": ["_util.py", "_mixin.py", "_helper.py"],
@@ -2190,12 +2191,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if file is in a valid folder, or violation dict with eviction target.
         """
-        # [APPS-AWARE HARDENING 2026-02-08]
-        # FOLDER_PURITY_RULES are designed for agentic_core layer folders and are
-        # NOT applicable to apps_* which have different folder semantics.
-        # For example, apps_rg/reasoning/ may legitimately contain non-Agent files.
-        if any(p.startswith("apps_") for p in path.parts):
-            return None
+        # [APPS SSOT GOVERNANCE EXTENSION 2026-02-16]
+        # FOLDER_PURITY_RULES now apply to BOTH agentic_core AND apps_* folders.
+        # apps_*/reasoning/ may contain non-Agent files (strategies, orchestrators),
+        # but apps_*/config/ and apps_*/utils/ must follow LCD suffix rules.
 
         from agentic_core.L5_safety.config.structure_blueprint_config import (
             FOLDER_PURITY_RULES,
