@@ -28,8 +28,7 @@ import hashlib
 import logging
 import re
 
-from agentic_core.base_agents.decorators import standard_heal
-
+from agentic_core.utils.decorators_base_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)

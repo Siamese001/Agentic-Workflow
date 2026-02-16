@@ -55,9 +55,8 @@ try:
 except ImportError:  # MetricsAgent not implemented yet or optional
     METRICS_AGENT_AVAILABLE = False
 
-from agentic_core.base_agents.decorators import standard_heal
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.utils.decorators_base_util import standard_heal
 
 
 @dataclass

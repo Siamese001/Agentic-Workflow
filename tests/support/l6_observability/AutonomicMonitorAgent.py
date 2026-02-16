@@ -13,13 +13,13 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.base_agents.decorators import standard_heal
 from agentic_core.L5_safety.types.health_status_types import (
     AlertSeverity,
     HealthAlert,
     HealthStatus,
     health_metrics,
 )
+from agentic_core.utils.decorators_base_util import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

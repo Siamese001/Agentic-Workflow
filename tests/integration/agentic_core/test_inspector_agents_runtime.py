@@ -131,7 +131,7 @@ class TestDecoratorRuntimeImports:
     """Verify canonical decorator imports work with full dep chain loaded."""
 
     def test_standard_heal_importable_with_full_deps(self) -> None:
-        from agentic_core.base_agents.decorators import standard_heal
+        from agentic_core.utils.decorators_base_util import standard_heal
 
         assert callable(standard_heal)
 
@@ -142,11 +142,10 @@ class TestDecoratorRuntimeImports:
         assert callable(decorator)
 
     def test_shim_identity_with_full_deps(self) -> None:
-        from agentic_core.base_agents.decorators import standard_heal as canonical
-
         from agentic_core.L5_safety.utils.decorators_util import (
             standard_heal as shim,
         )
+        from agentic_core.utils.decorators_base_util import standard_heal as canonical
 
         assert shim is canonical
 

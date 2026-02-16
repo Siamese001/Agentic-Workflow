@@ -105,11 +105,11 @@ class TestBaseAgentsPurity:
                 continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom):
-                    if node.module == "agentic_core.base_agents.decorators":
+                    if node.module == "agentic_core.utils.decorators_base_util":
                         violations.append(f"{rel}:{node.lineno}")
                 elif isinstance(node, ast.Import):
                     for alias in node.names:
-                        if alias.name == "agentic_core.base_agents.decorators":
+                        if alias.name == "agentic_core.utils.decorators_base_util":
                             violations.append(f"{rel}:{node.lineno}")
         assert not violations, (
             f"Found {len(violations)} residual base_agents.decorators imports "

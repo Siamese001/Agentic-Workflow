@@ -7,6 +7,6 @@ indefinitely. It's used across the agentic system for safety and reliability.
 
 from __future__ import annotations
 
-from .timeout_decorator_impl import TimeoutError, timeout  # noqa: F401
+from .timeout_decorator_impl_util import TimeoutError, timeout  # noqa: F401
 
 __all__ = ["timeout", "TimeoutError"]

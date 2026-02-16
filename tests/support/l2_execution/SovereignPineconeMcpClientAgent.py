@@ -14,7 +14,7 @@ from typing import Any
 
 # ARCHIVED IMPORT REMOVED - dependency no longer available
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.base_agents.decorators import standard_heal
+from agentic_core.utils.decorators_base_util import standard_heal
 
 Logger: Any = logging.getLogger(__name__)
 

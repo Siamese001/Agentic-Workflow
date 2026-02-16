@@ -32,17 +32,17 @@ class TestCanonicalDecoratorsContract:
     """Verify base_agents.decorators is the canonical SSOT."""
 
     def test_standard_heal_importable(self) -> None:
-        from agentic_core.base_agents.decorators import standard_heal
+        from agentic_core.utils.decorators_base_util import standard_heal
 
         assert callable(standard_heal)
 
     def test_standard_heal_async_importable(self) -> None:
-        from agentic_core.base_agents.decorators import standard_heal_async
+        from agentic_core.utils.decorators_base_util import standard_heal_async
 
         assert callable(standard_heal_async)
 
     def test_heal_result_schema_importable(self) -> None:
-        from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA
+        from agentic_core.utils.decorators_base_util import HEAL_RESULT_SCHEMA
 
         assert isinstance(HEAL_RESULT_SCHEMA, dict)
         assert "violations_found" in HEAL_RESULT_SCHEMA
@@ -50,7 +50,7 @@ class TestCanonicalDecoratorsContract:
         assert "status" in HEAL_RESULT_SCHEMA
 
     def test_dunder_all_matches_exports(self) -> None:
-        import agentic_core.base_agents.decorators as mod
+        import agentic_core.utils.decorators_base_util as mod
 
         assert hasattr(mod, "__all__")
         for name in mod.__all__:
@@ -95,18 +95,16 @@ class TestBackwardCompatShimIdentity:
 
     def test_l5_shim_standard_heal_is_canonical(self) -> None:
         """L5 shim must re-export base_agents.decorators.standard_heal."""
-        from agentic_core.base_agents.decorators import standard_heal as canonical
-
         from agentic_core.L5_safety.utils.decorators_util import standard_heal as shim
+        from agentic_core.utils.decorators_base_util import standard_heal as canonical
 
         assert shim is canonical, "L5 shim must re-export canonical object"
 
     def test_l5_shim_heal_result_schema_is_canonical(self) -> None:
-        from agentic_core.base_agents.decorators import HEAL_RESULT_SCHEMA as canonical
-
         from agentic_core.L5_safety.utils.decorators_util import (
             HEAL_RESULT_SCHEMA as shim,
         )
+        from agentic_core.utils.decorators_base_util import HEAL_RESULT_SCHEMA as canonical
 
         assert shim is canonical
 

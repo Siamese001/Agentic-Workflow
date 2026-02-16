@@ -35,9 +35,8 @@ try:
     )
 except ImportError:
     IntegrityGateExecutorAgent = None  # type: ignore[misc,assignment]
-from agentic_core.base_agents.decorators import standard_heal
-
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.utils.decorators_base_util import standard_heal
 
 
 class PeerIntelligenceResult:

@@ -18,11 +18,11 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 import networkx as nx
-from agentic_core.base_agents.decorators import standard_heal
 from pydantic import BaseModel, Field, validator
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.utils.decorators_base_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
 if TYPE_CHECKING:
