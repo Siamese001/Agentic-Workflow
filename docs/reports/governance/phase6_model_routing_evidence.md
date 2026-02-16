@@ -98,3 +98,62 @@ index 419ac7ebd..d0ea3efaa 100644
 Exit code: 0
 
 **WAVE 6.1 ACCEPTANCE**: All tests pass. Routing seam added (no SDK/executor imports). Phase 5 governance contract updated to allowlist controlled seam variables.
+
+---
+
+## Wave 6.2 — Default Router Implementation (Pure Map, Not Plugged)
+
+### File Created
+
+`agentic_core/L5_safety/types/heal_model_map.py`
+
+### Contents
+
+```python
+"""
+Tier-to-model ID mapping for heal policy escalation.
+
+Pure mapping function (stdlib-only, no environment access).
+Phase 6 Wave 6.2.
+"""
+
+from __future__ import annotations
+
+from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
+
+# Model identifiers for LOW and HIGH reasoning tiers
+LOW_MODEL_ID = "local_low"
+HIGH_MODEL_ID = "local_high"
+
+
+def map_tier_to_model_id(tier: ReasoningTier) -> str:
+    """Map a reasoning tier to a model identifier.
+
+    Args:
+        tier: The reasoning tier (LOW or HIGH)
+
+    Returns:
+        Model identifier string ("local_low" or "local_high")
+    """
+    return LOW_MODEL_ID if tier == ReasoningTier.LOW else HIGH_MODEL_ID
+```
+
+### Verification
+
+```bash
+python -c "from agentic_core.L5_safety.types.heal_model_map import map_tier_to_model_id; from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier; print(map_tier_to_model_id(ReasoningTier.LOW))"
+```
+
+```text
+local_low
+```
+
+### pytest -q
+
+```text
+===================== 136 passed in 20.19s =====================
+```
+
+Exit code: 0
+
+**WAVE 6.2 ACCEPTANCE**: All tests pass. Tier→model ID mapping created (pure, stdlib-only).
