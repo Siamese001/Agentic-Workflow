@@ -4613,6 +4613,11 @@ apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception s
 apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded timeout_s=60
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:46:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
 apps_rg/reasoning/ConfidencemetricsStrategy.py:206:magic_configuration:Magic configuration: Hardcoded min_confidence=0.8
 apps_rg/reasoning/ConfidencemetricsStrategy.py:25:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.95
 apps_rg/reasoning/ConfidencemetricsStrategy.py:26:magic_configuration:Magic configuration: Hardcoded convergence_threshold=0.9
@@ -4620,11 +4625,6 @@ apps_rg/reasoning/ConfidencemetricsStrategy.py:27:magic_configuration:Magic conf
 apps_rg/reasoning/ConfidencemetricsStrategy.py:28:magic_configuration:Magic configuration: Hardcoded min_steps=2
 apps_rg/reasoning/ConfidencemetricsStrategy.py:29:magic_configuration:Magic configuration: Hardcoded max_steps=8
 apps_rg/reasoning/ContentQualityAgent.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/reasoning/HardenedanthropicexecutorStrategy.py:41:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
-apps_rg/reasoning/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded timeout_s=60
-apps_rg/reasoning/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/reasoning/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
-apps_rg/reasoning/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:49:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:50:magic_configuration:Magic configuration: Hardcoded timeout_s=60
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:51:magic_configuration:Magic configuration: Hardcoded max_retries=3
@@ -4731,8 +4731,6 @@ apps_shared/reasoning/InfrastructureOrchestrator.py:269:silent_swallower:Silent 
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:138:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py:99:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/reasoning/l5_autonomous_orchestrator_wrapper.py:28:magic_configuration:Magic configuration: Hardcoded max_cycles=5
-apps_shared/reasoning/l5_autonomous_orchestrator_wrapper.py:29:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
 apps_shared/reasoning/restore_app_agents.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/restore_app_agents.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/reasoning/update_orchestrator_imports.py:131:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -5011,6 +5009,8 @@ apps_shared/utils/health_check_types_util.py:264:silent_swallower:Silent excepti
 apps_shared/utils/health_check_types_util.py:274:magic_configuration:Magic configuration: Hardcoded max_percent=90.0
 apps_shared/utils/health_check_types_util.py:304:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/l1_health_benchmark_util.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_shared/utils/l5_autonomous_orchestrator_wrapper.py:28:magic_configuration:Magic configuration: Hardcoded max_cycles=5
+apps_shared/utils/l5_autonomous_orchestrator_wrapper.py:29:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
 apps_shared/utils/late_interaction_reranker_util.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/late_interaction_reranker_util.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/late_interaction_reranker_util.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
