@@ -12,9 +12,11 @@ Phase 3 aggressively eliminates remaining exact duplicate clusters by extending 
 
 ## Wave 3.1 — Exact Cluster Enumeration and Eligibility Classification
 
-### Remaining Exact Duplicate Clusters (Phase 2 → Phase 3)
+### Exact Duplicate Clusters (Phase 2 → Phase 3)
 
-**Total clusters:** 13 (unchanged from Phase 2)
+**Phase 2 baseline:** 13 clusters
+**Phase 3 after consolidation:** 10 clusters
+**Net reduction:** 3 clusters eliminated
 
 ### Cluster Classification for Phase 3
 
@@ -139,7 +141,7 @@ Output is deterministic and reproducible from clean tree. Clusters SHA256 change
 ### Canonical Utility Artifact
 
 **File:** `agentic_core/utils/ast_fuzzy.py`
-**SHA256:** `7a8f5c2e1d9b4a6f3c8e2b5d9a1f4c7e8b2d5a9c1e4f7a3b6c9d2e5f8a1b4`
+**SHA256:** `fe110e8bddb49dd10aa1a319093c7641a2081fb6b0adfa0052ef5820becf1d9c`
 **Functions:** 10
 - `parse_ast_safe()`
 - `ast_dump_hash()`
@@ -162,6 +164,7 @@ Output is deterministic and reproducible from clean tree. Clusters SHA256 change
 | --- | --- | --- | --- |
 | compute_file_hash | 2 | `agentic_core.utils.ast_fuzzy.compute_file_hash()` | ✅ Consolidated |
 | normalize_path | 2 | `agentic_core.utils.ast_fuzzy.normalize_path()` | ✅ Consolidated |
+| _parse_evidence (Phase 2 residual) | 4 | `agentic_core.utils.ast_fuzzy.parse_evidence()` | ✅ Consolidated |
 
 ### Deferred Clusters (Phase 4+)
 
