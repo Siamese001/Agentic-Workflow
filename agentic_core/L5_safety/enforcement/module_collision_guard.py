@@ -21,7 +21,7 @@ from pathlib import Path
 # Allowed canonical+shim pairs (canonical_location -> shim_location)
 ALLOWED_SHIM_PAIRS = {
     "agentic_core/base_agents/decorators.py": "agentic_core/utils/decorators.py",
-    "agentic_core/L7_meta_learning/types/meta_learning_types.py": "agentic_core/L5_safety/types/meta_learning_types.py",
+    "system_learning/types/meta_learning_types.py": "agentic_core/L5_safety/types/meta_learning_types.py",
 }
 
 # Normalize paths for comparison (convert to forward slashes for consistency)
