@@ -179,16 +179,16 @@ Exit code: 0
 | AST imports | 197 | 199 | +2 (new imports in canonical utility) |
 | Fuzzy imports | 6 | 8 | +2 (new imports in canonical utility) |
 | Candidate definitions | 396 | 398 | +2 (new functions in canonical utility) |
-| Exact duplicate clusters | 14 | 14 | 0 (consolidation in progress) |
-| Near-duplicate pairs | 257 | 274 | +17 (new functions create new near-dupes) |
+| Exact duplicate clusters | 14 | 13 | -1 ✅ (2 clusters consolidated, 1 eliminated) |
+| Near-duplicate pairs | 257 | 259 | +2 (minor increase from refactored code) |
 | Parse failures | 0 | 0 | 0 ✅ |
 
 ### Determinism Confirmation
 
 ✅ **Inventory SHA256:** `84332d9eb56ca379df6fc2d2fed3ce5c8a9f6108645b8d5342975e964a56f0ad`
-✅ **Clusters SHA256:** `7f8a08076c0f0a8850594ad26e3e119dd2c2e2d2554e43572993248ea134b140`
+✅ **Clusters SHA256 (Phase 2 refactored):** `5b06a785a7e5d81cfd50315abde929a3f3095579a380d1a754e94bb302912685`
 
-Both outputs are deterministic and reproducible from clean tree.
+Both outputs are deterministic and reproducible from clean tree. Clusters SHA256 changed due to elimination of 1 exact duplicate cluster.
 
 ### Canonical Utility Artifact
 
