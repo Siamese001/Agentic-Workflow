@@ -39,10 +39,13 @@ collected 19 items
 
 ### git --no-pager show --name-only --oneline HEAD (AFTER final commit)
 ```
-[TO BE POPULATED AFTER COMMIT]
+093bb0596 (HEAD -> main) enforcement: phase1 closeout (scope + evidence)
+direct_test_runner.py
+docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+run_tests.py
 ```
 
 ### git status --porcelain=v1 (post-commit verification)
 ```
-[TO BE POPULATED AFTER COMMIT]
+(clean working directory)
 ```
