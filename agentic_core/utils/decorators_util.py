@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import functools
 import logging
+import os
 import time
 import traceback
 from collections.abc import Callable
@@ -47,6 +48,14 @@ HEAL_RESULT_SCHEMA = {
     "execution_time_ms": 0.0,
     "error_message": None,
 }
+
+
+def _select_reasoning_tier_enabled() -> bool:
+    """Check if heal policy model escalation is enabled via env var.
+
+    Returns True iff HEAL_POLICY_MODEL_ESCALATION == "1", else False.
+    """
+    return os.environ.get("HEAL_POLICY_MODEL_ESCALATION") == "1"
 
 
 def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
@@ -189,6 +198,12 @@ def standard_heal(func: F) -> F:
             Logger.debug(
                 f"[heal_policy] tier={policy_decision.tier.name} threshold={policy_decision.threshold_used}",
             )
+
+            # Phase 4: Escalation flag hook (default-off)
+            if _select_reasoning_tier_enabled():
+                Logger.debug(
+                    f"[heal_policy] escalation_enabled=1 selected_tier={policy_decision.tier.name}",
+                )
 
             result = func(
                 self,
