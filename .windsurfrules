@@ -637,16 +637,19 @@ pytest -q <relevant_tests>  # MUST pass
 ```
 
 **Evidence File Update:**
+
 - MUST include post-commit verification section
 - MUST show actual post-commit command outputs
 - MUST document any discrepancies from pre-commit claims
 
 **Failure Protocol:**
+
 - Any post-commit failure requires immediate remediation
 - Cannot proceed to next phase until post-commit integrity restored
 - Must document failure root cause and fix verification
 
 **Verification Artifacts:**
+
 - Commit hash MUST be recorded in evidence
 - File list MUST match `git show --name-only HEAD`
 - Clean working tree MUST be proven with `git status`
@@ -658,24 +661,28 @@ pytest -q <relevant_tests>  # MUST pass
 Test failures must not block unrelated structural work.
 
 **Test Classification:**
+
 - **Structural Tests**: Core architecture, layer compliance, SSOT validation
 - **Feature Tests**: Application functionality, business logic
 - **Integration Tests**: Cross-component interactions
 - **Collection Errors**: Import issues, missing dependencies
 
 **Isolation Protocol:**
+
 - Structural work can proceed with failing feature tests
 - Collection errors MUST be documented but not block governance work
 - Test failures MUST be classified in evidence files
 - Separate test suites for different concern domains
 
 **Test Suite Status Documentation:**
+
 - Evidence MUST show each test suite status separately
 - Structural test failures block phase completion
 - Feature test failures noted but don't block governance work
 - Collection errors require ticket creation, not phase halt
 
 **Remediation Tracking:**
+
 - Create separate tickets for non-structural test failures
 - Document test remediation as parallel workstream
 - Phase acceptance based on structural test integrity only
@@ -687,6 +694,7 @@ Test failures must not block unrelated structural work.
 All pre-commit hooks must either pass or be formally disabled with documented policy.
 
 **Forbidden:**
+
 - Skipping hooks with SKIP environment variable without documented policy
 - Claiming "pre-commit passes" when hooks are skipped
 - Generating new baselines to mask violations without explicit authorization
