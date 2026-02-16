@@ -30,10 +30,7 @@ except ImportError:
     SovereignBaseAgent = object
 
     # Use canonical standard_heal from HealingMixin
-
-    def standard_heal(func):
-        """Simple fallback that preserves function."""
-        return func
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import standard_heal
 
 
 # SSOT Constants

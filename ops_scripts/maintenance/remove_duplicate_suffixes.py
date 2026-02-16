@@ -51,15 +51,7 @@ def find_duplicate_files() -> list[Path]:
     return all_duplicates
 
 
-def get_canonical_path(duplicate_path: Path) -> tuple[Path, str | None]:
-    """Get the canonical path by removing suffix.
-
-    Returns:
-        Tuple of (canonical_path, matched_suffix)
-    """
-    from agentic_core.utils.fs_utils import remove_duplicate_suffix_path
-
-    return remove_duplicate_suffix_path(duplicate_path, PROBLEMATIC_SUFFIXES)
+from ops_scripts.dev_tools.l0_scripts.remove_duplicate_suffixes_util import get_canonical_path
 
 
 def analyze_duplicates(

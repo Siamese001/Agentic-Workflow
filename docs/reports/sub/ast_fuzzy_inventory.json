@@ -6492,26 +6492,9 @@
         "ast": [],
         "fuzzy": []
       },
-      "candidates": [
-        {
-          "kind": "function",
-          "name": "_state_hash",
-          "line": 191,
-          "keywords": [
-            "hash"
-          ]
-        },
-        {
-          "kind": "function",
-          "name": "_check_past_failures",
-          "line": 332,
-          "keywords": [
-            "ast"
-          ]
-        }
-      ],
-      "parse_status": "ok",
-      "parse_error": null
+      "candidates": [],
+      "parse_status": "failed",
+      "parse_error": "SyntaxError at line 395: expected an indented block after 'if' statement on line 394"
     },
     {
       "path": "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
@@ -9786,7 +9769,7 @@
         {
           "kind": "function",
           "name": "get_python_files_fast",
-          "line": 107,
+          "line": 109,
           "keywords": [
             "ast"
           ]
@@ -9794,7 +9777,7 @@
         {
           "kind": "function",
           "name": "enforce_kernel_structure",
-          "line": 256,
+          "line": 258,
           "keywords": [
             "match"
           ]
@@ -9802,7 +9785,7 @@
         {
           "kind": "function",
           "name": "_get_correct_folder_for_type",
-          "line": 369,
+          "line": 371,
           "keywords": [
             "ast",
             "match",
@@ -9812,7 +9795,7 @@
         {
           "kind": "function",
           "name": "classify_file",
-          "line": 726,
+          "line": 728,
           "keywords": [
             "ast",
             "match"
@@ -9821,7 +9804,7 @@
         {
           "kind": "function",
           "name": "_detect_filename_tag_conflicts",
-          "line": 1051,
+          "line": 1053,
           "keywords": [
             "match"
           ]
@@ -9829,7 +9812,7 @@
         {
           "kind": "function",
           "name": "normalize_filename",
-          "line": 1240,
+          "line": 1242,
           "keywords": [
             "normalize"
           ]
@@ -9837,7 +9820,7 @@
         {
           "kind": "function",
           "name": "_check_forbidden_patterns",
-          "line": 1291,
+          "line": 1293,
           "keywords": [
             "match"
           ]
@@ -9845,7 +9828,7 @@
         {
           "kind": "function",
           "name": "validate_territory_alignment",
-          "line": 1416,
+          "line": 1418,
           "keywords": [
             "ast"
           ]
@@ -9853,7 +9836,7 @@
         {
           "kind": "function",
           "name": "suggest_agent_layer",
-          "line": 1818,
+          "line": 1820,
           "keywords": [
             "ast"
           ]
@@ -9861,7 +9844,7 @@
         {
           "kind": "function",
           "name": "validate_single_suffix",
-          "line": 2014,
+          "line": 2016,
           "keywords": [
             "match"
           ]
@@ -9869,7 +9852,7 @@
         {
           "kind": "function",
           "name": "validate_folder_suffix_consistency",
-          "line": 2081,
+          "line": 2083,
           "keywords": [
             "match"
           ]
@@ -9877,7 +9860,7 @@
         {
           "kind": "function",
           "name": "_detect_cross_layer_naming_violation",
-          "line": 2316,
+          "line": 2318,
           "keywords": [
             "match"
           ]
@@ -9885,7 +9868,7 @@
         {
           "kind": "function",
           "name": "_compute_layer_affinity",
-          "line": 2440,
+          "line": 2442,
           "keywords": [
             "ast"
           ]
@@ -9893,7 +9876,7 @@
         {
           "kind": "function",
           "name": "_compute_content_scores",
-          "line": 2506,
+          "line": 2508,
           "keywords": [
             "ast"
           ]
@@ -9901,7 +9884,7 @@
         {
           "kind": "function",
           "name": "classify_file_with_confidence",
-          "line": 2598,
+          "line": 2600,
           "keywords": [
             "ast"
           ]
@@ -9909,7 +9892,7 @@
         {
           "kind": "function",
           "name": "_detect_test_patterns",
-          "line": 2643,
+          "line": 2645,
           "keywords": [
             "ast"
           ]
@@ -9917,7 +9900,7 @@
         {
           "kind": "function",
           "name": "_detect_script_patterns",
-          "line": 2708,
+          "line": 2710,
           "keywords": [
             "ast",
             "parse"
@@ -9926,7 +9909,7 @@
         {
           "kind": "function",
           "name": "_detect_type_patterns",
-          "line": 2765,
+          "line": 2767,
           "keywords": [
             "ast"
           ]
@@ -9934,7 +9917,7 @@
         {
           "kind": "function",
           "name": "_fuzzy_match_name_or_content",
-          "line": 2832,
+          "line": 2834,
           "keywords": [
             "fuzzy",
             "match"
@@ -9943,7 +9926,7 @@
         {
           "kind": "function",
           "name": "_detect_config_patterns",
-          "line": 2889,
+          "line": 2891,
           "keywords": [
             "ast"
           ]
@@ -9951,7 +9934,7 @@
         {
           "kind": "function",
           "name": "_detect_validator_patterns",
-          "line": 2946,
+          "line": 2948,
           "keywords": [
             "ast"
           ]
@@ -9959,7 +9942,7 @@
         {
           "kind": "function",
           "name": "_is_service_singleton",
-          "line": 3117,
+          "line": 3119,
           "keywords": [
             "ast",
             "match"
@@ -9968,7 +9951,7 @@
         {
           "kind": "function",
           "name": "update_file_header",
-          "line": 3373,
+          "line": 3375,
           "keywords": [
             "match"
           ]
@@ -9976,7 +9959,7 @@
         {
           "kind": "function",
           "name": "preflight_safety_gates",
-          "line": 4569,
+          "line": 4571,
           "keywords": [
             "ast"
           ]
@@ -9984,7 +9967,7 @@
         {
           "kind": "function",
           "name": "generate_execution_plan",
-          "line": 4637,
+          "line": 4639,
           "keywords": [
             "ast"
           ]
@@ -10611,7 +10594,7 @@
         {
           "kind": "function",
           "name": "matches",
-          "line": 85,
+          "line": 84,
           "keywords": [
             "match"
           ]
@@ -10619,7 +10602,7 @@
         {
           "kind": "function",
           "name": "_compare_threat_levels",
-          "line": 369,
+          "line": 368,
           "keywords": [
             "compare"
           ]
@@ -10627,7 +10610,7 @@
         {
           "kind": "function",
           "name": "_generate_recommendations",
-          "line": 373,
+          "line": 372,
           "keywords": [
             "match"
           ]
@@ -11202,7 +11185,7 @@
         {
           "kind": "function",
           "name": "matches",
-          "line": 78,
+          "line": 77,
           "keywords": [
             "match"
           ]
@@ -11210,7 +11193,7 @@
         {
           "kind": "function",
           "name": "_compare_threat_levels",
-          "line": 396,
+          "line": 395,
           "keywords": [
             "compare"
           ]
@@ -11218,7 +11201,7 @@
         {
           "kind": "function",
           "name": "_generate_recommendations",
-          "line": 400,
+          "line": 399,
           "keywords": [
             "match"
           ]
@@ -13431,7 +13414,7 @@
         {
           "kind": "function",
           "name": "matches",
-          "line": 92,
+          "line": 87,
           "keywords": [
             "match"
           ]
@@ -13439,7 +13422,7 @@
         {
           "kind": "function",
           "name": "_check_past_failures",
-          "line": 165,
+          "line": 161,
           "keywords": [
             "ast"
           ]
@@ -15565,7 +15548,7 @@
         {
           "kind": "function",
           "name": "synchronize_registry_hashes",
-          "line": 37,
+          "line": 38,
           "keywords": [
             "hash"
           ]
@@ -16505,7 +16488,7 @@
         {
           "kind": "function",
           "name": "_check_past_failures",
-          "line": 248,
+          "line": 249,
           "keywords": [
             "ast"
           ]
@@ -16750,6 +16733,25 @@
           "line": 222,
           "keywords": [
             "hash"
+          ]
+        }
+      ],
+      "parse_status": "ok",
+      "parse_error": null
+    },
+    {
+      "path": "agentic_core/utils/state_utils.py",
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "candidates": [
+        {
+          "kind": "function",
+          "name": "check_past_failures",
+          "line": 8,
+          "keywords": [
+            "ast"
           ]
         }
       ],
@@ -18228,7 +18230,7 @@
         {
           "kind": "function",
           "name": "get_python_files_fast",
-          "line": 22,
+          "line": 21,
           "keywords": [
             "ast"
           ]
@@ -18236,7 +18238,7 @@
         {
           "kind": "class",
           "name": "PascalSovereigntyFixer",
-          "line": 38,
+          "line": 37,
           "keywords": [
             "ast"
           ]
@@ -20323,16 +20325,7 @@
         "ast": [],
         "fuzzy": []
       },
-      "candidates": [
-        {
-          "kind": "function",
-          "name": "get_canonical_path",
-          "line": 54,
-          "keywords": [
-            "match"
-          ]
-        }
-      ],
+      "candidates": [],
       "parse_status": "ok",
       "parse_error": null
     },
