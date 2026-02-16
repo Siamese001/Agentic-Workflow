@@ -157,3 +157,47 @@ local_low
 Exit code: 0
 
 **WAVE 6.2 ACCEPTANCE**: All tests pass. Tier→model ID mapping created (pure, stdlib-only).
+
+---
+
+## Wave 6.3 — Governance Tests (Router Seam + Map)
+
+### Test File
+
+`tests/governance/test_heal_model_routing_enabled_path.py`
+
+### Tests
+
+**TestModelRoutingDefaultOff**:
+1. `test_router_seam_not_invoked_when_disabled` — Without env var, router seam NOT invoked
+2. `test_no_routed_model_log_when_disabled` — Without env var, no "routed_model=" log appears
+
+**TestModelRoutingEnabledLow**:
+3. `test_router_invoked_with_low_tier` — With env var + LOW tier, router invoked exactly once with LOW
+4. `test_routed_model_log_contains_local_low` — With env var + LOW tier, log contains "routed_model=local_low"
+
+**TestModelRoutingEnabledHigh**:
+5. `test_router_invoked_with_high_tier` — With env var + HIGH tier, router invoked exactly once with HIGH
+6. `test_routed_model_log_contains_local_high` — With env var + HIGH tier, log contains "routed_model=local_high"
+
+### pytest -q tests/governance/test_heal_model_routing_enabled_path.py
+
+```text
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingDefaultOff::test_router_seam_not_invoked_when_disabled PASSED
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingDefaultOff::test_no_routed_model_log_when_disabled PASSED
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingEnabledLow::test_router_invoked_with_low_tier PASSED
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingEnabledLow::test_routed_model_log_contains_local_low PASSED
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingEnabledHigh::test_router_invoked_with_high_tier PASSED
+tests/governance/test_heal_model_routing_enabled_path.py::TestModelRoutingEnabledHigh::test_routed_model_log_contains_local_high PASSED
+====================== 6 passed in 0.04s =======================
+```
+
+### pytest -q (full suite)
+
+```text
+===================== 142 passed in 20.29s =====================
+```
+
+Exit code: 0
+
+**WAVE 6.3 ACCEPTANCE**: All tests pass. Enabled-path model routing contract proven.
