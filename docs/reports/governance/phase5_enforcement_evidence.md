@@ -46,3 +46,57 @@ tests/governance/test_heal_policy_purity_contract.py::TestHealPolicyPurityContra
 Exit code: 0
 
 **WAVE 5.1 ACCEPTANCE**: All tests pass. Policy purity contract enforced.
+
+---
+
+## Wave 5.2 — Standard_Heal Routing Ban Contract (AST-Based)
+
+### Test File
+
+`tests/governance/test_standard_heal_no_routing_contract.py`
+
+### Tests
+
+**TestStandardHealNoRoutingContract**:
+1. `test_no_banned_imports` — Decorators module must not import routing/executor modules
+2. `test_standard_heal_no_routing_calls` — standard_heal function must not contain routing/executor calls
+3. `test_wrapper_function_no_routing_calls` — Nested wrapper function must not contain routing calls
+
+### Banned Import Modules
+
+- `L0_routing`
+- `executors`
+- `model_router`
+- `openai`
+- `gemini`
+- `vllm`
+- `anthropic`
+
+### Banned Call Names
+
+- `route`
+- `router`
+- `execute_model`
+- `call_llm`
+- `completion`
+- `chat`
+- `invoke`
+
+### pytest -q tests/governance/test_standard_heal_no_routing_contract.py
+
+```text
+tests/governance/test_standard_heal_no_routing_contract.py::TestStandardHealNoRoutingContract::test_no_banned_imports PASSED
+tests/governance/test_standard_heal_no_routing_contract.py::TestStandardHealNoRoutingContract::test_standard_heal_no_routing_calls PASSED
+tests/governance/test_standard_heal_no_routing_contract.py::TestStandardHealNoRoutingContract::test_wrapper_function_no_routing_calls PASSED
+====================== 3 passed in 0.02s =======================
+```
+
+### pytest -q (full suite)
+
+```text
+===================== 132 passed in 20.31s =====================
+```
+
+Exit code: 0
+
+**WAVE 5.2 ACCEPTANCE**: All tests pass. Routing ban contract enforced.
