@@ -50,14 +50,14 @@ class TestDagRuntimeInspectorAgent:
     """Validate DagRuntimeInspectorAgent imports and runs diagnostics."""
 
     def test_importable(self) -> None:
-        from agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent import (
+        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
 
         assert DagRuntimeInspectorAgent is not None
 
     def test_diagnose_returns_inspection_result(self) -> None:
-        from agentic_core.L3_orchestration.engines.DagRuntimeInspectorAgent import (
+        from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
 

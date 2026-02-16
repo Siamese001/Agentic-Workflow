@@ -20,7 +20,7 @@ pytestmark = pytest.mark.unit_min_deps
 ROOT = Path(__file__).resolve().parents[2]
 
 INSPECTOR_FILES = [
-    ROOT / "agentic_core" / "L3_orchestration" / "engines" / "DagRuntimeInspectorAgent.py",
+    ROOT / "agentic_core" / "L3_orchestration" / "reasoning" / "DagRuntimeInspectorAgent.py",
     ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SafetyInspectorAgent.py",
     ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SprawlInspectorAgent.py",
 ]

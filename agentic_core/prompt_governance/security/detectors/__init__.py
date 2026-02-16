@@ -3,6 +3,6 @@
 from __future__ import annotations
 
 from .injection_detector import InjectionDetector
-from .pii_scrubber import scrub_pii
+from .pii_scrubber import PIIScrubber
 
-__all__ = ["InjectionDetector", "scrub_pii"]
+__all__ = ["InjectionDetector", "PIIScrubber"]
