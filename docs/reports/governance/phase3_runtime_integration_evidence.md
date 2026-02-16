@@ -209,3 +209,60 @@ tests/governance/test_heal_policy_runtime_integration.py::TestHealPolicyRuntimeI
 Exit code: 0
 
 **WAVE 3.3 ACCEPTANCE**: All tests pass. Policy decision computed, logged, and output unchanged.
+
+---
+
+## PHASE 3 CLOSEOUT
+
+### Final Commits
+
+**Wave 3.2**:
+```bash
+git --no-pager show --name-only --oneline 7a50c7222
+```
+
+```text
+7a50c7222 feat(heal): compute policy decision in standard_heal (no behavior change)
+agentic_core/utils/decorators_util.py
+docs/reports/governance/phase3_runtime_integration_evidence.md
+```
+
+**Wave 3.3**:
+```bash
+git --no-pager show --name-only --oneline HEAD
+```
+
+```text
+e43f87c63 test(heal): runtime policy integration contract
+docs/reports/governance/phase3_runtime_integration_evidence.md
+tests/governance/test_heal_policy_runtime_integration.py
+```
+
+### Clean Tree Proof
+
+```bash
+git status --porcelain=v1
+```
+
+```text
+(empty - clean working tree)
+```
+
+---
+
+## PHASE 3 ACCEPTANCE STATUS: COMPLETE
+
+**All acceptance criteria met:**
+
+- ✓ `pytest -q` exits 0 (122 passed)
+- ✓ Only allowed files changed:
+  - `agentic_core/utils/decorators_util.py`
+  - `tests/governance/test_heal_policy_runtime_integration.py`
+  - `docs/reports/governance/phase3_runtime_integration_evidence.md`
+- ✓ Policy decision computed exactly once per wrapper invocation
+- ✓ Policy decision logged via `Logger.debug("[heal_policy] tier=... threshold=...")`
+- ✓ No behavior change beyond new debug log line
+- ✓ Evidence file contains raw outputs + commit proofs
+- ✓ Clean working tree
+
+**Phase 3 is CLOSED.**
