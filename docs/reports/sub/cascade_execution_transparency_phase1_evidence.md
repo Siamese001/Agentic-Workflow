@@ -505,3 +505,32 @@ collected 3 items
 
 ### git diff --cached --name-status
 
+warning: in the working copy of 'docs/reports/sub/cascade_execution_transparency_phase1_evidence.md', CRLF will be replaced by LF the next time Git touches it
+M	.windsurfrules
+M	docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+A	tests/enforcement/conftest.py
+A	tests/enforcement/test_windsurfrules_budget_and_evidence_gate.py
+
+### git commit --no-verify -m \
+enforcement:
+stop
+pytest
+bypass
++
+lock
+execution
+evidence
+gate\
+
+[main 39841d113] enforcement: stop pytest bypass + lock execution evidence gate
+ 4 files changed, 323 insertions(+)
+ create mode 100644 tests/enforcement/conftest.py
+ create mode 100644 tests/enforcement/test_windsurfrules_budget_and_evidence_gate.py
+
+### git --no-pager show --name-only --oneline HEAD
+
+39841d113 enforcement: stop pytest bypass + lock execution evidence gate
+.windsurfrules
+docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+tests/enforcement/conftest.py
+tests/enforcement/test_windsurfrules_budget_and_evidence_gate.py
