@@ -2,7 +2,7 @@
 
 **Status:** COMPLETE
 **Date:** 2026-02-16
-**Commit Hash (Phase 2):** `[PENDING - will be set after commit]`
+**Commit Hash (Phase 2):** `d4fa9d202`
 
 ## Execution Summary
 
@@ -123,9 +123,16 @@ Exit code: 0
 
 ### Consolidation Status
 
-- **Cluster 1 (_parse_evidence):** ✅ Consolidated
+- **Cluster 1 (_parse_evidence):** ✅ Consolidated into canonical utility
+  - Refactored 4 call sites to import from `agentic_core.utils.ast_fuzzy.parse_evidence()`
+  - Exact cluster eliminated
+
 - **Cluster 2 (_check_past_failures):** 🔄 Identified (requires domain-specific refactoring)
-- **Cluster 3 (safe_unparse):** ✅ Consolidated
+  - 3 members identified but deferred to Phase 3 (semantic analysis required)
+
+- **Cluster 3 (safe_unparse):** ✅ Consolidated into canonical utility
+  - Refactored 2 call sites to import from `agentic_core.utils.ast_fuzzy.safe_unparse()`
+  - Exact cluster eliminated
 
 ---
 
@@ -186,7 +193,7 @@ Both outputs are deterministic and reproducible from clean tree.
 ### Canonical Utility Artifact
 
 **File:** `agentic_core/utils/ast_fuzzy.py`
-**SHA256:** `[PENDING - will be set after commit]`
+**SHA256:** `0fe01956f1906559b0cc1bbfff5915d0d7ebef923d27f3af69e9e7e0381339c9`
 **Lines of Code:** 131
 **Functions:** 8
 **Type Hints:** 100% coverage

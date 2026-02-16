@@ -22,14 +22,6 @@ from agentic_core.L2_execution.types.heal_contract import (
 )
 
 
-def _parse_evidence(check: dict) -> dict:
-    """Extract and normalise evidence from a check dict."""
-    evidence = check.get("evidence", {})
-    if not isinstance(evidence, dict):
-        return {}
-    return evidence
-
-
 def heal_guardian_drift_detection(
     check: dict,
     *,

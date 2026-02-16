@@ -39,6 +39,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.utils.ast_fuzzy import safe_unparse
 
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
@@ -103,14 +104,6 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
-
-
-def safe_unparse(node: ast.AST) -> str:
-    try:
-        return ast.unparse(node)  # py>=3.9
-    # guardian: allow-silent-swallow
-    except Exception:
-        return node.__class__.__name__
 
 
 def extract_precise_mro(node: ast.ClassDef) -> list[str]:
