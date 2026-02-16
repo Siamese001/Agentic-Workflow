@@ -3,7 +3,8 @@ Test topology hard lock — enforces pytest collection boundaries.
 
 Enforced invariants:
     1. pytest.ini has [pytest] header (not [tool:pytest]).
-    2. testpaths includes ONLY tests/unit_min_deps and tests/integration.
+    2. testpaths includes ONLY tests/unit_min_deps, tests/integration/agentic_core,
+       tests/enforcement, and tests/governance.
     3. norecursedirs includes apps_rg, apps_lic, apps_shared, ops_scripts.
     4. There is NO root-level conftest.py.
 """
@@ -20,7 +21,12 @@ pytestmark = pytest.mark.unit_min_deps
 ROOT = Path(__file__).resolve().parents[2]
 PYTEST_INI = ROOT / "pytest.ini"
 
-REQUIRED_TESTPATHS = {"tests/unit_min_deps", "tests/integration/agentic_core"}
+REQUIRED_TESTPATHS = {
+    "tests/unit_min_deps",
+    "tests/integration/agentic_core",
+    "tests/enforcement",
+    "tests/governance",
+}
 
 REQUIRED_NORECURSEDIRS = {"apps_rg", "apps_lic", "apps_shared", "ops_scripts", "_quarantine"}
 
@@ -59,7 +65,7 @@ class TestPytestIniHeader:
 
 
 class TestTestpathsContract:
-    """testpaths must be locked to tests/unit_min_deps and tests/integration only."""
+    """testpaths must be locked to the allowed directories only."""
 
     def test_testpaths_exact_match(self) -> None:
         parser = _read_pytest_ini()
