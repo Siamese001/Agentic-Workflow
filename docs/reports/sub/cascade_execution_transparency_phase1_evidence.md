@@ -29,8 +29,8 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default-test_loop_scope=None, asyncio_default_test_loop_scope=function
-collected 19 items                                                                                                                                                                                                      
-                                                                                                                                                                                                                        
+collected 19 items
+
 ======================================================================================================================================================== no tests ran in 0.04s =========================================
 ===============================================================================================================
 ```
@@ -79,8 +79,8 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
-collected 19 items                                                                                                                                                                                                      
-                                                                                                                                                                                                                        
+collected 19 items
+
 ======================================================================================================================================================== no tests ran in 0.04s =========================================
 ===============================================================================================================
 ```
@@ -115,8 +115,8 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
-collected 19 items                                                                                                                                                                                                      
-                                                                                                                                                                                                                        
+collected 19 items
+
 ======================================================================================================================================================== no tests ran in 0.03s =========================================
 ===============================================================================================================
 ```
@@ -129,7 +129,7 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
-collected 19 items                                                                                                                                                                                                      
+collected 19 items
 
 ===================================================================================================================================================== 19 tests collected in 0.02s ======================================
 ===============================================================================================================
@@ -143,7 +143,7 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test-loop_scope=function
-collected 1 item                                                                                                                                                                                                        
+collected 1 item
 
 ======================================================================================================================================================== no tests ran in 0.03s =========================================
 ===============================================================================================================
@@ -193,8 +193,8 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
-collected 19 items                                                                                                                                                                                                      
-                                                                                                                                                                                                                        
+collected 19 items
+
 ======================================================================================================================================================== no tests ran in 0.03s =========================================
 ===============================================================================================================
 ```
@@ -207,7 +207,7 @@ rootdir: C:\Git\Agentic-Workflow
 configconfigfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope None, asyncio_default_test_loop_scope=function
-collected 1 item                                                                                                                                                                                                        
+collected 1 item
 
 ======================================================================================================================================================== no tests ran in 0.03s =========================================
 ===============================================================================================================
@@ -221,28 +221,28 @@ configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 testpaths: tests/unit_min_deps, tests/integration/agentic_core, tests/enforcement
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio-default-test-loop-scope=None, asyncio_default_test_loop_scope=function
-collected 117 items                                                                                                                                                                                                     
-                                                                                                                                                                                                                        
-tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED                                                                                                   
+collected 117 items
+
+tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED
                                                                                                          [ 10%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result
 ------------------------------------------------------------------------------------------------------------------------------------------------------------ live log call ---------------------------------------------
 ---------------------------------------------------------------------------------------------------------------                                                                                                         2026-02-15 19:05:49 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
-PASSED                                                                                                                                                                                                                  
-                                                                                                         [ 20%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_importable PASSED                                                                                                  
+PASSED
+                                                                                                         [ 20%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_importable PASSED
                                                                                                          [ 30%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_run_inspection_returns_inspection_result
 ------------------------------------------------------------------------------------------------------------------------------------------------------------ live log call ---------------------------------------------
 ---------------------------------------------------------------------------------------------------------------                                                                                                         2026-02-15 19:05:49 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
-PASSED                                                                                                                                                                                                                  
-                                                                                                         [ 40%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_importable PASSED                                                                                                     
+PASSED
+                                                                                                         [ 40%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_importable PASSED
                                                                                                          [ 50%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_run_inspection_returns_inspection_result
 ------------------------------------------------------------------------------------------------------------------------------------------------------------ live log call ---------------------------------------------
 ---------------------------------------------------------------------------------------------------------------                                                                                                         2026-02-15 19:05:49 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
-PASSED                                                                                                                                                                                                                  
-                                                                                                         [ 60%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED                                                                       
-                                                                                                         [ 70%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED                                                                             
-                                                                                                         [ 80%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_shim_identity_with_full_deps PASSED                                                                                  
-                                                                                                         [ 90%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_shim_identity_with_full_deps PASSED                                                                          
-                                                                                                         [100%]                                                                                                         
+PASSED
+                                                                                                         [ 60%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED
+                                                                                                         [ 70%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED
+                                                                                                         [ 80%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_shim_identity_with_full_deps PASSED
+                                                                                                         [ 90%]                                                                                                         tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_shim_identity_with_full_deps PASSED
+                                                                                                         [100%]
 ======================================================================================================================================================== slowest 10 durations ==========================================
 ===============================================================================================================                                                                                                         0.07s call     tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable
 
@@ -349,7 +349,7 @@ def pytest_configure(config):
     # Only bypass if explicitly requested (default OFF)
     if os.environ.get("PYTEST_BYPASS_RUNLOOP") == "1":
         return
-    
+
     # Clear testpaths restriction to allow enforcement tests to run
     if hasattr(config, 'option') and hasattr(config.option, 'testpaths'):
         config.option.testpaths = None
@@ -426,17 +426,17 @@ asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None,
 collected 118 items
 
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable [32mPASSED[0m[32m [ 10%][0m
-tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result 
+tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
 2026-02-15 19:15:57 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 20%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_importable [32mPASSED[0m[32m [ 30%][0m
-tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_run_inspection_returns_inspection_result 
+tests/integration/agentic_core/test_inspector_agents_runtime.py::TestTokenBudgetInspectorAgent::test_run_inspection_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
 2026-02-15 19:15:57 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 40%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_importable [32mPASSED[0m[32m [ 50%][0m
-tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_run_inspection_returns_inspection_result 
+tests/integration/agentic_core/test_inspector_agents_runtime.py::TestSignatureVerifierAgent::test_run_inspection_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
 2026-02-15 19:15:57 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 60%][0m

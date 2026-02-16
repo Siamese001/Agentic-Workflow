@@ -11,8 +11,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .instructional_injections import get_instructional_injections
-
 try:
     from agentic_core.L5_safety.validators.prompt_governance_types import (
         InjectionConfig,
@@ -108,23 +106,19 @@ class PromptInjectionLoader:
 
             except Exception as e:
                 logger.error(f"Failed to load {file_path}: {e}")
+                raise
 
         # Load instructional injections
         self._load_instructional_injections()
 
     def _load_instructional_injections(self) -> None:
-        """Load all 30 instructional injection patterns."""
+        """Load all 30 instructional injection patterns from YAML (mandatory).
 
-        # Try YAML loader if enabled
-        if self.config.enable_yaml_loader:
-            try:
-                self._load_instructional_injections_from_yaml()
-                return
-            except Exception as e:
-                logger.warning(f"YAML loader failed, falling back to markdown: {e}")
-
-        # Fallback to markdown-based loading
-        self._load_instructional_injections_from_markdown()
+        YAML-only enforcement: No markdown fallback.
+        If YAML loading fails, raises typed exception.
+        """
+        # YAML-only path (no fallback, no enable_yaml_loader toggle)
+        self._load_instructional_injections_from_yaml()
 
     def _load_instructional_injections_from_yaml(self) -> None:
         """Load instructional injections from YAML corpus."""
@@ -153,27 +147,6 @@ class PromptInjectionLoader:
 
                 self.injections[injection_pattern.id] = injection_pattern
                 logger.debug(f"Loaded YAML instructional injection {injection_pattern.id}")
-
-    def _load_instructional_injections_from_markdown(self) -> None:
-        """Load instructional injections from markdown (original behavior)."""
-        instructional_injections = get_instructional_injections()
-
-        for injection in instructional_injections:
-            # Convert to our InjectionPattern format
-            pattern = InjectionPattern(
-                id=injection.id,
-                name=injection.name,
-                type="instructional",
-                description=injection.description,
-                template=injection.template,
-                variables=[],
-                scope="instructional",
-                priority=5,
-                enabled=True,
-            )
-
-            self.injections[injection.id] = pattern
-            logger.debug(f"Loaded markdown instructional injection {injection.id}")
 
     def _create_builtin_injections(self) -> None:
         """Create built-in injection patterns."""
