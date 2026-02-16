@@ -28,6 +28,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# Pytest sandbox isolation: redirect tmp_path to .pytest_tmp inside repo root
+_BASETEMP = PROJECT_ROOT / ".pytest_tmp"
+
 
 # =============================================================================
 # MARKER REGISTRATION
@@ -49,7 +52,12 @@ def pytest_configure(config):
     Register custom pytest markers for the Guardian Layer.
 
     This prevents warnings about unknown markers when running tests.
+    Also sets basetemp early for tmp_path fixtures.
     """
+    # Set basetemp early, before tmp_path fixtures are created
+    if getattr(config, "option", None) and getattr(config.option, "basetemp", None) is None:
+        config.option.basetemp = str(_BASETEMP)
+
     # Propagate --import-strict to environment for tests._config.import_strict_mode
     if getattr(config.option, "import_strict", False):
         os.environ["IMPORT_STRICT_MODE"] = "1"

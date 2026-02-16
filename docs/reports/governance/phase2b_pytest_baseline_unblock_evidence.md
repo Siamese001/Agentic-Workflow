@@ -178,3 +178,101 @@ tests/unit_min_deps/test_testpaths_contract.py
 ```
 
 **Commit Hash**: `0c803acb7`
+
+---
+
+## Wave 2B.2 — Remove Root Conftest Violation (Minimal)
+
+### Step 1: Capture Failing Test Output
+
+```bash
+pytest -q "tests/unit_min_deps/test_testpaths_contract.py::TestNoRootConftest::test_no_root_conftest"
+```
+
+Exit code: 1
+
+Output:
+```
+tests/unit_min_deps/test_testpaths_contract.py::TestNoRootConftest::test_no_root_conftest FAILED [100%]
+
+AssertionError: Root-level conftest.py must not exist.
+  Global collection error suppression hooks are forbidden.
+  Use directory-based isolation (tests/unit_min_deps/, tests/integration/) instead.
+```
+
+---
+
+### Step 2: Identify Root Conftest Location
+
+```bash
+git ls-files "*conftest.py"
+```
+
+Output:
+```
+conftest.py
+tests/behavioral/conftest.py
+tests/conftest.py
+tests/contracts/conftest.py
+tests/enforcement/conftest.py
+tests/guardian/conftest.py
+tests/unit/apps_rg/conftest.py
+```
+
+**Violating file**: `conftest.py` (root-level)
+
+---
+
+### Step 3: Fix with Minimal Change
+
+**Analysis**: Root `conftest.py` contains a `pytest_configure` hook that sets `basetemp` to `.pytest_tmp`.
+
+**Action**: Merge functionality into `tests/conftest.py` and delete root `conftest.py`.
+
+Changes made:
+1. Added `_BASETEMP = PROJECT_ROOT / ".pytest_tmp"` to `tests/conftest.py`
+2. Added basetemp configuration to existing `pytest_configure` function
+3. Deleted root `conftest.py` via `git rm conftest.py`
+
+---
+
+### Step 4: Re-run Tests (After Fix)
+
+```bash
+pytest -q "tests/unit_min_deps/test_testpaths_contract.py::TestNoRootConftest::test_no_root_conftest"
+```
+
+Exit code: 0
+
+Output:
+```
+tests/unit_min_deps/test_testpaths_contract.py::TestNoRootConftest::test_no_root_conftest PASSED [100%]
+====================== 1 passed in 0.02s =======================
+```
+
+```bash
+pytest -q
+```
+
+Exit code: 1
+
+Output (short test summary):
+```
+FAILED tests/unit_min_deps/test_config_property_contract.py::TestNoSelfConfigAssignInInit::test_no_self_config_assign[DagRuntimeInspectorAgent]
+FAILED tests/unit_min_deps/test_config_property_contract.py::TestNoSelfConfigAssignInInit::test_no_self_config_assign[TokenBudgetInspectorAgent]
+FAILED tests/unit_min_deps/test_config_property_contract.py::TestNoSelfConfigAssignInInit::test_no_self_config_assign[SignatureVerifierAgent]
+FAILED tests/unit_min_deps/test_decorator_shim_contract.py::TestCanonicalTimeoutContract::test_timeout_decorator_is_passthrough
+FAILED tests/unit_min_deps/test_decorator_shim_contract.py::TestShimAllowlist::test_decorators_shim_imports_only_base_agents
+FAILED tests/unit_min_deps/test_decorator_timeout_layer_constraints.py::TestShimStrictness::test_shim_imports_only_canonical[decorators_util]
+FAILED tests/unit_min_deps/test_decorator_timeout_layer_constraints.py::TestCanonicalDefinesLocally::test_decorators_defines_standard_heal_locally
+FAILED tests/unit_min_deps/test_decorator_timeout_layer_constraints.py::TestCanonicalDefinesLocally::test_decorators_defines_heal_result_schema_locally
+FAILED tests/unit_min_deps/test_decorator_timeout_layer_constraints.py::TestCanonicalDefinesLocally::test_timeout_defines_timeout_locally
+FAILED tests/unit_min_deps/test_integration_allowlist_contract.py::TestNoOrphanIntegrationTests::test_all_integration_tests_under_allowed_roots
+FAILED tests/unit_min_deps/test_integration_allowlist_contract.py::TestNoTopLevelIntegrationFiles::test_no_top_level_test_files
+FAILED tests/unit_min_deps/test_quarantine_manifest_contract.py::TestManifestCompleteness::test_no_unlisted_quarantine_files
+FAILED tests/unit_min_deps/test_quarantine_manifest_contract.py::TestManifestNoStaleEntries::test_no_stale_manifest_entries
+FAILED tests/unit_min_deps/test_quarantine_manifest_contract.py::TestManifestBidirectionalSync::test_disk_manifest_exact_match
+=============== 14 failed, 105 passed in 20.25s ================
+```
+
+**Result**: Failure count reduced from 15 to 14. Root conftest violation fixed.
