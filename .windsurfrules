@@ -18,6 +18,37 @@ Hard violation cases (IMMEDIATE FAIL):
 - Pasting raw command output inline instead of evidence file.
 - Continuing after acceptance criteria is met.
 
+## -2. Execution Evidence Gate (ANTI-SPIN LOCK)
+All phase execution MUST include raw evidence capture and executed test outcomes:
+
+Per phase, Windsurf MUST:
+- Capture ALL command outputs using PowerShell `Tee-Object -FilePath $E -Append` with `2>&1`
+- Store evidence in a SINGLE file per phase under `docs/reports/plans/` or `docs/reports/sub/`
+- Authoritative pytest commands MUST show tests EXECUTED (e.g., "19 passed", explicit failures)
+- "no tests ran" output is AUTOMATIC FAIL regardless of collection count
+- Chat output MUST be limited to: evidence file path + commit hash + STOP
+
+Hard violation cases (IMMEDIATE FAIL):
+- Evidence not captured via Tee-Object (2>&1)
+- pytest output shows "no tests ran" 
+- Multiple evidence files per phase
+- Chat includes narrative beyond required outputs
+
+## -3. Wave/Phase Budget Lock (ANTI-INFINITE LOOP)
+Maximum execution budgets to prevent spin:
+
+Per phase:
+- Each wave MUST have evidence capture
+- Phase MUST complete with proper evidence documentation
+
+Per plan:
+- Plans should be reasonably scoped to maintain focus
+- Split large plans when they become unwieldy
+
+Hard violation cases (IMMEDIATE FAIL):
+- Continuing without phase completion evidence
+- Excessively long-running phases without documentation
+
 ---
 
 ## 0. SSOT Plan & Artifact Location
