@@ -176,3 +176,36 @@ index 754f4b6b7..799ab1279 100644
 Exit code: 0
 
 **WAVE 3.2 ACCEPTANCE**: All tests pass. Policy decision computed and logged without behavior change.
+
+---
+
+## Wave 3.3 — Governance Test (Prove Decision Computed + Logged)
+
+### Test File
+
+`tests/governance/test_heal_policy_runtime_integration.py`
+
+### Tests
+
+1. `test_decide_reasoning_tier_is_invoked` — Assert `decide_reasoning_tier()` is called exactly once
+2. `test_policy_decision_is_logged` — Assert Logger.debug receives `[heal_policy] tier=LOW threshold=TEST`
+3. `test_output_unchanged_by_policy_integration` — Assert returned dict matches baseline behavior
+
+### pytest -q tests/governance/test_heal_policy_runtime_integration.py
+
+```text
+tests/governance/test_heal_policy_runtime_integration.py::TestHealPolicyRuntimeIntegration::test_decide_reasoning_tier_is_invoked PASSED
+tests/governance/test_heal_policy_runtime_integration.py::TestHealPolicyRuntimeIntegration::test_policy_decision_is_logged PASSED
+tests/governance/test_heal_policy_runtime_integration.py::TestHealPolicyRuntimeIntegration::test_output_unchanged_by_policy_integration PASSED
+====================== 3 passed in 0.03s =======================
+```
+
+### pytest -q (full suite)
+
+```text
+===================== 122 passed in 20.22s =====================
+```
+
+Exit code: 0
+
+**WAVE 3.3 ACCEPTANCE**: All tests pass. Policy decision computed, logged, and output unchanged.
