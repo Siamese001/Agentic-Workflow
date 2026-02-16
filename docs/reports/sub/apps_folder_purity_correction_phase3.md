@@ -254,10 +254,58 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
 
 ## Wave 3.2: Restore Strictness
 
-(To be appended after execution)
+### Commit
+
+```text
+b796040f79fe209bcf887af84b3aa574985f4384
+governance(folder-purity): restore strict rules; hard disallow agents/validators in engines/tools
+```
+
+### Files Changed
+
+```text
+agentic_core/L5_safety/config/structure_blueprint/classification.py
+ops_scripts/hooks/landmine_baseline.txt
+```
+
+### python -m pytest -q
+
+```text
+153 passed in 20.08s
+```
+
+### pre-commit run --all-files
+
+```text
+All hooks passed
+```
 
 ---
 
 ## Wave 3.3: Ensure Invariants Run by Default
 
-(To be appended after execution)
+### Commit
+
+```text
+b7a778dc03088e32f5a11fada143426a420d03ec
+tests(governance): run folder purity invariants in default pytest
+```
+
+### Files Changed
+
+```text
+tests/enforcement/test_folder_purity_invariants.py (moved from tests/architecture/)
+```
+
+### python -m pytest -q
+
+```text
+9 failed, 160 passed in 20.20s
+(Failures expected - invariants now detect violations)
+```
+
+### pre-commit run --all-files
+
+```text
+All hooks passed
+```
