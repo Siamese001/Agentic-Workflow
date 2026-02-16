@@ -1,0 +1,766 @@
+{
+  "exact_dupe_clusters": [
+    {
+      "hash": "06a6273386c2cd7d",
+      "members": [
+        {
+          "line": 107,
+          "name": "get_python_files_fast",
+          "path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+        },
+        {
+          "line": 22,
+          "name": "get_python_files_fast",
+          "path": "ops_scripts/dev_tools/l0_scripts/pascal_sovereignty_fixer.py"
+        }
+      ]
+    },
+    {
+      "hash": "2785322cb379d8f4",
+      "members": [
+        {
+          "line": 108,
+          "name": "safe_unparse",
+          "path": "agentic_core/L0_routing/scripts/forensic_discovery_prep.py"
+        },
+        {
+          "line": 124,
+          "name": "safe_unparse",
+          "path": "agentic_core/L0_routing/scripts/full_agent_discovery.py"
+        }
+      ]
+    },
+    {
+      "hash": "285b35b71a2e2a5c",
+      "members": [
+        {
+          "line": 61,
+          "name": "normalize_path",
+          "path": "agentic_core/L0_routing/scripts/gatekeeper_lock_util.py"
+        },
+        {
+          "line": 69,
+          "name": "normalize_path",
+          "path": "ops_scripts/security/gatekeeper_lock.py"
+        }
+      ]
+    },
+    {
+      "hash": "38952fdd787c6525",
+      "members": [
+        {
+          "line": 80,
+          "name": "find_similar_named_files",
+          "path": "agentic_core/L0_routing/scripts/aggressive_dedup_util.py"
+        },
+        {
+          "line": 78,
+          "name": "find_similar_named_files",
+          "path": "ops_scripts/general/aggressive_dedup.py"
+        }
+      ]
+    },
+    {
+      "hash": "62b34851e5bc4b96",
+      "members": [
+        {
+          "line": 368,
+          "name": "_compare_threat_levels",
+          "path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py"
+        },
+        {
+          "line": 394,
+          "name": "_compare_threat_levels",
+          "path": "agentic_core/L5_safety/types/safety_types.py"
+        }
+      ]
+    },
+    {
+      "hash": "6959472dce04270f",
+      "members": [
+        {
+          "line": 84,
+          "name": "matches",
+          "path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py"
+        },
+        {
+          "line": 76,
+          "name": "matches",
+          "path": "agentic_core/L5_safety/types/safety_types.py"
+        }
+      ]
+    },
+    {
+      "hash": "79d504234dd592f7",
+      "members": [
+        {
+          "line": 22,
+          "name": "compute_file_hash",
+          "path": "agentic_core/L0_routing/scripts/verify_intentional_variants_util.py"
+        },
+        {
+          "line": 21,
+          "name": "compute_file_hash",
+          "path": "ops_scripts/dev_tools/l0_scripts/show_manual_review_files_util.py"
+        }
+      ]
+    },
+    {
+      "hash": "9f3af148d90b2685",
+      "members": [
+        {
+          "line": 44,
+          "name": "model_dump",
+          "path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py"
+        },
+        {
+          "line": 53,
+          "name": "model_dump",
+          "path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py"
+        }
+      ]
+    },
+    {
+      "hash": "e5f20859299c5ab1",
+      "members": [
+        {
+          "line": 15,
+          "name": "calculate_file_hash",
+          "path": "agentic_core/prompt_governance/scripts/detect_template_drift.py"
+        },
+        {
+          "line": 15,
+          "name": "calculate_file_hash",
+          "path": "agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py"
+        }
+      ]
+    },
+    {
+      "hash": "e6f0c610dd60c10b",
+      "members": [
+        {
+          "line": 21,
+          "name": "_parse_evidence",
+          "path": "agentic_core/L2_execution/healers/architecture_governance_healer.py"
+        },
+        {
+          "line": 26,
+          "name": "_parse_evidence",
+          "path": "agentic_core/L2_execution/healers/classification_compliance_healer.py"
+        },
+        {
+          "line": 25,
+          "name": "_parse_evidence",
+          "path": "agentic_core/L2_execution/healers/drift_detection_healer.py"
+        },
+        {
+          "line": 25,
+          "name": "_parse_evidence",
+          "path": "agentic_core/L2_execution/healers/hierarchy_compliance_healer.py"
+        }
+      ]
+    },
+    {
+      "hash": "ec849b4d01119504",
+      "members": [
+        {
+          "line": 332,
+          "name": "_check_past_failures",
+          "path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+        },
+        {
+          "line": 301,
+          "name": "_check_past_failures",
+          "path": "agentic_core/runtime/utils/sovereign_dependency_error_util.py"
+        },
+        {
+          "line": 248,
+          "name": "_check_past_failures",
+          "path": "agentic_core/runtime/utils/subatomic_hop_util.py"
+        }
+      ]
+    }
+  ],
+  "near_dupe_pairs": [
+    {
+      "a": {
+        "line": 61,
+        "name": "HealSchemaVisitor",
+        "path": "agentic_core/L0_routing/scripts/heal_schema_visitor.py"
+      },
+      "b": {
+        "line": 69,
+        "name": "HealSchemaVisitor",
+        "path": "ops_scripts/maintenance/heal_schema_visitor.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 1.0
+    },
+    {
+      "a": {
+        "line": 14,
+        "name": "get_file_hash",
+        "path": "agentic_core/L0_routing/scripts/investigate_overlaps_util.py"
+      },
+      "b": {
+        "line": 16,
+        "name": "get_file_hash",
+        "path": "ops_scripts/maintenance/investigate_overlaps.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 1.0
+    },
+    {
+      "a": {
+        "line": 18,
+        "name": "parse_mcp_client_specs",
+        "path": "agentic_core/L2_execution/utils/archive_util.py"
+      },
+      "b": {
+        "line": 16,
+        "name": "parse_mcp_client_specs",
+        "path": "agentic_core/L2_execution/utils/factory_util.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 1.0
+    },
+    {
+      "a": {
+        "line": 107,
+        "name": "get_python_files_fast",
+        "path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+      },
+      "b": {
+        "line": 20,
+        "name": "get_python_files_fast",
+        "path": "ops_scripts/maintenance/run_classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.97
+    },
+    {
+      "a": {
+        "line": 22,
+        "name": "get_python_files_fast",
+        "path": "ops_scripts/dev_tools/l0_scripts/pascal_sovereignty_fixer.py"
+      },
+      "b": {
+        "line": 20,
+        "name": "get_python_files_fast",
+        "path": "ops_scripts/maintenance/run_classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.97
+    },
+    {
+      "a": {
+        "line": 429,
+        "name": "_calculate_semantic_similarity",
+        "path": "agentic_core/L0_routing/scripts/execute_ssot.py"
+      },
+      "b": {
+        "line": 1333,
+        "name": "_calculate_semantic_similarity",
+        "path": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.965
+    },
+    {
+      "a": {
+        "line": 200,
+        "name": "_normalize_ast_tree",
+        "path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+      },
+      "b": {
+        "line": 428,
+        "name": "_normalize_ast_tree",
+        "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.945
+    },
+    {
+      "a": {
+        "line": 212,
+        "name": "_normalize_ts_tree",
+        "path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+      },
+      "b": {
+        "line": 439,
+        "name": "_normalize_ts_tree",
+        "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.944
+    },
+    {
+      "a": {
+        "line": 333,
+        "name": "refine_territory_by_ast",
+        "path": "agentic_core/L0_routing/scripts/territory_ssot_definitions_util.py"
+      },
+      "b": {
+        "line": 291,
+        "name": "refine_territory_by_ast",
+        "path": "ops_scripts/maintenance/territory_ssot_definitions_config.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.934
+    },
+    {
+      "a": {
+        "line": 270,
+        "name": "_state_hash",
+        "path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+      },
+      "b": {
+        "line": 86,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/engine/agent_engine.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.933
+    },
+    {
+      "a": {
+        "line": 270,
+        "name": "_state_hash",
+        "path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+      },
+      "b": {
+        "line": 978,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/config/security_level_config.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.929
+    },
+    {
+      "a": {
+        "line": 191,
+        "name": "_state_hash",
+        "path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+      },
+      "b": {
+        "line": 86,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/engine/agent_engine.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.909
+    },
+    {
+      "a": {
+        "line": 738,
+        "name": "_state_hash",
+        "path": "agentic_core/L3_orchestration/engines/orchestrator_engine.py"
+      },
+      "b": {
+        "line": 356,
+        "name": "_state_hash",
+        "path": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.905
+    },
+    {
+      "a": {
+        "line": 169,
+        "name": "get_weak_opening_match",
+        "path": "agentic_core/config/core/legacy_artifacts_config.py"
+      },
+      "b": {
+        "line": 177,
+        "name": "get_placeholder_match",
+        "path": "agentic_core/config/core/legacy_artifacts_config.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.905
+    },
+    {
+      "a": {
+        "line": 191,
+        "name": "_state_hash",
+        "path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+      },
+      "b": {
+        "line": 270,
+        "name": "_state_hash",
+        "path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.903
+    },
+    {
+      "a": {
+        "line": 17,
+        "name": "get_file_hash",
+        "path": "agentic_core/L3_orchestration/engines/convergence_engine.py"
+      },
+      "b": {
+        "line": 12,
+        "name": "get_file_hash",
+        "path": "agentic_core/L4_state/utils/get_file_hash_util.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.9
+    },
+    {
+      "a": {
+        "line": 978,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/config/security_level_config.py"
+      },
+      "b": {
+        "line": 86,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/engine/agent_engine.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.867
+    },
+    {
+      "a": {
+        "line": 226,
+        "name": "_hash_block",
+        "path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+      },
+      "b": {
+        "line": 410,
+        "name": "_hash_block_ast",
+        "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.865
+    },
+    {
+      "a": {
+        "line": 369,
+        "name": "_read_and_parse_file",
+        "path": "agentic_core/L0_routing/scripts/execute_ssot.py"
+      },
+      "b": {
+        "line": 69,
+        "name": "_read_and_parse_file",
+        "path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.84
+    },
+    {
+      "a": {
+        "line": 191,
+        "name": "_state_hash",
+        "path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+      },
+      "b": {
+        "line": 978,
+        "name": "_state_hash",
+        "path": "agentic_core/runtime/config/security_level_config.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.839
+    },
+    {
+      "a": {
+        "line": 179,
+        "name": "pause_node",
+        "path": "agentic_core/L3_orchestration/engines/dag_manager.py"
+      },
+      "b": {
+        "line": 196,
+        "name": "resume_node",
+        "path": "agentic_core/L3_orchestration/engines/dag_manager.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 174,
+        "name": "get_app_specific_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 180,
+        "name": "get_forbidden_backup_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 174,
+        "name": "get_app_specific_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 186,
+        "name": "get_forbidden_ephemeral_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 174,
+        "name": "get_app_specific_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 192,
+        "name": "get_ephemeral_exemption_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 180,
+        "name": "get_forbidden_backup_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 186,
+        "name": "get_forbidden_ephemeral_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 180,
+        "name": "get_forbidden_backup_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 192,
+        "name": "get_ephemeral_exemption_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 186,
+        "name": "get_forbidden_ephemeral_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 192,
+        "name": "get_ephemeral_exemption_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 174,
+        "name": "get_app_specific_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 355,
+        "name": "get_forbidden_compound_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 180,
+        "name": "get_forbidden_backup_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 355,
+        "name": "get_forbidden_compound_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 186,
+        "name": "get_forbidden_ephemeral_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 355,
+        "name": "get_forbidden_compound_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 192,
+        "name": "get_ephemeral_exemption_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+      },
+      "b": {
+        "line": 355,
+        "name": "get_forbidden_compound_patterns_compiled",
+        "path": "agentic_core/L5_safety/config/structure_blueprint/classification.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.833
+    },
+    {
+      "a": {
+        "line": 22,
+        "name": "compute_file_hash",
+        "path": "agentic_core/L0_routing/scripts/verify_intentional_variants_util.py"
+      },
+      "b": {
+        "line": 136,
+        "name": "get_file_hash",
+        "path": "agentic_core/L5_safety/types/file_health_score_types.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.818
+    },
+    {
+      "a": {
+        "line": 136,
+        "name": "get_file_hash",
+        "path": "agentic_core/L5_safety/types/file_health_score_types.py"
+      },
+      "b": {
+        "line": 21,
+        "name": "compute_file_hash",
+        "path": "ops_scripts/dev_tools/l0_scripts/show_manual_review_files_util.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.818
+    },
+    {
+      "a": {
+        "line": 17,
+        "name": "get_file_hash",
+        "path": "agentic_core/L3_orchestration/engines/convergence_engine.py"
+      },
+      "b": {
+        "line": 25,
+        "name": "get_file_hash",
+        "path": "ops_scripts/dev_tools/l0_scripts/fix_root_scripts_util.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.814
+    },
+    {
+      "a": {
+        "line": 180,
+        "name": "broadcast_agent_start",
+        "path": "agentic_core/L6_observability/enforcement/reasoning_streamer.py"
+      },
+      "b": {
+        "line": 186,
+        "name": "broadcast_agent_complete",
+        "path": "agentic_core/L6_observability/enforcement/reasoning_streamer.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.807
+    },
+    {
+      "a": {
+        "line": 403,
+        "name": "_compute_hash",
+        "path": "agentic_core/L4_state/memory/semantic_cache_manager.py"
+      },
+      "b": {
+        "line": 222,
+        "name": "generate_context_hash",
+        "path": "agentic_core/utils/meta_learning_storage.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.8
+    },
+    {
+      "a": {
+        "line": 61,
+        "name": "normalize_path",
+        "path": "agentic_core/L0_routing/scripts/gatekeeper_lock_util.py"
+      },
+      "b": {
+        "line": 99,
+        "name": "_normalize_path",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.778
+    },
+    {
+      "a": {
+        "line": 99,
+        "name": "_normalize_path",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py"
+      },
+      "b": {
+        "line": 69,
+        "name": "normalize_path",
+        "path": "ops_scripts/security/gatekeeper_lock.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.778
+    },
+    {
+      "a": {
+        "line": 27,
+        "name": "ASTAwareTokenizer",
+        "path": "agentic_core/L2_execution/config/hybrid_retriever_config.py"
+      },
+      "b": {
+        "line": 95,
+        "name": "tokenize_code",
+        "path": "agentic_core/L2_execution/config/hybrid_retriever_config.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.776
+    },
+    {
+      "a": {
+        "line": 145,
+        "name": "_content_hash",
+        "path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py"
+      },
+      "b": {
+        "line": 41,
+        "name": "_hash_query",
+        "path": "agentic_core/knowledge/research_cache/cache_store_util.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.769
+    },
+    {
+      "a": {
+        "line": 39,
+        "name": "CriticalInfrastructureError",
+        "path": "agentic_core/L4_state/memory/semantic_cache_manager.py"
+      },
+      "b": {
+        "line": 24,
+        "name": "TokenLimitError",
+        "path": "agentic_core/mixins/hardening_mixin.py"
+      },
+      "method": "SequenceMatcher",
+      "score": 0.75
+    }
+  ],
+  "summary": {
+    "exact_cluster_members": 25,
+    "exact_clusters": 11,
+    "near_dupe_pairs": 41
+  },
+  "threshold": 0.75
+}

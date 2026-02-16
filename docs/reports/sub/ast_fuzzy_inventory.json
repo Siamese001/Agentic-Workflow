@@ -1,0 +1,6774 @@
+{
+  "excluded_roots": [
+    "tests",
+    "apps_lic",
+    "apps_rg",
+    "apps_shared",
+    "archives",
+    ".backup"
+  ],
+  "files": [
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "sequence"
+          ],
+          "kind": "class",
+          "line": 33,
+          "name": "BootSequence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/enforcement/boot_sequence.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "class",
+          "line": 126,
+          "name": "ManifestHashError"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 130,
+          "name": "verify_manifest_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/enforcement/v15_p4_contracts.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 30,
+          "name": "hash_artifact_canonical"
+        },
+        {
+          "keywords": [
+            "hash",
+            "match"
+          ],
+          "kind": "function",
+          "line": 194,
+          "name": "record_hash_mismatch"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/enforcement/v15_p5_contracts.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 73,
+          "name": "_check_routing_thresholds_blast"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 87,
+          "name": "_check_tool_policies_blast"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 98,
+          "name": "_check_prompt_templates_blast"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 109,
+          "name": "_check_blast_radius"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/meta_control/meta_apply.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 59,
+          "name": "_check_policy_hash_unchanged"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/meta_control/meta_apply_ops.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 43,
+          "name": "ASTAnalyzer"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 189,
+          "name": "analyze_ast_signals"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 434,
+          "name": "_determine_ast_placement_routing"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 570,
+          "name": "run_inspection"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/reasoning/RootCustomsAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/add_subatomic_safe_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/agent_capability_supplement_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar"
+          ],
+          "kind": "function",
+          "line": 80,
+          "name": "find_similar_named_files"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/aggressive_dedup_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/auto_remediate_signatures_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/bloat_analysis_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 191,
+          "name": "compare_reports"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/c_c_measurement.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 70,
+          "name": "chunk_python_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/chunk_type.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 78,
+          "name": "compute_file_hash"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 111,
+          "name": "parse_python_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/class_info.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/code_entity.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/collision_resolver.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 8,
+          "name": "file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/compare_archive_to_current_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "difflib"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/compare_autonomy_guardian_files_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 76,
+          "name": "compare_components"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/compare_ui_components_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/diagnose_syntax_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/disposition.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/drift.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 360,
+          "name": "ASTCodeQualityValidator"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 369,
+          "name": "_read_and_parse_file"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 429,
+          "name": "_calculate_semantic_similarity"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 667,
+          "name": "request_sovereignty_token"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 693,
+          "name": "release_sovereignty_token"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast",
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/execute_ssot.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/extract_unique_content_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar"
+          ],
+          "kind": "function",
+          "line": 219,
+          "name": "find_similar_in_codebase"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/file_analysis.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/find_corrupted_files_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse",
+            "unparse"
+          ],
+          "kind": "function",
+          "line": 108,
+          "name": "safe_unparse"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 215,
+          "name": "forensic_inspect"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/forensic_discovery_prep.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse",
+            "unparse"
+          ],
+          "kind": "function",
+          "line": 124,
+          "name": "safe_unparse"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/full_agent_discovery.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 61,
+          "name": "normalize_path"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/gatekeeper_lock_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse",
+            "unparse"
+          ],
+          "kind": "function",
+          "line": 17,
+          "name": "unparse"
+        },
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 22,
+          "name": "HardenedAntiPatternVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/hardened_anti_pattern_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 61,
+          "name": "HealSchemaVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/heal_schema_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 14,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/investigate_overlaps_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 57,
+          "name": "_check_imports_normalize"
+        },
+        {
+          "keywords": [
+            "dump"
+          ],
+          "kind": "function",
+          "line": 80,
+          "name": "_check_no_raw_json_dumps"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/run_guardian_contract_integrity.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/scan_testing_compliance_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/ssot_audit_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 333,
+          "name": "refine_territory_by_ast"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/territory_ssot_definitions_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 38,
+          "name": "validate_drilldown_infrastructure"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/validate_drilldown_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/verify_agent_status_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 22,
+          "name": "compute_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/scripts/verify_intentional_variants_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 604,
+          "name": "normalize_repo_path"
+        },
+        {
+          "keywords": [
+            "walk"
+          ],
+          "kind": "function",
+          "line": 638,
+          "name": "_walk"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 868,
+          "name": "compute_certification_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/guardian_contract.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "sequence"
+          ],
+          "kind": "function",
+          "line": 55,
+          "name": "_require_sequence_of_str"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_artifact_validation_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 104,
+          "name": "policy_hash"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 208,
+          "name": "check_boundary_tokens"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_contracts.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 79,
+          "name": "require_manifest_hash_ok"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 94,
+          "name": "canonical_ast_serialize"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 110,
+          "name": "verify_ast_determinism"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 154,
+          "name": "ast_scan_wall_clock"
+        },
+        {
+          "keywords": [
+            "hash",
+            "match"
+          ],
+          "kind": "class",
+          "line": 210,
+          "name": "RollbackHashMismatch"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_p2_contracts.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 68,
+          "name": "verify_hash"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 100,
+          "name": "CanonicalASTResult"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_p2_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 71,
+          "name": "compute_error_signature_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_p4_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash",
+            "match"
+          ],
+          "kind": "class",
+          "line": 248,
+          "name": "HashMismatchTracker"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 263,
+          "name": "record_mismatch"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_p5_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 76,
+          "name": "TokenGateResult"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 85,
+          "name": "TokenCapArtifact"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 195,
+          "name": "TokenControlArtifact"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/types/v15_types.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/utils/add_test_coverage_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 60,
+          "name": "refine_territory_by_ast"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 514,
+          "name": "safe_parse"
+        },
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 1026,
+          "name": "_CCVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/utils/complexity_visitor_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 127,
+          "name": "_calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/utils/core_integrity_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/utils/find_misnamed_agents_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L0_routing/utils/gravity_audit_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 242,
+          "name": "_parse_action"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/config/react_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 32,
+          "name": "PerceptionNode"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 58,
+          "name": "ReasoningNode"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 180,
+          "name": "ActionNode"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 200,
+          "name": "CognitiveNode"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/engines/CognitiveNode.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 147,
+          "name": "get_similarity_threshold"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 151,
+          "name": "set_similarity_threshold"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 159,
+          "name": "meets_similarity_threshold"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/engines/cache_manager.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 32,
+          "name": "CognitiveNodeRefactored"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/engines/cognitive_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 197,
+          "name": "get_hash_signature"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 210,
+          "name": "compute_similarity"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/engines/memory_embedder.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 15,
+          "name": "PerceptionNode"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 91,
+          "name": "_parse_query"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/engines/perception_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 28,
+          "name": "ASTValidatorBase"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 60,
+          "name": "ASTValidatorAgent"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 455,
+          "name": "get_unified_ast_validator"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 158,
+          "name": "_parse_llm_response"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 52,
+          "name": "to_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/types/memory_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "class",
+          "line": 54,
+          "name": "ResultParser"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 58,
+          "name": "parse_strategy_result"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 63,
+          "name": "parse_draft_result"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 68,
+          "name": "parse_qa_result"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 73,
+          "name": "parse_safety_result"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/types/result_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 255,
+          "name": "validate_similarity_threshold"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/utils/guardrails.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 21,
+          "name": "UpdateTokenUsage"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/utils/token_updater.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 45,
+          "name": "DarkReasoningVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/validators/dark_reasoning_visitor_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 16,
+          "name": "ReasoningNode"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/validators/reasoningnode_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L1_cognition/validators/truth_keeper_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast",
+            "token",
+            "tokenize"
+          ],
+          "kind": "class",
+          "line": 27,
+          "name": "ASTAwareTokenizer"
+        },
+        {
+          "keywords": [
+            "token",
+            "tokenize"
+          ],
+          "kind": "function",
+          "line": 95,
+          "name": "tokenize_code"
+        },
+        {
+          "keywords": [
+            "token",
+            "tokenize"
+          ],
+          "kind": "function",
+          "line": 145,
+          "name": "tokenize_query"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 242,
+          "name": "sparse_search"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 264,
+          "name": "deduplicate_by_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/config/hybrid_retriever_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 217,
+          "name": "_parse_code"
+        },
+        {
+          "keywords": [
+            "parse",
+            "unparse"
+          ],
+          "kind": "function",
+          "line": 226,
+          "name": "_unparse_code"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/config/transform_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 378,
+          "name": "_emit_token_artifact"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 26,
+          "name": "_stable_args_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/enforcement/tool_policy_enforcer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 16,
+          "name": "ActionNode"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/engines/action_node.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 15,
+          "name": "ActionNodeCore"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/engines/action_node_core.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 46,
+          "name": "ToolMatch"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 173,
+          "name": "_generate_match_reason"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 287,
+          "name": "ast_analysis"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast",
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/engines/tool_registry.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 114,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/engines/validation_orchestrator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 21,
+          "name": "_parse_evidence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/healers/architecture_governance_healer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 26,
+          "name": "_parse_evidence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/healers/classification_compliance_healer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 25,
+          "name": "_parse_evidence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/healers/drift_detection_healer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 25,
+          "name": "_parse_evidence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/healers/hierarchy_compliance_healer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 145,
+          "name": "_content_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast",
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 128,
+          "name": "search_nodes"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/tools/figma_mcp_client.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 101,
+          "name": "_parse_analysis_response"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/tools/job_analyzer_impl.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "class",
+          "line": 21,
+          "name": "TextSimilarityCalculator"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/tools/text_similarity_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/tools/tool_verifier_impl.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 83,
+          "name": "_parse_mcp_response"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/tools/web_search_client.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 58,
+          "name": "CapabilityTokenSubject"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 98,
+          "name": "CapabilityTokenArtifact"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 146,
+          "name": "build_capability_token"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 299,
+          "name": "token"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 376,
+          "name": "_path_matches"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 394,
+          "name": "issue_capability_token"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/types/capability_token_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 17,
+          "name": "TokenEnforcementOutcome"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 26,
+          "name": "TokenEnforcementArtifact"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 60,
+          "name": "TokenBudgetExceeded"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 86,
+          "name": "TokenBudgetContext"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 104,
+          "name": "TokenBudgetStore"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 150,
+          "name": "get_token_budget_store"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 158,
+          "name": "set_token_budget_store"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 164,
+          "name": "estimate_prompt_tokens"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 173,
+          "name": "build_token_enforcement_artifact"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/types/token_enforcement_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 94,
+          "name": "analyze_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/utils/analysis_ops_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 18,
+          "name": "parse_mcp_client_specs"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/utils/archive_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/utils/deterministic_cleaner_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 16,
+          "name": "parse_mcp_client_specs"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L2_execution/utils/factory_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 163,
+          "name": "create_safety_inspector"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/AgentFactory.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 20,
+          "name": "ActionNode"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/action_router.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 231,
+          "name": "_calculate_total_tokens"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/context_curator_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 17,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/convergence_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 77,
+          "name": "add_node"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 167,
+          "name": "get_next_node"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 179,
+          "name": "pause_node"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 196,
+          "name": "resume_node"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/dag_manager.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 124,
+          "name": "_match_agent_for_task"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/decomposition_orchestrator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 738,
+          "name": "_state_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/orchestrator_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 314,
+          "name": "_get_node_function"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/recursive_orchestrator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 147,
+          "name": "_parse_critique"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 418,
+          "name": "_replace_node"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "dump"
+          ],
+          "kind": "function",
+          "line": 44,
+          "name": "model_dump"
+        },
+        {
+          "keywords": [
+            "dump"
+          ],
+          "kind": "function",
+          "line": 53,
+          "name": "model_dump"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 69,
+          "name": "_parse_fission_response"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 356,
+          "name": "_state_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 166,
+          "name": "_ensure_infrastructure"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/StateManagementAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 87,
+          "name": "nesting_depth_visitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 191,
+          "name": "_state_hash"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 332,
+          "name": "_check_past_failures"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 54,
+          "name": "matches"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/types/permission_scope_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 62,
+          "name": "parse_instructions"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/types/telepathy_interface_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "class",
+          "line": 37,
+          "name": "KNodeConfig"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 264,
+          "name": "get_knode_configs"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 290,
+          "name": "get_knode_config"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L3_orchestration/types/workflow_loader_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 254,
+          "name": "create_mastered_task_relation"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/enforcement/graph_memory_bridge.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 27,
+          "name": "InjectionMatch"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/memory/runtime_models.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 39,
+          "name": "CriticalInfrastructureError"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 403,
+          "name": "_compute_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/memory/semantic_cache_manager.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 69,
+          "name": "search_nodes"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/memory/sovereign_memory_store.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 59,
+          "name": "_extract_ast_features"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/memory/sovereign_semantic_cache.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash",
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 218,
+          "name": "_normalize_and_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/reasoning/GravityStateAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 260,
+          "name": "_get_sparse_vector"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/reasoning/PineconeSovereignAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 31,
+          "name": "update_file_hash"
+        },
+        {
+          "keywords": [
+            "ast",
+            "hash"
+          ],
+          "kind": "function",
+          "line": 42,
+          "name": "get_last_file_hashes"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 118,
+          "name": "calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/types/validation_context_types.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/utils/complexity_analyzer_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar"
+          ],
+          "kind": "function",
+          "line": 120,
+          "name": "find_similar"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/utils/experience_buffer_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 17,
+          "name": "get_existing_file_hashes"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/utils/get_existing_file_hashes_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 12,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L4_state/utils/get_file_hash_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "class",
+          "line": 32,
+          "name": "CompiledBlueprint"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 204,
+          "name": "compile_blueprint"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/blueprint_compiler.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 67,
+          "name": "_recompute_ast_scores"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 83,
+          "name": "_collect_ast_increments"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 144,
+          "name": "_aggregate_ast_increments"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/gravity_leak_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 62,
+          "name": "_allowlist_hash"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 137,
+          "name": "_is_repo_relative_normalized"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/_verify.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 174,
+          "name": "get_app_specific_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 180,
+          "name": "get_forbidden_backup_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 186,
+          "name": "get_forbidden_ephemeral_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 192,
+          "name": "get_ephemeral_exemption_patterns_compiled"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/artifacts.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 334,
+          "name": "get_classification_suffix_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 340,
+          "name": "get_compound_suffix_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 349,
+          "name": "get_folder_purity_patterns_compiled"
+        },
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 355,
+          "name": "get_forbidden_compound_patterns_compiled"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/classification.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 25,
+          "name": "compute_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/enforcement/blueprint_hash.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 140,
+          "name": "_parse_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/enforcement/import_graph.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 90,
+          "name": "_check_mixin_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/enforcement/mixin_ast.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 353,
+          "name": "_normalize_result"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/HealingStrategy.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast",
+            "normalize"
+          ],
+          "kind": "class",
+          "line": 34,
+          "name": "ASTNormalizer"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 311,
+          "name": "calculate_similarity"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/agent_info.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 21,
+          "name": "CanaryToken"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/canary_token_defense.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/dependency_graph.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 30,
+          "name": "FastDashboardE2EPipeline"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "difflib"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/human_review_queue.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "dump"
+          ],
+          "kind": "function",
+          "line": 108,
+          "name": "safe_json_dump"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/mutation_prohibition.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/namespace_medic.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token",
+            "tokenize"
+          ],
+          "kind": "function",
+          "line": 21,
+          "name": "tokenize"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/pii_vault.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 138,
+          "name": "_parse_agent_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/registry_verification.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/safety_guardrail.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/secure_error_handler.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 161,
+          "name": "_normalize_path"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/ssot_guardrail.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 234,
+          "name": "_parse_agent_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/ssot_scanner.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 99,
+          "name": "_normalize_path"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/system.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 183,
+          "name": "_normalize_agent_name"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/three_tier_compliance.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 83,
+          "name": "_verify_target_in_ast"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 161,
+          "name": "_verify_any_node_exists"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/enforcement/verification_gate.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 439,
+          "name": "compare_benchmarks"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 205,
+          "name": "_test_type_mismatches"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 182,
+          "name": "_normalize_code"
+        },
+        {
+          "keywords": [
+            "ast",
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 200,
+          "name": "_normalize_ast_tree"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 212,
+          "name": "_normalize_ts_tree"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 221,
+          "name": "_block_similarity"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 226,
+          "name": "_hash_block"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 394,
+          "name": "_hash_entire_file"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 864,
+          "name": "_collect_ast_symbols"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast",
+          "tree_sitter_python"
+        ],
+        "fuzzy": [
+          "difflib",
+          "tree_sitter.Language",
+          "tree_sitter.Parser"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 32,
+          "name": "CredentialMatch"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 386,
+          "name": "_match_to_dict"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast",
+            "hash"
+          ],
+          "kind": "function",
+          "line": 410,
+          "name": "_hash_block_ast"
+        },
+        {
+          "keywords": [
+            "ast",
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 428,
+          "name": "_normalize_ast_tree"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 439,
+          "name": "_normalize_ts_tree"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 107,
+          "name": "get_python_files_fast"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 1247,
+          "name": "normalize_filename"
+        },
+        {
+          "keywords": [
+            "fuzzy",
+            "match"
+          ],
+          "kind": "function",
+          "line": 2839,
+          "name": "_fuzzy_match_name_or_content"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 753,
+          "name": "get_blast_radius"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "class",
+          "line": 16,
+          "name": "InspectorExecutor"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "agentic_core.mixins.inspection_capability_mixin.InspectionCapability"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/InspectorExecutor.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 871,
+          "name": "_heal_territory_mismatch"
+        },
+        {
+          "keywords": [
+            "similar",
+            "similarity"
+          ],
+          "kind": "function",
+          "line": 1333,
+          "name": "_calculate_semantic_similarity"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 1355,
+          "name": "_find_best_matching_subfolder"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 377,
+          "name": "_validate_ast_violations"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 447,
+          "name": "_extract_modules_from_node"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 659,
+          "name": "_collect_ast_increments"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 678,
+          "name": "_aggregate_ast_increments"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 685,
+          "name": "_recompute_ast_scores"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/LocationValidatorAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 125,
+          "name": "validate_prefix_location_match"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/NamingAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 158,
+          "name": "_paths_match"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "class",
+          "line": 174,
+          "name": "SafetyInspectorAgent"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 504,
+          "name": "create_safety_inspector"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 84,
+          "name": "matches"
+        },
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 368,
+          "name": "_compare_threat_levels"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 270,
+          "name": "_state_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "class",
+          "line": 29,
+          "name": "SprawlInspectorAgent"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 57,
+          "name": "inspect"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 69,
+          "name": "_read_and_parse_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/agent_audit_result.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "class",
+          "line": 412,
+          "name": "SurgicalBlankLineNormalizer"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 589,
+          "name": "create_blank_line_normalizer"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "libcst"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/cst_transformers_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 136,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/file_health_score_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 263,
+          "name": "_find_matching_pattern"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/learning_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 76,
+          "name": "matches"
+        },
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 394,
+          "name": "_compare_threat_levels"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/safety_types.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 17,
+          "name": "ASTCoordinate"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 77,
+          "name": "get_target_node"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 85,
+          "name": "get_nodes_by_type"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/types/surgical_context_types.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/_fca_safety_gates.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/agent_categorizer_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/cache_invalidation_utils.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/capability_extractor_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/extract_pattern_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/fix_inherited_invocation_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 22,
+          "name": "GravityVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/gravity_visitor_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/guard_ddd_alignment_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 15,
+          "name": "normalize_location_path"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/location_utils_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast",
+          "libcst"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/utils/unified_cst_healer_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 159,
+          "name": "normalize_text"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/ats_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 229,
+          "name": "_get_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/base_detector_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/ddd_alignment_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 408,
+          "name": "signal_ast_valid"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/dependencygraph_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/global_mutation_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/gravity_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 156,
+          "name": "normalize_query"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/intelligence_query_validator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 247,
+          "name": "parse_telepathy_commands"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "fastapi.FastAPI",
+          "fastapi.responses.HTMLResponse",
+          "fastapi.responses.JSONResponse"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/intervention_server_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/magic_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/path_fragility_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/silent_swallower_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L5_safety/validators/type_erasure_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "fastapi.FastAPI",
+          "fastapi.HTTPException",
+          "fastapi.middleware.cors.CORSMiddleware"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L6_observability/dashboards/core/experiencein_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 145,
+          "name": "record_dimension_mismatch"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L6_observability/enforcement/rag_telemetry_collector.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 144,
+          "name": "broadcast"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 162,
+          "name": "broadcast_reasoning"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 180,
+          "name": "broadcast_agent_start"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 186,
+          "name": "broadcast_agent_complete"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 191,
+          "name": "broadcast_agent_error"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 246,
+          "name": "broadcast"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 252,
+          "name": "broadcast_reasoning"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/L6_observability/enforcement/reasoning_streamer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 313,
+          "name": "state_hash_fn"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "agentic_core.mixins.infrastructure_mixin.infrastructure_mixin"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/base_agents/SovereignBaseAgent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 127,
+          "name": "visit_node"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/config/core/complexity_metrics_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 169,
+          "name": "get_weak_opening_match"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 177,
+          "name": "get_placeholder_match"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/config/core/legacy_artifacts_config.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/config/core/non_conforming_agent_finder_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 237,
+          "name": "_should_use_fast_path"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 252,
+          "name": "_fast_path_evaluate"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/config/core/reflection_config.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/core/classification_kernel.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 41,
+          "name": "_hash_query"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/knowledge/research_cache/cache_store_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 20,
+          "name": "ASTEnforcementMixin"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 27,
+          "name": "_ast_audit_file"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 112,
+          "name": "_ast_audit_repo"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/ast_enforcement_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 103,
+          "name": "_compute_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/atomic_execution_mixin.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "agentic_core.infrastructure.SemanticKnowledgeClient.SemanticKnowledgeClient"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/cognitive_recovery_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 169,
+          "name": "estimate_tokens"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/context_management_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 31,
+          "name": "TokenUsage"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 212,
+          "name": "record_token_usage"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/cost_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 319,
+          "name": "_create_cst_insertion_node"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 328,
+          "name": "_find_cst_node_by_coordinate"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 378,
+          "name": "_extract_target_node"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "libcst"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/cst_healer_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 78,
+          "name": "_find_target_in_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/hallucination_detection_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "class",
+          "line": 24,
+          "name": "TokenLimitError"
+        },
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 170,
+          "name": "validate_token_budget_tiktoken"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/hardening_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 42,
+          "name": "_normalize_result"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/healer_agent_mixin.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/healing_policy_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 139,
+          "name": "_calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/hygiene_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 49,
+          "name": "InfrastructureMixin"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 154,
+          "name": "get_infrastructure_status"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 173,
+          "name": "reset_infrastructure"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/infrastructure_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "class",
+          "line": 34,
+          "name": "InspectionResult"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "class",
+          "line": 48,
+          "name": "InspectionCapability"
+        },
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 63,
+          "name": "run_inspection"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/inspection_capability_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 48,
+          "name": "_generate_context_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/meta_learning_mixin.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/migration_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "token"
+          ],
+          "kind": "function",
+          "line": 73,
+          "name": "_get_tokens"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/rate_limit_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 54,
+          "name": "_generate_op_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/state_validation_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 42,
+          "name": "_calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/mixins/structural_healing_mixin.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 432,
+          "name": "parse_response"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 611,
+          "name": "parse_response"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/core/prompt_assembler.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 83,
+          "name": "_parse_template_schema"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/core/sovereign_prompt_renderer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 15,
+          "name": "calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/detect_template_drift.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compile"
+          ],
+          "kind": "function",
+          "line": 31,
+          "name": "compile_template"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/dry_run_compiler.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/file_intent.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 24,
+          "name": "ImportViolationVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/import_violation_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 15,
+          "name": "calculate_file_hash"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 47,
+          "name": "synchronize_registry_hashes"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/synchronize_registry_hashes.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 41,
+          "name": "TemplateRenderVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/scripts/template_render_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 116,
+          "name": "_leetspeak_normalize"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 121,
+          "name": "normalize_and_decode"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/security/normalization_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 114,
+          "name": "_check_node"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/prompt_governance/security/output_schema_validator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "shared_infrastructure_config.*"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/config/__init__.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 35,
+          "name": "InjectionMatch"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 199,
+          "name": "find_matching_injections"
+        },
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 247,
+          "name": "_calculate_match_confidence"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/config/prompt_injection_loader_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 115,
+          "name": "SemanticMatch"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 978,
+          "name": "_state_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/config/security_level_config.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 23,
+          "name": "SharedInfrastructure"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 46,
+          "name": "get_shared_infrastructure"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/config/shared_infrastructure_config.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "ast_relocator.*"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/engine/__init__.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 86,
+          "name": "_state_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/engine/agent_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 19,
+          "name": "AstRelocator"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/engine/ast_relocator.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 127,
+          "name": "_find_semantic_match"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 138,
+          "name": "_hash_prompt"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/types/cache_entry_types.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/types/sovereign_events_types.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/utils/discovery_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 301,
+          "name": "_check_past_failures"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/utils/sovereign_dependency_error_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 248,
+          "name": "_check_past_failures"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/runtime/utils/subatomic_hop_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 97,
+          "name": "_normalize_heal_result"
+        },
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 161,
+          "name": "_normalize_heal_inputs"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/utils/decorators_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 175,
+          "name": "_create_mastered_task_relation"
+        },
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 222,
+          "name": "generate_context_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/utils/meta_learning_storage.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 174,
+          "name": "calculate_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "agentic_core/utils/structural_healing_engine.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 121,
+          "name": "check_script_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/active_set_ssot_check.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/centrality_gate.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/check_adapter_prohibition.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/check_directory_deletion_sweep.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 29,
+          "name": "_ast_classes_in_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/discovery_registry_consistency_check.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/governance_coverage_check.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 171,
+          "name": "_parse_file_imports"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/import_resolution_guardian.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/init_contract_check.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/mro_contract_check.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 147,
+          "name": "_check_state_hash_fn_present"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/run_v15_p3_gate.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/run_v15_p6_gate.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/shim_contract_check.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/skip_quarantine_check.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 34,
+          "name": "ast_find_guard_decorator"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/v15_d_evidence_collect_p2.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 140,
+          "name": "_node_name"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/v15_d_inventory_collect_full.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 70,
+          "name": "_parse_file"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/ci/v15_gap_regenerate_p0.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/audit_all_agents_mro_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/audit_residual_rglob_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 64,
+          "name": "compare_values"
+        },
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 92,
+          "name": "compare_dashboards"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/compare_dashboard_data_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/complexity.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/complexity_reducer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/fix_all_invocations_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/fix_missing_invocation_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 25,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/fix_root_scripts_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "inspect"
+          ],
+          "kind": "function",
+          "line": 19,
+          "name": "inspect_dashboard"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/inspect_dashboard_browser_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 22,
+          "name": "get_python_files_fast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/pascal_sovereignty_fixer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/pinecone_populator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/reduce_complexity_top5_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/repair_legacy_agents_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/scour_and_seal_legacy_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 21,
+          "name": "compute_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": [
+          "difflib"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/show_manual_review_files_util.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 17,
+          "name": "SovereignModelVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/sovereign_model_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "class",
+          "line": 30,
+          "name": "SovereignPdfParser"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 103,
+          "name": "parse_pdf"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/sovereign_pdf_parser.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/sovereignty_auditor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "compare"
+          ],
+          "kind": "function",
+          "line": 91,
+          "name": "compare_file_versions"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/ssot_consolidation_analyzer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/syntax_scar_repairer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/dev_tools/l0_scripts/zombie_vaccinator.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/agent_disposition_analyzer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "similar"
+          ],
+          "kind": "function",
+          "line": 78,
+          "name": "find_similar_named_files"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/aggressive_dedup.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/analyze_legacy_value.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/architectural_guard.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "class",
+          "line": 45,
+          "name": "ComponentMatch"
+        },
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 305,
+          "name": "ASTAnalyzer"
+        },
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 314,
+          "name": "parse_file"
+        },
+        {
+          "keywords": [
+            "fuzzy",
+            "match"
+          ],
+          "kind": "function",
+          "line": 359,
+          "name": "fuzzy_match_score"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": [
+          "difflib.SequenceMatcher"
+        ]
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/architecture_gap_analyzer.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "walk"
+          ],
+          "kind": "function",
+          "line": 430,
+          "name": "walk_python_files"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/ast_import_audit.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 75,
+          "name": "get_node_source"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/class_info.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "class",
+          "line": 29,
+          "name": "AppsLicASTAuditor"
+        },
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 143,
+          "name": "_has_k_node_logic"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/file_classification.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 22,
+          "name": "AgentVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/file_disposition.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/find_hangs.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/generate_certificate.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/generate_full_shim.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/generate_init_py.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/generate_monolith_shim.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 53,
+          "name": "analyze_file_with_ast"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/integration_gap_analyzer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/l0_import_model.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "class",
+          "line": 51,
+          "name": "LogicHasher"
+        },
+        {
+          "keywords": [
+            "hash",
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 57,
+          "name": "_normalize_and_hash"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/logic_signature.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/mece_test_rebaseline.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "node"
+          ],
+          "kind": "function",
+          "line": 85,
+          "name": "find_top_level_nodes"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/migrate_blueprint_to_modular.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/quick_hang_finder.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/suffix_cleanup_executor.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/general/test_territory_mirror_enforcer.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/governance/check_layer_separation.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/governance/fix_test_structure.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/hooks/check_import_resolution.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "match"
+          ],
+          "kind": "function",
+          "line": 22,
+          "name": "_match"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/hooks/reject_tracked_generated_artifacts.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/hooks/validate_folder_purity.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "parse"
+          ],
+          "kind": "function",
+          "line": 111,
+          "name": "_parse_manual_stage_hook_ids"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/hooks/validate_governance_policy.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/agent_technical_status.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/check_heal_schema_compliance.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/detect_corruption.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "visitor"
+          ],
+          "kind": "class",
+          "line": 69,
+          "name": "HealSchemaVisitor"
+        }
+      ],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/heal_schema_visitor.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "hash"
+          ],
+          "kind": "function",
+          "line": 16,
+          "name": "get_file_hash"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/investigate_overlaps.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 20,
+          "name": "get_python_files_fast"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/run_classification.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "ast"
+          ],
+          "kind": "function",
+          "line": 291,
+          "name": "refine_territory_by_ast"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/territory_ssot_definitions_config.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "inspect"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/maintenance/test_verify_ssot_compliance.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/root_scripts/phase3_behavioral_fixes.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/root_scripts/phase3_functional_coverage.py"
+    },
+    {
+      "candidates": [
+        {
+          "keywords": [
+            "normalize"
+          ],
+          "kind": "function",
+          "line": 69,
+          "name": "normalize_path"
+        }
+      ],
+      "imports": {
+        "ast": [],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "ops_scripts/security/gatekeeper_lock.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "tools/enforcement/pytest_config_guard.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "tools/governance/agent_heal_audit.py"
+    },
+    {
+      "candidates": [],
+      "imports": {
+        "ast": [
+          "ast"
+        ],
+        "fuzzy": []
+      },
+      "parse_status": "ok",
+      "path": "tools/tmp_ok/scan_ast_fuzzy_defs.py"
+    }
+  ],
+  "scanned_roots": [
+    "agentic_core",
+    "ops_scripts",
+    "tools"
+  ]
+}
