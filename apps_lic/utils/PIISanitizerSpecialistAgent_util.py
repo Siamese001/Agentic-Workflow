@@ -7,12 +7,12 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from apps_lic.utils.LICAgentBase import LICAgentBase
 from pydantic import BaseModel, Field
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
-from apps_lic.utils.LICAgentBase import LICAgentBase
 
 
 def track_metrics(name):
