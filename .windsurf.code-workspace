@@ -1,0 +1,61 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "git.ignoreLimitWarning": true,
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.autoTestDiscoverOnSaveEnabled": true,
+        "python.terminal.activateEnvironment": true,
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.typeCheckingMode": "basic",
+        "mcp.allowedDirectories": [
+            "C:\\Git\\Agentic-Workflow"
+        ],
+        "mcp.filesystem.allowedRoots": [
+            "C:\\Git\\Agentic-Workflow"
+        ],
+        "mcp.autoApproveTools": true,
+        "mcp.security.trustedWorkspaces": [
+            "C:\\Git\\Agentic-Workflow"
+        ],
+        "security.workspace.trust.untrustedFiles": "open",
+        "security.workspace.trust.enabled": true,
+        "security.workspace.trust.banner": "never",
+        "security.workspace.trust.startupPrompt": "never",
+        "windsurf.autoApproveCommands": true,
+        "windsurf.autoApproveCommandsInWorkspace": true,
+        "windsurf.trustedWorkspaceFolders": [
+            "C:\\Git\\Agentic-Workflow"
+        ],
+        "cascade.autoApproveTools": true,
+        "cascade.autoApproveCommands": true,
+        "cascade.trustedWorkspaces": [
+            "C:\\Git\\Agentic-Workflow"
+        ],
+        "files.watcherExclude": {
+            "**/.git/objects/**": true,
+            "**/.git/subtree-cache/**": true,
+            "**/node_modules/**": true,
+            "**/.pytest_cache/**": true,
+            "**/__pycache__/**": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.flake8",
+            "ms-python.black-formatter"
+        ]
+    },
+    "mcpServers": {
+        "filesystem": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Git\\Agentic-Workflow"],
+            "allowedDirectories": ["C:\\Git\\Agentic-Workflow"]
+        }
+    }
+}
