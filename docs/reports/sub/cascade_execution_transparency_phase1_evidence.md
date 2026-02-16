@@ -89,15 +89,18 @@ collected 19 items
 
 ### git diff --cached --name-status
 ```
-[TO BE POPULATED AFTER STAGING]
+M       docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+M       tests/enforcement/test_constitutional_validator.py
 ```
 
 ### git --no-pager show --name-only --oneline HEAD (AFTER final commit)
 ```
-[TO BE POPULATED AFTER COMMIT]
+5d0680c4f (HEAD -> main) enforcement: phase1 remediate (tests run + correct contents)
+docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+tests/enforcement/test_constitutional_validator.py
 ```
 
 ### git status --porcelain=v1 (post-commit verification)
 ```
-[TO BE POPULATED AFTER COMMIT]
+(clean working directory)
 ```
