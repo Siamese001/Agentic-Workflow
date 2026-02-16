@@ -74,7 +74,7 @@ def pytest_collection_modifyitems(config, items):
     This hook ensures both integration and governance tests run by default.
     Logs deselection count for transparency.
     '''
-    marker_expr = config.getoption("-m", default="")
+    marker_expr = getattr(config.option, "markexpr", "")
 
     if not marker_expr:
         default_markers = ("integration_full_deps", "governance")
@@ -186,7 +186,7 @@ markers =
 import pytest
 
 def pytest_collection_modifyitems(config, items):
-    marker_expr = config.getoption("-m", default="")
+    marker_expr = getattr(config.option, "markexpr", "")
     # No docstring - should generate warning
 """)
 

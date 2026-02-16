@@ -123,11 +123,39 @@ class PytestEnforcementGuard:
         if not ast.get_docstring(node):
             self.warnings.append(f"{conftest}: pytest_collection_modifyitems missing docstring")
 
+        # Check for brittle getoption("-m") marker access (AST-based detection)
+        self._check_brittle_marker_access(conftest, node)
+
         # Check for hardcoded marker logic
         if source and "integration_full_deps" in source:
             # This is expected but should be documented
             if "default_markers" not in source:
                 self.warnings.append(f"{conftest}: Consider using default_markers tuple for clarity")
+
+    def _check_brittle_marker_access(self, conftest: Path, node: ast.FunctionDef) -> None:
+        """Check for brittle config.getoption("-m") marker access patterns.
+
+        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
+        Robust alternative: getattr(config.option, "markexpr", "")
+        """
+        for child in ast.walk(node):
+            if isinstance(child, ast.Call):
+                # Check if this is a getoption call
+                if self._is_getoption_call(child):
+                    # Check if first argument is "-m" or '-m'
+                    if child.args and isinstance(child.args[0], ast.Constant):
+                        if child.args[0].value == "-m":
+                            self.errors.append(
+                                f"{conftest}: Brittle marker access detected: "
+                                f'config.getoption("-m") should be replaced with '
+                                f'getattr(config.option, "markexpr", "")'
+                            )
+
+    def _is_getoption_call(self, node: ast.Call) -> bool:
+        """Check if a Call node is a getoption method call."""
+        if isinstance(node.func, ast.Attribute):
+            return node.func.attr == "getoption"
+        return False
 
     def _validate_marker_consistency(self) -> None:
         """Validate marker usage across test files."""
@@ -215,6 +243,78 @@ def main():
         print(f"\n{len(warnings)} warnings found")
     else:
         print("\nPytest configuration passes all enforcement checks")
+
+
+class TestPytestConfigGuardBrittleMarkerDetection:
+    """Unit tests for brittle marker access detection."""
+
+    def test_detects_brittle_getoption_m(self):
+        """Test that getoption("-m") is flagged as brittle."""
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create pytest.ini
+            pytest_ini = tmpdir / "pytest.ini"
+            pytest_ini.write_text("""[pytest]
+testpaths = tests
+markers =
+    governance: Governance tests
+    integration_full_deps: Integration tests
+""")
+
+            # Create conftest with brittle pattern
+            conftest = tmpdir / "tests" / "conftest.py"
+            conftest.parent.mkdir(parents=True)
+            conftest.write_text("""import pytest
+
+def pytest_collection_modifyitems(config, items):
+    '''Hook with brittle marker access.'''
+    marker_expr = config.getoption("-m", default="")
+""")
+
+            guard = PytestEnforcementGuard(tmpdir)
+            errors, warnings = guard.validate_pytest_configuration()
+
+            assert any("Brittle marker access" in e for e in errors), (
+                f"Expected brittle marker error, got: {errors}"
+            )
+
+    def test_allows_robust_getattr_pattern(self):
+        """Test that getattr(config.option, 'markexpr', '') is NOT flagged."""
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+
+            # Create pytest.ini
+            pytest_ini = tmpdir / "pytest.ini"
+            pytest_ini.write_text("""[pytest]
+testpaths = tests
+markers =
+    governance: Governance tests
+    integration_full_deps: Integration tests
+""")
+
+            # Create conftest with robust pattern
+            conftest = tmpdir / "tests" / "conftest.py"
+            conftest.parent.mkdir(parents=True)
+            conftest.write_text("""import pytest
+
+def pytest_collection_modifyitems(config, items):
+    '''Hook with robust marker access.'''
+    marker_expr = getattr(config.option, "markexpr", "")
+""")
+
+            guard = PytestEnforcementGuard(tmpdir)
+            errors, warnings = guard.validate_pytest_configuration()
+
+            # Should NOT have brittle marker error
+            brittle_errors = [e for e in errors if "Brittle marker access" in e]
+            assert len(brittle_errors) == 0, f"Robust pattern should not be flagged, got: {brittle_errors}"
 
 
 if __name__ == "__main__":
