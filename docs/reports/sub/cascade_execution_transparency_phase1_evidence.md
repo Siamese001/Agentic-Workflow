@@ -258,15 +258,18 @@ Status: Tests are now executable when run as part of the full test suite. The en
 
 ### git diff --cached --name-status
 ```
-[TO BE POPULATED AFTER STAGING]
+M       docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+M       pytest.ini
 ```
 
 ### git --no-pager show --name-only --oneline HEAD (AFTER final commit)
 ```
-[TO BE POPULATED AFTER COMMIT]
+6ecef77fd (HEAD -> main) enforcement: phase1 fix test execution (add enforcement to testpaths)
+docs/reports/sub/cascade_execution_transparency_phase1_evidence.md
+pytest.ini
 ```
 
 ### git status --porcelain=v1 (post-commit verification)
 ```
-[TO BE POPULATED AFTER COMMIT]
+(clean working directory)
 ```
