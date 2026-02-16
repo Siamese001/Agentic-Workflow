@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from agentic_core.prompt_governance.security.injection_detector import InjectionDetector
-from agentic_core.prompt_governance.security.injection_scan_util import scan_untrusted_text
+from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
 from agentic_core.runtime.exceptions.sovereign_errors import SecurityViolationError
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

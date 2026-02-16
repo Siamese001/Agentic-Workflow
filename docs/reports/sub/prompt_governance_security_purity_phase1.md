@@ -60,3 +60,40 @@ Lines 2216-2227: Files directly under NO_ROOT_FILES_FOLDERS => FAIL with NO_ROOT
 
 ```
 tests/enforcement/test_folder_purity_governance.py - 13 passed in 0.19s
+```
+
+---
+
+## Wave 1.3 — File Moves: security/*.py -> security/utils/*.py + Import Updates
+
+### 1. Files Moved
+
+```bash
+git mv agentic_core/prompt_governance/security/injection_scan_util.py -> agentic_core/prompt_governance/security/utils/injection_scan_util.py
+git mv agentic_core/prompt_governance/security/normalization_util.py -> agentic_core/prompt_governance/security/utils/normalization_util.py
+```
+
+### 2. Created __init__.py
+
+`agentic_core/prompt_governance/security/utils/__init__.py`
+
+### 3. Imports Updated (7 files)
+
+- agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py
+- agentic_core/L5_safety/enforcement/canary_token_defense.py
+- agentic_core/mixins/instructional_injection_mixin.py
+- agentic_core/prompt_governance/security/injection_detector.py
+- tests/unit/agentic_core/L2_execution/enforcement/test_gateway_output_injection_scan.py
+- tests/unit/agentic_core/prompt_governance/security/test_injection_wiring_non_fenced_joinpoints.py
+- tests/unit/agentic_core/prompt_governance/security/test_injection_normalization_util.py
+
+### 4. rg proof: No remaining old import paths
+
+```bash
+grep "prompt_governance\.security\.injection_scan_util|prompt_governance\.security\.normalization_util" -> No results found
+```
+
+### 5. Test Results (13 passed)
+
+```
+tests/enforcement/test_folder_purity_governance.py - 13 passed in 0.14s

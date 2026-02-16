@@ -10,7 +10,7 @@ import os
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
 from agentic_core.mixins.instructional_injection_mixin import get_instructional_injection_mixin
 from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
-from agentic_core.prompt_governance.security.injection_scan_util import scan_untrusted_text
+from agentic_core.prompt_governance.security.utils.injection_scan_util import scan_untrusted_text
 
 # EmbeddingSovereignAgent import is deferred to __init__ because
 # EmbeddingSovereignAgent.py references SovereignBaseAgent without importing

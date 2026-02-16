@@ -85,7 +85,7 @@ class TestOutputInjectionScanHook:
             call_args_capture.append((text, source))
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             spy_scan,
         )
 
@@ -125,7 +125,7 @@ class TestOutputInjectionWarnMode:
                 )
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             raise_violation,
         )
 
@@ -161,7 +161,7 @@ class TestOutputInjectionWarnMode:
                 raise RuntimeError("unexpected scan failure")
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             raise_runtime,
         )
 
@@ -195,7 +195,7 @@ class TestOutputScanSkipsEmptyContent:
                 call_count += 1
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             counting_scan,
         )
 
@@ -218,7 +218,7 @@ class TestOutputScanSkipsEmptyContent:
                 call_count += 1
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             counting_scan,
         )
 
@@ -246,7 +246,7 @@ class TestOutputScanSkipsEmptyContent:
                 call_count += 1
 
         monkeypatch.setattr(
-            "agentic_core.prompt_governance.security.injection_scan_util.scan_untrusted_text",
+            "agentic_core.prompt_governance.security.utils.injection_scan_util.scan_untrusted_text",
             counting_scan,
         )
 
