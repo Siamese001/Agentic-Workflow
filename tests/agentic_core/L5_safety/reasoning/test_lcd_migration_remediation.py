@@ -1065,7 +1065,7 @@ class TestNewConfigConstants:
     """Tests for FOLDER_PURITY_RULES, APP_DOMAIN_PREFIXES, LAYER_KEYWORD_AFFINITY."""
 
     def test_folder_purity_rules_has_reasoning(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import FOLDER_PURITY_RULES
+        from agentic_core.L0_routing.config import FOLDER_PURITY_RULES
 
         assert "reasoning" in FOLDER_PURITY_RULES
         # reasoning/ should only allow *Agent.py
@@ -1075,7 +1075,7 @@ class TestNewConfigConstants:
     def test_folder_purity_rules_patterns_are_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import FOLDER_PURITY_RULES
+        from agentic_core.L0_routing.config import FOLDER_PURITY_RULES
 
         for folder, patterns in FOLDER_PURITY_RULES.items():
             for pattern in patterns:
@@ -1085,13 +1085,13 @@ class TestNewConfigConstants:
                     pytest.fail(f"Invalid regex in FOLDER_PURITY_RULES['{folder}']: '{pattern}' — {e}")
 
     def test_app_domain_prefixes_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import APP_DOMAIN_PREFIXES
+        from agentic_core.L0_routing.config import APP_DOMAIN_PREFIXES
 
         assert len(APP_DOMAIN_PREFIXES) > 0
         assert "Lic" in APP_DOMAIN_PREFIXES
 
     def test_layer_keyword_affinity_covers_all_layers(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_KEYWORD_AFFINITY
+        from agentic_core.L0_routing.config import LAYER_KEYWORD_AFFINITY
 
         expected_layers = {
             "L0_routing",
@@ -1106,25 +1106,25 @@ class TestNewConfigConstants:
 
     def test_suffix_to_folder_strategy_routes_to_enforcement(self):
         """Strategy.py should now route to enforcement/, not reasoning/."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+        from agentic_core.L0_routing.config import SUFFIX_TO_FOLDER
 
         assert SUFFIX_TO_FOLDER["Strategy.py"] == "enforcement"
 
     def test_suffix_to_folder_adapter_routes_to_enforcement(self):
         """Adapter.py should now route to enforcement/, not reasoning/."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+        from agentic_core.L0_routing.config import SUFFIX_TO_FOLDER
 
         assert SUFFIX_TO_FOLDER["Adapter.py"] == "enforcement"
 
     def test_suffix_to_folder_agent_still_routes_to_reasoning(self):
         """Agent.py should still route to reasoning/."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+        from agentic_core.L0_routing.config import SUFFIX_TO_FOLDER
 
         assert SUFFIX_TO_FOLDER["Agent.py"] == "reasoning"
 
     def test_suffix_to_folder_protocol_routes_to_global_interfaces(self):
         """Protocol.py should route to GLOBAL_INTERFACES sentinel."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import SUFFIX_TO_FOLDER
+        from agentic_core.L0_routing.config import SUFFIX_TO_FOLDER
 
         assert SUFFIX_TO_FOLDER["Protocol.py"] == "GLOBAL_INTERFACES"
 
@@ -1132,7 +1132,7 @@ class TestNewConfigConstants:
         """INTERFACE_FILENAME_PATTERN should be a valid regex."""
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import INTERFACE_FILENAME_PATTERN
+        from agentic_core.L0_routing.config import INTERFACE_FILENAME_PATTERN
 
         re_mod.compile(INTERFACE_FILENAME_PATTERN)
 
@@ -1140,7 +1140,7 @@ class TestNewConfigConstants:
         """INTERFACE_FILENAME_PATTERN should match I*Protocol.py files."""
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import INTERFACE_FILENAME_PATTERN
+        from agentic_core.L0_routing.config import INTERFACE_FILENAME_PATTERN
 
         assert re_mod.match(INTERFACE_FILENAME_PATTERN, "IHealerProtocol.py")
         assert re_mod.match(INTERFACE_FILENAME_PATTERN, "IOrchestratorProtocol.py")
@@ -1150,7 +1150,7 @@ class TestNewConfigConstants:
 
     def test_global_interfaces_folder_defined(self):
         """GLOBAL_INTERFACES_FOLDER should point to agentic_core/interfaces."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import GLOBAL_INTERFACES_FOLDER
+        from agentic_core.L0_routing.config import GLOBAL_INTERFACES_FOLDER
 
         assert GLOBAL_INTERFACES_FOLDER == "agentic_core/interfaces"
 
@@ -1292,27 +1292,27 @@ class TestEphemeralConfigConstants:
     """Tests for FORBIDDEN_EPHEMERAL_PATTERNS and exemptions."""
 
     def test_forbidden_patterns_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+        from agentic_core.L0_routing.config import FORBIDDEN_EPHEMERAL_PATTERNS
 
         assert len(FORBIDDEN_EPHEMERAL_PATTERNS) >= 3
 
     def test_forbidden_patterns_are_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+        from agentic_core.L0_routing.config import FORBIDDEN_EPHEMERAL_PATTERNS
 
         for pattern in FORBIDDEN_EPHEMERAL_PATTERNS:
             re_mod.compile(pattern)
 
     def test_exemptions_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+        from agentic_core.L0_routing.config import EPHEMERAL_PATTERN_EXEMPTIONS
 
         assert len(EPHEMERAL_PATTERN_EXEMPTIONS) >= 3
 
     def test_exemptions_are_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+        from agentic_core.L0_routing.config import EPHEMERAL_PATTERN_EXEMPTIONS
 
         for pattern in EPHEMERAL_PATTERN_EXEMPTIONS:
             re_mod.compile(pattern)
