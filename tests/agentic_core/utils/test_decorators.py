@@ -4,9 +4,8 @@ Test for decorators
 Generated as part of test structure mirror contract enforcement.
 """
 
-import pytest
-
 import agentic_core.utils.decorators
+import pytest
 
 
 def test_decorators_can_import():

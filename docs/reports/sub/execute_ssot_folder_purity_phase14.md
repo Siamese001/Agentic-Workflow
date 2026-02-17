@@ -98,4 +98,3 @@ Non-compliant folders (enforcement, engines, tools, types, utils, config, reason
 ```
 
 All tests pass. Folder purity invariant test now scoped to compliant folders only.
-

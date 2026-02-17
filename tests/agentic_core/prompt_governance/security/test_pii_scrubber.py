@@ -15,7 +15,9 @@ def test_test_pii_scrubber_can_import():
         mod = importlib.import_module("agentic_core.prompt_governance.security.detectors.pii_scrubber")
         assert mod is not None
     except ImportError as e:
-        pytest.skip(f"Cannot import module agentic_core.prompt_governance.security.detectors.pii_scrubber: {e}")
+        pytest.skip(
+            f"Cannot import module agentic_core.prompt_governance.security.detectors.pii_scrubber: {e}"
+        )
 
 
 def test_test_pii_scrubber_has_file_attribute():

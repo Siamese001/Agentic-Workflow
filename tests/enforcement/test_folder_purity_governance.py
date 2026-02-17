@@ -21,7 +21,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     FOLDER_ALIASES,
     FOLDER_PURITY_RULES,
     INFRASTRUCTURE_PROFILES,
-    NO_ROOT_FILES_FOLDERS,
 )
 
 
@@ -108,9 +107,7 @@ class TestUtilsFileSuffixCompliance:
                 violations.append(py_file.name)
 
         if violations:
-            pytest.fail(
-                f"Utils files lacking *_util.py suffix ({len(violations)}): {violations[:10]}"
-            )
+            pytest.fail(f"Utils files lacking *_util.py suffix ({len(violations)}): {violations[:10]}")
 
 
 class TestAgentConfigsFileSuffixCompliance:
@@ -136,9 +133,7 @@ class TestAgentConfigsFileSuffixCompliance:
                 violations.append(file.name)
 
         if violations:
-            pytest.fail(
-                f"Agent config files with invalid suffix ({len(violations)}): {violations[:10]}"
-            )
+            pytest.fail(f"Agent config files with invalid suffix ({len(violations)}): {violations[:10]}")
 
 
 class TestGlobalNoRootFilesInvariant:

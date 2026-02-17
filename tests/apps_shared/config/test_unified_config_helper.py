@@ -13,7 +13,6 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-
 from apps_shared.config.config_loader_config import ConfigLoadResult
 from apps_shared.config.unified_config_helper import (
     CATEGORY_DEFAULTS,

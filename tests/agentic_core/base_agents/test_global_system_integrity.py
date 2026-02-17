@@ -101,8 +101,9 @@ class TestGlobalSystemIntegrity:
         Verify Phase 20 hardening standards are enforced.
         """
         # Test LIC Agent Base compliance
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from apps_lic.utils.LICAgentBase import LICAgentBase
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Verify inheritance chain
         assert issubclass(LICAgentBase, SovereignBaseAgent), (
@@ -117,8 +118,9 @@ class TestGlobalSystemIntegrity:
         """
         Verify MRO Root Injection Pattern is working correctly.
         """
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
         from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
         # Create agent instance
         agent = HOP1ProfileAnalysisAgent()
@@ -184,8 +186,9 @@ class TestGlobalSystemIntegrity:
         """
         Verify LIC and RG domains maintain isolation while sharing core.
         """
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
         from apps_lic.utils.LICAgentBase import LICAgentBase
+
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
 
         # Both should inherit from SovereignBaseAgent but maintain domain specifics
         assert issubclass(LICAgentBase, RGAgentBase.__bases__[0]), "Both should share same base"

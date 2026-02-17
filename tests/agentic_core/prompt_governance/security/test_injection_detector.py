@@ -15,7 +15,9 @@ def test_test_injection_detector_can_import():
         mod = importlib.import_module("agentic_core.prompt_governance.security.detectors.injection_detector")
         assert mod is not None
     except ImportError as e:
-        pytest.skip(f"Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector: {e}")
+        pytest.skip(
+            f"Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector: {e}"
+        )
 
 
 def test_test_injection_detector_has_file_attribute():
@@ -24,7 +26,9 @@ def test_test_injection_detector_has_file_attribute():
         mod = importlib.import_module("agentic_core.prompt_governance.security.detectors.injection_detector")
         assert hasattr(mod, "__file__")
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector")
+        pytest.skip(
+            "Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector"
+        )
 
 
 def test_test_injection_detector_has_public_attributes():
@@ -43,4 +47,6 @@ def test_test_injection_detector_has_public_attributes():
             # If no callables, at least assert we have some public attributes
             assert len(public_attrs) >= 0
     except ImportError:
-        pytest.skip("Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector")
+        pytest.skip(
+            "Cannot import module agentic_core.prompt_governance.security.detectors.injection_detector"
+        )

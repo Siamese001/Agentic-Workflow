@@ -12,9 +12,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from apps_rg.engines.ResumeAssemblyAgent import ResumeAssemblyAgent, ResumeTemplateError
 
 from agentic_core.prompt_governance import PromptLoader, PromptLoadError
-from apps_rg.engines.ResumeAssemblyAgent import ResumeAssemblyAgent, ResumeTemplateError
 
 
 class TestResumeAssemblyAgent:

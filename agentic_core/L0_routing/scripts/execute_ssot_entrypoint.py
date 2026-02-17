@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
-# Do not extend. Use: python -m agentic_core.L0_routing.scripts.l0_execute
 """
 V15-Native Entrypoint for execute_ssot.
 
@@ -12,7 +10,7 @@ Minimal, modern entrypoint that:
 
 This file exists to make the runtime boundary unambiguous:
   - execute_ssot_entrypoint.py = the ONLY invocation path.
-  - execute_ssot.py = frozen legacy module (never invoked directly in CI).
+  - execute_ssot.py = active module for agent-based healing pipeline.
 """
 
 from __future__ import annotations

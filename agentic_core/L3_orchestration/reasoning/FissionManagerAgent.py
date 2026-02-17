@@ -100,13 +100,6 @@ class FissionManagerAgent(SovereignBaseAgent):
         # Default implementation - FissionManagerAgent manages code fission
         try:
             return {
-
-
-        # guardian: allow-type-erasure
-        def heal_repository(self, *args, **kwargs) -> dict:
-            """heal_repository() not implemented for FissionManagerAgent."""
-            raise NotImplementedError("heal_repository() not implemented for FissionManagerAgent")
-
                 "status": "skipped",
                 "details": f"FissionManagerAgent heal() not yet implemented for {violation_type}",
                 "artifacts": [],
@@ -119,3 +112,8 @@ class FissionManagerAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
+    # guardian: allow-type-erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for FissionManagerAgent."""
+        raise NotImplementedError("heal_repository() not implemented for FissionManagerAgent")

@@ -60,7 +60,6 @@ class TestDagRuntimeInspectorAgent:
         from agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent import (
             DagRuntimeInspectorAgent,
         )
-
         from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = DagRuntimeInspectorAgent()

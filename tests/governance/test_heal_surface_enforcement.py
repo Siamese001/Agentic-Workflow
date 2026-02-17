@@ -61,7 +61,9 @@ class TestHealSurfaceEnforcement:
         # Only check runtime agents, not protocols/interfaces/models
         for agent in audit_data["runtime_agents"]:
             if not agent["has_heal"]:
-                missing_heal.append(f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})")
+                missing_heal.append(
+                    f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})"
+                )
 
         assert not missing_heal, "Runtime agents missing heal() method:\n" + "\n".join(
             f"  - {m}" for m in sorted(missing_heal)
@@ -75,7 +77,9 @@ class TestHealSurfaceEnforcement:
         # Only check runtime agents, not protocols/interfaces/models
         for agent in audit_data["runtime_agents"]:
             if not agent["has_heal_repository"]:
-                missing_heal_repo.append(f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})")
+                missing_heal_repo.append(
+                    f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})"
+                )
 
         assert not missing_heal_repo, "Runtime agents missing heal_repository() method:\n" + "\n".join(
             f"  - {m}" for m in sorted(missing_heal_repo)

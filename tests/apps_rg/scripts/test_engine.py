@@ -19,11 +19,10 @@ def run_tests():
     print("PHASE 2 CONFIGURATION & BASE INTEGRATION TESTS")
     print("=" * 70)
 
+    from apps_rg.config.AgentSpec import AgentSpec, OrchestrationTopology
     from apps_rg.config.sovereign_config_loader_config import SovereignConfigLoader
     from apps_rg.engines.base_resume_engine import BaseRGEngine
     from apps_rg.engines.sovereign_context import SovereignContext
-
-    from apps_rg.config.AgentSpec import AgentSpec, OrchestrationTopology
 
     passed = 0
     failed = 0

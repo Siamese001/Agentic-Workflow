@@ -2201,7 +2201,6 @@ class FileClassificationAgent(*BASE_CLASSES):
             FOLDER_ALIASES,
             FOLDER_PURITY_RULES,
             INFRASTRUCTURE_PROFILES,
-            NO_ROOT_FILES_FOLDERS,
             NON_PYTHON_FOLDER_ROUTES,
             SUFFIX_TO_FOLDER,
         )

@@ -72,7 +72,6 @@ class LocationAgent(LocationHealerAgent):
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
 
-
     # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for LocationAgent."""

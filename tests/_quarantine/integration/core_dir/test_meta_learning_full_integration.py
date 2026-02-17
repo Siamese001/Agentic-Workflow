@@ -13,11 +13,10 @@ import pytest
 
 # Test imports - these will need to be implemented
 try:
-    from apps_rg.engines.RgHealingOrchestrator import RgHealingOrchestrator
-    from apps_rg.utils.RGAgentBaseAgent import RGAgentBase
-
     from apps_lic.engines.LicHealingOrchestrator import LicHealingOrchestrator
     from apps_lic.utils.LICAgentBase import LICAgentBase
+    from apps_rg.engines.RgHealingOrchestrator import RgHealingOrchestrator
+    from apps_rg.utils.RGAgentBaseAgent import RGAgentBase
 except ImportError as e:
     pytest.skip(f"Apps not yet enhanced with full meta-learning: {e}", allow_module_level=True)
 

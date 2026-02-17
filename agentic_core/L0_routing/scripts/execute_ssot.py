@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
-# Do not extend. Use: python -m agentic_core.L0_routing.scripts.l0_execute
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
@@ -1636,6 +1634,63 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
     violations = len(gov_report.get("layer_violations", [])) + len(gov_report.get("naming_violations", []))
     state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Violations: {violations}")
 
+    # Phase 3.5: Gravity Violation Detection and Healing
+    state_mgr.update_agent("GravityLeakRepairAgent", "L5 - Safety")
+    gravity_agent = agents["gravity_repair"](project_root=REPO_ROOT)
+
+    try:
+        logger.info("🔍 Detecting gravity violations (layer inversions)...")
+        gravity_result = gravity_agent.heal_repository(dry_run=not execute, execute=execute)
+
+        gravity_violations = gravity_result.get("violations_found", 0)
+        gravity_fixed = gravity_result.get("violations_fixed", 0)
+
+        # Store gravity violations for final reporting
+        if gravity_result.get("violations"):
+            state_mgr.state["gravity_violations"] = gravity_result["violations"]
+        else:
+            # Create violation entries from the result
+            gravity_violation_list = []
+            if gravity_violations > 0:
+                gravity_violation_list.append(
+                    {
+                        "type": "GRAVITY",
+                        "message": f"Found {gravity_violations} gravity violations (layer inversions)",
+                        "severity": "high",
+                        "recommended_action": "Review and fix layer boundary violations",
+                        "confidence": 0.9,
+                        "violations_found": gravity_violations,
+                        "violations_fixed": gravity_fixed,
+                    }
+                )
+            state_mgr.state["gravity_violations"] = gravity_violation_list
+
+        if gravity_result.get("status") == "ERROR":
+            state_mgr.complete_agent(
+                "GravityLeakRepairAgent", False, f"Error: {gravity_result.get('error', 'Unknown')}"
+            )
+        elif gravity_violations > 0:
+            status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
+            state_mgr.complete_agent("GravityLeakRepairAgent", True, status_msg)
+            logger.info(f"🔧 Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
+        else:
+            state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
+            logger.info("✅ No gravity violations detected")
+
+    except Exception as e:
+        logger.error(f"Gravity violation detection failed: {e}")
+        state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
+        # Store error as violation for reporting
+        state_mgr.state["gravity_violations"] = [
+            {
+                "type": "GRAVITY_ERROR",
+                "message": f"Gravity detection failed: {str(e)}",
+                "severity": "high",
+                "recommended_action": "Fix gravity detection error",
+                "confidence": 0.5,
+            }
+        ]
+
     state_mgr.update_agent("SystemArchitectAgent", "L5 - Safety")
     sys_arch = agents["system_architect"](project_root=REPO_ROOT)
     arch_report = sys_arch.validate_core_architecture(f"agentic_core/{territory}")
@@ -1826,6 +1881,26 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             "confidence": round(violation_confidence, 3),
         }
         all_violations.append(violation_dict)
+
+    # Get GravityLeakRepairAgent violations from phase 3.5
+    gravity_violations = state_mgr.state.get("gravity_violations", [])
+    for gravity_violation in gravity_violations:
+        if isinstance(gravity_violation, dict):
+            violation_dict = {
+                "type": "GRAVITY",
+                "source": "GravityLeakRepairAgent",
+                "file": gravity_violation.get("file", "unknown"),
+                "message": gravity_violation.get("message", str(gravity_violation)),
+                "severity": gravity_violation.get("severity", "high"),
+                "recommended_action": gravity_violation.get(
+                    "recommended_action", "Fix layer inversion violation"
+                ),
+                "llm_triggered": False,  # Gravity violations are structural, not LLM-triggered
+                "confidence": round(
+                    gravity_violation.get("confidence", 0.9), 3
+                ),  # High confidence for structural issues
+            }
+            all_violations.append(violation_dict)
 
     # Get DebateSynthesisAgent violations
     debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT)
@@ -2150,6 +2225,9 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
         from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,  # noqa: F401
         )
+        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
+            GravityLeakRepairAgent,
+        )
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
@@ -2164,6 +2242,7 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
             ("LocationAgent", LocationAgent(project_root)),
             ("HierarchyAgent", HierarchyAgent(project_root)),
             ("ArchitectureGovernorAgent", ArchitectureGovernorAgent(project_root)),
+            ("GravityLeakRepairAgent", GravityLeakRepairAgent(project_root)),
         ]
 
         mission_context = {
@@ -2635,6 +2714,9 @@ Examples:
         from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
             FilesystemSSOTReconcilerAgent,
         )
+        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
+            GravityLeakRepairAgent,
+        )
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
         from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
@@ -2654,6 +2736,7 @@ Examples:
             "location": LocationAgent,
             "hierarchy": HierarchyAgent,
             "arch_governor": ArchitectureGovernorAgent,
+            "gravity_repair": GravityLeakRepairAgent,
             "system_architect": SystemArchitectAgent,
             "file_classification": FileClassificationAgent,
             "conversational_repair": DebateSynthesisAgent,

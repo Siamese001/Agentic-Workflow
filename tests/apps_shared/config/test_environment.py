@@ -8,14 +8,14 @@ import os
 from unittest.mock import patch
 
 import pytest
-
-from apps_shared.config.environment_config import (
-    EnvironmentConfig,
-)
 from apps_shared.config.environment_util import (
     EnvironmentValidator,
     get_environment_config,
     validate_environment,
+)
+
+from apps_shared.config.environment_config import (
+    EnvironmentConfig,
 )
 
 # Test fixture for required environment variables

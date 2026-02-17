@@ -120,4 +120,3 @@ grep "prompt_governance\.security\.(injection_detector|pii_scrubber|output_schem
 ```
 tests/enforcement/test_folder_purity_governance.py - 15 passed in 0.03s
 ```
-

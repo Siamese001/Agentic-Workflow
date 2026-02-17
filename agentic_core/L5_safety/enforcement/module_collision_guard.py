@@ -240,8 +240,9 @@ def save_baseline(collisions: dict[str, list[tuple[str, list[Path]]]]) -> None:
     baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(baseline_path, "w") as f:
+    with open(baseline_path, "w", newline="\n") as f:
         json.dump(baseline, f, indent=2, sort_keys=True)
+        f.write("\n")  # Ensure trailing newline
 
 
 def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], baseline: dict) -> list[str]:

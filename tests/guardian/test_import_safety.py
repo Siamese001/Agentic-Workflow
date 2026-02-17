@@ -122,7 +122,7 @@ class TestImportSafety:
         "apps_lic",
         "apps_shared",
         "ops_scripts",
-        "scripts",
+        "system_learning",
     ]
 
     # Directories to exclude from import testing
@@ -276,6 +276,7 @@ class TestImportSafety:
             "apps_lic.",
             "apps_shared.",
             "ops_scripts.",
+            "system_learning.",
         )
 
         # Pass 1: collect all canonical module names from files
@@ -392,6 +393,7 @@ class TestImportSafety:
                             "apps_lic",
                             "apps_shared",
                             "ops_scripts",
+                            "system_learning",
                         )
                         if import_path.startswith(project_prefixes):
                             # Check if the target exists
@@ -557,7 +559,14 @@ class TestNuclearImportSweep:
     """
 
     # Directories to scan
-    SOURCE_DIRECTORIES = ["apps_rg", "apps_lic", "apps_shared", "agentic_core", "ops_scripts"]
+    SOURCE_DIRECTORIES = [
+        "apps_rg",
+        "apps_lic",
+        "apps_shared",
+        "agentic_core",
+        "ops_scripts",
+        "system_learning",
+    ]
 
     # Directories to exclude
     EXCLUDED_DIRS = {
@@ -759,7 +768,14 @@ class TestNuclearImportSweep:
         import_graph: dict[str, set[str]] = defaultdict(set)
 
         # Project-local prefixes
-        project_prefixes = ("agentic_core", "apps_rg", "apps_lic", "apps_shared", "ops_scripts")
+        project_prefixes = (
+            "agentic_core",
+            "apps_rg",
+            "apps_lic",
+            "apps_shared",
+            "ops_scripts",
+            "system_learning",
+        )
 
         for file_path in python_files:
             try:

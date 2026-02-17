@@ -358,15 +358,29 @@ FOLDER_ALIASES: Final[Mapping[str, str]] = {
 # Only __init__.py allowed at root; all other files must be in subfolders
 # ============================================================================
 
-NO_ROOT_FILES_FOLDERS: Final[frozenset[str]] = frozenset({
-    "security",  # prompt_governance/security - utils must be in security/utils/
-    "prompt_governance",  # prompt_governance root - files must be in approved subfolders
-})
+NO_ROOT_FILES_FOLDERS: Final[frozenset[str]] = frozenset(
+    {
+        "security",  # prompt_governance/security - utils must be in security/utils/
+        "prompt_governance",  # prompt_governance root - files must be in approved subfolders
+    }
+)
 
 # Approved subfolders for NO_ROOT_FILES_FOLDERS
 APPROVED_SUBFOLDERS: Final[Mapping[str, frozenset[str]]] = {
     "security": frozenset({"utils", "detectors", "schemas", "validators", "adversarial"}),
-    "prompt_governance": frozenset({"core", "meta_prompts", "optimization", "registry", "scripts", "security", "templates", "utils", "validation"}),
+    "prompt_governance": frozenset(
+        {
+            "core",
+            "meta_prompts",
+            "optimization",
+            "registry",
+            "scripts",
+            "security",
+            "templates",
+            "utils",
+            "validation",
+        }
+    ),
 }
 
 

@@ -3837,6 +3837,7 @@
 .venv/Scripts/pywin32_testall.py:90:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .venv/Scripts/pywin32_testall.py:98:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1680:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:155:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:268:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -3939,6 +3940,10 @@ agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:236:magic_con
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:38:magic_configuration:Magic configuration: Hardcoded line_threshold=600
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L3_orchestration/engines/sovereign_mcp_marketplace.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded line_limit=800
+agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded max_rounds=3
+agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:159:type_erasure:Type erasure: SemanticGatekeeperAgent.run_with_gating returns Any instead of structured type
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:178:type_erasure:Type erasure: SemanticGatekeeperAgent.clear_dead_letters returns Any instead of structured type
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:183:type_erasure:Type erasure: SemanticGatekeeperAgent.get_stats returns dict instead of structured type
@@ -4693,7 +4698,7 @@ apps_rg/reasoning/RgReflectionAgent.py:101:type_erasure:Type erasure: RgReflecti
 apps_rg/reasoning/RgReflectionAgent.py:143:type_erasure:Type erasure: RgReflectionAgent.ml_recall_execution_insight returns dict[str, Any] | None instead of structured type
 apps_rg/reasoning/RgReflectionAgent.py:177:type_erasure:Type erasure: RgReflectionAgent.ml_recall_quality_pattern returns dict[str, Any] | None instead of structured type
 apps_rg/reasoning/RgReflectionAgent.py:221:type_erasure:Type erasure: RgReflectionAgent.ml_recall_similar_reflection returns dict[str, Any] | None instead of structured type
-apps_rg/reasoning/RgResumeOrchestrator.py:82:magic_configuration:Magic configuration: Hardcoded max_depth=3
+apps_rg/reasoning/RgResumeOrchestrator.py:83:magic_configuration:Magic configuration: Hardcoded max_depth=3
 apps_rg/scripts/generate_final_report.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 apps_rg/scripts/generate_final_report.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/generate_resume.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
@@ -4712,9 +4717,9 @@ apps_rg/tools/ResumeGenerator.py:81:silent_swallower:Silent exception swallower:
 apps_rg/tools/RetrieveResumeHistory.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_rg/tools/fetch_user_preferences.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 apps_rg/tools/query_past_generations.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
-apps_rg/types/AllProvidersDownError.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/types/AllProvidersDownError.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/types/AllProvidersDownError.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:214:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:252:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:83:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
 apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded min_tot_depth=4 in function call
 apps_rg/types/PromptTemplate.py:208:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
