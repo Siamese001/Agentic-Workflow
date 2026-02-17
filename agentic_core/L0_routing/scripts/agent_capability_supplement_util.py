@@ -24,12 +24,11 @@ import json
 import sys
 from collections import Counter
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-
 # Import shared constants and normalizer from the discovery script
+from agentic_core.L0_routing.config import SCRIPTS_DIR
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     PROJECT_ROOT,
-    SCRIPTS_DIR,
 )
 
 # Add scripts directory to path for import

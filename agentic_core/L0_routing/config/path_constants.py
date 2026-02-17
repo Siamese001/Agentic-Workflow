@@ -51,7 +51,14 @@ APPS_RG_DIR: Final[str] = "apps_rg"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
 ARCHIVES_DIR: Final[str] = "archives"
 OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
+SCRIPTS_DIR: Final[str] = "scripts"
 TESTS_DIR: Final[str] = "tests"
+
+# ============================================================================
+# FILE CONSTANTS
+# ============================================================================
+
+AGENT_DISCOVERY_JSON: Final[str] = "agent_discovery.json"
 
 # ============================================================================
 # LAYER ROOTS
@@ -117,6 +124,7 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
 # ============================================================================
 
 __all__ = [
+    "AGENT_DISCOVERY_JSON",
     "AGENTIC_CORE_DIR",
     "APPS_LIC_DIR",
     "APPS_RG_DIR",
@@ -127,6 +135,7 @@ __all__ = [
     "OPS_SCRIPTS_DIR",
     "PROJECT_ROOT_MARKERS",
     "ROOT_WHITELIST",
+    "SCRIPTS_DIR",
     "TESTS_DIR",
     "get_validated_project_root",
 ]
