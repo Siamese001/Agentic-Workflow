@@ -19,6 +19,7 @@ __all__ = [
     "invoke_orchestrator_mission",
     "invoke_agent_roster_validation",
     "invoke_hierarchy_agent",
+    "invoke_code_validator",
 ]
 
 
@@ -189,6 +190,57 @@ def invoke_hierarchy_agent(
         "agentic_core.L5_safety.runners.hierarchy_runner",
         f"--action={action}",
     ]
+
+    if project_root:
+        cmd.append(f"--project-root={project_root}")
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 minute timeout
+        )
+        if result.stdout.strip():
+            return json.loads(result.stdout.strip())
+        return {
+            "success": result.returncode == 0,
+            "error": result.stderr if result.returncode != 0 else None,
+        }
+    # guardian: allow-silent-swallow
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
+    except json.JSONDecodeError as e:
+        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def invoke_code_validator(
+    action: str,
+    project_root: Path | None = None,
+    directory: str | None = None,
+) -> dict[str, Any]:
+    """
+    Invoke CodeValidatorAgent via subprocess.
+
+    Args:
+        action: One of 'validate', 'validate_directory'
+        project_root: Project root path (auto-detected if None)
+        directory: Directory to validate (required for validate_directory)
+
+    Returns:
+        Dict with 'success' key and action-specific results
+    """
+    cmd = [
+        sys.executable,
+        "-m",
+        "agentic_core.L5_safety.runners.code_validator_runner",
+        f"--action={action}",
+    ]
+
+    if directory:
+        cmd.append(f"--directory={directory}")
 
     if project_root:
         cmd.append(f"--project-root={project_root}")

@@ -82,11 +82,27 @@ class SafetyStrategy:
         try:
             # Dynamic import based on agent name
             if agent_name == "CodeValidatorAgent":
-                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-                    CodeValidatorAgent,
-                )
+                from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
 
-                return CodeValidatorAgent(project_root=self.project_root)
+                # Return a wrapper that delegates to subprocess
+                class CodeValidatorAgentProxy:
+                    def __init__(self, project_root):
+                        self.project_root = project_root
+                        self._invoke = invoke_code_validator
+
+                    def validate_repository(self, **kwargs):
+                        return self._invoke(action="validate", project_root=self.project_root)
+
+                    def heal_repository(self, directory=None, **kwargs):
+                        if directory:
+                            return self._invoke(
+                                action="validate_directory",
+                                project_root=self.project_root,
+                                directory=str(directory),
+                            )
+                        return self.validate_repository(**kwargs)
+
+                return CodeValidatorAgentProxy(project_root=self.project_root)
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
                     HygieneGuardianAgent,

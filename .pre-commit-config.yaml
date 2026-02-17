@@ -178,3 +178,14 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+      # -- T4a: Import Dependency Validation (missing imports/circular deps) --
+      # Scope: Validate all import statements resolve to existing modules
+      # Blocks commits with undefined imports like AtomicExecutionMixin
+      - id: import-dependency-check
+        name: "T4a: Import Dependency Validation"
+        entry: python ops_scripts/ci/validate_import_dependencies.py
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true

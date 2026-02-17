@@ -7,19 +7,21 @@ from pathlib import Path
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
 
 
 def main():
     project_root = Path(__file__).parent.parent
-    agent = CodeValidatorAgent(project_root=project_root)
-    result = agent.validate_repository()
+    result = invoke_code_validator(action="validate", project_root=project_root)
 
-    print(f"Total errors: {result['total_violations']}")
-    print()
+    if result.get("success"):
+        print(f"Total errors: {result.get('total_violations', 0)}")
+        print()
 
-    for v in result.get("violations", []):
-        print(f"{v.file_path}:{v.line_number}:{v.column} - {v.error_message}")
+        for v in result.get("violations", []):
+            print(f"{v['file_path']}:{v['line_number']}:{v['column']} - {v['error_message']}")
+    else:
+        print(f"Error: {result.get('error')}")
 
 
 if __name__ == "__main__":

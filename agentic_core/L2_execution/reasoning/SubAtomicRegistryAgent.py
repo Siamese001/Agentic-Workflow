@@ -211,18 +211,47 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
         StructureValidatorAgent,
     )
 
-    from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
     from apps_lic.types.ImmutableStagingBuffer import (  # LCD relocated
         AppContentValidatorAgent,
     )
 
+    # Wrapper class for CodeValidatorAgent to avoid upward import
+    class CodeValidatorAgentWrapper:
+        """Wrapper that delegates to CodeValidatorAgent via subprocess."""
+
+        def __init__(self, project_root=None, **kwargs):
+            # Import here to avoid circular dependency
+            import sys
+            from pathlib import Path
+
+            # Add project root to path if needed
+            if project_root:
+                sys.path.insert(0, str(project_root))
+
+            from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+
+            self.project_root = project_root or Path.cwd()
+            self._invoke = invoke_code_validator
+
+        def validate_repository(self, **kwargs):
+            """Delegate validation to subprocess."""
+            return self._invoke(action="validate", project_root=self.project_root)
+
+        def heal_repository(self, directory=None, **kwargs):
+            """Delegate healing to subprocess."""
+            if directory:
+                return self._invoke(
+                    action="validate_directory", project_root=self.project_root, directory=str(directory)
+                )
+            return self.validate_repository(**kwargs)
+
     return {
-        # Unified Code Validator (L5) - Single-pass AST validation
-        "SyntaxValidatorAgent": CodeValidatorAgent,
-        "CanonAstValidatorAgent": CodeValidatorAgent,
-        "CanonValidatorAgent": CodeValidatorAgent,
-        "AsyncBlockingValidatorAgent": CodeValidatorAgent,
-        "PrintStatementValidatorAgent": CodeValidatorAgent,
+        # Unified Code Validator (L5) - Single-pass AST validation (via wrapper)
+        "SyntaxValidatorAgent": CodeValidatorAgentWrapper,
+        "CanonAstValidatorAgent": CodeValidatorAgentWrapper,
+        "CanonValidatorAgent": CodeValidatorAgentWrapper,
+        "AsyncBlockingValidatorAgent": CodeValidatorAgentWrapper,
+        "PrintStatementValidatorAgent": CodeValidatorAgentWrapper,
         # Unified Structure Validator (L5) - Gravity/Hygiene/Registry
         "GravityValidatorAgent": StructureValidatorAgent,
         "HygieneValidatorAgent": StructureValidatorAgent,

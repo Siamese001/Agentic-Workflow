@@ -14,7 +14,7 @@ project_root = Path(__file__).resolve().parents[3]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
 from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (
     StructureEnforcerAgent,
 )
@@ -26,19 +26,17 @@ def run_code_validator():
     print("SOVEREIGN COMPLIANCE AUDIT: CodeValidatorAgent")
     print("=" * 80)
 
-    validator = CodeValidatorAgent()
-    policy_engine_dir = project_root / "agentic_core" / "L5_safety" / "policy_engine"
+    policy_engine_dir = "agentic_core/L5_safety/policy_engine"
+    result = invoke_code_validator(
+        action="validate_directory", project_root=project_root, directory=policy_engine_dir
+    )
 
-    result = validator.heal_repository(policy_engine_dir)
-
-    print("\nResults:")
-    print(f"  Violations Found: {result.get('violations_found', 0)}")
-    print(f"  Violations Fixed: {result.get('violations_fixed', 0)}")
-    print(f"  Status: {result.get('status', 'UNKNOWN')}")
-    print(f"  Execution Time: {result.get('execution_time_ms', 0):.2f}ms")
-
-    if result.get("error_message"):
-        print(f"  Error: {result['error_message']}")
+    if result.get("success"):
+        print("\nResults:")
+        print(f"  Violations Found: {result.get('total_violations', 0)}")
+        print(f"  Directory: {result.get('directory', policy_engine_dir)}")
+    else:
+        print(f"\nError: {result.get('error')}")
 
     return result
 
