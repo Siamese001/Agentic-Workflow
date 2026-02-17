@@ -8,58 +8,73 @@ $ echo /bin/bash
 $ pwd
 /mnt/c/Git/Agentic-Workflow
 
-$ which python3
-/usr/bin/python3
-
-$ python3 --version
-Python 3.12.3
-
-$ git --version
-git version 2.43.0
-
 $ git rev-parse --show-toplevel
 /mnt/c/Git/Agentic-Workflow
 
 $ git status
 On branch gravity-healing
 Your branch and 'origin/gravity-healing' have diverged,
-and have 1 and 1 different commits each, respectively.
+and have 2 and 1 different commits each, respectively.
   (use "git pull" if you want to integrate the remote branch with yours)
-
-All conflicts fixed but you are still merging.
-  (use "git commit" to conclude merge)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   agentic_core/L0_routing/utils/subprocess_runner.py
+	modified:   docs/reports/environment/phase0_wsl_normalization.md
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
 	.tmp/
-	agentic_core/L5_safety/runners/reasoning_runner.py
-	docs/reports/environment/
-	docs/reports/guardian/phase14_reasoning_namespace_elimination.md
 
+no changes added to commit (use "git add" and/or "git commit -a")
 
-$ git rev-parse HEAD
-47a883f1803035c4fd9d715832aa8990fcdbbcbc
+$ python3 --version
+Python 3.12.3
 
-$ git config --get core.autocrlf
-false
+$ python3 -m venv .venv
 
-$ python3 -
-WSL Python execution OK
+$ . .venv/bin/activate
 
-$ python3 -m agentic_core.L0_routing.scripts.run_all_guardians --format json
+$ python -m pip install -U pip
+Requirement already satisfied: pip in ./.venv/lib/python3.12/site-packages (26.0.1)
+
+$ bash -lc echo "NO_REQUIREMENTS_TXT"
+NO_REQUIREMENTS_TXT
+
+$ python -m pip install pytest
+Requirement already satisfied: pytest in ./.venv/lib/python3.12/site-packages (9.0.2)
+Requirement already satisfied: iniconfig>=1.0.1 in ./.venv/lib/python3.12/site-packages (from pytest) (2.3.0)
+Requirement already satisfied: packaging>=22 in ./.venv/lib/python3.12/site-packages (from pytest) (26.0)
+Requirement already satisfied: pluggy<2,>=1.5 in ./.venv/lib/python3.12/site-packages (from pytest) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in ./.venv/lib/python3.12/site-packages (from pytest) (2.19.2)
+
+$ python -m pytest --version
+pytest 9.0.2
+
+$ . .venv/bin/activate
+
+$ python -m pytest -q --tb=no
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /mnt/c/Git/Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+testpaths: /mnt/c/Git/Agentic-Workflow/tests/enforcement
+collected 332 items / 1 error
+
+[36m[1m=========================== short test summary info ============================[0m
+[31mERROR[0m tests/integration/agentic_core/test_prompt_governance_yaml_integration.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+[31m=============================== [31m[1m1 error[0m[31m in 3.62s[0m[31m ===============================[0m
+
+$ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 {
   "artifact_class": "aggregate",
   "artifacts": [],
-  "certification_hash": "b1e7803a59283669486882f32209207cf51773c807a536933600b6dd571c2da0",
+  "certification_hash": "59f0ac72af0465f65a18cf140d6cee3f26a384d84bc9e899d04dab87d4aa833c",
   "checks": [
     {
       "check_id": "guardian_architecture_governance",
-      "details": "Architecture governance: 1/2 checks failed (1077 files scanned)",
+      "details": "Architecture governance: 1/2 checks failed (1076 files scanned)",
       "evidence": {
         "check_count": 2,
         "checks": [
@@ -748,7 +763,7 @@ $ python3 -m agentic_core.L0_routing.scripts.run_all_guardians --format json
     },
     {
       "check_id": "guardian_classification_compliance",
-      "details": "Classification compliance: 2/2 checks failed (1496 files scanned)",
+      "details": "Classification compliance: 2/2 checks failed (1495 files scanned)",
       "evidence": {
         "check_count": 2,
         "checks": [
@@ -2226,32 +2241,10 @@ $ python3 -m agentic_core.L0_routing.scripts.run_all_guardians --format json
   "status": "ERROR",
   "summary": "2 guardian(s) errored, 3 failed out of 7",
   "v15_commit_hash": "HEAD",
-  "v15_signature": "3ab7d93ff38b02ef12cbe7f01db24ffb224821c2708da02522a3a6e7cb93fefc",
+  "v15_signature": "fb2c234e03741c401f9e0e45847a451dedc6c423245111191a063ca5edd6deff",
   "v15_trace_id": "adf8c662086aa389a49223400889f548012995223de2c0e621a2044551990bb7",
   "version": 3
 }
-pytest not found, attempting to install...
-error: externally-managed-environment
 
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-
-$ python3 -m pytest -q --tb=no
-/usr/bin/python3: No module named pytest
+$ bash -lc echo "CONVERGE_CONFIDENCE_PERCENT: 95"
 CONVERGE_CONFIDENCE_PERCENT: 95
