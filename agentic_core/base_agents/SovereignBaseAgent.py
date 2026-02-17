@@ -473,23 +473,36 @@ class SovereignBaseAgent(
                 },
             }
 
-        # Deterministic baseline: run local validation
+        # Phase 4: Use deterministic repo-heal pipeline (baseline first)
+        from agentic_core.L5_safety.types.heal_llm_seam import (
+            apply_repo_heal_plan,
+            build_repo_heal_plan,
+        )
+
         violations_found = 0
         violations_fixed = 0
         errors = 0
+        plan_result = None
 
         try:
-            # Deterministic file operations: validate project structure
+            # Step 1: Build deterministic baseline plan (no LLM)
             if hasattr(self, "project_root") and self.project_root.exists():
-                agentic_core = self.project_root / "agentic_core"
-                if agentic_core.exists():
-                    # Deterministic structure check: verify directory exists
-                    violations_found = 0  # Baseline: no violations in structure check
+                plan = build_repo_heal_plan(str(self.project_root))
+                plan_result = apply_repo_heal_plan(plan, dry_run=dry_run)
 
-                    if execute and not dry_run:
-                        # In execute mode, we could apply fixes here
-                        # For now, baseline does nothing (idempotent)
-                        pass
+                # Baseline reports validation-only operations
+                violations_found = plan_result.operations_failed
+                violations_fixed = 0 if dry_run else plan_result.operations_succeeded
+
+                # Step 2: Check if unresolved issues remain AND LLM escalation allowed
+                unresolved = plan_result.operations_failed > 0
+                if unresolved and policy_decision.tier is not None and enable_llm:
+                    # LLM escalation would happen here via guarded_heal_llm_call
+                    # But we don't actually call it in baseline - just log intent
+                    logger.debug(
+                        f"[heal_repository] {agent_name} would escalate to LLM "
+                        f"tier={policy_decision.tier.name} (unresolved={unresolved})"
+                    )
 
         except Exception as e:  # guardian: allow-silent-swallower
             errors = 1
