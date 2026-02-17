@@ -13,7 +13,13 @@ from agentic_core.L3_orchestration.reasoning.mcp_manager import (
     MCPConnectionManager,
 )
 
-from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+# Derived from SOVEREIGN_TERRITORIES
+SOVEREIGN_REGISTRY = {
+    "agentic_core": {"depth": 4},
+    "apps_lic": {"depth": 3},
+    "apps_rg": {"depth": 3},
+    "apps_shared": {"depth": 3},
+}
 
 Logger = logging.getLogger(__name__)
 

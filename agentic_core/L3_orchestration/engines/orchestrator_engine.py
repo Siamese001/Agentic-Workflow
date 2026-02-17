@@ -39,6 +39,7 @@ from typing import Any
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import get_validated_project_root
 from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
     v15_runtime_guard,
 )
@@ -54,7 +55,6 @@ from agentic_core.L3_orchestration.types import (
     ExecutionPhase,
     MissionResult,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import get_validated_project_root
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 

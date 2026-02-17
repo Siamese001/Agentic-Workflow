@@ -11,9 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config import TESTS_DIR
 
 LOGGER = logging.getLogger(__name__)
 

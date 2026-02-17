@@ -25,11 +25,10 @@ import sys
 from collections import Counter
 
 # Import shared constants and normalizer from the discovery script
-from agentic_core.L0_routing.config import SCRIPTS_DIR
+from agentic_core.L0_routing.config import SCRIPTS_DIR, get_validated_project_root
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    PROJECT_ROOT,
-)
+
+PROJECT_ROOT = get_validated_project_root()
 
 # Add scripts directory to path for import
 # guardian: allow-global-mutation

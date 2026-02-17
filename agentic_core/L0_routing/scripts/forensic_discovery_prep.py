@@ -49,12 +49,10 @@ try:
         FORENSIC_DISCOVERY_INTEGRITY_HASH,
         FORENSIC_DISCOVERY_SCRIPT,
     )
+    from agentic_core.L0_routing.utils.path_utils import validate_path_within_project
     from agentic_core.L0_routing.utils.project_root import get_validated_project_root
     from agentic_core.L0_routing.utils.ssot_discovery_util import (
         load_agent_discovery,
-    )
-    from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
-        validate_path_within_project,
     )
 except ImportError:
     # Fallback for standalone auditing (if outside strict env)

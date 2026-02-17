@@ -17,9 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    L0_MAINTENANCE_DIR,
-)
+from agentic_core.L0_routing.config import L0_MAINTENANCE_DIR
 
 # Add project root to path
 # guardian: allow-global-mutation

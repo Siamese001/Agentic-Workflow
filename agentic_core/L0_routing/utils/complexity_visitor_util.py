@@ -105,7 +105,7 @@ except ImportError:
     FIELD_BASE_CLASSES = "base_classes"
 
 # SSOT: Import canonical functions (Phase 3 Migration)
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,

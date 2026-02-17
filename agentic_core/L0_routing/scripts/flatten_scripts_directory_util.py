@@ -10,11 +10,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    SOVEREIGN_REGISTRY,
+from agentic_core.L0_routing.utils.path_utils import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
+
+# Derived from SOVEREIGN_TERRITORIES
+SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
 
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"

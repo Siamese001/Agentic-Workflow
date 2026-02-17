@@ -16,13 +16,6 @@ from pathlib import Path
 # SSOT Integration
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
-try:
-    from agentic_core.L5_safety.config.structure_blueprint_config import get_python_files
-except ImportError:
-
-    def get_python_files(root: Path):
-        return list(root.rglob("*.py"))
-
 
 class DebrisHunter:
     def __init__(self, root: Path, dry_run: bool = True):

@@ -312,9 +312,7 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorag
         raise ValueError(f"Unknown adapter type: {adapter_type}")
 
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config import TESTS_DIR
 
 
 class RedisDistributedLock(SovereignBaseAgent):

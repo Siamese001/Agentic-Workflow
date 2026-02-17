@@ -89,27 +89,41 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         return current
 
     def _load_ssot_config(self) -> None:
-        """Load SSOT configuration from structure_blueprint."""
-        try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
-                CORE_SUBFOLDER_MAP,
-                L4_APPROVED_FOLDERS,
-                SOVEREIGN_REGISTRY,
-                VARIABLE_DEPTH_SUBFOLDERS,
-            )
+        """Load SSOT configuration from L0 config."""
+        from agentic_core.L0_routing.config import (
+            L4_APPROVED_FOLDERS,
+            VARIABLE_DEPTH_SUBFOLDERS,
+        )
 
-            self.sovereign_registry = SOVEREIGN_REGISTRY
-            self.core_subfolder_map = CORE_SUBFOLDER_MAP
-            self.l4_approved_folders = L4_APPROVED_FOLDERS
-            self.variable_depth_subfolders = VARIABLE_DEPTH_SUBFOLDERS
+        # Derive SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP from L0 constants
+        self.sovereign_registry = {
+            "agentic_core": {"depth": 4},
+            "apps_lic": {"depth": 3},
+            "apps_rg": {"depth": 3},
+        }
+        self.core_subfolder_map = {
+            "L0_routing": ["config", "reasoning", "scripts", "types", "utils", "enforcement"],
+            "L1_cognition": ["P1_core", "reasoning", "types", "utils"],
+            "L2_execution": ["P1_core", "enforcement", "reasoning", "types", "utils"],
+            "L3_orchestration": ["P1_core", "engines", "reasoning", "types", "utils"],
+            "L4_state": ["P1_core", "memory", "reasoning", "types", "utils"],
+            "L5_safety": [
+                "P1_core",
+                "config",
+                "core_kernel",
+                "guardians",
+                "reasoning",
+                "types",
+                "utils",
+                "validators",
+            ],
+            "L6_observability": ["P1_core", "dashboards", "reasoning", "types", "utils"],
+        }
+        self.l4_approved_folders = L4_APPROVED_FOLDERS
+        self.variable_depth_subfolders = VARIABLE_DEPTH_SUBFOLDERS
 
-            # Build set of all approved paths
-            self._build_approved_paths()
-
-        except ImportError as e:
-            Logger.critical(f"FATAL: Failed to load SSOT config: {e}")
-            # SAFETY INTERLOCK: Do not proceed with empty config
-            raise RuntimeError("SSOT configuration Load Failed - Aborting to prevent mass deletion.")
+        # Build set of all approved paths
+        self._build_approved_paths()
 
     def _build_approved_paths(self) -> None:
         """Build the complete set of SSOT-approved paths."""

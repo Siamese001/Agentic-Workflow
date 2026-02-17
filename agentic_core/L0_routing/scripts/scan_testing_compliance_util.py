@@ -16,12 +16,12 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     SCRIPTS_DIR,
 )
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)

@@ -33,14 +33,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.utils.ssot_discovery_util import (
-    get_healers,
-    invalidate_cache,
-    load_agent_discovery,
-)
-
-# CRITICAL SSOT Imports - ALL directory constants MUST come from structure_blueprint.py
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+# CRITICAL SSOT Imports - ALL directory constants MUST come from L0 config
+from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -54,7 +48,12 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
-    validate_path_within_project,
+)
+from agentic_core.L0_routing.utils.path_utils import validate_path_within_project
+from agentic_core.L0_routing.utils.ssot_discovery_util import (
+    get_healers,
+    invalidate_cache,
+    load_agent_discovery,
 )
 from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
 from agentic_core.utils.ast_fuzzy_util import safe_unparse

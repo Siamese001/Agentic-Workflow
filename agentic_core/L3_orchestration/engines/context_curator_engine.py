@@ -6,9 +6,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config import TESTS_DIR
 
 Logger: Any = logging.getLogger(__name__)
 

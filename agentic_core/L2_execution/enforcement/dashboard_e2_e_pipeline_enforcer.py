@@ -22,7 +22,7 @@ from pathlib import Path
 from agentic_core.utils.security import safe_execute
 
 # Import SSOT paths
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
