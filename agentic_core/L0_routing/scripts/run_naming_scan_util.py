@@ -39,9 +39,7 @@ print("[2] Scanning for duplicate CLASS NAMES...")
 import json
 from collections import defaultdict
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    AGENT_DISCOVERY_JSON,
-)
+from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON
 
 discovery_path = project_root / AGENT_DISCOVERY_JSON
 if discovery_path.exists():

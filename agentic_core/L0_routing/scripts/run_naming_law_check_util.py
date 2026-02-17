@@ -9,9 +9,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    AGENTIC_CORE_DIR,
-)
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
 
