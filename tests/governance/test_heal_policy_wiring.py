@@ -253,6 +253,243 @@ class TestDeterministicRefusal:
             assert result1["error_message"] == result2["error_message"]
 
 
+class TestCanonicalSeamEnforcement:
+    """Tests proving only standard_heal can invoke LLM escalation."""
+
+    def test_direct_llm_call_without_seam_fails(self):
+        """Direct call to guarded_heal_llm_call without standard_heal context fails."""
+        from agentic_core.L5_safety.types.heal_llm_seam import (
+            HealLlmRequest,
+            HealSeamBypassError,
+            guarded_heal_llm_call,
+        )
+
+        request = HealLlmRequest(
+            prompt="bypass_attempt",
+            model_id="test-model",
+            metadata={"source": "direct_bypass"},
+        )
+
+        with pytest.raises(HealSeamBypassError) as exc_info:
+            guarded_heal_llm_call(request)
+
+        assert "canonical seam" in str(exc_info.value).lower()
+        assert "standard_heal" in str(exc_info.value)
+
+    def test_standard_heal_sets_capability_token(self):
+        """standard_heal decorator sets capability token for LLM access."""
+        from agentic_core.L5_safety.types.heal_llm_seam import (
+            _HEAL_SEAM_CAPABILITY,
+        )
+        from agentic_core.utils import decorators_util
+
+        capability_inside = None
+
+        with mock.patch.dict(os.environ, {"HEAL_POLICY_MODEL_ESCALATION": "1"}):
+
+            @decorators_util.standard_heal
+            def mock_heal_repository(self, dry_run=True, execute=False, **kwargs):
+                nonlocal capability_inside
+                capability_inside = _HEAL_SEAM_CAPABILITY.get()
+                return {"violations_found": 0, "violations_fixed": 0}
+
+            class MockAgent:
+                pass
+
+            agent = MockAgent()
+            mock_heal_repository(agent, _confidence=0.85)
+
+            # Inside standard_heal, capability should be True
+            assert capability_inside is True
+
+        # Outside standard_heal, capability should be False (reset)
+        assert _HEAL_SEAM_CAPABILITY.get() is False
+
+    def test_llm_escalation_only_via_standard_heal(self):
+        """LLM escalation succeeds only when enable_llm=True AND via standard_heal."""
+        from agentic_core.L5_safety.types import heal_llm_seam
+        from agentic_core.utils import decorators_util
+
+        llm_calls = []
+
+        def tracking_llm_caller(request):
+            llm_calls.append(request)
+            return "mock_response"
+
+        original_caller = heal_llm_seam.DEFAULT_HEAL_LLM_CALLER
+
+        try:
+            heal_llm_seam.DEFAULT_HEAL_LLM_CALLER = tracking_llm_caller
+
+            # Set up model router to return a model
+            original_router = decorators_util._HEAL_MODEL_ROUTER
+            decorators_util._HEAL_MODEL_ROUTER = lambda tier: "test-model"
+
+            with mock.patch.dict(os.environ, {"HEAL_POLICY_MODEL_ESCALATION": "1"}):
+
+                @decorators_util.standard_heal
+                def mock_heal_repository(self, dry_run=True, execute=False, **kwargs):
+                    return {"violations_found": 0, "violations_fixed": 0}
+
+                class MockAgent:
+                    pass
+
+                agent = MockAgent()
+                # Medium confidence with enable_llm=True triggers LLM escalation
+                result = mock_heal_repository(agent, _confidence=0.60, _task_complexity=5)
+
+                assert result["status"] == "PASS"
+                assert len(llm_calls) == 1
+                assert llm_calls[0].metadata["source"] == "standard_heal"
+
+            decorators_util._HEAL_MODEL_ROUTER = original_router
+
+        finally:
+            heal_llm_seam.DEFAULT_HEAL_LLM_CALLER = original_caller
+
+
+class TestPolicyDecisionRecord:
+    """Tests for deterministic policy decision record artifact."""
+
+    def test_policy_decision_record_schema(self):
+        """PolicyDecisionRecord has correct schema."""
+        from agentic_core.L5_safety.types.heal_llm_seam import PolicyDecisionRecord
+
+        record = PolicyDecisionRecord(
+            confidence=0.75,
+            enable_llm=True,
+            complexity=5,
+            prior_failures=0,
+            proceed=True,
+            tier="LOW",
+            threshold_used="MEDIUM_CONF_LLM_LOW",
+            rationale="Medium confidence with LLM enabled",
+        )
+
+        as_dict = record.to_dict()
+
+        assert as_dict["confidence"] == 0.75
+        assert as_dict["enable_llm"] is True
+        assert as_dict["complexity"] == 5
+        assert as_dict["prior_failures"] == 0
+        assert as_dict["proceed"] is True
+        assert as_dict["tier"] == "LOW"
+        assert as_dict["threshold_used"] == "MEDIUM_CONF_LLM_LOW"
+        assert as_dict["rationale"] == "Medium confidence with LLM enabled"
+
+    def test_policy_decision_record_deterministic_hash(self):
+        """PolicyDecisionRecord produces deterministic input hash."""
+        from agentic_core.L5_safety.types.heal_llm_seam import PolicyDecisionRecord
+
+        record1 = PolicyDecisionRecord(
+            confidence=0.75,
+            enable_llm=True,
+            complexity=5,
+            prior_failures=0,
+            proceed=True,
+            tier="LOW",
+            threshold_used="TEST",
+            rationale="test",
+        )
+
+        record2 = PolicyDecisionRecord(
+            confidence=0.75,
+            enable_llm=True,
+            complexity=5,
+            prior_failures=0,
+            proceed=False,  # Different output, same inputs
+            tier=None,
+            threshold_used="DIFFERENT",
+            rationale="different",
+        )
+
+        # Same inputs produce same hash
+        assert record1.input_hash() == record2.input_hash()
+
+        # Different inputs produce different hash
+        record3 = PolicyDecisionRecord(
+            confidence=0.60,  # Different input
+            enable_llm=True,
+            complexity=5,
+            prior_failures=0,
+            proceed=True,
+            tier="LOW",
+            threshold_used="TEST",
+            rationale="test",
+        )
+        assert record1.input_hash() != record3.input_hash()
+
+    def test_standard_heal_emits_policy_record(self):
+        """standard_heal includes policy decision record in result."""
+        from agentic_core.utils import decorators_util
+
+        with mock.patch.dict(os.environ, {"HEAL_POLICY_MODEL_ESCALATION": "0"}):
+
+            @decorators_util.standard_heal
+            def mock_heal_repository(self, dry_run=True, execute=False, **kwargs):
+                # Capture the policy decision passed through
+                return {
+                    "violations_found": 0,
+                    "violations_fixed": 0,
+                    "_policy_from_kwargs": kwargs.get("_policy_decision"),
+                }
+
+            class MockAgent:
+                pass
+
+            agent = MockAgent()
+            result = mock_heal_repository(agent, _confidence=0.85, _task_complexity=3)
+
+            # Policy record should be in _raw_result
+            raw_result = result.get("_raw_result", {})
+            policy = raw_result.get("_policy_from_kwargs")
+
+            assert policy is not None
+            assert policy["confidence"] == 0.85
+            assert policy["complexity"] == 3
+            assert policy["proceed"] is True
+            assert "rationale" in policy
+
+
+class TestNetworkTripwire:
+    """Tests proving network calls are blocked in governance heal tests."""
+
+    def test_network_tripwire_blocks_socket(self):
+        """Network tripwire blocks socket creation."""
+        # The autouse fixture should have blocked socket.socket
+        # Verify by attempting a socket call - it should raise our custom error
+        import socket
+
+        # Socket call should be blocked by the autouse fixture
+        try:
+            socket.socket()
+            pytest.fail("Expected NetworkTripwireError but socket.socket() succeeded")
+        except pytest.fail.Exception:
+            raise  # Re-raise pytest.fail
+        except Exception as e:
+            # Verify it's our network tripwire error
+            assert "Network call attempted" in str(e) or "governance test" in str(e)
+
+    def test_heal_paths_make_no_network_calls(self):
+        """Heal paths via standard_heal make no network calls."""
+        from agentic_core.utils import decorators_util
+
+        with mock.patch.dict(os.environ, {"HEAL_POLICY_MODEL_ESCALATION": "0"}):
+
+            @decorators_util.standard_heal
+            def mock_heal_repository(self, dry_run=True, execute=False, **kwargs):
+                return {"violations_found": 0, "violations_fixed": 0}
+
+            class MockAgent:
+                pass
+
+            agent = MockAgent()
+
+            # This should succeed without triggering network tripwire
+            result = mock_heal_repository(agent, _confidence=0.85)
+            assert result["status"] == "PASS"
+
+
 class TestHealRepositoryBaseline:
     """Tests for deterministic heal_repository baseline."""
 

@@ -27,8 +27,11 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
 from agentic_core.L5_safety.types.heal_llm_seam import (
-    DEFAULT_HEAL_LLM_CALLER,
     HealLlmRequest,
+    PolicyDecisionRecord,
+    guarded_heal_llm_call,
+    reset_heal_seam_capability,
+    set_heal_seam_capability,
 )
 from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationInputs,
@@ -188,6 +191,9 @@ def standard_heal(func: F) -> F:
         start_time = time.time()
         agent_name = self.__class__.__name__
 
+        # Phase 3: Set canonical seam capability token
+        capability_token = set_heal_seam_capability(True)
+
         try:
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
             depth = remaining_kwargs.pop("depth", 0)
@@ -254,22 +260,30 @@ def standard_heal(func: F) -> F:
 
                 remaining_kwargs["_heal_routed_model_id"] = routed_model_id
 
-                # Phase 8: Invoke heal LLM seam probe (only when model is routed)
-                if routed_model_id is not None and DEFAULT_HEAL_LLM_CALLER is not None:
+                # Phase 8: Invoke heal LLM seam probe via guarded call (only when model is routed)
+                if routed_model_id is not None:
                     request = HealLlmRequest(
                         prompt="heal_policy_probe",
                         model_id=routed_model_id,
                         metadata={"source": "standard_heal"},
                     )
-                    _ = DEFAULT_HEAL_LLM_CALLER(request)
+                    _ = guarded_heal_llm_call(request)
                     Logger.debug(f"[heal_policy] llm_probe=CALLED model_id={routed_model_id}")
 
+            # Phase 3: Create and store policy decision record for observability
+            policy_record = PolicyDecisionRecord(
+                confidence=confidence_value,
+                enable_llm=enable_llm,
+                complexity=task_complexity,
+                prior_failures=prior_failures,
+                proceed=policy_decision.proceed,
+                tier=policy_decision.tier.name if policy_decision.tier else None,
+                threshold_used=policy_decision.threshold_used,
+                rationale=policy_decision.rationale,
+            )
+
             # Store policy decision in kwargs for downstream use
-            remaining_kwargs["_policy_decision"] = {
-                "proceed": policy_decision.proceed,
-                "tier": policy_decision.tier.name if policy_decision.tier else None,
-                "threshold_used": policy_decision.threshold_used,
-            }
+            remaining_kwargs["_policy_decision"] = policy_record.to_dict()
 
             result = func(
                 self,
@@ -309,6 +323,10 @@ def standard_heal(func: F) -> F:
                 "_exception_type": type(e).__name__,
                 "_traceback": traceback.format_exc(),
             }
+
+        finally:
+            # Phase 3: Reset canonical seam capability token
+            reset_heal_seam_capability(capability_token)
 
     return cast(F, wrapper)
 
