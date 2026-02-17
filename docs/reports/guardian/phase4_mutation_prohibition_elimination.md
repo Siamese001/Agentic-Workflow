@@ -81,6 +81,7 @@ Total: 59 files with L5 mutation_prohibition imports
 ```
 
 Guardians baseline:
+
 ```text
 $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 {
@@ -90,6 +91,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 ```
 
 Tests baseline:
+
 ```text
 $ python -m pytest -q --tb=no
 ====================== 23 failed, 237 passed in 30.08s ========================
@@ -99,12 +101,13 @@ $ python -m pytest -q --tb=no
 
 ## WAVE 4.2 — Canonicalize Imports to Low-Layer Location
 
-### Actions Taken:
+### Actions Taken
 1. Created L0 mutation_prohibition module by copying from L5
 2. Updated 59 files to import from L0 instead of L5
 3. Verified only 3 remaining L5 imports (L5 self and 2 test files)
 
-### Post-rewrite verification:
+### Post-rewrite verification
+
 ```text
 $ git grep -c "L5_safety\.enforcement\.mutation_prohibition" agentic_core apps_* tests
 agentic_core/L5_safety/enforcement/activation_gate.py:1
@@ -114,7 +117,8 @@ tests/guardian/test_mutation_prohibition.py:1
 
 Only 3 files remain with L5 imports - the L5 file itself and 2 test files (acceptable).
 
-### Pre-commit results:
+### Pre-commit results
+
 ```text
 $ pre-commit run -a
 T0: Trailing Whitespace..................................................Passed
@@ -141,13 +145,15 @@ All pre-commit hooks passed successfully.
 
 ## WAVE 4.3 — Topology + Baseline-Comparison Gate
 
-### Current Tests (Phase 4):
+### Current Tests (Phase 4)
+
 ```text
 $ python -m pytest -q --tb=no
 ====================== 23 failed, 237 passed in 31.04s ========================
 ```
 
-### Current Guardians (Phase 4):
+### Current Guardians (Phase 4)
+
 ```text
 $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 {
@@ -156,7 +162,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 }
 ```
 
-### Baseline Comparison:
+### Baseline Comparison
 
 | Metric | Baseline (5fa654209) | Current (Phase 4) | Delta |
 |--------|----------------------|-------------------|-------|
@@ -166,7 +172,8 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 | Guardian passes | 1 | 1 | 0 |
 | L5 mutation_prohibition imports | 59 | 3 | -56 |
 
-### Import Topology Reduction:
+### Import Topology Reduction
+
 - **56 upward imports eliminated** (59 → 3)
 - **94.9% reduction** in mutation_prohibition upward imports
 - Only remaining L5 imports are: L5 self-reference and 2 test files
@@ -175,7 +182,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 
 ## CONVERGENCE CONFIDENCE ASSESSMENT
 
-### Acceptance Criteria Met:
+### Acceptance Criteria Met
 
 1. **✓ Pre-commit hooks pass**: All hooks passed successfully
 2. **✓ ZERO remaining imports from lower layers**: Only 3 L5 imports remain (self + 2 tests)
@@ -186,6 +193,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
 ### Converge Confidence: 95%
 
 **Rationale**: Phase 4 successfully achieved its primary objective with:
+
 - 94.9% reduction in mutation_prohibition upward imports
 - Identical test and guardian results vs baseline
 - All pre-commit hooks passing
