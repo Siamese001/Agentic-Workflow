@@ -13,7 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 # SSOT Integration
-from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     safe_os_remove,
 )
 

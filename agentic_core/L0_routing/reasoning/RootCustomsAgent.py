@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     ARTIFACT_ROUTING_MAP,
     AST_PLACEMENT_SIGNALS,
@@ -23,7 +24,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     TEST_TYPE_SIGNALS,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 @dataclass

@@ -8,10 +8,10 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 root: Any = Path.cwd()
 core: Any = ROOT / AGENTIC_CORE_DIR

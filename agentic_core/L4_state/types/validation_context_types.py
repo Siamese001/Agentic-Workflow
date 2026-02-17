@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Protocol
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 LOGGER = logging.getLogger(__name__)
 

@@ -21,11 +21,11 @@ if str(project_root) not in sys.path:
     # guardian: allow-global-mutation
     sys.path.insert(0, str(project_root))
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 core_root = project_root / "agentic_core"
 

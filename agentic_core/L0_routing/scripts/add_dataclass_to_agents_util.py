@@ -13,7 +13,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

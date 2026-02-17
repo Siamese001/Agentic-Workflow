@@ -21,6 +21,7 @@ import os
 from pathlib import Path
 from typing import Literal
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.types.v15_p2_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
@@ -28,7 +29,6 @@ from agentic_core.L0_routing.types.v15_p2_types import (
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from system_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
     build_apply_attempt,

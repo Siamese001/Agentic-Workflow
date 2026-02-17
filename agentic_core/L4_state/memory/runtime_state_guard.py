@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import RUNTIME_STATE_JSON
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 class RuntimeStateGuard:

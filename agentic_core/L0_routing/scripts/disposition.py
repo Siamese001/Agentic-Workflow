@@ -14,7 +14,7 @@ from pathlib import Path
 
 import networkx as nx
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 class Disposition(Enum):

@@ -9,12 +9,12 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_REGISTRY,
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / "agentic_core"

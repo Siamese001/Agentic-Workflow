@@ -10,7 +10,7 @@ import json
 import shutil
 from pathlib import Path
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_move,
 )

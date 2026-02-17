@@ -36,7 +36,7 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 def _optional_v15_runtime_guard():

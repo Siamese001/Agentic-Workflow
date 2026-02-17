@@ -8,7 +8,7 @@ from pathlib import Path
 "Brief description of functionality and purpose."
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
 def extract_net_incremental() -> None:

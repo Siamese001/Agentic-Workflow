@@ -8,11 +8,11 @@ import json
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 TEST_METHOD = '''
     def _run_self_tests(self) -> dict:

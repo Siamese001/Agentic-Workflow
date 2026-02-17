@@ -10,10 +10,10 @@ import json
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / AGENT_DISCOVERY_JSON

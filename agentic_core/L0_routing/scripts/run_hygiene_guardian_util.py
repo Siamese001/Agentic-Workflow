@@ -13,8 +13,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ARTIFACT_PATTERNS = ["*.heal_tmp", "*.temp", "*.tmp", ".pytest_cache", "__pycache__"]

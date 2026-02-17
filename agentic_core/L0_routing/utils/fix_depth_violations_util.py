@@ -9,11 +9,11 @@ import shutil
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
     safe_path_join,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations

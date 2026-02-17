@@ -20,7 +20,7 @@ if not project_root:
     sys.exit(1)
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_rmtree,
 )

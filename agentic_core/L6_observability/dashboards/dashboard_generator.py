@@ -12,6 +12,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
@@ -20,7 +21,6 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     APPS_SHARED_DIR,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # Fix UTF-8 encoding for Windows console (emoji support)
 if sys.platform == "win32":

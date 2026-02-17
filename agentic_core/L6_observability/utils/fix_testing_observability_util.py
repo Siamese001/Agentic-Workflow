@@ -13,7 +13,7 @@ import json
 import re
 from pathlib import Path
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (
