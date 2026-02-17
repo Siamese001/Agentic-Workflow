@@ -33,9 +33,7 @@ from agentic_core.L0_routing.types.guardian_contract import (
     normalize_repo_path,
     write_guardian_result,
 )
-from agentic_core.L5_safety.config.structure_blueprint import (
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.utils.project_root import get_validated_project_root
 
 GUARDIAN_ID = "architecture_governance"
 

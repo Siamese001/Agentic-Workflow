@@ -36,9 +36,7 @@ from agentic_core.L0_routing.types.guardian_registry import (
     GuardianSpec,
     get_guardian_specs,
 )
-from agentic_core.L5_safety.config.structure_blueprint import (
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.utils.project_root import get_validated_project_root
 
 
 def _run_single_guardian(

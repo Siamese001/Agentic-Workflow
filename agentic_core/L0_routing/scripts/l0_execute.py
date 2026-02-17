@@ -28,9 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint import (
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.utils.project_root import get_validated_project_root
 
 TOOL_ID = "l0_execute"
 

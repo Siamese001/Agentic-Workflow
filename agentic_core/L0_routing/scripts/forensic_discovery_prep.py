@@ -45,16 +45,15 @@ from agentic_core.utils.ast_fuzzy_util import safe_unparse
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
 # ==============================================================================
 try:
-    from agentic_core.L0_routing.utils.ssot_discovery_util import (
-        load_agent_discovery,
-    )
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    from agentic_core.L0_routing.config import (
         FORENSIC_DISCOVERY_INTEGRITY_HASH,
         FORENSIC_DISCOVERY_SCRIPT,
     )
+    from agentic_core.L0_routing.utils.project_root import get_validated_project_root
+    from agentic_core.L0_routing.utils.ssot_discovery_util import (
+        load_agent_discovery,
+    )
     from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
-        AGENT_DISCOVERY_JSON,
-        get_validated_project_root,
         validate_path_within_project,
     )
 except ImportError:

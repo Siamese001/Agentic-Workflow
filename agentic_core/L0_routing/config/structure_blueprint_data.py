@@ -227,6 +227,100 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, Mapping[str, str]]] = {
 }
 
 # ============================================================================
+# ============================================================================
+# FORENSIC DISCOVERY CONSTANTS
+# ============================================================================
+
+FORENSIC_DISCOVERY_SCRIPT: Final[str] = "agentic_core/L0_routing/scripts/forensic_discovery_prep.py"
+FORENSIC_DISCOVERY_INTEGRITY_HASH: Final[str] = (
+    "e248d17f49620ba763ab161c8799bfd37cdfd71badf6adba3adb92e56504944b"
+)
+
+
+# ============================================================================
+# COMPOUND SUFFIX CONFLICTS (Literal list of tuples)
+# ============================================================================
+
+COMPOUND_SUFFIX_CONFLICTS: Final[Sequence[tuple[str, str, str, str]]] = [
+    (r"_agent_types$", "AGENT", "TYPES", "code_detector_agent_types.py"),
+    (r"_agent_config$", "AGENT", "CONFIG", "security_level_agent_config.py"),
+    (r"_agent_validator$", "AGENT", "VALIDATOR", "routing_decision_agent_validator.py"),
+    (r"_agent_util$", "AGENT", "UTILITY", "extract_pattern_agent_util.py"),
+    (r"Agent_types$", "AGENT", "TYPES", "CodeDetectorAgent_types.py"),
+    (r"Agent_config$", "AGENT", "CONFIG", "SomeAgent_config.py"),
+    (r"_engine_types$", "ENGINE", "TYPES", "safety_engine_types.py"),
+    (r"_engine_validator$", "ENGINE", "VALIDATOR", "consensus_engine_validator.py"),
+    (r"_engine_config$", "ENGINE", "CONFIG", "engine_config.py"),
+    (r"_guardrail_types$", "GUARDRAIL", "TYPES", "mcp_security_guardrail_types.py"),
+    (r"_guardrail_mixin$", "GUARDRAIL", "MIXIN", "cost_guardrail_mixin.py"),
+    (r"_guardrail_config$", "GUARDRAIL", "CONFIG", "guardrail_config.py"),
+    (r"_manager_types$", "MANAGER", "TYPES", "resource_manager_types.py"),
+    (r"_manager_config$", "MANAGER", "CONFIG", "sovereign_manager_config.py"),
+    (r"_manager_validator$", "MANAGER", "VALIDATOR", "context_manager_validator.py"),
+    (r"_strategy_types$", "STRATEGY", "TYPES", "context_pruning_strategy_types.py"),
+    (r"_strategy_config$", "STRATEGY", "CONFIG", "mcpservermode_strategy_config.py"),
+    (r"_strategy_mixin$", "STRATEGY", "MIXIN", "healing_strategy_mixin.py"),
+    (r"_strategy_validator$", "STRATEGY", "VALIDATOR", "reasoningnode_strategy_validator.py"),
+    (r"_validator_types$", "VALIDATOR", "TYPES", "code_validator_types.py"),
+    (r"_validator_util$", "VALIDATOR", "UTILITY", "check_sovereign_base_validator_util.py"),
+    (r"_scanner_types$", "SCANNER", "TYPES", "credential_scanner_types.py"),
+    (r"_scanner_util$", "SCANNER", "UTILITY", "sovereign_scanner_util.py"),
+    (r"_protocol_types$", "PROTOCOL", "TYPES", "healer_protocol_types.py"),
+    (r"_protocol_config$", "PROTOCOL", "CONFIG", "detection_protocol_config.py"),
+    (r"_protocol_guardrail$", "PROTOCOL", "GUARDRAIL", "airlock_protocol_guardrail.py"),
+    (r"_suite_types$", "SUITE", "TYPES", "security_validation_suite_types.py"),
+    (r"_factory_config$", "FACTORY", "CONFIG", "gateway_factory_config.py"),
+    (r"_factory_util$", "FACTORY", "UTILITY", "component_factory_util.py"),
+    (r"_orchestrator_types$", "ORCHESTRATOR", "TYPES", "recursive_orchestrator_types.py"),
+    (r"_shield_validator$", "SHIELD", "VALIDATOR", "governance_shield_validator.py"),
+    (r"_sanitizer_util$", "SANITIZER", "UTILITY", "telemetry_sanitizer_util.py"),
+    (r"_guard_util$", "GUARD", "UTILITY", "scan_guard_util.py"),
+    (r"_guard_mixin$", "GUARD", "MIXIN", "cost_guard_mixin.py"),
+    (r"_detector_types$", "DETECTOR", "TYPES", "code_detector_types.py"),
+    (r"_detector_config$", "DETECTOR", "CONFIG", "gravity_leak_detector_config.py"),
+    (r"_enforcer_types$", "ENFORCER", "TYPES", "code_enforcer_types.py"),
+    (r"_enforcer_util$", "ENFORCER", "UTILITY", "root_hygiene_enforcer_util.py"),
+    (r"_config_types$", "CONFIG", "TYPES", "blueprint_config_types.py"),
+    (r"_config_util$", "CONFIG", "UTILITY", "sync_mcp_config_util.py"),
+    (r"_config_detector$", "CONFIG", "DETECTOR", "magic_config_detector.py"),
+    (r"_adapter_types$", "ADAPTER", "TYPES", "open_telemetry_tracing_adapter_types.py"),
+    (r"_adapter_config$", "ADAPTER", "CONFIG", "storage_adapter_config.py"),
+    (r"_adapter_util$", "ADAPTER", "UTILITY", "mcp_adapter_util.py"),
+    (r"Adapter_types$", "ADAPTER", "TYPES", "SomeAdapter_types.py"),
+    (r"_mixin_agent_mixin$", "MIXIN", "AGENT", "autonomy_mixin_agent_mixin.py"),
+    (r"_mixin_agent$", "MIXIN", "AGENT", "some_mixin_agent.py"),
+    (r"_agent_mixin$", "AGENT", "MIXIN", "feature_flagged_agent_mixin.py"),
+    (r"_mixin_types$", "MIXIN", "TYPES", "healer_mixin_types.py"),
+    (r"_mixin_config$", "MIXIN", "CONFIG", "autonomy_mixin_config.py"),
+    (r"_mixin_util$", "MIXIN", "UTILITY", "healer_mixin_util.py"),
+    (r"_mixin_validator$", "MIXIN", "VALIDATOR", "agent_mixin_validator.py"),
+]
+
+
+# ============================================================================
+# FILETYPE TO FOLDER MAPPING (AST-Based)
+# ============================================================================
+
+FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
+    "AGENT": "reasoning",
+    "ORCHESTRATOR": "reasoning",
+    "CONFIG": "config",
+    "TYPES": "types",
+    "PROTOCOL": "types",
+    "VALIDATOR": "validators",
+    "UTILITY": "utils",
+    "MIXIN": "GLOBAL_MIXINS",
+    "SCRIPT": "scripts",
+    "FACTORY": "enforcement",
+    "STRATEGY": "enforcement",
+    "EXCEPTION": "types",
+    "ENGINE": "reasoning",
+    "GATEWAY": "enforcement",
+    "SERVICE": "utils",
+}
+
+
+# ============================================================================
 # EXPORTS
 # ============================================================================
 
@@ -234,10 +328,14 @@ __all__ = [
     "AST_PLACEMENT_SIGNALS",
     "APP_DOMAIN_PREFIXES",
     "CANONICAL_LOCATION_PRIORITY",
+    "COMPOUND_SUFFIX_CONFLICTS",
     "DUPLICATE_DETECTION_EXEMPT",
     "EPHEMERAL_PATTERN_EXEMPTIONS",
+    "FILETYPE_TO_FOLDER",
     "FOLDER_PURITY_RULES",
     "FORBIDDEN_EPHEMERAL_PATTERNS",
+    "FORENSIC_DISCOVERY_INTEGRITY_HASH",
+    "FORENSIC_DISCOVERY_SCRIPT",
     "GLOBAL_INTERFACES_FOLDER",
     "INTERFACE_FILENAME_PATTERN",
     "L5_SUBPROCESS_ALLOWLIST",

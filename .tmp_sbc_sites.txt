@@ -1,0 +1,274 @@
+agentic_core/L0_routing/reasoning/RootCustomsAgent.py:18:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py:94:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/agent_capability_supplement_util.py:30:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/align_tests_structure_util.py:10:from agentic_core.L5_safety.config.structure_blueprint_config import TESTS_L2_SUBFOLDER_MAP
+agentic_core/L0_routing/scripts/bulk_hierarchy_heal_util.py:29:    from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+agentic_core/L0_routing/scripts/coverage.py:20:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/debris_hunter.py:20:    from agentic_core.L5_safety.config.structure_blueprint_config import get_python_files
+agentic_core/L0_routing/scripts/find_corrupted_files_util.py:21:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/forensic_discovery_prep.py:55:    from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
+agentic_core/L0_routing/scripts/full_agent_discovery.py:43:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/populate_ssot_folders_util.py:25:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py:69:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py:120:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/scan_testing_compliance_util.py:20:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/ssot_audit_util.py:9:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/scripts/validate_sovereign_structure_util.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/utils/complexity_visitor_util.py:108:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/utils/fix_all_tunnels_util.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+agentic_core/L0_routing/utils/fix_depth_violations_util.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L0_routing/utils/ssot_discovery_util.py:33:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L1_cognition/utils/agentic_constants_util.py:17:from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_PROTECTED_FILES
+agentic_core/L1_cognition/utils/constants_util.py:10:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline.py:25:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline_enforcer.py:25:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+agentic_core/L2_execution/utils/tool_registry_util.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L3_orchestration/engines/context_curator_engine.py:9:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L3_orchestration/engines/orchestrator_engine.py:57:from agentic_core.L5_safety.config.structure_blueprint_config import get_validated_project_root
+agentic_core/L3_orchestration/reasoning/CoverageAgent.py:211:        from agentic_core.L5_safety.config.structure_blueprint_config import EXERCISER_REGISTRY
+agentic_core/L3_orchestration/types/workflow_loader_types.py:14:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L4_state/memory/blob_storage_provider.py:315:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L4_state/memory/runtime_state_guard.py:8:from agentic_core.L5_safety.config.structure_blueprint_config import RUNTIME_STATE_JSON
+agentic_core/L4_state/reasoning/PineconeSovereignAgent.py:348:        from agentic_core.L5_safety.config.structure_blueprint_config import TERRITORY_EXAMPLES
+agentic_core/L4_state/utils/get_existing_file_hashes_util.py:12:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/config/structure_blueprint/_verify.py:312:    import agentic_core.L5_safety.config.structure_blueprint_config as shim
+agentic_core/L5_safety/config/structure_blueprint_config.py:18:  ``from agentic_core.L5_safety.config.structure_blueprint_config import X``
+agentic_core/L5_safety/enforcement/airlock_trimmer.py:10:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py:10:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/archival_gatekeeper.py:41:from agentic_core.L5_safety.config.structure_blueprint_config import ARCHIVES_DIR
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:41:from agentic_core.L5_safety.config.structure_blueprint_config import ARCHIVES_DIR
+agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py:24:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py:24:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py:85:SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py:115:    return "from agentic_core.L5_safety.config.structure_blueprint_config import" in content
+agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py:85:SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py:115:    return "from agentic_core.L5_safety.config.structure_blueprint_config import" in content
+agentic_core/L5_safety/enforcement/healing_invocation_audit.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/healing_invocation_audit_enforcer.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/mission_utils.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/mission_utils_enforcer.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/mock_context.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/mock_context_enforcer.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/namespace_medic.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/registry_verification.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/registry_verification_enforcer.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/ssot_import_enforcer.py:17:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/ssot_structure_validation.py:27:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py:27:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/system.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/system_enforcer.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py:19:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:19:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py:25:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py:29:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py:57:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/CredentialScannerAgent.py:239:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py:46:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py:21:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:387:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:1096:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:1335:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:1407:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:1463:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:2065:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:2199:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:2312:            from agentic_core.L5_safety.config.structure_blueprint_config import FILETYPE_TO_FOLDER
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3256:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py:378:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py:41:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/GovernanceAgent.py:364:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/HierarchyAgent.py:34:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/HierarchyAgent.py:432:                from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/HierarchyAgent.py:516:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/HierarchyAgent.py:646:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py:30:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:37:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:461:        from agentic_core.L5_safety.config.structure_blueprint_config import safe_path_join
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2144:                            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:85:        from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:151:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:174:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:210:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:267:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:304:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:319:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:364:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:464:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:477:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:566:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:638:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:760:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/LocationValidatorAgent.py:784:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/NamingAgent.py:23:from agentic_core.L5_safety.config.structure_blueprint_config import PROJECT_ROOT_METADATA
+agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py:28:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py:22:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:112:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:146:                        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:262:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/types/ssot_relocator_types.py:25:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/extract_pattern_util.py:66:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/fix_inherited_invocation_util.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/force_app_depth_util.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/forge_fortress_util.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+agentic_core/L5_safety/utils/guard_observability_footprint_util.py:17:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/location_path_util.py:51:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/location_utils_util.py:58:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/location_utils_util.py:103:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/location_utils_util.py:157:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/sovereign_lock_util.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:12:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:59:            if "from agentic_core.L5_safety.config.structure_blueprint_config import" in line:
+agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:122:        print("  from agentic_core.L5_safety.config.structure_blueprint_config import DASHBOARD_DIR")
+agentic_core/L5_safety/utils/validate_path_ssot_util.py:89:        if "from agentic_core.L5_safety.config.structure_blueprint_config import" in content:
+agentic_core/L5_safety/utils/validate_path_ssot_util.py:180:        print("  from agentic_core.L5_safety.config.structure_blueprint_config import (")
+agentic_core/L5_safety/validators/gravity_validator.py:26:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/validators/mission_preflight_validator.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L5_safety/validators/report_location_validator.py:30:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L6_observability/dashboards/core/DashboardDataGenerator.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L6_observability/dashboards/dashboard_generator.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/L6_observability/dashboards/dashboard_qa.py:19:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/base_agents/L0RoutingBase.py:40:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/config/core/domain_constitution_config.py:10:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/mixins/ast_enforcement_mixin.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+agentic_core/runtime/engine/ast_relocator.py:9:from agentic_core.L5_safety.config.structure_blueprint_config import SEMANTIC_L2_REGISTRY
+agentic_core/runtime/utils/sovereign_index_util.py:41:    from agentic_core.L5_safety.config.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
+agentic_core/runtime/utils/sovereign_scan_util.py:79:        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+apps_lic/tools/clean_duplicates_enhanced.py:198:from agentic_core.L5_safety.config.structure_blueprint_config import (
+apps_lic/tools/fix_duplicate_realagentdata.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import (
+apps_rg/config/void_compliance_config.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/_quarantine/integration/agentic_core/core_dashboard/test_sovereign_compliance.py:52:        from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
+tests/_quarantine/integration/core/test_sovereign_compliance.py:52:        from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
+tests/_quarantine/integration/test_fca_blueprint_consistency.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py:48:            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py:50:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py:67:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py:118:            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+tests/agentic_core/L0_routing/scripts/test_global_key_purge_validation.py:121:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L0_routing/scripts/test_global_key_purge_validation.py:140:        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+tests/agentic_core/L0_routing/scripts/test_global_key_purge_validation.py:150:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L0_routing/scripts/test_ultra_hardening_final_verification.py:32:        import agentic_core.L5_safety.config.structure_blueprint_config_config as structure_blueprint
+tests/agentic_core/L0_routing/scripts/test_ultra_hardening_final_verification.py:79:        import agentic_core.L5_safety.config.structure_blueprint_config_config as structure_blueprint
+tests/agentic_core/L0_routing/scripts/test_ultra_hardening_final_verification.py:161:        import agentic_core.L5_safety.config.structure_blueprint_config_config as blueprint
+tests/agentic_core/L0_routing/scripts/test_v25_structural_strictness.py:14:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L1_cognition/thought_engine/test_system_hardening.py:183:                assert "from agentic_core.L5_safety.config.structure_blueprint_config import" in source, (
+tests/agentic_core/L5_safety/config/test_structure_blueprint_config.py:29:            from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_ROOTS
+tests/agentic_core/L5_safety/config/test_structure_blueprint_config.py:39:            from agentic_core.L5_safety.config.structure_blueprint_config import REQUIRED_LCD_SUBFOLDERS
+tests/agentic_core/L5_safety/config/test_structure_blueprint_config.py:53:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:53:        from agentic_core.L5_safety.config.structure_blueprint_config import is_layer_root
+tests/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:62:        from agentic_core.L5_safety.config.structure_blueprint_config import is_allowed_subfolder
+tests/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:70:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:76:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:86:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:101:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:611:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:620:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:158:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:166:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:245:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:255:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_advanced_routing_signals.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:636:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:644:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:652:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:660:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_code_dedup_fuzzy.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_flat_directory_enforcement.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_global_candidate_vacuum.py:87:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_import_harmonization_audit.py:29:        import agentic_core.L5_safety.config.structure_blueprint_config_config as ssot
+tests/agentic_core/L5_safety/validators/test_import_harmonization_audit.py:56:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_is_path_allowed_stress.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/agentic_core/L5_safety/validators/test_shared_alignment_intelligence.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_shared_layer_rigor.py:17:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_shared_upgrade_circuit_breaker.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_stress_harden.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/agentic_core/L5_safety/validators/test_ultra_hardening.py:3:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_ultra_hardening.py:47:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/L5_safety/validators/test_ultra_hardening.py:84:        from agentic_core.L5_safety.config.structure_blueprint_config import is_l4_approved
+tests/agentic_core/L5_safety/validators/test_void_violation_handling.py:124:        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+tests/agentic_core/L5_safety/validators/test_void_violation_handling.py:132:        from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/agentic_core/base_agents/test_global_system_integrity.py:53:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/base_agents/test_global_system_integrity.py:142:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/agentic_core/domain/test_sovereign_purification.py:16:        from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+tests/agentic_core/utils/test_code_dedup_comprehensive.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/e2e/ops_scripts/maintenance/test_canon_key_removal.py:39:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/e2e/test_phase5_invariants_fixture_repo.py:20:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/e2e/test_phase5_invariants_fixture_repo.py:200:            from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+tests/e2e/test_phase5_invariants_fixture_repo.py:216:            from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
+tests/enforcement/test_folder_purity_governance.py:19:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/goldens/test_allowlist_goldens.py:8:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/guardian/test_aggregator_invariants.py:45:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/guardian/test_folder_purity_hardening.py:37:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/guardian/test_guardian_hierarchy_compliance.py:63:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/guardian/test_ssot_compliance.py:40:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/support/l1_cognition/SovereignCognitivePlaneAgent.py:22:    from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/support/l6_observability/ReportingAgent.py:35:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L0_maintenance/scripts/test_canon_key_removal.py:48:            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+tests/unit/agentic_core/L0_maintenance/scripts/test_canon_key_removal.py:50:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L0_maintenance/scripts/test_consolidated_migration.py:67:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L0_maintenance/scripts/test_consolidated_migration.py:118:            import agentic_core.L5_safety.config.structure_blueprint_config_config as sb
+tests/unit/agentic_core/L0_maintenance/scripts/test_global_key_purge_validation.py:121:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L0_maintenance/scripts/test_global_key_purge_validation.py:140:        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+tests/unit/agentic_core/L0_maintenance/scripts/test_global_key_purge_validation.py:150:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L0_maintenance/scripts/test_ultra_hardening_final_verification.py:32:        import agentic_core.L5_safety.config.structure_blueprint_config_config as structure_blueprint
+tests/unit/agentic_core/L0_maintenance/scripts/test_ultra_hardening_final_verification.py:79:        import agentic_core.L5_safety.config.structure_blueprint_config_config as structure_blueprint
+tests/unit/agentic_core/L0_maintenance/scripts/test_ultra_hardening_final_verification.py:161:        import agentic_core.L5_safety.config.structure_blueprint_config_config as blueprint
+tests/unit/agentic_core/L0_maintenance/scripts/test_v25_structural_strictness.py:14:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L1_cognition/thought_engine/test_system_hardening.py:183:                assert "from agentic_core.L5_safety.config.structure_blueprint_config import" in source, (
+tests/unit/agentic_core/L5_safety/config/test_structure_blueprint_config.py:29:            from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_ROOTS
+tests/unit/agentic_core/L5_safety/config/test_structure_blueprint_config.py:39:            from agentic_core.L5_safety.config.structure_blueprint_config import REQUIRED_LCD_SUBFOLDERS
+tests/unit/agentic_core/L5_safety/config/test_structure_blueprint_config.py:53:            from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:53:        from agentic_core.L5_safety.config.structure_blueprint_config import is_layer_root
+tests/unit/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:62:        from agentic_core.L5_safety.config.structure_blueprint_config import is_allowed_subfolder
+tests/unit/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:70:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/unit/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:76:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/unit/agentic_core/L5_safety/reasoning/test_layer_alignment_invariants.py:86:        from agentic_core.L5_safety.config.structure_blueprint_config import validate_no_nested_lcd
+tests/unit/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:101:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:611:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:620:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:635:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py:647:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:158:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:166:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:245:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py:255:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_advanced_routing_signals.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:636:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:644:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:652:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_architecture_governor_agent.py:660:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_code_dedup_fuzzy.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_flat_directory_enforcement.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_global_candidate_vacuum.py:87:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_import_harmonization_audit.py:29:        import agentic_core.L5_safety.config.structure_blueprint_config_config as ssot
+tests/unit/agentic_core/L5_safety/validators/test_import_harmonization_audit.py:56:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_is_path_allowed_stress.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/unit/agentic_core/L5_safety/validators/test_shared_alignment_intelligence.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_shared_layer_rigor.py:17:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_shared_upgrade_circuit_breaker.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_stress_harden.py:1:from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/unit/agentic_core/L5_safety/validators/test_ultra_hardening.py:3:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_ultra_hardening.py:47:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/L5_safety/validators/test_ultra_hardening.py:84:        from agentic_core.L5_safety.config.structure_blueprint_config import is_l4_approved
+tests/unit/agentic_core/L5_safety/validators/test_void_violation_handling.py:124:        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+tests/unit/agentic_core/L5_safety/validators/test_void_violation_handling.py:132:        from agentic_core.L5_safety.config.structure_blueprint_config import is_path_allowed
+tests/unit/agentic_core/base_agents/test_global_system_integrity.py:53:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/base_agents/test_global_system_integrity.py:142:        from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/agentic_core/domain/test_sovereign_purification.py:16:        from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+tests/unit/agentic_core/utils/test_code_dedup_comprehensive.py:15:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/anomaly_tests/test_anomaly_sections_a_to_i.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/core/test_discovery_canonical_identity.py:21:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/core/test_discovery_registry_consistency.py:23:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/file_classification_agent/test_nested_lcd_detection_hook.py:11:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/scripts/test_l0_import_model_metrics.py:43:                "target_module": "agentic_core.L5_safety.config.structure_blueprint_config",
+tests/unit/structure_blueprint/test_allowed_global_territories.py:13:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/structure_blueprint/test_layer_roots_and_required_subfolders.py:12:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/structure_blueprint/test_layer_roots_and_required_subfolders.py:148:        from agentic_core.L5_safety.config.structure_blueprint_config import SUBFOLDER_METADATA
+tests/unit/structure_blueprint/test_nested_lcd_prevention.py:12:from agentic_core.L5_safety.config.structure_blueprint_config import (
+tests/unit/structure_blueprint/test_scripts_purity_rules.py:16:from agentic_core.L5_safety.config.structure_blueprint_config import (

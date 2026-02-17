@@ -34,9 +34,7 @@ from agentic_core.L0_routing.types.guardian_contract import (
     normalize_repo_path,
     write_guardian_result,
 )
-from agentic_core.L5_safety.config.structure_blueprint import (
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.utils.project_root import get_validated_project_root
 
 GUARDIAN_ID = "classification_compliance"
 
@@ -119,9 +117,7 @@ def scan_naming_compliance(
     Returns sorted list of violation dicts with keys:
     filename, path, conflicting_tags, pattern_matched.
     """
-    from agentic_core.L5_safety.config.structure_blueprint import (
-        COMPOUND_SUFFIX_CONFLICTS,
-    )
+    from agentic_core.L0_routing.config import COMPOUND_SUFFIX_CONFLICTS
 
     if files is None:
         files = _collect_python_files(repo_root)
@@ -161,9 +157,7 @@ def scan_territory_compliance(
     Returns sorted list of violation dicts with keys:
     filename, path, classified_as, current_folder, expected_folder.
     """
-    from agentic_core.L5_safety.config.structure_blueprint import (
-        FILETYPE_TO_FOLDER,
-    )
+    from agentic_core.L0_routing.config import FILETYPE_TO_FOLDER
     from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
 
     if files is None:
