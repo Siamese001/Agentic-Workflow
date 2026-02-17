@@ -632,10 +632,6 @@ class TestBlueprintConfigConstants:
         """All FORBIDDEN_COMPOUND_PATTERNS should be valid regex."""
         import re
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
-            FORBIDDEN_COMPOUND_PATTERNS,
-        )
-
         for pattern in FORBIDDEN_COMPOUND_PATTERNS:
             try:
                 re.compile(pattern)
@@ -644,9 +640,6 @@ class TestBlueprintConfigConstants:
 
     def test_l5_enforcement_suffixes_not_empty(self):
         """L5_ENFORCEMENT_ALLOWED_SUFFIXES should be a non-empty list."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
-            L5_ENFORCEMENT_ALLOWED_SUFFIXES,
-        )
 
         assert len(L5_ENFORCEMENT_ALLOWED_SUFFIXES) > 0
         assert "_guardrail.py" in L5_ENFORCEMENT_ALLOWED_SUFFIXES
@@ -1378,14 +1371,14 @@ class TestLayerPrefixPatternConfig:
     def test_pattern_is_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         re_mod.compile(LAYER_PREFIX_PATTERN)
 
     def test_pattern_matches_l5_prefix(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         assert re_mod.search(LAYER_PREFIX_PATTERN, "l5_streamer.py")
         assert re_mod.search(LAYER_PREFIX_PATTERN, "L5_safety_util.py")
@@ -1393,14 +1386,14 @@ class TestLayerPrefixPatternConfig:
     def test_pattern_matches_mid_word(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         assert re_mod.search(LAYER_PREFIX_PATTERN, "my_l3_thing.py")
 
     def test_pattern_does_not_match_non_layer(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         # "healer" contains "l" but no layer pattern
         assert not re_mod.search(LAYER_PREFIX_PATTERN, "healer_agent.py")
@@ -1498,21 +1491,21 @@ class TestDuplicateDetectionConfig:
     """Tests for CANONICAL_LOCATION_PRIORITY and DUPLICATE_DETECTION_EXEMPT."""
 
     def test_priority_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+        from agentic_core.L0_routing.config import CANONICAL_LOCATION_PRIORITY
 
         assert len(CANONICAL_LOCATION_PRIORITY) >= 10
 
     def test_runtime_is_highest_priority(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+        from agentic_core.L0_routing.config import CANONICAL_LOCATION_PRIORITY
 
         assert CANONICAL_LOCATION_PRIORITY[0] == "runtime"
 
     def test_exempt_contains_init(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+        from agentic_core.L0_routing.config import DUPLICATE_DETECTION_EXEMPT
 
         assert "__init__.py" in DUPLICATE_DETECTION_EXEMPT
 
     def test_exempt_contains_conftest(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+        from agentic_core.L0_routing.config import DUPLICATE_DETECTION_EXEMPT
 
         assert "conftest.py" in DUPLICATE_DETECTION_EXEMPT

@@ -1292,27 +1292,27 @@ class TestEphemeralConfigConstants:
     """Tests for FORBIDDEN_EPHEMERAL_PATTERNS and exemptions."""
 
     def test_forbidden_patterns_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+        from agentic_core.L0_routing.config import FORBIDDEN_EPHEMERAL_PATTERNS
 
         assert len(FORBIDDEN_EPHEMERAL_PATTERNS) >= 3
 
     def test_forbidden_patterns_are_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import FORBIDDEN_EPHEMERAL_PATTERNS
+        from agentic_core.L0_routing.config import FORBIDDEN_EPHEMERAL_PATTERNS
 
         for pattern in FORBIDDEN_EPHEMERAL_PATTERNS:
             re_mod.compile(pattern)
 
     def test_exemptions_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+        from agentic_core.L0_routing.config import EPHEMERAL_PATTERN_EXEMPTIONS
 
         assert len(EPHEMERAL_PATTERN_EXEMPTIONS) >= 3
 
     def test_exemptions_are_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import EPHEMERAL_PATTERN_EXEMPTIONS
+        from agentic_core.L0_routing.config import EPHEMERAL_PATTERN_EXEMPTIONS
 
         for pattern in EPHEMERAL_PATTERN_EXEMPTIONS:
             re_mod.compile(pattern)
@@ -1378,14 +1378,14 @@ class TestLayerPrefixPatternConfig:
     def test_pattern_is_valid_regex(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         re_mod.compile(LAYER_PREFIX_PATTERN)
 
     def test_pattern_matches_l5_prefix(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         assert re_mod.search(LAYER_PREFIX_PATTERN, "l5_streamer.py")
         assert re_mod.search(LAYER_PREFIX_PATTERN, "L5_safety_util.py")
@@ -1393,14 +1393,14 @@ class TestLayerPrefixPatternConfig:
     def test_pattern_matches_mid_word(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         assert re_mod.search(LAYER_PREFIX_PATTERN, "my_l3_thing.py")
 
     def test_pattern_does_not_match_non_layer(self):
         import re as re_mod
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_PREFIX_PATTERN
+        from agentic_core.L0_routing.config import LAYER_PREFIX_PATTERN
 
         # "healer" contains "l" but no layer pattern
         assert not re_mod.search(LAYER_PREFIX_PATTERN, "healer_agent.py")
@@ -1498,21 +1498,21 @@ class TestDuplicateDetectionConfig:
     """Tests for CANONICAL_LOCATION_PRIORITY and DUPLICATE_DETECTION_EXEMPT."""
 
     def test_priority_not_empty(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+        from agentic_core.L0_routing.config import CANONICAL_LOCATION_PRIORITY
 
         assert len(CANONICAL_LOCATION_PRIORITY) >= 10
 
     def test_runtime_is_highest_priority(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import CANONICAL_LOCATION_PRIORITY
+        from agentic_core.L0_routing.config import CANONICAL_LOCATION_PRIORITY
 
         assert CANONICAL_LOCATION_PRIORITY[0] == "runtime"
 
     def test_exempt_contains_init(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+        from agentic_core.L0_routing.config import DUPLICATE_DETECTION_EXEMPT
 
         assert "__init__.py" in DUPLICATE_DETECTION_EXEMPT
 
     def test_exempt_contains_conftest(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import DUPLICATE_DETECTION_EXEMPT
+        from agentic_core.L0_routing.config import DUPLICATE_DETECTION_EXEMPT
 
         assert "conftest.py" in DUPLICATE_DETECTION_EXEMPT
