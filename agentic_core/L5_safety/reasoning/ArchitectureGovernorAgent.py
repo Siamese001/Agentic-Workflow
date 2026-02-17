@@ -51,10 +51,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,

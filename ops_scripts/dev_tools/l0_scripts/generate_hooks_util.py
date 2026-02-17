@@ -19,7 +19,7 @@ project_root = Path(__file__).resolve().parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
 
 def sync_pre_commit(dry_run: bool = False):

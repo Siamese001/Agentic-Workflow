@@ -5,7 +5,7 @@ Ensures no generic utility script exceeds weight 9 per Global Weight Standard.
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint_config import AST_PLACEMENT_SIGNALS
+from agentic_core.L0_routing.config import AST_PLACEMENT_SIGNALS
 
 
 class TestBaselineWeightAudit:
