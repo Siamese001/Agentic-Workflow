@@ -12,7 +12,7 @@ class TestCriticalImportResolution:
     def test_structure_blueprint_imports(self):
         """Structure blueprint should import without errors."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+            from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
             assert SOVEREIGN_TERRITORIES is not None
         except ImportError as e:

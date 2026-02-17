@@ -16,7 +16,7 @@ class TestStructureBlueprintConfig:
     def test_sovereign_territories_defined(self):
         """SOVEREIGN_TERRITORIES should be defined."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+            from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
             assert SOVEREIGN_TERRITORIES is not None
             assert isinstance(SOVEREIGN_TERRITORIES, dict)
@@ -65,7 +65,7 @@ class TestBlueprintConsistency:
     def test_apps_folders_in_territories(self):
         """apps_rg, apps_lic, apps_shared should be in SOVEREIGN_TERRITORIES."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+            from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
             for app in ["apps_rg", "apps_lic", "apps_shared"]:
                 assert app in SOVEREIGN_TERRITORIES, f"{app} should be in SOVEREIGN_TERRITORIES"
