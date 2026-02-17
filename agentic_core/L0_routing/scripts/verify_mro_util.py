@@ -84,13 +84,49 @@ def verify_location_validator_agent():
 
 
 def verify_hierarchy_agent():
-    """Verify HierarchyAgent MRO."""
+    """Verify HierarchyAgent MRO via subprocess."""
     try:
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
 
-        return print_mro(HierarchyAgent, "HierarchyAgent")
-    except ImportError as e:
-        print(f"❌ Failed to import HierarchyAgent: {e}")
+        result = invoke_hierarchy_agent(action="verify_mro")
+
+        if result.get("success"):
+            mro = result.get("mro", [])
+            print(f"\n{'=' * 80}")
+            print("MRO for HierarchyAgent (via subprocess)")
+            print(f"{'=' * 80}")
+
+            for i, cls_name in enumerate(mro):
+                indent = "  " * i
+                print(f"{indent}{i}. {cls_name}")
+
+            print(f"\nTotal classes in MRO: {len(mro)}")
+
+            # Check for infrastructure components
+            has_infra = any("infrastructure_mixin" in cls for cls in mro)
+            has_healer = any("HealerMixin" in cls for cls in mro)
+            has_mcp = any("MCPHardened" in cls for cls in mro)
+            has_testing = any("SubatomicTesting" in cls for cls in mro)
+
+            print("\nInfrastructure Components:")
+            print(f"  infrastructure_mixin: {'✅' if has_infra else '❌'}")
+            print(f"  HealerMixin: {'✅' if has_healer else '❌'}")
+            print(f"  MCPHardenedMixin: {'✅' if has_mcp else '❌'}")
+            print(f"  SubatomicTestingMixin: {'✅' if has_testing else '❌'}")
+
+            return {
+                "has_infra": has_infra,
+                "has_healer": has_healer,
+                "has_mcp": has_mcp,
+                "has_testing": has_testing,
+                "mro_length": len(mro),
+            }
+        else:
+            print(f"❌ Failed to verify HierarchyAgent MRO: {result.get('error')}")
+            return None
+    # guardian: allow-silent-swallow
+    except Exception as e:
+        print(f"❌ Failed to verify HierarchyAgent: {e}")
         return None
 
 

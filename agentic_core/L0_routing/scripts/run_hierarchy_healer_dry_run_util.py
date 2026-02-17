@@ -16,7 +16,7 @@ project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
+from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
 
 
 def main():
@@ -25,24 +25,26 @@ def main():
     print("=" * 80)
     print("Scanning for hierarchy violations (no changes will be made)...\n")
 
-    # Initialize with healing_enabled=False for dry-run
+    # Invoke via subprocess to avoid upward import edge
     project_root = Path.cwd()
-    agent = HierarchyHealerAgent(project_root, healing_enabled=False)
-
-    # Run hierarchy violation detection
-    result = agent.heal_hierarchy_violations()
+    result = invoke_hierarchy_agent(action="heal_violations", project_root=project_root)
 
     print("\n" + "=" * 80)
     print("DRY RUN RESULTS")
     print("=" * 80)
-    print(f"Files that would be relocated: {result['files_relocated']}")
-    print(f"Folders that would be removed: {result['folders_removed']}")
-    print(f"Errors encountered: {len(result['errors'])}")
 
-    if result["errors"]:
-        print("\nErrors:")
-        for error in result["errors"]:
-            print(f"  - {error}")
+    if result.get("success"):
+        print(f"Files that would be relocated: {result.get('files_relocated', 0)}")
+        print(f"Folders that would be removed: {result.get('folders_removed', 0)}")
+        errors = result.get("errors", [])
+        print(f"Errors encountered: {len(errors)}")
+
+        if errors:
+            print("\nErrors:")
+            for error in errors:
+                print(f"  - {error}")
+    else:
+        print(f"❌ Error: {result.get('error')}")
 
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")

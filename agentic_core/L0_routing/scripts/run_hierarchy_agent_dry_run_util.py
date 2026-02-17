@@ -18,7 +18,7 @@ project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
 
 
 def main():
@@ -30,11 +30,13 @@ def main():
 
     project_root = Path.cwd()
 
-    # Initialize with healing_enabled=False for dry-run
-    agent = HierarchyAgent(project_root, healing_enabled=False)
+    # Invoke via subprocess to avoid upward import edge
+    result = invoke_hierarchy_agent(action="dry_run", project_root=project_root)
 
-    # Run comprehensive hierarchy healing (all operations in dry-run)
-    agent.heal_hierarchy(create_structure=True, relocate_files=True, enforce_depth=True, purge_orphans=True)
+    if result.get("success"):
+        print(f"\n{result.get('message', 'Dry run complete')}")
+    else:
+        print(f"\n❌ Error: {result.get('error')}")
 
     print("\n" + "=" * 80)
     print("DRY RUN COMPLETE - No changes were made")

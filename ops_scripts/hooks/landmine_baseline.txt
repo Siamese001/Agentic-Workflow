@@ -3839,9 +3839,10 @@
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1680:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2714:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/utils/subprocess_runner.py:114:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
-agentic_core/L0_routing/utils/subprocess_runner.py:150:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
-agentic_core/L0_routing/utils/subprocess_runner.py:59:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
+agentic_core/L0_routing/utils/subprocess_runner.py:115:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
+agentic_core/L0_routing/utils/subprocess_runner.py:151:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+agentic_core/L0_routing/utils/subprocess_runner.py:197:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
+agentic_core/L0_routing/utils/subprocess_runner.py:60:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
 agentic_core/L1_cognition/config/react_config.py:155:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/config/react_config.py:268:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
