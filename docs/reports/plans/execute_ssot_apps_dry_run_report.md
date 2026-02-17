@@ -3,34 +3,27 @@
 ## Wave 1.1 — Discovery Commands
 
 ### Git Status (Before)
-
-```text
+```
 # Clean baseline - no uncommitted changes
 ```
 
 ### Locate Supported Entrypoint
-
 ```bash
 Get-ChildItem -Path "agentic_core" -Recurse -Filter "*execute_ssot*" | Select-Object FullName
 ```
-
 **Output:**
-
-```text
+```
 FullName
 --------
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot_entrypoint.py
 ```
 
 ### Help Text for Legacy Entrypoint
-
 ```bash
 python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --help
 ```
-
 **Output:**
-
-```text
+```
 usage: execute_ssot_entrypoint.py [-h] [--legacy] [--plan] [--v15-enforcement {0,1}] [-v]
 
 V15 Sovereign Compliance Entrypoint
@@ -55,14 +48,11 @@ Examples:
 ```
 
 ### Legacy Mode Help
-
 ```bash
 python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --help
 ```
-
 **Output:**
-
-```text
+```
 usage: execute_ssot_entrypoint.py [-h] [--legacy] [--plan] [--v15-enforcement {0,1}] [-v]
 
 V15 Sovereign Compliance Entrypoint
@@ -87,14 +77,11 @@ Examples:
 ```
 
 ### Discover Apps_* Folders
-
 ```bash
 Get-ChildItem -Path "." -Filter "apps_*" -Directory | Select-Object Name
 ```
-
 **Output:**
-
-```text
+```
 Name
 ----
 apps_lic
@@ -103,14 +90,11 @@ apps_shared
 ```
 
 ### Execution Plan Discovery
-
 ```bash
 python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --plan
 ```
-
 **Output:**
-
-```text
+```
 PHASE 1: Discovery
   - reconciler.detect_root_drift
     # filesystem SSOT drift detection
@@ -155,33 +139,25 @@ PHASE 5: Certification
 ## Wave 1.2 — Dry-Run Execution
 
 ### Issue with Legacy Entrypoint
-
 The legacy entrypoint fails with Windows LongPathsEnabled check:
-
 ```bash
 python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --validate --territory apps_shared
 ```
-
 **Output:**
-
-```text
+```
 2026-02-16 08:43:47,530 CRITICAL UnifiedSovereign 🛑 PRE-FLIGHT CHECK FAILED:
 2026-02-16 08:43:47,532 ERROR UnifiedSovereign   - Windows LongPathsEnabled is NOT active (Set to 1 in Registry)
 ```
 
 ### Alternative Approach: Direct FileClassificationAgent Invocation
-
 Since the legacy entrypoint is blocked by Windows pre-flight checks, I used the FileClassificationAgent directly with individual apps_* folders as project roots.
 
 #### apps_shared Dry-Run
-
 ```bash
 python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.').resolve())); from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent; import json; apps_shared_root=Path('.').resolve() / 'apps_shared'; agent=FileClassificationAgent(project_root=apps_shared_root, dry_run=True, validate_only=True); result=agent.run(); print('=== apps_shared ==='); print(json.dumps(result, indent=2, default=str))"
 ```
-
 **Output:**
-
-```text
+```
 [WARNING] Windows LongPathsEnabled is NOT set to 1.
 [MISNAMED_UTILITY] config_loader_config.py: config_loader_config.py contains class 'ConfigLoader' with active methods ['load_config', '_find_config_file', '_load_from_file']. This is a utility, not a config file.
 [MISNAMED_UTILITY] environment_config.py: environment_config.py contains class 'EnvironmentValidator' with active methods ['validate', '_format_error_message', 'get_config']. This is a utility, not a config file.
@@ -246,14 +222,11 @@ python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.'
 ```
 
 #### apps_lic Dry-Run
-
 ```bash
 python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.').resolve())); from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent; import json; apps_lic_root=Path('.').resolve() / 'apps_lic'; agent=FileClassificationAgent(project_root=apps_lic_root, dry_run=True, validate_only=True); result=agent.run(); print('=== apps_lic ==='); print(json.dumps(result, indent=2, default=str))"
 ```
-
 **Output:**
-
-```text
+```
 [WARNING] Windows LongPathsEnabled is NOT set to 1.
 [MISNAMED_UTILITY] archetype_indicator_config.py: archetype_indicator_config.py contains class 'AgentSpecs' with active methods ['from_dict']. This is a utility, not a config file.
 [DUAL-TAG] placeholder_detector_agent_config.py carries conflicting tags: {'AGENT', 'CONFIG'}. Resolving via folder context.
@@ -300,14 +273,11 @@ python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.'
 ```
 
 #### apps_rg Dry-Run
-
 ```bash
 python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.').resolve())); from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent; import json; apps_rg_root=Path('.').resolve() / 'apps_rg'; agent=FileClassificationAgent(project_root=apps_rg_root, dry_run=True, validate_only=True); result=agent.run(); print('=== apps_rg ==='); print(json.dumps(result, indent=2, default=str))"
 ```
-
 **Output:**
-
-```text
+```
 [WARNING] Windows LongPathsEnabled is NOT set to 1.
 [DUPLICATE] ContentStrategyAgent.py exists in multiple locations. Canonical: C:\Git\Agentic-Workflow\apps_rg\engines. Duplicate: C:\Git\Agentic-Workflow\apps_rg\reasoning — should be deleted.
 [MISNAMED_UTILITY] clerk_extractor_config.py: clerk_extractor_config.py contains class 'ClerkExtractor' with active methods ['extract', '_validate_structure', '_build_experience_sections']. This is a utility, not a config file.
@@ -354,14 +324,13 @@ python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.'
 
 ## Wave 1.3 — Summary Table
 
-| Folder     | Analyzed | Compliant | Violations | Issues Found                                            | Dry-Run Status |
-|------------|----------|-----------|------------|---------------------------------------------------------|----------------|
-| apps_shared| 232      | 225       | 0          | Multiple MISNAMED_UTILITY files, DUAL-TAG conflicts     | ✅ Success     |
-| apps_lic   | 139      | 131       | 0          | MISNAMED_UTILITY files, DUAL-TAG conflicts, PASSIVE_AGENT_NAMING | ✅ Success     |
-| apps_rg    | 155      | 148       | 0          | DUPLICATE file, MISNAMED_UTILITY files, MISPLACED-TEST, DUAL-TAG conflicts | ✅ Success     |
+| Folder | Analyzed | Compliant | Violations | Issues Found | Dry-Run Status |
+|--------|----------|-----------|------------|--------------|----------------|
+| apps_shared | 232 | 225 | 0 | Multiple MISNAMED_UTILITY files, DUAL-TAG conflicts | ✅ Success |
+| apps_lic | 139 | 131 | 0 | MISNAMED_UTILITY files, DUAL-TAG conflicts, PASSIVE_AGENT_NAMING | ✅ Success |
+| apps_rg | 155 | 148 | 0 | DUPLICATE file, MISNAMED_UTILITY files, MISPLACED-TEST, DUAL-TAG conflicts | ✅ Success |
 
 **Key Findings:**
-
 - Total files analyzed: 526
 - Total compliant files: 504 (95.8%)
 - No critical violations requiring immediate fixes
@@ -370,8 +339,7 @@ python -c "from pathlib import Path; import sys; sys.path.insert(0, str(Path('.'
 - No mutations occurred (dry-run validation successful)
 
 ## Git Status (After)
-
-```text
+```
 ?? docs/reports/plans/execute_ssot_apps_dry_run_report.md
 ```
 

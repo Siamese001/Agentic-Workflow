@@ -1,8 +1,16 @@
-# SDK & MCP Gap Analysis & Implementation Plan
+# SDK & MCP Gap Analysis & Implementation Plan (Updated)
 
 **Objective**: Review all tools used across L0-L6 layers and ensure SDK_MCPs are updated and synced with comprehensive gap analysis, implementation report, file diffs, and test cases.
 
-## Current State Assessment
+## Current State Assessment (Updated)
+
+### Critical Finding: Migration Incomplete
+
+**Previous Report vs. Reality Check:**
+- **Reported**: SovereignLLMGateway migrated to data/sdks_mcps ✅
+- **Reality**: Still uses direct imports (`import openai`, `import anthropic`, `import google.generativeai`) ❌
+- **Reported**: EmbeddingSovereignAgent updated ✅
+- **Reality**: Still uses direct imports (`import google.generativeai`, `import openai`) ❌
 
 ### L0-L6 Tool Usage Analysis
 
@@ -15,6 +23,11 @@
 - Found 20+ files using direct Redis imports
 - No centralized Redis MCP client implementation
 - All caching operations bypass sovereign architecture
+
+**LLM Gateway Integration (URGENT)**:
+- SovereignLLMGateway: Direct imports instead of data/sdks_mcps client wrappers
+- EmbeddingSovereignAgent: Direct imports instead of data/sdks_mcps client wrappers
+- **Impact**: Core LLM operations bypass centralized SDK management
 
 **Other MCP Tools (mcp0_, mcp1_, mcp5_, mcp6_, mcp7_, mcp8_, mcp10_, mcp11_)**:
 - Minimal integration - only 2 files actively using MCP tool prefixes
@@ -37,8 +50,27 @@ data/sdks_mcps/
 3. No Filesystem MCP client wrapper
 4. No Git operations MCP client
 5. Missing MCP tools for: Brave Search, Playwright, Memory Graph, Sequential Thinking
+6. **CRITICAL**: Existing client wrappers not being used by core gateway components
 
-## Implementation Plan
+## Implementation Plan (Updated)
+
+### Phase 0: Complete LLM Gateway Migration (URGENT)
+
+**0.1 SovereignLLMGateway Migration**
+- Replace direct OpenAI imports with `data.sdks_mcps.client_wrappers.openai_client`
+- Replace direct Anthropic imports with `data.sdks_mcps.client_wrappers.anthropic_client`
+- Replace direct Google imports with `data.sdks_mcps.client_wrappers.vertex_client`
+- Update all provider initialization and method calls
+
+**0.2 EmbeddingSovereignAgent Migration**
+- Replace direct OpenAI embedding imports with openai_client wrapper
+- Replace direct Google embedding imports with vertex_client wrapper
+- Ensure embedding methods use centralized client wrappers
+
+**0.3 Validation & Testing**
+- Create integration tests to verify gateway functionality with client wrappers
+- Performance benchmarking: direct SDK vs client wrapper approach
+- Ensure no breaking changes to existing interfaces
 
 ### Phase 1: MCP Client Wrapper Creation
 
@@ -108,11 +140,47 @@ data/sdks_mcps/
 - Validate interface contracts
 - Test multi-provider scenarios
 
-## File Diffs Preview
+## File Diffs Preview (Updated)
+
+### Critical Files to Modify (Phase 0)
+
+**`agentic_core/L2_execution/enforcement/SovereignLLMGateway.py`:**
+```diff
+- import openai
+- import anthropic
+- import google.generativeai as genai
++ from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient
++ from data.sdks_mcps.client_wrappers.anthropic_client import AnthropicClient
++ from data.sdks_mcps.client_wrappers.vertex_client import VertexClient
+
+class SovereignLLMGateway:
+    def __init__(self):
+-       self.openai_client = openai.Client(api_key=config.OPENAI_API_KEY)
+-       self.anthropic_client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)
+-       self.vertex_client = genai.configure(api_key=config.GOOGLE_API_KEY)
++       self.openai_client = OpenAIClient()
++       self.anthropic_client = AnthropicClient()
++       self.vertex_client = VertexClient()
+```
+
+**`agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py`:**
+```diff
+- import google.generativeai as genai
+- import openai
++ from data.sdks_mcps.client_wrappers.vertex_client import VertexClient
++ from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient
+
+class EmbeddingSovereignAgent:
+    def __init__(self):
+-       self.vertex_client = genai.configure(api_key=config.GOOGLE_API_KEY)
+-       self.openai_client = openai.Client(api_key=config.OPENAI_API_KEY)
++       self.vertex_client = VertexClient()
++       self.openai_client = OpenAIClient()
+```
 
 ### New Files to Create
 
-**`data/sdks_mcps/client_wrappers/pinecone_client.py`**:
+**`data/sdks_mcps/client_wrappers/pinecone_client.py`:**
 ```python
 """
 Production Pinecone MCP Client Wrapper
@@ -149,7 +217,7 @@ class PineconeMCPClient:
         pass
 ```
 
-**`data/sdks_mcps/mcp_catalog/pinecone_mcp_v1.json`**:
+**`data/sdks_mcps/mcp_catalog/pinecone_mcp_v1.json`:**
 ```json
 {
   "name": "pinecone_mcp",
@@ -187,37 +255,40 @@ class PineconeMCPClient:
 }
 ```
 
-### Files to Modify
-
-**`agentic_core/L4_state/reasoning/PineconeSovereignAgent.py`**:
-```diff
-- import pinecone
-- from pinecone import PineconeClient
-+ from data.sdks_mcps.client_wrappers.pinecone_client import PineconeMCPClient
-
-class PineconeSovereignAgent:
-    def __init__(self):
--       self.client = pinecone.Client(api_key=config.PINECONE_API_KEY)
-+       self.client = PineconeMCPClient(enable_cache=True)
-```
-
-**`agentic_core/L4_state/memory/sovereign_semantic_cache.py`**:
-```diff
-- import redis
-- from redis import RedisClient
-+ from data.sdks_mcps.client_wrappers.redis_client import RedisMCPClient
-
-class SovereignSemanticCache:
-    def __init__(self):
--       self.redis_client = redis.Redis(host=config.REDIS_HOST)
-+       self.redis_client = RedisMCPClient()
-```
-
 ## Test Cases
 
 ### Unit Test Structure
 
-**`tests/unit/sdks_mcps/test_pinecone_client.py`**:
+**`tests/unit/sdks_mcps/test_gateway_migration.py`:**
+```python
+import pytest
+from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+
+class TestGatewayMigration:
+    @pytest.fixture
+    async def gateway(self):
+        gateway = SovereignLLMGateway()
+        await gateway.initialize()
+        return gateway
+
+    async def test_openai_client_wrapper(self, gateway):
+        """Test OpenAI operations use client wrapper."""
+        # Verify openai_client is an instance of OpenAIClient wrapper
+        from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient
+        assert isinstance(gateway.openai_client, OpenAIClient)
+
+    async def test_anthropic_client_wrapper(self, gateway):
+        """Test Anthropic operations use client wrapper."""
+        from data.sdks_mcps.client_wrappers.anthropic_client import AnthropicClient
+        assert isinstance(gateway.anthropic_client, AnthropicClient)
+
+    async def test_vertex_client_wrapper(self, gateway):
+        """Test Vertex operations use client wrapper."""
+        from data.sdks_mcps.client_wrappers.vertex_client import VertexClient
+        assert isinstance(gateway.vertex_client, VertexClient)
+```
+
+**`tests/unit/sdks_mcps/test_pinecone_client.py`:**
 ```python
 import pytest
 from data.sdks_mcps.client_wrappers.pinecone_client import PineconeMCPClient
@@ -249,7 +320,7 @@ class TestPineconeMCPClient:
 
 ### Integration Test Structure
 
-**`tests/integration/sdks_mcps/test_mcp_integration.py`**:
+**`tests/integration/sdks_mcps/test_mcp_integration.py`:**
 ```python
 import pytest
 from data.sdks_mcps.client_wrappers.pinecone_client import PineconeMCPClient
@@ -275,6 +346,7 @@ class TestMCPIntegration:
 - **Sovereignty Score**: Target 100% compliance with L3 routing
 - **Performance Impact**: <10% latency overhead vs direct SDK
 - **Test Coverage**: >90% code coverage for all MCP clients
+- **Gateway Migration**: 100% of LLM gateway operations use client wrappers
 
 ### Qualitative Metrics
 - All external operations flow through sovereign architecture
@@ -294,8 +366,9 @@ class TestMCPIntegration:
 - **Data Consistency**: Implement gradual migration with fallback options
 - **Operational Impact**: Deploy in phases with rollback capability
 
-## Timeline
+## Timeline (Updated)
 
+**Phase 0** (Week 1, URGENT): Complete LLM Gateway Migration
 **Phase 1** (Week 1): Create MCP client wrappers
 **Phase 2** (Week 1): Update MCP catalog and specifications
 **Phase 3** (Week 2): Migrate L0-L6 layers to use MCP clients
@@ -303,10 +376,12 @@ class TestMCPIntegration:
 
 ## Next Steps
 
-1. Validate MCP tool availability in Windsurf environment
-2. Create Pinecone MCP client wrapper with full functionality
-3. Implement Redis MCP client for caching operations
-4. Begin migration of high-priority files (PineconeSovereignAgent, etc.)
-5. Establish testing framework for MCP integration validation
+1. **IMMEDIATE**: Complete SovereignLLMGateway migration to use client wrappers
+2. **IMMEDIATE**: Complete EmbeddingSovereignAgent migration to use client wrappers
+3. Validate MCP tool availability in Windsurf environment
+4. Create Pinecone MCP client wrapper with full functionality
+5. Implement Redis MCP client for caching operations
+6. Begin migration of high-priority files (PineconeSovereignAgent, etc.)
+7. Establish testing framework for MCP integration validation
 
-This plan ensures complete alignment between the tools used across L0-L6 layers and the centralized SDK_MCPs directory, with full sovereign architecture compliance and comprehensive testing coverage.
+This updated plan addresses the critical finding that the previously reported migration work is incomplete, with Phase 0 added as an urgent priority to ensure core LLM gateway components actually use the centralized data/sdks_mcps client wrappers as intended.
