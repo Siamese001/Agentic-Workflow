@@ -152,7 +152,7 @@ OUTPUT_JSON = CANONICAL_JSON
 # ============================================================================
 # Import SSOT exclusions from structure_blueprint
 try:
-    from agentic_core.L5_safety.config.structure_blueprint_config import GLOBAL_EXCLUDED_DIRS
+    from agentic_core.L0_routing.config import GLOBAL_EXCLUDED_DIRS
 
     SSOT_EXCLUDED = set(GLOBAL_EXCLUDED_DIRS)
 except ImportError:

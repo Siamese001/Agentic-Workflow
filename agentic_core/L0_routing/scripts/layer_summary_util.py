@@ -3,10 +3,7 @@
 import json
 from collections import defaultdict
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    AGENT_DISCOVERY_JSON,
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON, TESTS_DIR
 
 data = json.load(open(AGENT_DISCOVERY_JSON))
 

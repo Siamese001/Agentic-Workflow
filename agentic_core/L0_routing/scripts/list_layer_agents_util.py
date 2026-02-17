@@ -12,9 +12,7 @@ Reads from agent_discovery_full.json - run full_agent_discovery.py first.
 import json
 import sys
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    AGENT_DISCOVERY_JSON,
-)
+from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON
 
 layer = sys.argv[1] if len(sys.argv) > 1 else APPS_RG_DIR
 data = json.load(open(AGENT_DISCOVERY_JSON))

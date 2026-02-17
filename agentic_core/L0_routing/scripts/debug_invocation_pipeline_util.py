@@ -3,9 +3,7 @@
 import json
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    AGENT_DISCOVERY_JSON,
-)
+from agentic_core.L0_routing.config import AGENT_DISCOVERY_JSON
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
