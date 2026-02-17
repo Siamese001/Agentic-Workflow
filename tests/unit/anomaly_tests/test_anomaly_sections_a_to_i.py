@@ -9,10 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    CORE_SUBFOLDER_MAP,
+from agentic_core.L0_routing.config import (
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
+)
+from agentic_core.L5_safety.config.structure_blueprint_config import (
+    CORE_SUBFOLDER_MAP,
 )
 
 

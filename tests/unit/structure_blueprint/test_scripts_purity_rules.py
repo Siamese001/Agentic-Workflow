@@ -12,9 +12,9 @@ import re
 
 import pytest
 
+from agentic_core.L0_routing.config import SCRIPTS_FORBIDDEN_PATTERNS
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
-    SCRIPTS_FORBIDDEN_PATTERNS,
 )
 
 

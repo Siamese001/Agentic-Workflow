@@ -9,9 +9,9 @@ Validates:
 
 import pytest
 
+from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
-    SOVEREIGN_TERRITORIES,
 )
 
 
