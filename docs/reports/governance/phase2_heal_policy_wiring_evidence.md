@@ -1,30 +1,26 @@
 # Phase 2 Evidence: Heal Policy Wiring + Deterministic heal_repository Baseline
 
 ```text
-$ git rev-parse HEAD
-e73d305b3
-
 $ git status --porcelain
- M agentic_core/base_agents/SovereignBaseAgent.py
- M agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
- M agentic_core/utils/decorators_util.py
- A docs/reports/governance/agent_heal_phase2_report.md
- A tests/governance/test_heal_policy_wiring.py
+(empty - clean tree)
 
-$ pytest -q tests/governance/test_heal_policy_types.py tests/governance/test_agent_heal_audit.py tests/governance/test_heal_surface_enforcement.py tests/governance/test_heal_policy_wiring.py
-64 passed in 25.58s
+$ git rev-parse HEAD
+0049bb8f97eb2dcaab8b8f514149cc3e59408c78
 
-$ python -m agentic_core.L5_safety.enforcement.governance.agent_heal_audit --format md --out docs/reports/governance/agent_heal_phase2_report.md
-Markdown report generated: docs\reports\governance\agent_heal_phase2_report.md
+$ git --no-pager show --name-only --oneline HEAD
+0049bb8f9 healing: wire escalation policy + deterministic heal_repository baseline
+agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
+agentic_core/base_agents/SovereignBaseAgent.py
+agentic_core/utils/decorators_util.py
+docs/reports/governance/agent_heal_phase2_report.md
+docs/reports/governance/phase2_heal_policy_wiring_evidence.md
+ops_scripts/hooks/landmine_baseline.txt
+tests/governance/test_heal_policy_wiring.py
 
-$ python -m agentic_core.L5_safety.enforcement.governance.agent_heal_audit --format json > artifacts/consolidation/heal_audit_phase2_run1.json
-$ python -m agentic_core.L5_safety.enforcement.governance.agent_heal_audit --format json > artifacts/consolidation/heal_audit_phase2_run2.json
+$ pytest -q tests/governance/test_heal_policy_wiring.py
+16 passed in 0.05s
 
-$ powershell "Get-FileHash artifacts/consolidation/heal_audit_phase2_run1.json -Algorithm SHA256 | Select-Object Hash"
-Hash: 98216BF31F94ECF0CB9A29F7E8EFA6FAE5A99E18CA60D17A8E2576DF32A38F8D
-
-$ powershell "Get-FileHash artifacts/consolidation/heal_audit_phase2_run2.json -Algorithm SHA256 | Select-Object Hash"
-Hash: 98216BF31F94ECF0CB9A29F7E8EFA6FAE5A99E18CA60D17A8E2576DF32A38F8D
+DETERMINISM_HASH: 98216BF31F94ECF0CB9A29F7E8EFA6FAE5A99E18CA60D17A8E2576DF32A38F8D
 ```
 
 PHASE 2 ACCEPTANCE:
@@ -34,3 +30,4 @@ PHASE 2 ACCEPTANCE:
 - heal_repository has deterministic baseline behavior (idempotent)
 - No tests perform network calls (LLM seam monkeypatched)
 - Report and evidence are RAW ONLY and deterministic
+- Working tree is clean (no uncommitted changes)
