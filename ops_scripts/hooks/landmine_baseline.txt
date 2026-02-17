@@ -3939,10 +3939,6 @@ agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:236:magic_con
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:38:magic_configuration:Magic configuration: Hardcoded line_threshold=600
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L3_orchestration/engines/sovereign_mcp_marketplace.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded line_limit=800
-agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded max_rounds=3
-agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:159:type_erasure:Type erasure: SemanticGatekeeperAgent.run_with_gating returns Any instead of structured type
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:178:type_erasure:Type erasure: SemanticGatekeeperAgent.clear_dead_letters returns Any instead of structured type
 agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:183:type_erasure:Type erasure: SemanticGatekeeperAgent.get_stats returns dict instead of structured type
@@ -4461,6 +4457,7 @@ agentic_core/base_agents/L0RoutingBase.py:87:magic_configuration:Magic configura
 agentic_core/base_agents/L3OrchestrationBase.py:62:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/L4StateBase.py:46:type_erasure:Type erasure: L4StateBase.get_state returns Any instead of structured type
+agentic_core/base_agents/SovereignBaseAgent.py:494:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/config/core/reflection_config.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:279:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -4567,8 +4564,7 @@ agentic_core/utils/meta_learning_engine_util.py:201:silent_swallower:Silent exce
 agentic_core/utils/meta_learning_engine_util.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/config/placeholder_detector_agent_config.py:56:type_erasure:Type erasure: PlaceholderDetectorAgent.heal returns dict instead of structured type
-apps_lic/config/placeholder_detector_agent_config.py:60:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
+apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/reasoning/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4

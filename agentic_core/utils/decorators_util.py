@@ -33,7 +33,7 @@ from agentic_core.L5_safety.types.heal_llm_seam import (
 from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationInputs,
     ReasoningTier,
-    decide_reasoning_tier,
+    decide_heal_escalation,
 )
 from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 
@@ -198,23 +198,46 @@ def standard_heal(func: F) -> F:
                 f"(dry_run={dry_run}, execute={execute}, depth={depth})",
             )
 
-            # Phase 3: Compute heal policy decision (no behavior change)
+            # Phase 2: Compute heal policy decision using canonical escalation
+            enable_llm = _select_reasoning_tier_enabled()
+            confidence_value = remaining_kwargs.pop("_confidence", 0.75)
+            task_complexity = remaining_kwargs.pop("_task_complexity", 5)
+            prior_failures = remaining_kwargs.pop("_prior_failures", 0)
+
             policy_inputs = HealEscalationInputs(
-                task_complexity=5,
-                confidence=0.75,
-                safety_risk=3,
-                retry_count=0,
-                cost_budget=None,
-                latency_budget=None,
+                confidence_value=confidence_value,
+                enable_llm=enable_llm,
+                task_complexity=task_complexity,
+                prior_failures=prior_failures,
             )
-            policy_decision = decide_reasoning_tier(policy_inputs)
+            policy_decision = decide_heal_escalation(policy_inputs)
             Logger.debug(
-                f"[heal_policy] tier={policy_decision.tier.name} threshold={policy_decision.threshold_used}",
+                f"[heal_policy] proceed={policy_decision.proceed} "
+                f"tier={policy_decision.tier.name if policy_decision.tier else 'NONE'} "
+                f"threshold={policy_decision.threshold_used}",
             )
 
-            # Phase 4: Escalation flag hook (default-off)
+            # Hard gate: If proceed=False, return deterministic refusal (no LLM)
+            if not policy_decision.proceed:
+                execution_time_ms = (time.time() - start_time) * 1000
+                return {
+                    **HEAL_RESULT_SCHEMA,
+                    "status": "BLOCKED",
+                    "violations_found": 0,
+                    "violations_fixed": 0,
+                    "execution_time_ms": execution_time_ms,
+                    "error_message": policy_decision.rationale,
+                    "_policy_decision": {
+                        "proceed": False,
+                        "tier": None,
+                        "threshold_used": policy_decision.threshold_used,
+                        "rationale": policy_decision.rationale,
+                    },
+                }
+
+            # Phase 4: LLM escalation (only if proceed=True AND tier is set)
             routed_model_id: str | None = None
-            if _select_reasoning_tier_enabled():
+            if policy_decision.tier is not None and enable_llm:
                 Logger.debug(
                     f"[heal_policy] escalation_enabled=1 selected_tier={policy_decision.tier.name}",
                 )
@@ -231,7 +254,7 @@ def standard_heal(func: F) -> F:
 
                 remaining_kwargs["_heal_routed_model_id"] = routed_model_id
 
-                # Phase 8: Invoke heal LLM seam probe (default-off)
+                # Phase 8: Invoke heal LLM seam probe (only when model is routed)
                 if routed_model_id is not None and DEFAULT_HEAL_LLM_CALLER is not None:
                     request = HealLlmRequest(
                         prompt="heal_policy_probe",
@@ -240,6 +263,13 @@ def standard_heal(func: F) -> F:
                     )
                     _ = DEFAULT_HEAL_LLM_CALLER(request)
                     Logger.debug(f"[heal_policy] llm_probe=CALLED model_id={routed_model_id}")
+
+            # Store policy decision in kwargs for downstream use
+            remaining_kwargs["_policy_decision"] = {
+                "proceed": policy_decision.proceed,
+                "tier": policy_decision.tier.name if policy_decision.tier else None,
+                "threshold_used": policy_decision.threshold_used,
+            }
 
             result = func(
                 self,
