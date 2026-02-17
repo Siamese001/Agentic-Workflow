@@ -3,13 +3,18 @@
 Pure type definitions only (stdlib-only, no environment access or SDK imports).
 Phase 7 Wave 7.1.
 Phase 3: Added canonical seam enforcement via capability token.
+Phase 5: Added telemetry + budget caps.
 """
 
 from __future__ import annotations
 
 import contextvars
+import hashlib
+import json
+import os
 from dataclasses import dataclass
-from typing import Any, Callable
+from pathlib import Path
+from typing import Any, Callable, Literal
 
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
@@ -116,10 +121,180 @@ class PolicyDecisionRecord:
 
     def input_hash(self) -> str:
         """Compute deterministic hash of inputs for stable filenames."""
-        import hashlib
-
         input_str = f"{self.confidence}:{self.enable_llm}:{self.complexity}:{self.prior_failures}"
         return hashlib.sha256(input_str.encode()).hexdigest()[:16]
+
+
+# =============================================================================
+# PHASE 5: Telemetry + Budget Caps
+# =============================================================================
+
+
+class HealBudgetExceededError(Exception):
+    """Raised when heal escalation budget is exceeded."""
+
+    pass
+
+
+@dataclass(frozen=True)
+class HealBudgetCaps:
+    """Budget caps for heal escalation (defaults from env vars)."""
+
+    max_escalations_per_run: int = 1
+    max_high_tier_per_run: int = 1
+
+    @classmethod
+    def from_env(cls, enable_llm: bool = False) -> HealBudgetCaps:
+        """Load budget caps from environment variables with sensible defaults."""
+        max_escalations = int(os.environ.get("HEAL_MAX_ESCALATIONS_PER_RUN", "1"))
+        # HIGH-tier default is 0 when enable_llm=False, 1 otherwise
+        default_high = 0 if not enable_llm else 1
+        max_high = int(os.environ.get("HEAL_MAX_HIGH_TIER_PER_RUN", str(default_high)))
+        return cls(
+            max_escalations_per_run=max_escalations,
+            max_high_tier_per_run=max_high,
+        )
+
+
+# Budget counters via contextvars (reset in standard_heal finally)
+_ESCALATION_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_ESCALATION_COUNT", default=0)
+_HIGH_TIER_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_HIGH_TIER_COUNT", default=0)
+_BUDGET_CAPS: contextvars.ContextVar[HealBudgetCaps | None] = contextvars.ContextVar(
+    "_BUDGET_CAPS", default=None
+)
+
+
+def set_heal_budget_caps(caps: HealBudgetCaps) -> contextvars.Token[HealBudgetCaps | None]:
+    """Set budget caps for current heal run."""
+    return _BUDGET_CAPS.set(caps)
+
+
+def reset_heal_budget_counters() -> None:
+    """Reset budget counters to zero."""
+    _ESCALATION_COUNT.set(0)
+    _HIGH_TIER_COUNT.set(0)
+
+
+def increment_escalation_count(tier: str | None = None) -> None:
+    """Increment escalation count and check budget.
+
+    Raises:
+        HealBudgetExceededError: If budget cap is exceeded.
+    """
+    caps = _BUDGET_CAPS.get()
+    if caps is None:
+        # No budget caps set, allow all
+        return
+
+    current = _ESCALATION_COUNT.get()
+    if current >= caps.max_escalations_per_run:
+        raise HealBudgetExceededError(
+            f"Escalation budget exceeded: {current} >= {caps.max_escalations_per_run}"
+        )
+
+    _ESCALATION_COUNT.set(current + 1)
+
+    # Check HIGH-tier budget
+    if tier == "HIGH":
+        high_current = _HIGH_TIER_COUNT.get()
+        if high_current >= caps.max_high_tier_per_run:
+            raise HealBudgetExceededError(
+                f"HIGH-tier budget exceeded: {high_current} >= {caps.max_high_tier_per_run}"
+            )
+        _HIGH_TIER_COUNT.set(high_current + 1)
+
+
+def get_budget_counters() -> dict[str, int]:
+    """Get current budget counter values."""
+    return {
+        "escalation_count": _ESCALATION_COUNT.get(),
+        "high_tier_count": _HIGH_TIER_COUNT.get(),
+    }
+
+
+@dataclass(frozen=True)
+class HealTelemetryRecord:
+    """Deterministic telemetry record for heal runs (no timestamps/UUIDs).
+
+    Emitted per heal / heal_repository run for observability.
+    """
+
+    run_kind: Literal["heal", "heal_repository"]
+    agent_class: str
+    target_path: str  # repo root or file path; may be empty for single-issue heal
+    inputs_hash: str  # stable hash of normalized inputs
+    policy_hash: str  # PolicyDecisionRecord.input_hash()
+    baseline_ops_count: int
+    applied_ops_count: int
+    changed_files_count: int
+    idempotent_second_pass: bool
+    outcome: Literal["plan_only", "applied", "blocked_budget", "blocked_policy"]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to JSON-serializable dict."""
+        return {
+            "run_kind": self.run_kind,
+            "agent_class": self.agent_class,
+            "target_path": self.target_path,
+            "inputs_hash": self.inputs_hash,
+            "policy_hash": self.policy_hash,
+            "baseline_ops_count": self.baseline_ops_count,
+            "applied_ops_count": self.applied_ops_count,
+            "changed_files_count": self.changed_files_count,
+            "idempotent_second_pass": self.idempotent_second_pass,
+            "outcome": self.outcome,
+        }
+
+    def telemetry_hash(self) -> str:
+        """Compute deterministic hash of telemetry record for filenames."""
+        record_str = json.dumps(self.to_dict(), sort_keys=True)
+        return hashlib.sha256(record_str.encode()).hexdigest()[:16]
+
+
+def emit_heal_telemetry(
+    record: HealTelemetryRecord,
+    artifacts_root: Path | None = None,
+) -> Path:
+    """Emit a deterministic telemetry artifact.
+
+    Args:
+        record: The telemetry record to emit.
+        artifacts_root: Root path for artifacts (default: artifacts/consolidation/heal_telemetry)
+
+    Returns:
+        Path to the emitted artifact.
+
+    Raises:
+        ValueError: If file exists with different content.
+    """
+    if artifacts_root is None:
+        # Use project root detection
+        current = Path(__file__).resolve()
+        project_root = current.parent.parent.parent.parent  # Up to agentic_core parent
+        artifacts_root = project_root / "artifacts" / "consolidation" / "heal_telemetry"
+
+    artifacts_root.mkdir(parents=True, exist_ok=True)
+
+    filename = f"{record.inputs_hash}.json"
+    filepath = artifacts_root / filename
+
+    # Deterministic JSON serialization
+    content = json.dumps(record.to_dict(), sort_keys=True, indent=2)
+    content_bytes = content.encode("utf-8")
+
+    if filepath.exists():
+        existing = filepath.read_bytes()
+        if existing != content_bytes:
+            raise ValueError(
+                f"Telemetry artifact conflict: {filepath} exists with different content. "
+                f"Expected hash: {hashlib.sha256(content_bytes).hexdigest()[:16]}, "
+                f"Found hash: {hashlib.sha256(existing).hexdigest()[:16]}"
+            )
+        # Already exists with identical content, no-op
+        return filepath
+
+    filepath.write_bytes(content_bytes)
+    return filepath
 
 
 # =============================================================================

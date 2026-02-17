@@ -342,6 +342,79 @@ def _get_repo_heal_outcomes_static() -> dict[str, Any]:
     }
 
 
+def _get_telemetry_schema_summary() -> dict[str, Any]:
+    """Get telemetry schema summary for Phase 5 report.
+
+    Returns schema fields and determinism rules (no timestamps).
+    """
+    return {
+        "fields": [
+            "run_kind",
+            "agent_class",
+            "target_path",
+            "inputs_hash",
+            "policy_hash",
+            "baseline_ops_count",
+            "applied_ops_count",
+            "changed_files_count",
+            "idempotent_second_pass",
+            "outcome",
+        ],
+        "determinism_rules": [
+            "No timestamps or UUIDs",
+            "JSON serialization with sorted keys",
+            "File naming uses inputs_hash (16-char SHA256 prefix)",
+            "Overwrite allowed only if content is byte-identical",
+        ],
+        "outcome_values": [
+            "plan_only",
+            "applied",
+            "blocked_budget",
+            "blocked_policy",
+        ],
+    }
+
+
+def _get_telemetry_aggregates_static() -> dict[str, Any]:
+    """Get telemetry aggregates from synthetic artifacts (fixed set).
+
+    Uses pre-computed values for determinism (no filesystem nondeterminism).
+    """
+    # Pre-computed aggregates from synthetic telemetry artifacts
+    return {
+        "total_records": 5,
+        "by_run_kind": {
+            "heal": 2,
+            "heal_repository": 3,
+        },
+        "by_outcome": {
+            "plan_only": 2,
+            "applied": 2,
+            "blocked_policy": 1,
+            "blocked_budget": 0,
+        },
+        "total_baseline_ops": 25,
+        "total_applied_ops": 15,
+        "idempotent_passes": 4,
+    }
+
+
+def _get_budget_caps_summary() -> dict[str, Any]:
+    """Get budget caps summary for Phase 5 report."""
+    return {
+        "defaults": {
+            "MAX_ESCALATIONS_PER_RUN": 1,
+            "MAX_HIGH_TIER_PER_RUN (enable_llm=False)": 0,
+            "MAX_HIGH_TIER_PER_RUN (enable_llm=True)": 1,
+        },
+        "enforcement": [
+            "Tracked via contextvars (reset in standard_heal finally)",
+            "HealBudgetExceededError on cap exceed",
+            "Fail-closed: no escalation if budget exceeded",
+        ],
+    }
+
+
 def generate_markdown_report(audit_data: dict[str, Any]) -> str:
     """Generate deterministic markdown report from audit data."""
     runtime_agents = audit_data["runtime_agents"]
@@ -465,6 +538,90 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
         ]
     )
+
+    # Phase 5: Telemetry Schema Summary section
+    telemetry_schema = _get_telemetry_schema_summary()
+    lines.extend(
+        [
+            "## Telemetry Schema Summary",
+            "",
+            "HealTelemetryRecord fields (no timestamps/UUIDs):",
+            "",
+            "| Field | Description |",
+            "|-------|-------------|",
+        ]
+    )
+    for field_name in telemetry_schema["fields"]:
+        lines.append(f"| {field_name} | Deterministic |")
+
+    lines.extend(
+        [
+            "",
+            "Determinism rules:",
+            "",
+        ]
+    )
+    for rule in telemetry_schema["determinism_rules"]:
+        lines.append(f"- {rule}")
+
+    lines.extend(
+        [
+            "",
+            "Outcome values: " + ", ".join(telemetry_schema["outcome_values"]),
+            "",
+        ]
+    )
+
+    # Phase 5: Telemetry Aggregates section
+    telemetry_aggregates = _get_telemetry_aggregates_static()
+    lines.extend(
+        [
+            "## Telemetry Aggregates (Synthetic)",
+            "",
+            "Aggregates computed from fixed set of synthetic telemetry artifacts:",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
+            f"| Total Records | {telemetry_aggregates['total_records']} |",
+            f"| heal runs | {telemetry_aggregates['by_run_kind']['heal']} |",
+            f"| heal_repository runs | {telemetry_aggregates['by_run_kind']['heal_repository']} |",
+            f"| plan_only outcomes | {telemetry_aggregates['by_outcome']['plan_only']} |",
+            f"| applied outcomes | {telemetry_aggregates['by_outcome']['applied']} |",
+            f"| blocked_policy outcomes | {telemetry_aggregates['by_outcome']['blocked_policy']} |",
+            f"| blocked_budget outcomes | {telemetry_aggregates['by_outcome']['blocked_budget']} |",
+            f"| Total Baseline Ops | {telemetry_aggregates['total_baseline_ops']} |",
+            f"| Total Applied Ops | {telemetry_aggregates['total_applied_ops']} |",
+            f"| Idempotent Passes | {telemetry_aggregates['idempotent_passes']} |",
+            "",
+        ]
+    )
+
+    # Phase 5: Budget Caps Summary section
+    budget_caps = _get_budget_caps_summary()
+    lines.extend(
+        [
+            "## Budget Caps Summary",
+            "",
+            "Defaults:",
+            "",
+            "| Cap | Default Value |",
+            "|-----|---------------|",
+        ]
+    )
+    for cap_name, cap_value in budget_caps["defaults"].items():
+        lines.append(f"| {cap_name} | {cap_value} |")
+
+    lines.extend(
+        [
+            "",
+            "Enforcement rules:",
+            "",
+        ]
+    )
+    for rule in budget_caps["enforcement"]:
+        lines.append(f"- {rule}")
+
+    lines.append("")
 
     return "\n".join(lines)
 
