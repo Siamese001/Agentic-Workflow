@@ -1575,7 +1575,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns None if compliant, or a violation dict.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             L5_SUBPROCESS_ALLOWLIST,
             L6_HYBRID_ALLOWLIST,
             SCRIPTS_FORBIDDEN_PATTERNS,
@@ -2368,7 +2368,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if no violation, or violation dict with correct app domain.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             APP_DOMAIN_PREFIXES,
         )
 
@@ -2407,7 +2407,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if file is clean, or violation dict if ephemeral script detected.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             EPHEMERAL_PATTERN_EXEMPTIONS,
             FORBIDDEN_EPHEMERAL_PATTERNS,
         )
@@ -2448,7 +2448,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if no violation, or violation dict with details.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             LAYER_PREFIX_PATTERN,
         )
 
@@ -2513,7 +2513,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             List of violation dicts, one per duplicate file (not per group).
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             CANONICAL_LOCATION_PRIORITY,
             DUPLICATE_DETECTION_EXEMPT,
         )
@@ -2574,7 +2574,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             Dict mapping layer names (L0-L6) to affinity scores (0.0-1.0).
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config import (
             LAYER_KEYWORD_AFFINITY,
         )
 
