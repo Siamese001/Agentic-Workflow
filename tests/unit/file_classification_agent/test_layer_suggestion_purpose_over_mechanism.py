@@ -10,7 +10,7 @@ Validates:
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
 )

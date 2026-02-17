@@ -79,7 +79,7 @@ class TestAllowlistIntegrity:
     def test_l5_subprocess_allowlist_exists(self):
         """L5_SUBPROCESS_ALLOWLIST should be defined."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import L5_SUBPROCESS_ALLOWLIST
+            from agentic_core.L0_routing.config import L5_SUBPROCESS_ALLOWLIST
 
             assert L5_SUBPROCESS_ALLOWLIST is not None
             assert isinstance(L5_SUBPROCESS_ALLOWLIST, (set, list, tuple, frozenset))
@@ -89,7 +89,7 @@ class TestAllowlistIntegrity:
     def test_l6_hybrid_allowlist_exists(self):
         """L6_HYBRID_ALLOWLIST should be defined."""
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import L6_HYBRID_ALLOWLIST
+            from agentic_core.L0_routing.config import L6_HYBRID_ALLOWLIST
 
             assert L6_HYBRID_ALLOWLIST is not None
             assert isinstance(L6_HYBRID_ALLOWLIST, (set, list, tuple, frozenset))

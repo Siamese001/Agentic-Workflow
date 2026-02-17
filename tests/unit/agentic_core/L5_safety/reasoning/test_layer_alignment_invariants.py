@@ -91,21 +91,21 @@ class TestBlueprintAPI:
         assert result is None
 
     def test_l5_subprocess_allowlist_populated(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import L5_SUBPROCESS_ALLOWLIST
+        from agentic_core.L0_routing.config import L5_SUBPROCESS_ALLOWLIST
 
         assert "safe_subprocess_handler.py" in L5_SUBPROCESS_ALLOWLIST
         assert "PreCommitSovereignAgent.py" in L5_SUBPROCESS_ALLOWLIST
         assert len(L5_SUBPROCESS_ALLOWLIST) >= 7
 
     def test_l6_hybrid_allowlist_populated(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import L6_HYBRID_ALLOWLIST
+        from agentic_core.L0_routing.config import L6_HYBRID_ALLOWLIST
 
         assert "verify_dashboard_e2e_playwright_util.py" in L6_HYBRID_ALLOWLIST
 
     def test_scripts_forbidden_patterns(self):
         import re
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import SCRIPTS_FORBIDDEN_PATTERNS
+        from agentic_core.L0_routing.config import SCRIPTS_FORBIDDEN_PATTERNS
 
         # PascalCase should match
         assert any(re.match(p, "AgentAuditResult.py") for p in SCRIPTS_FORBIDDEN_PATTERNS)

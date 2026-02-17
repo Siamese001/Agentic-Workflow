@@ -165,22 +165,86 @@ DUPLICATE_DETECTION_EXEMPT: Final[Sequence[str]] = [
 LAYER_PREFIX_PATTERN: Final[str] = r"^(L[0-6]|apps_|ops_scripts|docs|archives)"
 
 # ============================================================================
+# AST PLACEMENT SIGNALS
+# ============================================================================
+
+AST_PLACEMENT_SIGNALS: Final[Sequence[str]] = [
+    "Agent",
+    "Strategy",
+    "Adapter",
+    "Protocol",
+    "Healer",
+    "Guardian",
+    "Validator",
+    "Enforcer",
+    "Auditor",
+    "Monitor",
+    "Orchestrator",
+    "Coordinator",
+    "Manager",
+    "Controller",
+    "Service",
+    "Handler",
+    "Processor",
+    "Executor",
+    "Runner",
+    "Worker",
+]
+
+# ============================================================================
+# SOVEREIGN TERRITORIES
+# ============================================================================
+
+SOVEREIGN_TERRITORIES: Final[Mapping[str, Mapping[str, str]]] = {
+    "agentic_core": {
+        "description": "Core framework and shared utilities",
+        "layer": "L0_routing",
+    },
+    "apps_rg": {
+        "description": "Research and development applications",
+        "layer": "L1_cognition",
+    },
+    "apps_lic": {
+        "description": "Licensed commercial applications",
+        "layer": "L2_execution",
+    },
+    "apps_shared": {
+        "description": "Shared application components",
+        "layer": "L3_orchestration",
+    },
+    "archives": {
+        "description": "Archived code and documentation",
+        "layer": "L4_state",
+    },
+    "docs": {
+        "description": "Documentation and reports",
+        "layer": "L5_safety",
+    },
+    "ops_scripts": {
+        "description": "Operational scripts and tools",
+        "layer": "L6_observability",
+    },
+}
+
+# ============================================================================
 # EXPORTS
 # ============================================================================
 
 __all__ = [
-    "SCRIPTS_FORBIDDEN_PATTERNS",
-    "L5_SUBPROCESS_ALLOWLIST",
-    "L6_HYBRID_ALLOWLIST",
-    "FOLDER_PURITY_RULES",
+    "AST_PLACEMENT_SIGNALS",
     "APP_DOMAIN_PREFIXES",
-    "LAYER_KEYWORD_AFFINITY",
-    "SUFFIX_TO_FOLDER",
-    "INTERFACE_FILENAME_PATTERN",
-    "GLOBAL_INTERFACES_FOLDER",
-    "FORBIDDEN_EPHEMERAL_PATTERNS",
-    "EPHEMERAL_PATTERN_EXEMPTIONS",
     "CANONICAL_LOCATION_PRIORITY",
     "DUPLICATE_DETECTION_EXEMPT",
+    "EPHEMERAL_PATTERN_EXEMPTIONS",
+    "FOLDER_PURITY_RULES",
+    "FORBIDDEN_EPHEMERAL_PATTERNS",
+    "GLOBAL_INTERFACES_FOLDER",
+    "INTERFACE_FILENAME_PATTERN",
+    "L5_SUBPROCESS_ALLOWLIST",
+    "L6_HYBRID_ALLOWLIST",
+    "LAYER_KEYWORD_AFFINITY",
     "LAYER_PREFIX_PATTERN",
+    "SCRIPTS_FORBIDDEN_PATTERNS",
+    "SOVEREIGN_TERRITORIES",
+    "SUFFIX_TO_FOLDER",
 ]

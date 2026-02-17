@@ -18,6 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.config.structure_blueprint_data import (
     APP_DOMAIN_PREFIXES,
+    AST_PLACEMENT_SIGNALS,
     CANONICAL_LOCATION_PRIORITY,
     DUPLICATE_DETECTION_EXEMPT,
     EPHEMERAL_PATTERN_EXEMPTIONS,
@@ -30,6 +31,7 @@ from agentic_core.L0_routing.config.structure_blueprint_data import (
     LAYER_KEYWORD_AFFINITY,
     LAYER_PREFIX_PATTERN,
     SCRIPTS_FORBIDDEN_PATTERNS,
+    SOVEREIGN_TERRITORIES,
     SUFFIX_TO_FOLDER,
 )
 
@@ -41,6 +43,7 @@ __all__ = [
     "APPS_RG_DIR",
     "APPS_SHARED_DIR",
     "ARCHIVES_DIR",
+    "AST_PLACEMENT_SIGNALS",
     "CANONICAL_LOCATION_PRIORITY",
     "DUPLICATE_DETECTION_EXEMPT",
     "EPHEMERAL_PATTERN_EXEMPTIONS",
@@ -59,6 +62,7 @@ __all__ = [
     "ROOT_WHITELIST",
     "SCRIPTS_DIR",
     "SCRIPTS_FORBIDDEN_PATTERNS",
+    "SOVEREIGN_TERRITORIES",
     "SUFFIX_TO_FOLDER",
     "TESTS_DIR",
     "get_validated_project_root",
