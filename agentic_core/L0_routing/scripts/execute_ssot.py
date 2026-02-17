@@ -2215,50 +2215,30 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
     Returns: (success: bool, results: List|None)
     """
     try:
-        # Dynamic import to avoid hard dependency on L3 (Graceful Degradation)
-        from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import (
-            get_consolidated_orchestrator,
-        )
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
-        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,  # noqa: F401
-        )
-        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
-            GravityLeakRepairAgent,
-        )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
-            SystemArchitectAgent,  # noqa: F401
+        # Invoke via subprocess to avoid upward import edges
+        from agentic_core.L0_routing.utils.subprocess_runner import (
+            invoke_orchestrator_mission,
         )
 
-        orchestrator = get_consolidated_orchestrator(project_root)
-        logger.info("🧠 L3 ORCHESTRATOR SUMMONED: Delegating command.")
+        logger.info("🧠 L3 ORCHESTRATOR SUMMONED (via subprocess): Delegating command.")
 
-        # Assemble Roster for L3
-        active_roster = [
-            ("LocationAgent", LocationAgent(project_root)),
-            ("HierarchyAgent", HierarchyAgent(project_root)),
-            ("ArchitectureGovernorAgent", ArchitectureGovernorAgent(project_root)),
-            ("GravityLeakRepairAgent", GravityLeakRepairAgent(project_root)),
-        ]
+        result = invoke_orchestrator_mission(
+            project_root=project_root,
+            targets=targets,
+            execute=execute,
+        )
 
-        mission_context = {
-            "dry_run": not execute,
-            "execute": execute,
-            "domains": targets,
-            "scan_mode": "leveraged",
-        }
+        if result.get("success"):
+            return True, result.get("results")
 
-        # Execute via L3
-        mission_results = orchestrator.run_mission(active_roster, mission_context)
-        return True, mission_results
+        # Check if fallback is needed
+        if result.get("fallback"):
+            logger.warning("L3 Orchestrator not found. Falling back to L5 iteration.")
+            return False, None
 
-    except ImportError:
-        logger.warning("L3 Orchestrator not found. Falling back to L5 iteration.")
+        logger.error(f"L3 Orchestration failed: {result.get('error')}. Falling back.")
         return False, None
+
     # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"L3 Orchestration failed: {e}. Falling back to L5 iteration.")
@@ -2617,14 +2597,18 @@ Examples:
     if args.capture_baseline:
         print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
         try:
-            from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-                ArchitectureGovernorAgent,
-            )
+            from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
 
-            governor = ArchitectureGovernorAgent(project_root=project_root)
-            manifest = governor.capture_golden_baseline()
-            print(f"✨ Golden Baseline captured at: {manifest}")
-            sys.exit(0)
+            result = invoke_arch_governor(
+                action="capture_baseline",
+                project_root=project_root,
+            )
+            if result.get("success"):
+                print(f"✨ Golden Baseline captured at: {result.get('manifest_path')}")
+                sys.exit(0)
+            else:
+                logger.error(f"Baseline capture failed: {result.get('error')}")
+                sys.exit(1)
         # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Baseline capture failed: {e}")
@@ -2703,60 +2687,32 @@ Examples:
     logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
     logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
 
-    # [HARDENED] Mandatory Hard Imports for Total Awareness
+    # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
     try:
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
+        from agentic_core.L0_routing.utils.subprocess_runner import (
+            invoke_agent_roster_validation,
         )
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-            FileClassificationAgent,
-        )
-        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
-            FilesystemSSOTReconcilerAgent,
-        )
-        from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
-            GravityLeakRepairAgent,
-        )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
-            RootHygieneAgent,
-        )
-        from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
-        from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor as DebateSynthesisAgent,
-        )
-        # Note: NamingAgent is a dependency for FileClassificationAgent, checked during instantiation
 
-        agents = {
-            "reconciler": FilesystemSSOTReconcilerAgent,
-            "location": LocationAgent,
-            "hierarchy": HierarchyAgent,
-            "arch_governor": ArchitectureGovernorAgent,
-            "gravity_repair": GravityLeakRepairAgent,
-            "system_architect": SystemArchitectAgent,
-            "file_classification": FileClassificationAgent,
-            "conversational_repair": DebateSynthesisAgent,
-            "cognitive_disposition": CognitiveDispositionAgent,
-            "root_hygiene": RootHygieneAgent,
-        }
+        roster_result = invoke_agent_roster_validation()
 
-        logger.info("Total Awareness: Mandatory agent roster registered.")
+        if roster_result.get("success"):
+            logger.info("Total Awareness: Mandatory agent roster registered.")
+            logger.info(f"  Agents validated: {', '.join(roster_result.get('agents_validated', []))}")
+        else:
+            integrity_errors = roster_result.get("integrity_errors", [])
+            if integrity_errors:
+                logger.critical("🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
+                for err in integrity_errors:
+                    logger.error(f"  - {err}")
+                if not args.list_agents:
+                    sys.exit(1)  # Halt mission if any agent is non-compliant
+            else:
+                error_msg = roster_result.get("error", "Unknown error")
+                logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
+                sys.exit(1)
 
-        # [HARDENED] Blocking Integrity Check
-        integrity_errors = validator.validate_agent_integrity(agents)
-        if integrity_errors:
-            logger.critical("🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
-            for err in integrity_errors:
-                logger.error(f"  - {err}")
-            if not args.list_agents:
-                sys.exit(1)  # Halt mission if any agent is non-compliant
-
-    except ImportError as e:
-        logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {e}")
+    except Exception as e:
+        logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
         sys.exit(1)
 
     # 4. Determine Targets
@@ -2792,31 +2748,36 @@ Examples:
             if is_autonomous:
                 logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
                 try:
-                    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-                        ArchitectureGovernorAgent,
+                    from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+
+                    result = invoke_arch_governor(
+                        action="audit",
+                        project_root=project_root,
+                        targets=targets,
                     )
 
-                    governor = ArchitectureGovernorAgent(project_root=project_root, ci_mode=True)
-                    # Use provided targets to prevent global scanning during pre-flight check
-                    audit_results = governor.run_audit(target_territories=targets)
+                    if result.get("success"):
+                        audit_results = result.get("audit_results", {})
+                        # [UNIFIED AUDIT] Persist all identified violations to the runtime state
+                        state_mgr.state["compliance_report"] = audit_results
 
-                    # [UNIFIED AUDIT] Persist all identified violations to the runtime state
-                    state_mgr.state["compliance_report"] = audit_results
+                        stats = audit_results.get("stats", {})
+                        if stats.get("violations_found", 0) > 0:
+                            logger.warning(
+                                f"⚠️  {stats['violations_found']} total violations identified.",
+                            )
 
-                    if audit_results["stats"]["violations_found"] > 0:
-                        logger.warning(
-                            f"⚠️  {audit_results['stats']['violations_found']} total violations identified.",
-                        )
-
-                    if audit_results["stats"]["drift_detected"] > 0:
-                        logger.error(
-                            f"🛑 CRITICAL: {audit_results['stats']['drift_detected']} integrity drift detected.",
-                        )
-                        if args.validate:
-                            state_mgr.finish_mission(status="failed_integrity")
-                            sys.exit(1)  # Fatal in CI
-                        else:
-                            logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
+                        if stats.get("drift_detected", 0) > 0:
+                            logger.error(
+                                f"🛑 CRITICAL: {stats['drift_detected']} integrity drift detected.",
+                            )
+                            if args.validate:
+                                state_mgr.finish_mission(status="failed_integrity")
+                                sys.exit(1)  # Fatal in CI
+                            else:
+                                logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
+                    else:
+                        logger.warning(f"Integrity check failed: {result.get('error')}")
                 # guardian: allow-silent-swallow
                 except Exception as e:
                     logger.warning(f"Integrity check failed, continuing: {e}")

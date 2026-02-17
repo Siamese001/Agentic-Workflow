@@ -37,27 +37,24 @@ def main() -> int:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
+        from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
 
         print("=" * 60)
         print("SOVEREIGN LOCKDOWN VERIFICATION")
         print("=" * 60)
 
-        # Initialize the Governor in headless/auto-approve mode
-        agent = ArchitectureGovernorAgent(
+        # Invoke via subprocess to avoid upward import edge
+        result = invoke_arch_governor(
+            action="verify",
             project_root=project_root,
-            auto_approve=True,  # Force non-interactive sovereignty
+            auto_approve=True,
         )
 
-        # Execute final sync verification
-        passed, results = agent.run_ci_verification_sync()
-
         # Extract details
-        raw_result = results.get("_raw_result", results)
-        violations_found = raw_result.get("violations_found", 0)
-        roots_scanned = raw_result.get("roots_scanned", [])
+        raw_result = result.get("raw_result", result)
+        passed = result.get("success", False)
+        violations_found = raw_result.get("violations_found", result.get("violations_found", 0))
+        roots_scanned = raw_result.get("roots_scanned", result.get("roots_scanned", []))
 
         print(f"\nRoots Scanned: {', '.join(roots_scanned) if roots_scanned else 'None'}")
         print(f"Violations Found: {violations_found}")

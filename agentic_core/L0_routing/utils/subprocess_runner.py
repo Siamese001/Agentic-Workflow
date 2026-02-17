@@ -1,0 +1,168 @@
+"""
+L0 utilities for invoking L5 runners via subprocess.
+
+This module provides clean subprocess invocation to L5 runners,
+avoiding upward import edges while enabling L0 scripts to
+trigger L5 agent functionality.
+"""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+__all__ = [
+    "invoke_arch_governor",
+    "invoke_orchestrator_mission",
+    "invoke_agent_roster_validation",
+]
+
+
+def invoke_arch_governor(
+    action: str,
+    project_root: Path | None = None,
+    targets: list[str] | None = None,
+    auto_approve: bool = True,
+) -> dict[str, Any]:
+    """
+    Invoke ArchitectureGovernorAgent via subprocess.
+
+    Args:
+        action: One of 'verify', 'capture_baseline', 'audit'
+        project_root: Project root path (auto-detected if None)
+        targets: Target territories for audit action
+        auto_approve: Auto-approve mode
+
+    Returns:
+        Dict with 'success' key and action-specific results
+    """
+    cmd = [
+        sys.executable,
+        "-m",
+        "agentic_core.L5_safety.runners.arch_governor_runner",
+        f"--action={action}",
+    ]
+
+    if project_root:
+        cmd.append(f"--project-root={project_root}")
+
+    if targets:
+        cmd.append(f"--targets={','.join(targets)}")
+
+    if auto_approve:
+        cmd.append("--auto-approve")
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 minute timeout
+        )
+        if result.stdout.strip():
+            return json.loads(result.stdout.strip())
+        return {
+            "success": result.returncode == 0,
+            "error": result.stderr if result.returncode != 0 else None,
+        }
+    # guardian: allow-silent-swallow
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
+    except json.JSONDecodeError as e:
+        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def invoke_orchestrator_mission(
+    project_root: Path | None = None,
+    targets: list[str] | None = None,
+    execute: bool = False,
+) -> dict[str, Any]:
+    """
+    Invoke orchestrator mission via subprocess.
+
+    Args:
+        project_root: Project root path (auto-detected if None)
+        targets: Target territories
+        execute: Execute mode (vs dry-run)
+
+    Returns:
+        Dict with 'success' key and mission results
+    """
+    if not targets:
+        return {"success": False, "error": "No targets specified"}
+
+    cmd = [
+        sys.executable,
+        "-m",
+        "agentic_core.L5_safety.runners.orchestrator_runner",
+        "--action=mission",
+        f"--targets={','.join(targets)}",
+    ]
+
+    if project_root:
+        cmd.append(f"--project-root={project_root}")
+
+    if execute:
+        cmd.append("--execute")
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=600,  # 10 minute timeout for missions
+        )
+        if result.stdout.strip():
+            return json.loads(result.stdout.strip())
+        return {
+            "success": result.returncode == 0,
+            "error": result.stderr if result.returncode != 0 else None,
+        }
+    # guardian: allow-silent-swallow
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Subprocess timed out after 600 seconds"}
+    except json.JSONDecodeError as e:
+        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def invoke_agent_roster_validation() -> dict[str, Any]:
+    """
+    Invoke agent roster validation via subprocess.
+
+    Returns:
+        Dict with 'success', 'agents_validated', and 'integrity_errors' keys
+    """
+    cmd = [
+        sys.executable,
+        "-m",
+        "agentic_core.L5_safety.runners.agent_roster_runner",
+        "--action=validate",
+    ]
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=120,  # 2 minute timeout
+        )
+        if result.stdout.strip():
+            return json.loads(result.stdout.strip())
+        return {
+            "success": result.returncode == 0,
+            "error": result.stderr if result.returncode != 0 else None,
+        }
+    # guardian: allow-silent-swallow
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Subprocess timed out after 120 seconds"}
+    except json.JSONDecodeError as e:
+        return {"success": False, "error": f"Failed to parse runner output: {e}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}

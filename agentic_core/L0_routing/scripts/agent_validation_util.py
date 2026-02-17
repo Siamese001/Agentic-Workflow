@@ -68,31 +68,30 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
-            ArchitectureGovernorAgent,
-        )
+        from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
 
         print("\n" + "=" * 70)
         print("AGENT VALIDATION: Architecture Governance")
         print("=" * 70)
 
-        agent = ArchitectureGovernorAgent(
+        # Invoke via subprocess to avoid upward import edge
+        result = invoke_arch_governor(
+            action="verify",
             project_root=project_root,
-            auto_approve=True,  # Headless CI mode
+            auto_approve=True,
         )
 
-        # Run validation (dry-run mode)
-        is_compliant, results = agent.run_ci_verification_sync()
-
-        violations_found = results.get("violations_found", 0)
+        is_compliant = result.get("success", False)
+        violations_found = result.get("violations_found", 0)
+        roots_scanned = result.get("roots_scanned", [])
 
         if not is_compliant:
             print(f"\n❌ Found {violations_found} architecture violations")
-            print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
+            print(f"   Roots scanned: {', '.join(roots_scanned)}")
             return False, f"Found {violations_found} architecture violations"
 
         print("\n✅ Architecture validation passed")
-        print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
+        print(f"   Roots scanned: {', '.join(roots_scanned)}")
         return True, "Architecture governance check passed"
 
     # guardian: allow-silent-swallow
