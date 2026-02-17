@@ -46,7 +46,7 @@ class NotAgentClass:
     pass
 '''
 
-EXPECTED_SCHEMA_KEYS = {"audit_results", "summary"}
+EXPECTED_SCHEMA_KEYS = {"audit_results", "runtime_agents", "non_agents", "summary"}
 
 EXPECTED_RESULT_KEYS = {
     "repo_relative_path",
@@ -54,9 +54,11 @@ EXPECTED_RESULT_KEYS = {
     "has_heal",
     "has_heal_repository",
     "base_class_names",
+    "is_runtime_agent",
+    "classification_reason",
 }
 
-EXPECTED_SUMMARY_KEYS = {"total_agents", "missing_heal", "missing_heal_repository", "missing_both"}
+EXPECTED_SUMMARY_KEYS = {"runtime_agents", "all_classes"}
 
 
 def run_audit_cli(format_type: str = "json", out_path: Path | None = None) -> dict[str, Any]:
@@ -169,6 +171,8 @@ class TestStructureContract:
             assert isinstance(item["has_heal"], bool)
             assert isinstance(item["has_heal_repository"], bool)
             assert isinstance(item["base_class_names"], list)
+            assert isinstance(item["is_runtime_agent"], bool)
+            assert isinstance(item["classification_reason"], str)
 
             # Check base_class_names content
             for base in item["base_class_names"]:
@@ -184,17 +188,34 @@ class TestStructureContract:
             f"Unexpected summary keys: {set(summary.keys()) - EXPECTED_SUMMARY_KEYS}"
         )
 
-        # Check data types and values
-        for key, value in summary.items():
-            assert isinstance(value, int)
-            assert value >= 0, f"Summary value {key} should be non-negative"
+        # Check runtime_agents section
+        runtime = summary["runtime_agents"]
+        runtime_keys = {"total", "missing_heal", "missing_heal_repository", "missing_both"}
+        assert set(runtime.keys()) == runtime_keys
 
-        # Check logical consistency
-        assert summary["total_agents"] >= summary["missing_heal"]
-        assert summary["total_agents"] >= summary["missing_heal_repository"]
-        assert summary["total_agents"] >= summary["missing_both"]
-        assert summary["missing_both"] <= summary["missing_heal"]
-        assert summary["missing_both"] <= summary["missing_heal_repository"]
+        for key, value in runtime.items():
+            assert isinstance(value, int)
+            assert value >= 0, f"Runtime summary value {key} should be non-negative"
+
+        # Check logical consistency for runtime agents
+        assert runtime["total"] >= runtime["missing_heal"]
+        assert runtime["total"] >= runtime["missing_heal_repository"]
+        assert runtime["total"] >= runtime["missing_both"]
+        assert runtime["missing_both"] <= runtime["missing_heal"]
+        assert runtime["missing_both"] <= runtime["missing_heal_repository"]
+
+        # Check all_classes section
+        all_classes = summary["all_classes"]
+        all_keys = {"total", "runtime_count", "non_agent_count"}
+        assert set(all_classes.keys()) == all_keys
+
+        for key, value in all_classes.items():
+            assert isinstance(value, int)
+            assert value >= 0, f"All classes summary value {key} should be non-negative"
+
+        # Check overall consistency
+        assert all_classes["total"] == all_classes["runtime_count"] + all_classes["non_agent_count"]
+        assert all_classes["runtime_count"] == runtime["total"]
 
 
 @pytest.mark.governance
@@ -337,12 +358,13 @@ class TestMarkdownGeneration:
 
         # Should contain required sections
         assert "# Agent Healing Audit Report" in content
-        assert "## Summary" in content
-        assert "## Detailed Results" in content
-        assert "| Path | Class | heal | heal_repository |" in content
+        assert "## Runtime Agents Summary" in content
+        assert "## Runtime Agents Detailed Results" in content
+        assert "## Non-Agents Appendix" in content
+        assert "| Path | Class | heal | heal_repository | Reason |" in content
 
         # Should contain summary numbers
-        assert "Total Agents" in content
+        assert "Runtime Agents" in content
         assert "Missing heal()" in content
         assert "Missing heal_repository()" in content
 

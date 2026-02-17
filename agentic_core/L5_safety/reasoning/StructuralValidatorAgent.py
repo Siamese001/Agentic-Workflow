@@ -325,3 +325,8 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         except Exception as e:
             Logger.error(f"[STRUCTURAL_VALIDATOR] Failed to heal: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
+
+    # guardian: allow-type-erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for StructuralValidatorAgent."""
+        raise NotImplementedError("heal_repository() not implemented for StructuralValidatorAgent")

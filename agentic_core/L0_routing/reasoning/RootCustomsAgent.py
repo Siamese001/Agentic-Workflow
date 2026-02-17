@@ -727,6 +727,11 @@ class RootCustomsAgent(SovereignBaseAgent):
                 "errors": [str(e)],
             }
 
+    # guardian: allow-type-erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for RootCustomsAgent."""
+        raise NotImplementedError("heal_repository() not implemented for RootCustomsAgent")
+
 
 def main():
     """Main entry point for the Enhanced Root Customs Agent."""

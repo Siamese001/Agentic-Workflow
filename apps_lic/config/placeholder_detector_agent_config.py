@@ -52,11 +52,6 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
 
         return True, ""
 
-    # guardian: allow-type_erasure
-    def heal(self, *args, **kwargs) -> dict:
-        """heal() not implemented for PlaceholderDetectorAgent."""
-        raise NotImplementedError("heal() not implemented for PlaceholderDetectorAgent")
-
     def heal_repository(self) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository()

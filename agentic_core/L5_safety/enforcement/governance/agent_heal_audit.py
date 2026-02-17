@@ -19,9 +19,59 @@ from typing import Any
 class AgentHealAuditScanner:
     """AST-based scanner for agent healing capabilities."""
 
+    # Known agent base classes (deterministically discovered)
+    KNOWN_AGENT_BASES = {
+        "SovereignBaseAgent",
+        "L0RoutingBase",
+        "L1CognitionBase",
+        "L2ExecutionBase",
+        "L3OrchestrationBase",
+        "L4StateBase",
+        "L5SafetyBase",
+        "L6ObservabilityBase",
+        "LightweightBase",
+    }
+
+    # Runtime agent folder patterns
+    RUNTIME_FOLDERS = {
+        "reasoning",
+        "engines",
+        "enforcement",
+        "orchestrators",
+    }
+
     def __init__(self, repo_root: Path):
         """Initialize scanner with repository root."""
         self.repo_root = repo_root
+
+    def _is_runtime_agent(self, class_name: str, base_names: list[str], file_path: Path) -> tuple[bool, str]:
+        """Deterministically classify if a class is a runtime agent.
+
+        Returns:
+            (is_runtime, reason)
+        """
+        # Rule 1: Inherits from known agent base
+        for base_name in base_names:
+            if base_name in self.KNOWN_AGENT_BASES:
+                return True, f"inherits from {base_name}"
+
+        # Rule 2: Check if it's a Pydantic model (not a runtime agent)
+        if "BaseModel" in base_names:
+            return False, "Pydantic model"
+
+        # Rule 3: In runtime folder and not in types/config
+        path_parts = file_path.parts
+        parent_dir = path_parts[-2] if len(path_parts) >= 2 else ""
+
+        if parent_dir in self.RUNTIME_FOLDERS:
+            # Exclude types/ and config/ subdirectories
+            if "types" not in path_parts and "config" not in path_parts:
+                # Additional check: exclude if BaseModel is in bases
+                if "BaseModel" not in base_names:
+                    return True, f"in runtime folder {parent_dir}"
+
+        # Default: not a runtime agent
+        return False, "protocol/interface/model/type"
 
     def scan_agent_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Scan a single Python file for Agent classes and their healing methods."""
@@ -54,6 +104,9 @@ class AgentHealAuditScanner:
                             # Handle cases like module.ClassName
                             base_class_names.append(ast.unparse(base))
 
+                    # Classify as runtime agent or not
+                    is_runtime, reason = self._is_runtime_agent(node.name, base_class_names, file_path)
+
                     # Get repo-relative path with forward slashes (OS-independent)
                     repo_relative = str(PurePosixPath(file_path.relative_to(self.repo_root)))
 
@@ -64,6 +117,8 @@ class AgentHealAuditScanner:
                             "has_heal": has_heal,
                             "has_heal_repository": has_heal_repository,
                             "base_class_names": sorted(base_class_names),  # Ensure deterministic ordering
+                            "is_runtime_agent": is_runtime,
+                            "classification_reason": reason,
                         }
                     )
 
@@ -95,21 +150,35 @@ class AgentHealAuditScanner:
         # Sort deterministically
         all_agents.sort(key=lambda x: (x["repo_relative_path"], x["class_name"]))
 
-        # Compute summary
-        total_agents = len(all_agents)
-        missing_heal = sum(1 for agent in all_agents if not agent["has_heal"])
-        missing_heal_repository = sum(1 for agent in all_agents if not agent["has_heal_repository"])
-        missing_both = sum(
-            1 for agent in all_agents if not agent["has_heal"] and not agent["has_heal_repository"]
+        # Separate runtime agents from non-agents
+        runtime_agents = [a for a in all_agents if a["is_runtime_agent"]]
+        non_agents = [a for a in all_agents if not a["is_runtime_agent"]]
+
+        # Compute summary for runtime agents only
+        runtime_total = len(runtime_agents)
+        runtime_missing_heal = sum(1 for agent in runtime_agents if not agent["has_heal"])
+        runtime_missing_heal_repository = sum(1 for agent in runtime_agents if not agent["has_heal_repository"])
+        runtime_missing_both = sum(
+            1 for agent in runtime_agents
+            if not agent["has_heal"] and not agent["has_heal_repository"]
         )
 
         return {
             "audit_results": all_agents,
+            "runtime_agents": runtime_agents,
+            "non_agents": non_agents,
             "summary": {
-                "total_agents": total_agents,
-                "missing_heal": missing_heal,
-                "missing_heal_repository": missing_heal_repository,
-                "missing_both": missing_both,
+                "runtime_agents": {
+                    "total": runtime_total,
+                    "missing_heal": runtime_missing_heal,
+                    "missing_heal_repository": runtime_missing_heal_repository,
+                    "missing_both": runtime_missing_both,
+                },
+                "all_classes": {
+                    "total": len(all_agents),
+                    "runtime_count": runtime_total,
+                    "non_agent_count": len(non_agents),
+                },
             },
         }
 
@@ -141,33 +210,52 @@ def main():
 
 def generate_markdown_report(audit_data: dict[str, Any]) -> str:
     """Generate deterministic markdown report from audit data."""
-    results = audit_data["audit_results"]
+    runtime_agents = audit_data["runtime_agents"]
+    non_agents = audit_data["non_agents"]
     summary = audit_data["summary"]
 
     lines = [
         "# Agent Healing Audit Report",
         "",
-        "## Summary",
+        "## Runtime Agents Summary",
         "",
-        f"- **Total Agents**: {summary['total_agents']}",
-        f"- **Missing heal()**: {summary['missing_heal']}",
-        f"- **Missing heal_repository()**: {summary['missing_heal_repository']}",
-        f"- **Missing Both**: {summary['missing_both']}",
+        f"- **Runtime Agents**: {summary['runtime_agents']['total']}",
+        f"- **Missing heal()**: {summary['runtime_agents']['missing_heal']}",
+        f"- **Missing heal_repository()**: {summary['runtime_agents']['missing_heal_repository']}",
+        f"- **Missing Both**: {summary['runtime_agents']['missing_both']}",
         "",
-        "## Detailed Results",
+        "## Runtime Agents Detailed Results",
         "",
-        "| Path | Class | heal | heal_repository |",
-        "|------|-------|------|-----------------|",
+        "| Path | Class | heal | heal_repository | Reason |",
+        "|------|-------|------|-----------------|--------|",
     ]
 
-    # Add table rows (already sorted deterministically)
-    for agent in results:
+    # Add runtime agent table rows
+    for agent in runtime_agents:
         path = agent["repo_relative_path"].replace("\\", "/")  # Normalize path separators
         class_name = agent["class_name"]
         heal_check = "✓" if agent["has_heal"] else "✗"
         heal_repo_check = "✓" if agent["has_heal_repository"] else "✗"
+        reason = agent["classification_reason"]
 
-        lines.append(f"| {path} | {class_name} | {heal_check} | {heal_repo_check} |")
+        lines.append(f"| {path} | {class_name} | {heal_check} | {heal_repo_check} | {reason} |")
+
+    # Add non-agents appendix
+    lines.extend([
+        "",
+        "## Non-Agents Appendix",
+        "",
+        f"*Total non-agent classes with 'Agent' suffix: {len(non_agents)}*",
+        "",
+        "| Path | Class | Reason |",
+        "|------|-------|--------|",
+    ])
+
+    for agent in non_agents:
+        path = agent["repo_relative_path"].replace("\\", "/")
+        class_name = agent["class_name"]
+        reason = agent["classification_reason"]
+        lines.append(f"| {path} | {class_name} | {reason} |")
 
     return "\n".join(lines)
 

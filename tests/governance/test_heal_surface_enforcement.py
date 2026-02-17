@@ -47,130 +47,37 @@ def run_audit_cli() -> dict:
     return json.loads(result.stdout)
 
 
-# Known base classes that provide heal/heal_repository via inheritance
-# These are checked at runtime, not via AST
-KNOWN_HEAL_PROVIDERS = frozenset(
-    {
-        "SovereignBaseAgent",
-        "LICAgentBase",
-        "RGAgentBase",
-        "LocationHealerAgent",
-    }
-)
-
-# Known protocol/interface classes that are exempt from heal requirements
-# These define contracts, not implementations
-KNOWN_PROTOCOL_CLASSES = frozenset(
-    {
-        "IOrchestratorAgent",
-        "ITieredAgent",
-        "IAgent",
-        "Protocol",
-    }
-)
-
-# Known Pydantic/dataclass models that happen to end with "Agent" but aren't agents
-KNOWN_MODEL_CLASSES = frozenset(
-    {
-        "GateDecisionAgent",
-        "GenerationAgent",
-        "ProfileAnalysisAgent",
-        "QAReportAgent",
-        "ResearchAgent",
-        "RoutingAgent",
-        "SenderGroundingAgent",
-        "ValidationAgent",
-    }
-)
-
-# Known legacy/stub classes that are exempt (with justification)
-KNOWN_EXEMPT_CLASSES = frozenset(
-    {
-        "BaseAgent",  # Abstract interface in apps_shared
-        "AppContentValidatorAgent",  # Type definition, not runtime agent
-        "CompetitorReconAgent",  # Type definition, not runtime agent
-        "StackModernizationAgent",  # Type definition, not runtime agent
-        "GapClosureArchitectAgent",  # Type definition, not runtime agent
-    }
-)
+# No exemption lists - we use the audit tool's deterministic runtime-agent classification
 
 
 class TestHealSurfaceEnforcement:
     """Regression tests for heal surface availability."""
 
     def test_all_agents_have_heal_surface(self):
-        """Verify all agents have heal() method (directly or via inheritance)."""
+        """Verify all runtime agents have heal() method."""
         audit_data = run_audit_cli()
 
         missing_heal = []
-        for agent in audit_data["audit_results"]:
-            if agent["has_heal"]:
-                continue
+        # Only check runtime agents, not protocols/interfaces/models
+        for agent in audit_data["runtime_agents"]:
+            if not agent["has_heal"]:
+                missing_heal.append(f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})")
 
-            class_name = agent["class_name"]
-            bases = set(agent["base_class_names"])
-
-            # Skip protocols/interfaces
-            if class_name in KNOWN_PROTOCOL_CLASSES:
-                continue
-            if bases & {"Protocol", "ABC"}:
-                continue
-
-            # Skip known model classes
-            if class_name in KNOWN_MODEL_CLASSES:
-                continue
-            if "BaseModel" in bases:
-                continue
-
-            # Skip known exempt classes
-            if class_name in KNOWN_EXEMPT_CLASSES:
-                continue
-
-            # Check if inherits from known heal provider
-            if bases & KNOWN_HEAL_PROVIDERS:
-                continue
-
-            missing_heal.append(f"{agent['repo_relative_path']}:{agent['class_name']}")
-
-        assert not missing_heal, "Agents missing heal() method:\n" + "\n".join(
+        assert not missing_heal, "Runtime agents missing heal() method:\n" + "\n".join(
             f"  - {m}" for m in sorted(missing_heal)
         )
 
     def test_all_agents_have_heal_repository_surface(self):
-        """Verify all agents have heal_repository() method (directly or via inheritance)."""
+        """Verify all runtime agents have heal_repository() method."""
         audit_data = run_audit_cli()
 
         missing_heal_repo = []
-        for agent in audit_data["audit_results"]:
-            if agent["has_heal_repository"]:
-                continue
+        # Only check runtime agents, not protocols/interfaces/models
+        for agent in audit_data["runtime_agents"]:
+            if not agent["has_heal_repository"]:
+                missing_heal_repo.append(f"{agent['repo_relative_path']}:{agent['class_name']} ({agent['classification_reason']})")
 
-            class_name = agent["class_name"]
-            bases = set(agent["base_class_names"])
-
-            # Skip protocols/interfaces
-            if class_name in KNOWN_PROTOCOL_CLASSES:
-                continue
-            if bases & {"Protocol", "ABC"}:
-                continue
-
-            # Skip known model classes
-            if class_name in KNOWN_MODEL_CLASSES:
-                continue
-            if "BaseModel" in bases:
-                continue
-
-            # Skip known exempt classes
-            if class_name in KNOWN_EXEMPT_CLASSES:
-                continue
-
-            # Check if inherits from known heal provider
-            if bases & KNOWN_HEAL_PROVIDERS:
-                continue
-
-            missing_heal_repo.append(f"{agent['repo_relative_path']}:{agent['class_name']}")
-
-        assert not missing_heal_repo, "Agents missing heal_repository() method:\n" + "\n".join(
+        assert not missing_heal_repo, "Runtime agents missing heal_repository() method:\n" + "\n".join(
             f"  - {m}" for m in sorted(missing_heal_repo)
         )
 
@@ -190,8 +97,16 @@ class TestHealSurfaceEnforcement:
         audit_data = run_audit_cli()
         summary = audit_data["summary"]
 
-        assert summary["total_agents"] >= summary["missing_heal"]
-        assert summary["total_agents"] >= summary["missing_heal_repository"]
-        assert summary["total_agents"] >= summary["missing_both"]
-        assert summary["missing_both"] <= summary["missing_heal"]
-        assert summary["missing_both"] <= summary["missing_heal_repository"]
+        runtime_summary = summary["runtime_agents"]
+        all_summary = summary["all_classes"]
+
+        # Runtime agent counts
+        assert runtime_summary["total"] >= runtime_summary["missing_heal"]
+        assert runtime_summary["total"] >= runtime_summary["missing_heal_repository"]
+        assert runtime_summary["total"] >= runtime_summary["missing_both"]
+        assert runtime_summary["missing_both"] <= runtime_summary["missing_heal"]
+        assert runtime_summary["missing_both"] <= runtime_summary["missing_heal_repository"]
+
+        # Overall counts
+        assert all_summary["total"] == all_summary["runtime_count"] + all_summary["non_agent_count"]
+        assert all_summary["runtime_count"] == runtime_summary["total"]

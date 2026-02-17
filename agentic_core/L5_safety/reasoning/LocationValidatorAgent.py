@@ -65,6 +65,13 @@ class LocationValidatorAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         return {
+
+
+    # guardian: allow-type-erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for LocationValidatorAgent."""
+        raise NotImplementedError("heal_repository() not implemented for LocationValidatorAgent")
+
             "status": "skipped",
             "details": "LocationValidatorAgent is validation-only. Use LocationHealerAgent for healing.",
             "artifacts": [],

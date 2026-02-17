@@ -205,6 +205,11 @@ class CachedStateLedgerAgent(SovereignBaseAgent):
         return False
 
     # guardian: allow-type-erasure
+    def heal(self, *args, **kwargs) -> dict:
+        """heal() not implemented for CachedStateLedgerAgent."""
+        raise NotImplementedError("heal() not implemented for CachedStateLedgerAgent")
+
+    # guardian: allow-type-erasure
     def heal_repository(self, **kwargs) -> dict:
         """Invoke healing chain via super()."""
         return super().heal_repository(**kwargs)

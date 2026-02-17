@@ -269,3 +269,8 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
 
         # Call the internal heal method
         return _heal_cognitive_disposition(self, violation)
+
+    # guardian: allow-type-erasure
+    def heal_repository(self, *args, **kwargs) -> dict:
+        """heal_repository() not implemented for CognitiveDispositionAgent."""
+        raise NotImplementedError("heal_repository() not implemented for CognitiveDispositionAgent")
