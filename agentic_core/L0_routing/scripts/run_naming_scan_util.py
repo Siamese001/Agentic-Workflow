@@ -11,14 +11,15 @@ project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.NamingAgent import get_naming_agent
+from agentic_core.L0_routing.seams.safety_reasoning_seam import load_naming_agent
 
 print("=" * 80)
 print("NAMING AGENT SCAN - Duplicate Detection")
 print("=" * 80)
 
 # Initialize NamingAgent
-naming = get_naming_agent(project_root)
+NamingAgent = load_naming_agent()
+naming = NamingAgent(project_root)
 
 # Scan for duplicate filenames
 print("\n[1] Scanning for duplicate FILENAMES...")

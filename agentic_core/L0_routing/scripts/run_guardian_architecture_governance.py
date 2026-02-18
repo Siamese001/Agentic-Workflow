@@ -180,7 +180,11 @@ def scan_layer_gravity(
     path, agent_name, actual_layer, assigned_layer.
     """
     try:
-        from agentic_core.L5_safety.enforcement.ssot_scanner import SSOTScanner
+        from agentic_core.L0_routing.seams.safety_enforcement_seam import (
+            load_ssot_scanner,
+        )
+
+        SSOTScanner = load_ssot_scanner().SSOTScanner
     except ImportError:
         return []
 

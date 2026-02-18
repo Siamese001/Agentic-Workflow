@@ -53,13 +53,14 @@ class TestHealPolicyRuntimeIntegration:
     def test_decide_reasoning_tier_is_invoked(self) -> None:
         """Assert decide_reasoning_tier() is called exactly once per wrapper invocation."""
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         with patch(
-            "agentic_core.utils.decorators_util.decide_reasoning_tier",
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
             return_value=mock_decision,
         ) as mock_decide:
             healer = DummyHealer()
@@ -70,9 +71,10 @@ class TestHealPolicyRuntimeIntegration:
     def test_policy_decision_is_logged(self) -> None:
         """Assert Logger.debug receives the policy decision log line."""
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         captured_messages: list[str] = []
@@ -82,7 +84,7 @@ class TestHealPolicyRuntimeIntegration:
 
         with (
             patch(
-                "agentic_core.utils.decorators_util.decide_reasoning_tier",
+                "agentic_core.utils.decorators_util.decide_heal_escalation",
                 return_value=mock_decision,
             ),
             patch(
@@ -101,13 +103,14 @@ class TestHealPolicyRuntimeIntegration:
     def test_output_unchanged_by_policy_integration(self) -> None:
         """Assert returned normalized dict matches baseline behavior."""
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         with patch(
-            "agentic_core.utils.decorators_util.decide_reasoning_tier",
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
             return_value=mock_decision,
         ):
             healer = DummyHealer()

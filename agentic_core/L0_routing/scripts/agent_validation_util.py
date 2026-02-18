@@ -27,9 +27,11 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L5_safety.enforcement.CodeDeduplicationAgent import (
-            CodeDeduplicationAgent,
+        from agentic_core.L0_routing.seams.safety_enforcement_seam import (
+            load_code_deduplication_agent,
         )
+
+        CodeDeduplicationAgent = load_code_deduplication_agent()
 
         print("\n" + "=" * 70)
         print("AGENT VALIDATION: Code Deduplication")

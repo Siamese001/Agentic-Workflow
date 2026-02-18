@@ -610,10 +610,11 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
 
         try:
             # Dynamic import of CDA to avoid hard dependency
-            from agentic_core.L5_safety.validators.CognitiveDispositionAgent import (
-                CognitiveDispositionAgent,
+            from agentic_core.L0_routing.seams.safety_validators_seam import (
+                load_cognitive_disposition_agent,
             )
 
+            CognitiveDispositionAgent = load_cognitive_disposition_agent()
             cda = CognitiveDispositionAgent()
 
             # Analyze violations

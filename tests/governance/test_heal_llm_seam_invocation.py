@@ -31,20 +31,36 @@ class DummyHealer:
 
 def test_heal_llm_seam_default_off():
     """When flag unset, seam not invoked."""
+    from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationDecision,
+        ReasoningTier,
+    )
+
+    mock_decision = HealEscalationDecision(
+        proceed=True,
+        tier=ReasoningTier.LOW,
+        rationale="Test",
+        threshold_used="TEST",
+    )
+
     with patch.dict(os.environ, {}, clear=False):
         if "HEAL_POLICY_MODEL_ESCALATION" in os.environ:
             del os.environ["HEAL_POLICY_MODEL_ESCALATION"]
 
         mock_caller = MagicMock(return_value="ok")
         with patch(
-            "agentic_core.utils.decorators_util.DEFAULT_HEAL_LLM_CALLER",
-            mock_caller,
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
+            return_value=mock_decision,
         ):
-            healer = DummyHealer()
-            result = healer.heal_repository(dry_run=True, execute=False)
+            with patch(
+                "agentic_core.utils.decorators_util.DEFAULT_HEAL_LLM_CALLER",
+                mock_caller,
+            ):
+                healer = DummyHealer()
+                result = healer.heal_repository(dry_run=True, execute=False)
 
-            assert result["status"] == "PASS"
-            mock_caller.assert_not_called()
+                assert result["status"] == "PASS"
+                mock_caller.assert_not_called()
 
 
 def test_heal_llm_seam_enabled_no_caller():
@@ -65,7 +81,15 @@ def test_heal_llm_seam_enabled_no_caller():
 def test_heal_llm_seam_enabled_with_caller():
     """When enabled + caller set + routed model, seam invoked with correct request."""
     from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationDecision,
         ReasoningTier,
+    )
+
+    mock_decision = HealEscalationDecision(
+        proceed=True,
+        tier=ReasoningTier.HIGH,
+        rationale="Test",
+        threshold_used="TEST",
     )
 
     def mock_router(tier: ReasoningTier) -> str:
@@ -79,19 +103,26 @@ def test_heal_llm_seam_enabled_with_caller():
         return "ok"
 
     with patch.dict(os.environ, {"HEAL_POLICY_MODEL_ESCALATION": "1"}):
-        with patch("agentic_core.utils.decorators_util._HEAL_MODEL_ROUTER", mock_router):
+        with patch(
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
+            return_value=mock_decision,
+        ):
             with patch(
-                "agentic_core.utils.decorators_util.DEFAULT_HEAL_LLM_CALLER",
-                mock_caller,
+                "agentic_core.utils.decorators_util._HEAL_MODEL_ROUTER",
+                mock_router,
             ):
-                healer = DummyHealer()
-                result = healer.heal_repository(dry_run=True, execute=False)
+                with patch(
+                    "agentic_core.L5_safety.types.heal_llm_seam.DEFAULT_HEAL_LLM_CALLER",
+                    mock_caller,
+                ):
+                    healer = DummyHealer()
+                    result = healer.heal_repository(dry_run=True, execute=False)
 
-                assert result["status"] == "PASS"
-                assert captured_request is not None
-                assert captured_request.prompt == "heal_policy_probe"
-                assert captured_request.model_id == "local_high"
-                assert captured_request.metadata == {"source": "standard_heal"}
+                    assert result["status"] == "PASS"
+                    assert captured_request is not None
+                    assert captured_request.prompt == "heal_policy_probe"
+                    assert captured_request.model_id == "local_high"
+                    assert captured_request.metadata == {"source": "standard_heal"}
 
 
 def test_heal_llm_seam_logging():

@@ -63,26 +63,29 @@ except ImportError:
 
 # SSOT: Import field name constants for agent_discovery_full.json
 try:
-    from agentic_core.L5_safety.validators.dashboard_ssot_definitions_config import (
-        FIELD_BASE_CLASSES,
-        FIELD_CATEGORY,
-        FIELD_CLASS_NAME,
-        FIELD_CYCLOMATIC_COMPLEXITY,
-        FIELD_DOCUMENTED_PCT,
-        FIELD_HAS_HEALING,
-        FIELD_HAS_MEMORY,
-        FIELD_HAS_TESTS,
-        FIELD_HAS_TOOLS,
-        FIELD_INHERITANCE,
-        FIELD_INVOCATION,
-        FIELD_LAYER,
-        FIELD_MCP_HARDENED,
-        FIELD_PATH,
-        FIELD_PROPER_BASE_CLASS,
-        FIELD_SCHEMA_STRICTNESS,
-        FIELD_TERRITORY,
-        FIELD_TYPED_PCT,
+    from agentic_core.L0_routing.seams.safety_validators_seam import (
+        load_dashboard_ssot_definitions,
     )
+
+    _ssot_defs = load_dashboard_ssot_definitions()
+    FIELD_BASE_CLASSES = _ssot_defs.FIELD_BASE_CLASSES
+    FIELD_CATEGORY = _ssot_defs.FIELD_CATEGORY
+    FIELD_CLASS_NAME = _ssot_defs.FIELD_CLASS_NAME
+    FIELD_CYCLOMATIC_COMPLEXITY = _ssot_defs.FIELD_CYCLOMATIC_COMPLEXITY
+    FIELD_DOCUMENTED_PCT = _ssot_defs.FIELD_DOCUMENTED_PCT
+    FIELD_HAS_HEALING = _ssot_defs.FIELD_HAS_HEALING
+    FIELD_HAS_MEMORY = _ssot_defs.FIELD_HAS_MEMORY
+    FIELD_HAS_TESTS = _ssot_defs.FIELD_HAS_TESTS
+    FIELD_HAS_TOOLS = _ssot_defs.FIELD_HAS_TOOLS
+    FIELD_INHERITANCE = _ssot_defs.FIELD_INHERITANCE
+    FIELD_INVOCATION = _ssot_defs.FIELD_INVOCATION
+    FIELD_LAYER = _ssot_defs.FIELD_LAYER
+    FIELD_MCP_HARDENED = _ssot_defs.FIELD_MCP_HARDENED
+    FIELD_PATH = _ssot_defs.FIELD_PATH
+    FIELD_PROPER_BASE_CLASS = _ssot_defs.FIELD_PROPER_BASE_CLASS
+    FIELD_SCHEMA_STRICTNESS = _ssot_defs.FIELD_SCHEMA_STRICTNESS
+    FIELD_TERRITORY = _ssot_defs.FIELD_TERRITORY
+    FIELD_TYPED_PCT = _ssot_defs.FIELD_TYPED_PCT
 except ImportError:
     # Fallback field names
     FIELD_CLASS_NAME = "class_name"
@@ -1116,7 +1119,11 @@ def is_sovereign_agent(class_node: ast.ClassDef, bases: set[str], rel_path: Path
     Returns:
         True if the file is classified as AGENT by the kernel.
     """
-    from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
+    from agentic_core.L0_routing.seams.safety_kernel_seam import (
+        load_classification_kernel,
+    )
+
+    is_agent_file = load_classification_kernel().is_agent_file
 
     if rel_path is None:
         # Without a file path, fall back to name-based heuristic

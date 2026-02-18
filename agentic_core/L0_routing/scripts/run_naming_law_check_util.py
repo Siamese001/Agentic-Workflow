@@ -10,10 +10,11 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
+from agentic_core.L0_routing.seams.safety_reasoning_seam import load_naming_agent
 
 
 def main():
+    NamingAgent = load_naming_agent()
     agent = NamingAgent(PROJECT_ROOT)
 
     # Directories to scan

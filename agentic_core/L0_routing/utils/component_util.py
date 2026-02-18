@@ -50,11 +50,12 @@ class ComponentFactory:
 
         if use_adapter:
             try:
-                from agentic_core.L5_safety.reasoning.verification_gate_adapter import (
-                    VerificationGateAdapter,
+                from agentic_core.L0_routing.seams.safety_reasoning_seam import (
+                    load_verification_gate_adapter,
                 )
 
-                instance = VerificationGateAdapter()
+                adapter_mod = load_verification_gate_adapter()
+                instance = adapter_mod.VerificationGateAdapter()
                 cls._instances[cache_key] = instance
                 return instance
             except ImportError:
@@ -89,11 +90,12 @@ class ComponentFactory:
 
         if use_adapter:
             try:
-                from agentic_core.L5_safety.reasoning.human_review_adapter import (
-                    HumanReviewAdapter,
+                from agentic_core.L0_routing.seams.safety_reasoning_seam import (
+                    load_human_review_adapter,
                 )
 
-                instance = HumanReviewAdapter()
+                adapter_mod = load_human_review_adapter()
+                instance = adapter_mod.HumanReviewAdapter()
                 cls._instances[cache_key] = instance
                 return instance
             except ImportError:

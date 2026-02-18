@@ -16,7 +16,12 @@ from agentic_core.L0_routing.config import (
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L5_safety.validators.canonical_truth_validator import get_canonical_layer
+from agentic_core.L0_routing.seams.safety_validators_seam import (
+    load_canonical_truth_validator,
+)
+
+_ctv = load_canonical_truth_validator()
+get_canonical_layer = _ctv.get_canonical_layer
 
 # Approved folders only
 APPROVED_FOLDERS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, SCRIPTS_DIR, TESTS_DIR]

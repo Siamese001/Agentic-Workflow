@@ -59,9 +59,10 @@ class TestModelRoutingDefaultOff:
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         router_calls: list[ReasoningTier] = []
@@ -89,9 +90,10 @@ class TestModelRoutingDefaultOff:
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         captured_messages: list[str] = []
@@ -126,9 +128,10 @@ class TestModelRoutingEnabledLow:
         monkeypatch.setenv("HEAL_POLICY_MODEL_ESCALATION", "1")
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         router_calls: list[ReasoningTier] = []
@@ -155,9 +158,10 @@ class TestModelRoutingEnabledLow:
         monkeypatch.setenv("HEAL_POLICY_MODEL_ESCALATION", "1")
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         captured_messages: list[str] = []
@@ -192,9 +196,10 @@ class TestModelRoutingEnabledHigh:
         monkeypatch.setenv("HEAL_POLICY_MODEL_ESCALATION", "1")
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.HIGH,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         router_calls: list[ReasoningTier] = []
@@ -205,7 +210,7 @@ class TestModelRoutingEnabledHigh:
 
         with (
             patch(
-                "agentic_core.utils.decorators_util.decide_reasoning_tier",
+                "agentic_core.utils.decorators_util.decide_heal_escalation",
                 return_value=mock_decision,
             ),
             patch.object(decorators_module, "_HEAL_MODEL_ROUTER", spy_router),
@@ -221,9 +226,10 @@ class TestModelRoutingEnabledHigh:
         monkeypatch.setenv("HEAL_POLICY_MODEL_ESCALATION", "1")
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.HIGH,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         captured_messages: list[str] = []
@@ -233,7 +239,7 @@ class TestModelRoutingEnabledHigh:
 
         with (
             patch(
-                "agentic_core.utils.decorators_util.decide_reasoning_tier",
+                "agentic_core.utils.decorators_util.decide_heal_escalation",
                 return_value=mock_decision,
             ),
             patch.object(decorators_module, "_HEAL_MODEL_ROUTER", map_tier_to_model_id),

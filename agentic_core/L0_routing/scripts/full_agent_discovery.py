@@ -49,13 +49,17 @@ from agentic_core.L0_routing.config import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
+from agentic_core.L0_routing.seams.safety_kernel_seam import (
+    get_classification_cache_context,
+)
 from agentic_core.L0_routing.utils.path_utils import validate_path_within_project
 from agentic_core.L0_routing.utils.ssot_discovery_util import (
     get_healers,
     invalidate_cache,
     load_agent_discovery,
 )
-from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
+
+classification_cache_context = get_classification_cache_context()
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
 
 # Standard error logging wrapper configuration
@@ -208,7 +212,11 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     2. AST metadata extraction (inheritance, decorators, methods)
     3. Integrity report generation
     """
-    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
+    from agentic_core.L0_routing.seams.safety_kernel_seam import (
+        load_classification_kernel,
+    )
+
+    classify_file_standalone = load_classification_kernel().classify_file_standalone
 
     report = AgentIntegrityReport(path=file_path)
 

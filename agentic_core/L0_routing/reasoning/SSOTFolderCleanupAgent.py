@@ -155,10 +155,11 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _get_cognitive_agent(self):
         """Lazy-load CognitiveDispositionAgent."""
         if self._cognitive_agent is None:
-            from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
-                CognitiveDispositionAgent,
+            from agentic_core.L0_routing.seams.safety_reasoning_seam import (
+                load_cognitive_disposition_agent,
             )
 
+            CognitiveDispositionAgent = load_cognitive_disposition_agent()
             # guardian: allow-magic-config
             self._cognitive_agent = CognitiveDispositionAgent(
                 project_root=self.project_root,
@@ -169,8 +170,11 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _get_archival_gatekeeper(self):
         """Lazy-load ArchivalGatekeeper."""
         if self._archival_gatekeeper is None:
-            from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+            from agentic_core.L0_routing.seams.safety_enforcement_seam import (
+                load_archival_gatekeeper,
+            )
 
+            ArchivalGatekeeper = load_archival_gatekeeper().ArchivalGatekeeper
             self._archival_gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
         return self._archival_gatekeeper
 
@@ -281,10 +285,11 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """
         # [DEDUP] Try FCA first for classification-based routing
         try:
-            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-                FileClassificationAgent,
+            from agentic_core.L0_routing.seams.safety_reasoning_seam import (
+                load_file_classification_agent,
             )
 
+            FileClassificationAgent = load_file_classification_agent()
             fca = FileClassificationAgent(
                 project_root=self.project_root,
                 dry_run=True,

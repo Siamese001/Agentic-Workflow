@@ -28,16 +28,32 @@ class DummyHealer:
 
 def test_heal_routed_model_id_disabled():
     """When HEAL_POLICY_MODEL_ESCALATION is unset, _heal_routed_model_id not in kwargs."""
+    from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationDecision,
+        ReasoningTier,
+    )
+
+    mock_decision = HealEscalationDecision(
+        proceed=True,
+        tier=ReasoningTier.LOW,
+        rationale="Test",
+        threshold_used="TEST",
+    )
+
     # Ensure flag is disabled
     with patch.dict(os.environ, {}, clear=False):
         if "HEAL_POLICY_MODEL_ESCALATION" in os.environ:
             del os.environ["HEAL_POLICY_MODEL_ESCALATION"]
 
-        healer = DummyHealer()
-        result = healer.heal_repository(dry_run=True, execute=False)
+        with patch(
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
+            return_value=mock_decision,
+        ):
+            healer = DummyHealer()
+            result = healer.heal_repository(dry_run=True, execute=False)
 
-        assert result["status"] == "PASS"
-        assert "_heal_routed_model_id" not in healer._captured_kwargs
+            assert result["status"] == "PASS"
+            assert "_heal_routed_model_id" not in healer._captured_kwargs
 
 
 def test_heal_routed_model_id_enabled_with_router():
@@ -93,17 +109,33 @@ def test_heal_routed_model_id_logging_enabled():
 
 def test_heal_routed_model_id_disabled_no_logging():
     """When disabled, routed_model log is not emitted."""
+    from agentic_core.L5_safety.types.heal_policy_types import (
+        HealEscalationDecision,
+        ReasoningTier,
+    )
+
+    mock_decision = HealEscalationDecision(
+        proceed=True,
+        tier=ReasoningTier.LOW,
+        rationale="Test",
+        threshold_used="TEST",
+    )
+
     with patch.dict(os.environ, {}, clear=False):
         if "HEAL_POLICY_MODEL_ESCALATION" in os.environ:
             del os.environ["HEAL_POLICY_MODEL_ESCALATION"]
 
-        with patch("agentic_core.utils.decorators_util.Logger") as mock_logger:
-            healer = DummyHealer()
-            result = healer.heal_repository(dry_run=True, execute=False)
+        with patch(
+            "agentic_core.utils.decorators_util.decide_heal_escalation",
+            return_value=mock_decision,
+        ):
+            with patch("agentic_core.utils.decorators_util.Logger") as mock_logger:
+                healer = DummyHealer()
+                result = healer.heal_repository(dry_run=True, execute=False)
 
-            assert result["status"] == "PASS"
+                assert result["status"] == "PASS"
 
-            # Check that routed_model log was NOT emitted
-            debug_calls = list(mock_logger.debug.call_args_list)
-            routed_model_logs = [call for call in debug_calls if "routed_model=" in str(call)]
-            assert len(routed_model_logs) == 0, "Expected no routed_model logs when disabled"
+                # Check that routed_model log was NOT emitted
+                debug_calls = list(mock_logger.debug.call_args_list)
+                routed_model_logs = [call for call in debug_calls if "routed_model=" in str(call)]
+                assert len(routed_model_logs) == 0

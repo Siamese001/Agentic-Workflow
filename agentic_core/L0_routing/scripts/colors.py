@@ -466,9 +466,11 @@ def main():
         try:
             # Import Guardian and Targets Config
             from agentic_core.config.autonomy_targets import get_target
-            from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
-                get_autonomy_guardian,
+            from agentic_core.L0_routing.seams.safety_validators_seam import (
+                load_autonomy_guardian,
             )
+
+            get_autonomy_guardian = load_autonomy_guardian().get_autonomy_guardian
 
             guardian = get_autonomy_guardian(project_root)
             # Pass extra config if needed to inject targets during JSON generation
@@ -589,8 +591,10 @@ def main():
     # Handle hygiene modes
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
+        from agentic_core.L0_routing.seams.safety_validators_seam import load_healing_strategy
         from agentic_core.L3_orchestration.Orchestrator import Orchestrator
-        from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+
+        HealingStrategy = load_healing_strategy().HealingStrategy
 
         execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False)
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
@@ -664,13 +668,17 @@ def main():
         try:
             # [PHASE 3] UNIFIED ORCHESTRATION - Strategy Pattern
             # The 5-tier logic is now encapsulated in HealingStrategy
+            from agentic_core.L0_routing.seams.safety_validators_seam import (
+                load_healing_strategy as _load_hs2,
+            )
             from agentic_core.L3_orchestration.Orchestrator import (
                 Orchestrator,
             )
             from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
                 get_checkpoint_manager,
             )
-            from agentic_core.L5_safety.validators.healing_strategy import HealingStrategy
+
+            HealingStrategy = _load_hs2().HealingStrategy
 
             # Helper to safely load Performance Analyst (L6)
             def get_performance_analyst_safe(root):
@@ -725,10 +733,11 @@ def main():
             # Check for Gemini activation
             gemini_active = False
             try:
-                from agentic_core.L5_safety.validators.AutonomyGuardianAgent import (
-                    get_autonomy_guardian,
+                from agentic_core.L0_routing.seams.safety_validators_seam import (
+                    load_autonomy_guardian as _load_ag2,
                 )
 
+                get_autonomy_guardian = _load_ag2().get_autonomy_guardian
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, "gemini_embedder") and guardian.gemini_embedder is not None
             # guardian: allow-silent-swallow

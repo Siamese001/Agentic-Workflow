@@ -40,6 +40,9 @@ from agentic_core.L5_safety.types.heal_policy_types import (
 )
 from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 
+# Backward-compat alias for tests that patch decide_reasoning_tier
+decide_reasoning_tier = decide_heal_escalation
+
 Logger = logging.getLogger(__name__)
 
 # Type variable for decorated functions

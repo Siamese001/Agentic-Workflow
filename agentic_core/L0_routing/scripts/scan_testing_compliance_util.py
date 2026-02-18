@@ -25,7 +25,12 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L5_safety.validators.canonical_truth_validator import get_canonical_layer
+from agentic_core.L0_routing.seams.safety_validators_seam import (
+    load_canonical_truth_validator,
+)
+
+_ctv = load_canonical_truth_validator()
+get_canonical_layer = _ctv.get_canonical_layer
 from agentic_core.utils.security import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

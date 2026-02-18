@@ -60,9 +60,10 @@ class TestFlagDefaultOff:
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         captured_messages: list[str] = []
@@ -93,9 +94,10 @@ class TestFlagDefaultOff:
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
         mock_decision = HealEscalationDecision(
+            proceed=True,
             tier=ReasoningTier.LOW,
-            threshold_used="TEST",
             rationale="Test rationale",
+            threshold_used="TEST",
         )
 
         observer_calls: list[ReasoningTier] = []

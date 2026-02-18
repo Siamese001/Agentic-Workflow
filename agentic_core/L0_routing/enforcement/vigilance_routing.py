@@ -12,20 +12,22 @@ Routing rules (deterministic, no fallback to wall-clock):
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.v15_types import RoutePath
-from agentic_core.L6_observability.types.vigilance_event_types import (
-    VigilanceEventArtifact,
-    VigilanceSeverity,
+from typing import Any
+
+from agentic_core.L0_routing.seams.vigilance_seam import (
+    get_vigilance_severity,
 )
+from agentic_core.L0_routing.types.v15_types import RoutePath
 
 
-def route_vigilance_event(event: VigilanceEventArtifact) -> RoutePath:
+def route_vigilance_event(event: Any) -> RoutePath:
     """§Wave4.1 — Deterministic routing from VigilanceEventArtifact tier.
 
     Returns:
         RoutePath.HUMAN_ESCALATION for HIGH/CRITICAL
         RoutePath.STANDARD_VALIDATION for LOW/MEDIUM
     """
+    VigilanceSeverity = get_vigilance_severity()
     if event.vigilance_tier in (VigilanceSeverity.HIGH, VigilanceSeverity.CRITICAL):
         return RoutePath.HUMAN_ESCALATION
     return RoutePath.STANDARD_VALIDATION

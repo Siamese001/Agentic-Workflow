@@ -12,11 +12,14 @@ root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(root))
 
-from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+from agentic_core.L0_routing.seams.safety_validators_seam import (
+    load_hygiene_guardian,
+)
 
 
 def main():
     root = Path(__file__).parent.parent
+    HygieneGuardianAgent = load_hygiene_guardian()
     guardian = HygieneGuardianAgent(project_root=root)
 
     print("=" * 80)

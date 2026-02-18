@@ -158,7 +158,11 @@ def scan_territory_compliance(
     filename, path, classified_as, current_folder, expected_folder.
     """
     from agentic_core.L0_routing.config import FILETYPE_TO_FOLDER
-    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
+    from agentic_core.L0_routing.seams.safety_kernel_seam import (
+        load_classification_kernel,
+    )
+
+    classify_file_standalone = load_classification_kernel().classify_file_standalone
 
     if files is None:
         files = _collect_python_files(repo_root)
