@@ -92,15 +92,26 @@ pytest -q tests/governance/test_lazy_seam_allowlist.py
 
 ## Provenance Appendix
 
-**PHASE_COMMIT**: [Will be populated after commit]
+**PHASE_COMMIT**: 90528b678b3784c62943217444ff3e7bfe156505
 
 **File Changes**:
-- `agentic_core/L5_safety/governance/lazy_seam_scanner.py` - Refactored to Phase 3B wrapper
-- `agentic_core/L5_safety/governance/lazy_seam_classifier.py` - Reason classification (unchanged)
-- `agentic_core/L5_safety/governance/lazy_seam_enforcer.py` - Refactored to Phase 3B wrapper
-- `agentic_core/L5_safety/governance/lazy_seam_allowlist.json` - 44-seam allowlist (Phase 3B universe)
-- `tests/governance/test_lazy_seam_allowlist.py` - Updated tests with negative cases
-- `docs/reports/governance/gravity_phase4_lazy_seam_allowlist.md` - Evidence documentation
+```
+agentic_core/L5_safety/governance/lazy_seam_allowlist.json
+agentic_core/L5_safety/governance/lazy_seam_classifier.py
+agentic_core/L5_safety/governance/lazy_seam_enforcer.py
+agentic_core/L5_safety/governance/lazy_seam_scanner.py
+agentic_core/L6_observability/interfaces/IBlackboardLeaseVerifier.py
+agentic_core/L6_observability/interfaces/IBlackboardLeaseVerifierProtocol.py
+agentic_core/L6_observability/interfaces/IHealerProtocol.py
+agentic_core/L6_observability/interfaces/IHealingStrategyProtocol.py
+agentic_core/L6_observability/interfaces/IMemoryStoreProtocol.py
+agentic_core/L6_observability/interfaces/IOrchestratorProtocol.py
+agentic_core/L6_observability/interfaces/IValidatorProtocol.py
+agentic_core/L6_observability/interfaces/__init__.py
+docs/reports/governance/gravity_phase2_lazy_seam_constraints.md
+docs/reports/governance/gravity_phase4_lazy_seam_allowlist.md
+tests/governance/test_lazy_seam_allowlist.py
+```
 
 ## Key Achievements
 
