@@ -3,7 +3,7 @@
 **Converge Confidence:** 90%
 **Basis:** Target met (62→≤45) + determinism verified + all governance tests green + no new seams introduced
 
-**PHASE_COMMIT:** TBD (filled after commit)
+**PHASE_COMMIT:** 7ac631fa1
 **Date:** 2025-07-10
 **Waves:** 1.1 / 1.2 / 1.3
 
@@ -177,3 +177,30 @@ class HealingAgentProtocol(Protocol):
 | LAZY_SEAM_VIOLATIONS | 0 | 0 | PASS |
 | MODULE_LEVEL_UPWARD_IMPORTS | 0 | 0 | PASS |
 | Governance tests | all pass | 20/20 + new | PASS |
+
+---
+
+## Appendix: Phase 1 Commit File List
+
+**Commit:** `7ac631fa1`
+**Command:** `git show --name-only 7ac631fa1`
+
+```
+agentic_core/L0_routing/scripts/forward_rolling_facade.py
+agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline.py
+agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline_enforcer.py
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py
+agentic_core/L3_orchestration/enforcement/safety_strategy.py
+agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py
+agentic_core/seams/__init__.py
+agentic_core/seams/contracts/__init__.py
+agentic_core/seams/contracts/activation.py
+agentic_core/seams/contracts/forward_rolling.py
+agentic_core/seams/contracts/mcp.py
+agentic_core/seams/contracts/safety_agents.py
+docs/reports/governance/gravity_phase3b_contract_extraction.md
+ops_scripts/hooks/import_dep_baseline.txt
+ops_scripts/hooks/landmine_baseline.txt
+tests/governance/test_seam_contracts.py
+```

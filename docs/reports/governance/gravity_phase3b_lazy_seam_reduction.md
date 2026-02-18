@@ -2,7 +2,7 @@
 
 **Converge Confidence:** 95%
 **Basis:** Budget locked at 44 (target <=45 met), all 37 governance tests green, no regressions
-**PHASE_COMMIT:** TBD (filled after commit)
+**PHASE_COMMIT:** d194102a3
 **Date:** 2025-07-10
 **Waves:** 2.1 / 2.2 / 2.3
 
@@ -116,29 +116,41 @@ All hooks pass:
 
 ---
 
-## Files Changed (Phase 1 + Phase 2 combined)
+## Appendix: Phase 2 Commit File List
 
-### New files
+**Commit:** `d194102a3`
+**Command:** `git show --name-only d194102a3`
 
-- `agentic_core/seams/__init__.py`
-- `agentic_core/seams/contracts/__init__.py`
-- `agentic_core/seams/contracts/forward_rolling.py`
-- `agentic_core/seams/contracts/activation.py`
-- `agentic_core/seams/contracts/mcp.py`
-- `agentic_core/seams/contracts/safety_agents.py`
-- `tests/governance/test_seam_contracts.py`
-- `docs/reports/governance/gravity_phase3b_contract_extraction.md`
-- `docs/reports/governance/gravity_phase3b_lazy_seam_reduction.md`
+```
+docs/reports/governance/gravity_phase3b_lazy_seam_reduction.md
+tests/governance/test_upward_import_enforcement.py
+```
 
-### Modified files
+---
 
-- `agentic_core/L0_routing/scripts/forward_rolling_facade.py` (T1: contract import)
-- `agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline.py` (T1: contract import)
-- `agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline_enforcer.py` (T1: contract import)
-- `agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py` (T1: contract import)
-- `agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py` (T1: contract import)
-- `agentic_core/L3_orchestration/enforcement/safety_strategy.py` (T2: factory injection)
-- `agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py` (T2: factory injection)
-- `tests/governance/test_upward_import_enforcement.py` (budget lock 62->44)
-- `ops_scripts/hooks/landmine_baseline.txt` (baseline update)
-- `ops_scripts/hooks/import_dep_baseline.txt` (baseline update)
+## Appendix: Remaining 44 Lazy Seams Inventory
+
+All remaining seams classified as **Type D (True plugin boundary)**:
+
+| File | Count | Reason Code | Description |
+|------|-------|-------------|-------------|
+| `agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py` | 16 | D1 | Registry dispatch: runtime class references for unified agent mapping |
+| `agentic_core/L1_cognition/engines/meta_client.py` | 3 | D2 | External service connections (Redis/Pinecone/Embedding) |
+| `agentic_core/L0_routing/scripts/colors.py` | 2 | D3 | Entry-point script: Orchestrator + CheckpointManager loaders |
+| `agentic_core/L3_orchestration/engines/autonomous_execution_engine.py` | 2 | D4 | Infrastructure: CheckpointManager (module-scope) + ResourceManager |
+| `agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py` | 1 | D5 | L3→L6 event-driven observer (CoverageAgent) |
+| `agentic_core/L0_routing/enforcement/execution_gateway.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| `agentic_core/L0_routing/meta_control/meta_apply.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| `agentic_core/L0_routing/scripts/coverage.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| `agentic_core/L3_orchestration/engines/execution_context.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| `agentic_core/L3_orchestration/engines/hardened_orchestrator_wrapper_util.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| `agentic_core/L1_cognition/engines/cognitive_engine.py` | 1 | D6 | Singleton lazy loader for cross-layer service |
+| 18 other files | 1 each | D6 | Singleton lazy loaders for cross-layer services |
+
+**Reason Codes:**
+- **D1:** Registry dispatch requires runtime class references
+- **D2:** External service connections (network/infrastructure)
+- **D3:** Entry-point scripts with minimal loaders
+- **D4:** Infrastructure components at module scope
+- **D5:** Event-driven observers across layer boundaries
+- **D6:** Singleton lazy loaders for cross-layer services
