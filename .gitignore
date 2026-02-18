@@ -62,6 +62,7 @@ cache/               # Unauthorized root folder - strictly ignored
 
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
+.tmp/                # Temporary directory - strictly ignored
 
 # [SSOT VIOLATION FIX] Legacy healing backup folder - deprecated
 # Now using .healing_backups/ as the canonical backup location
