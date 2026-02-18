@@ -1,5 +1,5 @@
 """
-L0 Thin Router — Unified entry point for the guardian→dispatcher→healer pipeline.
+Guardian Heal Orchestrator — L3 orchestration for guardian→dispatcher→healer pipeline.
 
 Replaces the legacy execute_ssot pipeline with a clean, deterministic
 three-stage execution model:
@@ -14,9 +14,9 @@ Modes:
     --apply      Run guardians + dispatcher + healers in apply mode (sandbox-gated)
 
 CLI:
-    python -m agentic_core.L0_routing.scripts.l0_execute --scan
-    python -m agentic_core.L0_routing.scripts.l0_execute --dry-run
-    python -m agentic_core.L0_routing.scripts.l0_execute --apply --repo-root /path/to/sandbox
+    python -m agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator --scan
+    python -m agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator --dry-run
+    python -m agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator --apply --repo-root /path/to/sandbox
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root import get_validated_project_root
 
-TOOL_ID = "l0_execute"
+TOOL_ID = "guardian_heal_orchestrator"
 
 
 # ---------------------------------------------------------------------------

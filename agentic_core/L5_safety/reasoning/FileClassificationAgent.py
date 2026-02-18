@@ -954,15 +954,12 @@ class FileClassificationAgent(*BASE_CLASSES):
             ):
                 return "AGENT"
 
-        # Architectural fuzzy - STRICT: primary class name only
-        orchestrator_patterns = [
-            "Orchestrator",
-            "orchestrator",
-            "orchestrate",
-            "Coordinator",
-            "Pipeline",
-        ]
-        is_orchestrator = any(p in primary_name for p in orchestrator_patterns)
+        # Architectural distinction: Router (L0) vs. Orchestrator (L3)
+        # Router: Single target selection, direct pass-through call, thin CLI wrapper
+        # Orchestrator: Multi-stage execution, coordinates multiple components, manages workflow semantics
+        
+        # Check if file exhibits orchestration behavior patterns
+        is_orchestrator = self._detect_orchestrator_patterns(tree, path, content, primary_name)
 
         # Split ADAPTER into STRATEGY and ADAPTER categories
         strategy_patterns = ["Strategy"]
@@ -1077,6 +1074,122 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
+
+    # ========================================================================
+    # ROUTER VS. ORCHESTRATOR DETECTION (Architectural Classification)
+    # ========================================================================
+
+    def _detect_orchestrator_patterns(self, tree: ast.AST, path: Path, content: str, primary_name: str) -> bool:
+        """
+        Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
+        
+        L0 Router characteristics:
+        - Single target selection
+        - Direct pass-through call
+        - Thin CLI wrapper
+        - No multi-stage execution
+        - No intermediate artifact management
+        
+        L3 Orchestrator characteristics:
+        - Multi-stage workflow coordination (e.g., guardians → dispatcher → healers)
+        - Manages intermediate artifacts
+        - Controls apply vs dry-run semantics
+        - Defines workflow semantics
+        - Coordinates multiple components
+        - Implements execution policy
+        - Stateful across phases
+        
+        Returns:
+            True if file exhibits orchestrator behavior, False if router or neither.
+        """
+        # Name-based detection (primary class name)
+        orchestrator_name_patterns = [
+            "Orchestrator",
+            "orchestrator",
+            "orchestrate",
+            "Coordinator",
+            "Pipeline",
+        ]
+        has_orchestrator_name = any(p in primary_name for p in orchestrator_name_patterns)
+        
+        # Behavioral pattern detection in content
+        orchestrator_behavior_signals = [
+            # Multi-stage execution indicators
+            "run_pipeline",
+            "_run_guardians",
+            "_run_dispatcher",
+            "_run_healers",
+            "stage_1",
+            "stage_2",
+            "stage_3",
+            "phase_1",
+            "phase_2",
+            # Workflow coordination
+            "coordinate",
+            "orchestrate",
+            "workflow",
+            # Artifact management
+            "write_artifacts_dir",
+            "intermediate_result",
+            "aggregate_result",
+            # Mode/policy control
+            "apply_mode",
+            "dry_run_mode",
+            "execution_policy",
+            "allow_mutation",
+        ]
+        
+        # Count orchestrator behavior signals
+        behavior_signal_count = sum(1 for signal in orchestrator_behavior_signals if signal in content)
+        
+        # Router anti-patterns (if present, likely NOT an orchestrator)
+        router_patterns = [
+            "select_handler",
+            "route_to",
+            "dispatch_single",
+            "thin_wrapper",
+        ]
+        has_router_pattern = any(p in content for p in router_patterns)
+        
+        # Check for multi-stage function definitions (strong orchestrator signal)
+        function_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+        stage_functions = [f for f in function_nodes if any(stage in f.name.lower() for stage in ["stage", "phase", "step"])]
+        has_multi_stage_functions = len(stage_functions) >= 2
+        
+        # Check for pipeline/workflow method patterns
+        pipeline_methods = [f for f in function_nodes if any(kw in f.name.lower() for kw in ["pipeline", "workflow", "orchestrate", "coordinate"])]
+        has_pipeline_method = len(pipeline_methods) > 0
+        
+        # Decision logic:
+        # 1. If in L0_routing/scripts/ with orchestrator name + behavior → likely misplaced orchestrator
+        # 2. If in L3_orchestration/ with orchestrator patterns → definitely orchestrator
+        # 3. If has multi-stage functions + behavior signals → orchestrator
+        # 4. If has orchestrator name but router patterns → router (name is misleading)
+        
+        is_in_l0_scripts = "L0_routing" in path.parts and "scripts" in path.parts
+        is_in_l3 = "L3_orchestration" in path.parts
+        
+        # Strong orchestrator signals
+        if is_in_l3 and has_orchestrator_name:
+            return True
+        
+        if has_multi_stage_functions and behavior_signal_count >= 3:
+            return True
+        
+        if has_pipeline_method and behavior_signal_count >= 2:
+            return True
+        
+        # Misplaced orchestrator in L0 (architectural violation)
+        if is_in_l0_scripts and has_orchestrator_name and behavior_signal_count >= 3:
+            # This is an orchestrator misplaced in L0
+            return True
+        
+        # Router pattern overrides orchestrator name
+        if has_router_pattern and not has_multi_stage_functions:
+            return False
+        
+        # Default: orchestrator name alone is not sufficient
+        return has_orchestrator_name and behavior_signal_count >= 2
 
     # ========================================================================
     # FILENAME TAG CONFLICT DETECTION (RCA hardening)

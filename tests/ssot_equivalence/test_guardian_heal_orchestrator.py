@@ -1,5 +1,5 @@
 """
-Wave 8.1 — Tests for the L0 thin router (l0_execute.py).
+Wave 8.1 — Tests for the L3 Guardian Heal Orchestrator.
 
 Verifies:
 1. run_pipeline returns correct structure in each mode
@@ -21,6 +21,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator import (
+    run_pipeline,
+)
 from tests._helpers.robust_fs import robust_subprocess_run
 
 pytestmark = pytest.mark.ssot_equivalence
@@ -43,17 +46,13 @@ class TestRunPipelineAPI:
     """Test the run_pipeline function directly."""
 
     def test_scan_mode_returns_guardian_result(self) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
-        assert result["tool_id"] == "l0_execute"
+        assert result["tool_id"] == "guardian_heal_orchestrator"
         assert result["mode"] == "scan"
         assert "guardian_result" in result
         assert "heal_result" not in result
 
     def test_scan_mode_guardian_has_checks(self) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
         guardian = result["guardian_result"]
         assert "checks" in guardian
@@ -61,8 +60,6 @@ class TestRunPipelineAPI:
         assert len(guardian["checks"]) > 0
 
     def test_dry_run_mode_returns_heal_result(self, tmp_path: Path) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(
             mode="dry-run",
             timestamp=FIXED_UTC,
@@ -73,8 +70,6 @@ class TestRunPipelineAPI:
         assert "heal_result" in result
 
     def test_dry_run_heal_result_has_results(self, tmp_path: Path) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(
             mode="dry-run",
             timestamp=FIXED_UTC,
@@ -86,19 +81,17 @@ class TestRunPipelineAPI:
         assert len(heal["results"]) > 0
 
     def test_dry_run_all_healers_skipped(self, tmp_path: Path) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(
             mode="dry-run",
             timestamp=FIXED_UTC,
             write_artifacts_dir=str(tmp_path / "artifacts"),
         )
         for hr in result["heal_result"]["results"]:
-            assert hr["status"] == "SKIPPED", f"{hr['check_id']} status={hr['status']}"
+            assert hr["status"] == "SKIPPED", (
+                f"{hr['check_id']} status={hr['status']}"
+            )
 
     def test_timestamp_injected(self) -> None:
-        from agentic_core.L0_routing.scripts.l0_execute import run_pipeline
-
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)
         assert result["timestamp"] == FIXED_UTC
 
