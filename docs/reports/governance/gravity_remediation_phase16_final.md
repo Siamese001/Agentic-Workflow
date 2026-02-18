@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-18 13:20:35 UTC
 **Baseline Commit**: `76cdf5225a9abc91410f3a14792f1d7018105c91`
-**Remediation Commit**: `73ca36d5295fd6db4c5caf217f70bc26e0cf469f`
+**Remediation Commit**: `0ec0effae5561f363efa75b90aaef0eb3c81cff0`
 
 ## Summary
 
