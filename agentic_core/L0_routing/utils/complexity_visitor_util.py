@@ -110,10 +110,17 @@ from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.utils.canonical_truth_util import (
-    categorize_agent,
-    get_canonical_layer,
-)
+
+
+def _get_canonical_truth_util():
+    """Lazy import to avoid L0→L5 static dependency."""
+    from agentic_core.L5_safety.utils.canonical_truth_util import (
+        categorize_agent,
+        get_canonical_layer,
+    )
+
+    return categorize_agent, get_canonical_layer
+
 
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
 if platform.system() == "Windows":
@@ -1399,6 +1406,7 @@ def main():
     for py_file in target_py_files:
         source, tree = parsed_files[py_file]
         rel_path = py_file.relative_to(PROJECT_ROOT)
+        _, get_canonical_layer = _get_canonical_truth_util()
         layer = get_canonical_layer(py_file)
 
         # Phase 3.1: Override layer for special paths (schemas, prompt_governance, base_agents)
@@ -1573,6 +1581,7 @@ def main():
                 b.id if isinstance(b, ast.Name) else b.attr if isinstance(b, ast.Attribute) else str(b)
                 for b in node.bases
             ]
+            categorize_agent, _ = _get_canonical_truth_util()
             category = categorize_agent(
                 class_name=node.name,
                 base_classes=base_class_names,
