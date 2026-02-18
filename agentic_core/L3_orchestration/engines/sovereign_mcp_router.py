@@ -46,6 +46,13 @@ class SovereignMcpRouter(SovereignBaseAgent):
             mcp_authority.record_breach(str(e))
             raise
 
+    @staticmethod
+    def _get_ValidationContext():
+        """Lazy loader for ValidationContext (upward L3->L4 seam)."""
+        from agentic_core.L4_state.P1_core.ValidationContext import ValidationContext
+
+        return ValidationContext
+
     async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
         """Route canon key Violation to hardened MCP tool — L5 shielded"""
         if not mcp_authority.is_authorized():
@@ -101,8 +108,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                 }
             elif key_id in {40, 41, 42, 49}:
                 try:
-                    from agentic_core.L4_state.P1_core.ValidationContext import ValidationContext
-
+                    ValidationContext = self._get_ValidationContext()
                     if hasattr(ValidationContext, "_instance") and ValidationContext._instance:
                         ctx: Any = ValidationContext._instance
                         if hasattr(ctx, "deepwiki_client") and ctx.deepwiki_client:
@@ -124,8 +130,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     pass
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
                 try:
-                    from agentic_core.L4_state.P1_core.ValidationContext import ValidationContext
-
+                    ValidationContext = self._get_ValidationContext()
                     if hasattr(ValidationContext, "_instance") and ValidationContext._instance:
                         ctx: Any = ValidationContext._instance
                         if hasattr(ctx, "figma_client") and ctx.figma_client:

@@ -14,14 +14,24 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-try:
-    from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
-        SubatomicTestingMixin,
-    )
-except ImportError:
 
-    class SubatomicTestingMixin:
-        pass
+def _get_SubatomicTestingMixin():
+    """Lazy loader for SubatomicTestingMixin (upward L0->L3 seam)."""
+    try:
+        from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
+            SubatomicTestingMixin,
+        )
+
+        return SubatomicTestingMixin
+    except ImportError:
+
+        class SubatomicTestingMixin:
+            pass
+
+        return SubatomicTestingMixin
+
+
+SubatomicTestingMixin = _get_SubatomicTestingMixin()
 
 
 @dataclass

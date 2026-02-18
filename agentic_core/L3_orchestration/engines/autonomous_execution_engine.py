@@ -35,12 +35,22 @@ def _get_create_proactive_resource_manager():
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
+
 # L4 Checkpoint integration
 # GRAVITY FIXED: Dynamic import for Checkpoint manager
-try:
-    from agentic_core.L4_state.checkpoint_manager import create_autonomous_checkpoint_manager
-except ImportError:
-    create_autonomous_checkpoint_manager = None
+def _get_create_autonomous_checkpoint_manager():
+    """Lazy loader for create_autonomous_checkpoint_manager (upward L3->L4 seam)."""
+    try:
+        from agentic_core.L4_state.checkpoint_manager import (
+            create_autonomous_checkpoint_manager,
+        )
+
+        return create_autonomous_checkpoint_manager
+    except ImportError:
+        return None
+
+
+create_autonomous_checkpoint_manager = _get_create_autonomous_checkpoint_manager()
 
 
 # NAMING FIXED: AutonomousExecutionEngine → autonomous_execution_engine

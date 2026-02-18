@@ -69,7 +69,7 @@ class SafetyStrategy:
             ],
         }
 
-    def get_agent(self, agent_name: str) -> Any | None:
+    def _get_agent(self, agent_name: str) -> Any | None:
         """
         Get or create an agent instance by name.
 

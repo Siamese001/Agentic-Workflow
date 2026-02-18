@@ -21,6 +21,15 @@ def get_project_root() -> Path:
     return Path(__file__).resolve().parent.parent.parent.parent
 
 
+def _get_ObservabilityProbeExecutor():
+    """Lazy loader for ObservabilityProbeExecutor (upward L5->L6 seam)."""
+    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
+        ObservabilityProbeExecutor,
+    )
+
+    return ObservabilityProbeExecutor
+
+
 def validate_agent_roster() -> dict:
     """Validate mandatory agent roster integrity."""
     try:
@@ -48,9 +57,8 @@ def validate_agent_roster() -> dict:
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
             SystemArchitectAgent,
         )
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor as DebateSynthesisAgent,
-        )
+
+        DebateSynthesisAgent = _get_ObservabilityProbeExecutor()
 
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,

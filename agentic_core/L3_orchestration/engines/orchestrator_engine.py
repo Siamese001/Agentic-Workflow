@@ -203,6 +203,15 @@ class Orchestrator(SovereignBaseAgent):
 
         self.logger.info(f"UnifiedOrchestrator initialized with mode: {self.mode.value}")
 
+    @staticmethod
+    def _get_CredentialScannerAgent():
+        """Lazy loader for CredentialScannerAgent (upward L3->L5 seam)."""
+        from agentic_core.L5_safety.validators.credential_types import (
+            CredentialScannerAgent,
+        )
+
+        return CredentialScannerAgent
+
     @property
     def strategies(self) -> dict[str, Any]:
         """Lazy-load strategies to avoid circular imports."""
@@ -401,11 +410,7 @@ class Orchestrator(SovereignBaseAgent):
 
         # Risk 4: Integrate CredentialScannerAgent
         try:
-            from agentic_core.L5_safety.validators.credential_types import (
-                CredentialScannerAgent,
-            )
-
-            credential_scanner = CredentialScannerAgent()
+            credential_scanner = self._get_CredentialScannerAgent()()
             credential_results = credential_scanner.scan_for_credentials()
 
             total_credentials = credential_results.get("total_matches", 0)

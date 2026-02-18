@@ -347,6 +347,16 @@ if TYPE_CHECKING:
 
         return results
 
+    @staticmethod
+    def _get_unified_cst_healer():
+        """Lazy loader for UnifiedCSTHealer (upward L1->L5 seam)."""
+        from agentic_core.L5_safety.validators.unified_cst_healer import (
+            HealingConfig,
+            UnifiedCSTHealer,
+        )
+
+        return HealingConfig, UnifiedCSTHealer
+
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
         Heal violations detected by ASTValidatorAgent using CST-based transformations.
@@ -367,10 +377,7 @@ if TYPE_CHECKING:
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        from agentic_core.L5_safety.validators.unified_cst_healer import (
-            HealingConfig,
-            UnifiedCSTHealer,
-        )
+        HealingConfig, UnifiedCSTHealer = self._get_unified_cst_healer()
 
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")

@@ -63,10 +63,20 @@ try:
 except ImportError:
     SafetyInspectorAgent = None
 
-try:
-    from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
-except ImportError:
-    CodeEnforcerAgent = None
+
+def _get_CodeEnforcerAgent():
+    """Lazy loader for CodeEnforcerAgent (upward L3->L5 seam)."""
+    try:
+        from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import (
+            CodeEnforcerAgent,
+        )
+
+        return CodeEnforcerAgent
+    except ImportError:
+        return None
+
+
+CodeEnforcerAgent = _get_CodeEnforcerAgent()
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

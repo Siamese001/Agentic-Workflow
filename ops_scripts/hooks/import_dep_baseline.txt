@@ -158,6 +158,8 @@ C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_l1_imports_l30\agentic_core\L1
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_l2_imports_l60\agentic_core\L2_execution\test_violation.py: Line 1: Module 'agentic_core.L6_observability.telemetry' not found
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_non_layer_import0\agentic_core\L0_routing\test_allowed.py: Line 1: Module 'agentic_core.utils.helpers' not found
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_same_layer_impor0\agentic_core\L3_orchestration\test_allowed.py: Line 1: Module 'agentic_core.L3_orchestration.other_module' not found
+C:\Git\Agentic-Workflow\.pytest_tmp\test_upward_import_inside_get_0\agentic_core\L2_execution\good_seam.py: Line 2: 'SomeValidator' not found in module 'agentic_core.L5_safety.validators'
+C:\Git\Agentic-Workflow\.pytest_tmp\test_upward_import_inside_non_0\agentic_core\L2_execution\bad_seam.py: Line 2: 'SomeValidator' not found in module 'agentic_core.L5_safety.validators'
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 26: Module 'agentic_core.discovery' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 27: Module 'agentic_core.L0_routing.enforcement.manifest_guardian_util' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 28: Module 'agentic_core.L0_routing.scripts.compliance_gate_validator' not found
@@ -169,19 +171,18 @@ C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\cache_data_access_init_u
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\chunk_type.py: Line 234: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\chunk_type.py: Line 234: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\collision_resolver.py: Line 21: Module 'agentic_core.utils.ssot_discovery_validator' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 28: Module 'agentic_core.utils.terminal_colors' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 404: Module 'agentic_core.L0_routing.reset_sovereign_state' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 468: Module 'agentic_core.config.autonomy_targets' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 595: Module 'agentic_core.L3_orchestration.Orchestrator' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 674: Module 'agentic_core.L3_orchestration.Orchestrator' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 30: Module 'agentic_core.L3_orchestration.Orchestrator' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 421: Module 'agentic_core.L0_routing.reset_sovereign_state' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 45: Module 'agentic_core.utils.terminal_colors' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\colors.py: Line 485: Module 'agentic_core.config.autonomy_targets' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\compliance_gate_util.py: Line 18: 'DiscoveredAgent' not found in module 'agentic_core.runtime.utils.discovery_util'
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\coverage.py: Line 39: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\coverage.py: Line 85: Module 'agentic_core.L3_orchestration.reasoning.mission_controller_convergence' not found
@@ -191,7 +192,7 @@ C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 80
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 80: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 89: Module 'agentic_core.base_agents.IHealerProtocol' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 89: Module 'agentic_core.base_agents.IHealerProtocol' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execution_context.py: Line 18: Module 'agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execution_context.py: Line 21: Module 'agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\extract_net.py: Line 25: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\find_agents_in_low_heal_territories_util.py: Line 34: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\find_corrupted_files_util.py: Line 65: Module 'agentic_core.utils.ssot_discovery_validator' not found
@@ -258,8 +259,8 @@ C:\Git\Agentic-Workflow\agentic_core\L1_cognition\engines\meta_observability.py:
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\engines\meta_observability.py: Line 199: Module 'agentic_core.L1_cognition.reasoning.cache_strategy_manager_types' not found
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\engines\meta_observability.py: Line 223: Module 'agentic_core.L1_cognition.reasoning.domain_context_manager_types' not found
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\ASTValidatorAgent.py: Line 25: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\ASTValidatorAgent.py: Line 370: Module 'agentic_core.L5_safety.validators.unified_cst_healer' not found
-C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\ASTValidatorAgent.py: Line 370: Module 'agentic_core.L5_safety.validators.unified_cst_healer' not found
+C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\ASTValidatorAgent.py: Line 353: Module 'agentic_core.L5_safety.validators.unified_cst_healer' not found
+C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\ASTValidatorAgent.py: Line 353: Module 'agentic_core.L5_safety.validators.unified_cst_healer' not found
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\reasoning\StrategicRecommendationAgent.py: Line 32: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\dark_reasoning_visitor_validator.py: Line 103: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\spiffe_validator.py: Line 17: Module 'agentic_core.L1_cognition.identity.spiffe_manager_types' not found
@@ -341,22 +342,21 @@ C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\action_router.py: 
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\action_router.py: Line 14: Module 'agentic_core.action_node_modules' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\agent_gym_engine.py: Line 20: Module 'agentic_core.L3_orchestration.reasoning.agent_gym_types' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\autonomous_execution_engine.py: Line 29: 'create_proactive_resource_manager' not found in module 'agentic_core.L5_safety.reasoning.ResourceManagerAgent'
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\autonomous_execution_engine.py: Line 41: Module 'agentic_core.L4_state.checkpoint_manager' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\autonomous_execution_engine.py: Line 44: Module 'agentic_core.L4_state.checkpoint_manager' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\dag_manager.py: Line 23: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\omni_context_engine.py: Line 8: Module 'agentic_core.L2_execution.reasoning.base' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 212: Module 'agentic_core.L3_orchestration.reasoning.RLStrategy' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 213: Module 'agentic_core.L3_orchestration.reasoning.SafetyStrategy' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 209: Module 'agentic_core.L5_safety.validators.credential_types' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 221: Module 'agentic_core.L3_orchestration.reasoning.RLStrategy' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 222: Module 'agentic_core.L3_orchestration.reasoning.SafetyStrategy' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 39: Module 'agentic_core.utils.ssot_discovery_validator' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 404: Module 'agentic_core.L5_safety.validators.credential_types' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 58: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 30: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_router.py: Line 104: Module 'agentic_core.L4_state.P1_core.ValidationContext' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_router.py: Line 127: Module 'agentic_core.L4_state.P1_core.ValidationContext' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_router.py: Line 14: Module 'agentic_core.L3_orchestration.reasoning.mcp_manager' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_router.py: Line 14: Module 'agentic_core.L3_orchestration.reasoning.mcp_manager' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_router.py: Line 52: Module 'agentic_core.L4_state.P1_core.ValidationContext' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_rag_orchestrator.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_rag_orchestrator.py: Line 87: Module 'apps_shared.utils.TitaniumRAGPipeline' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_redis_orchestrator.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
@@ -371,9 +371,9 @@ C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\DagEngineAgent.p
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\DomainPlannerAgent.py: Line 24: 'subatomic_testing_mixin' not found in module 'agentic_core.mixins.subatomic_testing_mixin'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\DomainPlannerAgent.py: Line 28: 'subatomic_testing_mixin' not found in module 'agentic_core.mixins.subatomic_testing_mixin'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\DomainPlannerAgent.py: Line 9: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 102: Module 'agentic_core.L5_safety.enforcement.HierarchyAgent' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 234: Module 'agentic_core.L6_observability.reasoning.CoverageAgent' not found
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 87: Module 'agentic_core.L5_safety.validators.GovernanceAgent' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 194: Module 'agentic_core.L5_safety.validators.GovernanceAgent' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 208: Module 'agentic_core.L5_safety.enforcement.HierarchyAgent' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\NervousSystemAgent.py: Line 224: Module 'agentic_core.L6_observability.reasoning.CoverageAgent' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\OrchestrationHandshakeAgent.py: Line 23: Module 'agentic_core.L3_orchestration.unified.CoreOrchestrationAgent' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\OrchestrationHandshakeAgent.py: Line 51: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\SemanticGatekeeperAgent.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
@@ -735,7 +735,7 @@ C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\SystemArchitectAgent.py
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\TestGeneratorAgent.py: Line 29: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\TypeHintFixerAgent.py: Line 21: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\UnusedCleanupAgent.py: Line 23: Module 'agentic_core.utils.security' not found
-C:\Git\Agentic-Workflow\agentic_core\L5_safety\runners\agent_roster_runner.py: Line 27: Module 'agentic_core.L5_safety.validators.CognitiveDispositionAgent' not found
+C:\Git\Agentic-Workflow\agentic_core\L5_safety\runners\agent_roster_runner.py: Line 36: Module 'agentic_core.L5_safety.validators.CognitiveDispositionAgent' not found
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\runners\orchestrator_runner.py: Line 32: Module 'agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent' not found
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\types\file_health_score_types.py: Line 14: Module 'agentic_core.runtime.types.anomaly_report' not found
 C:\Git\Agentic-Workflow\agentic_core\L5_safety\types\healing_orchestration_types.py: Line 76: Module 'agentic_core.L5_safety.validators.chaos_healing_integration_types' not found

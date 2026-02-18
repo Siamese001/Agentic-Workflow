@@ -24,6 +24,23 @@ from agentic_core.L0_routing.config.path_constants import (
 # Color-coded terminal output for progress visibility
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
+
+def _get_Orchestrator():
+    """Lazy loader for Orchestrator (upward L0->L3 seam)."""
+    from agentic_core.L3_orchestration.Orchestrator import Orchestrator
+
+    return Orchestrator
+
+
+def _get_get_checkpoint_manager():
+    """Lazy loader for get_checkpoint_manager (upward L0->L4 seam)."""
+    from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
+        get_checkpoint_manager,
+    )
+
+    return get_checkpoint_manager
+
+
 try:
     from agentic_core.utils.terminal_colors import (
         Colors,
@@ -592,7 +609,8 @@ def main():
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L0_routing.seams.safety_validators_seam import load_healing_strategy
-        from agentic_core.L3_orchestration.Orchestrator import Orchestrator
+
+        Orchestrator = _get_Orchestrator()  # noqa: F841
 
         HealingStrategy = load_healing_strategy().HealingStrategy
 
@@ -671,12 +689,9 @@ def main():
             from agentic_core.L0_routing.seams.safety_validators_seam import (
                 load_healing_strategy as _load_hs2,
             )
-            from agentic_core.L3_orchestration.Orchestrator import (
-                Orchestrator,
-            )
-            from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
-                get_checkpoint_manager,
-            )
+
+            Orchestrator = _get_Orchestrator()
+            get_checkpoint_manager = _get_get_checkpoint_manager()
 
             HealingStrategy = _load_hs2().HealingStrategy
 

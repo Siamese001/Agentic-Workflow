@@ -84,34 +84,24 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.InterventionServer = InterventionServer()
 
         # L6 Architecture Governor
-        from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
-
-        self.ArchitectureGovernor = GovernanceAgent()
+        self.ArchitectureGovernor = self._get_GovernanceAgent()()
 
         # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
         self.project_root = Path(__file__).resolve().parents[3]
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
-            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-
-            self.location_agent = LocationAgent(self.project_root)
+            self.location_agent = self._get_LocationAgent()(self.project_root)
         except ImportError:
             self.location_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
-            from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent
-
-            self.hierarchy_agent = HierarchyAgent(self.project_root)
+            self.hierarchy_agent = self._get_HierarchyAgent()(self.project_root)
         except ImportError:
             self.hierarchy_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         # Phase 5 Migration: ImportAgent -> CodeHealerAgent
         try:
-            from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-                create_legacy_import_healer,
-            )
-
-            self.import_agent = create_legacy_import_healer()
+            self.import_agent = self._get_create_legacy_import_healer()()
         except ImportError:
             self.import_agent = None
         self._backup_dir: Path | None = None
@@ -198,6 +188,43 @@ class NervousSystemAgent(SovereignBaseAgent):
             },
         )
 
+    @staticmethod
+    def _get_GovernanceAgent():
+        """Lazy loader for GovernanceAgent (upward L3->L5 seam)."""
+        from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
+
+        return GovernanceAgent
+
+    @staticmethod
+    def _get_LocationAgent():
+        """Lazy loader for LocationAgent (upward L3->L5 seam)."""
+        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+
+        return LocationAgent
+
+    @staticmethod
+    def _get_HierarchyAgent():
+        """Lazy loader for HierarchyAgent (upward L3->L5 seam)."""
+        from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent
+
+        return HierarchyAgent
+
+    @staticmethod
+    def _get_create_legacy_import_healer():
+        """Lazy loader for create_legacy_import_healer (upward L3->L5 seam)."""
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+            create_legacy_import_healer,
+        )
+
+        return create_legacy_import_healer
+
+    @staticmethod
+    def _get_CoverageAgent():
+        """Lazy loader for CoverageAgent (upward L3->L6 seam)."""
+        from agentic_core.L6_observability.reasoning.CoverageAgent import CoverageAgent
+
+        return CoverageAgent
+
     def _handle_bias_update(self, event_data: dict) -> None:
         """Process CoverageAgent bias events — multi-layer queue."""
         layer = event_data.get("underrepresented_layer")
@@ -231,9 +258,7 @@ class NervousSystemAgent(SovereignBaseAgent):
 
             # Dynamic decay: Reduce weight if proportion healthy
             try:
-                from agentic_core.L6_observability.reasoning.CoverageAgent import CoverageAgent
-
-                coverage_agent = CoverageAgent()
+                coverage_agent = self._get_CoverageAgent()()
                 metrics = coverage_agent._fetch_metrics()
                 if metrics:
                     current_props = coverage_agent._compute_proportions(metrics)
