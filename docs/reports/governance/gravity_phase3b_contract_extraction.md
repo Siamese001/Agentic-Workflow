@@ -176,7 +176,7 @@ class HealingAgentProtocol(Protocol):
 | Total after Phase 1 | ≤ 52 | 44 | PASS |
 | LAZY_SEAM_VIOLATIONS | 0 | 0 | PASS |
 | MODULE_LEVEL_UPWARD_IMPORTS | 0 | 0 | PASS |
-| Governance tests | all pass | 20/20 + new | PASS |
+| Governance tests | all pass | 20/20 | PASS |
 
 ---
 
