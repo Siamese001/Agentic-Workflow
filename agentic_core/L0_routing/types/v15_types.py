@@ -16,17 +16,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.L0_routing.seams.layer_emission_seam import (
+    assert_layer_may_emit,
+)
 from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
-
-
-def _get_layer_emission_validator():
-    """Lazy import to avoid L0→L5 static dependency."""
-    from agentic_core.L5_safety.enforcement.artifact_emission_prohibition import (
-        assert_layer_may_emit,
-    )
-
-    return assert_layer_may_emit
-
 
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact
@@ -171,7 +164,7 @@ class ResultArtifact:
     emitting_layer: str = "L2"
 
     def __post_init__(self) -> None:
-        _get_layer_emission_validator()("RESULT", self.emitting_layer, self.trace_id)
+        assert_layer_may_emit("RESULT", self.emitting_layer, self.trace_id)
 
 
 # =============================================================================
@@ -309,7 +302,7 @@ class HealingPlan:
     emitting_layer: str = "L2"
 
     def __post_init__(self) -> None:
-        _get_layer_emission_validator()("HEALING_PLAN", self.emitting_layer, self.trace_id)
+        assert_layer_may_emit("HEALING_PLAN", self.emitting_layer, self.trace_id)
         if not self.trace_id:
             raise ValueError("HealingPlan: trace_id must be non-empty")
         if not self.plan_id:

@@ -110,17 +110,31 @@ def guardian_config() -> dict:
             "base_agent_violations": 5,
         },
         # Excluded directories for scanning
+        # Aligned with .gitignore where appropriate for consistency
         "excluded_dirs": {
+            # Python & tool caches
             "__pycache__",
-            ".git",
-            ".venv",
-            "venv",
-            "archives",
-            ".sovereign_healing_backup",
-            ".backup",
-            "node_modules",
             ".mypy_cache",
             ".ruff_cache",
+            ".pytest_cache",
+            ".nox",
+            # Version control & backups
+            ".git",
+            ".backup",
+            ".sovereign_healing_backup",
+            ".healing_backups",
+            # Virtual environments
+            ".venv",
+            "venv",
+            # Build artifacts
+            "agentic_workflow.egg-info",
+            "node_modules",
+            # Runtime & temporary
+            "logs",
+            "artifacts",
+            "data",
+            "archives",
+            # Test directories
             "temp_quiet_test",
             "temp_verbose_test",
         },
