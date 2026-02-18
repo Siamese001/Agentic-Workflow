@@ -2,7 +2,7 @@
 
 Accepts either:
   (a) dict-like (TypedDict instance) OR
-  (b) existing frozen dataclass instance from v15_types.py
+  (b) existing frozen dataclass instance from routing_artifact_types.py
 
 Normalizes output to plain dict matching the TypedDict shape.
 Raises ValueError with deterministic message on first missing/invalid field.

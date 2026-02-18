@@ -30,7 +30,7 @@ def run_phase1_gate(repo_root: Path = None) -> int:
         print("[P1-GATE] Collecting D-evidence...")
         evidence_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_d_evidence_collect_p1.py",
+            "ops_scripts/ci/evidence_collect_phase1.py",
             "--repo-root",
             str(repo_root),
             "--output",
@@ -66,7 +66,7 @@ def run_phase1_gate(repo_root: Path = None) -> int:
         print("[P1-GATE] Running P1 gate evaluation...")
         gate_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_coverage_scoreboard.py",
+            "ops_scripts/ci/coverage_scoreboard.py",
             "--phase",
             "P1",
             "--d-evidence",

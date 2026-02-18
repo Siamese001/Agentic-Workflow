@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
@@ -136,7 +136,7 @@ def _local_build_ssot_manifest():
     if not is_v15_enforced():
         return None
 
-    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
+    from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
 
     _hex8 = hashlib.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -188,7 +188,7 @@ class TestRuntimeSSOTManifest:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest(self):
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 

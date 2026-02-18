@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
 )
 

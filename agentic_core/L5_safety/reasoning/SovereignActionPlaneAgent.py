@@ -7,8 +7,8 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
@@ -98,7 +98,7 @@ class SovereignSandbox:
         self._is_running = False
         Logger.info("Sovereign Sandbox stopped")
 
-    @v15_runtime_guard("B.execute_tool.SovereignActionPlaneAgent")
+    @runtime_guard("B.execute_tool.SovereignActionPlaneAgent")
     async def execute_tool(self, tool_path: str, args: list[str] | None = None) -> dict[str, Any]:
         """
         Execute a tool in the sandbox.
@@ -220,10 +220,10 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -258,7 +258,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
         if manifest is not None:
             import hashlib as _hl
 
-            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.execution_gateway import (
                 V15ExecutionGateway,
             )
 

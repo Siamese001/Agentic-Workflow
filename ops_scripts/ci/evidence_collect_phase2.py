@@ -3,13 +3,13 @@
 V15 Phase 2 D-Evidence Collector — AST-Verified Runtime Enforcement Wiring.
 
 Reads the Wave 2.1 inventory JSON and AST-verifies that each unenforced
-entry point has been wired with v15_runtime_guard decorator.
+entry point has been wired with runtime_guard decorator.
 
 Output schema version: 2.2.0
 
 Usage:
-    python ops_scripts/ci/v15_d_evidence_collect_p2.py --output evidence.json
-    python ops_scripts/ci/v15_d_evidence_collect_p2.py --output evidence.json --repo-root .
+    python ops_scripts/ci/evidence_collect_phase2.py --output evidence.json
+    python ops_scripts/ci/evidence_collect_phase2.py --output evidence.json --repo-root .
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def compute_sha256(path: Path) -> str:
 
 
 def ast_find_guard_decorator(source: str, entry_point_id: str) -> dict | None:
-    """AST-search for @v15_runtime_guard("<entry_point_id>") in source.
+    """AST-search for @runtime_guard("<entry_point_id>") in source.
 
     Returns evidence dict with line span if found, None otherwise.
     """
@@ -51,20 +51,20 @@ def ast_find_guard_decorator(source: str, entry_point_id: str) -> dict | None:
             if not (isinstance(arg, ast.Constant) and arg.value == entry_point_id):
                 continue
             func = dec.func
-            # Shape 1: @v15_runtime_guard("ID")
+            # Shape 1: @runtime_guard("ID")
             func_name = None
             if isinstance(func, ast.Name):
                 func_name = func.id
             elif isinstance(func, ast.Attribute):
                 func_name = func.attr
-            if func_name == "v15_runtime_guard":
+            if func_name == "runtime_guard":
                 return {
                     "decorator_line": dec.lineno,
                     "function_name": node.name,
                     "function_line_start": node.lineno,
                     "function_line_end": node.end_lineno,
                 }
-            # Shape 2: @_optional_v15_runtime_guard()("ID")
+            # Shape 2: @_optional_runtime_guard()("ID")
             if isinstance(func, ast.Call):
                 inner = func.func
                 inner_name = None
@@ -72,7 +72,7 @@ def ast_find_guard_decorator(source: str, entry_point_id: str) -> dict | None:
                     inner_name = inner.id
                 elif isinstance(inner, ast.Attribute):
                     inner_name = inner.attr
-                if inner_name == "_optional_v15_runtime_guard":
+                if inner_name == "_optional_runtime_guard":
                     return {
                         "decorator_line": dec.lineno,
                         "function_name": node.name,
@@ -162,7 +162,7 @@ def collect_evidence(repo_root: Path, synthetic_fail: bool = False) -> dict:
                             proof["function_line_end"],
                         ],
                         "call_site_proof": (
-                            f'@v15_runtime_guard("{ep_id}") on '
+                            f'@runtime_guard("{ep_id}") on '
                             f"{proof['function_name']} at line {proof['decorator_line']}"
                         ),
                     },
@@ -179,7 +179,7 @@ def collect_evidence(repo_root: Path, synthetic_fail: bool = False) -> dict:
                     "status": status,
                     "evidence": {
                         "path": ep["path"],
-                        "error": "v15_runtime_guard decorator not found for this entry_point_id",
+                        "error": "runtime_guard decorator not found for this entry_point_id",
                     },
                 },
             )

@@ -94,14 +94,14 @@ class TestManifestConstructionPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_construction_pattern_enforced(self):
         """The shared manifest construction pattern produces valid SurgicalManifest."""
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
+        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
         assert is_v15_enforced()
 
@@ -152,13 +152,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_orchestrator_manifest(self):
         """Gateway accepts and processes manifest from Cat-A pattern."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -194,13 +194,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_nervous_system_manifest(self):
         """Gateway accepts NervousSystemAgent manifest."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -235,13 +235,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_security_config_manifest(self):
         """Gateway accepts security_level_config manifest."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )

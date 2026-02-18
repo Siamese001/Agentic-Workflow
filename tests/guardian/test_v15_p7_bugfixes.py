@@ -76,7 +76,7 @@ class TestEnforcementModeSemantics:
 
     def test_assert_v15_guarded_does_not_raise_in_log_mode(self):
         """In LOG_ONLY mode, assert_v15_guarded logs instead of raising."""
-        from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
+        from agentic_core.L0_routing.enforcement.runtime_guard import (
             assert_v15_guarded,
         )
 
@@ -86,7 +86,7 @@ class TestEnforcementModeSemantics:
 
     def test_assert_v15_guarded_raises_in_hard_mode(self):
         """In HARD_FAIL mode, assert_v15_guarded raises V15EnforcementError."""
-        from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
+        from agentic_core.L0_routing.enforcement.runtime_guard import (
             assert_v15_guarded,
         )
         from agentic_core.L0_routing.types.guardian_contract import (
@@ -235,7 +235,7 @@ class TestTraceIdFormat:
 
     def test_validate_trace_id_does_not_raise(self):
         """validate_trace_id() must accept the trace_id produced by heal()."""
-        from agentic_core.L0_routing.types.v15_p4_types import validate_trace_id
+        from agentic_core.L0_routing.types.traceability_types import validate_trace_id
 
         agent = _make_agent("log")
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "log"}):
@@ -258,7 +258,7 @@ class TestStateHashReal:
         """Call state_hash_fn via a heal() and intercept the hashes."""
         captured: list[tuple[str, str, str]] = []
 
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 

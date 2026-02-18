@@ -306,7 +306,7 @@ class HealingStrategy:
             Dictionary with execution results
         """
         # §3.1 — Under V15, require RouteDecisionArtifact before healing
-        from agentic_core.L0_routing.types.v15_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts import (
             enforce_route_decision_presence,
         )
 

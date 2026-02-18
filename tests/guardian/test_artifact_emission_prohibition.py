@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     HealingPlan,
     ResultArtifact,
 )

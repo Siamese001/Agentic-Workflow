@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.L0_routing.types.v15_p5_types import (
+from agentic_core.L0_routing.types.crypto_trust_types import (
     HashMismatchTracker,
     KeyStatus,
     ReplayGuardRecord,

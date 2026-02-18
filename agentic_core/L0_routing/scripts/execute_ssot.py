@@ -39,7 +39,7 @@ from typing import Any, Optional
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
-def _optional_v15_runtime_guard():
+def _optional_runtime_guard():
     """Lazy import to avoid import-time failure in bootstrap contexts.
 
     Fail-closed semantics: when V15_ENFORCEMENT=1 and the guard cannot be
@@ -47,9 +47,9 @@ def _optional_v15_runtime_guard():
     no-op.  When enforcement is off (or unset), fall back to a no-op decorator.
     """
     try:
-        from agentic_core.L0_routing.enforcement.v15_runtime_guard import v15_runtime_guard
+        from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 
-        return v15_runtime_guard
+        return runtime_guard
     # guardian: allow-silent-swallow
     except Exception:
         if os.getenv("V15_ENFORCEMENT") == "1":
@@ -170,10 +170,10 @@ def _v15_build_ssot_manifest():
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -208,7 +208,7 @@ def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
     try:
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 
@@ -841,7 +841,7 @@ class NonInteractiveGuard:
         raise RuntimeError(f"Interactive prompt blocked in autonomous mode: {prompt}")
 
 
-@_optional_v15_runtime_guard()("D.with_retry.execute_ssot")
+@_optional_runtime_guard()("D.with_retry.execute_ssot")
 # guardian: allow-magic-config
 def with_retry(max_retries=3, delay=1.0):
     """
@@ -2467,7 +2467,7 @@ def main() -> int:
     return 0
 
 
-@_optional_v15_runtime_guard()("E.execute_ssot_main.execute_ssot")
+@_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()

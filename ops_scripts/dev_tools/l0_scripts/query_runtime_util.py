@@ -5,8 +5,8 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 
 try:
@@ -21,7 +21,7 @@ except ImportError as _err:
 _console = Console()
 
 
-@v15_runtime_guard("D.retry_query.query_runtime_util")
+@runtime_guard("D.retry_query.query_runtime_util")
 # guardian: allow-magic-config
 def retry_query(max_retries: int = 3, base_delay: float = 1.0):
     """

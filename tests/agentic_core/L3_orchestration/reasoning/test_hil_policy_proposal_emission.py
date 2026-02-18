@@ -15,10 +15,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
+from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_policy_proposal,
 )
-from agentic_core.L0_routing.types.v15_p3_types import (
+from agentic_core.L0_routing.types.governance_types import (
     ChangeAction,
     HILOutcome,
     PolicyUpdateProposal,
@@ -258,7 +258,7 @@ class TestApproveEmitsProposal:
                 proposals.append(asdict(proposal))
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter",
         ) as MockEmitter:
             mock_instance = MagicMock()
             mock_instance.emit_typed_artifact = mock_emit
@@ -302,7 +302,7 @@ class TestRejectEmitsProposal:
                 proposals.append(asdict(proposal))
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter",
         ) as MockEmitter:
             mock_instance = MagicMock()
             mock_instance.emit_typed_artifact = mock_emit

@@ -5,7 +5,7 @@ Runtime contracts that enforce P1 (Fail-Closed Defaults) invariants required
 by the V15 Target State audit (Prompt v5.0 Enhanced).
 
 Each class/function here satisfies a specific audit capability (§ reference in docstring).
-These are enforcement mechanisms, not types — they consume the types from v15_types.py.
+These are enforcement mechanisms, not types — they consume the types from routing_artifact_types.py.
 
 Contract version: 1.0.0
 """
@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     HEALER_PIPE_ORDER,
     AggregateArtifact,
     CapabilityDepletionTracker,

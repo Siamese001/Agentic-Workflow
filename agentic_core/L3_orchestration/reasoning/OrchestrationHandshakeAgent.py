@@ -22,23 +22,23 @@ from typing import Any
 
 from agentic_core.L3_orchestration.unified.CoreOrchestrationAgent import CoreOrchestrationAgent
 
-from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
+from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_evidence_pack,
+)
+from agentic_core.L0_routing.types.governance_types import (
+    PolicySnapshot,
+    RouteDecisionRef,
 )
 from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
     is_v15_enforced,
 )
-from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
-from agentic_core.L0_routing.types.v15_p3_types import (
-    PolicySnapshot,
-    RouteDecisionRef,
-)
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
 )
+from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
 from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
     build_l3_route_decision_artifact,
 )

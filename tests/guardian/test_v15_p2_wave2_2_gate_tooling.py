@@ -12,13 +12,13 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_SCRIPT = "ops_scripts/ci/v15_d_evidence_collect_p2.py"
-SCOREBOARD_SCRIPT = "ops_scripts/ci/v15_coverage_scoreboard.py"
+EVIDENCE_SCRIPT = "ops_scripts/ci/evidence_collect_phase2.py"
+SCOREBOARD_SCRIPT = "ops_scripts/ci/coverage_scoreboard.py"
 CI_RUNNER_SCRIPT = "ops_scripts/ci/run_v15_p2_gate.py"
 
 
 class TestP2EvidenceCollector:
-    """Subprocess tests for v15_d_evidence_collect_p2.py."""
+    """Subprocess tests for evidence_collect_phase2.py."""
 
     def test_evidence_collector_produces_valid_json(self, tmp_path: Path) -> None:
         """Evidence collector must produce valid JSON with schema 2.2.0."""

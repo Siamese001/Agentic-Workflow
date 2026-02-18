@@ -14,7 +14,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from system_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,

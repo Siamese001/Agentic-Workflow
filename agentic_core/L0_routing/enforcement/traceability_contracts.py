@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from agentic_core.L0_routing.types.v15_p4_types import (
+from agentic_core.L0_routing.types.traceability_types import (
     CitationBundle,
     CognitiveDiffBundle,
     ErrorSignature,

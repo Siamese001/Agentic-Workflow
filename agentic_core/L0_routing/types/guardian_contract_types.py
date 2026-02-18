@@ -799,7 +799,7 @@ class GuardianResult:
 
         Fail-closed: raises V15EnforcementError if signing fails.
         """
-        from agentic_core.L0_routing.types.v15_p5_types import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
             SignedGuardianArtifact,
         )
 
@@ -989,7 +989,7 @@ def get_default_signing_enclave() -> Any:
     (no production enclave available yet — fail-closed).
     When not enforced: returns None.
     """
-    from agentic_core.L0_routing.types.v15_p5_types import (
+    from agentic_core.L0_routing.types.crypto_trust_types import (
         DeterministicTestEnclave,
         KeyRecord,
         KeyStatus,

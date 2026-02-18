@@ -15,7 +15,7 @@ import dataclasses
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.v15_p6_contracts import (
+from agentic_core.L0_routing.enforcement.boundary_contracts import (
     BoundarySchemaError,
     ContextRetrievalError,
     MetaInvariantError,
@@ -30,7 +30,7 @@ from agentic_core.L0_routing.enforcement.v15_p6_contracts import (
     validate_boundary_schema,
     validate_context_retrieval_read_only,
 )
-from agentic_core.L0_routing.types.v15_p6_types import (
+from agentic_core.L0_routing.types.boundary_types import (
     BoundarySchemaDescriptor,
     ContextRetrievalRequest,
     InvariantCheck,

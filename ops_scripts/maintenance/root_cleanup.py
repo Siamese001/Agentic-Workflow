@@ -1,17 +1,18 @@
-#!/usr/bin/env python
-"""
-Root Cleanup: Move root files to appropriate territories
-"""
-
-from __future__ import annotations
+#!/usr/bin/env python3
+"""Clean up root files and move them to appropriate locations."""
 
 import shutil
+import sys
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from agentic_core.utils.project_root_util import get_project_root
 
 
 def main():
     """Clean up root files."""
-    root = Path("C:/Git/Agentic-Workflow")
+    root = get_project_root()
 
     # Files to move to docs/reports/audit
     audit_files = [

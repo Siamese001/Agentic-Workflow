@@ -8,8 +8,8 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
@@ -139,10 +139,10 @@ class SubatomicHopAgent(SovereignBaseAgent):
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -170,7 +170,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
             provenance_chain=(trace_id,),
         )
 
-    @v15_runtime_guard("B.run.SubatomicHopAgent")
+    @runtime_guard("B.run.SubatomicHopAgent")
     # guardian: allow-type-erasure
     async def run(self, context: dict) -> Any:
         """Execute the hop with zero-trust protections."""
@@ -179,7 +179,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
         if manifest is not None:
             import hashlib as _hl
 
-            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.execution_gateway import (
                 V15ExecutionGateway,
             )
 

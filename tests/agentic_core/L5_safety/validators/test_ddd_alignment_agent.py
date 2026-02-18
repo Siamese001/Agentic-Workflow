@@ -17,12 +17,19 @@ def get_project_root() -> Path:
     if "PROJECT_ROOT" in os.environ:
         return Path(os.environ["PROJECT_ROOT"])
 
-    known_root = Path("C:/Git/Agentic-Workflow")
-    if known_root.exists() and (known_root / "agentic_core").is_dir():
-        return known_root
+    try:
+        from agentic_core.utils.project_root_util import get_project_root_safe
 
-    test_file = Path(__file__).resolve()
-    return test_file.parent.parent.parent
+        return get_project_root_safe()
+    except ImportError:
+        # Fallback for very early test environments
+        current = Path(__file__).resolve()
+        while current != current.parent:
+            if (current / "agentic_core").is_dir():
+                return current
+            current = current.parent
+
+        raise RuntimeError("Could not determine project root")
 
 
 class TestDDDAlignmentAgent:

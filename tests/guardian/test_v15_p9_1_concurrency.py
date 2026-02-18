@@ -14,7 +14,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import patch
 
-from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+from agentic_core.L0_routing.enforcement.execution_gateway import (
     GatewayResult,
     V15ExecutionGateway,
 )
@@ -26,8 +26,8 @@ from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
 
 def _make_manifest(seed: str):
     """Create a distinct valid SurgicalManifest from a seed string."""
-    from agentic_core.L0_routing.enforcement.v15_p4_contracts import generate_trace_id
-    from agentic_core.L0_routing.types.v15_p2_types import FixConstraint, SurgicalManifest
+    from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+    from agentic_core.L0_routing.types.determinism_types import FixConstraint, SurgicalManifest
 
     _hex8 = hashlib.sha256(seed.encode()).hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)

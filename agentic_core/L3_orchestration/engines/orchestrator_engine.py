@@ -40,8 +40,8 @@ from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import get_validated_project_root
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
@@ -82,7 +82,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
         self._import_cache: dict[str, bool] = {}
         self._available_agents: list[str] | None = None
 
-    @v15_runtime_guard("A.execute.orchestrator_engine")
+    @runtime_guard("A.execute.orchestrator_engine")
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
         agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
@@ -256,7 +256,7 @@ class Orchestrator(SovereignBaseAgent):
     # IOrchestratorAgent Protocol Implementation
     # =========================================================================
 
-    @v15_runtime_guard("A.run_mission.orchestrator_engine")
+    @runtime_guard("A.run_mission.orchestrator_engine")
     def run_mission(
         self,
         agents: list[str],
@@ -341,7 +341,7 @@ class Orchestrator(SovereignBaseAgent):
         self.logger.info(f"[MISSION] Complete: {successful}/{len(agents)} agents succeeded")
         return mission_result
 
-    @v15_runtime_guard("A.run_agent.orchestrator_engine")
+    @runtime_guard("A.run_agent.orchestrator_engine")
     def run_agent(
         self,
         agent_name: str,
@@ -659,13 +659,13 @@ class Orchestrator(SovereignBaseAgent):
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_contracts import (
+        from agentic_core.L0_routing.types.determinism_contracts import (
             require_manifest_hash_ok,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )

@@ -2,7 +2,7 @@
 """V15 Phase 4 Gate Runner — Immutable Traceability (§15.5)
 
 CI-ready evidence-only gate. Verifies trace_id infrastructure:
-- TRACE_ID_PATTERN exported from v15_p4_types
+- TRACE_ID_PATTERN exported from traceability_types
 - validate_trace_id callable and rejects bad input
 - generate_trace_id callable and produces compliant IDs
 - trace_id propagated through SurgicalManifest.correlation_id
@@ -60,13 +60,13 @@ class P4EvidenceCollector:
         }
 
     def _check_trace_id_pattern_exported(self):
-        """Verify TRACE_ID_PATTERN is exported from v15_p4_types."""
-        p4_path = self.repo_root / "agentic_core/L0_routing/types/v15_p4_types.py"
+        """Verify TRACE_ID_PATTERN is exported from traceability_types."""
+        p4_path = self.repo_root / "agentic_core/L0_routing/types/traceability_types.py"
         if not p4_path.exists():
             self.violations.append(
                 {
                     "check": "trace_id_pattern_exported",
-                    "detail": "v15_p4_types.py not found",
+                    "detail": "traceability_types.py not found",
                 },
             )
             return
@@ -79,7 +79,7 @@ class P4EvidenceCollector:
             self.checks_passed.append(
                 {
                     "check": "trace_id_pattern_exported",
-                    "detail": "TRACE_ID_PATTERN with CC3AL1 regex found in v15_p4_types",
+                    "detail": "TRACE_ID_PATTERN with CC3AL1 regex found in traceability_types",
                 },
             )
         else:
@@ -93,7 +93,7 @@ class P4EvidenceCollector:
     def _check_validate_trace_id_callable(self):
         """Verify validate_trace_id is importable and rejects bad input."""
         try:
-            from agentic_core.L0_routing.types.v15_p4_types import validate_trace_id
+            from agentic_core.L0_routing.types.traceability_types import validate_trace_id
 
             # Must reject invalid input
             try:
@@ -142,7 +142,7 @@ class P4EvidenceCollector:
         try:
             import re
 
-            from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+            from agentic_core.L0_routing.enforcement.traceability_contracts import (
                 generate_trace_id,
             )
 
@@ -173,12 +173,12 @@ class P4EvidenceCollector:
 
     def _check_trace_id_in_manifest(self):
         """Verify SurgicalManifest has correlation_id field for trace propagation."""
-        p2_path = self.repo_root / "agentic_core/L0_routing/types/v15_p2_types.py"
+        p2_path = self.repo_root / "agentic_core/L0_routing/types/determinism_types.py"
         if not p2_path.exists():
             self.violations.append(
                 {
                     "check": "trace_id_in_manifest",
-                    "detail": "v15_p2_types.py not found",
+                    "detail": "determinism_types.py not found",
                 },
             )
             return
@@ -223,7 +223,7 @@ class P4EvidenceCollector:
 
     def _check_trace_id_immutability_contract(self):
         """Verify SurgicalManifest is frozen (immutable)."""
-        p2_path = self.repo_root / "agentic_core/L0_routing/types/v15_p2_types.py"
+        p2_path = self.repo_root / "agentic_core/L0_routing/types/determinism_types.py"
         if not p2_path.exists():
             return
 

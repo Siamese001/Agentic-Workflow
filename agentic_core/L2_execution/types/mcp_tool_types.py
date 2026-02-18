@@ -13,8 +13,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 
 Logger = logging.getLogger(__name__)
@@ -188,7 +188,7 @@ class MCPToolServer:
 
         return tools
 
-    @v15_runtime_guard("B.execute_tool.mcp_tool_types")
+    @runtime_guard("B.execute_tool.mcp_tool_types")
     def execute_tool(
         self,
         name: str,
@@ -260,7 +260,7 @@ class MCPToolServer:
             )
         else:
             # §Wave5.0.2 fail-closed: no token provided → deterministic DENY
-            from agentic_core.L0_routing.types.v15_p2_types import (
+            from agentic_core.L0_routing.types.determinism_types import (
                 SemanticClockSnapshot,
             )
 
@@ -306,7 +306,7 @@ class MCPToolServer:
 
         # Emit enforcement artifact via TelemetryEmitter
         try:
-            from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
+            from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)

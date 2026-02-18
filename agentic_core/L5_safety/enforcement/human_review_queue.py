@@ -25,10 +25,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
+from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_policy_proposal,
 )
-from agentic_core.L0_routing.types.v15_p3_types import HILOutcome
+from agentic_core.L0_routing.types.governance_types import HILOutcome
 
 Logger = logging.getLogger(__name__)
 
@@ -371,7 +371,7 @@ class HumanReviewQueue:
                 file_scope=file_scope,
             )
 
-            from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
+            from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("POLICY_UPDATE_PROPOSAL", proposal)

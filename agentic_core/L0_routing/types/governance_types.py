@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 
 # =============================================================================
 # §3.4 — EvidencePack (Human Escalation)

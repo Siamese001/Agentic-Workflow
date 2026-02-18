@@ -13,7 +13,7 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.self_healing_trigger_types import (
     AUTHORIZED_DECISIONS,
     REJECTED_DECISIONS,

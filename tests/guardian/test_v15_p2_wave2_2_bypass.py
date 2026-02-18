@@ -2,7 +2,7 @@
 Guardian test: Wave 2.2 Fail-Closed Bypass Negative Tests.
 
 Proves that under V15_ENFORCEMENT=1, direct execution at/behind an
-enforcement boundary WITHOUT the v15_runtime_guard raises
+enforcement boundary WITHOUT the runtime_guard raises
 V15EnforcementError deterministically.
 
 One representative per category A-E (minimum 5 tests) plus a coverage
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
+from agentic_core.L0_routing.enforcement.runtime_guard import (
     _get_active_guards,
     assert_v15_guarded,
 )
@@ -124,7 +124,7 @@ class TestInventoryCoverageAssertion:
     """Every inventory entrypoint must be WIRED or ALREADY_ENFORCED."""
 
     def test_all_unenforced_entrypoints_have_guard_decorator(self) -> None:
-        """AST-verify that every unenforced entrypoint has v15_runtime_guard decorator."""
+        """AST-verify that every unenforced entrypoint has runtime_guard decorator."""
         import ast
 
         inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
@@ -147,18 +147,18 @@ class TestInventoryCoverageAssertion:
                 unwired.append(f"{ep['id']} (syntax error in {ep['path']})")
                 continue
 
-            # Check if v15_runtime_guard with this entry_point_id appears as a decorator
+            # Check if runtime_guard with this entry_point_id appears as a decorator
             found = _ast_find_guard_decorator(tree, ep["id"])
             if not found:
                 unwired.append(ep["id"])
 
-        assert not unwired, f"Unenforced entrypoints missing v15_runtime_guard decorator: {unwired}"
+        assert not unwired, f"Unenforced entrypoints missing runtime_guard decorator: {unwired}"
 
 
 def _ast_find_guard_decorator(tree: ast.Module, entry_point_id: str) -> bool:
-    """AST-search for @v15_runtime_guard("<entry_point_id>") decorator in module.
+    """AST-search for @runtime_guard("<entry_point_id>") decorator in module.
 
-    Also recognises the lazy-import variant @_optional_v15_runtime_guard()("ID").
+    Also recognises the lazy-import variant @_optional_runtime_guard()("ID").
     """
     import ast
 
@@ -172,15 +172,15 @@ def _ast_find_guard_decorator(tree: ast.Module, entry_point_id: str) -> bool:
             if not (isinstance(arg, ast.Constant) and arg.value == entry_point_id):
                 continue
             func = dec.func
-            # Shape 1: @v15_runtime_guard("ID")
+            # Shape 1: @runtime_guard("ID")
             func_name = None
             if isinstance(func, ast.Name):
                 func_name = func.id
             elif isinstance(func, ast.Attribute):
                 func_name = func.attr
-            if func_name == "v15_runtime_guard":
+            if func_name == "runtime_guard":
                 return True
-            # Shape 2: @_optional_v15_runtime_guard()("ID")
+            # Shape 2: @_optional_runtime_guard()("ID")
             if isinstance(func, ast.Call):
                 inner = func.func
                 inner_name = None
@@ -188,6 +188,6 @@ def _ast_find_guard_decorator(tree: ast.Module, entry_point_id: str) -> bool:
                     inner_name = inner.id
                 elif isinstance(inner, ast.Attribute):
                     inner_name = inner.attr
-                if inner_name == "_optional_v15_runtime_guard":
+                if inner_name == "_optional_runtime_guard":
                     return True
     return False

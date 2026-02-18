@@ -14,8 +14,8 @@ GUARANTEES:
 - The baseline is annotated as untrusted with its SHA-256.
 
 Usage:
-    python v15_gap_regenerate_p0.py                       # stdout
-    python v15_gap_regenerate_p0.py --out /tmp/gap.json   # file
+    python gap_regenerate_p0.py                       # stdout
+    python gap_regenerate_p0.py --out /tmp/gap.json   # file
 
 Evidence checks (P0 scope — boundary-level, not symbol-exists):
     7.2.1  Signed GuardianArtifact  — ensure_v15_signed() called in to_json()
@@ -282,7 +282,7 @@ def regenerate(
     data["_p0_meta"] = {
         "derived_from_untrusted_baseline": True,
         "baseline_sha256": baseline_hash,
-        "generator": "v15_gap_regenerate_p0.py",
+        "generator": "gap_regenerate_p0.py",
         "layer_flags_mutated": False,
     }
 

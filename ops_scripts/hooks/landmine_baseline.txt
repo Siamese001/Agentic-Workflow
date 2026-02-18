@@ -1,6 +1,7 @@
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1681:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2715:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/utils/subprocess_runner.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:152:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:198:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
@@ -588,6 +589,7 @@ agentic_core/L5_safety/validators/path_fragility_validator.py:84:silent_swallowe
 agentic_core/L5_safety/validators/silent_swallower_validator.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/type_erasure_validator.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/verb_canonicalizer_validator.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+agentic_core/L5_safety/validators/verb_canonicalizer_validator.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L6_observability/dashboards/core/DashboardDataGenerator.py:35:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L6_observability/dashboards/core/StaticFileApp.py:11:path_fragility:Path fragility: os.chdir() - use pathlib.Path instead
 agentic_core/L6_observability/dashboards/core/StaticFileApp.py:28:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -737,6 +739,7 @@ agentic_core/utils/meta_learning_engine_util.py:201:silent_swallower:Silent exce
 agentic_core/utils/meta_learning_engine_util.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/project_root_util.py:32:global_mutation:Global mutation: os.environ['PROJECT_ROOT'] assignment modifies global state at runtime
 apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -767,7 +770,9 @@ apps_lic/scripts/migrate_agents.py:29:path_fragility:Path fragility: os.path.exi
 apps_lic/scripts/migrate_agents.py:30:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 apps_lic/scripts/purge_legacy_archive.py:11:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/scripts/purge_legacy_archive.py:12:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -805,6 +810,7 @@ apps_lic/tools/run_workflow_lic.py:27:path_fragility:Path fragility: os.path.exi
 apps_lic/tools/run_workflow_lic.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/tools/run_workflow_lic.py:29:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_lic/types/app_content_validator_agent_types.py:486:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.9 in function call
 apps_lic/types/code_quality_guardrail_types.py:71:magic_configuration:Magic configuration: Hardcoded max_line_length=120
 apps_lic/types/code_quality_guardrail_types.py:72:magic_configuration:Magic configuration: Hardcoded max_function_length=50
@@ -833,6 +839,7 @@ apps_lic/validators/MessageDiversityValidator.py:82:type_erasure:Type erasure: M
 apps_lic/validators/PersonaPlannerValidator.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded timeout_s=60
@@ -866,6 +873,7 @@ apps_rg/reasoning/RgResumeOrchestrator.py:83:magic_configuration:Magic configura
 apps_rg/scripts/generate_final_report.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 apps_rg/scripts/generate_final_report.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/generate_resume.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/scripts/migration_executor.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/migration_executor.py:177:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1363,6 +1371,7 @@ artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__Debat
 artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py:71:magic_configuration:Magic configuration: Hardcoded limit_multiplier=2.0
 artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__TrackObservabilityCostAgent.py:85:magic_configuration:Magic configuration: Hardcoded max_depth=3
 artifacts/consolidation/backups/apps_lic__engines__HOP5GenerationAgent.py:284:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+artifacts/consolidation/backups/apps_lic__engines__Hop1ProfileAnalysisAgent.py:146:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 artifacts/consolidation/backups/apps_lic__engines__Hop1ProfileAnalysisAgent.py:146:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 artifacts/consolidation/backups/apps_lic__engines__Hop1ProfileAnalysisAgent.py:190:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py:224:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SurgicalManifest,
 )
 
@@ -201,7 +201,7 @@ class TestRuntimeRetryManifest:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_survives_multiple_retries_sync(self):
         """Prove manifest + trace_id are stable across >=2 retries."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 
@@ -264,7 +264,7 @@ class TestRuntimeRetryManifest:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest_instance(self):
         """Gateway.execute must receive the exact manifest instance."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 

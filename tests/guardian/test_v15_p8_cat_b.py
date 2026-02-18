@@ -107,14 +107,14 @@ class TestManifestConstructionPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_construction_pattern_enforced(self):
         """The shared manifest construction pattern produces valid SurgicalManifest."""
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
+        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
         assert is_v15_enforced()
 
@@ -160,13 +160,13 @@ class TestManifestConstructionPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_trace_id_preserved_through_gateway(self):
         """trace_id from manifest is passed to gateway.execute()."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -205,13 +205,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_agent_engine_manifest(self):
         """Gateway accepts AgentEngine manifest (L2)."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -246,13 +246,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_subatomic_hop_manifest(self):
         """Gateway accepts SubatomicHopAgent manifest (L3, AGGREGATE)."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -288,13 +288,13 @@ class TestGatewayInvocationPattern:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_processes_action_plane_manifest(self):
         """Gateway accepts SovereignActionPlaneAgent manifest (L2, RESULT)."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )

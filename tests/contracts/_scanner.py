@@ -33,8 +33,8 @@ KNOWN_SOVEREIGN_BASES = frozenset(
 
 APPROVED_GUARD_DECORATORS = frozenset(
     {
-        "v15_runtime_guard",
-        "_optional_v15_runtime_guard",
+        "runtime_guard",
+        "_optional_runtime_guard",
     },
 )
 

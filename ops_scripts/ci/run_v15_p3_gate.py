@@ -27,9 +27,9 @@ EVIDENCE_DIR = PROJECT_ROOT / "docs" / "reports" / "plans"
 
 # Files in the enforcement critical path
 ENFORCEMENT_FILES = [
-    "agentic_core/L0_routing/enforcement/v15_execution_gateway.py",
-    "agentic_core/L0_routing/enforcement/v15_runtime_guard.py",
-    "agentic_core/L0_routing/enforcement/v15_p4_contracts.py",
+    "agentic_core/L0_routing/enforcement/execution_gateway.py",
+    "agentic_core/L0_routing/enforcement/runtime_guard.py",
+    "agentic_core/L0_routing/enforcement/traceability_contracts.py",
     "agentic_core/base_agents/SovereignBaseAgent.py",
 ]
 
@@ -109,12 +109,12 @@ class P3EvidenceCollector:
 
     def _check_semantic_clock_wiring(self):
         """Verify SemanticClock is imported and tick() is called in gateway."""
-        gw_path = self.repo_root / "agentic_core/L0_routing/enforcement/v15_execution_gateway.py"
+        gw_path = self.repo_root / "agentic_core/L0_routing/enforcement/execution_gateway.py"
         if not gw_path.exists():
             self.violations.append(
                 {
                     "check": "semantic_clock_wiring",
-                    "file": "v15_execution_gateway.py",
+                    "file": "execution_gateway.py",
                     "detail": "Gateway file not found",
                 },
             )
@@ -131,7 +131,7 @@ class P3EvidenceCollector:
             self.checks_passed.append(
                 {
                     "check": "semantic_clock_wiring",
-                    "file": "v15_execution_gateway.py",
+                    "file": "execution_gateway.py",
                     "detail": f"SemanticClock imported, _clock.tick() called, prepare_commit={has_clock_prepare}",
                 },
             )
@@ -139,7 +139,7 @@ class P3EvidenceCollector:
             self.violations.append(
                 {
                     "check": "semantic_clock_wiring",
-                    "file": "v15_execution_gateway.py",
+                    "file": "execution_gateway.py",
                     "detail": f"SemanticClock import={has_import}, _clock.tick={has_clock_tick}",
                 },
             )

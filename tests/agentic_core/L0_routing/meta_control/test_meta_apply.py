@@ -18,7 +18,7 @@ from pathlib import Path
 from agentic_core.L0_routing.meta_control.meta_apply import (
     apply_meta_learning_rollout,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityConstraints,
     CapabilityTokenSubject,

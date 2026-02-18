@@ -12,7 +12,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from system_learning.types.app_signal_types import (
     AppSignalEventArtifact,
     aggregate_app_signals,

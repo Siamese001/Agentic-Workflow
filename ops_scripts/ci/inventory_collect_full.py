@@ -23,8 +23,8 @@ Exclusion signals (negative = false positive):
   - Test files
 
 Usage:
-    python ops_scripts/ci/v15_d_inventory_collect_full.py --out v15_d_inventory_p4.json
-    python ops_scripts/ci/v15_d_inventory_collect_full.py --out v15_d_inventory_final.json
+    python ops_scripts/ci/inventory_collect_full.py --out v15_d_inventory_p4.json
+    python ops_scripts/ci/inventory_collect_full.py --out v15_d_inventory_final.json
 """
 
 from __future__ import annotations
@@ -43,8 +43,8 @@ SCAN_ROOTS = ("agentic_core", "ops_scripts")
 P2_INVENTORY_REL = "docs/reports/plans/v15_phase2_wave2_1_runtime_entrypoints.json"
 
 # Guard decorator names we recognise
-GUARD_NAMES_DIRECT = frozenset({"v15_runtime_guard"})
-GUARD_NAMES_LAZY = frozenset({"_optional_v15_runtime_guard"})
+GUARD_NAMES_DIRECT = frozenset({"runtime_guard"})
+GUARD_NAMES_LAZY = frozenset({"_optional_runtime_guard"})
 
 # ---------------------------------------------------------------------------
 # AST scope-heuristic constants
@@ -159,14 +159,14 @@ def _dotted_name(node: ast.expr) -> str | None:
 
 
 def has_v15_guard(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> dict | None:
-    """Check if a function/method has a v15_runtime_guard decorator.
+    """Check if a function/method has a runtime_guard decorator.
 
     Returns evidence dict if found, None otherwise.
     """
     for dec in func_node.decorator_list:
         if not isinstance(dec, ast.Call):
             continue
-        # Shape 1: @v15_runtime_guard("ID")
+        # Shape 1: @runtime_guard("ID")
         fname = _node_name(dec.func)
         if fname in GUARD_NAMES_DIRECT and dec.args:
             arg = dec.args[0]
@@ -176,7 +176,7 @@ def has_v15_guard(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> dict | N
                     "shape": "direct",
                     "line": dec.lineno,
                 }
-        # Shape 2: @_optional_v15_runtime_guard()("ID")
+        # Shape 2: @_optional_runtime_guard()("ID")
         if isinstance(dec.func, ast.Call):
             inner_name = _node_name(dec.func.func)
             if inner_name in GUARD_NAMES_LAZY and dec.args:

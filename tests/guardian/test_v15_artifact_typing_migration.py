@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_artifact_validate import (
+from agentic_core.L0_routing.types.artifact_validate_compat import (
     make_healing_plan_from_dataclass,
     make_result_artifact_from_dataclass,
     to_healing_plan_dict,
@@ -27,7 +27,7 @@ from agentic_core.L0_routing.types.v15_artifact_validate import (
     validate_result_artifact,
     validate_stale_write_incident,
 )
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     HealingPlan,
     IncidentArtifact,
     ResultArtifact,
@@ -369,15 +369,15 @@ class TestStructural:
     """TypedDict SSOT module exists with correct exports."""
 
     def test_td_module_exists(self):
-        td_path = Path("agentic_core/L0_routing/types/v15_artifact_typed.py")
+        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat.py")
         assert td_path.exists(), f"Missing: {td_path}"
 
     def test_validate_module_exists(self):
-        val_path = Path("agentic_core/L0_routing/types/v15_artifact_validate.py")
+        val_path = Path("agentic_core/L0_routing/types/artifact_validate_compat.py")
         assert val_path.exists(), f"Missing: {val_path}"
 
     def test_td_module_exports_expected_names(self):
-        td_path = Path("agentic_core/L0_routing/types/v15_artifact_typed.py")
+        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat.py")
         source = td_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 
@@ -397,16 +397,22 @@ class TestStructural:
         assert not missing, f"Missing from __all__: {missing}"
 
     def test_no_dataclass_signature_changes(self):
-        """Verify v15_types.py still has the original dataclass definitions (no breaking changes)."""
-        types_path = Path("agentic_core/L0_routing/types/v15_types.py")
+        """Verify routing_artifact_types.py still has the original dataclass definitions (no breaking changes)."""
+        types_path = Path("agentic_core/L0_routing/types/routing_artifact_types.py")
         source = types_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 
         class_names = [n.name for n in tree.body if isinstance(n, ast.ClassDef)]
-        assert "ResultArtifact" in class_names, "ResultArtifact dataclass missing from v15_types.py"
-        assert "HealingPlan" in class_names, "HealingPlan dataclass missing from v15_types.py"
-        assert "IncidentArtifact" in class_names, "IncidentArtifact dataclass missing from v15_types.py"
-        assert "StaleWriteIncident" in class_names, "StaleWriteIncident dataclass missing from v15_types.py"
+        assert "ResultArtifact" in class_names, (
+            "ResultArtifact dataclass missing from routing_artifact_types.py"
+        )
+        assert "HealingPlan" in class_names, "HealingPlan dataclass missing from routing_artifact_types.py"
+        assert "IncidentArtifact" in class_names, (
+            "IncidentArtifact dataclass missing from routing_artifact_types.py"
+        )
+        assert "StaleWriteIncident" in class_names, (
+            "StaleWriteIncident dataclass missing from routing_artifact_types.py"
+        )
 
     def test_unsupported_type_raises_type_error(self):
         """Passing a non-dict, non-dataclass object raises TypeError."""

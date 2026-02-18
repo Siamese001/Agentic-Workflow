@@ -1,16 +1,16 @@
 """
-Backward compatibility shim for v15_artifact_validate module.
+Backward compatibility stub for artifact_validate_compat module.
 
-This module re-exports symbols from v15_artifact_validation_types
+This module re-exports symbols from artifact_validate_compat_types
 to maintain backwards compatibility with existing imports.
 
-Canonical location: agentic_core/L0_routing/types/v15_artifact_validation_types.py
-Compatibility shim: agentic_core/L0_routing/types/v15_artifact_validate_types.py
+Canonical location: agentic_core/L0_routing/types/artifact_validators.py
+Compatibility stub: agentic_core/L0_routing/types/artifact_validate_compat.py
 """
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.v15_artifact_validation_types import (
+from agentic_core.L0_routing.types.artifact_validators import (
     make_healing_plan_from_dataclass,
     make_result_artifact_from_dataclass,
     to_healing_plan_dict,

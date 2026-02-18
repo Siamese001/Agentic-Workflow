@@ -25,7 +25,7 @@ from agentic_core.L0_routing.meta_control.meta_apply_ops import (
     record_canary_state,
     rollback_meta_learning_rollout,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from system_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,

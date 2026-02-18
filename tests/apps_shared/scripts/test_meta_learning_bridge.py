@@ -15,7 +15,7 @@ import inspect
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from apps_shared.scripts.meta_learning_bridge import (
     emit_app_signal_aggregate,
     emit_app_signal_event,

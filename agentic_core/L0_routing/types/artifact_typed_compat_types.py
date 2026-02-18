@@ -1,16 +1,16 @@
 """
-Backward compatibility stub for v15_artifact_typed module.
+Backward compatibility stub for artifact_typed_compat module.
 
-This module re-exports symbols from v15_types
+This module re-exports symbols from routing_artifact_types
 to maintain backwards compatibility with existing imports.
 
-Canonical location: agentic_core/L0_routing/types/v15_types.py
-Compatibility stub: agentic_core/L0_routing/types/v15_artifact_typed.py
+Canonical location: agentic_core/L0_routing/types/routing_artifact_types.py
+Compatibility stub: agentic_core/L0_routing/types/artifact_typed_compat.py
 """
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     AggregateArtifact,
     HealingPlan,
     IncidentArtifact,

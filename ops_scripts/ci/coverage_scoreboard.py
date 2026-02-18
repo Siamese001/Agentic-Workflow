@@ -7,9 +7,9 @@ status counts.  Returns exit code 1 if gate thresholds are not met
 for the specified phase.
 
 Usage:
-    python v15_coverage_scoreboard.py --phase P0
-    python v15_coverage_scoreboard.py --phase P1
-    python v15_coverage_scoreboard.py --phase P3 --json
+    python coverage_scoreboard.py --phase P0
+    python coverage_scoreboard.py --phase P1
+    python coverage_scoreboard.py --phase P3 --json
 
 Phase thresholds:
     P0: FAIL == 0
@@ -197,7 +197,7 @@ def check_gate(
         p0_meta = raw_data.get("_p0_meta")
         if p0_meta is None:
             raise SchemaValidationError(
-                "P0 gate requires _p0_meta in regenerated artifact. Run v15_gap_regenerate_p0.py first.",
+                "P0 gate requires _p0_meta in regenerated artifact. Run gap_regenerate_p0.py first.",
             )
         if "evidence_fail_count" not in p0_meta:
             raise SchemaValidationError(
@@ -219,7 +219,7 @@ def check_gate(
     if phase == "P1":
         if d_evidence is None:
             raise SchemaValidationError(
-                "P1 gate requires --d-evidence report from v15_d_evidence_collect_p1.py",
+                "P1 gate requires --d-evidence report from evidence_collect_phase1.py",
             )
 
         # Check critical D-set (must be 100%)
@@ -254,7 +254,7 @@ def check_gate(
     if phase == "P2":
         if p2_evidence is None:
             raise SchemaValidationError(
-                "P2 gate requires --p2-evidence report from v15_d_evidence_collect_p2.py",
+                "P2 gate requires --p2-evidence report from evidence_collect_phase2.py",
             )
 
         # Validate required fields
@@ -347,13 +347,13 @@ def main() -> int:
         "--d-evidence",
         type=Path,
         dest="d_evidence",
-        help="Path to D-evidence report from v15_d_evidence_collect_p1.py (required for P1)",
+        help="Path to D-evidence report from evidence_collect_phase1.py (required for P1)",
     )
     parser.add_argument(
         "--p2-evidence",
         type=Path,
         dest="p2_evidence",
-        help="Path to P2 evidence report from v15_d_evidence_collect_p2.py (required for P2)",
+        help="Path to P2 evidence report from evidence_collect_phase2.py (required for P2)",
     )
     args = parser.parse_args()
 

@@ -5,14 +5,21 @@ description: |
     1. Indexes Source Tree (agentic_core L0-L6) to build an Address Map.
     2. Recursively finds 'test_*.py' files anywhere in the project.
     3. Moves them to tests/unit/{mirrored_path}.
-    4. Rewrites imports from 'from src.agentic_core' or 'from core' to 'from agentic_core'.
+    4. Rewrites imports from 'from agentic_core' or 'from core' to 'from agentic_core'.
 """
 
-import re
+#!/usr/bin/env python3
+"""Intelligence sentry for monitoring project health."""
+
 import shutil
+import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path("C:/Git/Agentic-Workflow").resolve()
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from agentic_core.utils.project_root_util import get_project_root
+
+PROJECT_ROOT = get_project_root()
 SOURCE_ROOTS = ["agentic_core", "apps_rg", "apps_lic"]
 TEST_UNIT_ROOT = PROJECT_ROOT / "tests/unit"
 

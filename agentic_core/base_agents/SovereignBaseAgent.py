@@ -30,19 +30,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+from agentic_core.L0_routing.enforcement.execution_gateway import (
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
+)
+from agentic_core.L0_routing.enforcement.traceability_contracts import (
     generate_trace_id,
 )
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
-)
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SurgicalManifest,
 )
+from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 from agentic_core.L0_routing.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
@@ -180,7 +180,7 @@ class SovereignBaseAgent(
         }
 
     # Base execute method returns Any - subclasses should override with specific types
-    @v15_runtime_guard("B.execute.SovereignBaseAgent")
+    @runtime_guard("B.execute.SovereignBaseAgent")
     # guardian: allow-type-erasure
     def execute(self, *args, **kwargs) -> Any:
         """Execute the agent's main function."""
@@ -270,7 +270,7 @@ class SovereignBaseAgent(
         # Convert violation to SurgicalManifest (Phase 1 simplified version)
         import hashlib
 
-        from agentic_core.L0_routing.types.v15_p2_types import FixConstraint
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint
 
         ast_snippet = f"heal({violation.get('id', 'unknown')})"
 

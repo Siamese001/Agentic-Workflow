@@ -57,10 +57,10 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_sign_produces_signed_artifact(self):
         """GuardianResult.sign() must produce a SignedGuardianArtifact."""
-        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
-        from agentic_core.L0_routing.types.v15_p5_types import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
             SignedGuardianArtifact,
         )
+        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
 
         result = GuardianResult(guardian_id="test_guardian", v15_trace_id="trace-001")
 
@@ -236,18 +236,18 @@ class TestP03RouteSchemaConvergence:
         assert found, "RouteDecision must be assigned as alias for RoutePath"
 
     def test_router_imports_v15_route_path(self):
-        """contextual_router_config must import RoutePath from v15_types."""
+        """contextual_router_config must import RoutePath from routing_artifact_types."""
         router_path = PROJECT_ROOT / "agentic_core" / "runtime" / "config" / "contextual_router_config.py"
         source = router_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
         found = False
         for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and node.module and "v15_types" in node.module:
+            if isinstance(node, ast.ImportFrom) and node.module and "routing_artifact_types" in node.module:
                 for alias in node.names:
                     if alias.name == "RoutePath":
                         found = True
                         break
-        assert found, "contextual_router_config must import RoutePath from v15_types"
+        assert found, "contextual_router_config must import RoutePath from routing_artifact_types"
 
     def test_routing_result_decision_typed_as_route_path(self):
         """RoutingResult.decision annotation must reference RoutePath."""
@@ -291,7 +291,7 @@ class TestP04MissingTypedArtifacts:
     """P0.4: HealingPlan, StaleWriteIncident, SideEffectRegistry."""
 
     def test_healing_plan_construction(self):
-        from agentic_core.L0_routing.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.routing_artifact_types import HealingPlan
 
         hp = HealingPlan(
             trace_id="t1",
@@ -304,7 +304,7 @@ class TestP04MissingTypedArtifacts:
         assert hp.manifests == ("m1", "m2")
 
     def test_healing_plan_frozen(self):
-        from agentic_core.L0_routing.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.routing_artifact_types import HealingPlan
 
         hp = HealingPlan(
             trace_id="t1",
@@ -317,7 +317,7 @@ class TestP04MissingTypedArtifacts:
             hp.trace_id = "changed"  # type: ignore[misc]
 
     def test_healing_plan_validation(self):
-        from agentic_core.L0_routing.types.v15_types import HealingPlan
+        from agentic_core.L0_routing.types.routing_artifact_types import HealingPlan
 
         with pytest.raises(ValueError, match="trace_id"):
             HealingPlan(
@@ -337,7 +337,7 @@ class TestP04MissingTypedArtifacts:
             )
 
     def test_stale_write_incident_construction(self):
-        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.routing_artifact_types import StaleWriteIncident
 
         swi = StaleWriteIncident(
             trace_id="t1",
@@ -350,7 +350,7 @@ class TestP04MissingTypedArtifacts:
         assert swi.actual_hash == "bbb"
 
     def test_stale_write_incident_frozen(self):
-        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.routing_artifact_types import StaleWriteIncident
 
         swi = StaleWriteIncident(
             trace_id="t",
@@ -363,7 +363,7 @@ class TestP04MissingTypedArtifacts:
             swi.trace_id = "x"  # type: ignore[misc]
 
     def test_stale_write_incident_validation(self):
-        from agentic_core.L0_routing.types.v15_types import StaleWriteIncident
+        from agentic_core.L0_routing.types.routing_artifact_types import StaleWriteIncident
 
         with pytest.raises(ValueError, match="target_path"):
             StaleWriteIncident(
@@ -375,7 +375,7 @@ class TestP04MissingTypedArtifacts:
             )
 
     def test_side_effect_registry_construction(self):
-        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.boundary_types import SideEffectRegistry
 
         ser = SideEffectRegistry(
             trace_id="t1",
@@ -387,7 +387,7 @@ class TestP04MissingTypedArtifacts:
         assert ser.paths_read == ("a.py",)
 
     def test_side_effect_registry_frozen(self):
-        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.boundary_types import SideEffectRegistry
 
         ser = SideEffectRegistry(
             trace_id="t",
@@ -400,7 +400,7 @@ class TestP04MissingTypedArtifacts:
             ser.wave_id = "x"  # type: ignore[misc]
 
     def test_side_effect_registry_validation(self):
-        from agentic_core.L0_routing.types.v15_p6_types import SideEffectRegistry
+        from agentic_core.L0_routing.types.boundary_types import SideEffectRegistry
 
         with pytest.raises(ValueError, match="trace_id"):
             SideEffectRegistry(trace_id="", wave_id="w", paths_read=(), paths_written=(), apis_called=())
@@ -423,7 +423,7 @@ class TestP05DiscoverySchema:
     """P0.5: V15DiscoverySchema pinned with all required fields."""
 
     def test_v15_discovery_schema_all_fields(self):
-        from agentic_core.L0_routing.types.v15_p6_types import (
+        from agentic_core.L0_routing.types.boundary_types import (
             V15_DISCOVERY_REQUIRED_FIELDS,
         )
 
@@ -442,7 +442,7 @@ class TestP05DiscoverySchema:
         assert V15_DISCOVERY_REQUIRED_FIELDS == expected
 
     def test_v15_discovery_schema_construction(self):
-        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.boundary_types import V15DiscoverySchema
 
         schema = V15DiscoverySchema(
             identity="AgentA",
@@ -459,7 +459,7 @@ class TestP05DiscoverySchema:
         assert schema.identity == "AgentA"
 
     def test_v15_discovery_schema_frozen(self):
-        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.boundary_types import V15DiscoverySchema
 
         schema = V15DiscoverySchema(
             identity="A",
@@ -478,7 +478,7 @@ class TestP05DiscoverySchema:
 
     def test_v15_discovery_schema_missing_field_fails(self):
         """Missing any required field must raise ValueError/TypeError."""
-        from agentic_core.L0_routing.types.v15_p6_types import V15DiscoverySchema
+        from agentic_core.L0_routing.types.boundary_types import V15DiscoverySchema
 
         with pytest.raises(ValueError, match="identity"):
             V15DiscoverySchema(
@@ -495,7 +495,7 @@ class TestP05DiscoverySchema:
             )
 
     def test_v15_discovery_schema_version_pinned(self):
-        from agentic_core.L0_routing.types.v15_p6_types import (
+        from agentic_core.L0_routing.types.boundary_types import (
             V15_DISCOVERY_SCHEMA_VERSION,
         )
 
@@ -508,23 +508,23 @@ class TestP05DiscoverySchema:
 
 
 class TestP06CoverageScoreboard:
-    """P0.6: v15_coverage_scoreboard.py exists and functions."""
+    """P0.6: coverage_scoreboard.py exists and functions."""
 
     def _load_sb(self):
         """Import the scoreboard module."""
         sys.path.insert(0, str(PROJECT_ROOT / "ops_scripts" / "ci"))
         try:
             # Force reimport to pick up edits
-            if "v15_coverage_scoreboard" in sys.modules:
-                del sys.modules["v15_coverage_scoreboard"]
-            import v15_coverage_scoreboard as sb
+            if "coverage_scoreboard" in sys.modules:
+                del sys.modules["coverage_scoreboard"]
+            import coverage_scoreboard as sb
 
             return sb
         finally:
             sys.path.pop(0)
 
     def test_scoreboard_script_exists(self):
-        path = PROJECT_ROOT / "ops_scripts" / "ci" / "v15_coverage_scoreboard.py"
+        path = PROJECT_ROOT / "ops_scripts" / "ci" / "coverage_scoreboard.py"
         assert path.exists()
 
     def test_scoreboard_computes_stats_canonical_schema(self):
@@ -727,7 +727,7 @@ class TestP0AGapRegeneration:
     """Phase 0A: Regeneration never mutates layer flags; baseline is untrusted."""
 
     def _rg(self):
-        return _load_ci_module("v15_gap_regenerate_p0")
+        return _load_ci_module("gap_regenerate_p0")
 
     def test_gap_json_not_mutated_by_gating(self):
         """In-repo v15_gap_analysis.json must not change during gating."""
@@ -744,7 +744,7 @@ class TestP0AGapRegeneration:
         assert hash_before == hash_after, "Gap JSON was mutated during regeneration!"
 
     def test_regeneration_script_exists(self):
-        path = PROJECT_ROOT / "ops_scripts" / "ci" / "v15_gap_regenerate_p0.py"
+        path = PROJECT_ROOT / "ops_scripts" / "ci" / "gap_regenerate_p0.py"
         assert path.exists()
 
     def test_regeneration_produces_zero_fail(self):
@@ -898,7 +898,7 @@ class TestP0BBoundaryEvidence:
     """Phase 0B: Evidence checks verify boundary call-sites, not just symbols."""
 
     def _rg(self):
-        return _load_ci_module("v15_gap_regenerate_p0")
+        return _load_ci_module("gap_regenerate_p0")
 
     def test_7_2_1_verifies_callsite_not_existence(self):
         """7.2.1 evidence must check that to_json() CALLS ensure_v15_signed(),
@@ -965,8 +965,8 @@ class TestP0CDEvidenceDrivenGate:
 
     def test_end_to_end_p0_gate(self):
         """Full pipeline: regenerate → scoreboard → P0 gate PASS via evidence_fail_count."""
-        rg = _load_ci_module("v15_gap_regenerate_p0")
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        rg = _load_ci_module("gap_regenerate_p0")
+        sb = _load_ci_module("coverage_scoreboard")
 
         gap_path = PROJECT_ROOT / "docs" / "reports" / "plans" / "v15_gap_analysis.json"
         baseline = json.loads(gap_path.read_text(encoding="utf-8"))
@@ -986,8 +986,8 @@ class TestP0CDEvidenceDrivenGate:
     def test_baseline_fail_outside_p0_ignored(self):
         """Baseline FAIL on a non-P0 item must NOT affect the P0 gate.
         The gate reads evidence_fail_count, not baseline status counts."""
-        rg = _load_ci_module("v15_gap_regenerate_p0")
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        rg = _load_ci_module("gap_regenerate_p0")
+        sb = _load_ci_module("coverage_scoreboard")
 
         # Baseline has a FAIL on non-P0 item 99.1
         fake = {
@@ -1023,8 +1023,8 @@ class TestP0CDEvidenceDrivenGate:
 
     def test_evidence_fail_overrides_clean_baseline(self):
         """If evidence_fail_count > 0, gate must FAIL even if baseline has zero FAILs."""
-        rg = _load_ci_module("v15_gap_regenerate_p0")
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        rg = _load_ci_module("gap_regenerate_p0")
+        sb = _load_ci_module("coverage_scoreboard")
 
         import copy
 
@@ -1051,8 +1051,8 @@ class TestP0CDEvidenceDrivenGate:
 
     def test_regenerated_fail_hard_fails_gate(self):
         """If regeneration produces a FAIL (evidence missing), scoreboard must reject."""
-        rg = _load_ci_module("v15_gap_regenerate_p0")
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        rg = _load_ci_module("gap_regenerate_p0")
+        sb = _load_ci_module("coverage_scoreboard")
 
         import copy
 
@@ -1095,7 +1095,7 @@ class TestINV1NoParallelSchemas:
         for py_file in sorted((PROJECT_ROOT / "agentic_core").rglob("*.py")):
             if py_file == guardian_contract_path:
                 continue
-            if "v15_p5_types" in py_file.name:
+            if "crypto_trust_types" in py_file.name:
                 continue  # SignedGuardianArtifact is the V15 type
             try:
                 source = py_file.read_text(encoding="utf-8")
@@ -1223,7 +1223,7 @@ class TestP0ECIReadySmokePath:
 
     def test_missing_p0_meta_hard_fails_gate(self):
         """If _p0_meta is removed from regenerated artifact, P0 gate must hard-fail."""
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        sb = _load_ci_module("coverage_scoreboard")
 
         # Create fake data without _p0_meta
         fake_data = {
@@ -1243,7 +1243,7 @@ class TestP0ECIReadySmokePath:
 
     def test_evaluated_ids_differs_hard_fails_gate(self):
         """If evaluated_ids differs from expected list, gate must hard-fail."""
-        sb = _load_ci_module("v15_coverage_scoreboard")
+        sb = _load_ci_module("coverage_scoreboard")
 
         # Create fake data with wrong evaluated_ids
         fake_data = {

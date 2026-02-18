@@ -19,7 +19,7 @@ from typing import Any
 from agentic_core.L0_routing.seams.layer_emission_seam import (
     assert_layer_may_emit,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 
 # =============================================================================
 # §3.1 — RouteDecision Typed Artifact

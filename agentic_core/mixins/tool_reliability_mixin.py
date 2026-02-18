@@ -25,8 +25,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypeVar
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
@@ -363,10 +363,10 @@ class ToolReliabilityMixin:
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -401,7 +401,7 @@ class ToolReliabilityMixin:
         try:
             import hashlib as _hl
 
-            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.execution_gateway import (
                 V15ExecutionGateway,
             )
 
@@ -420,7 +420,7 @@ class ToolReliabilityMixin:
         except Exception as exc:
             Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
 
-    @v15_runtime_guard("D.with_retry.tool_reliability_mixin")
+    @runtime_guard("D.with_retry.tool_reliability_mixin")
     async def with_retry(
         self,
         tool_name: str,
@@ -497,7 +497,7 @@ class ToolReliabilityMixin:
 
         raise RetryExhaustedError(tool_name, policy.max_retries + 1, last_error or Exception("Unknown error"))
 
-    @v15_runtime_guard("D.with_retry_sync.tool_reliability_mixin")
+    @runtime_guard("D.with_retry_sync.tool_reliability_mixin")
     def with_retry_sync(
         self,
         tool_name: str,

@@ -18,20 +18,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from agentic_core.L0_routing.types.guardian_contract import (
-    V15HardFailAbort,
-    V15SoftFailAbort,
-    is_v15_hard_fail,
-    is_v15_soft_fail,
-)
-from agentic_core.L0_routing.types.v15_contracts import (
-    GuardrailGuard,
-    PipeOrderEnforcer,
-    PipeOrderViolation,
-    PolicyConfigGuard,
-    PolicyMutationIncident,
-)
-from agentic_core.L0_routing.types.v15_p2_contracts import (
+from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
+from agentic_core.L0_routing.types.determinism_contracts import (
     RollbackHashMismatch,
     create_boundary_snapshot,
     dedupe_sha256,
@@ -39,23 +27,41 @@ from agentic_core.L0_routing.types.v15_p2_contracts import (
     validate_manifest_emission,
     verify_rollback_integrity,
 )
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     BoundarySnapshotArtifact,
     SemanticClock,
     StateCommitInvalid,
     SurgicalManifest,
 )
-from agentic_core.L0_routing.types.v15_p5_types import HashMismatchTracker
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.guardian_contract import (
+    V15HardFailAbort,
+    V15SoftFailAbort,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
+from agentic_core.L0_routing.types.routing_artifact_types import (
     HEALER_PIPE_ORDER,
     TokenCapArtifact,
     TokenGateResult,
 )
-from agentic_core.L2_execution.enforcement.healer_pipe_order import (
-    enforce_healer_pipe_order,
+from agentic_core.L0_routing.types.routing_contracts import (
+    GuardrailGuard,
+    PipeOrderEnforcer,
+    PipeOrderViolation,
+    PolicyConfigGuard,
+    PolicyMutationIncident,
 )
 
 Logger = logging.getLogger(__name__)
+
+
+def _get_enforce_healer_pipe_order():
+    """Lazy load enforce_healer_pipe_order to avoid upward import."""
+    from agentic_core.L2_execution.enforcement.healer_pipe_order import (
+        enforce_healer_pipe_order,
+    )
+
+    return enforce_healer_pipe_order
 
 
 # =============================================================================
@@ -254,7 +260,7 @@ class V15ExecutionGateway:
         self._pipe_advance(pipe, "commit", trace_id, observed_steps)
 
         # G-2-3 — Final completeness gate: verify all 10 steps executed in order
-        enforce_healer_pipe_order(HEALER_PIPE_ORDER, observed_steps, trace_id)
+        _get_enforce_healer_pipe_order()(HEALER_PIPE_ORDER, observed_steps, trace_id)
         # §13.1/§13.1.1 — Advance semantic clock only on valid commit
         tick = self._clock.step_id
         if commit_valid:

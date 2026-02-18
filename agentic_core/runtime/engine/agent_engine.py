@@ -3,8 +3,8 @@
 
 import logging
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 from agentic_core.patterns.base import BaseReasoningPattern
@@ -33,10 +33,10 @@ class AgentEngine:
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -64,7 +64,7 @@ class AgentEngine:
             provenance_chain=(trace_id,),
         )
 
-    @v15_runtime_guard("B.run.agent_engine")
+    @runtime_guard("B.run.agent_engine")
     async def run(self, user_input: str, task_id: str = "default") -> AgentState:
         """
         Executes the agent loop until completion or max_turns.
@@ -74,7 +74,7 @@ class AgentEngine:
         if manifest is not None:
             import hashlib as _hl
 
-            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.execution_gateway import (
                 V15ExecutionGateway,
             )
 

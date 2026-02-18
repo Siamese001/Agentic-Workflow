@@ -7,8 +7,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -302,13 +302,13 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
 
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+        from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.v15_p2_contracts import (
+        from agentic_core.L0_routing.types.determinism_contracts import (
             require_manifest_hash_ok,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -338,7 +338,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         require_manifest_hash_ok(manifest)
         return manifest
 
-    @v15_runtime_guard("A.run_mission.NervousSystemAgent")
+    @runtime_guard("A.run_mission.NervousSystemAgent")
     async def run_mission(self, max_phases: int | None = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
 
@@ -443,7 +443,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
 
-    @v15_runtime_guard("A.execute.NervousSystemAgent")
+    @runtime_guard("A.execute.NervousSystemAgent")
     async def execute(self, context: ExecutionContext, resume_phase: str | None = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 

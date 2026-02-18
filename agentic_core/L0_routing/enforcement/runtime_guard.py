@@ -49,7 +49,7 @@ def _get_correlation_id() -> str | None:
     return getattr(_guard_context, "correlation_id", None)
 
 
-def v15_runtime_guard(entry_point_id: str) -> Callable[[F], F]:
+def runtime_guard(entry_point_id: str) -> Callable[[F], F]:
     """Decorator that enforces V15 gateway routing for a runtime entry point.
 
     Args:
@@ -178,7 +178,7 @@ def assert_v15_guarded(entry_point_id: str) -> None:
     if entry_point_id not in active:
         msg = (
             f"V15 bypass detected: '{entry_point_id}' called without "
-            f"v15_runtime_guard. Active guards: {sorted(active)}"
+            f"runtime_guard. Active guards: {sorted(active)}"
         )
         if is_v15_hard_fail():
             raise V15EnforcementError(msg)
@@ -188,19 +188,19 @@ def assert_v15_guarded(entry_point_id: str) -> None:
 def v15_runtime_boundary(entry_point_id: str) -> Callable[[F], F]:
     """Canonical unified guard — safe for bootstrap and normal contexts.
 
-    Identical semantics to ``v15_runtime_guard`` but fail-closed safe:
+    Identical semantics to ``runtime_guard`` but fail-closed safe:
     when ``V15_ENFORCEMENT=1`` and the guard infrastructure cannot initialise,
     the import error propagates (hard failure).  When enforcement is off,
     the decorator is a zero-cost identity wrapper.
 
-    Use this instead of duplicating ``_optional_v15_runtime_guard()`` in
+    Use this instead of duplicating ``_optional_runtime_guard()`` in
     every bootstrap file.
     """
-    return v15_runtime_guard(entry_point_id)
+    return runtime_guard(entry_point_id)
 
 
 __all__ = [
     "assert_v15_guarded",
     "v15_runtime_boundary",
-    "v15_runtime_guard",
+    "runtime_guard",
 ]

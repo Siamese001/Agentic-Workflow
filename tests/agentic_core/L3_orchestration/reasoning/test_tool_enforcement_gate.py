@@ -187,7 +187,7 @@ class TestPassPath:
             emitted.append({"type": type_label, "artifact": artifact})
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"x": 1})
@@ -215,7 +215,7 @@ class TestPassPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             result = server.execute_tool("test_tool", {"a": 1})
@@ -280,7 +280,7 @@ class TestBlockPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             with pytest.raises(ToolPolicyBlocked):
@@ -351,7 +351,7 @@ class TestModifyPath:
             emitted.append(artifact)
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"a": 1})
@@ -400,7 +400,7 @@ class TestDeterminism:
             artifacts.append(artifact)
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"x": 42})
@@ -420,7 +420,7 @@ class TestDeterminism:
             artifacts.append(artifact)
 
         with patch(
-            "agentic_core.L0_routing.types.v15_contracts.TelemetryEmitter.emit_typed_artifact",
+            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter.emit_typed_artifact",
             mock_emit,
         ):
             server.execute_tool("test_tool", {"key": "value"})

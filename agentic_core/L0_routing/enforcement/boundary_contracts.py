@@ -10,7 +10,7 @@ Contract version: 1.0.0
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.v15_p6_types import (
+from agentic_core.L0_routing.types.boundary_types import (
     BoundarySchemaDescriptor,
     ContextRetrievalRequest,
     InvariantCheck,

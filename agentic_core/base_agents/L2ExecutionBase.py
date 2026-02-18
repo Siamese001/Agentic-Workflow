@@ -20,8 +20,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 
 
@@ -46,7 +46,7 @@ class L2ExecutionBase(SovereignBaseAgent):
         """Cooperative MRO initialization."""
         super().__post_init__()
 
-    @v15_runtime_guard("B.execute_tool.L2ExecutionBase")
+    @runtime_guard("B.execute_tool.L2ExecutionBase")
     def execute_tool(self, tool_name: str, **kwargs: Any) -> dict[str, Any]:
         """
         Execute a registered tool by name.

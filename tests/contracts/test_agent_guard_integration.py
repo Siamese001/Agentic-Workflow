@@ -2,8 +2,8 @@
 
 Enforces:
 1. execute method must include at least one approved guard decorator:
-   - v15_runtime_guard
-   - _optional_v15_runtime_guard
+   - runtime_guard
+   - _optional_runtime_guard
 2. OR class-level decorator equivalent.
 3. execute body must reference policy_config or call into base policy method.
 

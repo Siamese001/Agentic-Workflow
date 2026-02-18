@@ -24,7 +24,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Protocol
 
-from agentic_core.L0_routing.types.v15_types import RoutePath
+from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
 from agentic_core.L5_safety.enforcement.circuit_breaker import get_breaker
 from agentic_core.L5_safety.enforcement.context_session import (
     ContextSession,
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 # V15 P0.3: RouteDecision is now an alias for the canonical V15 RoutePath.
-# All 5 strictly defined paths come from v15_types.RoutePath.
+# All 5 strictly defined paths come from routing_artifact_types.RoutePath.
 RouteDecision = RoutePath
 
 

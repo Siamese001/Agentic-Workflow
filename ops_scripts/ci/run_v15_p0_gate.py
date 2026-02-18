@@ -91,7 +91,7 @@ def main() -> NoReturn:
         print("[REGEN] Regenerating P0 artifact...", file=sys.stderr)
         regen_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_gap_regenerate_p0.py",
+            "ops_scripts/ci/gap_regenerate_p0.py",
             "--baseline",
             str(args.baseline),
             "--out",
@@ -118,7 +118,7 @@ def main() -> NoReturn:
         print("[GATE] Running P0 gate...", file=sys.stderr)
         gate_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_coverage_scoreboard.py",
+            "ops_scripts/ci/coverage_scoreboard.py",
             "--gap-json",
             str(args.output),
             "--phase",

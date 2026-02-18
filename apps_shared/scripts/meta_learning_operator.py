@@ -33,7 +33,7 @@ from agentic_core.L0_routing.meta_control.meta_apply import (
 from agentic_core.L0_routing.meta_control.meta_apply_ops import (
     apply_with_invariants,
 )
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )

@@ -53,7 +53,7 @@ class TestCountL0TargetingEdges:
         edges = [
             {
                 "source": "agentic_core/L5_safety/utils/a.py",
-                "target_module": "agentic_core.L0_routing.types.v15_p2_types",
+                "target_module": "agentic_core.L0_routing.types.determinism_types",
                 "lineno": 10,
             },
             {

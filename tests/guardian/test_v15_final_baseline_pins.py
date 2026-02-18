@@ -59,7 +59,7 @@ class TestV15FinalP4TraceID:
     """P4 trace_id regex enforcement is available."""
 
     def test_trace_id_pattern_importable(self):
-        from agentic_core.L0_routing.types.v15_p4_types import (
+        from agentic_core.L0_routing.types.traceability_types import (
             TRACE_ID_PATTERN,
             validate_trace_id,
         )
@@ -68,7 +68,7 @@ class TestV15FinalP4TraceID:
         assert validate_trace_id("CC3AL1-0A1B2C3D") == "CC3AL1-0A1B2C3D"
 
     def test_trace_id_rejects_invalid(self):
-        from agentic_core.L0_routing.types.v15_p4_types import (
+        from agentic_core.L0_routing.types.traceability_types import (
             validate_trace_id,
         )
 
@@ -80,7 +80,7 @@ class TestV15FinalP5SigningEnclave:
     """P5 signing enclave and trust root are available."""
 
     def test_enclave_importable(self):
-        from agentic_core.L0_routing.types.v15_p5_types import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
             DeterministicTestEnclave,
             KeyRecord,
             KeyStatus,
@@ -99,7 +99,7 @@ class TestV15FinalP5SigningEnclave:
         assert enclave.verify(b"test", sig, "pin-test") is True
 
     def test_revoked_key_rejected(self):
-        from agentic_core.L0_routing.types.v15_p5_types import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
             DeterministicTestEnclave,
             KeyRecord,
             KeyStatus,
@@ -122,7 +122,7 @@ class TestV15FinalP6MetaGovernor:
     """P6 meta-invariants runner exists and is functional."""
 
     def test_meta_runner_importable(self):
-        from agentic_core.L0_routing.enforcement.v15_p6_contracts import (
+        from agentic_core.L0_routing.enforcement.boundary_contracts import (
             fail_closed_on_violation,
             run_meta_invariants,
         )
@@ -142,7 +142,7 @@ class TestV15FinalP6MetaGovernor:
         assert fail_closed_on_violation(report) is True
 
     def test_meta_runner_detects_drift(self):
-        from agentic_core.L0_routing.enforcement.v15_p6_contracts import (
+        from agentic_core.L0_routing.enforcement.boundary_contracts import (
             MetaInvariantError,
             fail_closed_on_violation,
             run_meta_invariants,

@@ -17,7 +17,7 @@ from typing import Any
 from agentic_core.L0_routing.seams.vigilance_seam import (
     get_vigilance_severity,
 )
-from agentic_core.L0_routing.types.v15_types import RoutePath
+from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
 
 
 def route_vigilance_event(event: Any) -> RoutePath:

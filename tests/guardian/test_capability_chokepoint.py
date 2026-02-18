@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
     get_chokepoint,

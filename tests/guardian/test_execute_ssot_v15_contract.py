@@ -148,15 +148,15 @@ class TestV15FailClosed:
         assert "_apply_v15_enforcement_flag" in func_names
 
     def test_optional_guard_wrapper_exists(self):
-        """_optional_v15_runtime_guard must exist for lazy import safety."""
+        """_optional_runtime_guard must exist for lazy import safety."""
         source = EXECUTE_SSOT.read_text(encoding="utf-8")
         tree = ast.parse(source)
         func_names = [
             node.name
             for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef) and node.name == "_optional_v15_runtime_guard"
+            if isinstance(node, ast.FunctionDef) and node.name == "_optional_runtime_guard"
         ]
-        assert "_optional_v15_runtime_guard" in func_names
+        assert "_optional_runtime_guard" in func_names
 
     def test_main_and_with_retry_have_guard_decorators(self):
         """main() and with_retry() must have v15 guard decorators."""
@@ -170,14 +170,14 @@ class TestV15FailClosed:
             for dec in node.decorator_list:
                 if not isinstance(dec, ast.Call):
                     continue
-                # Shape: @_optional_v15_runtime_guard()("ID")
+                # Shape: @_optional_runtime_guard()("ID")
                 func = dec.func
                 if isinstance(func, ast.Call):
                     inner = func.func
-                    if isinstance(inner, ast.Name) and inner.id == "_optional_v15_runtime_guard":
+                    if isinstance(inner, ast.Name) and inner.id == "_optional_runtime_guard":
                         guarded_functions.add(node.name)
-                # Shape: @v15_runtime_guard("ID")
-                elif isinstance(func, ast.Name) and func.id == "v15_runtime_guard":
+                # Shape: @runtime_guard("ID")
+                elif isinstance(func, ast.Name) and func.id == "runtime_guard":
                     guarded_functions.add(node.name)
 
         assert "main" in guarded_functions or "with_retry" in guarded_functions, (

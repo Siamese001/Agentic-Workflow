@@ -72,7 +72,7 @@ class TestInventoryAutoClassification:
         result = subprocess.run(
             [
                 sys.executable,
-                "ops_scripts/ci/v15_d_inventory_collect_full.py",
+                "ops_scripts/ci/inventory_collect_full.py",
                 "--out",
                 "v15_d_inventory_tripwire.json",
             ],
@@ -96,7 +96,7 @@ class TestInventoryAutoClassification:
 
     def test_classify_unguarded_has_heuristic_layers(self):
         """The classify_unguarded function must have all required heuristic layers."""
-        collector_path = REPO_ROOT / "ops_scripts" / "ci" / "v15_d_inventory_collect_full.py"
+        collector_path = REPO_ROOT / "ops_scripts" / "ci" / "inventory_collect_full.py"
         source = collector_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
         # Find classify_unguarded function
@@ -122,7 +122,7 @@ class TestRuntimeBoundaryExists:
 
     def test_v15_runtime_boundary_exported(self):
         """v15_runtime_boundary must be importable from the guard module."""
-        from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
+        from agentic_core.L0_routing.enforcement.runtime_guard import (
             v15_runtime_boundary,
         )
 
@@ -130,7 +130,7 @@ class TestRuntimeBoundaryExists:
 
     def test_v15_runtime_boundary_in_all(self):
         """v15_runtime_boundary must be in __all__."""
-        guard_path = REPO_ROOT / "agentic_core" / "L0_routing" / "enforcement" / "v15_runtime_guard.py"
+        guard_path = REPO_ROOT / "agentic_core" / "L0_routing" / "enforcement" / "runtime_guard.py"
         source = guard_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
         for node in ast.walk(tree):
@@ -143,7 +143,7 @@ class TestRuntimeBoundaryExists:
                             f"v15_runtime_boundary not in __all__: {names}"
                         )
                         return
-        pytest.fail("__all__ not found in v15_runtime_guard.py")
+        pytest.fail("__all__ not found in runtime_guard.py")
 
 
 class TestEntrypointDecomposition:

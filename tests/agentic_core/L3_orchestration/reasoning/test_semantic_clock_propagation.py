@@ -14,23 +14,23 @@ from dataclasses import asdict
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.v15_p3_contracts import (
+from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_evidence_pack,
     build_hil_policy_proposal,
 )
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SemanticClock,
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from agentic_core.L0_routing.types.v15_p3_types import (
+from agentic_core.L0_routing.types.governance_types import (
     EvidencePack,
     HILOutcome,
     PolicySnapshot,
     PolicyUpdateProposal,
     RouteDecisionRef,
 )
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,

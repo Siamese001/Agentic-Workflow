@@ -19,8 +19,8 @@ from pathlib import Path
 
 from agentic_core.utils.security import safe_git_execute
 
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
 
@@ -131,13 +131,13 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
 
     import hashlib as _hl
 
-    from agentic_core.L0_routing.enforcement.v15_p4_contracts import (
+    from agentic_core.L0_routing.enforcement.traceability_contracts import (
         generate_trace_id,
     )
-    from agentic_core.L0_routing.types.v15_p2_contracts import (
+    from agentic_core.L0_routing.types.determinism_contracts import (
         require_manifest_hash_ok,
     )
-    from agentic_core.L0_routing.types.v15_p2_types import (
+    from agentic_core.L0_routing.types.determinism_types import (
         FixConstraint,
         SurgicalManifest,
     )
@@ -169,7 +169,7 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
     try:
         import hashlib as _hl
 
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 
@@ -194,7 +194,7 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
 # ==============================================================================
 
 
-@v15_runtime_guard("C.run_daemon_mode.mission_runner")
+@runtime_guard("C.run_daemon_mode.mission_runner")
 def run_daemon_mode():
     """
     L5 Autonomous Mode: The Watchman - monitors repository for changes.
@@ -257,7 +257,7 @@ def run_daemon_mode():
 # ==============================================================================
 
 
-@v15_runtime_guard("E.run_surgical_mode.mission_runner")
+@runtime_guard("E.run_surgical_mode.mission_runner")
 def run_surgical_mode(target_file: str):
     """
     Surgical mode: Target a specific file for validation.
@@ -287,7 +287,7 @@ def run_surgical_mode(target_file: str):
 # ==============================================================================
 
 
-@v15_runtime_guard("C.run_standard_mode.mission_runner")
+@runtime_guard("C.run_standard_mode.mission_runner")
 def run_standard_mode():
     """
     Standard L4 Mode: Full validation mission with self-healing cycles.
@@ -443,7 +443,7 @@ def run_standard_mode():
     return run_mission
 
 
-@v15_runtime_guard("C._start_websocket_server.mission_runner")
+@runtime_guard("C._start_websocket_server.mission_runner")
 def _start_websocket_server(ctx):
     """Start WebSocket server for live reasoning stream."""
     import threading

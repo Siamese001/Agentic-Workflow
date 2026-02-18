@@ -14,14 +14,14 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+from agentic_core.L0_routing.enforcement.execution_gateway import (
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
+from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
-from agentic_core.L0_routing.types.v15_p5_types import HashMismatchTracker
 
 
 def _make_manifest(trace_id: str = "CC3AL1-00000001") -> SurgicalManifest:

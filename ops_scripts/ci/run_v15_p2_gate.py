@@ -35,7 +35,7 @@ def run_phase2_gate(repo_root: Path | None = None) -> int:
         print("[P2-GATE] Collecting P2 evidence...")
         evidence_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_d_evidence_collect_p2.py",
+            "ops_scripts/ci/evidence_collect_phase2.py",
             "--repo-root",
             str(repo_root),
             "--output",
@@ -75,7 +75,7 @@ def run_phase2_gate(repo_root: Path | None = None) -> int:
         print("[P2-GATE] Running P2 gate evaluation...")
         gate_cmd = [
             sys.executable,
-            "ops_scripts/ci/v15_coverage_scoreboard.py",
+            "ops_scripts/ci/coverage_scoreboard.py",
             "--phase",
             "P2",
             "--p2-evidence",

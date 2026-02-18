@@ -9,7 +9,7 @@ No uuid4, no wall-clock time, no elapsed_ms.
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L6_observability.types.vigilance_event_types import (
     VigilanceEventArtifact,
     VigilanceSeverity,

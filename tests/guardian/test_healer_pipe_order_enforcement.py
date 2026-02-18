@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_types import HEALER_PIPE_ORDER
+from agentic_core.L0_routing.types.routing_artifact_types import HEALER_PIPE_ORDER
 from agentic_core.L2_execution.enforcement.healer_pipe_order import (
     enforce_healer_pipe_order,
 )
@@ -198,12 +198,12 @@ class TestStructural:
         assert "healer_pipe_order" in hits[0]
 
     def test_gateway_calls_enforce(self):
-        """v15_execution_gateway.py must call enforce_healer_pipe_order."""
-        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/v15_execution_gateway.py")
+        """execution_gateway.py must call enforce_healer_pipe_order."""
+        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/execution_gateway.py")
         assert gw_path.exists(), f"Gateway not found: {gw_path}"
         content = gw_path.read_text(encoding="utf-8", errors="ignore")
         assert "enforce_healer_pipe_order" in content, (
-            "v15_execution_gateway.py does not call enforce_healer_pipe_order"
+            "execution_gateway.py does not call enforce_healer_pipe_order"
         )
         assert "import" in content and "enforce_healer_pipe_order" in content
 
@@ -223,7 +223,7 @@ class TestRuntimeWiring:
         import hashlib
         from unittest.mock import MagicMock
 
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             FixConstraint,
             SurgicalManifest,
         )
@@ -255,7 +255,7 @@ class TestRuntimeWiring:
                 }
             )
 
-        gw_mod = "agentic_core.L0_routing.enforcement.v15_execution_gateway"
+        gw_mod = "agentic_core.L0_routing.enforcement.execution_gateway"
         with (
             patch(f"{gw_mod}.enforce_healer_pipe_order", side_effect=spy_enforce),
             patch(f"{gw_mod}.validate_execution_input", return_value=manifest),
@@ -266,7 +266,7 @@ class TestRuntimeWiring:
         ):
             mock_guardrail_cls.return_value.enforce_all.return_value = True
 
-            from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+            from agentic_core.L0_routing.enforcement.execution_gateway import (
                 V15ExecutionGateway,
             )
 
@@ -292,7 +292,7 @@ class TestRuntimeWiring:
     def test_gate_removal_causes_test_failure(self):
         """Prove that if we replace enforce with a no-op, the structural test
         still catches it (the function must exist in the source)."""
-        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/v15_execution_gateway.py")
+        gw_path = pathlib.Path("agentic_core/L0_routing/enforcement/execution_gateway.py")
         content = gw_path.read_text(encoding="utf-8", errors="ignore")
         assert "enforce_healer_pipe_order(HEALER_PIPE_ORDER, observed_steps" in content, (
             "The enforce_healer_pipe_order call site was removed from the gateway"

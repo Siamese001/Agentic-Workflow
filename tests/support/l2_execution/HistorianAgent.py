@@ -5,8 +5,8 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.v15_runtime_guard import (
-    v15_runtime_guard,
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
 )
 from agentic_core.utils.decorators_base_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -203,7 +203,7 @@ if WATCHDOG_AVAILABLE:
             self.loop = loop
             self.cooldown = 0.0
 
-        @v15_runtime_guard("C.WatchmanHandler.HistorianAgent")
+        @runtime_guard("C.WatchmanHandler.HistorianAgent")
         def on_modified(self, event) -> Any:
             """Execute on_modified operation."""
             if event.is_directory:
@@ -232,7 +232,7 @@ else:
             self.ctx = context
             self.loop = loop
 
-        @v15_runtime_guard("C.WatchmanHandler.HistorianAgent")
+        @runtime_guard("C.WatchmanHandler.HistorianAgent")
         def on_modified(self, event) -> Any:
             """Execute on_modified operation."""
             pass

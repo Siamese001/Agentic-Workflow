@@ -19,7 +19,7 @@ from agentic_core.L0_routing.meta_control.meta_apply import (
     _config_path,
     _rollback_path,
 )
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )

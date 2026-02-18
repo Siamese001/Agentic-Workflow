@@ -878,12 +878,24 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Collect all ClassDef nodes
         class_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         if not class_nodes:
-            # [PRIORITY 4] SCRIPT Detection — only for no-class files
+            # [PRIORITY 4] NO-CLASS ROUTING (HARDENED): avoid defaulting config modules to UTILITY
             # Scripts are functions + if __name__ == "__main__", no classes.
-            # Files WITH classes use class-based routing (AGENT, STRATEGY, etc.)
             script_indicators = self._detect_script_patterns(tree, path)
             if script_indicators["is_script"]:
                 return "SCRIPT"
+
+            # Config/Validator modules are commonly "constants + dicts" (no classes).
+            # Treat folder placement + suffix as strong signal before falling back to UTILITY.
+            parent_folder = path.parent.name
+            filename = path.name
+
+            if parent_folder == "config" or filename.endswith(
+                ("_config.py", "_settings.py", "_blueprint.py")
+            ):
+                return "CONFIG"
+            if parent_folder == "validators" or filename.endswith("_validator.py"):
+                return "VALIDATOR"
+
             return "UTILITY"
 
         class_names = [node.name for node in class_nodes]
@@ -957,7 +969,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Architectural distinction: Router (L0) vs. Orchestrator (L3)
         # Router: Single target selection, direct pass-through call, thin CLI wrapper
         # Orchestrator: Multi-stage execution, coordinates multiple components, manages workflow semantics
-        
+
         # Check if file exhibits orchestration behavior patterns
         is_orchestrator = self._detect_orchestrator_patterns(tree, path, content, primary_name)
 
@@ -1079,17 +1091,19 @@ class FileClassificationAgent(*BASE_CLASSES):
     # ROUTER VS. ORCHESTRATOR DETECTION (Architectural Classification)
     # ========================================================================
 
-    def _detect_orchestrator_patterns(self, tree: ast.AST, path: Path, content: str, primary_name: str) -> bool:
+    def _detect_orchestrator_patterns(
+        self, tree: ast.AST, path: Path, content: str, primary_name: str
+    ) -> bool:
         """
         Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
-        
+
         L0 Router characteristics:
         - Single target selection
         - Direct pass-through call
         - Thin CLI wrapper
         - No multi-stage execution
         - No intermediate artifact management
-        
+
         L3 Orchestrator characteristics:
         - Multi-stage workflow coordination (e.g., guardians → dispatcher → healers)
         - Manages intermediate artifacts
@@ -1098,7 +1112,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         - Coordinates multiple components
         - Implements execution policy
         - Stateful across phases
-        
+
         Returns:
             True if file exhibits orchestrator behavior, False if router or neither.
         """
@@ -1111,7 +1125,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "Pipeline",
         ]
         has_orchestrator_name = any(p in primary_name for p in orchestrator_name_patterns)
-        
+
         # Behavioral pattern detection in content
         orchestrator_behavior_signals = [
             # Multi-stage execution indicators
@@ -1138,10 +1152,10 @@ class FileClassificationAgent(*BASE_CLASSES):
             "execution_policy",
             "allow_mutation",
         ]
-        
+
         # Count orchestrator behavior signals
         behavior_signal_count = sum(1 for signal in orchestrator_behavior_signals if signal in content)
-        
+
         # Router anti-patterns (if present, likely NOT an orchestrator)
         router_patterns = [
             "select_handler",
@@ -1150,44 +1164,50 @@ class FileClassificationAgent(*BASE_CLASSES):
             "thin_wrapper",
         ]
         has_router_pattern = any(p in content for p in router_patterns)
-        
+
         # Check for multi-stage function definitions (strong orchestrator signal)
         function_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-        stage_functions = [f for f in function_nodes if any(stage in f.name.lower() for stage in ["stage", "phase", "step"])]
+        stage_functions = [
+            f for f in function_nodes if any(stage in f.name.lower() for stage in ["stage", "phase", "step"])
+        ]
         has_multi_stage_functions = len(stage_functions) >= 2
-        
+
         # Check for pipeline/workflow method patterns
-        pipeline_methods = [f for f in function_nodes if any(kw in f.name.lower() for kw in ["pipeline", "workflow", "orchestrate", "coordinate"])]
+        pipeline_methods = [
+            f
+            for f in function_nodes
+            if any(kw in f.name.lower() for kw in ["pipeline", "workflow", "orchestrate", "coordinate"])
+        ]
         has_pipeline_method = len(pipeline_methods) > 0
-        
+
         # Decision logic:
         # 1. If in L0_routing/scripts/ with orchestrator name + behavior → likely misplaced orchestrator
         # 2. If in L3_orchestration/ with orchestrator patterns → definitely orchestrator
         # 3. If has multi-stage functions + behavior signals → orchestrator
         # 4. If has orchestrator name but router patterns → router (name is misleading)
-        
+
         is_in_l0_scripts = "L0_routing" in path.parts and "scripts" in path.parts
         is_in_l3 = "L3_orchestration" in path.parts
-        
+
         # Strong orchestrator signals
         if is_in_l3 and has_orchestrator_name:
             return True
-        
+
         if has_multi_stage_functions and behavior_signal_count >= 3:
             return True
-        
+
         if has_pipeline_method and behavior_signal_count >= 2:
             return True
-        
+
         # Misplaced orchestrator in L0 (architectural violation)
         if is_in_l0_scripts and has_orchestrator_name and behavior_signal_count >= 3:
             # This is an orchestrator misplaced in L0
             return True
-        
+
         # Router pattern overrides orchestrator name
         if has_router_pattern and not has_multi_stage_functions:
             return False
-        
+
         # Default: orchestrator name alone is not sufficient
         return has_orchestrator_name and behavior_signal_count >= 2
 
@@ -4262,6 +4282,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         if path in self.processed_paths:
             return None
 
+        # Sentinel types are not subject to territory relocation
+        if file_type in ("IGNORE", "STUB", "TEST"):
+            return None
+
         is_core = root_anchor == "agentic_core"
         is_app = root_anchor.startswith("apps_")
 
@@ -4285,6 +4309,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             "CLASS": {"base_agents", "reasoning"},
             "SCRIPT": {"scripts"},
             "UTILITY": {"utils"},
+            "SERVICE": {"utils"},
+            "FACTORY": {"utils", "reasoning"},
             "EXCEPTION": {"types"},
         }
 
@@ -4339,11 +4365,20 @@ class FileClassificationAgent(*BASE_CLASSES):
             # [HARDENED] base_agents PURIFICATION: Only CLASS (*Base.py) and MIXIN (*_mixin.py) allowed
             # Scripts, utilities, and active workers MUST be relocated
             if current_parent == "base_agents":
-                if file_type in ("SCRIPT", "UTILITY"):
+                if file_type == "SCRIPT":
                     # Flag for movement to L0_routing/scripts/
                     for i, part in enumerate(path.parts):
                         if part == "agentic_core":
                             target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
+                if file_type in ("UTILITY", "SERVICE"):
+                    # Flag for movement to agentic_core/utils/
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = Path(*path.parts[: i + 1]) / "utils" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
                             return target_path
@@ -4377,10 +4412,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                             self.processed_paths.add(target_path)
                             return target_path
 
-            # [HARDENED] config/ PURIFICATION: Only CONFIG types allowed
-            # Scripts and utilities in config/ MUST be moved to L0_routing/scripts/
+            # [HARDENED] config/ PURIFICATION: fail-closed and route by intent
+            # - SCRIPT   -> L0_routing/scripts/
+            # - UTILITY/MIXIN/SERVICE -> utils/
+            # - TYPES/PROTOCOL/EXCEPTION -> types/
+            # - VALIDATOR -> validators/
             if current_parent == "config":
-                if file_type in ("SCRIPT", "UTILITY"):
+                if file_type == "SCRIPT":
                     for i, part in enumerate(path.parts):
                         if part == "agentic_core":
                             target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
@@ -4388,9 +4426,88 @@ class FileClassificationAgent(*BASE_CLASSES):
                             self.processed_paths.add(target_path)
                             return target_path
                     return None
+                if file_type in ("UTILITY", "MIXIN", "SERVICE"):
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = Path(*path.parts[: i + 1]) / "utils" / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
+                if file_type in ("TYPES", "PROTOCOL", "EXCEPTION"):
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = Path(*path.parts[: i + 1]) / "types" / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
+                if file_type == "VALIDATOR":
+                    for i, part in enumerate(path.parts):
+                        if part == "agentic_core":
+                            target_path = Path(*path.parts[: i + 1]) / "validators" / path.name
+                            self.processed_paths.add(path)
+                            self.processed_paths.add(target_path)
+                            return target_path
+                    return None
                 # CONFIG is allowed in config/ - no violation
                 if file_type == "CONFIG":
                     return None
+
+            # Central relocation target used by folder purity gates below
+            purity_relocation_folder = {
+                "AGENT": "reasoning",
+                "ORCHESTRATOR": "reasoning",
+                "STRATEGY": "reasoning",
+                "ADAPTER": "reasoning",
+                "CLASS": "reasoning",
+                "VALIDATOR": "validators",
+                "CONFIG": "config",
+                "PROTOCOL": "types",
+                "TYPES": "types",
+                "EXCEPTION": "types",
+                "MIXIN": "mixins",
+                "SCRIPT": "L0_routing/scripts",
+                "UTILITY": "utils",
+                "SERVICE": "utils",
+                "FACTORY": "utils",
+            }.get(file_type, "utils")
+
+            # [HARDENED] validators/ PURIFICATION: only VALIDATOR allowed
+            if current_parent == "validators":
+                if file_type == "VALIDATOR":
+                    return None
+                for i, part in enumerate(path.parts):
+                    if part == "agentic_core":
+                        target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
+                        self.processed_paths.add(path)
+                        self.processed_paths.add(target_path)
+                        return target_path
+                return None
+
+            # [HARDENED] types/ PURIFICATION: only TYPES/PROTOCOL/EXCEPTION allowed
+            if current_parent == "types":
+                if file_type in ("TYPES", "PROTOCOL", "EXCEPTION"):
+                    return None
+                for i, part in enumerate(path.parts):
+                    if part == "agentic_core":
+                        target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
+                        self.processed_paths.add(path)
+                        self.processed_paths.add(target_path)
+                        return target_path
+                return None
+
+            # [HARDENED] mixins/ PURIFICATION: only MIXIN allowed
+            if current_parent == "mixins":
+                if file_type == "MIXIN":
+                    return None
+                for i, part in enumerate(path.parts):
+                    if part == "agentic_core":
+                        target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
+                        self.processed_paths.add(path)
+                        self.processed_paths.add(target_path)
+                        return target_path
+                return None
 
             # Domain Check
             allowed_set = core_rules.get(file_type)
@@ -4419,10 +4536,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "CONFIG": "config",
                             "PROTOCOL": "types",
                             "TYPES": "types",
-                            "MIXIN": "utils",
+                            "MIXIN": "mixins",
                             "CLASS": "reasoning",
                             "SCRIPT": "L0_routing/scripts",
                             "UTILITY": "utils",
+                            "SERVICE": "utils",
+                            "FACTORY": "utils",
                             "STRATEGY": "reasoning",
                             "ADAPTER": "reasoning",
                             "ORCHESTRATOR": "reasoning",
@@ -4434,11 +4553,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                     if "patterns" in path.parts and target_folder is None:
                         # Default evacuation for any file type in patterns/
                         type_to_folder = {
-                            "MIXIN": "utils",
+                            "MIXIN": "mixins",
                             "CLASS": "reasoning",
                             "CONFIG": "config",
                             "SCRIPT": "L0_routing/scripts",
                             "UTILITY": "utils",
+                            "SERVICE": "utils",
+                            "FACTORY": "utils",
                             "TYPES": "types",
                         }
                         target_folder = type_to_folder.get(file_type, "reasoning")

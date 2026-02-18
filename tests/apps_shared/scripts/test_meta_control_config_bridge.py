@@ -17,7 +17,7 @@ import pytest
 
 from agentic_core.L0_routing.meta_control.config_store import write_next_version
 from agentic_core.L0_routing.meta_control.config_store_types import canonical_json
-from agentic_core.L0_routing.types.v15_p2_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from apps_shared.scripts.meta_control_config_bridge import (
     load_app_component_config,
     render_app_component_config,

@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_types import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
@@ -399,7 +399,7 @@ class TestFlushDurability:
         """flush_to_artifacts_dir writes NDJSON containing ROUTE_DECISION payload."""
         import json
 
-        from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
+        from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
 
         artifact = RouteDecisionArtifact(
             trace_id="flush-test-trace",
@@ -428,7 +428,7 @@ class TestFlushDurability:
 
     def test_flush_returns_none_when_no_events(self, tmp_path):
         """flush_to_artifacts_dir returns None if no events buffered."""
-        from agentic_core.L0_routing.types.v15_contracts import TelemetryEmitter
+        from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
 
         emitter = TelemetryEmitter()
         assert emitter.flush_to_artifacts_dir(tmp_path) is None

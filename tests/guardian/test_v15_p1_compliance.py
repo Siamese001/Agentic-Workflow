@@ -16,7 +16,24 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.types.v15_contracts import (
+from agentic_core.L0_routing.types.routing_artifact_types import (
+    HEALER_PIPE_ORDER,
+    AggregateArtifact,
+    CapabilityDepletionTracker,
+    IncidentArtifact,
+    PermsArtifact,
+    ResultArtifact,
+    RouteDecisionArtifact,
+    RoutePath,
+    RoutingRationale,
+    SelfHealingTrigger,
+    SeverityEnum,
+    TokenCapArtifact,
+    TokenControlArtifact,
+    TokenGateResult,
+    VigilanceTier,
+)
+from agentic_core.L0_routing.types.routing_contracts import (
     ArtifactAbsenceFailure,
     GuardrailGuard,
     HealingTransactionBoundary,
@@ -34,23 +51,6 @@ from agentic_core.L0_routing.types.v15_contracts import (
     meta_guardian_check,
     static_policy_alignment_check,
     validate_result_emission,
-)
-from agentic_core.L0_routing.types.v15_types import (
-    HEALER_PIPE_ORDER,
-    AggregateArtifact,
-    CapabilityDepletionTracker,
-    IncidentArtifact,
-    PermsArtifact,
-    ResultArtifact,
-    RouteDecisionArtifact,
-    RoutePath,
-    RoutingRationale,
-    SelfHealingTrigger,
-    SeverityEnum,
-    TokenCapArtifact,
-    TokenControlArtifact,
-    TokenGateResult,
-    VigilanceTier,
 )
 
 # =========================================================================
@@ -718,12 +718,12 @@ class TestP1CriticalDWiring:
                 with pytest.raises(ValueError):
                     is_v15_enforced()
 
-    def test_v15_execution_gateway_exists_and_callable(self):
+    def test_execution_gateway_exists_and_callable(self):
         """V15ExecutionGateway must be instantiable and have execute method."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import SemanticClock
+        from agentic_core.L0_routing.types.determinism_types import SemanticClock
 
         gateway = V15ExecutionGateway()
         assert hasattr(gateway, "execute")
@@ -732,7 +732,7 @@ class TestP1CriticalDWiring:
 
     def test_gateway_requires_surgical_manifest(self):
         """Gateway must reject non-SurgicalManifest inputs."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 
@@ -746,7 +746,7 @@ class TestP1CriticalDWiring:
             return ("fs_hash", "git_hash", "mem_hash")
 
         # Test with invalid input
-        from agentic_core.L0_routing.types.v15_p2_contracts import ForbiddenInputError
+        from agentic_core.L0_routing.types.determinism_contracts import ForbiddenInputError
 
         with pytest.raises(ForbiddenInputError):  # Should raise validation error
             gateway.execute(
@@ -758,10 +758,10 @@ class TestP1CriticalDWiring:
 
     def test_gateway_advances_semantic_clock(self):
         """Gateway must advance SemanticClock on successful execution."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import SurgicalManifest
+        from agentic_core.L0_routing.types.determinism_types import SurgicalManifest
 
         gateway = V15ExecutionGateway()
         initial_tick = gateway.clock.current_tick
@@ -769,7 +769,7 @@ class TestP1CriticalDWiring:
         # Create valid manifest
         import hashlib
 
-        from agentic_core.L0_routing.types.v15_p2_types import FixConstraint
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint
 
         ast_snippet = "test snippet"
         manifest_hash = hashlib.sha256(ast_snippet.encode("utf-8")).hexdigest()
@@ -806,10 +806,10 @@ class TestP1CriticalDWiring:
 
     def test_gateway_creates_boundary_snapshots(self):
         """Gateway must create pre-mutation boundary snapshot."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
             BoundarySnapshotArtifact,
             SurgicalManifest,
         )
@@ -818,7 +818,7 @@ class TestP1CriticalDWiring:
 
         import hashlib
 
-        from agentic_core.L0_routing.types.v15_p2_types import FixConstraint
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint
 
         ast_snippet = "boundary test snippet"
         manifest = SurgicalManifest(
@@ -854,16 +854,16 @@ class TestP1CriticalDWiring:
 
     def test_gateway_performs_deduplication(self):
         """Gateway must deduplicate based on SHA-256."""
-        from agentic_core.L0_routing.enforcement.v15_execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
-        from agentic_core.L0_routing.types.v15_p2_types import SurgicalManifest
+        from agentic_core.L0_routing.types.determinism_types import SurgicalManifest
 
         gateway = V15ExecutionGateway()
 
         import hashlib
 
-        from agentic_core.L0_routing.types.v15_p2_types import FixConstraint
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint
 
         ast_snippet = "dedupe test snippet"
         manifest = SurgicalManifest(
@@ -923,7 +923,7 @@ class TestP1CriticalDWiring:
 
     def test_healing_transaction_boundary_exists(self):
         """HealingTransactionBoundary must be available."""
-        from agentic_core.L0_routing.types.v15_contracts import HealingTransactionBoundary
+        from agentic_core.L0_routing.types.routing_contracts import HealingTransactionBoundary
 
         # Verify it's a context manager
         assert hasattr(HealingTransactionBoundary, "__enter__")
@@ -931,7 +931,7 @@ class TestP1CriticalDWiring:
 
     def test_policy_config_guard_exists(self):
         """PolicyConfigGuard must be available for policy pinning."""
-        from agentic_core.L0_routing.types.v15_contracts import PolicyConfigGuard
+        from agentic_core.L0_routing.types.routing_contracts import PolicyConfigGuard
 
         # Verify it has required methods
         assert hasattr(PolicyConfigGuard, "read_config")
@@ -950,8 +950,8 @@ class TestP1CriticalDWiring:
         import hashlib
         import uuid
 
-        from agentic_core.L0_routing.types.v15_p2_contracts import create_boundary_snapshot
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_contracts import create_boundary_snapshot
+        from agentic_core.L0_routing.types.determinism_types import (
             SemanticClock,
             SurgicalManifest,
         )
@@ -959,7 +959,7 @@ class TestP1CriticalDWiring:
         trace_id = str(uuid.uuid4())
 
         # Test that artifacts accept correlation_id (trace_id equivalent)
-        from agentic_core.L0_routing.types.v15_p2_types import FixConstraint
+        from agentic_core.L0_routing.types.determinism_types import FixConstraint
 
         ast_snippet = "test snippet"
         manifest = SurgicalManifest(
@@ -990,8 +990,8 @@ class TestP1CriticalDWiring:
 
     def test_boundary_snapshot_contract(self):
         """Boundary snapshot creation and verification must work."""
-        from agentic_core.L0_routing.types.v15_p2_contracts import create_boundary_snapshot
-        from agentic_core.L0_routing.types.v15_p2_types import (
+        from agentic_core.L0_routing.types.determinism_contracts import create_boundary_snapshot
+        from agentic_core.L0_routing.types.determinism_types import (
             BoundarySnapshotArtifact,
             SemanticClock,
         )
@@ -1108,7 +1108,7 @@ class TestEnforceRouteDecisionPresence:
         from agentic_core.L0_routing.types.guardian_contract import (
             V15HardFailAbort,
         )
-        from agentic_core.L0_routing.types.v15_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts import (
             enforce_route_decision_presence,
         )
 
@@ -1120,7 +1120,7 @@ class TestEnforceRouteDecisionPresence:
         from agentic_core.L0_routing.types.guardian_contract import (
             V15HardFailAbort,
         )
-        from agentic_core.L0_routing.types.v15_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts import (
             enforce_route_decision_presence,
         )
 
@@ -1129,7 +1129,7 @@ class TestEnforceRouteDecisionPresence:
                 enforce_route_decision_presence({"status": "success"})
 
     def test_v15_enforced_valid_artifact_passes(self):
-        from agentic_core.L0_routing.types.v15_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts import (
             enforce_route_decision_presence,
         )
 
@@ -1143,7 +1143,7 @@ class TestEnforceRouteDecisionPresence:
             enforce_route_decision_presence(payload)
 
     def test_non_v15_none_payload_passes(self):
-        from agentic_core.L0_routing.types.v15_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts import (
             enforce_route_decision_presence,
         )
 

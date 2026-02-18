@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+"""Analyze agent count waterfall across commits."""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+from agentic_core.utils.project_root_util import get_project_root
+
+PROJECT_ROOT = get_project_root()
+
 """
 analyze_agent_count_waterfall_util.py - Trace agent count changes through git history
 
@@ -18,7 +31,7 @@ def get_agent_count_at_commit(commit_hash):
             ["git", "show", f"{commit_hash}:agent_discovery_full.json"],
             capture_output=True,
             text=True,
-            cwd="C:/Git/Agentic-Workflow",
+            cwd=str(PROJECT_ROOT),
         )
         if result.returncode == 0:
             data = json.loads(result.stdout)
@@ -43,7 +56,7 @@ def get_commit_history():
         ],
         capture_output=True,
         text=True,
-        cwd="C:/Git/Agentic-Workflow",
+        cwd=str(PROJECT_ROOT),
     )
 
     commits = []
