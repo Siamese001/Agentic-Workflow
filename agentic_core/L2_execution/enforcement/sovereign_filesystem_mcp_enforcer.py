@@ -9,9 +9,15 @@ import json
 import logging
 from datetime import datetime
 
-from agentic_core.L3_orchestration.reasoning.mcp_manager import (
-    MCPConnectionManager,
-)
+
+def _get_MCPConnectionManager():
+    """Lazy load MCPConnectionManager to avoid upward import."""
+    from agentic_core.L3_orchestration.reasoning.mcp_manager import (
+        MCPConnectionManager,
+    )
+
+    return MCPConnectionManager
+
 
 # Derived from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {

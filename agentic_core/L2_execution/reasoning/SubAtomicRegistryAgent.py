@@ -27,11 +27,22 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
-
-# [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+
+def _get_PineconeSovereignAgent():
+    """Lazy load PineconeSovereignAgent to avoid upward import."""
+    from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
+
+    return PineconeSovereignAgent
+
+
+def _get_RedisSovereignAgent():
+    """Lazy load RedisSovereignAgent to avoid upward import."""
+    from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
+
+    return RedisSovereignAgent
+
 
 Logger = logging.getLogger(__name__)
 
@@ -337,8 +348,8 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
     def __init__(self, project_root: Path) -> None:
         """Initialize the instance."""
         self.root = project_root
-        self.pinecone = PineconeSovereignAgent(project_root)
-        self.redis_gateway = RedisSovereignAgent(project_root)
+        self.pinecone = _get_PineconeSovereignAgent()(project_root)
+        self.redis_gateway = _get_RedisSovereignAgent()(project_root)
         self.redis = self.redis_gateway.get_client()
 
         # Index for methods

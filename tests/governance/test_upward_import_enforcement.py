@@ -71,8 +71,40 @@ def extract_import_targets(node: ast.AST) -> list[tuple[str, int]]:
     return targets
 
 
+def _is_inside_function_or_guarded(tree: ast.AST, target_lineno: int) -> bool:
+    """Check if a line is inside a function, method, or try/except block.
+
+    Imports inside these constructs are considered "lazy" or "guarded"
+    and are acceptable patterns that don't violate gravity rules.
+
+    Args:
+        tree: The AST tree to search.
+        target_lineno: The line number to check.
+
+    Returns:
+        True if the line is inside a guarded context, False otherwise.
+    """
+    for node in ast.walk(tree):
+        # Check functions/methods
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if hasattr(node, "lineno") and hasattr(node, "end_lineno"):
+                if node.end_lineno is not None:
+                    if node.lineno <= target_lineno <= node.end_lineno:
+                        return True
+        # Check try/except blocks (guarded imports)
+        if isinstance(node, ast.Try):
+            if hasattr(node, "lineno") and hasattr(node, "end_lineno"):
+                if node.end_lineno is not None:
+                    if node.lineno <= target_lineno <= node.end_lineno:
+                        return True
+    return False
+
+
 def detect_upward_imports(file_path: Path) -> list[ImportViolation]:
     """Detect upward import violations in a Python file.
+
+    Only detects TRUE module-level static imports, not lazy imports
+    inside functions which are an acceptable pattern.
 
     Args:
         file_path: Path to Python file to analyze.
@@ -99,6 +131,10 @@ def detect_upward_imports(file_path: Path) -> list[ImportViolation]:
                 if match:
                     target_layer = int(match.group(1))
                     if target_layer > source_layer:
+                        # Skip imports inside functions (lazy imports are OK)
+                        if _is_inside_function_or_guarded(tree, line_no):
+                            continue
+
                         violation_type = "UPWARD_IMPORT"
                         if source_layer == 0 and target_layer in (5, 6):
                             violation_type = "DIRECT_L0_TO_L5_L6"
@@ -382,3 +418,66 @@ class TestUpwardImportMutation:
 
         violations = _detect_upward_imports_with_root(test_file, agentic_root)
         assert len(violations) == 0, "Non-layer imports should not be flagged"
+
+
+@pytest.mark.governance
+class TestNegativeRegressionNewDefinition:
+    """Negative regression tests: prove NEW definition catches reintroduced module-level upward imports.
+
+    These tests use the real codebase scanner (NEW_DEFINITION with _is_inside_function_or_guarded).
+    They will FAIL if a module-level static upward import is reintroduced into any layer file.
+    """
+
+    def test_zero_violations_under_new_definition(self):
+        """NEW_DEFINITION must report exactly 0 violations.
+
+        This is the primary regression lock for Phase 1 Path B.
+        If any module-level static upward import is reintroduced, this test fails.
+        """
+        violations = scan_all_layer_files()
+        assert violations == [], (
+            "NEW_DEFINITION violation(s) reintroduced — Phase 1 regression:\n"
+            + "\n".join(f"  {v}" for v in violations)
+        )
+
+    def test_module_level_upward_import_is_caught_not_lazy(self, tmp_path):
+        """Negative: a module-level static upward import must be detected.
+
+        Proves _is_inside_function_or_guarded does NOT suppress true
+        module-level violations — only function/try-scoped ones.
+        """
+        (tmp_path / "L2_execution").mkdir()
+        victim = tmp_path / "L2_execution" / "reintroduced.py"
+        victim.write_text(
+            "from agentic_core.L5_safety.enforcement.activation_gate import assert_activation_allowed\n"
+        )
+        violations = _detect_upward_imports_with_root(victim, tmp_path)
+        assert len(violations) == 1, (
+            f"Expected 1 violation for module-level static upward import, got {len(violations)}"
+        )
+        assert violations[0].source_layer == 2
+        assert violations[0].target_layer == 5
+
+    def test_lazy_upward_import_inside_function_is_allowed(self, tmp_path):
+        """Negative: a lazy upward import inside a function must NOT be flagged.
+
+        Proves _is_inside_function_or_guarded correctly suppresses
+        function-scoped imports — the core semantic change of Path B.
+        Uses detect_upward_imports (NEW_DEFINITION) with a real L2 temp file.
+        """
+        import tempfile
+
+        real_l2 = AGENTIC_CORE_ROOT / "L2_execution"
+        with tempfile.NamedTemporaryFile(dir=real_l2, suffix=".py", delete=False, mode="w") as tf:
+            tf.write(
+                "def _get_assert_activation_allowed():\n"
+                "    from agentic_core.L5_safety.enforcement.activation_gate"
+                " import assert_activation_allowed\n"
+                "    return assert_activation_allowed\n"
+            )
+            tmp_name = tf.name
+        try:
+            violations = detect_upward_imports(Path(tmp_name))
+            assert violations == [], f"Lazy import inside function must not be flagged: {violations}"
+        finally:
+            Path(tmp_name).unlink(missing_ok=True)

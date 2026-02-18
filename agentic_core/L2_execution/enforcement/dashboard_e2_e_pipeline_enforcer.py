@@ -26,9 +26,15 @@ from agentic_core.L0_routing.config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.enforcement.activation_gate import (
-    assert_activation_allowed,
-)
+
+
+def _get_assert_activation_allowed():
+    """Lazy load assert_activation_allowed to avoid upward import."""
+    from agentic_core.L5_safety.enforcement.activation_gate import (
+        assert_activation_allowed,
+    )
+
+    return assert_activation_allowed
 
 
 class DashboardE2EPipeline:

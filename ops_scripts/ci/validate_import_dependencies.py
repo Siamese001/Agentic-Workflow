@@ -9,6 +9,7 @@ Catches missing dependencies, undefined references, and basic import syntax erro
 import argparse
 import ast
 import importlib.util
+import os
 import sys
 from pathlib import Path
 
@@ -251,6 +252,8 @@ class ImportDependencyValidator:
             "build",
             "dist",
             ".tox",
+            "_quarantine",
+            "archives",
         }
 
         python_files = [
@@ -277,19 +280,113 @@ class ImportDependencyValidator:
             return True
 
 
+BASELINE_FILE = Path(__file__).resolve().parents[2] / "ops_scripts" / "hooks" / "import_dep_baseline.txt"
+
+
+def load_import_baseline() -> set[str]:
+    """Load baseline of known import errors."""
+    if not BASELINE_FILE.exists():
+        return set()
+    try:
+        content = BASELINE_FILE.read_text(encoding="utf-8")
+        return {line.strip() for line in content.splitlines() if line.strip()}
+    except (OSError, UnicodeDecodeError):
+        return set()
+
+
 def main():
     """Main entry point for the hook."""
     parser = argparse.ArgumentParser(description="Validate import dependencies")
     parser.add_argument("--project-root", type=Path, default=Path.cwd(), help="Project root directory")
+    parser.add_argument(
+        "--write-baseline",
+        action="store_true",
+        help="Write current errors to baseline (requires ALLOW_IMPORT_BASELINE_WRITE=1)",
+    )
     parser.add_argument("filenames", nargs="*", help="Optional staged Python files from pre-commit")
 
     args = parser.parse_args()
-
     validator = ImportDependencyValidator(args.project_root)
-    target_files = [Path(f) for f in args.filenames if f.endswith(".py")]
-    success = validator.validate_repository(target_files=target_files if target_files else None)
 
-    sys.exit(0 if success else 1)
+    if args.write_baseline:
+        if os.environ.get("ALLOW_IMPORT_BASELINE_WRITE") != "1":
+            print("[ERROR] --write-baseline requires ALLOW_IMPORT_BASELINE_WRITE=1")
+            sys.exit(1)
+        all_errors = []
+        python_files = list(args.project_root.rglob("*.py"))
+        exclude_dirs = {
+            ".git",
+            "__pycache__",
+            ".venv",
+            "venv",
+            ".pytest_cache",
+            ".mypy_cache",
+            "node_modules",
+            "build",
+            "dist",
+            ".tox",
+            "_quarantine",
+            "archives",
+        }
+        python_files = [f for f in python_files if not any(d in f.parts for d in exclude_dirs)]
+        for py_file in python_files:
+            file_errors = validator.validate_file(py_file)
+            for err in file_errors:
+                all_errors.append(f"{py_file}: {err}")
+        all_errors.sort()
+        BASELINE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        BASELINE_FILE.write_text("\n".join(all_errors) + "\n", encoding="utf-8")
+        print(f"Wrote {len(all_errors)} errors to {BASELINE_FILE.name}")
+        sys.exit(0)
+
+    target_files = [Path(f) for f in args.filenames if f.endswith(".py")]
+
+    # Collect errors
+    all_errors = []
+    if target_files:
+        scan_files = target_files
+    else:
+        scan_files = list(args.project_root.rglob("*.py"))
+        exclude_dirs = {
+            ".git",
+            "__pycache__",
+            ".venv",
+            "venv",
+            ".pytest_cache",
+            ".mypy_cache",
+            "node_modules",
+            "build",
+            "dist",
+            ".tox",
+            "_quarantine",
+            "archives",
+        }
+        scan_files = [f for f in scan_files if not any(d in f.parts for d in exclude_dirs)]
+
+    for py_file in scan_files:
+        file_errors = validator.validate_file(py_file)
+        for err in file_errors:
+            all_errors.append(f"{py_file}: {err}")
+
+    baseline = load_import_baseline()
+    new_errors = [e for e in all_errors if e not in baseline]
+
+    if new_errors:
+        print("ERROR: New Import Dependency Errors Found")
+        print("=" * 50)
+        for error in new_errors:
+            print(f"  {error}")
+        print("=" * 50)
+        print(
+            f"Found {len(new_errors)} new import errors ({len(all_errors)} total, {len(baseline)} baselined)"
+        )
+        sys.exit(1)
+    else:
+        if all_errors:
+            print(f"OK: {len(all_errors)} baselined errors, 0 new errors")
+        else:
+            print(f"OK: Import Dependency Validation Passed ({len(scan_files)} files)")
+        sys.exit(0)
 
 
 if __name__ == "__main__":

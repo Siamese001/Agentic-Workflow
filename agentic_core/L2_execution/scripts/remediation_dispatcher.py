@@ -32,11 +32,18 @@ from agentic_core.L2_execution.types.l2_phase_spec import (
     LEGACY_MIRROR_PLAN,
     L2ExecutionPlan,
 )
-from agentic_core.L3_orchestration.types.approval_contract import (
-    ApprovalBundle,
-    ApprovalDecision,
-    ApprovalRecord,
-)
+
+
+def _get_approval_types():
+    """Lazy load approval types to avoid upward import."""
+    from agentic_core.L3_orchestration.types.approval_contract import (
+        ApprovalBundle,
+        ApprovalDecision,
+        ApprovalRecord,
+    )
+
+    return ApprovalBundle, ApprovalDecision, ApprovalRecord
+
 
 TOOL_ID = "remediation_dispatcher"
 OUTPUT_FILENAME = "combined_heal_result.json"

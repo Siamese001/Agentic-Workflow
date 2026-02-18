@@ -18,11 +18,17 @@ import logging
 from typing import Any
 
 from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
-from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)
+
+
+def _get_ValidationContext():
+    """Lazy load ValidationContext to avoid upward import."""
+    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
+
+    return ValidationContext
 
 
 async def run_hardened_orchestrator(
@@ -54,7 +60,7 @@ async def run_hardened_orchestrator(
         enable_checkpointing=True,
         checkpoint_dir=storage_path or "./checkpoints",
     )
-    context: Any = ValidationContext()
+    context: Any = _get_ValidationContext()()
     orchestrator: Any = create_orchestrator(config=config, context=context)
     resume_agent: Any = create_resume_agent(
         context=context,

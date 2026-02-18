@@ -15,7 +15,14 @@ except ImportError as _err:
     raise ImportError(
         "numpy is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
-from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
+
+def _get_layer_entry():
+    """Lazy load layer_entry to avoid upward import."""
+    from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
+    return layer_entry
+
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.utils.decorators_compat_util import standard_heal

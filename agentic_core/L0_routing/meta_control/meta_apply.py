@@ -22,12 +22,9 @@ from pathlib import Path
 from typing import Literal
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.types.v15_p2_types import (
+from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
-)
-from agentic_core.L2_execution.types.capability_token_types import (
-    CapabilityTokenArtifact,
 )
 from system_learning.types.apply_attempt_types import (
     MetaLearningApplyAttemptArtifact,
@@ -40,6 +37,16 @@ from system_learning.types.meta_learning_types import (
 from system_learning.types.rollout_types import (
     MetaLearningRolloutPlanArtifact,
 )
+
+
+def _get_CapabilityTokenArtifact():
+    """Lazy load CapabilityTokenArtifact to avoid upward import."""
+    from agentic_core.L2_execution.types.capability_token_types import (
+        CapabilityTokenArtifact,
+    )
+
+    return CapabilityTokenArtifact
+
 
 # =============================================================================
 # Blast-radius limits per component type

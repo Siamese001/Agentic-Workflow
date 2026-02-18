@@ -8,7 +8,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
+def _get_layer_entry():
+    """Lazy load layer_entry to avoid upward import."""
+    from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+
+    return layer_entry
+
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

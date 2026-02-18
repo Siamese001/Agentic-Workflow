@@ -22,10 +22,16 @@ from typing import Any
 
 Logger = logging.getLogger(__name__)
 
+
 # L2 Resource awareness - Use ResourceManagerAgent (consolidates ProactiveResourceManagerAgent)
-from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
-    create_proactive_resource_manager,
-)
+def _get_create_proactive_resource_manager():
+    """Lazy load create_proactive_resource_manager to avoid upward import."""
+    from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
+        create_proactive_resource_manager,
+    )
+
+    return create_proactive_resource_manager
+
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

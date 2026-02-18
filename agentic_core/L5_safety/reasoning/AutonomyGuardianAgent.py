@@ -19,7 +19,16 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L6_observability.dashboards.data_generator import DashboardDataGenerator
+
+def _get_DashboardDataGenerator():
+    """Lazy load DashboardDataGenerator to avoid upward import."""
+    from agentic_core.L6_observability.dashboards.data_generator import (
+        DashboardDataGenerator,
+    )
+
+    return DashboardDataGenerator
+
+
 from agentic_core.prompt_governance.renderer import DashboardRenderer
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (

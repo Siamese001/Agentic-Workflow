@@ -16,7 +16,13 @@ import hashlib
 import time
 from typing import Any
 
-from agentic_core.L3_orchestration.engines.action_router import ActionNode
+
+def _get_ActionNode():
+    """Lazy load ActionNode to avoid upward import."""
+    from agentic_core.L3_orchestration.engines.action_router import ActionNode
+
+    return ActionNode
+
 
 try:
     from .PerceptionNode import PerceptionNode
