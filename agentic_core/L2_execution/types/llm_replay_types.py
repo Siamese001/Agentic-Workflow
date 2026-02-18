@@ -15,6 +15,10 @@ import enum
 import hashlib
 from dataclasses import dataclass
 
+from agentic_core.utils.canonical_serializer_util import (
+    canonical_bytes,
+)
+
 
 class ReplayMode(enum.Enum):
     """LLM replay mode policy.
@@ -58,6 +62,8 @@ class ReplayBundle:
     raw_prompt_bytes: bytes
     raw_response_bytes: bytes
     provider_checksum: str
+    replay_hash: str
+    integrity_verified: bool
 
     @staticmethod
     def create(
@@ -67,15 +73,25 @@ class ReplayBundle:
         raw_prompt_bytes: bytes,
         raw_response_bytes: bytes,
     ) -> ReplayBundle:
-        """Construct a bundle with computed provider checksum."""
+        """Construct a bundle with computed checksums."""
         checksum_input = f"{model_version}+{tokenizer_version}"
         provider_checksum = hashlib.sha256(checksum_input.encode("utf-8")).hexdigest()
+        bundle_obj = {
+            "model_version": model_version,
+            "tokenizer_version": tokenizer_version,
+            "raw_prompt_bytes": raw_prompt_bytes.hex(),
+            "raw_response_bytes": raw_response_bytes.hex(),
+            "provider_checksum": provider_checksum,
+        }
+        replay_hash = hashlib.sha256(canonical_bytes(bundle_obj)).hexdigest()
         return ReplayBundle(
             model_version=model_version,
             tokenizer_version=tokenizer_version,
             raw_prompt_bytes=raw_prompt_bytes,
             raw_response_bytes=raw_response_bytes,
             provider_checksum=provider_checksum,
+            replay_hash=replay_hash,
+            integrity_verified=True,
         )
 
     def verify_checksum(self) -> bool:
@@ -116,6 +132,23 @@ class LLMReplayStrategy:
     @property
     def governance_label(self) -> str:
         return mode_label(self.mode)
+
+
+def verify_replay_integrity(bundle: ReplayBundle) -> bool:
+    """Re-derive replay_hash and verify bundle integrity.
+
+    Returns True only if the re-derived hash matches the
+    stored replay_hash.
+    """
+    bundle_obj = {
+        "model_version": bundle.model_version,
+        "tokenizer_version": bundle.tokenizer_version,
+        "raw_prompt_bytes": bundle.raw_prompt_bytes.hex(),
+        "raw_response_bytes": bundle.raw_response_bytes.hex(),
+        "provider_checksum": bundle.provider_checksum,
+    }
+    expected = hashlib.sha256(canonical_bytes(bundle_obj)).hexdigest()
+    return expected == bundle.replay_hash
 
 
 def validate_production_mode(mode: ReplayMode) -> None:

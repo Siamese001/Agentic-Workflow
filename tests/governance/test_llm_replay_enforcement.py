@@ -19,6 +19,7 @@ from agentic_core.L2_execution.types.llm_replay_types import (
     is_authoritative,
     mode_label,
     validate_production_mode,
+    verify_replay_integrity,
 )
 
 pytestmark = pytest.mark.governance
@@ -96,6 +97,8 @@ class TestReplayBundle:
             raw_prompt_bytes=SAMPLE_PROMPT,
             raw_response_bytes=SAMPLE_RESPONSE,
             provider_checksum="0" * 64,
+            replay_hash="0" * 64,
+            integrity_verified=False,
         )
         assert bundle.verify_checksum() is False
 
@@ -158,6 +161,19 @@ class TestLLMReplayStrategy:
         strategy = LLMReplayStrategy(bundle=bundle, mode=ReplayMode.DETERMINISTIC_INFERENCE)
         with pytest.raises(NotImplementedError, match="NON_AUTHORITATIVE"):
             strategy.replay()
+
+    def test_execution_blocked_on_invalid_bundle(self):
+        bundle = ReplayBundle(
+            model_version="gpt-4-0613",
+            tokenizer_version="cl100k_base_v1",
+            raw_prompt_bytes=SAMPLE_PROMPT,
+            raw_response_bytes=SAMPLE_RESPONSE,
+            provider_checksum="0" * 64,
+            replay_hash="0" * 64,
+            integrity_verified=False,
+        )
+        assert not verify_replay_integrity(bundle)
+        assert bundle.integrity_verified is False
 
     def test_strategy_governance_label(self):
         bundle = ReplayBundle.create(

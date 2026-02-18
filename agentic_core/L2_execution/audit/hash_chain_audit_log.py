@@ -22,11 +22,14 @@ Lives in L2 per gravity rules (durable writes are L2-only).
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
+
+from agentic_core.utils.canonical_serializer_util import (
+    canonical_bytes,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -43,8 +46,7 @@ def _canonical_entry_bytes(
 ) -> bytes:
     """Deterministic canonical bytes for hash computation.
 
-    Uses sorted-key JSON with compact separators — matches the
-    CanonicalSerializationSpec from the enterprise plan.
+    Delegates to the shared canonical serializer.
     """
     obj = {
         "action": action,
@@ -54,7 +56,7 @@ def _canonical_entry_bytes(
         "tier": tier,
         "timestamp": timestamp,
     }
-    return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return canonical_bytes(obj)
 
 
 @dataclass(frozen=True)

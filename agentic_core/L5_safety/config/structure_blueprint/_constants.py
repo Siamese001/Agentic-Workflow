@@ -146,11 +146,28 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
                 "purpose": "Guardian and audit log outputs (JSON reports).",
                 "allowed_extensions": [".json", ".log"],
             },
+            "engines": {
+                "purpose": "Routing engines and dispatch processors.",
+            },
+            "meta_control": {
+                "purpose": "Meta-control logic for routing governance and self-regulation.",
+            },
+            "policy": {
+                "purpose": "Policy definitions and routing policy engines.",
+            },
+            "seams": {
+                "purpose": "Cross-layer seam contracts and integration points.",
+            },
         },
     },
     "L1_cognition": {
         "purpose": "Cognitive processing, reasoning, and thought patterns.",
         "notes": "LCD+ canonical skeleton. thought_engine/ and meta_learning/ DISSOLVED into 6 folders.",
+        "extra_subfolders": {
+            "engines": {
+                "purpose": "Cognitive engines and processing pipelines.",
+            },
+        },
         "reasoning_suffixes": [
             "_engine.py",
             "_manager.py",
@@ -184,6 +201,18 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         ],
         "enforcement_suffixes": ["_env.py", "_jail.py", "_container.py", "_sandbox.py", "_agent.py"],
         "extra_subfolders": {
+            "audit": {
+                "purpose": "Execution audit trails and compliance logging.",
+            },
+            "engines": {
+                "purpose": "Execution engines and processing pipelines.",
+            },
+            "healers": {
+                "purpose": "Self-healing strategies for execution failures.",
+            },
+            "scripts": {
+                "purpose": "Execution-layer operational scripts.",
+            },
             "tools": {
                 "purpose": "Standardized tool implementations — strict naming enforced.",
                 "allowed_suffixes": [
@@ -212,6 +241,14 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L3_orchestration": {
         "purpose": "The Conductor: Workflow Management, DAGs, and Coordination.",
         "notes": "LCD+ canonical skeleton. engine/orchestrators/routers/strategies/patterns/diagnostics DISSOLVED.",
+        "extra_subfolders": {
+            "engines": {
+                "purpose": "Orchestration engines and workflow processors.",
+            },
+            "scripts": {
+                "purpose": "Orchestration-layer operational scripts.",
+            },
+        },
         "reasoning_suffixes": [
             "_engine.py",
             "_manager.py",
@@ -269,6 +306,9 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         ],
         "utils_suffixes": ["_util.py", "_helper.py"],
         "extra_subfolders": {
+            "caching": {
+                "purpose": "Caching layers and cache management strategies.",
+            },
             "memory": {
                 "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
                 "allowed_suffixes": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
@@ -293,6 +333,20 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L5_safety": {
         "purpose": "The Guardian: Safety, Security, and Governance.",
         "notes": "LCD+ canonical skeleton. guardrails/gravity/cognition/governance/security/policy_engine/red_teaming/runtime/human_review DISSOLVED into reasoning/enforcement.",
+        "extra_subfolders": {
+            "core_kernel": {
+                "purpose": "Zero-dependency safety kernel and foundational primitives.",
+            },
+            "governance": {
+                "purpose": "Governance policies, rules, and compliance frameworks.",
+            },
+            "runners": {
+                "purpose": "Safety runner orchestration and execution harnesses.",
+            },
+            "security": {
+                "purpose": "Security enforcement, threat detection, and access control.",
+            },
+        },
         "config_suffixes": ["_config.py", "_blueprint.py", "_settings.py"],
         "reasoning_suffixes": [
             "_agent.py",
@@ -395,6 +449,28 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "dashboards": {
                 "purpose": "Operational dashboards, visualizations, and renderers.",
                 "allowed_suffixes": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
+                "subfolders": {
+                    "core": {"purpose": "Core dashboard logic and shared components."},
+                    "css": {"purpose": "Dashboard stylesheets and themes."},
+                    "data": {"purpose": "Dashboard data files and fixtures."},
+                    "js": {
+                        "purpose": "Dashboard JavaScript modules.",
+                        "subfolders": {
+                            "components": {"purpose": "Reusable UI components."},
+                            "constants": {"purpose": "JS constant definitions."},
+                            "controllers": {"purpose": "Dashboard controllers."},
+                            "renderers": {"purpose": "Chart and data renderers."},
+                            "utils": {"purpose": "JS utility functions."},
+                        },
+                    },
+                    "renderers": {"purpose": "Server-side rendering logic."},
+                },
+            },
+            "engines": {
+                "purpose": "Observability engines and telemetry processors.",
+            },
+            "golden_evaluation": {
+                "purpose": "Golden evaluation datasets and benchmark tooling.",
             },
         },
         "routing_rules": {
@@ -544,11 +620,35 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 },
                 "strict_subfolder_enforcement": True,
                 "required_subfolders": ["meta_prompts", "templates", "scripts", "security"],
-                "optional_subfolders": ["core", "domain", "optimization", "registry", "utils"],
+                "optional_subfolders": ["core", "domain", "optimization", "registry", "utils", "validation"],
                 "forbidden_patterns": ["L3_", "l3_"],
                 "required_dirs": [
                     "agentic_core/prompt_governance/meta_prompts",
                 ],
+                "subfolders": {
+                    "core": {"purpose": "Core prompt governance logic and shared primitives."},
+                    "meta_prompts": {"purpose": "Meta-prompt definitions and persona templates."},
+                    "optimization": {"purpose": "Prompt optimization strategies and tuning."},
+                    "registry": {
+                        "purpose": "Prompt version registry and manifest management.",
+                        "subfolders": {
+                            "backups": {"purpose": "Registry backup snapshots."},
+                        },
+                    },
+                    "scripts": {"purpose": "Prompt governance operational scripts."},
+                    "security": {
+                        "purpose": "Prompt security, injection detection, and adversarial defense.",
+                        "subfolders": {
+                            "adversarial": {"purpose": "Adversarial prompt testing and red-teaming."},
+                            "detectors": {"purpose": "Injection and anomaly detection modules."},
+                            "utils": {"purpose": "Security utility functions."},
+                            "validators": {"purpose": "Security validation logic."},
+                        },
+                    },
+                    "templates": {"purpose": "Prompt templates and rendering logic."},
+                    "utils": {"purpose": "Prompt governance utility functions."},
+                    "validation": {"purpose": "Prompt validation rules and compliance checks."},
+                },
             },
             "runtime": {
                 "purpose": "Active execution engine and primitives.",
@@ -568,6 +668,12 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "subfolders": {},
                 "flat": True,
                 "naming_convention": r"^[a-z][a-z0-9_]*_(mixin|contract|client_mixin)\.py$",
+            },
+            "seams": {
+                "purpose": "Cross-layer seam contracts and integration points.",
+                "subfolders": {
+                    "contracts": {"purpose": "Seam contract definitions and interface agreements."},
+                },
             },
             "utils": {
                 "purpose": "Shared, passive helper functions. NO executable scripts (if __name__ == '__main__'). NO tests.",

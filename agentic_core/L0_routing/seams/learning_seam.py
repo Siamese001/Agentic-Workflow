@@ -14,22 +14,24 @@ Hardening item: H5 — Frozen LearningArtifactIntent with pre-L2 hash.
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from typing import Protocol
 
+from agentic_core.utils.canonical_serializer_util import (
+    canonical_bytes,
+)
 
-def _canonical_bytes(
+
+def _intent_canonical_bytes(
     agent_id: str,
     execution_id: str,
     outcome: str,
     metrics: tuple[tuple[str, float], ...],
     context_hash: str,
 ) -> bytes:
-    """Produce deterministic canonical bytes for hash computation.
+    """Produce deterministic canonical bytes for intent hash.
 
-    Uses sorted-key JSON with no whitespace variance, matching the
-    CanonicalSerializationSpec from the enterprise plan.
+    Delegates to the shared canonical serializer.
     """
     payload = {
         "agent_id": agent_id,
@@ -38,7 +40,7 @@ def _canonical_bytes(
         "metrics": [[k, v] for k, v in metrics],
         "outcome": outcome,
     }
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return canonical_bytes(payload)
 
 
 @dataclass(frozen=True)
@@ -74,14 +76,14 @@ class LearningArtifactIntent:
         ``__init__`` is allowed but callers are responsible for
         providing a correct ``intent_hash``.
         """
-        canonical = _canonical_bytes(
+        cb = _intent_canonical_bytes(
             agent_id=agent_id,
             execution_id=execution_id,
             outcome=outcome,
             metrics=metrics,
             context_hash=context_hash,
         )
-        intent_hash = hashlib.sha256(canonical).hexdigest()
+        intent_hash = hashlib.sha256(cb).hexdigest()
         return LearningArtifactIntent(
             agent_id=agent_id,
             execution_id=execution_id,
@@ -93,14 +95,14 @@ class LearningArtifactIntent:
 
     def verify(self) -> bool:
         """Re-derive hash and compare — used by L2 on receipt."""
-        canonical = _canonical_bytes(
+        cb = _intent_canonical_bytes(
             agent_id=self.agent_id,
             execution_id=self.execution_id,
             outcome=self.outcome,
             metrics=self.metrics,
             context_hash=self.context_hash,
         )
-        return hashlib.sha256(canonical).hexdigest() == self.intent_hash
+        return hashlib.sha256(cb).hexdigest() == self.intent_hash
 
 
 class LearningPersistenceService(Protocol):
