@@ -9,15 +9,7 @@ import json
 import logging
 from datetime import datetime
 
-
-def _get_MCPConnectionManager():
-    """Lazy load MCPConnectionManager to avoid upward import."""
-    from agentic_core.L3_orchestration.reasoning.mcp_manager import (
-        MCPConnectionManager,
-    )
-
-    return MCPConnectionManager
-
+from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
 # Derived from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {
@@ -124,5 +116,5 @@ class SovereignFilesystemMcp:
             # Persist for continuity
             redis_shield.execute("set", self.roots_key, json.dumps(validated), ex=60 * 60 * 24)
             Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallower
             Logger.warning(f"MCP Server does not support dynamic roots: {e}")

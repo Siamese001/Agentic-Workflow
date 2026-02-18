@@ -19,48 +19,17 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.seams.contracts.forward_rolling import (
+    AdaptiveDepthManager,
+    ContextPruningStrategy,
+    ExecutionMode,
+    ForwardRollingConfig,
+    HealthStatus,
+    RecursionMonitor,
+    RolloutStage,
+)
+
 Logger = logging.getLogger(__name__)
-
-
-def _get_forward_rolling_types():
-    """Lazy load L3 types to avoid upward import."""
-    from agentic_core.L3_orchestration.reasoning.forward_rolling_config_types import (
-        ExecutionMode,
-        ForwardRollingConfig,
-        RolloutStage,
-    )
-    from agentic_core.L3_orchestration.reasoning.recursion_monitor_types import (
-        HealthStatus,
-        RecursionMonitor,
-    )
-    from agentic_core.L3_orchestration.reasoning.recursive_orchestration_types import (
-        RecursiveOrchestrator,
-        SuccessorSpec,
-    )
-    from agentic_core.L3_orchestration.types import (
-        AgentResult,
-        ExecutionContext,
-        ExecutionPhase,
-    )
-    from agentic_core.L3_orchestration.types.context_pruning_types import (
-        AdaptiveDepthManager,
-        ContextPruningStrategy,
-    )
-
-    return {
-        "ExecutionMode": ExecutionMode,
-        "ForwardRollingConfig": ForwardRollingConfig,
-        "RolloutStage": RolloutStage,
-        "HealthStatus": HealthStatus,
-        "RecursionMonitor": RecursionMonitor,
-        "RecursiveOrchestrator": RecursiveOrchestrator,
-        "SuccessorSpec": SuccessorSpec,
-        "AgentResult": AgentResult,
-        "ExecutionContext": ExecutionContext,
-        "ExecutionPhase": ExecutionPhase,
-        "AdaptiveDepthManager": AdaptiveDepthManager,
-        "ContextPruningStrategy": ContextPruningStrategy,
-    }
 
 
 @dataclass

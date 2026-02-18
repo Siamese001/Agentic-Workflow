@@ -23,6 +23,8 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from typing import Any
 
+from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+
 
 @dataclass
 class NervousSystemAgent(SovereignBaseAgent):
@@ -84,26 +86,17 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.InterventionServer = InterventionServer()
 
         # L6 Architecture Governor
-        self.ArchitectureGovernor = self._get_GovernanceAgent()()
+        self.project_root = Path(__file__).resolve().parents[3]
+        _safety_factory = SafetyAgentFactory(self.project_root)
+        self.ArchitectureGovernor = _safety_factory.get("GovernanceAgent")
 
         # GOLD STANDARD: Domain-specific agent integrations for post-phase validation
-        self.project_root = Path(__file__).resolve().parents[3]
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
-        try:
-            self.location_agent = self._get_LocationAgent()(self.project_root)
-        except ImportError:
-            self.location_agent = None
-        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
-        try:
-            self.hierarchy_agent = self._get_HierarchyAgent()(self.project_root)
-        except ImportError:
-            self.hierarchy_agent = None
-        # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
+        self.location_agent = _safety_factory.get("LocationAgent")
+        self.hierarchy_agent = _safety_factory.get("HierarchyAgent")
         # Phase 5 Migration: ImportAgent -> CodeHealerAgent
-        try:
-            self.import_agent = self._get_create_legacy_import_healer()()
-        except ImportError:
-            self.import_agent = None
+        _healer_factory = _safety_factory.get_legacy_import_healer_factory()
+        self.import_agent = _healer_factory() if _healer_factory else None
         self._backup_dir: Path | None = None
 
         # Initialize helper classes
@@ -187,36 +180,6 @@ class NervousSystemAgent(SovereignBaseAgent):
                 "rl_orchestration_enabled": True,
             },
         )
-
-    @staticmethod
-    def _get_GovernanceAgent():
-        """Lazy loader for GovernanceAgent (upward L3->L5 seam)."""
-        from agentic_core.L5_safety.validators.GovernanceAgent import GovernanceAgent
-
-        return GovernanceAgent
-
-    @staticmethod
-    def _get_LocationAgent():
-        """Lazy loader for LocationAgent (upward L3->L5 seam)."""
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-
-        return LocationAgent
-
-    @staticmethod
-    def _get_HierarchyAgent():
-        """Lazy loader for HierarchyAgent (upward L3->L5 seam)."""
-        from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent
-
-        return HierarchyAgent
-
-    @staticmethod
-    def _get_create_legacy_import_healer():
-        """Lazy loader for create_legacy_import_healer (upward L3->L5 seam)."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-            create_legacy_import_healer,
-        )
-
-        return create_legacy_import_healer
 
     @staticmethod
     def _get_CoverageAgent():

@@ -55,8 +55,8 @@ agentic_core/L1_cognition/validators/spiffe_validator.py:274:magic_configuration
 agentic_core/L1_cognition/validators/truth_keeper_validator.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/firecracker_manager.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L2_execution/enforcement/firecracker_manager_enforcer.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/batch_embedding_service.py:103:magic_configuration:Magic configuration: Hardcoded max_workers=4
 agentic_core/L2_execution/engines/batch_embedding_service.py:24:magic_configuration:Magic configuration: Hardcoded max_workers=4
 agentic_core/L2_execution/engines/execute_command_executor.py:127:magic_configuration:Magic configuration: Hardcoded timeout=30

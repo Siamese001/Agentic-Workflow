@@ -19,6 +19,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+
 Logger = logging.getLogger(__name__)
 
 
@@ -39,6 +41,11 @@ class SafetyStrategy:
     """
 
     project_root: Path = field(default_factory=Path.cwd)
+    _agent_factory: SafetyAgentFactory | None = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self._agent_factory is None:
+            self._agent_factory = SafetyAgentFactory(self.project_root)
 
     @property
     def name(self) -> str:
@@ -79,12 +86,12 @@ class SafetyStrategy:
         Returns:
             Agent instance or None if not available
         """
-        try:
-            # Dynamic import based on agent name
-            if agent_name == "CodeValidatorAgent":
-                from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+        if agent_name == "CodeValidatorAgent":
+            try:
+                from agentic_core.L0_routing.utils.subprocess_runner import (
+                    invoke_code_validator,
+                )
 
-                # Return a wrapper that delegates to subprocess
                 class CodeValidatorAgentProxy:
                     def __init__(self, project_root):
                         self.project_root = project_root
@@ -103,38 +110,13 @@ class SafetyStrategy:
                         return self.validate_repository(**kwargs)
 
                 return CodeValidatorAgentProxy(project_root=self.project_root)
-            elif agent_name == "HygieneGuardianAgent":
-                from agentic_core.L5_safety.validators.HygieneGuardianAgent import (
-                    HygieneGuardianAgent,
-                )
-
-                return HygieneGuardianAgent(project_root=self.project_root)
-            elif agent_name == "NamingAgent":
-                from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
-
-                return NamingAgent(project_root=self.project_root)
-            elif agent_name == "LocationAgent":
-                from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-
-                return LocationAgent(project_root=self.project_root)
-            elif agent_name == "StructureEnforcerAgent":
-                from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (
-                    StructureEnforcerAgent,
-                )
-
-                return StructureEnforcerAgent(project_root=self.project_root)
-            elif agent_name == "StructuralHealerAgent":
-                from agentic_core.L5_safety.validators.StructuralHealerAgent import (
-                    StructuralHealerAgent,
-                )
-
-                return StructuralHealerAgent(project_root=self.project_root)
-            else:
-                Logger.warning(f"[SafetyStrategy] Unknown agent: {agent_name}")
+            except ImportError as e:
+                Logger.warning(f"[SafetyStrategy] Failed to import CodeValidatorAgent: {e}")
                 return None
-        except ImportError as e:
-            Logger.warning(f"[SafetyStrategy] Failed to import {agent_name}: {e}")
-            return None
+        agent = self._agent_factory.get(agent_name) if self._agent_factory else None
+        if agent is None:
+            Logger.warning(f"[SafetyStrategy] Unknown or unavailable agent: {agent_name}")
+        return agent
 
     def execute_agent(
         self,
