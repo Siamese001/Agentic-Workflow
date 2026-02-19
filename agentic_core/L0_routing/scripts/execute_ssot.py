@@ -100,6 +100,12 @@ except ImportError:
             return {"status": "failed", "errors": ["Adapter not available"]}
 
 
+def _safe_print(text: str) -> None:
+    """Print text safely on Windows consoles that use charmap encoding."""
+    sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
+    sys.stdout.buffer.flush()
+
+
 def resolve_repo_root(start=None):
     """Deterministic repo-root resolver.
     Walk upward from this file (or provided start) until we find repo markers.
@@ -2140,16 +2146,16 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         )
 
     # Print JSON Manifest
-    print(json.dumps(detailed_cert, indent=2))
+    _safe_print(json.dumps(detailed_cert, indent=2))
 
     # Print Markdown Summary
-    print("\n" + "\n".join(markdown_summary))
+    _safe_print("\n" + "\n".join(markdown_summary))
     if files_affected:
-        print("\n### 📂 Affected Files")
+        _safe_print("\n### Affected Files")
         for f in sorted(files_affected):
-            print(f"* `{f}`")
+            _safe_print(f"* `{f}`")
     else:
-        print("\n*No files required remediation.*")
+        _safe_print("\n*No files required remediation.*")
 
     # [COMPREHENSIVE REPORTS] Save detailed reports to files
     save_comprehensive_reports(
