@@ -63,6 +63,19 @@ class ObservabilityProbeExecutor(SovereignBaseAgent):
     def _probe_telemetry(self, ctx: dict) -> dict:
         return {"probe": "runtime_telemetry", "benchmarks": ctx.get("benchmarks", {})}
 
+    # guardian: allow-type-erasure
+    def scan_violations(self, target_territory: str | None = None) -> dict:
+        """Contract-aligned surface for EXECUTION_PLAN phase 4.5.
+
+        Delegates to execute() with debate probe context.
+        """
+        ctx: dict[str, Any] = {}
+        if target_territory is not None:
+            ctx["target_territory"] = target_territory
+        result = self.execute(ctx)
+        return {"violations": result.get("synthesis", {}).get("violations", [])}
+
+    # guardian: allow-type-erasure
     @standard_heal
     def heal_repository(self, **kwargs) -> dict:
         return super().heal_repository(**kwargs)

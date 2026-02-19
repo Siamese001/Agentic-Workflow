@@ -1425,7 +1425,12 @@ def execute_phase1_discovery_impl(
     location_scan_result = {}
     if territory_path.exists():
         # Let LocationAgent do comprehensive file discovery
-        location_scan_result = location_validator.run(target_territory=territory) or {}
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
+            LocationValidatorAgent,
+        )
+
+        _lva = LocationValidatorAgent(project_root=REPO_ROOT)
+        location_scan_result = _lva.run(target_territory=territory) or {}
         violations = location_scan_result.get("violations", [])
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
@@ -1513,7 +1518,7 @@ def execute_phase1_discovery_impl(
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
         file_classifier.dry_run = True  # Don't make changes during discovery
-        classification_scan_result = file_classifier.run(target_territory=territory) or {}
+        classification_scan_result = file_classifier.run() or {}
 
         # Extract violations from stats
         if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
@@ -1611,12 +1616,12 @@ def execute_phase2_alignment_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase3_architectural_validation(agents, territory, state_mgr):
+def execute_phase3_architectural_validation(agents, territory, state_mgr, dry_run=True):
     """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
-    return execute_phase3_validation_impl(agents, territory, state_mgr)
+    return execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=dry_run)
 
 
-def execute_phase3_validation_impl(agents, territory, state_mgr):
+def execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=True):
     """PHASE 3: ARCHITECTURAL VALIDATION - Implementation"""
     logger.info(f"=== PHASE 3: VALIDATION - {territory} ===")
 
@@ -1641,7 +1646,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
 
     try:
         logger.info("🔍 Detecting gravity violations (layer inversions)...")
-        gravity_result = gravity_agent.heal_repository(dry_run=not execute, execute=execute)
+        gravity_result = gravity_agent.heal_repository(dry_run=dry_run, execute=not dry_run)
 
         gravity_violations = gravity_result.get("violations_found", 0)
         gravity_fixed = gravity_result.get("violations_fixed", 0)
@@ -1678,6 +1683,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
             state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
             logger.info("✅ No gravity violations detected")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Gravity violation detection failed: {e}")
         state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
@@ -1904,7 +1910,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             all_violations.append(violation_dict)
 
     # Get DebateSynthesisAgent violations
-    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT)
+    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT, probe_type="debate")
     debate_synthesis_result = debate_synthesis_agent.scan_violations(target_territory=territory)
     conversational_violations = debate_synthesis_result.get("violations", [])
     for conv_violation in conversational_violations:
@@ -2712,9 +2718,51 @@ Examples:
                 logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
                 sys.exit(1)
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
         sys.exit(1)
+
+    # 3b. Build local agents roster (classes, not instances)
+    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
+        ArchitectureGovernorAgent,
+    )
+    from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
+        CognitiveDispositionAgent,
+    )
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        FileClassificationAgent,
+    )
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
+        FilesystemSSOTReconcilerAgent,
+    )
+    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
+        GravityLeakRepairAgent,
+    )
+    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
+        RootHygieneAgent,
+    )
+    from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
+        SystemArchitectAgent,
+    )
+    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
+        ObservabilityProbeExecutor,
+    )
+
+    agents = {
+        "reconciler": FilesystemSSOTReconcilerAgent,
+        "location": LocationAgent,
+        "hierarchy": HierarchyAgent,
+        "arch_governor": ArchitectureGovernorAgent,
+        "gravity_repair": GravityLeakRepairAgent,
+        "system_architect": SystemArchitectAgent,
+        "file_classification": FileClassificationAgent,
+        "conversational_repair": ObservabilityProbeExecutor,
+        "cognitive_disposition": CognitiveDispositionAgent,
+        "root_hygiene": RootHygieneAgent,
+    }
 
     # 4. Determine Targets
     targets = []
@@ -2912,7 +2960,9 @@ Examples:
                             state_mgr.add_event("info", "Sovereignty healing skipped - Dry run mode")
 
                         # Phase 3: Validation (Legacy)
-                        gov, arch = execute_phase3_architectural_validation(agents, territory, state_mgr)
+                        gov, arch = execute_phase3_architectural_validation(
+                            agents, territory, state_mgr, dry_run=dry_run
+                        )
 
                         # Persist full work to state
                         state_mgr.state["compliance_report"] = gov

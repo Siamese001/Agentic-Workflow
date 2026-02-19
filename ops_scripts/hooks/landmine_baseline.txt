@@ -1,47 +1,4 @@
-_refactor_ast.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:175:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:234:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:200:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:219:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_final.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_final.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_mutations.py:247:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_mutations.py:247:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass2.py:27:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass2.py:27:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass3.py:55:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass3.py:55:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:235:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:24:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:24:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_remaining.py:141:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:189:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_remaining.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:134:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:144:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:196:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:196:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1681:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:2715:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/utils/subprocess_runner.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:152:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
@@ -670,7 +627,7 @@ agentic_core/L6_observability/engines/SovereignHealthMonitor.py:68:silent_swallo
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:86:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:90:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L6_observability/reasoning/ObservabilityProbeExecutor.py:29:type_erasure:Type erasure: ObservabilityProbeExecutor.execute returns dict instead of structured type
-agentic_core/L6_observability/reasoning/ObservabilityProbeExecutor.py:67:type_erasure:Type erasure: ObservabilityProbeExecutor.heal_repository returns dict instead of structured type
+agentic_core/L6_observability/reasoning/ObservabilityProbeExecutor.py:80:type_erasure:Type erasure: ObservabilityProbeExecutor.heal_repository returns dict instead of structured type
 agentic_core/base_agents/L0RoutingBase.py:87:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:62:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
