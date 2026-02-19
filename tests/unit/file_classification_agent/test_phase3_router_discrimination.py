@@ -63,7 +63,7 @@ class TestRouterSuffix:
             def select_handler(self, req):
                 return self.handlers[req.type]
         """
-        p = _make_file(tmp_path, "dispatch.py", code)
+        p = _make_file(tmp_path, "dispatch_router.py", code)
         result, stats = _classify(tmp_path, p)
         assert result == "ENGINE"
 

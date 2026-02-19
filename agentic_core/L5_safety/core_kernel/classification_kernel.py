@@ -262,7 +262,7 @@ def _classify_impl(path: Path) -> FileType:
         path.name.startswith("I") and len(path.name) > 2 and path.name[1:2].isupper()
     )
     # Phase 3: Explicit router => ENGINE (must precede orchestrator check)
-    is_router = path.stem.endswith("_router") or primary_name.endswith("Router")
+    is_router = path.stem.endswith("_router")
     if is_router:
         return "ENGINE"
 

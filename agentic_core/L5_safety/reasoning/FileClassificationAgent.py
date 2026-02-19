@@ -1030,7 +1030,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             return "PROTOCOL"
 
         # 5.9. ROUTER: Phase 3 — explicit router => ENGINE (before orchestrator)
-        is_router = path.stem.endswith("_router") or primary_name.endswith("Router")
+        is_router = path.stem.endswith("_router")
         if is_router:
             self._validate_router_invariants(tree, path, content)
             return "ENGINE"
@@ -1494,10 +1494,8 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Router remains ENGINE regardless of violations.
         """
-        if not (
-            path.stem.endswith("_router")
-            or any(n.name.endswith("Router") for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
-        ):
+        is_router = path.stem.endswith("_router")
+        if not is_router:
             return
 
         inv = self.stats["violations"]["ROUTER_INVARIANT_FAIL"]
