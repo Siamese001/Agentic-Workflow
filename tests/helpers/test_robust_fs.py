@@ -6,7 +6,7 @@ import os
 import stat
 from pathlib import Path
 
-from tests._helpers.robust_fs import robust_rmtree
+from .robust_fs import robust_rmtree
 
 
 class TestRobustRmtree:
