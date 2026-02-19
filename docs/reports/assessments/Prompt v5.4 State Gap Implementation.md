@@ -1,16 +1,18 @@
 # WINDSURF STATE→GAP→IMPLEMENTATION PROMPT (v5.4 – PNG CONTROL-PLANE / EXECUTION-OPERATIONAL / REPO-GROUNDED / HARDENED)
 
-## VERSION (v5.4.2)
+## VERSION (v5.4.3)
 
 This patch updates the **TARGET STATE** and **PLANNING RULES** to incorporate:
 
 1) **Phase 5 P0 execution hardening** (capability-gated L2 execution boundary with deterministic audit artifacts).
 2) **Governed Improvement (Meta-learning)** as a first-class, schema-locked target capability set, strictly bounded by the control spine.
-
 3) **Compliance-audit-aligned P0 inclusions** (SSOT binding resolution §1.5, TokenControl PreGuard Snapshot §6.3) and stricter gating of governed improvement on all P0 closures.
+4) **Write Gateway enforcement** (`agentic_core/L2_execution/tools/write_gateway.py` as the single durable-mutation chokepoint for all non-L2 layers), AST-based governance tests as the mandatory enforcement mechanism for §12.3 and P3, and healing re-entry pattern hardening (P1.3 — approval via L0 seam, apply/rollback via direct L2.2 `FileIo`).
 
-Hard rule:
+Hard rules:
 * Meta-learning is only COMPLIANT if it is **governed, versioned in L4, re-enters via L0**, and **cannot bypass L5/HIL/L2**.
+* Any layer outside `L2_execution` that contains durable mutation primitives (`open(...,"w"/"a"/"x")`, `Path.write_text/write_bytes`, `os.remove/rename/makedirs`, `shutil.*`, `json.dump(obj, file)`) is a **FAIL (P3)** unless the call is routed through `write_gateway` or an approved L0 seam.
+* Governance tests enforcing mutation boundaries MUST be AST-based (not regex or runtime-import-based); regex-based enforcement is insufficient and evaluates to **MISSING**.
 
 ## PURPOSE (v5.4.2)
 
@@ -301,6 +303,13 @@ Planning constraints (v5.3):
 * No implicit writes: any side-effect not registered in the Side-Effect Registry is an abort.
 * `apps_*` code MUST NOT mutate external state or governed repos/config; it is treated as an untrusted caller and must traverse the same L2 chokepoint + capability tokens.
 
+**P3 Enforcement Mechanism (v5.4.3):**
+* The sole sanctioned durable-mutation chokepoint outside `L2_execution` is `agentic_core/L2_execution/tools/write_gateway.py`.
+* Forbidden mutation primitives in L3/L4/L5/L6 (exhaustive): `open(..., "w")`/`"a"`/`"x"`, `Path.write_text()`, `Path.write_bytes()`, `Path.mkdir()`, `Path.unlink()`, `Path.rmdir()`, `Path.rename()`, `Path.touch()`, `os.makedirs()`, `os.remove()`, `os.rename()`, `shutil.copy*()`, `shutil.move()`, `shutil.rmtree()`, `json.dump(obj, file_handle)`.
+* Enforcement MUST be via AST-based static analysis (not regex or runtime import checks). Governance tests using only regex are **MISSING** for this invariant.
+* Accepted routing patterns for higher layers: (a) emit `MutationIntent` routed via `L0_routing/intent_router.py` to `L2.2` executor, or (b) call `write_gateway.*` functions directly if the calling module is inside `L2_execution`.
+* `FileIo` class (`agentic_core/L2_execution/tools/file_io_impl.py`) MUST NOT be imported or instantiated in L3/L4/L5/L6.
+
 ## P4. Immutable Traceability (GLOBAL)
 
 * TraceID is mandatory and immutable.
@@ -508,6 +517,8 @@ This exception is valid **only** for the current "Semantic Clock" tick.
 
 ! Added invariant: **No direct writes from L0** (PNG callout).
 
+! Added invariant (v5.4.3): **L0 seam allowlist** — L0 may only load higher-layer modules via `importlib` through the three allowlisted seam files (`safety_enforcement_seam.py`, `mutation_protocol.py`, `intent_router.py`). Static `import` of L1–L6 symbols from any other L0 file is a **FAIL (P6)**.
+
 **Architecture gates to apply:** P1, P2, P4, P5, P6.
 
 ---
@@ -708,9 +719,14 @@ A `Perms Artifact` (trace_id, policy_hash, budget) must be passed to the agent.
 
 12.2 A side-effect registry tracks **all touched resources**.
 
-* **12.3 Read-Only Boundary Enforcement**
+* **12.3 Read-Only Boundary Enforcement (v5.4.3 — extended)**
 
-  * L0, L4, L6 are physically incapable of state mutation.
+  * L0, L3, L4, L5, L6 are physically incapable of durable state mutation.
+  * L2_execution is the **sole** layer permitted to contain durable mutation primitives.
+  * Enforcement MUST be proven by AST-based governance tests (e.g., `tests/governance/test_intent_emission_no_mutation.py`, `test_l6_purity.py`, `test_authority_boundaries.py`) that scan all non-L2 source trees for forbidden primitives.
+  * Ratchet ceilings (integer counts of remaining violations) are **MISSING** status; only zero-violation counts are **COMPLIANT**.
+  * Healing re-entry pattern: approval MUST be mediated via `L0_routing/seams/safety_enforcement_seam.py` (dynamic importlib load of L5 gate); apply/rollback MUST use direct `L2_execution/tools/file_io_impl.FileIo` calls — no bare `open()` in orchestrators.
+  * L0 upward-import seam allowlist: only the following L0 seam files may dynamically load higher-layer modules via `importlib`: `safety_enforcement_seam.py`, `mutation_protocol.py`, `intent_router.py`. Any other L0 file that imports L1–L6 symbols is a **FAIL (P6)**.
 
 **Architecture gates to apply:** P1, P3, P6 (fail-closed, no implicit writes, typed boundaries).
 
@@ -931,6 +947,11 @@ Mandatory inclusions (prompt ownership must be traceable):
 Mandatory inclusions:
 * any write/mutation path originating from `apps_*` (expected: NONE; otherwise FAIL/P0)
 * prompt template mutation in `agentic_core/**/prompt_governance` (must be gated + traceable)
+* `agentic_core/L2_execution/tools/write_gateway.py` — expected: EXISTS and is the **sole** durable-mutation chokepoint; absence = FAIL (P3)
+* `agentic_core/L3_orchestration/**`, `L4_state/**`, `L5_safety/**`, `L6_observability/**` — expected: ZERO forbidden mutation primitives (see P3 exhaustive list); any count > 0 = FAIL (P3)
+* `agentic_core/L0_routing/**` — expected: ZERO direct writes; dynamic importlib loads restricted to allowlisted seam files only; violations = FAIL (P6)
+* AST-based governance tests (`tests/governance/test_intent_emission_no_mutation.py`, `test_l6_purity.py`, `test_authority_boundaries.py`) — expected: EXISTS and enforces zero-violation ceiling; ratchet ceilings = MISSING; absent tests = MISSING
+* Healing re-entry path in `L2_execution/engines/validation_orchestrator.py` — expected: approval via `L0_routing/seams/safety_enforcement_seam.py` (importlib), apply/rollback via `FileIo.save_file()`; bare `open()` calls = FAIL (P3)
 
 ## SECTION B — TARGET STATE (PNG/V15-ALIGNED)
 
@@ -1314,10 +1335,16 @@ PATCH (v5.4.2) — Explicit P0 inclusions (non-exhaustive, but mandatory when pr
 * §8.3 Safety mixins LEFT in MRO (enforced, fail-closed)
 * §9.1–§9.3 Separation-of-responsibility enforcement (runtime/scanner evidence)
 * §11.2 Route Recovery (TokenOverflow)
-* §12.3 Read-only boundary enforcement for L0/L4/L6 (comprehensive mutation lock)
+* §12.3 Read-only boundary enforcement for L0/L3/L4/L5/L6 (comprehensive mutation lock; write_gateway as sole chokepoint; AST-based governance tests required)
 * 0.7 / P6 app boundary enforcement (no `apps_*` policy/safety/tool prompts; no direct provider calls)
 * P5.1 Capability-gated L2 execution boundary
 * §16.7 Meta-learning safety invariants (when §16 is in-scope)
+
+PATCH (v5.4.3) — Additional P0 inclusions:
+* P3 Write Gateway existence: `agentic_core/L2_execution/tools/write_gateway.py` must exist with all durable-mutation functions (`write_text`, `write_bytes`, `write_json`, `append_text`, `open_write`, `ensure_dir`, `remove_file`, `remove_dir`, `remove_tree`, `copy_file`, `move_path`, `rename_path`, `touch_file`, `copy_tree`, `makedirs`); absence = FAIL (P3/P0)
+* P3 AST governance tests: `tests/governance/test_intent_emission_no_mutation.py`, `test_l6_purity.py`, `test_authority_boundaries.py` must exist and enforce zero-violation ceilings via AST scanning; absence or ratchet-only enforcement = MISSING (P3/P0)
+* P6 L0 seam allowlist: only `safety_enforcement_seam.py`, `mutation_protocol.py`, `intent_router.py` may use `importlib` to load L1–L6 modules from L0; any other L0 file with upward imports = FAIL (P6/P0)
+* P3 Healing re-entry: `L2_execution/engines/validation_orchestrator.py` must route approval through `L0_routing/seams/safety_enforcement_seam.py` and use `FileIo.save_file()` for apply/rollback; bare `open()` in orchestrator = FAIL (P3/P0)
 
 ### 17.2 Wave Ordering
 Order waves strictly:
@@ -1345,6 +1372,8 @@ Default dependencies (minimum):
 * §1.5 SSOT binding resolution precedes any replay/eval/meta-learning gating (trustworthy trace binding)
 * §6.3 TokenControl PreGuard Snapshot precedes metrics/eval foundations when §16 is in-scope
 * P5.1 capability tokens and §12.3 mutation lock precede §16 meta-learning activation and promotion.
+* Write Gateway (`write_gateway.py`) existence and zero-violation AST governance tests precede any §12.3 compliance claim and any §16 activation.
+* Healing re-entry pattern closure (approval via L0 seam + FileIo apply/rollback) precedes §2.5 (Healer commit) compliance.
 
 Dependency escalation rule (mandatory):
 * If §13.1 (Semantic Clock) is MISSING/FAIL, then §5.2 (time-bucketed signatures) MUST be scheduled as P0 in a later wave, explicitly blocked on §13 closure.
@@ -1398,9 +1427,16 @@ PATCH (v5.4.2) — Meta-learning enforcement:
 * If any form of "learning" performs direct mutation (bypassing L0/L5/HIL/L4 versioning), status = FAIL (P3/P6).
 * If §16 capabilities are requested but any Phase 5/6 P0 gates are open (P5.1, §12.3, or any §17.1 explicit P0 inclusion), §16 activation/promotion MUST be treated as blocked (P0) and scheduled only after those closures.
 
+PATCH (v5.4.3) — Mutation authority enforcement:
+* If `agentic_core/L2_execution/tools/write_gateway.py` does not exist, status = FAIL (P3/P0) for §12.3.
+* If any of `tests/governance/test_intent_emission_no_mutation.py`, `test_l6_purity.py`, `test_authority_boundaries.py` are absent or enforce only ratchet ceilings (not zero), status = MISSING (P3/P0) for §12.3.
+* If `L2_execution/engines/validation_orchestrator.py` contains bare `open(..., "w")` calls for healing apply/rollback, status = FAIL (P3/P0).
+* If any L0 file outside the three allowlisted seams (`safety_enforcement_seam.py`, `mutation_protocol.py`, `intent_router.py`) statically imports L1–L6 symbols, status = FAIL (P6/P0).
+* These four checks are mandatory in Section A3 and Section 4 of every audit run.
+
 ---
 
-## START EXECUTION (v5.4.2)
+## START EXECUTION (v5.4.3)
 
 1) Run discovery script
 2) Ingest JSON + freeze scope
