@@ -8,6 +8,7 @@ import importlib  # AUTO-INJECTED BY GRAVITY HEALER
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 L6 Sovereign Code Graph & Governance Infrastructure
@@ -316,8 +317,7 @@ class DependencyGraph:
         dot.append("}")
         dot_str: Any = "\n".join(dot)
         if output_file:
-            with open(output_file, "w") as f:
-                f.write(dot_str)
+            _wg.open_write(output_file, dot_str)
             LOGGER.info(f"Graph visualization saved to {output_file}")
         return dot_str
 
@@ -524,7 +524,7 @@ class GovernanceAgent(SovereignBaseAgent):
             Action taken
         """
         scripts_dir = self.root_dir / "scripts"
-        scripts_dir.mkdir(exist_ok=True)
+        _wg.ensure_dir(scripts_dir)
         noise_patterns = ["temp", "tmp", "debug", "test", ".log", ".tmp", ".bak"]
         is_noise = any(pattern in file_path.name.lower() for pattern in noise_patterns)
         if is_noise:
@@ -832,7 +832,7 @@ class GovernanceAgent(SovereignBaseAgent):
         if self._backup_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             self._backup_dir = self.root_dir / ".governance_healer_backups" / timestamp
-            self._backup_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self._backup_dir)
         return self._backup_dir
 
     def post_hierarchy_validation(self, file_paths: list[str], dry_run: bool = True) -> dict[str, Any]:

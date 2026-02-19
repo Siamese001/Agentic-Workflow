@@ -19,7 +19,6 @@ SSOT PRINCIPLE:
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -27,6 +26,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Final
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
 )
@@ -320,22 +320,21 @@ class ReportLocationValidator:
 
         inventory = self.generate_inventory()
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(output_path.parent)
 
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "timestamp": inventory.timestamp,
-                    "total_reports": inventory.total_reports,
-                    "compliant_reports": inventory.compliant_reports,
-                    "misplaced_reports": inventory.misplaced_reports,
-                    "compliance_percentage": round(inventory.compliance_percentage, 2),
-                    "reports_by_location": inventory.reports_by_location,
-                    "misplaced_files": inventory.misplaced_files,
-                },
-                f,
-                indent=2,
-            )
+        _wg.write_json(
+            output_path,
+            {
+                "timestamp": inventory.timestamp,
+                "total_reports": inventory.total_reports,
+                "compliant_reports": inventory.compliant_reports,
+                "misplaced_reports": inventory.misplaced_reports,
+                "compliance_percentage": round(inventory.compliance_percentage, 2),
+                "reports_by_location": inventory.reports_by_location,
+                "misplaced_files": inventory.misplaced_files,
+            },
+            indent=2,
+        )
 
         Logger.info(f"[SSOT] Report inventory saved to {output_path}")
         return output_path

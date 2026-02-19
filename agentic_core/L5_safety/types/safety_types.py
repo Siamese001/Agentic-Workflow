@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Self-Updating Safety Engine - L5 Safety Enhancement
 
@@ -232,15 +234,14 @@ class SelfUpdatingSafetyEngine:
     def _save_rules(self):
         """Save rules to storage."""
         try:
-            os.makedirs(os.path.dirname(self.rules_storage_path), exist_ok=True)
+            _wg.makedirs(os.path.dirname(self.rules_storage_path), exist_ok=True)
 
             data = {
                 "rules": [rule.to_dict() for rule in self.rules.values()],
                 "last_updated": datetime.now().isoformat(),
             }
 
-            with open(self.rules_storage_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+            _wg.write_json(self.rules_storage_path, data, indent=2)
 
             Logger.debug(f"Saved {len(self.rules)} rules")
         except Exception as e:

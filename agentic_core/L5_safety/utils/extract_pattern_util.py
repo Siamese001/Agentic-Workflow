@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Extract PatternEnforcerAgent from canon_agents_pattern.py.
 Also removes SubAtomicAgent stub and adds proper import.
@@ -75,8 +77,7 @@ Logger: Any = logging.getLogger(__name__)
 '''
 
     print(f"Creating {target_file}")
-    with open(target_file, "w", encoding="utf-8") as f:
-        f.write(content)
+    _wg.open_write(target_file, content)
 
     return target_file
 
@@ -115,8 +116,7 @@ def update_source_file(source_file: Path):
     backup_file = source_file.with_suffix(".py.bak")
     print(f"  Creating backup: {backup_file}")
     with open(source_file, encoding="utf-8") as f:
-        with open(backup_file, "w", encoding="utf-8") as b:
-            b.write(f.read())
+        _wg.open_write(backup_file, f.read())
 
     # Remove classes
     for start, end, name in ranges_to_remove:
@@ -139,8 +139,7 @@ def update_source_file(source_file: Path):
     lines.insert(insert_idx + 1, "")
 
     # Write updated file
-    with open(source_file, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
+    _wg.open_write(source_file, "\n".join(lines))
 
 
 def main():

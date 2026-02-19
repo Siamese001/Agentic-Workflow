@@ -29,6 +29,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root import get_validated_project_root
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 TOOL_ID = "guardian_heal_orchestrator"
 
@@ -105,7 +106,7 @@ def _run_dispatcher(
         )
         return result.to_dict()
     finally:
-        agg_path.unlink(missing_ok=True)
+        _wg.remove_file(agg_path)
 
 
 # ---------------------------------------------------------------------------

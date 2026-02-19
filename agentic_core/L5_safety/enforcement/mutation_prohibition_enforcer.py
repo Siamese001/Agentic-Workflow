@@ -11,13 +11,13 @@ Override: AGENTIC_ALLOW_MUTATION_FOR_TESTS=1 (env var, test-only).
 
 from __future__ import annotations
 
-import json
 import logging
 import os
-import shutil
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
+
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ def safe_write_text(
 ) -> None:
     """Guarded Path.write_text replacement."""
     assert_no_persistent_write(layer, "write_text", str(filepath), trace_id)
-    Path(filepath).write_text(content, encoding=encoding)
+    _wg.write_text(Path(filepath), content, encoding=encoding)
 
 
 def safe_write_bytes(
@@ -102,7 +102,7 @@ def safe_write_bytes(
 ) -> None:
     """Guarded Path.write_bytes replacement."""
     assert_no_persistent_write(layer, "write_bytes", str(filepath), trace_id)
-    Path(filepath).write_bytes(data)
+    _wg.write_bytes(Path(filepath), data)
 
 
 def safe_json_dump(
@@ -117,8 +117,7 @@ def safe_json_dump(
 ) -> None:
     """Guarded json.dump-to-file replacement."""
     assert_no_persistent_write(layer, "json.dump", str(filepath), trace_id)
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(obj, f, indent=indent, sort_keys=sort_keys, **kwargs)
+    _wg.write_json(filepath, obj, indent=indent)
 
 
 def safe_shutil_move(
@@ -130,7 +129,7 @@ def safe_shutil_move(
 ) -> None:
     """Guarded shutil.move replacement."""
     assert_no_persistent_write(layer, "shutil.move", str(dst), trace_id)
-    shutil.move(str(src), str(dst))
+    _wg.move_path(str(src), str(dst))
 
 
 def safe_shutil_rmtree(
@@ -141,7 +140,7 @@ def safe_shutil_rmtree(
 ) -> None:
     """Guarded shutil.rmtree replacement."""
     assert_no_persistent_write(layer, "shutil.rmtree", str(target), trace_id)
-    shutil.rmtree(str(target))
+    _wg.remove_tree(str(target))
 
 
 def safe_os_remove(
@@ -152,7 +151,7 @@ def safe_os_remove(
 ) -> None:
     """Guarded os.remove replacement."""
     assert_no_persistent_write(layer, "os.remove", str(filepath), trace_id)
-    os.remove(filepath)
+    _wg.remove_file(filepath)
 
 
 def safe_os_rename(
@@ -164,7 +163,7 @@ def safe_os_rename(
 ) -> None:
     """Guarded os.rename replacement."""
     assert_no_persistent_write(layer, "os.rename", str(dst), trace_id)
-    os.rename(src, dst)
+    _wg.rename_path(src, dst)
 
 
 def safe_open_write(

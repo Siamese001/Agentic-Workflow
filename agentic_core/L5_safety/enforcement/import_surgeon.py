@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 SOVEREIGN IMPORT SURGEON
 Scans all .py files and identifies import statements that need updating
@@ -186,8 +188,7 @@ class SovereignImportSurgeon:
                     lines: Any = f.readlines()
                 for v in sorted(violations, key=lambda x: x.line_num, reverse=True):
                     lines[v.line_num - 1] = v.suggested_fix + "\n"
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.writelines(lines)
+                _wg.open_write(file_path, "".join(lines))
                 fixed_count += 1
                 print(f"✅ Fixed: {file_path}")
             # guardian: allow-silent-swallow
@@ -204,8 +205,7 @@ def main() -> Any:
     report: Any = surgeon.generate_report()
     print(report)
     report_path: Any = Path(project_root) / "08_scripts" / "import_surgery_report.txt"
-    with open(report_path, "w", encoding="utf-8") as f:
-        f.write(report)
+    _wg.open_write(report_path, report)
     print(f"\n📄 Report saved to: {report_path}")
     print("\n⚠️  This was a DRY RUN. No files were modified.")
     print("Review the report and confirm before applying changes.")

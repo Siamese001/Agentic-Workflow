@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 CheckpointManagerAgent - Consolidated L4 Checkpoint Guardian (Priority 2)
 
@@ -27,7 +29,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import shutil
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -154,12 +155,12 @@ class CheckpointManagerAgent(SovereignBaseAgent):
             self.storage_path = Path(self.storage_path)
 
         # Create directories
-        self.storage_path.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.storage_path)
 
         # Mirror path for AUTONOMOUS mode
         self.mirror_path = self.storage_path / "mirrors"
         if self.mode == "AUTONOMOUS":
-            self.mirror_path.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.mirror_path)
 
         # Initialize collections
         if not isinstance(self.checkpoints, dict):
@@ -278,9 +279,8 @@ class CheckpointManagerAgent(SovereignBaseAgent):
         file_path = self.storage_path / f"{checkpoint_id}.json"
 
         try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(checkpoint.to_dict(), f, indent=2, default=str)
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            _wg.write_json(file_path, checkpoint.to_dict(), indent=2)
 
             self.checkpoints[checkpoint_id] = checkpoint
             self.current_checkpoint_id = checkpoint_id
@@ -347,12 +347,12 @@ class CheckpointManagerAgent(SovereignBaseAgent):
             True if mirroring succeeded
         """
         if not self.mirror_path.exists():
-            self.mirror_path.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.mirror_path)
 
         mirror_path = self.mirror_path / primary_path.name
 
         try:
-            shutil.copy2(primary_path, mirror_path)
+            _wg.copy_file(primary_path, mirror_path)
             Logger.debug(f"[MIRROR] Redundant copy created: {mirror_path.name}")
             return True
         except Exception as e:
@@ -427,7 +427,7 @@ class CheckpointManagerAgent(SovereignBaseAgent):
 
         if mirror.exists():
             try:
-                shutil.copy2(mirror, primary)
+                _wg.copy_file(mirror, primary)
                 Logger.warning(f"[RECOVERY] Restored checkpoint {checkpoint_id} from mirror")
 
                 # Update checkpoint metadata
@@ -583,9 +583,8 @@ class CheckpointManagerAgent(SovereignBaseAgent):
         }
 
         try:
-            with open(index_path, "w", encoding="utf-8") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(index_data, f, indent=2)
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            _wg.write_json(index_path, index_data, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to save checkpoint index: {e}")
@@ -611,9 +610,9 @@ class CheckpointManagerAgent(SovereignBaseAgent):
             mirror = self.mirror_path / f"{checkpoint_id}.json"
 
             if primary.exists():
-                primary.unlink()
+                _wg.remove_file(primary)
             if mirror.exists():
-                mirror.unlink()
+                _wg.remove_file(mirror)
 
             # Remove from memory
             if checkpoint_id in self.checkpoints:

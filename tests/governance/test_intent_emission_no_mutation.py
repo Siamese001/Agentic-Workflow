@@ -1,13 +1,13 @@
-"""Governance: Strict intent emission — no durable mutation outside L2.2.
+"""Governance: Strict intent emission — no durable mutation outside L2.
 
-Invariants enforced (ratchet pattern):
-  A) L3/L4/L5 mutation primitive count must not exceed the baselined ceiling.
+Invariants enforced:
+  A) Non-L2 mutation primitives must exactly match an explicit allowlist
+     keyed by (relative_path, enclosing_function, syntactic_fingerprint).
+     Any new hit fails; any disappeared hit fails (forces intentional update).
   B) L3/L4/L5 must not import or instantiate FileIo.
   C) Negative regression snippets prove the detector catches violations.
-
-The baseline ceiling captures the current architectural reality. Any *new*
-mutation primitive added to L3/L4/L5 will fail the test, enforcing a
-monotonic-decrease ratchet toward zero.
+  D) The L2 write-gateway (_wg.*) is the only permitted write mechanism
+     outside L2; its calls are excluded from the scanner.
 """
 
 import ast
@@ -25,16 +25,51 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 _AGENTIC = _REPO_ROOT / "agentic_core"
 _TARGET_LAYERS = ("L3_orchestration", "L4_state", "L5_safety")
 
-# Baselined ceilings per layer (from inventory scan 2026-02-19).
-# These numbers must only ever decrease.
-_CEILING = {
-    "L3_orchestration": 29,
-    "L4_state": 50,
-    "L5_safety": 373,
-}
-
 _FORBIDDEN_OS_FUNCS = frozenset({"remove", "rename", "unlink", "makedirs", "mkdir", "rmdir"})
 _FORBIDDEN_PATH_METHODS = frozenset({"write_text", "write_bytes", "mkdir", "unlink", "rename", "rmdir"})
+
+# ---- Explicit allowlist (stable fingerprint: path | func | AST sig) ----
+# Each entry is a frozenset-key of (relative_posix_path, func, fingerprint).
+# To update: change ONLY this set and justify in the commit message.
+_ALLOWLIST: frozenset[tuple[str, str, str]] = frozenset(
+    {
+        (
+            "agentic_core/L3_orchestration/engines/autonomous_execution_engine.py",
+            "save_state",
+            "Call:json.dump(obj,file)",
+        ),
+        (
+            "agentic_core/L3_orchestration/scripts/guardian_heal_orchestrator.py",
+            "_run_dispatcher",
+            "Call:json.dump(obj,file)",
+        ),
+        (
+            "agentic_core/L4_state/enforcement/mission_historian.py",
+            "__init__",
+            "Call:open(mode=w)",
+        ),
+        (
+            "agentic_core/L4_state/enforcement/mission_historian.py",
+            "record",
+            "Call:open(mode=a)",
+        ),
+        (
+            "agentic_core/L4_state/enforcement/mission_historian_enforcer.py",
+            "__init__",
+            "Call:open(mode=w)",
+        ),
+        (
+            "agentic_core/L4_state/enforcement/mission_historian_enforcer.py",
+            "record",
+            "Call:open(mode=a)",
+        ),
+        (
+            "agentic_core/L5_safety/config/structure_blueprint/_simulate_verify.py",
+            "main",
+            "Call:open(mode=w)",
+        ),
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -42,9 +77,79 @@ _FORBIDDEN_PATH_METHODS = frozenset({"write_text", "write_bytes", "mkdir", "unli
 # ---------------------------------------------------------------------------
 
 
-def _scan_mutation_primitives(layer_dir: Path) -> list[str]:
-    """Return list of violation strings for forbidden mutation primitives."""
-    hits: list[str] = []
+# ---- Fingerprinted scanner ----
+
+
+def _enclosing_func(
+    tree: ast.Module,
+    target_lineno: int,
+) -> str:
+    """Return the innermost function name enclosing *target_lineno*."""
+    best = "<module>"
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if (
+                hasattr(node, "end_lineno")
+                and node.end_lineno is not None
+                and node.lineno <= target_lineno <= node.end_lineno
+            ):
+                best = node.name
+    return best
+
+
+def _fingerprint_hit(
+    func: ast.expr,
+    node: ast.Call,
+) -> str | None:
+    """Return a stable syntactic fingerprint or *None*."""
+    # open(..., "w"/"a"/"x")
+    if isinstance(func, ast.Name) and func.id == "open":
+        mode = None
+        if len(node.args) >= 2:
+            a = node.args[1]
+            if isinstance(a, ast.Constant) and isinstance(a.value, str):
+                mode = a.value
+        for kw in node.keywords:
+            if kw.arg == "mode" and isinstance(kw.value, ast.Constant):
+                mode = kw.value.value
+        if mode and any(m in mode for m in ("w", "a", "x")):
+            # Exclude stdout/stderr reconfiguration
+            if (
+                node.args
+                and isinstance(node.args[0], ast.Call)
+                and isinstance(node.args[0].func, ast.Attribute)
+                and node.args[0].func.attr == "fileno"
+            ):
+                return None
+            return f"Call:open(mode={mode})"
+
+    # .write_text / .write_bytes / .mkdir / .unlink / .rename
+    # Skip _wg.* (routed through L2 write gateway)
+    if isinstance(func, ast.Attribute) and func.attr in _FORBIDDEN_PATH_METHODS:
+        if isinstance(func.value, ast.Name) and func.value.id == "_wg":
+            return None
+        return f"Call:.{func.attr}()"
+
+    # os.remove / os.rename etc.
+    if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
+        if func.value.id == "os" and func.attr in _FORBIDDEN_OS_FUNCS:
+            return f"Call:os.{func.attr}()"
+        if func.value.id == "shutil":
+            return f"Call:shutil.{func.attr}()"
+
+    # json.dump(obj, file)
+    if isinstance(func, ast.Attribute) and func.attr == "dump":
+        if isinstance(func.value, ast.Name) and func.value.id == "json" and len(node.args) >= 2:
+            return "Call:json.dump(obj,file)"
+
+    return None
+
+
+def _scan_mutation_fingerprints(
+    layer_dir: Path,
+) -> set[tuple[str, str, str]]:
+    """Return set of (rel_path, func_name, fingerprint) tuples."""
+    hits: set[tuple[str, str, str]] = set()
     for py in sorted(layer_dir.rglob("*.py")):
         try:
             src = py.read_text(encoding="utf-8")
@@ -52,40 +157,13 @@ def _scan_mutation_primitives(layer_dir: Path) -> list[str]:
         except (SyntaxError, UnicodeDecodeError):
             continue
         rel = py.relative_to(_REPO_ROOT).as_posix()
-
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call):
                 continue
-            func = node.func
-
-            # open(..., "w"/"a"/"x")
-            if isinstance(func, ast.Name) and func.id == "open":
-                mode = None
-                if len(node.args) >= 2:
-                    arg = node.args[1]
-                    if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
-                        mode = arg.value
-                for kw in node.keywords:
-                    if kw.arg == "mode" and isinstance(kw.value, ast.Constant):
-                        mode = kw.value.value
-                if mode and any(m in mode for m in ("w", "a", "x")):
-                    hits.append(f'{rel}:{node.lineno}: open(..., "{mode}")')
-
-            # .write_text / .write_bytes / .mkdir / .unlink / .rename
-            if isinstance(func, ast.Attribute) and func.attr in _FORBIDDEN_PATH_METHODS:
-                hits.append(f"{rel}:{node.lineno}: .{func.attr}()")
-
-            # os.remove / os.rename etc.
-            if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
-                if func.value.id == "os" and func.attr in _FORBIDDEN_OS_FUNCS:
-                    hits.append(f"{rel}:{node.lineno}: os.{func.attr}()")
-                if func.value.id == "shutil":
-                    hits.append(f"{rel}:{node.lineno}: shutil.{func.attr}()")
-
-            # json.dump(obj, file)
-            if isinstance(func, ast.Attribute) and func.attr == "dump":
-                if isinstance(func.value, ast.Name) and func.value.id == "json" and len(node.args) >= 2:
-                    hits.append(f"{rel}:{node.lineno}: json.dump(obj, file)")
+            fp = _fingerprint_hit(node.func, node)
+            if fp is not None:
+                enc = _enclosing_func(tree, node.lineno)
+                hits.add((rel, enc, fp))
     return hits
 
 
@@ -114,35 +192,49 @@ def _scan_fileio_imports(layer_dir: Path) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Test A — mutation primitive ratchet
+# Test A — explicit allowlist enforcement
 # ---------------------------------------------------------------------------
 
 
-class TestMutationPrimitiveRatchet:
-    """Mutation primitive count must not exceed baselined ceiling."""
+class TestAllowlistEnforcement:
+    """Non-L2 mutation primitives must exactly match the allowlist."""
 
-    @pytest.mark.parametrize("layer", _TARGET_LAYERS)
-    def test_layer_does_not_exceed_ceiling(self, layer: str):
-        layer_dir = _AGENTIC / layer
-        if not layer_dir.exists():
-            pytest.skip(f"{layer} directory not found")
-        hits = _scan_mutation_primitives(layer_dir)
-        ceiling = _CEILING[layer]
-        assert len(hits) <= ceiling, (
-            f"{layer} has {len(hits)} mutation primitives, "
-            f"exceeding ceiling of {ceiling}.\n"
-            f"New violations:\n" + "\n".join(f"  {h}" for h in hits[:20])
-        )
-
-    def test_total_does_not_exceed_aggregate_ceiling(self):
-        total = 0
+    def _collect_all_hits(self) -> set[tuple[str, str, str]]:
+        hits: set[tuple[str, str, str]] = set()
         for layer in _TARGET_LAYERS:
             layer_dir = _AGENTIC / layer
-            if not layer_dir.exists():
-                continue
-            total += len(_scan_mutation_primitives(layer_dir))
-        aggregate = sum(_CEILING.values())
-        assert total <= aggregate, f"Aggregate mutation primitives ({total}) exceed ceiling ({aggregate})"
+            if layer_dir.exists():
+                hits |= _scan_mutation_fingerprints(layer_dir)
+        return hits
+
+    def test_total_hits_equals_seven(self):
+        hits = self._collect_all_hits()
+        assert len(hits) == 7, f"Expected exactly 7 allowlisted hits, got {len(hits)}.\n" + "\n".join(
+            f"  {h}" for h in sorted(hits)
+        )
+
+    def test_every_hit_is_allowlisted(self):
+        hits = self._collect_all_hits()
+        unexpected = hits - _ALLOWLIST
+        assert not unexpected, "Non-allowlisted mutation primitives found:\n" + "\n".join(
+            f"  {u}" for u in sorted(unexpected)
+        )
+
+    def test_every_allowlist_entry_still_exists(self):
+        hits = self._collect_all_hits()
+        missing = _ALLOWLIST - hits
+        assert not missing, (
+            "Allowlisted entries no longer present (update "
+            "_ALLOWLIST if intentionally removed):\n" + "\n".join(f"  {m}" for m in sorted(missing))
+        )
+
+    def test_hits_equal_allowlist_exactly(self):
+        hits = self._collect_all_hits()
+        assert hits == _ALLOWLIST, (
+            "Hits do not match allowlist exactly.\n"
+            f"  Extra: {sorted(hits - _ALLOWLIST)}\n"
+            f"  Missing: {sorted(_ALLOWLIST - hits)}"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -167,38 +259,38 @@ class TestNoFileIoImports:
 # ---------------------------------------------------------------------------
 
 
+def _fp(src: str) -> str | None:
+    """Parse single-statement src, return first fingerprint."""
+    tree = ast.parse(src)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            fp = _fingerprint_hit(node.func, node)
+            if fp is not None:
+                return fp
+    return None
+
+
 class TestNegativeRegressionDetectors:
     """Prove the AST detectors catch forbidden patterns."""
 
     def test_detects_open_write(self):
-        src = 'f = open("out.txt", "w")\n'
-        tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert any("open" in h for h in hits)
+        assert _fp('open("out.txt", "w")') is not None
 
     def test_detects_path_write_text(self):
-        src = "from pathlib import Path\nPath('x').write_text('y')\n"
-        tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert any("write_text" in h for h in hits)
+        src = "from pathlib import Path\nPath('x').write_text('y')"
+        assert _fp(src) is not None
 
     def test_detects_shutil_call(self):
-        src = "import shutil\nshutil.copy2('a', 'b')\n"
-        tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert any("shutil" in h for h in hits)
+        src = "import shutil\nshutil.copy2('a', 'b')"
+        assert _fp(src) is not None
 
     def test_detects_os_remove(self):
-        src = "import os\nos.remove('file.txt')\n"
-        tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert any("os.remove" in h for h in hits)
+        src = "import os\nos.remove('file.txt')"
+        assert _fp(src) is not None
 
     def test_detects_json_dump_to_file(self):
-        src = "import json\njson.dump({'a': 1}, open('f', 'w'))\n"
-        tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert any("json.dump" in h for h in hits)
+        src = "import json\njson.dump({'a': 1}, open('f', 'w'))"
+        assert _fp(src) is not None
 
     def test_detects_fileio_import(self):
         src = "from agentic_core.L2_execution import FileIo\n"
@@ -207,53 +299,31 @@ class TestNegativeRegressionDetectors:
         assert any("FileIo" in h for h in hits)
 
     def test_ignores_read_only_open(self):
-        src = 'f = open("data.txt", "r")\n'
+        assert _fp('open("data.txt", "r")') is None
+
+    def test_new_open_write_in_l5_is_flagged(self):
+        """A new with-open('w') in L5 must be detected."""
+        src = "def sneaky():\n    with open('x.txt', 'w') as f:\n        f.write('bad')\n"
         tree = ast.parse(src)
-        hits = _scan_mutation_primitives_from_tree(tree, "fake.py")
-        assert not any("open" in h for h in hits)
+        found = False
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                fp = _fingerprint_hit(node.func, node)
+                if fp and "open" in fp:
+                    found = True
+                    break
+        assert found, "Scanner must flag new open('w') in L5"
 
 
 # ---------------------------------------------------------------------------
-# Tree-level helpers for negative tests
+# Tree-level helper for negative tests (FileIo imports)
 # ---------------------------------------------------------------------------
 
 
-def _scan_mutation_primitives_from_tree(tree: ast.Module, filename: str) -> list[str]:
-    """Scan an already-parsed AST for mutation primitives."""
-    hits: list[str] = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        func = node.func
-
-        if isinstance(func, ast.Name) and func.id == "open":
-            mode = None
-            if len(node.args) >= 2:
-                arg = node.args[1]
-                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
-                    mode = arg.value
-            for kw in node.keywords:
-                if kw.arg == "mode" and isinstance(kw.value, ast.Constant):
-                    mode = kw.value.value
-            if mode and any(m in mode for m in ("w", "a", "x")):
-                hits.append(f'{filename}:{node.lineno}: open(..., "{mode}")')
-
-        if isinstance(func, ast.Attribute) and func.attr in _FORBIDDEN_PATH_METHODS:
-            hits.append(f"{filename}:{node.lineno}: .{func.attr}()")
-
-        if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
-            if func.value.id == "os" and func.attr in _FORBIDDEN_OS_FUNCS:
-                hits.append(f"{filename}:{node.lineno}: os.{func.attr}()")
-            if func.value.id == "shutil":
-                hits.append(f"{filename}:{node.lineno}: shutil.{func.attr}()")
-
-        if isinstance(func, ast.Attribute) and func.attr == "dump":
-            if isinstance(func.value, ast.Name) and func.value.id == "json" and len(node.args) >= 2:
-                hits.append(f"{filename}:{node.lineno}: json.dump(obj, file)")
-    return hits
-
-
-def _scan_fileio_imports_from_tree(tree: ast.Module, filename: str) -> list[str]:
+def _scan_fileio_imports_from_tree(
+    tree: ast.Module,
+    filename: str,
+) -> list[str]:
     """Scan an already-parsed AST for FileIo imports."""
     hits: list[str] = []
     for node in ast.walk(tree):

@@ -27,7 +27,6 @@ from __future__ import annotations
 
 import logging
 import re
-import shutil
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -36,6 +35,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     StructureHealingStrategy,
 )
@@ -214,7 +214,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                         new_name,
                         content,
                     )
-                    file_path.write_text(new_content, encoding="utf-8")
+                    _wg.write_text(file_path, new_content, encoding="utf-8")
                     action.applied = True
 
                     Logger.info(f"Renamed class: {class_name} -> {new_name}")
@@ -268,7 +268,7 @@ class StructureHealerAgent(SovereignBaseAgent):
 
         if modified:
             self._backup_file(file_path)
-            file_path.write_text("\n".join(new_lines), encoding="utf-8")
+            _wg.write_text(file_path, "\n".join(new_lines), encoding="utf-8")
 
         self._actions.extend(actions)
         return actions
@@ -332,12 +332,12 @@ class StructureHealerAgent(SovereignBaseAgent):
             return None
 
         backup_dir = self._agent_config.backup_dir
-        backup_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(backup_dir)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_path = backup_dir / f"{file_path.name}.{timestamp}"
 
-        shutil.copy2(file_path, backup_path)
+        _wg.copy_file(file_path, backup_path)
         Logger.info(f"Backed up {file_path} to {backup_path}")
 
         return backup_path

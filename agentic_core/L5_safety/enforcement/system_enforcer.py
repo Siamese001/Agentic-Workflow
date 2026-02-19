@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Phase 5: System Validation Suite — Ultra Zero-Loss Verification
@@ -285,8 +287,7 @@ class SystemValidator:
             "mcp_pct": mcp_pct,
             "pass": (testing_pct >= 80 and healing_pct >= 70 and mcp_pct >= 80 and len(r.regressions) == 0),
         }
-        with open(report_path, "w") as f:
-            json.dump(report_data, f, indent=2)
+        _wg.write_json(report_path, report_data, indent=2)
         Logger.info(f"\n[SAVED] {report_path}")
 
 

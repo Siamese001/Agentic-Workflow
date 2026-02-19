@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """Brief description of functionality and purpose."""
 
@@ -633,8 +634,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                                     "issues": issues,
                                     "validated_at": str(Path(__file__).stat().st_mtime),
                                 }
-                                with open(report_path, "w", encoding="utf-8") as rf:
-                                    json.dump(report, rf, indent=2)
+                                _wg.write_json(report_path, report, indent=2)
                                 violations_fixed += 1
                                 self.logger.info(f"    Generated report: {report_path.name}")
 

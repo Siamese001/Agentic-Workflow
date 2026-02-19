@@ -5,6 +5,7 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 Autonomy Guardian Agent - L0 DNA Integrity Enforcement
@@ -196,7 +197,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
             if "FORBIDDEN_RUNNER_SCRIPT" in reason:
                 if actual_execute:
                     try:
-                        file_path.unlink()
+                        _wg.remove_file(file_path)
                         counts["scripts_purged"] += 1
                     # guardian: allow-silent-swallow
                     except Exception:
@@ -244,7 +245,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         md += "| **TOTAL** | **{Total}** | **{Heal Cap %}** | **** | **{Test %}** | **{Avg CC}** | **{Health}** |\n".format(
             **total_row,
         )
-        report_path.write_text(md, encoding="utf-8")
+        _wg.write_text(report_path, md, encoding="utf-8")
 
     def _generate_dashboard_v2_with_rows(
         self,
@@ -432,8 +433,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
 
                                 # Write back to file
                                 try:
-                                    with open(agent_path, "w", encoding="utf-8") as f:
-                                        f.write("\n".join(lines))
+                                    _wg.open_write(agent_path, "\n".join(lines))
                                     summary["fixed"] += 1
                                     log.info(f"[AutonomyGuardian] ✅ Added heal_repository() to {agent_path}")
                                 # guardian: allow-silent-swallow

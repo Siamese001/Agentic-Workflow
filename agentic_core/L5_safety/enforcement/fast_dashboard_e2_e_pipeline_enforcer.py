@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 FAST DASHBOARD E2E PIPELINE
@@ -113,7 +115,7 @@ class FastDashboardE2EPipeline:
                 new_method_body = "\n".join(lines)
                 new_method = method_sig + docstring + new_method_body + next_section
                 new_content = content[: match.start()] + new_method + content[match.end() :]
-                path.write_text(new_content, encoding="utf-8")
+                _wg.write_text(path, new_content, encoding="utf-8")
 
                 fixed_count += 1
 
@@ -190,7 +192,7 @@ class FastDashboardE2EPipeline:
                     )
                     content = "\n".join(lines)
 
-                path.write_text(content, encoding="utf-8")
+                _wg.write_text(path, content, encoding="utf-8")
                 fixed_count += 1
 
             except Exception:
@@ -229,8 +231,7 @@ class FastDashboardE2EPipeline:
                             updated += 1
 
             # Save updated discovery
-            with open(self.discovery_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+            _wg.write_json(self.discovery_path, data, indent=2)
 
             # Calculate after stats
             after_invocation = sum(1 for a in data if a.get("invocation") == "Yes")

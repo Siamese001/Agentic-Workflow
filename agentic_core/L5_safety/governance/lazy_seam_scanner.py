@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Lazy Seam Scanner - Phase 4 Option A: Thin wrapper over Phase 3B metric.
 
@@ -6,16 +8,16 @@ the same seam universe (44 seams) and scan scope.
 """
 
 import ast
-import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 
 @dataclass
 class LazyUpwardImport:
     """A lazy upward import excluded by function/try guard."""
+
     source_file: Path
     source_layer: int
     target_layer: int
@@ -202,9 +204,9 @@ class LazySeamScanner:
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
-        self.seams: List[Dict[str, Any]] = []
+        self.seams: list[dict[str, Any]] = []
 
-    def scan_codebase(self) -> List[Dict[str, Any]]:
+    def scan_codebase(self) -> list[dict[str, Any]]:
         """Scan codebase using Phase 3B lazy upward import metric."""
         # Get Phase 3B metric results
         agentic_core_path = self.root_path / "agentic_core"
@@ -219,16 +221,12 @@ class LazySeamScanner:
                 "imported_modules": [item.import_statement] if item.import_statement else [],
                 "imported_symbols": [],  # Phase 3B doesn't track symbols separately
                 "reason_code": "TBD",  # Will be filled by classifier
-                "justification": "TBD"  # Will be filled by classifier
+                "justification": "TBD",  # Will be filled by classifier
             }
             self.seams.append(seam_entry)
 
         # Sort deterministically by file_path, function_name, imported_modules
-        self.seams.sort(key=lambda x: (
-            x["file_path"],
-            x["function_name"],
-            x["imported_modules"]
-        ))
+        self.seams.sort(key=lambda x: (x["file_path"], x["function_name"], x["imported_modules"]))
 
         return self.seams
 
@@ -236,11 +234,10 @@ class LazySeamScanner:
         """Export allowlist to JSON file."""
         allowlist = {
             "description": "Lazy Seam Allowlist - Phase 4 Option A (Phase 3B universe)",
-            "seams": self.seams
+            "seams": self.seams,
         }
 
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(allowlist, f, indent=2, ensure_ascii=False)
+        _wg.write_json(output_path, allowlist, indent=2)
 
         print(f"Allowlist exported to: {output_path}")
 

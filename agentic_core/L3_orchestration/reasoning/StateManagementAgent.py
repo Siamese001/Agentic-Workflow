@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 StateManagementAgent - Consolidated L4 State Controller (Phase 5)
 
@@ -25,7 +27,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import shutil
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -165,13 +166,13 @@ class StateManagementAgent(SovereignBaseAgent):
 
     def _ensure_infrastructure(self) -> None:
         """Ensure directories exist and manifest is initialized."""
-        self.memory_root.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.memory_root)
 
         # Create subdirectories
-        (self.memory_root / "conversations").mkdir(exist_ok=True)
-        (self.memory_root / "results").mkdir(exist_ok=True)
-        (self.memory_root / "state").mkdir(exist_ok=True)
-        (self.memory_root / "checkpoints").mkdir(exist_ok=True)
+        _wg.ensure_dir(self.memory_root / "conversations")
+        _wg.ensure_dir(self.memory_root / "results")
+        _wg.ensure_dir(self.memory_root / "state")
+        _wg.ensure_dir(self.memory_root / "checkpoints")
 
         # Initialize manifest if needed
         self.manifest_path = self.memory_root / "manifest.json"
@@ -238,7 +239,7 @@ class StateManagementAgent(SovereignBaseAgent):
                 # Try backup
                 if self.manifest_backup.exists():
                     Logger.info("Attempting to restore from backup...")
-                    shutil.copy2(self.manifest_backup, self.manifest_path)
+                    _wg.copy_file(self.manifest_backup, self.manifest_path)
                     self._load_manifest()
 
     def _save_manifest(self) -> None:
@@ -246,7 +247,7 @@ class StateManagementAgent(SovereignBaseAgent):
         with self._lock:
             # Create backup first
             if self.manifest_path.exists():
-                shutil.copy2(self.manifest_path, self.manifest_backup)
+                _wg.copy_file(self.manifest_path, self.manifest_backup)
 
             data = {
                 "version": "2.0",
@@ -263,8 +264,7 @@ class StateManagementAgent(SovereignBaseAgent):
 
     def _write_manifest_raw(self, data: dict[str, Any]) -> None:
         """Write raw manifest data to disk."""
-        with open(self.manifest_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, default=str)
+        _wg.write_json(self.manifest_path, data, indent=2)
 
     def _read_manifest_raw(self) -> dict[str, Any]:
         """Read raw manifest data from disk."""
@@ -296,9 +296,8 @@ class StateManagementAgent(SovereignBaseAgent):
             file_hash = hashlib.md5(data_json.encode()).hexdigest()
 
             # Write data to disk
-            file_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, default=str)
+            _wg.ensure_dir(file_path.parent)
+            _wg.write_json(file_path, data, indent=2)
 
             # Update manifest
             now = datetime.now()
@@ -374,7 +373,7 @@ class StateManagementAgent(SovereignBaseAgent):
 
             # Delete file
             if file_path.exists():
-                file_path.unlink()
+                _wg.remove_file(file_path)
 
             # Remove from manifest
             del self._manifest[key]
@@ -590,7 +589,7 @@ class StateManagementAgent(SovereignBaseAgent):
 
                 if file_path.exists():
                     cleaned["bytes_freed"] += file_path.stat().st_size
-                    file_path.unlink()
+                    _wg.remove_file(file_path)
                     cleaned["files_deleted"] += 1
 
                 del self._manifest[key]
@@ -699,7 +698,7 @@ class StateManagementAgent(SovereignBaseAgent):
                     # Backup current manifest
                     if self.manifest_path.exists():
                         backup_path = self.manifest_backup
-                        shutil.copy2(self.manifest_path, backup_path)
+                        _wg.copy_file(self.manifest_path, backup_path)
 
                     # Reload manifest from backup or create fresh
                     self._load_manifest()

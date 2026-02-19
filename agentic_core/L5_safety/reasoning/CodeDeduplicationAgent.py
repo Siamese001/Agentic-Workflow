@@ -10,13 +10,13 @@ import ast
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """Brief description of functionality and purpose."""
 import difflib
 
 "Brief description of functionality and purpose."
 import hashlib
-import shutil
 import textwrap
 import warnings
 from collections import defaultdict
@@ -339,7 +339,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
     def _create_shared_utility(self, code: str, func_name: str, project_root: Path) -> Path:
         """Create deduplicated utility in sovereign shared location."""
         utils_dir = project_root / AGENTIC_CORE_DIR / "utils" / "deduplicated"
-        utils_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(utils_dir)
         safe_name = "".join(c if c.isalnum() else "_" for c in func_name.lower())[:40]
         candidate = utils_dir / f"{safe_name}_shared.py"
         counter = 1
@@ -347,7 +347,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             candidate = utils_dir / f"{safe_name}_shared_{counter}.py"
             counter += 1
         header = f"# Auto-extracted shared utility by CodeDeduplicationAgent (fuzzy structural match >= {self.threshold:.0%})\n# Original function: {func_name}\n\n"
-        candidate.write_text(header + textwrap.dedent(code), encoding="utf-8")
+        _wg.write_text(candidate, header + textwrap.dedent(code), encoding="utf-8")
         return candidate
 
     async def auto_extract_duplicates(self, project_root: Path, ctx: Any) -> Any:
@@ -383,9 +383,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                         + replacement
                         + lines[end_line:]
                     )
-                    file_path.write_text("".join(new_lines), encoding="utf-8")
+                    _wg.write_text(file_path, "".join(new_lines), encoding="utf-8")
                     backup_path = file_path.parent / f"{file_path.stem}_backup{file_path.suffix}"
-                    shutil.copy(file_path, backup_path)
+                    _wg.copy_file(file_path, backup_path)
                     print(f"      [✓] Created backup: {backup_path}")
                 except Exception as e:
                     print(f"      [!] Backup failed for {file_path}: {e}")
@@ -588,7 +588,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         try:
             preview = file_path.read_text(encoding="utf-8", errors="ignore")[:2048].lower()
             target_dir = self._get_target_dir_from_content(preview, project_root)
-            target_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target_dir)
             return self._get_unique_path(target_dir, file_path)
         except Exception as e:
             self.errors.append(f"Uniqueness suggestion failed for {file_path}: {e}")
@@ -634,8 +634,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     if p != primary:
                         if not dry_run:
                             backup = p.with_suffix(".bak_identical")
-                            shutil.copy(p, backup)
-                            p.unlink()
+                            _wg.copy_file(p, backup)
+                            _wg.remove_file(p)
                             print(f"      [✓] DELETED identical file: {p} (backup: {backup})")
                             self.consolidated_count += 1
                         else:
@@ -659,8 +659,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                             # Mandatory backup with unique hash suffix to prevent purge collisions
                             content_hash = hashlib.md5(str(p).encode()).hexdigest()[:6]
                             backup = p.with_suffix(f".bak_purge_{content_hash}")
-                            shutil.copy(p, backup)
-                            p.unlink()
+                            _wg.copy_file(p, backup)
+                            _wg.remove_file(p)
                             print(f"      [✓] AGGRESSIVE PURGE: Deleted {p} (Backup: {backup.name})")
                             self.consolidated_count += 1
                         else:
@@ -773,10 +773,9 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
 
                 if execute and not dry_run:
                     # Generate deduplication report
-                    import json
 
                     report_path = self.project_root / "logs" / "deduplication_report.json"
-                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(report_path.parent)
 
                     report = {
                         "scan_date": str(Path(__file__).stat().st_mtime),
@@ -789,8 +788,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                         "note": "Deduplication requires batch processing and manual review",
                     }
 
-                    with open(report_path, "w", encoding="utf-8") as f:
-                        json.dump(report, f, indent=2, default=str)
+                    _wg.write_json(report_path, report, indent=2)
 
                     self.logger.info(f"  Generated deduplication report: {report_path}")
 
@@ -997,7 +995,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 content = file_path.read_text(encoding="utf-8")
                 lines = content.splitlines(keepends=True)
                 new_lines = [line for i, line in enumerate(lines, 1) if i not in lines_to_remove]
-                file_path.write_text("".join(new_lines), encoding="utf-8")
+                _wg.write_text(file_path, "".join(new_lines), encoding="utf-8")
                 results["applied"] = True
             except Exception as e:
                 results["error"] = str(e)

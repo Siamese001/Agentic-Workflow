@@ -12,10 +12,11 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
+
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 
 def _repo_root() -> str:
@@ -76,30 +77,29 @@ def main() -> int:
         backup_debt = os.path.join(tmpdir, "phantom_debt.md")
         # guardian: allow-path-string
         if os.path.isfile(baseline_path):
-            shutil.copy2(baseline_path, backup_baseline)
+            _wg.copy_file(baseline_path, backup_baseline)
         # guardian: allow-path-string
         if os.path.isfile(hash_path):
-            shutil.copy2(hash_path, backup_hash)
+            _wg.copy_file(hash_path, backup_hash)
         # guardian: allow-path-string
         if os.path.isfile(debt_path):
-            shutil.copy2(debt_path, backup_debt)
+            _wg.copy_file(debt_path, backup_debt)
 
         def _restore() -> None:
             """Restore original lock files from backup."""
             # guardian: allow-path-string
             if os.path.isfile(backup_baseline):
-                shutil.copy2(backup_baseline, baseline_path)
+                _wg.copy_file(backup_baseline, baseline_path)
             # guardian: allow-path-string
             if os.path.isfile(backup_hash):
-                shutil.copy2(backup_hash, hash_path)
+                _wg.copy_file(backup_hash, hash_path)
             # guardian: allow-path-string
             if os.path.isfile(backup_debt):
-                shutil.copy2(backup_debt, debt_path)
+                _wg.copy_file(backup_debt, debt_path)
 
         # ── SIM 1: Allowlist mismatch → FAIL, then ack → exit 0 ──
         try:
-            with open(hash_path, "w", encoding="utf-8") as hf:
-                hf.write("TAMPERED_SIM_HASH\n")
+            _wg.open_write(hash_path, "TAMPERED_SIM_HASH\n")
             rc, out = _run_verify()
             sim1_fail = rc != 0 and "MISMATCH" in out
             rc2, out2 = _run_verify("--acknowledge-import-change")
@@ -112,8 +112,7 @@ def main() -> int:
 
         # ── SIM 2: Corrupt baseline → FAIL, then repair → exit 0 ──
         try:
-            with open(baseline_path, "w", encoding="utf-8") as bf:
-                bf.write("NOT VALID JSON")
+            _wg.open_write(baseline_path, "NOT VALID JSON")
             rc, out = _run_verify()
             sim2_fail = rc != 0 and "CORRUPT" in out
             rc2, out2 = _run_verify("--repair-phantom-baseline")
@@ -129,8 +128,7 @@ def main() -> int:
             with open(baseline_path, encoding="utf-8") as bf:
                 data = json.load(bf)
             data[0][0] = "/absolute/path/file.py"
-            with open(baseline_path, "w", encoding="utf-8") as bf:
-                json.dump(data, bf, indent=2, sort_keys=True)
+            _wg.write_json(baseline_path, data, indent=2)
             rc, out = _run_verify()
             passed = rc != 0 and "repo-relative-normalized" in out
             detail = f"rc={rc}, has_guidance={'repo-relative-normalized' in out}"
@@ -152,7 +150,7 @@ def main() -> int:
         finally:
             # guardian: allow-path-string
             if os.path.isfile(syntax_err_path):
-                os.remove(syntax_err_path)
+                _wg.remove_file(syntax_err_path)
             _restore()
 
         # ── SIM 5: Remove one baseline entry → FAIL with Baseline-only ──
@@ -161,8 +159,7 @@ def main() -> int:
                 data = json.load(bf)
             if len(data) > 1:
                 data.pop()
-                with open(baseline_path, "w", encoding="utf-8") as bf:
-                    json.dump(data, bf, indent=2, sort_keys=True)
+                _wg.write_json(baseline_path, data, indent=2)
                 rc, out = _run_verify()
                 has_current_only = "Current-only entries" in out
                 passed = rc != 0 and has_current_only
@@ -179,8 +176,7 @@ def main() -> int:
             with open(baseline_path, encoding="utf-8") as bf:
                 data = json.load(bf)
             data[0][0] = "agentic_core\\L0_routing\\scripts\\fake.py"
-            with open(baseline_path, "w", encoding="utf-8") as bf:
-                json.dump(data, bf, indent=2, sort_keys=True)
+            _wg.write_json(baseline_path, data, indent=2)
             rc, out = _run_verify()
             passed = rc != 0 and "repo-relative-normalized" in out
             detail = f"rc={rc}, canonical_fail={'repo-relative-normalized' in out}"

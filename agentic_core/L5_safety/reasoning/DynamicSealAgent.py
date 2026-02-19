@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 DYNAMIC SEAL AGENT
 ------------------
@@ -247,7 +249,7 @@ class DynamicSealAgent(SovereignBaseAgent):
 
             # Write back if changed
             if content != original_content:
-                file_path.write_text(content, encoding="utf-8")
+                _wg.write_text(file_path, content, encoding="utf-8")
                 return SealResult(
                     file_path=str(file_path),
                     violations_found=violations_found,

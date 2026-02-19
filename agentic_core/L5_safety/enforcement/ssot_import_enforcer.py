@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 SSOT Enforcement Script
@@ -68,7 +70,7 @@ def add_ssot_import(file_path: Path) -> bool:
     lines.insert(insert_idx + 1, SSOT_IMPORT)
 
     new_content = "\n".join(lines)
-    file_path.write_text(new_content, encoding="utf-8")
+    _wg.write_text(file_path, new_content, encoding="utf-8")
     return True
 
 

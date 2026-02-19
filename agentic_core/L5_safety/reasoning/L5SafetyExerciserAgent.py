@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 
 def _get_layer_entry():
     """Lazy load layer_entry to avoid upward import."""
@@ -159,7 +161,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             return "Gravity probe: Skipped (agent not available)"
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_file = Path(tmpdir) / "synthetic_gravity_test.py"
-            temp_file.write_text("import sys\nprint('gravity test')\n")
+            _wg.write_text(temp_file, "import sys\nprint('gravity test')\n")
             try:
                 import_healer = healer_factory()
                 # Note: CodeHealerAgent uses heal_imports() instead of check_gravity()

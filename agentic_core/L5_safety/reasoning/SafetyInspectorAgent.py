@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Constitutional Overseer for validating ActionRequests.
 
 This module provides safety validation for action requests, including:
@@ -422,10 +424,9 @@ class SafetyInspectorAgent(SovereignBaseAgent):
 
                 if execute and not dry_run:
                     # Generate a security report (we don't auto-fix security issues)
-                    import json
 
                     report_path = Path(self.project_root) / "logs" / "security_scan_report.json"
-                    report_path.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(report_path.parent)
 
                     report = {
                         "scan_date": str(Path(__file__).stat().st_mtime),
@@ -441,8 +442,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                         "note": "Security violations require manual review",
                     }
 
-                    with open(report_path, "w", encoding="utf-8") as f:
-                        json.dump(report, f, indent=2)
+                    _wg.write_json(report_path, report, indent=2)
 
                     LOGGER.info(f"  Generated security report: {report_path}")
                     # Note: violations_fixed stays 0 because security issues need manual review

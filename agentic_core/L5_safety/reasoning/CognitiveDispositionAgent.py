@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 [PHASE 15 REFACTOR] Cognitive Disposition Agent.
 STRICT COMPLIANCE: Native Sovereign Capabilities.
@@ -223,8 +225,8 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                         target_path = decision.target_path
                         if target_path:
                             target = Path(target_path)
-                            target.parent.mkdir(parents=True, exist_ok=True)
-                            file_path.rename(target)
+                            _wg.ensure_dir(target.parent)
+                            _wg.rename_path(file_path, target)
                             Logger.info(f"  Moved {path} -> {target_path}")
                             return {
                                 "violations_fixed": 1,

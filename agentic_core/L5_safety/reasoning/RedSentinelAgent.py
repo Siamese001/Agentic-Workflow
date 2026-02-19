@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """RedSentinelAgent - L5 Active Defense & Hostile Input Fuzzing.
 
 This module provides an active defense system that generates hostile inputs
@@ -64,7 +66,7 @@ class RedSentinelAgent(SovereignBaseAgent):
         self.llm_client: Any | None = llm_client
         self.enabled: bool = os.getenv("ENABLE_FUZZ", "false").lower() == "true"
         self.audit_path: Path = Path("observability/audit/fuzz_results.json")
-        self.audit_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.audit_path.parent)
 
     async def fuzz_function(self, func_name: str, func_code: str, file_path: str) -> dict[str, Any]:
         """
@@ -210,8 +212,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             log_data["fuzz_tests"].append(results)
             if len(log_data["fuzz_tests"]) > 1000:
                 log_data["fuzz_tests"] = log_data["fuzz_tests"][-1000:]
-            with open(self.audit_path, "w") as f:
-                json.dump(log_data, f, indent=2)
+            _wg.write_json(self.audit_path, log_data, indent=2)
             LOGGER.info(f"RedSentinelAgent: Logged fuzz results to {self.audit_path}")
         except Exception as e:
             LOGGER.error(f"Failed to log fuzz results: {e}")

@@ -83,9 +83,20 @@ def _count_mutation_primitives(layer_dir: Path) -> list[str]:
                     if kw.arg == "mode" and isinstance(kw.value, ast.Constant):
                         mode = kw.value.value
                 if mode and any(m in mode for m in ("w", "a", "x")):
+                    # Exclude stdout/stderr reconfiguration
+                    if (
+                        node.args
+                        and isinstance(node.args[0], ast.Call)
+                        and isinstance(node.args[0].func, ast.Attribute)
+                        and node.args[0].func.attr == "fileno"
+                    ):
+                        continue
                     hits.append(f'{rel}:{node.lineno}: open(..., "{mode}")')
 
+            # Skip _wg.* calls (routed through L2 write gateway)
             if isinstance(func, ast.Attribute) and func.attr in _FORBIDDEN_PATH_METHODS:
+                if isinstance(func.value, ast.Name) and func.value.id == "_wg":
+                    continue
                 hits.append(f"{rel}:{node.lineno}: .{func.attr}()")
 
             if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):

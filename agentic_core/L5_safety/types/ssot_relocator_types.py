@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 SSOT Relocator - Automated Violation Remediation
 
@@ -96,7 +98,7 @@ class SSOTRelocator:
         # Setup logging
         if log_file is None:
             log_dir = project_root / AGENTIC_CORE_DIR / "L0_routing" / "logs"
-            log_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(log_dir)
             log_file = log_dir / "enforcement_history.log"
 
         self.log_file = log_file
@@ -110,7 +112,7 @@ class SSOTRelocator:
         # Archive root
         self.archive_root = project_root / ARCHIVES_DIR / "unmapped_drift"
         if not dry_run:
-            self.archive_root.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.archive_root)
 
         # Initialize ArchivalGatekeeper for safe file operations
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
@@ -408,7 +410,7 @@ class SSOTRelocator:
             logger.info(f"[DRY-RUN] Would flatten: {result.source} -> {result.target}")
         else:
             try:
-                target.mkdir(parents=True, exist_ok=True)
+                _wg.ensure_dir(target)
 
                 # Move all files from source to target
                 # Final True 20: Use ssot_discovery instead of rglob
@@ -424,7 +426,7 @@ class SSOTRelocator:
                         target_file = target / rel_path.name  # Flatten structure
 
                         if not target_file.exists():
-                            target_file.parent.mkdir(parents=True, exist_ok=True)
+                            _wg.ensure_dir(target_file.parent)
                             # DELEGATION: Use ArchivalGatekeeper for safe move
                             gk_result = self.gatekeeper.safe_move(
                                 item,
@@ -440,7 +442,7 @@ class SSOTRelocator:
 
                 # Remove empty source folder
                 if source.exists() and not any(source.iterdir()):
-                    source.rmdir()
+                    _wg.remove_dir(source)
 
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
@@ -464,7 +466,7 @@ class SSOTRelocator:
         try:
             # Check if directory is empty
             if not any(directory.iterdir()):
-                directory.rmdir()
+                _wg.remove_dir(directory)
                 logger.info(f"Cleaned up empty directory: {directory}")
 
                 # Recursively clean parent

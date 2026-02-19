@@ -24,6 +24,7 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.enforcement.registry_verification import (
     RegistryVerifier,
     VerificationResult,
@@ -379,11 +380,11 @@ class AgentIntegrityReporter:
         if output_path is None:
             output_path = self.project_root / "docs" / "reports" / "agent_integrity_audit.md"
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(output_path.parent)
 
         report_content = self.generate_markdown_report(result)
         assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
-        output_path.write_text(report_content, encoding="utf-8")
+        _wg.write_text(output_path, report_content, encoding="utf-8")
 
         return output_path
 

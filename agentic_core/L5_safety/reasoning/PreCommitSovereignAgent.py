@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 PRE-COMMIT SOVEREIGN AGENT
 --------------------------
@@ -286,7 +288,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             return False
 
         hooks_dir = git_dir / "hooks"
-        hooks_dir.mkdir(exist_ok=True)
+        _wg.ensure_dir(hooks_dir)
 
         hook_path = hooks_dir / "pre-commit"
 
@@ -313,7 +315,7 @@ if __name__ == "__main__":
 """
 
         try:
-            hook_path.write_text(hook_content, encoding="utf-8")
+            _wg.write_text(hook_path, hook_content, encoding="utf-8")
             # Make executable (Unix-like systems)
             if sys.platform != "win32":
                 import os
@@ -344,7 +346,7 @@ if __name__ == "__main__":
             return True
 
         try:
-            hook_path.unlink()
+            _wg.remove_file(hook_path)
             print("Pre-commit hook removed")
             return True
         except Exception as e:

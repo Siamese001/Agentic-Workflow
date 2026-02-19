@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Cache & Temp Governance Guard
@@ -6,7 +8,6 @@ Deterministic read-only scanner for cache/temp directory governance.
 Enforces location constraints and tracked file detection.
 """
 
-import json
 import os
 import subprocess
 from pathlib import Path
@@ -169,12 +170,11 @@ def main():
 
     # Ensure output directory exists
     output_dir = root_path / "artifacts" / "governance"
-    output_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(output_dir)
 
     # Write report
     report_path = output_dir / "cache_guard_report.json"
-    with open(report_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, sort_keys=True)
+    _wg.write_json(report_path, result, indent=2)
 
     print(f"Scan complete. Report written to: {report_path}")
     print(f"Directories scanned: {result['dirs_scanned']}")

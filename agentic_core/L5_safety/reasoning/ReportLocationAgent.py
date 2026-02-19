@@ -22,7 +22,6 @@ SSOT PRINCIPLE:
 from __future__ import annotations
 
 import logging
-import shutil
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -36,6 +35,7 @@ from agentic_core.utils.report_location_validator_types import (
     ReportValidationResult,
 )
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
@@ -153,7 +153,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
     def git_move(self, source: Path, destination: Path) -> bool:
         """Move a file using git mv to preserve history (L5-safe delegation)."""
         try:
-            destination.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(destination.parent)
             from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
                 safe_subprocess_run,
             )
@@ -169,11 +169,11 @@ class ReportLocationAgent(AtomicExecutionMixin):
     def backup_file(self, file_path: Path) -> Path | None:
         """Create a backup of a file before healing."""
         try:
-            self.backup_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.backup_dir)
             rel_path = file_path.relative_to(self.project_root)
             backup_path = self.backup_dir / rel_path
-            backup_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(file_path, backup_path)
+            _wg.ensure_dir(backup_path.parent)
+            _wg.copy_file(file_path, backup_path)
             return backup_path
         except Exception as e:
             Logger.warning(f"[ReportLocationAgent] Backup failed for {file_path}: {e}")
@@ -218,12 +218,12 @@ class ReportLocationAgent(AtomicExecutionMixin):
 
         # Perform the move
         try:
-            destination.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(destination.parent)
 
             if self.is_git_tracked(source):
                 success = self.git_move(source, destination)
             else:
-                shutil.move(str(source), str(destination))
+                _wg.move_path(str(source), str(destination))
                 success = True
 
             if success:

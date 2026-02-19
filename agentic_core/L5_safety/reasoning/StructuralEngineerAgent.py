@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 Structural Engineer Agent - Code Structure Validation
@@ -242,8 +243,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 current_code = mutated_code
                 continue
             try:
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(mutated_code)
+                _wg.open_write(file_path, mutated_code)
                 # guardian: allow-path-string
                 print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return

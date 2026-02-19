@@ -3,6 +3,8 @@
 # Suggested keywords to add in docstring/code: guardrail, healer, orchestrator, prompt, workflow
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -157,7 +159,7 @@ class SovereignHealingEngine:
                 return False
             new_content = await self._generate_fix(content, ViolationType, message)
             if new_content and new_content != content:
-                success = await self.fs_client.write_text(file_path, new_content)
+                success = await _wg.write_text(self.fs_client, file_path, new_content)
                 if success:
                     Logger.info(f"[L0 HEALING] Fixed {ViolationType} in {file_path}")
                     return True
@@ -194,7 +196,7 @@ class SovereignHealingEngine:
                 return False
             content = re.sub(fix["old_import"], fix["new_import"], content)
             content = re.sub(fix["old_usage"], fix["new_usage"], content)
-            return await self.fs_client.write_text(file_path, content)
+            return await _wg.write_text(self.fs_client, file_path, content)
         except Exception as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_import: {e}")
             return False
@@ -223,7 +225,7 @@ class SovereignHealingEngine:
             if fix["new_client"] not in content:
                 content = f"{fix['import_path']}\n{content}"
             content = re.sub(f"{fix['sdk']}\\(.*?\\)", f"{fix['new_client']}", content)
-            return await self.fs_client.write_text(file_path, content)
+            return await _wg.write_text(self.fs_client, file_path, content)
         except Exception as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_llm: {e}")
             return False
@@ -259,7 +261,7 @@ class SovereignHealingEngine:
                 "Path(",
                 f"# TODO: Use {fix['new_client']} for file operations\n# Path(",
             )
-            return await self.fs_client.write_text(file_path, content)
+            return await _wg.write_text(self.fs_client, file_path, content)
         except Exception as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_io: {e}")
             return False

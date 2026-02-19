@@ -21,6 +21,8 @@ import os
 import sys
 from types import MappingProxyType
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # ── Canonical allowlist for _constants.py imports ──
 ALLOWED_MODULES: frozenset[str] = frozenset(
     {
@@ -216,9 +218,8 @@ def main() -> int:
         cur = _allowlist_hash()
         hp = os.path.join(root, "docs", "reports", "plans", "allowlist_hash.txt")
         if not os.path.isfile(hp):
-            os.makedirs(os.path.dirname(hp), exist_ok=True)
-            with open(hp, "w", encoding="utf-8") as hf:
-                hf.write(cur + "\n")
+            _wg.makedirs(os.path.dirname(hp), exist_ok=True)
+            _wg.open_write(hp, cur + "\n")
             print(f"ALLOWLIST HASH INITIALIZED: {cur}")
             return 0
         with open(hp, encoding="utf-8") as hf:
@@ -232,8 +233,7 @@ def main() -> int:
         print("  current allowlist (sorted):")
         for m in sorted(ALLOWED_MODULES):
             print(f"    {m}")
-        with open(hp, "w", encoding="utf-8") as hf:
-            hf.write(cur + "\n")
+        _wg.open_write(hp, cur + "\n")
         print("ALLOWLIST HASH UPDATED")
         print("  Run normal verify to confirm all checks pass")
         return 0
@@ -586,8 +586,7 @@ def main() -> int:
             print("  --repair-phantom-baseline REFUSED — baseline is valid")
             print("    Use --update-phantom-baseline for baseline drift")
             return 1
-        with open(baseline_path, "w", encoding="utf-8") as bf:
-            json.dump(current_baseline, bf, indent=2, sort_keys=True)
+        _wg.write_json(baseline_path, current_baseline, indent=2)
         print(f"  Phantom baseline: REPAIRED ({len(current_baseline)} entries)")
         for entry in current_baseline[:10]:
             print(f"    {entry[0]}:{entry[1]}")
@@ -621,8 +620,7 @@ def main() -> int:
             )
             if not current_only and update_flag:
                 # Only baseline_only: phantoms reduced — safe to update
-                with open(baseline_path, "w", encoding="utf-8") as bf:
-                    json.dump(current_baseline, bf, indent=2, sort_keys=True)
+                _wg.write_json(baseline_path, current_baseline, indent=2)
                 print(f"  Phantom baseline: UPDATED ({len(saved_set)} → {len(current_set_cmp)} entries)")
             elif current_only:
                 print(f"  Phantom baseline: FAIL — {len(current_only)} new phantom(s)")
@@ -632,9 +630,8 @@ def main() -> int:
             else:
                 print("    Run with --update-phantom-baseline to persist reduction")
     elif init_flag:
-        os.makedirs(os.path.dirname(baseline_path), exist_ok=True)
-        with open(baseline_path, "w", encoding="utf-8") as bf:
-            json.dump(current_baseline, bf, indent=2, sort_keys=True)
+        _wg.makedirs(os.path.dirname(baseline_path), exist_ok=True)
+        _wg.write_json(baseline_path, current_baseline, indent=2)
         print(f"  Phantom baseline: INITIALIZED ({len(current_baseline)} entries)")
         print(f"    Wrote: {os.path.relpath(baseline_path, root)}")
     else:
@@ -815,9 +812,8 @@ def main() -> int:
             print("  Allowlist hash: FAIL — run with --acknowledge-import-change")
             failures += 1
     else:
-        os.makedirs(os.path.dirname(hash_path), exist_ok=True)
-        with open(hash_path, "w", encoding="utf-8") as hf:
-            hf.write(current_hash + "\n")
+        _wg.makedirs(os.path.dirname(hash_path), exist_ok=True)
+        _wg.open_write(hash_path, current_hash + "\n")
         print(f"  Allowlist hash: INITIALIZED ({current_hash})")
 
     if not allowlist_violations:
@@ -898,9 +894,8 @@ def main() -> int:
         excerpt = f"`from {mod} import {name}` (line {lineno})"
         debt_lines.append(f"| `{rp}` | `{name}` | {excerpt} | {fix} |")
     debt_lines.append("")
-    os.makedirs(os.path.dirname(debt_path), exist_ok=True)
-    with open(debt_path, "w", encoding="utf-8") as df:
-        df.write("\n".join(debt_lines))
+    _wg.makedirs(os.path.dirname(debt_path), exist_ok=True)
+    _wg.open_write(debt_path, "\n".join(debt_lines))
     baseline_count = len(saved_set) if saved_set is not None else None
     current_count = len(phantom_set)
     print("  Source: PHANTOM_CURRENT_SET (deduplicated current scan)")
@@ -1001,10 +996,9 @@ def main() -> int:
 
         # Emit artifact
         verification_dir = os.path.join(root, "docs", "reports", "verification")
-        os.makedirs(verification_dir, exist_ok=True)
+        _wg.makedirs(verification_dir, exist_ok=True)
         report_path = os.path.join(verification_dir, "enforcement_report.json")
-        with open(report_path, "w", encoding="utf-8") as rf:
-            json.dump(report_json, rf, indent=2, sort_keys=False)
+        _wg.write_json(report_path, report_json, indent=2)
         print(f"  Artifact: {os.path.relpath(report_path, root)}")
 
         passed = report["summary"]["passed"]

@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import logging
 import re
-import shutil
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -31,6 +30,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     LocationHealingStrategy,
 )
@@ -441,7 +441,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             / "location"
             / datetime.now().strftime("%Y%m%d_%H%M%S")
         )
-        backup_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(backup_dir)
         return backup_dir
 
     def _backup_file(self, file_path: Path, backup_dir: Path = None) -> Path:
@@ -451,8 +451,8 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         rel = file_path.relative_to(self.project_root)
         backup_path = backup_dir / rel
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, backup_path)
+        _wg.ensure_dir(backup_path.parent)
+        _wg.copy_file(file_path, backup_path)
         Logger.info(f"[LocationHealerAgent] Backed up: {rel}")
         return backup_path
 
@@ -462,7 +462,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         target = safe_path_join(self.project_root, relative_path)
         if not target.exists():
-            target.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target)
             Logger.info(f"[LocationHealerAgent] Created directory: {target}")
         return target
 
@@ -568,7 +568,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     def _backup_and_write_file(self, file_path: Path, new_content: str) -> None:
         """Backup file and write new content atomically."""
         self._backup_file(file_path)
-        file_path.write_text(new_content, encoding="utf-8")
+        _wg.write_text(file_path, new_content, encoding="utf-8")
         Logger.info(f"[LocationHealerAgent] Updated file: {file_path.relative_to(self.project_root)}")
 
     # ========================================================================
@@ -699,15 +699,15 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if new_content != content:
                     # Backup changed file
                     backup_dir = self._init_backup_dir() / "import_fixes"
-                    backup_dir.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(backup_dir)
                     try:
                         backup_path = backup_dir / py_file.relative_to(self.project_root)
-                        backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(py_file, backup_path)
+                        _wg.ensure_dir(backup_path.parent)
+                        _wg.copy_file(py_file, backup_path)
                     except Exception:
                         pass  # Best effort backup
 
-                    py_file.write_text(new_content, encoding="utf-8")
+                    _wg.write_text(py_file, new_content, encoding="utf-8")
                     touched_files.append(str(py_file.relative_to(self.project_root)))
 
             import_result["import_fix_applied"] = True
@@ -1175,7 +1175,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 # Backup and write
                 self._backup_file(blueprint_path)
-                blueprint_path.write_text(new_content, encoding="utf-8")
+                _wg.write_text(blueprint_path, new_content, encoding="utf-8")
 
                 Logger.info(
                     f"[LocationHealerAgent] Updated SSOT: Added '{new_subfolder}' to {root_folder}/subfolders",
@@ -1423,7 +1423,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if not dry_run:
                     # Backup and write
                     self._backup_file(blueprint_path)
-                    blueprint_path.write_text(new_content, encoding="utf-8")
+                    _wg.write_text(blueprint_path, new_content, encoding="utf-8")
                     Logger.info(
                         f"[LocationHealerAgent] SSOT Updated: Added '{new_subfolder}' to {root_folder}",
                     )
@@ -1688,9 +1688,9 @@ class LocationHealerAgent(SovereignBaseAgent):
         todo = "\n# SOVEREIGN MARKER MISSING - ADD CANON COMPLIANCE COMMENT\n"
         if todo not in content:
             backup_dir = self._init_backup_dir() / "naming_marker"
-            backup_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, backup_dir / path.name)
-            path.write_text(content + todo, encoding="utf-8")
+            _wg.ensure_dir(backup_dir)
+            _wg.copy_file(path, backup_dir / path.name)
+            _wg.write_text(path, content + todo, encoding="utf-8")
 
     def _find_docstring_end(self, lines: list) -> int:
         """Find insertion point after docstring/shebang."""
@@ -2112,12 +2112,12 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                     if new_content != content:
                         backup_dir = self._init_backup_dir() / "deep_import_heal"
-                        backup_dir.mkdir(parents=True, exist_ok=True)
+                        _wg.ensure_dir(backup_dir)
                         backup_path = backup_dir / path.relative_to(self.project_root)
-                        backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(path, backup_path)
+                        _wg.ensure_dir(backup_path.parent)
+                        _wg.copy_file(path, backup_path)
 
-                        path.write_text(new_content, encoding="utf-8")
+                        _wg.write_text(path, new_content, encoding="utf-8")
                         convention_actions.append(
                             {
                                 "type": "IMPORT_CONVENTION_HEAL",
@@ -2331,7 +2331,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     target_dir = self.project_root / target_root
                     if not target_dir.exists():
                         if not dry_run:
-                            target_dir.mkdir(exist_ok=True)
+                            _wg.ensure_dir(target_dir)
 
                     move_res = self.safe_move(file_path, target_path, dry_run=dry_run)
                     action.update(move_res)

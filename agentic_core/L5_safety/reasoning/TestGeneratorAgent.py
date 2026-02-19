@@ -11,6 +11,7 @@ from dataclasses import dataclass
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 TestGeneratorAgent: Automatically creates subatomic tests for agents.
@@ -52,7 +53,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
         """
         super().__init__()
         self.tests_dir: Path = tests_dir or Path("tests/autogen")
-        self.tests_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.tests_dir)
         self._generated_tests: list[dict[str, Any]] = []
         log.info("[L0 TESTING] TestGeneratorAgent initialized")
 
@@ -96,7 +97,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
         test_path = self.tests_dir / test_filename
 
         try:
-            test_path.write_text(test_content, encoding="utf-8")
+            _wg.write_text(test_path, test_content, encoding="utf-8")
         except Exception as e:
             return {"success": False, "error": f"Failed to write test file: {e}"}
 

@@ -3,6 +3,8 @@
 # Suggested keywords to add in docstring/code: guardrail, healer, prompt
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -69,7 +71,7 @@ class autonomous_execution_engine:
     def __init__(self):
         self.running = True
         self.state_path = Path(".canon_memory/execution_state.json")
-        self.state_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.state_path.parent)
 
         # Initialize dependencies
         self.resource_manager = create_proactive_resource_manager()

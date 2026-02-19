@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 FilesystemSSOTReconcilerAgent - FILESYSTEM-LEVEL SSOT RECONCILER
 Territory: agentic_core/L0_routing/scripts/
@@ -56,7 +58,6 @@ DOMAIN-SPECIFIC INTEGRATIONS (SSOT Coordination):
 import ast
 import logging
 import os
-import shutil
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime
@@ -806,7 +807,7 @@ class FilesystemSSOTReconcilerAgent(
         for prop in proposals:
             if prop["action"] == "CREATE_FOLDER":
                 path = Path(prop["target"])
-                path.mkdir(parents=True, exist_ok=True)
+                _wg.ensure_dir(path)
                 applied_logs.append(f"CREATED: {prop['target']}")
                 Logger.info(f"Created folder: {prop['target']}")
 
@@ -815,7 +816,7 @@ class FilesystemSSOTReconcilerAgent(
                 target = Path(prop["target"])
                 if source.exists():
                     # [PHASE 33j] Gatekeeper is Single Point of Approval
-                    target.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(target.parent)
                     gk_result = self.gatekeeper.safe_move(
                         source,
                         target,
@@ -840,7 +841,7 @@ class FilesystemSSOTReconcilerAgent(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_path = self.blueprint_file.parent / f"structure_blueprint_backup_{timestamp}.py"
 
-        shutil.copy2(self.blueprint_file, backup_path)
+        _wg.copy_file(self.blueprint_file, backup_path)
 
         Logger.info(f"Backup created: {backup_path}")
         return backup_path
@@ -1059,7 +1060,7 @@ class FilesystemSSOTReconcilerAgent(
         Args:
             backup_path: Path to backup file to restore from
         """
-        shutil.copy2(backup_path, self.blueprint_file)
+        _wg.copy_file(backup_path, self.blueprint_file)
         Logger.warning(f"Rolled back blueprint to {backup_path}")
         print(f"\n[ROLLBACK] Blueprint restored from backup: {backup_path}")
 

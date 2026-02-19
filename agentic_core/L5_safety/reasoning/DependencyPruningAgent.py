@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Dependency Pruning Agent - Detects and removes unused Python dependencies.
 
 This module provides a batch agent that detects and removes unused Python
@@ -119,7 +121,7 @@ class DependencyPruningAgent(SovereignBaseAgent):
                 new_lines.append(line)
 
         if removed > 0 and not self.dry_run:
-            self.requirements_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+            _wg.write_text(self.requirements_path, "\n".join(new_lines) + "\n", encoding="utf-8")
 
         return {"removed": removed, "file": "requirements.txt"}
 

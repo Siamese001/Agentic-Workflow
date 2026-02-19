@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Lazy Seam Allowlist Reason Classifier - Phase 4.2
 
@@ -6,7 +8,7 @@ Classifies lazy seams into reason categories based on their imports and context.
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 
 class LazySeamClassifier:
@@ -18,19 +20,19 @@ class LazySeamClassifier:
         "D2_ENTRYPOINT_SCRIPT": "CLI/scripts that orchestrate",
         "D3_PLUGIN_REGISTRY_DISPATCH": "Registry/dynamic dispatch boundaries",
         "D4_OBSERVABILITY_INTEGRATION": "Telemetry/probes integration",
-        "D5_SECURITY_SAFETY_ADAPTER": "Policy adapters (boundary-only)"
+        "D5_SECURITY_SAFETY_ADAPTER": "Policy adapters (boundary-only)",
     }
 
     def __init__(self, allowlist_path: Path):
         self.allowlist_path = allowlist_path
         self.allowlist_data = self._load_allowlist()
 
-    def _load_allowlist(self) -> Dict[str, Any]:
+    def _load_allowlist(self) -> dict[str, Any]:
         """Load allowlist from file."""
-        with open(self.allowlist_path, 'r', encoding='utf-8') as f:
+        with open(self.allowlist_path, encoding="utf-8") as f:
             return json.load(f)
 
-    def _classify_seam(self, seam: Dict[str, Any]) -> tuple[str, str]:
+    def _classify_seam(self, seam: dict[str, Any]) -> tuple[str, str]:
         """Classify a single seam and return (reason_code, justification)."""
         file_path = seam["file_path"]
         function_name = seam["function_name"]
@@ -39,79 +41,92 @@ class LazySeamClassifier:
 
         # D1_EXTERNAL_OPTIONAL_DEP: External optional dependencies
         external_deps = {
-            "pinecone", "redis", "torch", "transformers", "openai",
-            "anthropic", "numpy", "pandas", "matplotlib", "plotly"
+            "pinecone",
+            "redis",
+            "torch",
+            "transformers",
+            "openai",
+            "anthropic",
+            "numpy",
+            "pandas",
+            "matplotlib",
+            "plotly",
         }
 
         for module in imported_modules:
             if any(dep in module.lower() for dep in external_deps):
-                return (
-                    "D1_EXTERNAL_OPTIONAL_DEP",
-                    f"Optional external dependency: {module}"
-                )
+                return ("D1_EXTERNAL_OPTIONAL_DEP", f"Optional external dependency: {module}")
 
         for module, symbol in imported_symbols:
             if any(dep in module.lower() for dep in external_deps):
-                return (
-                    "D1_EXTERNAL_OPTIONAL_DEP",
-                    f"Optional external dependency: {module}.{symbol}"
-                )
+                return ("D1_EXTERNAL_OPTIONAL_DEP", f"Optional external dependency: {module}.{symbol}")
 
         # D2_ENTRYPOINT_SCRIPT: Scripts and orchestration
-        if ("scripts" in file_path or
-            "ops_scripts" in file_path or
-            function_name.endswith("_orchestrator") or
-            function_name.endswith("_runner")):
-            return (
-                "D2_ENTRYPOINT_SCRIPT",
-                "Script/orchestration entrypoint with lazy loading"
-            )
+        if (
+            "scripts" in file_path
+            or "ops_scripts" in file_path
+            or function_name.endswith("_orchestrator")
+            or function_name.endswith("_runner")
+        ):
+            return ("D2_ENTRYPOINT_SCRIPT", "Script/orchestration entrypoint with lazy loading")
 
         # D3_PLUGIN_REGISTRY_DISPATCH: Dynamic dispatch and registry
         registry_keywords = {
-            "registry", "dispatch", "factory", "router", "broker",
-            "agent", "sovereign", "mcp", "workflow"
+            "registry",
+            "dispatch",
+            "factory",
+            "router",
+            "broker",
+            "agent",
+            "sovereign",
+            "mcp",
+            "workflow",
         }
 
-        if (any(keyword in function_name.lower() for keyword in registry_keywords) or
-            any(keyword in file_path.lower() for keyword in registry_keywords)):
-            return (
-                "D3_PLUGIN_REGISTRY_DISPATCH",
-                "Plugin registry or dynamic dispatch boundary"
-            )
+        if any(keyword in function_name.lower() for keyword in registry_keywords) or any(
+            keyword in file_path.lower() for keyword in registry_keywords
+        ):
+            return ("D3_PLUGIN_REGISTRY_DISPATCH", "Plugin registry or dynamic dispatch boundary")
 
         # D4_OBSERVABILITY_INTEGRATION: Telemetry and monitoring
         obs_keywords = {
-            "telemetry", "tracing", "metrics", "observability",
-            "monitoring", "logging", "reporting"
+            "telemetry",
+            "tracing",
+            "metrics",
+            "observability",
+            "monitoring",
+            "logging",
+            "reporting",
         }
 
-        if (any(keyword in function_name.lower() for keyword in obs_keywords) or
-            "L6_observability" in file_path):
-            return (
-                "D4_OBSERVABILITY_INTEGRATION",
-                "Observability/telemetry integration point"
-            )
+        if (
+            any(keyword in function_name.lower() for keyword in obs_keywords)
+            or "L6_observability" in file_path
+        ):
+            return ("D4_OBSERVABILITY_INTEGRATION", "Observability/telemetry integration point")
 
         # D5_SECURITY_SAFETY_ADAPTER: Safety and policy adapters
         safety_keywords = {
-            "safety", "security", "validator", "enforcement", "guard",
-            "policy", "archival", "healing", "adapter"
+            "safety",
+            "security",
+            "validator",
+            "enforcement",
+            "guard",
+            "policy",
+            "archival",
+            "healing",
+            "adapter",
         }
 
-        if (any(keyword in function_name.lower() for keyword in safety_keywords) or
-            "L5_safety" in file_path or
-            "enforcement" in file_path):
-            return (
-                "D5_SECURITY_SAFETY_ADAPTER",
-                "Security/safety adapter or policy boundary"
-            )
+        if (
+            any(keyword in function_name.lower() for keyword in safety_keywords)
+            or "L5_safety" in file_path
+            or "enforcement" in file_path
+        ):
+            return ("D5_SECURITY_SAFETY_ADAPTER", "Security/safety adapter or policy boundary")
 
         # Default classification for remaining seams
-        return (
-            "D3_PLUGIN_REGISTRY_DISPATCH",
-            "Dynamic component loading (default classification)"
-        )
+        return ("D3_PLUGIN_REGISTRY_DISPATCH", "Dynamic component loading (default classification)")
 
     def classify_all_seams(self) -> None:
         """Classify all seams in the allowlist."""
@@ -131,8 +146,7 @@ class LazySeamClassifier:
 
     def save_allowlist(self) -> None:
         """Save updated allowlist to file."""
-        with open(self.allowlist_path, 'w', encoding='utf-8') as f:
-            json.dump(self.allowlist_data, f, indent=2, sort_keys=True)
+        _wg.write_json(self.allowlist_path, self.allowlist_data, indent=2)
 
     def print_summary(self) -> None:
         """Print classification summary."""

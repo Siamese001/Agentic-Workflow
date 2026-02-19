@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import os
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -88,7 +90,7 @@ class AdaptiveLearningEngine:
             self.storage_path = Path.cwd() / ".canon_memory" / "healing_patterns.json"
         self.pattern_storage_path = str(self.storage_path)
         self.backup_dir = Path(".canon_memory/backups")
-        self.backup_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.backup_dir)
         self.autonomous_mode = autonomous_mode
         self._improvement_task = None
         self.patterns: dict[int, list[HealingPattern]] = defaultdict(list)
@@ -152,12 +154,11 @@ class AdaptiveLearningEngine:
     def _save_patterns(self):
         """Save learned patterns to storage with versioned rotation (Keep Last 10)."""
         try:
-            os.makedirs(os.path.dirname(self.pattern_storage_path), exist_ok=True)
+            _wg.makedirs(os.path.dirname(self.pattern_storage_path), exist_ok=True)
             if self.storage_path.exists():
                 backup = self.backup_dir / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-                import shutil
 
-                shutil.copy2(self.storage_path, backup)
+                _wg.copy_file(self.storage_path, backup)
                 # Sub-20: Use ssot_discovery instead of glob
                 from agentic_core.utils.ssot_discovery_validator import get_data_files
 
@@ -168,7 +169,7 @@ class AdaptiveLearningEngine:
                     reverse=True,
                 )
                 while len(backups) > 10:
-                    backups[0].unlink()
+                    _wg.remove_file(backups[0])
                     backups.pop(0)
             data = {"patterns": {}, "last_updated": datetime.now().isoformat()}
             for key, patterns in self.patterns.items():
@@ -186,8 +187,7 @@ class AdaptiveLearningEngine:
                     }
                     for p in patterns
                 ]
-            with open(self.pattern_storage_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+            _wg.write_json(self.pattern_storage_path, data, indent=2)
             Logger.debug(f"Saved patterns to {self.pattern_storage_path}")
         except Exception as e:
             Logger.error(f"Failed to save patterns: {e}")

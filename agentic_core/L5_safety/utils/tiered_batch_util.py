@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 [PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.
 
@@ -89,11 +91,8 @@ class TieredBatchProcessor:
     def _save_checkpoint(self) -> None:
         """Save checkpoint to file."""
         try:
-            self.checkpoint_file.parent.mkdir(parents=True, exist_ok=True)
-            self.checkpoint_file.write_text(
-                json.dumps(self.results, indent=2),
-                encoding="utf-8",
-            )
+            _wg.ensure_dir(self.checkpoint_file.parent)
+            _wg.write_text(self.checkpoint_file, json.dumps(self.results, indent=2), encoding="utf-8")
         except Exception as e:
             Logger.error(f"[TIERED] Checkpoint save failed: {e}")
 
@@ -372,7 +371,7 @@ class TieredBatchProcessor:
     def clear_checkpoint(self) -> None:
         """Clear checkpoint and reset."""
         if self.checkpoint_file.exists():
-            self.checkpoint_file.unlink()
+            _wg.remove_file(self.checkpoint_file)
         self.results = {}
         self.stats = {
             "tier1_auto": 0,

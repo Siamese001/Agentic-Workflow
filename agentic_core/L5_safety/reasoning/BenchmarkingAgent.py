@@ -5,6 +5,7 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 BenchmarkingAgent - L3 System Health Specialist
@@ -403,7 +404,7 @@ class BenchmarkingAgent(SovereignBaseAgent):
 
         # Store alert
         alert_file = Path("observability/alerts/performance.json")
-        alert_file.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(alert_file.parent)
 
         try:
             if alert_file.exists():
@@ -418,8 +419,7 @@ class BenchmarkingAgent(SovereignBaseAgent):
             if len(alerts) > 50:
                 alerts = alerts[-50:]
 
-            with open(alert_file, "w") as f:
-                json.dump(alerts, f, indent=2)
+            _wg.write_json(alert_file, alerts, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Failed to save performance alert: {e}")

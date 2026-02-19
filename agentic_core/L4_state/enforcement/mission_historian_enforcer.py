@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 MissionHistorian - L4 State Framework Agent
 Tracks mission execution history and audit trails.
@@ -28,7 +30,7 @@ class MissionHistorian:
         """
         self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
-            self.log_path.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.log_path.parent)
             with open(self.log_path, "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])

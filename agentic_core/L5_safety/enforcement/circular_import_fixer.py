@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Fix circular imports in agentic_core by converting absolute imports to relative imports.
 
@@ -102,8 +104,7 @@ def fix_imports_in_file(
     new_content: Any = "\n".join(modified_lines)
     if new_content != original_content and (not dry_run):
         try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
+            _wg.open_write(file_path, new_content)
         except Exception as e:
             return (0, [f"ERROR writing {file_path}: {e}"])
     num_changes: Any = len(changes)
