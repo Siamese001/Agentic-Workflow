@@ -337,7 +337,7 @@ agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:104:sile
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:139:type_erasure:Type erasure: ToxicDependencyAuditor.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:160:type_erasure:Type erasure: ToxicDependencyAuditor.heal returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:30:magic_configuration:Magic configuration: Hardcoded toxic_threshold=10
-agentic_core/L5_safety/governance/lazy_seam_enforcer.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/governance/lazy_seam_enforcer.py:256:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py:221:type_erasure:Type erasure: AdversarialProbeAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:509:magic_configuration:Magic configuration: Hardcoded max_depth=3
