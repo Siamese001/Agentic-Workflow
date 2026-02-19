@@ -1,44 +1,44 @@
-_refactor_ast.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:172:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_ast.py:246:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:114:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:128:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:203:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_final.py:53:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_final.py:53:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_final.py:97:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_mutations.py:278:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_mutations.py:278:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass2.py:28:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass2.py:28:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass3.py:56:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass3.py:56:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:244:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:25:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_pass4.py:25:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_remaining.py:132:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:178:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:194:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-_refactor_remaining.py:212:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_ast.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_ast.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_ast.py:175:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_ast.py:234:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_ast.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:200:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:219:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_final.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_final.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_final.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_mutations.py:247:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_mutations.py:247:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass2.py:27:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass2.py:27:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass3.py:55:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass3.py:55:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass4.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass4.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass4.py:235:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass4.py:24:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_pass4.py:24:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_remaining.py:141:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_remaining.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_remaining.py:189:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_remaining.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+_refactor_remaining.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 _refactor_remaining.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 _refactor_remaining.py:54:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:120:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:120:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:120:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:133:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:145:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:163:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:163:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:163:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:197:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-_refactor_withopen.py:197:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:121:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:134:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:144:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:161:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:196:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+_refactor_withopen.py:196:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1681:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2715:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -135,13 +135,13 @@ agentic_core/L2_execution/utils/deterministic_cleaner_util.py:84:silent_swallowe
 agentic_core/L2_execution/utils/egress_util.py:67:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/utils/text_similarity_util.py:63:magic_configuration:Magic configuration: Hardcoded threshold=0.9
 agentic_core/L2_execution/utils/tool_registry_util.py:206:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:129:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:175:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:208:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:82:magic_configuration:Magic configuration: Hardcoded execution_interval=3600
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:83:magic_configuration:Magic configuration: Hardcoded priority_threshold=50
-agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:87:magic_configuration:Magic configuration: Hardcoded max_consecutive_failures=5
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:105:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:164:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:197:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:80:magic_configuration:Magic configuration: Hardcoded execution_interval=3600
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:81:magic_configuration:Magic configuration: Hardcoded priority_threshold=50
+agentic_core/L3_orchestration/engines/autonomous_execution_engine.py:85:magic_configuration:Magic configuration: Hardcoded max_consecutive_failures=5
 agentic_core/L3_orchestration/engines/convergence_engine.py:13:magic_configuration:Magic configuration: Hardcoded max_rounds=8
 agentic_core/L3_orchestration/engines/coordinator_capability_orchestrator.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/engines/dag_manager.py:267:magic_configuration:Magic configuration: Hardcoded max_depth=3
@@ -182,10 +182,10 @@ agentic_core/L3_orchestration/types/workflow_loader_types.py:117:silent_swallowe
 agentic_core/L4_state/caching/redis_mcp_client.py:103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/graph_memory_bridge.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/graph_memory_bridge_enforcer.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/mission_historian.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/mission_historian.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/mission_historian_enforcer.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/mission_historian_enforcer.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/mission_historian.py:55:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/mission_historian.py:77:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/mission_historian_enforcer.py:55:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/mission_historian_enforcer.py:77:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/neo4j_store.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/neo4j_store.py:67:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/neo4j_store_enforcer.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -378,7 +378,7 @@ agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:104:sile
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:139:type_erasure:Type erasure: ToxicDependencyAuditor.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:160:type_erasure:Type erasure: ToxicDependencyAuditor.heal returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:30:magic_configuration:Magic configuration: Hardcoded toxic_threshold=10
-agentic_core/L5_safety/governance/lazy_seam_enforcer.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/governance/lazy_seam_enforcer.py:256:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py:221:type_erasure:Type erasure: AdversarialProbeAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:509:magic_configuration:Magic configuration: Hardcoded max_depth=3
@@ -920,6 +920,7 @@ apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String 
 apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/scripts/migration_executor.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/migration_executor.py:177:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/rg_inject_archives.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/rg_json_miner.py:20:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_rg/scripts/rg_json_miner.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/scripts/rg_json_miner.py:284:magic_configuration:Magic configuration: Hardcoded min_length=100

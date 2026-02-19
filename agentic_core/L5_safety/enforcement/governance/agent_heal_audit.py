@@ -1,5 +1,3 @@
-from agentic_core.L2_execution.tools import write_gateway as _wg
-
 #!/usr/bin/env python3
 """
 Agent Healing Audit - Deterministic AST Enumeration
@@ -13,7 +11,6 @@ Phase 1, Wave 1.1: Core audit functionality
 import argparse
 import ast
 import json
-import sys
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -190,7 +187,6 @@ def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(description="Agent Healing Audit - AST Enumeration")
     parser.add_argument("--format", choices=["json", "md"], default="json", help="Output format")
-    parser.add_argument("--out", type=Path, help="Output file path (for markdown format)")
     parser.add_argument("--repo-root", type=Path, default=Path.cwd(), help="Repository root path")
 
     args = parser.parse_args()
@@ -203,12 +199,10 @@ def main():
         json_output = json.dumps(result, indent=2, sort_keys=True)
         print(json_output)
     elif args.format == "md":
-        if not args.out:
-            print("Error: --out required for markdown format", file=sys.stderr)
-            sys.exit(1)
         markdown = generate_markdown_report(result)
-        _wg.write_text(args.out, markdown, encoding="utf-8")
-        print(f"Markdown report generated: {args.out}")
+        import sys  # noqa: PLC0415
+
+        sys.stdout.buffer.write(markdown.encode("utf-8"))
 
 
 def _get_escalation_scenarios_static() -> list[dict[str, Any]]:

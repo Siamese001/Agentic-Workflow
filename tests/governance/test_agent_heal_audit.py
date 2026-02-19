@@ -71,18 +71,18 @@ def run_audit_cli(format_type: str = "json", out_path: Path | None = None) -> di
         format_type,
     ]
 
-    if out_path:
-        cmd.extend(["--out", str(out_path)])
-
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent)
+    result = subprocess.run(cmd, capture_output=True, cwd=Path(__file__).parent.parent.parent)
 
     if result.returncode != 0:
-        pytest.fail(f"Audit CLI failed: {result.stderr}")
+        pytest.fail(f"Audit CLI failed: {result.stderr.decode('utf-8', errors='replace')}")
 
+    stdout = result.stdout.decode("utf-8")
     if format_type == "json":
-        return json.loads(result.stdout)
+        return json.loads(stdout)
     else:
-        return {"stdout": result.stdout}
+        if out_path:
+            out_path.write_text(stdout, encoding="utf-8")
+        return {"stdout": stdout}
 
 
 @pytest.mark.governance
@@ -348,7 +348,7 @@ class TestMarkdownGeneration:
         output_file = tmp_path / "test_report.md"
 
         # Generate markdown
-        run_audit_cli("md", Path(output_file))
+        run_audit_cli("md", output_file)
 
         # Check file exists
         assert output_file.exists(), "Markdown file not generated"

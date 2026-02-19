@@ -392,16 +392,6 @@
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
     },
     {
-      "file_path": "agentic_core\\L3_orchestration\\reasoning\\DagRuntimeInspectorAgent.py",
-      "function_name": "_get_DagRuntimeInspectorAgent",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.InspectorExecutor"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
       "file_path": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent.py",
       "function_name": "_get_CoverageAgent",
       "imported_modules": [
