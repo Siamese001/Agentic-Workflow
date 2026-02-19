@@ -58,6 +58,8 @@ FileType = Literal[
     "CONFIG_WITH_LOGIC",  # CONFIG file containing executable methods (violation)
     "ADAPTER",
     "STRATEGY",
+    "ENFORCER",
+    "SEAM",
     "EXCEPTION",
     "SERVICE",
     "IGNORE",
@@ -259,7 +261,21 @@ def _classify_impl(path: Path) -> FileType:
     is_protocol = any(b == "Protocol" for b in bases) or (
         path.name.startswith("I") and len(path.name) > 2 and path.name[1:2].isupper()
     )
+    # Phase 3: Explicit router => ENGINE (must precede orchestrator check)
+    is_router = path.stem.endswith("_router")
+    if is_router:
+        return "ENGINE"
+
     is_orchestrator = any(p in primary_name for p in ("Orchestrator", "Coordinator", "Pipeline"))
+    if not is_orchestrator:
+        orchestrator_bases = {
+            "Coordinator",
+            "Orchestrator",
+            "WorkflowCoordinator",
+            "L3OrchestrationBase",
+        }
+        if orchestrator_bases & set(bases):
+            is_orchestrator = True
     is_agent = primary_name.endswith("Agent")
     if not is_agent:
         for b in bases:
@@ -267,6 +283,14 @@ def _classify_impl(path: Path) -> FileType:
                 is_agent = True
                 break
     is_strategy = primary_name.endswith("Strategy")
+    is_enforcer = primary_name.endswith(("Enforcer", "Guard", "Guardrail")) or path.stem.endswith(
+        (
+            "_enforcer",
+            "_guard",
+            "_guardrail",
+        )
+    )
+    is_seam = primary_name.endswith("Seam") or "seams" in path.parts
     is_adapter = any(primary_name.endswith(s) for s in ("Adapter", "Wrapper", "Bridge"))
     is_factory = primary_name.endswith("Factory")
 
@@ -318,6 +342,14 @@ def _classify_impl(path: Path) -> FileType:
     # PRIORITY 11: STRATEGY
     if is_strategy:
         return "STRATEGY"
+
+    # PRIORITY 11.5: ENFORCER (policy authority boundary)
+    if is_enforcer:
+        return "ENFORCER"
+
+    # PRIORITY 11.6: SEAM (structural boundary primitive)
+    if is_seam:
+        return "SEAM"
 
     # PRIORITY 12: ADAPTER
     if is_adapter:
