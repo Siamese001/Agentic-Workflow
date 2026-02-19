@@ -25,3 +25,10 @@ def load_ssot_scanner():
     import importlib
 
     return importlib.import_module("agentic_core.L5_safety.enforcement.ssot_scanner")
+
+
+def load_activation_gate():
+    """Load activation_gate from L5 — approved seam for healing approval mediation."""
+    import importlib
+
+    return importlib.import_module("agentic_core.L5_safety.enforcement.activation_gate")
