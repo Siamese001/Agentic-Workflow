@@ -17,6 +17,7 @@ import asyncio
 import hashlib
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
@@ -27,6 +28,22 @@ from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
 Logger = logging.getLogger(__name__)
+
+
+def _load_activation_gate() -> Any:
+    """Load L5 activation gate via approved L0 seam (no static L2→L5 import)."""
+    from agentic_core.L0_routing.seams.safety_enforcement_seam import (
+        load_activation_gate,
+    )
+
+    return load_activation_gate()
+
+
+def _get_file_io() -> Any:
+    """Return a FileIo instance for direct L2.2 writes."""
+    from agentic_core.L2_execution.tools.file_io_impl import FileIo
+
+    return FileIo()
 
 
 class ValidationOrchestrator(SovereignBaseAgent):
@@ -274,8 +291,14 @@ class ValidationOrchestrator(SovereignBaseAgent):
                     previous_failure = "No changes were made to the code."
                     continue
 
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(fixed_code)
+                # Approval via L0 seam — no direct L2→L5 import
+                _gate_mod = _load_activation_gate()
+                trace_id = f"healing:{violation_key}:{Path(file_path).name}:r{round_num}"
+                _gate_mod.assert_activation_allowed(trace_id=trace_id)
+
+                # Direct L2.2 write — no L0 mutation routing
+                _file_io = _get_file_io()
+                _file_io.save_file(fixed_code, file_path)
 
                 res = await self._run_check_func(check_func)
                 if res[0]:
@@ -291,8 +314,9 @@ class ValidationOrchestrator(SovereignBaseAgent):
                 )
                 current_code = fixed_code
 
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(original_code)
+            # Rollback — direct L2.2 write, no L0 routing
+            _file_io = _get_file_io()
+            _file_io.save_file(original_code, file_path)
             print(
                 # guardian: allow-path-string
                 f"      [X] Healing failed after {max_rounds} rounds - reverting {os.path.basename(file_path)}",
