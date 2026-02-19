@@ -2,49 +2,32 @@ from __future__ import annotations
 
 """
 RAGGuardrail - L5 RAG Content Filtering and Reranking
+
+Model library imports (torch, FlagEmbedding) are forbidden in L0-L6.
+Reranker creation is delegated to tools/rag_reranker_shim.py which
+lives outside the layer boundary. The shim result is injected here.
 """
 import asyncio
 import math
 import re
 from typing import Any
 
-# Lazy import torch to avoid import-time side effects
-torch = None
-
-
-def _get_torch():
-    """Lazy load torch to avoid import-time overhead."""
-    global torch
-    if torch is None:
-        import torch as _torch
-
-        torch = _torch
-    return torch
-
 
 class RagGuardrail:
     """Brief description of functionality and purpose."""
 
-    def __init__(self):
-        self.bge_reranker = None
-        self.reranker_available = False
-        try:
-            from FlagEmbedding import FlagReranker
-
-            _torch = _get_torch()
-            device = (
-                "cuda"
-                if _torch.cuda.is_available()
-                else "mps"
-                if _torch.backends.mps.is_available()
-                else "cpu"
-            )
-            model_name = "BAAI/bge-reranker-v2-m3"
-            self.bge_reranker = FlagReranker(model_name, use_fp16=device != "cpu")
-            self.reranker_available = True
-            print(f"   [OK] BGE Reranker armed on {device}: {model_name}")
-        except ImportError:
-            print("   [!] FlagEmbedding not installed — falling back to RRF only")
+    def __init__(
+        self,
+        reranker: Any = None,
+        reranker_available: bool = False,
+        status_message: str = "",
+    ):
+        self.bge_reranker = reranker
+        self.reranker_available = reranker_available
+        if status_message:
+            print(f"   [OK] {status_message}")
+        elif not reranker_available:
+            print("   [!] No reranker injected — falling back to RRF only")
 
     async def rerank_documents(self, documents: list[Any], query: str, top_k: int = 10) -> list[Any]:
         """
