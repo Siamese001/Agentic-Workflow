@@ -199,6 +199,12 @@ class FileClassificationAgent(*BASE_CLASSES):
                     "insufficient_roles": 0,
                 },
                 "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
+                "ROUTER_INVARIANT_FAIL": {
+                    "mutation": 0,
+                    "workflow": 0,
+                    "inheritance": 0,
+                    "structure": 0,
+                },
             },
             "territory_moves": 0,
         }
@@ -1023,6 +1029,12 @@ class FileClassificationAgent(*BASE_CLASSES):
         if is_interface_protocol or is_protocol:
             return "PROTOCOL"
 
+        # 5.9. ROUTER: Phase 3 — explicit router => ENGINE (before orchestrator)
+        is_router = path.stem.endswith("_router") or primary_name.endswith("Router")
+        if is_router:
+            self._validate_router_invariants(tree, path, content)
+            return "ENGINE"
+
         # 6. ORCHESTRATOR: Specialized agent type (must come before AGENT)
         if is_orchestrator:
             result = self._validate_orchestrator_invariants(
@@ -1287,12 +1299,18 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         behavior_signal_count = sum(1 for signal in orchestrator_behavior_signals if signal in content)
 
-        # Router anti-patterns
+        # Router anti-patterns (Phase 3 expanded)
         router_patterns = [
             "select_handler",
             "route_to",
             "dispatch_single",
             "thin_wrapper",
+            "route_request",
+            "get_handler",
+            "resolve_route",
+            "match_route",
+            "dispatch_to",
+            "forward_to",
         ]
         has_router_pattern = any(p in content for p in router_patterns)
 
@@ -1455,6 +1473,83 @@ class FileClassificationAgent(*BASE_CLASSES):
             return
 
         self.stats["violations"]["ORCHESTRATOR_LAYER_MISALIGNMENT"] += 1
+
+    # ========================================================================
+    # ROUTER INVARIANT VALIDATION (Phase 3)
+    # ========================================================================
+
+    def _validate_router_invariants(
+        self,
+        tree: ast.AST,
+        path: Path,
+        content: str,
+    ) -> None:
+        """Report-only invariant validation for router files (ENGINE).
+
+        Checks for anti-patterns that violate router expectations:
+        1. mutation — router should not perform file I/O
+        2. workflow — router should not have multi-stage execution
+        3. inheritance — router should not inherit orchestrator bases
+        4. structure — router should not have >5 functions
+
+        Router remains ENGINE regardless of violations.
+        """
+        if not (
+            path.stem.endswith("_router")
+            or any(n.name.endswith("Router") for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
+        ):
+            return
+
+        inv = self.stats["violations"]["ROUTER_INVARIANT_FAIL"]
+
+        # 1. Mutation check
+        mutation_tokens = [
+            "open(",
+            ".write_text(",
+            ".write_bytes(",
+            "shutil.move(",
+            "shutil.copy(",
+            "os.remove(",
+        ]
+        if any(t in content for t in mutation_tokens):
+            inv["mutation"] += 1
+
+        # 2. Workflow check
+        workflow_tokens = [
+            "run_pipeline",
+            "run_stages",
+            "execute_workflow",
+            "stage_1",
+            "stage_2",
+            "phase_1",
+            "phase_2",
+        ]
+        if sum(1 for t in workflow_tokens if t in content) >= 2:
+            inv["workflow"] += 1
+
+        # 3. Inheritance check
+        orch_bases = {
+            "WorkflowCoordinator",
+            "Coordinator",
+            "L3OrchestrationBase",
+            "IOrchestratorProtocol",
+        }
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                for base in node.bases:
+                    bname = ""
+                    if isinstance(base, ast.Name):
+                        bname = base.id
+                    elif isinstance(base, ast.Attribute):
+                        bname = base.attr
+                    if bname in orch_bases:
+                        inv["inheritance"] += 1
+                        break
+
+        # 4. Structure check
+        func_count = sum(1 for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
+        if func_count > 5:
+            inv["structure"] += 1
 
     # ========================================================================
     # FILENAME TAG CONFLICT DETECTION (RCA hardening)

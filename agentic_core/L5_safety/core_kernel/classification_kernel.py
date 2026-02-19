@@ -261,6 +261,11 @@ def _classify_impl(path: Path) -> FileType:
     is_protocol = any(b == "Protocol" for b in bases) or (
         path.name.startswith("I") and len(path.name) > 2 and path.name[1:2].isupper()
     )
+    # Phase 3: Explicit router => ENGINE (must precede orchestrator check)
+    is_router = path.stem.endswith("_router") or primary_name.endswith("Router")
+    if is_router:
+        return "ENGINE"
+
     is_orchestrator = any(p in primary_name for p in ("Orchestrator", "Coordinator", "Pipeline"))
     if not is_orchestrator:
         orchestrator_bases = {
