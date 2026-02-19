@@ -145,15 +145,16 @@ def generate_proposal(prompt: str, config: dict) -> dict:
 
     Raises:
         TimeoutError: If vLLM request exceeds _DEFAULT_TIMEOUT_SECONDS.
-        RuntimeError: If vLLM request fails.
+        ConnectionError: If vLLM server is unreachable.
+        RuntimeError: If vLLM returns a non-2xx HTTP response.
     """
     config_hash = canonical_hash(config)
     routing_version = config.get("routing_version", "unknown")
 
     try:
         text = _call_vllm(prompt, config)
-    except TimeoutError:
-        raise TimeoutError(f"vLLM request timed out after {_DEFAULT_TIMEOUT_SECONDS}s. No retries.")
+    except (TimeoutError, ConnectionError, RuntimeError):
+        raise
     except Exception as exc:
         raise RuntimeError(f"vLLM request failed: {exc}") from exc
 
@@ -200,8 +201,15 @@ def _call_vllm(prompt: str, config: dict) -> str:
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
             body = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as exc:
+        err_body = ""
+        if exc.fp is not None:
+            err_body = exc.fp.read(512).decode("utf-8", errors="replace")
+        raise RuntimeError(f"vLLM HTTP {exc.code}: {err_body[:256]}") from exc
     except urllib.error.URLError as exc:
-        raise TimeoutError(f"vLLM request failed: {exc}") from exc
+        if isinstance(exc.reason, TimeoutError):
+            raise TimeoutError(f"vLLM request timed out after {timeout}s") from exc
+        raise ConnectionError(f"vLLM connection failed: {exc.reason}") from exc
 
     parsed = json.loads(body)
 
