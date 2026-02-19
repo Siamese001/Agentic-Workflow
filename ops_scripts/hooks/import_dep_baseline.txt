@@ -286,6 +286,7 @@ C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\execute_command_execut
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 17: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 22: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 23: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
@@ -339,7 +340,9 @@ C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engin
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 221: Module 'agentic_core.L3_orchestration.reasoning.RLStrategy' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 222: Module 'agentic_core.L3_orchestration.reasoning.SafetyStrategy' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 39: Module 'agentic_core.utils.ssot_discovery_validator' not found
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 55: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 58: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
+C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\orchestrator_engine.py: Line 58: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\recursive_orchestrator.py: Line 252: Module 'agentic_core.L3_orchestration.reasoning.dag_mutator_agent_config' not found
