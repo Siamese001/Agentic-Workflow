@@ -33,6 +33,10 @@ CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
     r"Strategy\.py$": "STRATEGY",
     r"Adapter\.py$": "ADAPTER",
     r"I[A-Z].*Protocol\.py$": "PROTOCOL",
+    r"_enforcer\.py$": "ENFORCER",
+    r"_guard\.py$": "ENFORCER",
+    r"_guardrail\.py$": "ENFORCER",
+    r"_seam\.py$": "SEAM",
 }
 
 
@@ -117,6 +121,9 @@ SUFFIX_TO_FOLDER: Final[Mapping[str, str]] = {
     "Strategy.py": "enforcement",
     "_guardrail.py": "enforcement",
     "_strategy.py": "enforcement",
+    "_enforcer.py": "enforcement",
+    "_guard.py": "enforcement",
+    "_seam.py": "seams",
 }
 
 
@@ -140,6 +147,8 @@ FILETYPE_TO_FOLDER: Final[Mapping[str, str]] = {
     "ENGINE": "reasoning",
     "GATEWAY": "enforcement",
     "SERVICE": "utils",
+    "ENFORCER": "enforcement",
+    "SEAM": "seams",
 }
 
 
@@ -431,6 +440,10 @@ KNOWN_ARCHITECTURAL_SUFFIXES: Final[Sequence[str]] = [
     "_engine",
     "_gateway",
     "_sensor",
+    "_enforcer",
+    "_guard",
+    "_guardrail",
+    "_seam",
 ]
 
 FORBIDDEN_COMPOUND_PATTERNS: Final[Sequence[str]] = [

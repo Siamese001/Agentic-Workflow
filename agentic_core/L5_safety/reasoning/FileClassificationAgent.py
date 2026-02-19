@@ -189,6 +189,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "CONFIG": 0,
                 "ADAPTER": 0,
                 "STRATEGY": 0,
+                "ENFORCER": 0,
+                "SEAM": 0,
                 "EXCEPTION": 0,
             },
             "territory_moves": 0,
@@ -235,6 +237,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             "FACTORY": ["engines"],
             "GATEWAY": ["engines"],
             "STUB": ["engines", "tools"],
+            "ENFORCER": ["enforcement"],
+            "SEAM": ["seams"],
         }
 
         # APPS VALID FOLDERS: All legitimate top-level subfolders in apps_* directories.
@@ -1029,6 +1033,74 @@ class FileClassificationAgent(*BASE_CLASSES):
         if is_adapter:
             return "ADAPTER"
 
+        # 7.65. ENFORCER: Policy authority boundary (AND-gate backstop)
+        # Primary signal: name-based
+        is_enforcer = primary_name.endswith(("Enforcer", "Guard", "Guardrail")) or path.stem.endswith(
+            (
+                "_enforcer",
+                "_guard",
+                "_guardrail",
+            )
+        )
+        if is_enforcer:
+            # Behavioral backstop: require BOTH control outcome AND policy semantics
+            has_control_outcome = self._detect_enforcer_control_signal(tree, content)
+            policy_tokens = [
+                "policy_",
+                "permission",
+                "budget",
+                "guardian",
+                "enforce_",
+                "violation",
+                "prohibit",
+                "block",
+            ]
+            has_policy_semantics = any(t in content for t in policy_tokens)
+            if has_control_outcome and has_policy_semantics:
+                return "ENFORCER"
+
+        # 7.66. SEAM: Structural boundary primitive
+        is_seam_folder = "seams" in path.parts
+        is_seam_suffix = primary_name.endswith("Seam")
+        has_deferred_import = "importlib" in content and any(
+            f"load_{x}" in content or f"get_{x}" in content
+            for x in ["module", "plugin", "component", "adapter", "impl"]
+        )
+        if is_seam_folder or is_seam_suffix or has_deferred_import:
+            # Disqualifier: >=3 FunctionDef with body >5 stmts (excluding accessors)
+            complex_funcs = 0
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if node.name.startswith(("load_", "get_")):
+                        continue
+                    if len(node.body) > 5:
+                        complex_funcs += 1
+            policy_tokens_seam = [
+                "policy_",
+                "permission",
+                "budget",
+                "guardian",
+                "enforce_",
+                "violation",
+                "prohibit",
+                "block",
+            ]
+            has_policy = any(t in content for t in policy_tokens_seam)
+            io_tokens = [
+                "open(",
+                "write(",
+                "read(",
+                "pathlib",
+                "shutil",
+                "os.remove",
+                "os.rename",
+            ]
+            has_io = any(t in content for t in io_tokens) and "importlib" not in content
+            if complex_funcs >= 3 or has_policy or has_io:
+                pass  # disqualified from SEAM
+            else:
+                return "SEAM"
+
         # 7.7. SERVICE: Singleton services, monitors, collectors → utils/
         # These are infrastructure classes with _instance pattern, record_*/get_metrics methods.
         # MUST come after AGENT (so FooMonitorAgent stays AGENT).
@@ -1086,6 +1158,26 @@ class FileClassificationAgent(*BASE_CLASSES):
         # 14. CLASS: Fallback for any other class
         else:
             return "CLASS"
+
+    def _detect_enforcer_control_signal(self, tree: ast.AST, content: str) -> bool:
+        """Detect control outcome signal for ENFORCER AND-gate.
+
+        Returns True if file contains:
+        - raise *Error inside validate_* or assert_*_allowed
+        - OR function returning (False, "...") pattern
+        """
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name.startswith(("validate_", "assert_")) or node.name.startswith("verify_"):
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Raise):
+                            return True
+                        if isinstance(child, ast.Return) and isinstance(child.value, ast.Tuple):
+                            if len(child.value.elts) >= 2:
+                                first = child.value.elts[0]
+                                if isinstance(first, ast.Constant) and first.value is False:
+                                    return True
+        return False
 
     # ========================================================================
     # ROUTER VS. ORCHESTRATOR DETECTION (Architectural Classification)
