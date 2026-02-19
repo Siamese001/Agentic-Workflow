@@ -10,12 +10,14 @@ Tool ID Prefix: ACT-010
 
 from __future__ import annotations
 
+import csv
 import json
 import logging
 import os
 import shutil
+import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 Logger: Any = logging.getLogger("L2.WriteGateway")
 
@@ -151,6 +153,61 @@ def makedirs(path: str | Path, exist_ok: bool = True) -> str:
     return str(path)
 
 
+def write_json_atomic(
+    path: str | Path,
+    obj: Any,
+    indent: int = 2,
+) -> str:
+    """Serialize obj as JSON via temp file + atomic rename."""
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(
+        dir=str(p.parent),
+        suffix=".tmp",
+        prefix=f".{p.stem}_",
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(obj, f, indent=indent)
+        # Atomic replace (Windows needs target removed first)
+        if os.name == "nt" and p.exists():
+            p.unlink()
+        Path(tmp).replace(p)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+    Logger.debug(f"[WriteGateway] write_json_atomic: {p}")
+    return str(p)
+
+
+def init_csv(
+    path: str | Path,
+    header: Sequence[str],
+) -> str:
+    """Create a CSV file with a header row, creating parent dirs."""
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w", newline="", encoding="utf-8") as f:
+        csv.writer(f).writerow(header)
+    Logger.debug(f"[WriteGateway] init_csv: {p}")
+    return str(p)
+
+
+def append_csv_row(
+    path: str | Path,
+    row: Sequence[str],
+) -> str:
+    """Append a single row to an existing CSV file."""
+    p = Path(path)
+    with open(p, "a", newline="", encoding="utf-8") as f:
+        csv.writer(f).writerow(row)
+    Logger.debug(f"[WriteGateway] append_csv_row: {p}")
+    return str(p)
+
+
 __all__ = [
     "write_text",
     "write_bytes",
@@ -167,4 +224,7 @@ __all__ = [
     "touch_file",
     "copy_tree",
     "makedirs",
+    "write_json_atomic",
+    "init_csv",
+    "append_csv_row",
 ]

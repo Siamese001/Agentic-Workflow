@@ -140,9 +140,10 @@ def main() -> int:
         # guardian: allow-path-string
         syntax_err_path = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
         try:
-            with open(syntax_err_path, "w", encoding="utf-8") as sf:
-                sf.write("from agentic_core.L5_safety.config.structure_blueprint import FAKE\n")
-                sf.write("def broken(\n")
+            _wg.open_write(
+                syntax_err_path,
+                "from agentic_core.L5_safety.config.structure_blueprint import FAKE\ndef broken(\n",
+            )
             rc, out = _run_verify()
             passed = rc != 0 and "SyntaxError" in out and "_tmp_syntax_err_sim" in out
             detail = f"rc={rc}, syntax_detected={'SyntaxError' in out}"

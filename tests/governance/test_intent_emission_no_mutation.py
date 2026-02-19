@@ -29,47 +29,9 @@ _FORBIDDEN_OS_FUNCS = frozenset({"remove", "rename", "unlink", "makedirs", "mkdi
 _FORBIDDEN_PATH_METHODS = frozenset({"write_text", "write_bytes", "mkdir", "unlink", "rename", "rmdir"})
 
 # ---- Explicit allowlist (stable fingerprint: path | func | AST sig) ----
-# Each entry is a frozenset-key of (relative_posix_path, func, fingerprint).
-# To update: change ONLY this set and justify in the commit message.
-_ALLOWLIST: frozenset[tuple[str, str, str]] = frozenset(
-    {
-        (
-            "agentic_core/L3_orchestration/engines/autonomous_execution_engine.py",
-            "save_state",
-            "Call:json.dump(obj,file)",
-        ),
-        (
-            "agentic_core/L3_orchestration/scripts/guardian_heal_orchestrator.py",
-            "_run_dispatcher",
-            "Call:json.dump(obj,file)",
-        ),
-        (
-            "agentic_core/L4_state/enforcement/mission_historian.py",
-            "__init__",
-            "Call:open(mode=w)",
-        ),
-        (
-            "agentic_core/L4_state/enforcement/mission_historian.py",
-            "record",
-            "Call:open(mode=a)",
-        ),
-        (
-            "agentic_core/L4_state/enforcement/mission_historian_enforcer.py",
-            "__init__",
-            "Call:open(mode=w)",
-        ),
-        (
-            "agentic_core/L4_state/enforcement/mission_historian_enforcer.py",
-            "record",
-            "Call:open(mode=a)",
-        ),
-        (
-            "agentic_core/L5_safety/config/structure_blueprint/_simulate_verify.py",
-            "main",
-            "Call:open(mode=w)",
-        ),
-    }
-)
+# TRUE ZERO: All mutation sites now route through _wg (L2 write gateway).
+# This allowlist must remain empty. Any new entry is a regression.
+_ALLOWLIST: frozenset[tuple[str, str, str]] = frozenset()
 
 
 # ---------------------------------------------------------------------------
@@ -207,9 +169,9 @@ class TestAllowlistEnforcement:
                 hits |= _scan_mutation_fingerprints(layer_dir)
         return hits
 
-    def test_total_hits_equals_seven(self):
+    def test_total_hits_equals_zero(self):
         hits = self._collect_all_hits()
-        assert len(hits) == 7, f"Expected exactly 7 allowlisted hits, got {len(hits)}.\n" + "\n".join(
+        assert len(hits) == 0, f"Expected zero mutation hits, got {len(hits)}.\n" + "\n".join(
             f"  {h}" for h in sorted(hits)
         )
 

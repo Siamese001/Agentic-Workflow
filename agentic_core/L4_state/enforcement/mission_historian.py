@@ -30,10 +30,10 @@ class MissionHistorian:
         """
         self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
-            _wg.ensure_dir(self.log_path.parent)
-            with open(self.log_path, "w", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
+            _wg.init_csv(
+                self.log_path,
+                ["timestamp", "file", "action", "source", "destination", "reason"],
+            )
 
     def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
         """
@@ -47,9 +47,10 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
-            with open(self.log_path, "a", newline="", encoding="utf-8") as f:
-                writer: Any = csv.writer(f)
-                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
+            _wg.append_csv_row(
+                self.log_path,
+                [datetime.now().isoformat(), file_name, action, source, destination, reason],
+            )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         except Exception as e:
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")

@@ -84,16 +84,11 @@ def _run_dispatcher(
         run_dispatcher,
     )
 
-    # Write aggregate to temp file for dispatcher
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        suffix=".json",
-        delete=False,
-        encoding="utf-8",
-    ) as f:
-        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-        json.dump(guardian_aggregate, f, indent=2)
-        agg_path = Path(f.name)
+    # Write aggregate to temp file for dispatcher (via L2 gateway)
+    assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+    tmp_dir = write_artifacts_dir or Path(tempfile.gettempdir())
+    agg_path = tmp_dir / f"_guardian_agg_{created_utc}.json"
+    _wg.write_json(agg_path, guardian_aggregate)
 
     try:
         result = run_dispatcher(
