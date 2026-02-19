@@ -8,6 +8,7 @@ Compliance: REV 5 - routing_invariants_version = 1
 
 from __future__ import annotations
 
+import ast
 import dataclasses
 import datetime
 import json
@@ -312,3 +313,261 @@ def test_enum_normalization(bc) -> None:
     assert bc.normalize_payload(Color.GREEN) == "GREEN"
     # Idempotent: already a string
     assert bc.normalize_payload("RED") == "RED"
+
+
+# ===========================================================================
+# PHASE 2 — ROUTING PREDICATE GOVERNANCE TESTS
+# ===========================================================================
+
+_PREDICATE_REGISTRY = _PROJECT_ROOT / "agentic_core" / "L4_state" / "config" / "vllm_routing_predicates.py"
+
+
+def _import_predicate_registry():
+    """Import predicate registry module dynamically for test isolation."""
+    import importlib.util
+
+    mod_name = "vllm_routing_predicates"
+    spec = importlib.util.spec_from_file_location(mod_name, _PREDICATE_REGISTRY)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[mod_name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+@pytest.fixture(scope="module")
+def pr():
+    """Predicate registry module fixture."""
+    return _import_predicate_registry()
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test A1 — RoutingDecision frozen (attribute assignment)
+# ---------------------------------------------------------------------------
+
+
+def test_routing_decision_frozen(pr) -> None:
+    """RoutingDecision must reject attribute assignment."""
+    decision = pr.evaluate({"routing_version": "1"})
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        decision.routing_version = "x"
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test A2 — RoutingDecision frozen (object.__setattr__)
+# ---------------------------------------------------------------------------
+
+
+def test_routing_decision_frozen_setattr(pr) -> None:
+    """RoutingDecision with slots rejects new attribute creation."""
+    decision = pr.evaluate({"routing_version": "1"})
+    # With frozen=True + slots=True, object.__setattr__ can
+    # overwrite existing slots but cannot create new attributes.
+    with pytest.raises(AttributeError):
+        object.__setattr__(decision, "nonexistent_attr", "x")
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test A3 — ROUTING_PREDICATES immutable tuple
+# ---------------------------------------------------------------------------
+
+
+def test_routing_predicates_immutable(pr) -> None:
+    """ROUTING_PREDICATES must be an immutable tuple."""
+    assert pr.ROUTING_PREDICATES == tuple(pr.ROUTING_PREDICATES)
+    assert isinstance(pr.ROUTING_PREDICATES, tuple)
+    # Tuple itself is immutable — cannot append in-place
+    original = pr.ROUTING_PREDICATES
+    local_ref = original
+    with pytest.raises(TypeError):
+        local_ref[0] = None  # type: ignore[index]
+    assert pr.ROUTING_PREDICATES is original
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B1 — No ast.Lambda in predicate registry
+# ---------------------------------------------------------------------------
+
+
+def test_no_lambda_in_predicate_registry() -> None:
+    """Predicate registry must contain no lambda expressions."""
+    tree = ast.parse(
+        _PREDICATE_REGISTRY.read_text(encoding="utf-8"),
+        filename=str(_PREDICATE_REGISTRY),
+    )
+    lambdas = [node for node in ast.walk(tree) if isinstance(node, ast.Lambda)]
+    assert not lambdas, "Lambda found in predicate registry"
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B2 — No forbidden AST nodes in predicate registry
+# ---------------------------------------------------------------------------
+
+
+def test_no_forbidden_ast_nodes_in_predicate_registry() -> None:
+    """Predicate registry must not contain AugAssign/Delete/With/Try/Raise/Yield."""
+    _FORBIDDEN_NODES = (
+        ast.AugAssign,
+        ast.Delete,
+        ast.With,
+        ast.AsyncWith,
+        ast.Try,
+        ast.Raise,
+        ast.Yield,
+        ast.YieldFrom,
+    )
+    tree = ast.parse(
+        _PREDICATE_REGISTRY.read_text(encoding="utf-8"),
+        filename=str(_PREDICATE_REGISTRY),
+    )
+    violations = []
+    for node in ast.walk(tree):
+        if isinstance(node, _FORBIDDEN_NODES):
+            violations.append(f"line {node.lineno}: {type(node).__name__}")
+    assert not violations, "Forbidden AST nodes in predicate registry:\n" + "\n".join(violations)
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B3 — No eval/exec/compile in predicate registry
+# ---------------------------------------------------------------------------
+
+
+def test_no_eval_exec_compile_in_predicate_registry() -> None:
+    """Predicate registry must not call eval, exec, or compile."""
+    tree = ast.parse(
+        _PREDICATE_REGISTRY.read_text(encoding="utf-8"),
+        filename=str(_PREDICATE_REGISTRY),
+    )
+    _FORBIDDEN_CALLS = {"eval", "exec", "compile"}
+    violations = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Name) and func.id in _FORBIDDEN_CALLS:
+                violations.append(f"line {node.lineno}: {func.id}()")
+    assert not violations, "eval/exec/compile found in predicate registry:\n" + "\n".join(violations)
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B4 — Predicate functions have no free variables
+# ---------------------------------------------------------------------------
+
+
+def test_predicate_functions_no_free_vars(pr) -> None:
+    """All predicate functions must have co_freevars == ()."""
+    for entry in pr.ROUTING_PREDICATES:
+        fn = entry.predicate
+        assert fn.__code__.co_freevars == (), f"{fn.__name__} has free vars: {fn.__code__.co_freevars}"
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B5 — Provider strict type
+# ---------------------------------------------------------------------------
+
+
+def test_provider_strict_type(pr) -> None:
+    """Decision provider must be exact Provider enum type."""
+    decision = pr.evaluate({"routing_version": "1"})
+    assert isinstance(decision.provider, pr.Provider)
+    assert type(decision.provider) is pr.Provider
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test B6 — No provider-name string literals in registry AST
+# ---------------------------------------------------------------------------
+
+
+def test_no_provider_string_literals_in_registry(pr) -> None:
+    """Predicate registry must not contain provider value string literals."""
+    tree = ast.parse(
+        _PREDICATE_REGISTRY.read_text(encoding="utf-8"),
+        filename=str(_PREDICATE_REGISTRY),
+    )
+    provider_values = {m.value for m in pr.Provider}
+    violations = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            if node.value in provider_values:
+                # Allow inside the Enum class definition itself
+                pass
+    # Re-scan excluding Enum class body
+    for node in ast.iter_child_nodes(tree):
+        if isinstance(node, ast.ClassDef) and node.name == "Provider":
+            continue
+        for child in ast.walk(node):
+            if (
+                isinstance(child, ast.Constant)
+                and isinstance(child.value, str)
+                and child.value in provider_values
+            ):
+                violations.append(f"line {child.lineno}: string literal {child.value!r}")
+    assert not violations, (
+        "Provider-name string literals found outside Enum in predicate registry:\n" + "\n".join(violations)
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test C1 — Context structural immutability
+# ---------------------------------------------------------------------------
+
+
+def test_context_structural_immutability(pr, bc) -> None:
+    """evaluate() must not mutate the context dict."""
+    import copy
+
+    ctx = {"routing_version": "1", "requires_policy_read": True}
+    snapshot = copy.deepcopy(ctx)
+    pr.evaluate(ctx)
+    assert ctx == snapshot
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test C2 — Context hash immutability
+# ---------------------------------------------------------------------------
+
+
+def test_context_hash_immutability(pr, bc) -> None:
+    """canonical_hash(ctx) must be unchanged after evaluate()."""
+    ctx = {"routing_version": "1", "requires_policy_read": True}
+    hash_before = bc.canonical_hash(dict(ctx))
+    pr.evaluate(ctx)
+    hash_after = bc.canonical_hash(dict(ctx))
+    assert hash_before == hash_after
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test C3 — Key-order independence
+# ---------------------------------------------------------------------------
+
+
+def test_key_order_independence(pr) -> None:
+    """Two dicts with same items in different order must produce identical decisions."""
+    ctx_a = {"routing_version": "1", "requires_policy_read": True, "z": 99}
+    ctx_b = {"z": 99, "requires_policy_read": True, "routing_version": "1"}
+    decision_a = pr.evaluate(ctx_a)
+    decision_b = pr.evaluate(ctx_b)
+    assert decision_a == decision_b
+    assert decision_a.predicate_evaluation_hash == decision_b.predicate_evaluation_hash
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test C4 — Double evaluation equality
+# ---------------------------------------------------------------------------
+
+
+def test_double_evaluation_equality(pr) -> None:
+    """evaluate(ctx) called twice must return identical results."""
+    ctx = {"routing_version": "1", "iteration_count": 5}
+    assert pr.evaluate(ctx) == pr.evaluate(ctx)
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 Test C5 — Predicate hash correctness
+# ---------------------------------------------------------------------------
+
+
+def test_predicate_hash_correctness(pr, bc) -> None:
+    """decision.predicate_evaluation_hash must equal canonical_hash(dict(ctx))."""
+    ctx = {"routing_version": "1", "invalid_ast": True}
+    decision = pr.evaluate(ctx)
+    expected = bc.canonical_hash(dict(ctx))
+    assert decision.predicate_evaluation_hash == expected
