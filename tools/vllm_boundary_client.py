@@ -13,12 +13,18 @@ import datetime as _dt
 import hashlib
 import json
 import math
+import os
+import urllib.error
+import urllib.request
 from dataclasses import asdict, is_dataclass
 from decimal import Decimal
 from enum import Enum
 from typing import Any
 
 _DEFAULT_TIMEOUT_SECONDS = 30  # guardian: allow-magic_configuration
+
+VLLM_BASE_URL = os.getenv("VLLM_BASE_URL", "http://localhost:8000/v1")
+VLLM_MODEL_NAME = os.getenv("VLLM_MODEL_NAME", "local-model")
 
 
 def normalize_payload(payload: Any) -> Any:
@@ -159,13 +165,45 @@ def generate_proposal(prompt: str, config: dict) -> dict:
     }
 
 
-def _call_vllm(prompt: str, config: dict) -> str:  # noqa: ARG001
-    """Internal vLLM call. Model imports isolated here.
+def _call_vllm(prompt: str, config: dict) -> str:
+    """Internal vLLM call via OpenAI-compatible HTTP API.
 
-    Only location where vllm/transformers/torch may be imported.
-    No other module in L0-L6 may import these.
+    Sends a single POST to the vLLM chat/completions endpoint.
+    No retries. Deterministic timeout via _DEFAULT_TIMEOUT_SECONDS.
+
+    Environment variables:
+        VLLM_BASE_URL:  Base URL (default http://localhost:8000/v1)
+        VLLM_MODEL_NAME: Model identifier (default local-model)
     """
-    # import vllm          # noqa: F401 (uncomment when installed)
-    # import transformers  # noqa: F401 (uncomment when installed)
-    # import torch         # noqa: F401 (uncomment when installed)
-    return f"[vLLM proposal for prompt: {prompt[:50]}]"
+    timeout = _DEFAULT_TIMEOUT_SECONDS
+
+    temperature = config.get("temperature", 0)
+    top_p = config.get("top_p", 1)
+
+    payload = {
+        "model": VLLM_MODEL_NAME,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature,
+        "top_p": top_p,
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+    url = f"{VLLM_BASE_URL}/chat/completions"
+
+    req = urllib.request.Request(  # noqa: S310
+        url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+            body = resp.read().decode("utf-8")
+    except urllib.error.URLError as exc:
+        raise TimeoutError(f"vLLM request failed: {exc}") from exc
+
+    parsed = json.loads(body)
+
+    # OpenAI-compatible response structure
+    return parsed["choices"][0]["message"]["content"]
