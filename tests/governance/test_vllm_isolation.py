@@ -1,14 +1,13 @@
 """vLLM Isolation Governance Tests.
 
-Verifies that L0-L6 layers contain zero model imports (direct or transitive)
+Verifies that L0-L6 layers contain ZERO model imports (direct or transitive)
 and no dynamic bypass vectors. All scanning is pure AST — no module execution.
 
 Scope notes:
-- Model import scan: all L0-L6 files (pre-existing baseline violations
-  are explicitly listed and must not grow).
+- Model import scan: ALL L0-L6 files, no exclusions, no baselines.
 - Dynamic bypass / time-based routing scans: routing decision files only
-  (seams, routing configs, predicates). General infrastructure files
-  legitimately use importlib, datetime, etc.
+  (predicates, routers). General infrastructure files legitimately use
+  importlib, datetime, etc.
 
 Compliance: REV 5 - routing_invariants_version = 1
 """
@@ -35,19 +34,6 @@ _LAYER_ROOTS = [
 ]
 _FORBIDDEN_MODEL_PREFIXES = ("vllm", "transformers", "torch")
 _BOUNDARY_CLIENT_PATH = _PROJECT_ROOT / "tools" / "vllm_boundary_client.py"
-
-# Pre-existing baseline violations that existed before this phase.
-# These lists must NOT grow. Any new entry is a test failure.
-_MODEL_IMPORT_BASELINE = frozenset(
-    {
-        "agentic_core/L5_safety/enforcement/rag_guardrail.py",
-    }
-)
-_TRANSITIVE_IMPORT_BASELINE = frozenset(
-    {
-        "agentic_core/L5_safety/enforcement/rag_guardrail.py",
-    }
-)
 
 # Patterns for routing decision files (predicates, routers).
 # Seams are excluded — they legitimately use importlib for lazy loading.
@@ -156,14 +142,11 @@ def _resolve_transitive_imports(
 def test_no_direct_model_imports_in_layers() -> None:
     """L0-L6 must not directly import vllm, transformers, or torch.
 
-    Pre-existing baseline violations are explicitly listed in
-    _MODEL_IMPORT_BASELINE and must not grow.
+    Zero exclusions. Every .py file under L0-L6 is scanned.
     """
-    new_violations: list[str] = []
+    violations: list[str] = []
     for py_file in _iter_layer_files():
         rel = py_file.relative_to(_PROJECT_ROOT).as_posix()
-        if rel in _MODEL_IMPORT_BASELINE:
-            continue  # pre-existing baseline — must not grow
         try:
             tree = _parse_file(py_file)
         except SyntaxError:
@@ -173,15 +156,13 @@ def test_no_direct_model_imports_in_layers() -> None:
                 for alias in node.names:
                     root = alias.name.split(".")[0]
                     if root in _FORBIDDEN_MODEL_PREFIXES:
-                        new_violations.append(f"{rel}: import {alias.name}")
+                        violations.append(f"{rel}: import {alias.name}")
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     root = node.module.split(".")[0]
                     if root in _FORBIDDEN_MODEL_PREFIXES:
-                        new_violations.append(f"{rel}: from {node.module} import ...")
-    assert not new_violations, "NEW model imports found in L0-L6 (baseline must not grow):\n" + "\n".join(
-        new_violations
-    )
+                        violations.append(f"{rel}: from {node.module} import ...")
+    assert not violations, "Model imports found in L0-L6 (zero allowed):\n" + "\n".join(violations)
 
 
 # ---------------------------------------------------------------------------
@@ -300,15 +281,13 @@ def test_transitive_import_graph_clean() -> None:
     """No L0-L6 file has a transitive import path to model libraries.
 
     Graph is built via pure AST traversal. No modules are executed.
-    Pre-existing baseline violations must not grow.
+    Zero exclusions.
     """
-    new_violations: list[str] = []
+    violations: list[str] = []
     agentic_root = _PROJECT_ROOT / "agentic_core"
 
     for py_file in _iter_layer_files():
         rel = py_file.relative_to(_PROJECT_ROOT).as_posix()
-        if rel in _TRANSITIVE_IMPORT_BASELINE:
-            continue
         try:
             tree = _parse_file(py_file)
         except SyntaxError:
@@ -318,11 +297,9 @@ def test_transitive_import_graph_clean() -> None:
 
         for module_name in all_imports:
             if module_name.startswith(_FORBIDDEN_MODEL_PREFIXES):
-                new_violations.append(f"{rel}: transitive import -> {module_name}")
+                violations.append(f"{rel}: transitive import -> {module_name}")
 
-    assert not new_violations, (
-        "NEW transitive model imports found in L0-L6 (baseline must not grow):\n" + "\n".join(new_violations)
-    )
+    assert not violations, "Transitive model imports found in L0-L6 (zero allowed):\n" + "\n".join(violations)
 
 
 # ---------------------------------------------------------------------------

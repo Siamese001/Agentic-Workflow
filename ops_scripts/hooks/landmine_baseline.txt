@@ -356,7 +356,7 @@ agentic_core/L5_safety/enforcement/process_guard.py:154:silent_swallower:Silent 
 agentic_core/L5_safety/enforcement/process_guard.py:206:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
 agentic_core/L5_safety/enforcement/process_guardrail.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/process_guardrail.py:206:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/enforcement/rag_guardrail.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/rag_guardrail.py:61:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/safe_subprocess_handler.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60.0
 agentic_core/L5_safety/enforcement/safe_subprocess_handler.py:158:magic_configuration:Magic configuration: Hardcoded max_output_chars=2000
 agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60.0
