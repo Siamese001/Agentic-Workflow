@@ -158,6 +158,7 @@ C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_l1_imports_l30\agentic_core\L1
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_l2_imports_l60\agentic_core\L2_execution\test_violation.py: Line 1: Module 'agentic_core.L6_observability.telemetry' not found
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_non_layer_import0\agentic_core\L0_routing\test_allowed.py: Line 1: Module 'agentic_core.utils.helpers' not found
 C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_same_layer_impor0\agentic_core\L3_orchestration\test_allowed.py: Line 1: Module 'agentic_core.L3_orchestration.other_module' not found
+C:\Git\Agentic-Workflow\.pytest_tmp\test_mutation_static_seam_upwa0\agentic_core\L0_routing\seams\loader_seam.py: Line 1: 'Validator' not found in module 'agentic_core.L5_safety.validators'
 C:\Git\Agentic-Workflow\.pytest_tmp\test_upward_import_inside_get_0\agentic_core\L2_execution\good_seam.py: Line 2: 'SomeValidator' not found in module 'agentic_core.L5_safety.validators'
 C:\Git\Agentic-Workflow\.pytest_tmp\test_upward_import_inside_non_0\agentic_core\L2_execution\bad_seam.py: Line 2: 'SomeValidator' not found in module 'agentic_core.L5_safety.validators'
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 26: Module 'agentic_core.discovery' not found
@@ -285,7 +286,7 @@ C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\execute_command_execut
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 17: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 22: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 23: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found

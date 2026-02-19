@@ -76,6 +76,9 @@ _HEAL_TIER_OBSERVER: Callable[[ReasoningTier], None] | None = None
 # Phase 6: Seam for model routing (default None, no SDK/executor imports)
 _HEAL_MODEL_ROUTER: Callable[[ReasoningTier], str] | None = None
 
+# Phase 8: Default LLM caller seam (test patching)
+DEFAULT_HEAL_LLM_CALLER: Callable[[Any], Any] | None = None
+
 
 def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
     """Emit warnings for non-canonical keys in heal_repository return values."""

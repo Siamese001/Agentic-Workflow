@@ -337,6 +337,7 @@ agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:104:sile
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:139:type_erasure:Type erasure: ToxicDependencyAuditor.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:160:type_erasure:Type erasure: ToxicDependencyAuditor.heal returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:30:magic_configuration:Magic configuration: Hardcoded toxic_threshold=10
+agentic_core/L5_safety/governance/lazy_seam_enforcer.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py:221:type_erasure:Type erasure: AdversarialProbeAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:509:magic_configuration:Magic configuration: Hardcoded max_depth=3
@@ -537,6 +538,7 @@ agentic_core/L5_safety/types/safety_types.py:229:silent_swallower:Silent excepti
 agentic_core/L5_safety/types/safety_types.py:235:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L5_safety/types/safety_types.py:246:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/types/security_validation_types.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/types/shift_report.py:19:magic_configuration:Magic configuration: Hardcoded min_sample_size=30
 agentic_core/L5_safety/utils/capability_extractor_util.py:104:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:53:magic_configuration:Magic configuration: Hardcoded checkpoint_interval=10

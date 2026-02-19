@@ -168,6 +168,23 @@ L4_SUBFOLDER_MAP: Final[Mapping[str, Mapping[str, Sequence[str]]]] = {
         "validators": ["tool_validators"],
         "adapters": ["tool_adapters"],
     },
+    "L5_enforcement": {
+        "governance": ["governance_policies", "compliance_rules"],
+        "security": ["security_guards", "access_control"],
+    },
+    "L6_dashboards": {
+        "core": ["dashboard_core"],
+        "css": ["themes", "layouts"],
+        "data": ["json_data", "runtime_data"],
+        "js": {
+            "components": ["ui_components"],
+            "constants": ["js_constants"],
+            "controllers": ["dashboard_controllers"],
+            "renderers": ["chart_renderers"],
+            "utils": ["js_utils"],
+        },
+        "renderers": ["server_renderers"],
+    },
     "prompt_governance": {
         "meta_prompts": {
             "orchestration": ["agents", "flows"],
@@ -204,6 +221,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/L5_safety/enforcement",
         "agentic_core/L5_safety/validators",
         "agentic_core/L5_safety/reasoning",
+        "agentic_core/L5_safety/config",
         "agentic_core/L2_execution/reasoning",
         "agentic_core/L2_execution/tools",
         "agentic_core/L4_state/memory",
@@ -212,6 +230,9 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "agentic_core/prompt_governance/templates",
         "agentic_core/prompt_governance/scripts",
         "agentic_core/prompt_governance/version_registry",
+        "agentic_core/prompt_governance/registry",
+        "agentic_core/prompt_governance/security",
+        "agentic_core/seams/contracts",
     },
 )
 
