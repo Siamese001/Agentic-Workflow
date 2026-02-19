@@ -37,6 +37,8 @@ CLASSIFICATION_SUFFIX_PATTERNS: Final[Mapping[str, str]] = {
     r"_guard\.py$": "ENFORCER",
     r"_guardrail\.py$": "ENFORCER",
     r"_seam\.py$": "SEAM",
+    r"_orchestrator\.py$": "ORCHESTRATOR",
+    r"_coordinator\.py$": "ORCHESTRATOR",
 }
 
 
@@ -124,6 +126,7 @@ SUFFIX_TO_FOLDER: Final[Mapping[str, str]] = {
     "_enforcer.py": "enforcement",
     "_guard.py": "enforcement",
     "_seam.py": "seams",
+    "Coordinator.py": "engines",
 }
 
 
@@ -444,6 +447,7 @@ KNOWN_ARCHITECTURAL_SUFFIXES: Final[Sequence[str]] = [
     "_guard",
     "_guardrail",
     "_seam",
+    "_coordinator",
 ]
 
 FORBIDDEN_COMPOUND_PATTERNS: Final[Sequence[str]] = [

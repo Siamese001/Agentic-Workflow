@@ -192,6 +192,13 @@ class FileClassificationAgent(*BASE_CLASSES):
                 "ENFORCER": 0,
                 "SEAM": 0,
                 "EXCEPTION": 0,
+                "ORCHESTRATOR_INVARIANT_FAIL": {
+                    "mutation_hard": 0,
+                    "mutation_soft": 0,
+                    "thin_wrapper": 0,
+                    "insufficient_roles": 0,
+                },
+                "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
             },
             "territory_moves": 0,
         }
@@ -1018,7 +1025,16 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # 6. ORCHESTRATOR: Specialized agent type (must come before AGENT)
         if is_orchestrator:
-            return "ORCHESTRATOR"
+            result = self._validate_orchestrator_invariants(
+                tree,
+                path,
+                content,
+            )
+            self._validate_orchestrator_layer_alignment(
+                path,
+                result,
+            )
+            return result
 
         # 7. AGENT: Strongest architectural signal — Agent suffix or Agent inheritance
         # MUST come before STRATEGY/ADAPTER/CONFIG/VALIDATOR because a class named
@@ -1189,25 +1205,39 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
 
-        L0 Router characteristics:
-        - Single target selection
-        - Direct pass-through call
-        - Thin CLI wrapper
-        - No multi-stage execution
-        - No intermediate artifact management
-
-        L3 Orchestrator characteristics:
-        - Multi-stage workflow coordination (e.g., guardians → dispatcher → healers)
-        - Manages intermediate artifacts
-        - Controls apply vs dry-run semantics
-        - Defines workflow semantics
-        - Coordinates multiple components
-        - Implements execution policy
-        - Stateful across phases
+        Phase 2 hardened: inheritance signals, broader tokens, multi-class coordinator,
+        relaxed threshold for exact suffix match.
 
         Returns:
             True if file exhibits orchestrator behavior, False if router or neither.
         """
+        # --- Phase 2: Strong inheritance signal (immediate True) ---
+        orchestrator_base_classes = {
+            "WorkflowCoordinator",
+            "Coordinator",
+            "L3OrchestrationBase",
+            "IOrchestratorProtocol",
+        }
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                for base in node.bases:
+                    base_name = ""
+                    if isinstance(base, ast.Name):
+                        base_name = base.id
+                    elif isinstance(base, ast.Attribute):
+                        base_name = base.attr
+                    if base_name in orchestrator_base_classes:
+                        return True
+
+        # --- Phase 2: Multi-class coordinator detection ---
+        coordinator_class_count = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ClassDef) and node.name.endswith("Coordinator")
+        )
+        if coordinator_class_count >= 3:
+            return True
+
         # Name-based detection (primary class name)
         orchestrator_name_patterns = [
             "Orchestrator",
@@ -1217,8 +1247,9 @@ class FileClassificationAgent(*BASE_CLASSES):
             "Pipeline",
         ]
         has_orchestrator_name = any(p in primary_name for p in orchestrator_name_patterns)
+        has_exact_suffix = primary_name.endswith(("Orchestrator", "Coordinator"))
 
-        # Behavioral pattern detection in content
+        # Phase 2: Broadened behavioral pattern detection
         orchestrator_behavior_signals = [
             # Multi-stage execution indicators
             "run_pipeline",
@@ -1243,12 +1274,20 @@ class FileClassificationAgent(*BASE_CLASSES):
             "dry_run_mode",
             "execution_policy",
             "allow_mutation",
+            # Phase 2 additions
+            "run_stages",
+            "execute_workflow",
+            "run_phases",
+            "dispatch_to_agents",
+            "agent_roster",
+            "mission_context",
+            "run_all_guardians",
+            "run_healers",
         ]
 
-        # Count orchestrator behavior signals
         behavior_signal_count = sum(1 for signal in orchestrator_behavior_signals if signal in content)
 
-        # Router anti-patterns (if present, likely NOT an orchestrator)
+        # Router anti-patterns
         router_patterns = [
             "select_handler",
             "route_to",
@@ -1257,14 +1296,14 @@ class FileClassificationAgent(*BASE_CLASSES):
         ]
         has_router_pattern = any(p in content for p in router_patterns)
 
-        # Check for multi-stage function definitions (strong orchestrator signal)
+        # Multi-stage function definitions
         function_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
         stage_functions = [
             f for f in function_nodes if any(stage in f.name.lower() for stage in ["stage", "phase", "step"])
         ]
         has_multi_stage_functions = len(stage_functions) >= 2
 
-        # Check for pipeline/workflow method patterns
+        # Pipeline/workflow method patterns
         pipeline_methods = [
             f
             for f in function_nodes
@@ -1272,16 +1311,10 @@ class FileClassificationAgent(*BASE_CLASSES):
         ]
         has_pipeline_method = len(pipeline_methods) > 0
 
-        # Decision logic:
-        # 1. If in L0_routing/scripts/ with orchestrator name + behavior → likely misplaced orchestrator
-        # 2. If in L3_orchestration/ with orchestrator patterns → definitely orchestrator
-        # 3. If has multi-stage functions + behavior signals → orchestrator
-        # 4. If has orchestrator name but router patterns → router (name is misleading)
-
+        # Decision logic
         is_in_l0_scripts = "L0_routing" in path.parts and "scripts" in path.parts
         is_in_l3 = "L3_orchestration" in path.parts
 
-        # Strong orchestrator signals
         if is_in_l3 and has_orchestrator_name:
             return True
 
@@ -1291,17 +1324,137 @@ class FileClassificationAgent(*BASE_CLASSES):
         if has_pipeline_method and behavior_signal_count >= 2:
             return True
 
-        # Misplaced orchestrator in L0 (architectural violation)
         if is_in_l0_scripts and has_orchestrator_name and behavior_signal_count >= 3:
-            # This is an orchestrator misplaced in L0
             return True
 
-        # Router pattern overrides orchestrator name
         if has_router_pattern and not has_multi_stage_functions:
             return False
 
-        # Default: orchestrator name alone is not sufficient
+        # Phase 2: Relaxed threshold for exact suffix match
+        if has_exact_suffix and behavior_signal_count >= 1:
+            return True
+
         return has_orchestrator_name and behavior_signal_count >= 2
+
+    # ========================================================================
+    # ORCHESTRATOR INVARIANT VALIDATION (Phase 2)
+    # ========================================================================
+
+    def _validate_orchestrator_invariants(self, tree: ast.AST, path: Path, content: str) -> str:
+        """Post-classification invariant validation for ORCHESTRATOR files.
+
+        Checks:
+        1. Role coordination evidence (>=2 distinct role buckets)
+        2. Mutation indicators (hard fail / soft warn)
+        3. Thin wrapper downgrade (<=3 funcs, <=50 LOC, single call path)
+
+        Returns:
+            "ORCHESTRATOR" if invariants pass, "ENGINE" if downgraded.
+        """
+        # --- 1. Role coordination evidence ---
+        role_map = {
+            "reasoning": "AGENT",
+            "engines": "ENGINE",
+            "validators": "VALIDATOR",
+            "enforcement": "ENFORCER",
+            "utils": "UTILITY",
+        }
+        detected_roles: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                module = ""
+                if isinstance(node, ast.ImportFrom) and node.module:
+                    module = node.module
+                for bucket_path, role in role_map.items():
+                    if bucket_path in module:
+                        detected_roles.add(role)
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                for bucket_path, role in role_map.items():
+                    if bucket_path in node.value:
+                        detected_roles.add(role)
+
+        if len(detected_roles) < 2:
+            self.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]["insufficient_roles"] += 1
+            return "ENGINE"
+
+        # --- 2. Mutation indicators ---
+        hard_mutation_patterns = [
+            "open(",
+            '"w")',
+            '"a")',
+            ".write_text(",
+            ".write_bytes(",
+            "save_file(",
+            "write_file(",
+            "shutil.move(",
+            "shutil.copy(",
+            "shutil.rmtree(",
+            "os.remove(",
+            "os.unlink(",
+            ".unlink(",
+            ".rename(",
+        ]
+        soft_mutation_patterns = [
+            "subprocess.run(",
+            "subprocess.call(",
+            "subprocess.Popen(",
+            "apply_",
+            "commit_",
+        ]
+
+        has_hard = any(p in content for p in hard_mutation_patterns)
+        has_soft = any(p in content for p in soft_mutation_patterns)
+
+        if has_hard:
+            self.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]["mutation_hard"] += 1
+            return "ENGINE"
+
+        if has_soft:
+            self.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]["mutation_soft"] += 1
+
+        # --- 3. Thin wrapper downgrade ---
+        func_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+        non_comment_loc = sum(
+            1 for line in content.splitlines() if line.strip() and not line.strip().startswith("#")
+        )
+        if len(func_nodes) <= 3 and non_comment_loc <= 50:
+            call_count = sum(1 for n in ast.walk(tree) if isinstance(n, ast.Call))
+            if call_count <= 5:
+                self.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]["thin_wrapper"] += 1
+                return "ENGINE"
+
+        return "ORCHESTRATOR"
+
+    def _validate_orchestrator_layer_alignment(self, path: Path, file_type: str) -> None:
+        """Report-only: flag ORCHESTRATOR files outside L3_orchestration/.
+
+        Exceptions (no flag):
+        - apps_*/ directories
+        - agentic_core/L5_safety/runners/ (scripts)
+        - knowledge/ (warning-only)
+        - *_enforcer.py files
+        """
+        if file_type != "ORCHESTRATOR":
+            return
+
+        parts = path.parts
+
+        if any(p.startswith("apps_") for p in parts):
+            return
+
+        if "L5_safety" in parts and "runners" in parts:
+            return
+
+        if path.stem.endswith("_enforcer"):
+            return
+
+        if "L3_orchestration" in parts:
+            return
+
+        if "knowledge" in parts:
+            return
+
+        self.stats["violations"]["ORCHESTRATOR_LAYER_MISALIGNMENT"] += 1
 
     # ========================================================================
     # FILENAME TAG CONFLICT DETECTION (RCA hardening)

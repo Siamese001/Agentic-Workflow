@@ -1,0 +1,314 @@
+"""
+Phase 2 — Orchestrator Hardening tests.
+
+Tests exercise FCA classify_file() to verify:
+- Hardened orchestrator detection (inheritance, broader tokens)
+- Invariant validation (role coordination, mutation tiering, thin-wrapper)
+- Layer alignment reporting
+
+Unit tests:
+a) Inherits WorkflowCoordinator => ORCHESTRATOR (if invariants pass)
+b) Thin wrapper => downgraded to ENGINE + thin_wrapper stat
+c) open(...,"w") present => downgraded to ENGINE + mutation_hard stat
+d) subprocess.run present => remains ORCHESTRATOR + mutation_soft stat
+e) ORCHESTRATOR under L2 => layer misalignment stat
+
+Integration mini-slice:
+3 temp files: valid L3 orchestrator, thin wrapper, hard mutation
+"""
+
+import textwrap
+from pathlib import Path
+
+import pytest
+
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+    FileClassificationAgent,
+)
+
+# ================================================================
+# Helpers
+# ================================================================
+
+
+def _write(tmp_path: Path, rel_parts: tuple, stem: str, code: str) -> Path:
+    """Write a .py file under tmp_path/rel_parts/stem.py."""
+    folder = tmp_path
+    for part in rel_parts:
+        folder = folder / part
+    folder.mkdir(parents=True, exist_ok=True)
+    p = folder / f"{stem}.py"
+    p.write_text(textwrap.dedent(code), encoding="utf-8")
+    return p
+
+
+def _make_fca(tmp_path: Path):
+    """Create a minimal FileClassificationAgent for testing."""
+    return FileClassificationAgent(
+        project_root=tmp_path,
+        dry_run=True,
+        validate_only=True,
+    )
+
+
+def _classify_fca(
+    tmp_path: Path,
+    rel_parts: tuple,
+    stem: str,
+    code: str,
+):
+    """Write file, classify via FCA, return (result, fca)."""
+    p = _write(tmp_path, rel_parts, stem, code)
+    fca = _make_fca(tmp_path)
+    result = fca.classify_file(p)
+    return result, fca
+
+
+# ================================================================
+# Shared test content
+# ================================================================
+
+VALID_ORCHESTRATOR_CODE = """\
+    from agentic_core.L3_orchestration.reasoning import SomeAgent
+    from agentic_core.L5_safety.enforcement import SomeEnforcer
+
+    class WorkflowCoordinator:
+        pass
+
+    class ValidationOrchestrator(WorkflowCoordinator):
+        def run_pipeline(self):
+            agent = SomeAgent()
+            enforcer = SomeEnforcer()
+            agent.execute()
+            enforcer.validate_safety(agent)
+            return self.aggregate_result()
+
+        def aggregate_result(self):
+            return {}
+
+        def coordinate(self):
+            pass
+
+        def run_stages(self):
+            pass
+"""
+
+
+# ================================================================
+# Unit Tests
+# ================================================================
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorInheritance:
+    """Phase 2A: Inheritance-based orchestrator detection."""
+
+    def test_inherits_workflow_coordinator(self, tmp_path):
+        """Inherits WorkflowCoordinator => ORCHESTRATOR."""
+        result, _fca = _classify_fca(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "validation_orchestrator",
+            VALID_ORCHESTRATOR_CODE,
+        )
+        assert result == "ORCHESTRATOR", f"Expected ORCHESTRATOR, got {result}"
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorThinWrapper:
+    """Phase 2B: Thin wrapper downgrade."""
+
+    def test_thin_wrapper_downgraded_to_engine(self, tmp_path):
+        """Thin wrapper (<=3 funcs, <=50 LOC) => ENGINE."""
+        code = """\
+            from agentic_core.L3_orchestration.reasoning import R
+            from agentic_core.L5_safety.enforcement import G
+
+            class ThinOrchestrator:
+                def run(self):
+                    return R().execute()
+        """
+        result, fca = _classify_fca(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "thin_orchestrator",
+            code,
+        )
+        assert result == "ENGINE", f"Expected ENGINE (thin wrapper), got {result}"
+        inv = fca.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]
+        assert inv["thin_wrapper"] >= 1, f"thin_wrapper stat should be >= 1, got {inv['thin_wrapper']}"
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorMutationHard:
+    """Phase 2B: Hard mutation downgrade."""
+
+    def test_hard_mutation_downgraded_to_engine(self, tmp_path):
+        """open(...,'w') present => ENGINE + mutation_hard stat."""
+        code = """\
+            from agentic_core.L3_orchestration.reasoning import A
+            from agentic_core.L5_safety.enforcement import G
+
+            class MutatingOrchestrator:
+                def run_pipeline(self):
+                    a = A()
+                    g = G()
+                    a.execute()
+                    g.check()
+                    with open("output.txt", "w") as f:
+                        f.write("result")
+                    return self.aggregate_result()
+
+                def aggregate_result(self):
+                    return {}
+
+                def coordinate(self):
+                    pass
+
+                def run_stages(self):
+                    pass
+        """
+        result, fca = _classify_fca(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "mutating_orchestrator",
+            code,
+        )
+        assert result == "ENGINE", f"Expected ENGINE (hard mutation), got {result}"
+        inv = fca.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]
+        assert inv["mutation_hard"] >= 1, f"mutation_hard should be >= 1, got {inv['mutation_hard']}"
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorMutationSoft:
+    """Phase 2B: Soft mutation warning."""
+
+    def test_soft_mutation_remains_orchestrator(self, tmp_path):
+        """subprocess.run present => ORCHESTRATOR + mutation_soft."""
+        code = """\
+            import subprocess
+            from agentic_core.L3_orchestration.reasoning import A
+            from agentic_core.L5_safety.enforcement import G
+
+            class SubprocessOrchestrator:
+                def run_pipeline(self):
+                    a = A()
+                    g = G()
+                    a.execute()
+                    g.check()
+                    subprocess.run(["echo", "hello"])
+                    return self.aggregate_result()
+
+                def aggregate_result(self):
+                    return {}
+
+                def coordinate(self):
+                    pass
+
+                def run_stages(self):
+                    pass
+        """
+        result, fca = _classify_fca(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "subprocess_orchestrator",
+            code,
+        )
+        assert result == "ORCHESTRATOR", f"Expected ORCHESTRATOR (soft warn), got {result}"
+        inv = fca.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]
+        assert inv["mutation_soft"] >= 1, f"mutation_soft should be >= 1, got {inv['mutation_soft']}"
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorLayerMisalignment:
+    """Phase 2C: Layer alignment reporting."""
+
+    def test_orchestrator_under_l2_flags_misalignment(self, tmp_path):
+        """ORCHESTRATOR under L2 => layer misalignment stat."""
+        result, fca = _classify_fca(
+            tmp_path,
+            ("agentic_core", "L2_execution", "reasoning"),
+            "misplaced_orchestrator",
+            VALID_ORCHESTRATOR_CODE,
+        )
+        assert result == "ORCHESTRATOR", f"Expected ORCHESTRATOR, got {result}"
+        mis = fca.stats["violations"]["ORCHESTRATOR_LAYER_MISALIGNMENT"]
+        assert mis >= 1, "ORCHESTRATOR_LAYER_MISALIGNMENT should be >= 1"
+
+
+# ================================================================
+# Integration Mini-Slice
+# ================================================================
+
+
+@pytest.mark.unit_min_deps
+class TestOrchestratorIntegration:
+    """Integration: 3 temp files with different outcomes."""
+
+    def test_mini_slice(self, tmp_path):
+        """3 files: valid orchestrator, thin wrapper, hard mutation."""
+        fca = _make_fca(tmp_path)
+
+        # 1) Valid L3 orchestrator (2 roles, no mutation)
+        p1 = _write(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "valid_orchestrator",
+            VALID_ORCHESTRATOR_CODE,
+        )
+        r1 = fca.classify_file(p1)
+        assert r1 == "ORCHESTRATOR", f"valid_orchestrator: expected ORCHESTRATOR, got {r1}"
+
+        # 2) Thin wrapper orchestrator
+        p2 = _write(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "thin_wrapper_orchestrator",
+            textwrap.dedent("""\
+                from agentic_core.L3_orchestration.reasoning import R
+                from agentic_core.L5_safety.enforcement import G
+
+                class ThinWrapperOrchestrator:
+                    def run(self):
+                        return R().execute()
+            """),
+        )
+        r2 = fca.classify_file(p2)
+        assert r2 == "ENGINE", f"thin_wrapper: expected ENGINE, got {r2}"
+
+        # 3) Hard mutation orchestrator
+        p3 = _write(
+            tmp_path,
+            ("agentic_core", "L3_orchestration", "reasoning"),
+            "mutation_orchestrator",
+            textwrap.dedent("""\
+                from agentic_core.L3_orchestration.reasoning import A
+                from agentic_core.L5_safety.enforcement import G
+
+                class MutationOrchestrator:
+                    def run_pipeline(self):
+                        a = A()
+                        g = G()
+                        a.execute()
+                        g.check()
+                        with open("out.txt", "w") as f:
+                            f.write("x")
+                        return self.aggregate_result()
+
+                    def aggregate_result(self):
+                        return {}
+
+                    def coordinate(self):
+                        pass
+
+                    def run_stages(self):
+                        pass
+            """),
+        )
+        r3 = fca.classify_file(p3)
+        assert r3 == "ENGINE", f"mutation_orchestrator: expected ENGINE, got {r3}"
+
+        # Verify stats buckets
+        inv = fca.stats["violations"]["ORCHESTRATOR_INVARIANT_FAIL"]
+        assert inv["thin_wrapper"] >= 1, f"thin_wrapper stat: {inv['thin_wrapper']}"
+        assert inv["mutation_hard"] >= 1, f"mutation_hard stat: {inv['mutation_hard']}"

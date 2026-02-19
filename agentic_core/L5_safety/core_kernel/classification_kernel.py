@@ -262,6 +262,15 @@ def _classify_impl(path: Path) -> FileType:
         path.name.startswith("I") and len(path.name) > 2 and path.name[1:2].isupper()
     )
     is_orchestrator = any(p in primary_name for p in ("Orchestrator", "Coordinator", "Pipeline"))
+    if not is_orchestrator:
+        orchestrator_bases = {
+            "Coordinator",
+            "Orchestrator",
+            "WorkflowCoordinator",
+            "L3OrchestrationBase",
+        }
+        if orchestrator_bases & set(bases):
+            is_orchestrator = True
     is_agent = primary_name.endswith("Agent")
     if not is_agent:
         for b in bases:
