@@ -29,6 +29,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root import get_validated_project_root
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 TOOL_ID = "guardian_heal_orchestrator"
 
@@ -83,16 +84,11 @@ def _run_dispatcher(
         run_dispatcher,
     )
 
-    # Write aggregate to temp file for dispatcher
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        suffix=".json",
-        delete=False,
-        encoding="utf-8",
-    ) as f:
-        assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-        json.dump(guardian_aggregate, f, indent=2)
-        agg_path = Path(f.name)
+    # Write aggregate to temp file for dispatcher (via L2 gateway)
+    assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+    tmp_dir = write_artifacts_dir or Path(tempfile.gettempdir())
+    agg_path = tmp_dir / f"_guardian_agg_{created_utc}.json"
+    _wg.write_json(agg_path, guardian_aggregate)
 
     try:
         result = run_dispatcher(
@@ -105,7 +101,7 @@ def _run_dispatcher(
         )
         return result.to_dict()
     finally:
-        agg_path.unlink(missing_ok=True)
+        _wg.remove_file(agg_path)
 
 
 # ---------------------------------------------------------------------------

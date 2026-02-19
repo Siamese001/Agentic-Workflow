@@ -27,7 +27,6 @@ import ast
 import logging
 import os
 import re
-import shutil
 import tempfile
 import threading
 from dataclasses import dataclass, field
@@ -41,6 +40,7 @@ from agentic_core.L5_safety.validators.surgical_cst_healer_mixin import (
 )
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
     HealingStrategy,
@@ -270,7 +270,7 @@ class CodeHealerAgent(
             Logger.critical(f"Atomic write failed for {file_path}: {e}")
             # guardian: allow-path-string
             if os.path.exists(temp_path):
-                os.unlink(temp_path)
+                _wg.remove_file(temp_path)
             return False
 
     def heal_all(self, file_path: Path) -> list[HealingAction]:
@@ -609,12 +609,12 @@ class CodeHealerAgent(
             return None
 
         backup_dir = self._agent_config.backup_dir
-        backup_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(backup_dir)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_path = backup_dir / f"{file_path.name}.{timestamp}"
 
-        shutil.copy2(file_path, backup_path)
+        _wg.copy_file(file_path, backup_path)
         Logger.info(f"Backed up {file_path} to {backup_path}")
 
         return backup_path

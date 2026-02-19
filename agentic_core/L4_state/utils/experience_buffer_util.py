@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 ExperienceBuffer – Sovereign Agent Role Component (Phase 30 – Dec 30, 2025)
 
@@ -52,12 +54,12 @@ class ExperienceBuffer:
         self.Logger = logging.getLogger(f"{__name__}.{self.path.stem}")
 
         # Ensure directory exists
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.path.parent)
 
         # Initialize file if Missing
         if not self.path.exists():
             assert_no_persistent_write("L4", "write_text")  # G-12-1: mutation prohibition guard
-            self.path.write_text("")  # Empty JSONL file
+            _wg.write_text(self.path, "")  # Empty JSONL file
             self.Logger.info(f"Created new experience buffer at {self.path}")
 
     def record(self, entry: dict[str, Any]) -> None:
@@ -69,11 +71,7 @@ class ExperienceBuffer:
         entry["entry_id"] = int(time.time() * 1000000)  # Rough unique ID
 
         # Append to file
-        with self.path.open("a", encoding="utf-8") as f:
-            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(entry, f)
-            f.write("\n")
-
+        _wg.write_json(self.path, entry, indent=2)
         # Enforce max entries (trim oldest)
         self._enforce_size_limit()
 
@@ -97,7 +95,7 @@ class ExperienceBuffer:
             kept = lines[-self.max_entries :]
             try:
                 assert_no_persistent_write("L4", "write_text")  # G-12-1: mutation prohibition guard
-                self.path.write_text("".join(kept), encoding="utf-8")
+                _wg.write_text(self.path, "".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             except Exception as e:
                 self.Logger.error(f"Failed to trim buffer: {e}")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 Storage adapters for different backend types.
@@ -55,7 +56,7 @@ class LocalDiskAdapter:
             base_path: Base directory for storage
         """
         self.base_path = Path(base_path)
-        self.base_path.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.base_path)
         LOGGER.info(f"Local disk adapter initialized at: {self.base_path}")
 
     def _get_path(self: Any, key: str) -> Path:
@@ -90,16 +91,14 @@ class LocalDiskAdapter:
         """
         target_path: Any = self._get_path(key)
         temp_path: Any = target_path.with_suffix(".tmp")
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(temp_path, "wb") as f:
-            f.write(data)
+        _wg.ensure_dir(target_path.parent)
+        _wg.open_write(temp_path, data)
         if metadata:
             meta_path: Any = target_path.with_suffix(".meta.json")
-            with open(meta_path, "w") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(metadata, f)
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            _wg.write_json(meta_path, metadata)
         assert_no_persistent_write("L4", "shutil.mutate")  # G-12-1: mutation prohibition guard
-        shutil.move(str(temp_path), str(target_path))
+        _wg.move_path(str(temp_path), str(target_path))
         checksum: Any = hashlib.md5(data).hexdigest()
         LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")
         return checksum
@@ -149,10 +148,10 @@ class LocalDiskAdapter:
         """
         target_path: Any = self._get_path(key)
         if target_path.exists():
-            target_path.unlink()
+            _wg.remove_file(target_path)
             meta_path: Any = target_path.with_suffix(".meta.json")
             if meta_path.exists():
-                meta_path.unlink()
+                _wg.remove_file(meta_path)
             LOGGER.debug(f"Deleted blob: {key}")
             return True
         return False

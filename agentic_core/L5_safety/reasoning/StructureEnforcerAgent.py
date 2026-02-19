@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 StructureEnforcerAgent - Structural Enforcement
@@ -27,7 +28,6 @@ Features:
 import ast
 import logging
 import re
-import shutil
 import threading
 from dataclasses import dataclass
 from datetime import datetime
@@ -385,12 +385,12 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         if not dry_run:
             # Backup first
             backup_dir = self.project_root / "archives" / "healing_backups" / "naming"
-            backup_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(backup_dir)
             backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            shutil.copy2(file_path, backup_path)
+            _wg.copy_file(file_path, backup_path)
 
             # Write new content
-            file_path.write_text(new_content, encoding="utf-8")
+            _wg.write_text(file_path, new_content, encoding="utf-8")
             result["applied"] = True
             result["backup"] = str(backup_path)
 

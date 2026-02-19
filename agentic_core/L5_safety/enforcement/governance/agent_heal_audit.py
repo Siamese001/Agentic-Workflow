@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Agent Healing Audit - Deterministic AST Enumeration
@@ -205,7 +207,7 @@ def main():
             print("Error: --out required for markdown format", file=sys.stderr)
             sys.exit(1)
         markdown = generate_markdown_report(result)
-        args.out.write_text(markdown, encoding="utf-8")
+        _wg.write_text(args.out, markdown, encoding="utf-8")
         print(f"Markdown report generated: {args.out}")
 
 

@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 AST REDUNDANCY ANALYZER - Sovereign Structural Deduplication
@@ -499,5 +501,5 @@ if __name__ == "__main__":
             for a1, a2, s in results["near_duplicates"]
         ],
     }
-    report_path.write_text(json.dumps(json_data, indent=2))
+    _wg.write_text(report_path, json.dumps(json_data, indent=2))
     print(f"\nJSON report saved to: {report_path}")

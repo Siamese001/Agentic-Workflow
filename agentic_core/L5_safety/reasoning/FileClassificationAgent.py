@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 File: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 Rationale:
@@ -638,7 +640,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 )
                 if purity_violation.get("target_path") and not self.validate_only:
                     target = purity_violation["target_path"]
-                    target.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(target.parent)
                     if self.resolve_collision_and_rename(path, target.name, target_dir=target.parent):
                         if not self.dry_run:
                             self.stats.setdefault("purity_evictions", 0)
@@ -3956,7 +3958,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                             # [SAFETY CHECK] Only delete if byte-identical (True Duplicate)
                             if conflict_path.read_bytes() == live_path.read_bytes():
                                 print(f"  [DELETE] Redundant backup: {filename}")
-                                conflict_path.unlink()
+                                _wg.remove_file(conflict_path)
                                 count += 1
                         # guardian: allow-silent-swallow
                         except Exception as e:
@@ -3974,7 +3976,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             # Replace 'File: .../OldName.py' with 'File: .../NewName.py'
             new_content = content.replace(old_name, new_name)
             if new_content != content:
-                path.write_text(new_content, encoding="utf-8")
+                _wg.write_text(path, new_content, encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception:
             pass
@@ -4028,7 +4030,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     if new_content != content:
                         print(f"  [CONFIG] Updating reference in {path.name}")
                         if not self.dry_run:
-                            path.write_text(new_content, encoding="utf-8")
+                            _wg.write_text(path, new_content, encoding="utf-8")
             # guardian: allow-silent-swallow
             except Exception:
                 continue
@@ -4073,7 +4075,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                 if new_content != content:
                     if not self.dry_run:
-                        path.write_text(new_content, encoding="utf-8")
+                        _wg.write_text(path, new_content, encoding="utf-8")
                     count += 1
             # guardian: allow-silent-swallow
             except Exception as e:
@@ -4123,7 +4125,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
                 if new_content != content:
                     if not self.dry_run:
-                        path.write_text(new_content, encoding="utf-8")
+                        _wg.write_text(path, new_content, encoding="utf-8")
                     count += 1
             # guardian: allow-silent-swallow
             except Exception:
@@ -4172,7 +4174,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # Ensure target directory exists if we are moving
         if target_dir and not target_dir.exists():
-            target_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target_dir)
 
         # [HARDENED] Verify source exists before proceeding
         if not src.exists():
@@ -4217,7 +4219,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     print(f"  [ACTION] DELETE {src.name}")
 
                     # [HARDENED] Atomic delete with verification
-                    src.unlink()
+                    _wg.remove_file(src)
 
                     # [HARDENED] Verify deletion succeeded
                     if src.exists():
@@ -4252,7 +4254,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             temp_path = temp
 
             # Step 1: Move source to temp
-            src.rename(temp)
+            _wg.rename_path(src, temp)
 
             # [HARDENED] Verify temp move succeeded
             if not temp.exists():
@@ -4263,20 +4265,20 @@ class FileClassificationAgent(*BASE_CLASSES):
                 return False
 
             # Step 2: Move temp to destination
-            temp.rename(dest)
+            _wg.rename_path(temp, dest)
 
             # [HARDENED] Verify final rename succeeded
             if not dest.exists():
                 print(f"  [ERROR] Failed to move temp to {dest_name}")
                 # Attempt rollback: restore from temp
                 if temp.exists():
-                    temp.rename(src)
+                    _wg.rename_path(temp, src)
                     print(f"  [ROLLBACK] Restored {src.name} from temp")
                 return False
             if temp.exists():
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
-                    temp.unlink()
+                    _wg.remove_file(temp)
                 # guardian: allow-silent-swallow
                 except Exception:
                     pass  # Best effort cleanup
@@ -5252,7 +5254,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
             # Perform the rename
-            file_path.rename(new_path)
+            _wg.rename_path(file_path, new_path)
             self.logger.info(f"  Renamed {path} -> {new_path}")
 
             return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}

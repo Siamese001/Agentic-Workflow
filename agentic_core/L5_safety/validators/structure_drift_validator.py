@@ -11,6 +11,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
 
@@ -71,9 +73,8 @@ def save_manifest(manifest: dict[str, Any], output_path: Path) -> None:
         manifest: The structure manifest to save
         output_path: Path where to save the manifest
     """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2, sort_keys=True)
+    _wg.ensure_dir(output_path.parent)
+    _wg.write_json(output_path, manifest, indent=2)
 
 
 def load_manifest(manifest_path: Path) -> dict[str, Any]:

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 HierarchyAgent - Unified Hierarchy Management
@@ -25,7 +26,6 @@ LOCATION: agentic_core/L5_safety/enforcement/ (LCD+ SSOT-compliant)
 
 import logging
 import os
-import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -109,7 +109,7 @@ class HierarchyAgent(SovereignBaseAgent):
             self.gatekeeper.set_require_approval(False)
 
         if healing_enabled:
-            self.archive_root.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(self.archive_root)
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -299,8 +299,8 @@ class HierarchyAgent(SovereignBaseAgent):
     def _create_dir_with_init(self, path: Path, results: dict, rel_label: str) -> None:
         """Helper to create directory and touch __init__.py sentinel."""
         try:
-            path.mkdir(parents=True, exist_ok=True)
-            (path / "__init__.py").touch()
+            _wg.ensure_dir(path)
+            _wg.touch_file(path / "__init__.py")
             results["created"].append(rel_label)
             Logger.info(f"   [✓] CREATED: {rel_label}/")
         # guardian: allow-silent-swallow
@@ -450,7 +450,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 category = "unit"  # Default
 
             target_dir = root_path / category
-            target_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target_dir)
             dest = target_dir / py_file.name
 
             if not dest.exists():
@@ -559,7 +559,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
 
             final_target = target_path / target_territory_l3
-            final_target.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(final_target)
 
             dest = final_target / py_file.name
             if not dest.exists():
@@ -685,7 +685,7 @@ class HierarchyAgent(SovereignBaseAgent):
             if not target_territory_l3:
                 target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
             target_path = layer_l2_path / target_territory_l3
-            target_path.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target_path)
 
             dest = target_path / py_file.name
             if not dest.exists():
@@ -860,7 +860,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 )
 
             # Execute Move using ArchivalGatekeeper
-            target_path.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(target_path.parent)
             gk_result = self.gatekeeper.safe_move(
                 file_path,
                 target_path,
@@ -1012,14 +1012,14 @@ class HierarchyAgent(SovereignBaseAgent):
 
             pycache = path / "__pycache__"
             if pycache.exists():
-                shutil.rmtree(pycache, ignore_errors=True)  # Keep shutil for __pycache__ (not tracked)
+                _wg.remove_tree(pycache, ignore_errors=True)  # Keep shutil for __pycache__ (not tracked)
 
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
                 self.gatekeeper.safe_delete(gitkeep, self.agent_name, "Empty folder cleanup - .gitkeep")
 
             try:
-                path.rmdir()
+                _wg.remove_dir(path)
             except OSError:
                 pass
 
@@ -1166,7 +1166,7 @@ class HierarchyAgent(SovereignBaseAgent):
             )
             new_content = "\n".join(new_lines).rstrip() + "\n"
 
-            gitignore_path.write_text(new_content, encoding="utf-8")
+            _wg.write_text(gitignore_path, new_content, encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception:
             pass
@@ -1530,7 +1530,7 @@ class HierarchyAgent(SovereignBaseAgent):
         # 1. Move .archived files to .healing_backups/root_archived/
         archives_dir = self.project_root / ".healing_backups" / "root_archived"
         if not dry_run:
-            archives_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(archives_dir)
 
         for filename in scan_results["archived_files_at_root"]:
             src = self.project_root / filename
@@ -1614,7 +1614,7 @@ class HierarchyAgent(SovereignBaseAgent):
         ssot_folder = self.project_root / ssot_target
 
         if not dry_run:
-            ssot_folder.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(ssot_folder)
 
         Logger.info(f"HierarchyAgent: Merging {folder_name}/ -> {ssot_target}/")
 
@@ -1651,7 +1651,7 @@ class HierarchyAgent(SovereignBaseAgent):
             if not dry_run:
                 # [PHASE 33j] Gatekeeper is Single Point of Approval
                 try:
-                    dst_file.parent.mkdir(parents=True, exist_ok=True)
+                    _wg.ensure_dir(dst_file.parent)
                     gk_result = self.gatekeeper.safe_move(
                         src_file,
                         dst_file,
@@ -1723,8 +1723,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         if not dry_run:
             try:
-                with open(gitignore_path, "a", encoding="utf-8") as f:
-                    f.write(f"\n# Test coverage output\n{coverage_entry}\n")
+                _wg.append_text(gitignore_path, f"\n# Test coverage output\n{coverage_entry}\n")
                 action["applied"] = True
                 result["handled"] = True
                 Logger.info(f"   [✓] ADDED to .gitignore: {coverage_entry}")

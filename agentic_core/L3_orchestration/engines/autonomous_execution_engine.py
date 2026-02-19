@@ -3,6 +3,8 @@
 # Suggested keywords to add in docstring/code: guardrail, healer, prompt
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -14,8 +16,6 @@ The eternal heart that continuously validates and heals the Canon territory.
 import asyncio
 import json
 import logging
-import os
-import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -69,7 +69,7 @@ class autonomous_execution_engine:
     def __init__(self):
         self.running = True
         self.state_path = Path(".canon_memory/execution_state.json")
-        self.state_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.state_path.parent)
 
         # Initialize dependencies
         self.resource_manager = create_proactive_resource_manager()
@@ -113,16 +113,7 @@ class autonomous_execution_engine:
                 "consecutive_failures": self.consecutive_failures,
                 "saved_at": datetime.utcnow().isoformat(),
             }
-            # Sovereign Pattern: Temp file + Atomic Rename
-            with tempfile.NamedTemporaryFile(
-                "w",
-                delete=False,
-                dir=self.state_path.parent,
-                encoding="utf-8",
-            ) as tf:
-                json.dump(data, tf, indent=2)
-                temp_name = tf.name
-            os.replace(temp_name, self.state_path)
+            _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
         except Exception as e:
             Logger.error(f"Execution state save failed: {e}")

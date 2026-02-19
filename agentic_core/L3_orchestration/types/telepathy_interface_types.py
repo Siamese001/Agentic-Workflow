@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 L6 Codebase Telepathy - Human Instruction Watcher
 
@@ -31,7 +33,7 @@ class TelepathyInterface:
         self.instructions_path = Path(instructions_path)
         self._cycle = 0
         self._last_consumed = ""
-        self.instructions_path.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.instructions_path.parent)
         LOGGER.info(f"Telepathy interface initialized: {self.instructions_path}")
 
     def check_instructions(self, cycle: int) -> str | None:
@@ -136,7 +138,7 @@ class TelepathyInterface:
         """
         try:
             done_content: Any = f"# DONE (Cycle {self._cycle})\n\n# Original instructions:\n{instructions}"
-            self.instructions_path.write_text(done_content, encoding="utf-8")
+            _wg.write_text(self.instructions_path, done_content, encoding="utf-8")
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
         except Exception as e:
@@ -167,7 +169,7 @@ class TelepathyInterface:
         """Clear the instructions file."""
         try:
             if self.instructions_path.exists():
-                self.instructions_path.unlink()
+                _wg.remove_file(self.instructions_path)
                 LOGGER.info("Telepathy instructions cleared")
         except Exception as e:
             LOGGER.error(f"Failed to clear instructions: {e}")

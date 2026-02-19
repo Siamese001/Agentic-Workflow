@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Fix Testing & observability - Add SubatomicTestingMixin and logging to all agents.
@@ -93,7 +95,7 @@ def add_logging_to_file(file_path: Path) -> bool:
     if modified:
         try:
             assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
-            file_path.write_text(source, encoding="utf-8")
+            _wg.write_text(file_path, source, encoding="utf-8")
             return True
         except Exception as e:
             print(f"  [ERROR] Cannot write {file_path}: {e}")
@@ -147,7 +149,7 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
     if count > 0:
         try:
             assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
-            file_path.write_text(new_source, encoding="utf-8")
+            _wg.write_text(file_path, new_source, encoding="utf-8")
             return True
         except Exception as e:
             print(f"  [ERROR] Cannot write {file_path}: {e}")

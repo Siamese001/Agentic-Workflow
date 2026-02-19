@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 RegressionOracleAgent - Extracted for one-class-per-file pattern.
@@ -51,7 +52,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         """
         super().__init__(ctx)
         self.test_dir = Path("tests/autogen")
-        self.test_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.test_dir)
         pinecone_available = PINECONE_AVAILABLE
         pinecone_index = None
         if PINECONE_AVAILABLE:

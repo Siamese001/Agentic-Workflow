@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.enforcement.types import (
     EnforcementResult,
     Violation,
@@ -57,7 +58,7 @@ def check(
     hash_path = blueprint_dir / HASH_FILE
 
     if update:
-        hash_path.write_text(current_hash + "\n", encoding="utf-8")
+        _wg.write_text(hash_path, current_hash + "\n", encoding="utf-8")
         stats["updated"] = True
         stats["hash_match"] = True
         return make_result("blueprint_hash", violations, stats)

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 GravityLeakDetector: Cross-boundary dependency detection agent
 
@@ -17,7 +19,6 @@ Migrated from LocationAgent.py during Phase 4 of the fission process.
 import ast
 import logging
 import re
-import shutil
 from pathlib import Path
 from typing import Any
 
@@ -249,8 +250,8 @@ class GravityLeakDetector:
 
         healer = LocationHealerAgent(project_root=self.project_root)
         backup_dir = healer._init_backup_dir() / "gravity_auto_heal"
-        backup_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(backup_dir)
         backup_path = backup_dir / path.relative_to(self.project_root)
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(path, backup_path)
-        path.write_text(content, encoding="utf-8")
+        _wg.ensure_dir(backup_path.parent)
+        _wg.copy_file(path, backup_path)
+        _wg.write_text(path, content, encoding="utf-8")

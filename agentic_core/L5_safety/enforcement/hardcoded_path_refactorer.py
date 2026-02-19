@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Bulk refactor hardcoded paths to use SSOT constants from structure_blueprint.py
@@ -189,7 +191,7 @@ def refactor_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
             content = add_ssot_import(content)
 
             if not dry_run and content != original_content:
-                file_path.write_text(content, encoding="utf-8")
+                _wg.write_text(file_path, content, encoding="utf-8")
 
             return True, replacements
 

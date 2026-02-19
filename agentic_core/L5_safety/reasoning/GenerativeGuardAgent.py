@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 GenerativeGuardAgent - Detects and removes runaway generated files.
@@ -168,7 +169,7 @@ class GenerativeGuardAgent(
     def _purge_single_file(self, file_path: str) -> Any:
         """Helper to attempt purging a single file and report."""
         try:
-            os.remove(file_path)
+            _wg.remove_file(file_path)
             print(f"         DELETED: {file_path}")
         except OSError as e:
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
@@ -255,7 +256,7 @@ class GenerativeGuardAgent(
 
                 # guardian: allow-path-string
                 if os.path.exists(path):
-                    os.remove(path)
+                    _wg.remove_file(path)
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
             # guardian: allow-silent-swallow
             except Exception:

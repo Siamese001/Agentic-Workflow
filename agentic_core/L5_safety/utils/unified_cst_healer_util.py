@@ -16,6 +16,7 @@ from typing import Any
 
 import libcst as cst
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 
 from .cst_transformers_types import (
@@ -367,7 +368,7 @@ class UnifiedCSTHealer:
             # Write back if modifications were made
             if total_modifications > 0 and not self.config.dry_run:
                 modified_code = cst_tree.code
-                context.file_path.write_text(modified_code, encoding="utf-8")
+                _wg.write_text(context.file_path, modified_code, encoding="utf-8")
 
             return {
                 "status": "success",

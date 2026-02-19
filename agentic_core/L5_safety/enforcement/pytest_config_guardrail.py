@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Pytest Configuration Enforcement Guard
 ====================================
@@ -258,22 +260,18 @@ class TestPytestConfigGuardBrittleMarkerDetection:
 
             # Create pytest.ini
             pytest_ini = tmpdir / "pytest.ini"
-            pytest_ini.write_text("""[pytest]
-testpaths = tests
-markers =
-    governance: Governance tests
-    integration_full_deps: Integration tests
-""")
+            _wg.write_text(
+                pytest_ini,
+                "[pytest]\ntestpaths = tests\nmarkers =\n    governance: Governance tests\n    integration_full_deps: Integration tests\n",
+            )
 
             # Create conftest with brittle pattern
             conftest = tmpdir / "tests" / "conftest.py"
-            conftest.parent.mkdir(parents=True)
-            conftest.write_text("""import pytest
-
-def pytest_collection_modifyitems(config, items):
-    '''Hook with brittle marker access.'''
-    marker_expr = config.getoption("-m", default="")
-""")
+            _wg.ensure_dir(conftest.parent)
+            _wg.write_text(
+                conftest,
+                "import pytest\n\ndef pytest_collection_modifyitems(config, items):\n    '''Hook with brittle marker access.'''\n    marker_expr = config.getoption(\"-m\", default=\"\")\n",
+            )
 
             guard = PytestEnforcementGuard(tmpdir)
             errors, warnings = guard.validate_pytest_configuration()
@@ -292,22 +290,18 @@ def pytest_collection_modifyitems(config, items):
 
             # Create pytest.ini
             pytest_ini = tmpdir / "pytest.ini"
-            pytest_ini.write_text("""[pytest]
-testpaths = tests
-markers =
-    governance: Governance tests
-    integration_full_deps: Integration tests
-""")
+            _wg.write_text(
+                pytest_ini,
+                "[pytest]\ntestpaths = tests\nmarkers =\n    governance: Governance tests\n    integration_full_deps: Integration tests\n",
+            )
 
             # Create conftest with robust pattern
             conftest = tmpdir / "tests" / "conftest.py"
-            conftest.parent.mkdir(parents=True)
-            conftest.write_text("""import pytest
-
-def pytest_collection_modifyitems(config, items):
-    '''Hook with robust marker access.'''
-    marker_expr = getattr(config.option, "markexpr", "")
-""")
+            _wg.ensure_dir(conftest.parent)
+            _wg.write_text(
+                conftest,
+                "import pytest\n\ndef pytest_collection_modifyitems(config, items):\n    '''Hook with robust marker access.'''\n    marker_expr = getattr(config.option, \"markexpr\", \"\")\n",
+            )
 
             guard = PytestEnforcementGuard(tmpdir)
             errors, warnings = guard.validate_pytest_configuration()

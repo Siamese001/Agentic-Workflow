@@ -5,6 +5,7 @@ from __future__ import annotations
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 GravityStateAgent - Gravity Healing State Tracker
@@ -178,7 +179,7 @@ class GravityStateAgent(SovereignBaseAgent):
         self.logger = Logger
 
         # Ensure state directory exists
-        self.state_dir.mkdir(exist_ok=True)
+        _wg.ensure_dir(self.state_dir)
 
         # Load existing state
         self.state = self._load_state()
@@ -208,9 +209,8 @@ class GravityStateAgent(SovereignBaseAgent):
         """Persist healing state to disk."""
         try:
             self.state["metadata"]["last_updated"] = datetime.now().isoformat()
-            with open(self.state_file, "w", encoding="utf-8") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(self.state, f, indent=2)
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            _wg.write_json(self.state_file, self.state, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
             self.logger.error(f"Failed to save state: {e}")
@@ -350,9 +350,8 @@ class GravityStateAgent(SovereignBaseAgent):
         )
 
         try:
-            with open(checkpoint_file, "w", encoding="utf-8") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(self.state, f, indent=2)
+            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+            _wg.write_json(checkpoint_file, self.state, indent=2)
 
             self.logger.info(f"Created checkpoint: {checkpoint_file.name}")
             return str(checkpoint_file)

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Brief description of functionality and purpose."""
 
 import json
@@ -9,8 +11,6 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol
-
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 LOGGER = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class Historian:
             memory_dir: Directory to store historical data
         """
         self.memory_dir = memory_dir or Path("observability/memory")
-        self.memory_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.memory_dir)
 
         # Context manager (injected dependency)
         self.context_manager = context_manager
@@ -109,9 +109,7 @@ class Historian:
         """Save historical data to memory files."""
         # Save file history
         try:
-            with open(self.file_history_file, "w") as f:
-                assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(self.file_history, f, indent=2)
+            _wg.write_json(self.file_history_file, self.file_history, indent=2)
         except Exception as e:
             LOGGER.error(f"Failed to save file history: {e}")
 

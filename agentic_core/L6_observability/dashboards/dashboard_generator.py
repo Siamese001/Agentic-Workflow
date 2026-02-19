@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 file: agentic_core/scripts/L6_observability/generate_dashboard.py
 description: Regenerated with L6 observability moved above L5 Safety in the territory order while maintaining Base Agent nomenclature.
@@ -6,7 +8,6 @@ description: Regenerated with L6 observability moved above L5 Safety in the terr
 import io
 import json
 import re
-import shutil
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -781,7 +782,7 @@ class DashboardGenerator:
         # GUARDRAIL: Create a backup before modifying
         try:
             backup_path = self.dashboard_path.with_suffix(".html.bak")
-            shutil.copy2(self.dashboard_path, backup_path)
+            _wg.copy_file(self.dashboard_path, backup_path)
             print(f"💾 Backup created: {backup_path.name}")
         except Exception as e:
             print(f"❌ ERROR creating backup: {e}")
@@ -827,7 +828,7 @@ class DashboardGenerator:
 
             # Only write if validation passes
             assert_no_persistent_write("L6", "write_text")  # G-12-1: mutation prohibition guard
-            self.dashboard_path.write_text(new_html, encoding="utf-8")
+            _wg.write_text(self.dashboard_path, new_html, encoding="utf-8")
             print(f"✅ Updated {self.dashboard_path}")
             return True
 
@@ -835,7 +836,7 @@ class DashboardGenerator:
             print(f"❌ ERROR updating dashboard HTML: {e}")
             try:
                 if backup_path.exists():
-                    shutil.copy2(backup_path, self.dashboard_path)
+                    _wg.copy_file(backup_path, self.dashboard_path)
                     print("⚠️  Restored original HTML from backup")
             except Exception:
                 pass

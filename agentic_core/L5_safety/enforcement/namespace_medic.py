@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Namespace Medic - Standalone Utility for Fast Import Healing
 Scans all Python files and injects Missing standard library imports.
@@ -100,8 +102,7 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
             print(f"   [!] Syntax error after healing {file_path.name}: {e}")
             return (False, 0)
         if not dry_run:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(healed_content)
+            _wg.open_write(file_path, healed_content)
         return (True, len(Missing))
     except Exception as e:
         print(f"   [!] Failed to heal {file_path.name}: {e}")

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 System Architect Agent - Core Architecture Validation
@@ -317,8 +318,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
             folder_path = Path(os.getcwd()) / folder_rel
             if folder_path.exists():
                 init_file = folder_path / "__init__.py"
-                with open(init_file, "w", encoding="utf-8") as f:
-                    f.write(f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n''')
+                _wg.open_write(
+                    init_file, f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n'''
+                )
                 print(f"      [✓] {self.name}: INITIALIZED {folder_rel}/__init__.py")
         remaining_violations = [v for v in violations if "Missing __init__.py" not in v]
         if not remaining_violations:
@@ -385,8 +387,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 current_code = mutated_code
                 continue
             try:
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(mutated_code)
+                _wg.open_write(file_path, mutated_code)
                 print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return
             except Exception as e:

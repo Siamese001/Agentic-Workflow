@@ -46,6 +46,15 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
 # Baseline file path
 BASELINE_FILE = PROJECT_ROOT / "ops_scripts" / "hooks" / "landmine_baseline.txt"
 
+# Transient / non-source directories excluded from all scans.
+_EXCLUDE_DIRS = {
+    "__pycache__", ".git", ".venv", "venv",
+    ".pytest_cache", ".pytest_tmp", ".mypy_cache", ".ruff_cache",
+    ".coverage", "dist", "build", ".tox", ".nox",
+    "node_modules", "archives", ".backup", "_quarantine",
+    "tests", "ops_scripts",
+}
+
 
 def load_baseline() -> set[str]:
     """Load baseline violations from file."""
@@ -101,12 +110,10 @@ def check_files(file_paths: list[str]) -> int:
     """
     # If no files specified (pre-commit --all-files), scan all Python files
     if not file_paths:
-        all_python_files = list(PROJECT_ROOT.rglob("*.py"))
-        # Skip tests, __pycache__, .nox, and other non-source directories
-        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup", "ops_scripts"]
+        all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         python_files = [
             f for f in all_python_files
-            if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)
+            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
         ]
     else:
         # Filter to only Python files
@@ -240,12 +247,10 @@ def main() -> int:
             print("        To authorize: ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --write-baseline")
             return 1
 
-        all_python_files = list(PROJECT_ROOT.rglob("*.py"))
-        # Skip tests, __pycache__, .nox, and other non-source directories
-        exclude_dirs = ["tests", "__pycache__", ".nox", ".git", "archives", ".backup", "ops_scripts"]
+        all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         all_python_files = [
             f for f in all_python_files
-            if not any(exclude_dir in str(f) for exclude_dir in exclude_dirs)
+            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
         ]
 
         scanner = AntiPatternScanner(

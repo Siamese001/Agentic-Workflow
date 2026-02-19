@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 CodeEnforcerAgent - Code Sovereignty Enforcement
@@ -422,7 +423,8 @@ class CodeEnforcerAgent(SovereignBaseAgent):
             import json
 
             try:
-                self._agent_config.ssot_registry_path.write_text(
+                _wg.write_text(
+                    self._agent_config.ssot_registry_path,
                     json.dumps(self._ssot_registry, indent=2),
                     encoding="utf-8",
                 )

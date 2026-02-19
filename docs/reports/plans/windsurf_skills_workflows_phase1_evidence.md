@@ -5,6 +5,73 @@ Phase 1 — Create Skills + Workflows (windsurf governance artifacts)
 
 ---
 
+## Authoritative HEAD Identity (Wave 1 raw capture — hash consistency patch)
+
+### git branch --show-current
+```
+soccer_epiphanies
+```
+
+### git rev-parse HEAD
+```
+dfe35b440fc30522c8aa1d6597065ea808486fee
+```
+
+### git log -3 --oneline
+```
+dfe35b440 (HEAD -> soccer_epiphanies, origin/soccer_epiphanies) Phase 1: Add Windsurf skills + workflows for governance failure pattern elimination
+96601ab4b docs: bump prompt to v5.4.3 — reflect P3-P5 Soccer Epiphanies learnings
+f00f1801b P3-P5: strict intent emission, L6 purity, authority boundaries — governance tests + evidence
+```
+
+### git show --stat --oneline HEAD
+```
+dfe35b440 (HEAD -> soccer_epiphanies, origin/soccer_epiphanies) Phase 1: Add Windsurf skills + workflows for governance failure pattern elimination
+ .../evidence-bundle/command_capture_snippets.ps1   |  60 ++++
+ .../skills/evidence-bundle/evidence_template.md    | 108 ++++++
+ .../post_commit_verification_block.md              |  28 ++
+ .../collection_vs_execution_protocol.md            |  43 +++
+ .../skills/pytest-integrity/conftest_hook_audit.md |  53 +++
+ .../skills/scope-guard/decontamination_protocol.md |  55 +++
+ .../scope_expansion_revision_template.md           |  52 +++
+ .windsurf/skills/scope-guard/scope_precheck.md     |  44 +++
+ .../canonical_invocation_policy.md                 |  41 +++
+ .../entrypoint_decision_tree.md                    |  45 +++
+ .windsurf/workflows/phase-execute.md               |  86 +++++
+ .windsurf/workflows/scope-audit.md                 |  33 ++
+ .windsurf/workflows/scope-decontaminate.md         |  51 +++
+ .windsurf/workflows/verify-integrity.md            |  50 +++
+ .../windsurf_skills_workflows_phase1_evidence.md   | 388 +++++++++++++++++++++
+ 15 files changed, 1137 insertions(+)
+```
+
+### git show --name-only HEAD
+```
+commit dfe35b440fc30522c8aa1d6597065ea808486fee (HEAD -> soccer_epiphanies, origin/soccer_epiphanies)
+Author: Siamese001 <siamese001@users.noreply.github.com>
+Date:   Thu Feb 19 06:25:54 2026 -0500
+
+    Phase 1: Add Windsurf skills + workflows for governance failure pattern elimination
+
+.windsurf/skills/evidence-bundle/command_capture_snippets.ps1
+.windsurf/skills/evidence-bundle/evidence_template.md
+.windsurf/skills/evidence-bundle/post_commit_verification_block.md
+.windsurf/skills/pytest-integrity/collection_vs_execution_protocol.md
+.windsurf/skills/pytest-integrity/conftest_hook_audit.md
+.windsurf/skills/scope-guard/decontamination_protocol.md
+.windsurf/skills/scope-guard/scope_expansion_revision_template.md
+.windsurf/skills/scope-guard/scope_precheck.md
+.windsurf/skills/script-sprawl-guard/canonical_invocation_policy.md
+.windsurf/skills/script-sprawl-guard/entrypoint_decision_tree.md
+.windsurf/workflows/phase-execute.md
+.windsurf/workflows/scope-audit.md
+.windsurf/workflows/scope-decontaminate.md
+.windsurf/workflows/verify-integrity.md
+docs/reports/plans/windsurf_skills_workflows_phase1_evidence.md
+```
+
+---
+
 ## Scope Declaration
 
 Allowed paths for this phase:
@@ -294,38 +361,38 @@ T4a: Import Dependency Validation....................(no files to check)Skipped
 [INFO] Restored changes from C:\Users\amita\.cache\pre-commit\patch1771500396-18464.
 ```
 
-### git rev-parse HEAD
+### git rev-parse HEAD (Wave 3 — post-amend)
 
 ```
-aa33ee564b3650037ae9b4912172888b99e40ff5
+dfe35b440fc30522c8aa1d6597065ea808486fee
 ```
 
-### git show --stat --oneline HEAD
+### git show --stat --oneline HEAD (Wave 3 — post-amend)
 
 ```
-aa33ee564 (HEAD -> soccer_epiphanies) Phase 1: Add Windsurf skills + workflows for governance failure pattern elimination
+dfe35b440 (HEAD -> soccer_epiphanies, origin/soccer_epiphanies) Phase 1: Add Windsurf skills + workflows for governance failure pattern elimination
  .../evidence-bundle/command_capture_snippets.ps1   |  60 ++++
- .../skills/evidence-bundle/evidence_template.md    | 108 +++++++
+ .../skills/evidence-bundle/evidence_template.md    | 108 ++++++
  .../post_commit_verification_block.md              |  28 ++
  .../collection_vs_execution_protocol.md            |  43 +++
- .../skills/pytest-integrity/conftest_hook_audit.md |  53 ++++
- .../skills/scope-guard/decontamination_protocol.md |  55 ++++
- .../scope_expansion_revision_template.md           |  52 ++++
+ .../skills/pytest-integrity/conftest_hook_audit.md |  53 +++
+ .../skills/scope-guard/decontamination_protocol.md |  55 +++
+ .../scope_expansion_revision_template.md           |  52 +++
  .windsurf/skills/scope-guard/scope_precheck.md     |  44 +++
  .../canonical_invocation_policy.md                 |  41 +++
  .../entrypoint_decision_tree.md                    |  45 +++
- .windsurf/workflows/phase-execute.md               |  86 ++++++
- .windsurf/workflows/scope-audit.md                 |  33 +++
- .windsurf/workflows/scope-decontaminate.md         |  51 ++++
- .windsurf/workflows/verify-integrity.md            |  50 ++++
- .../windsurf_skills_workflows_phase1_evidence.md   | 323 +++++++++++++++++++++
- 15 files changed, 1072 insertions(+)
+ .windsurf/workflows/phase-execute.md               |  86 +++++
+ .windsurf/workflows/scope-audit.md                 |  33 ++
+ .windsurf/workflows/scope-decontaminate.md         |  51 +++
+ .windsurf/workflows/verify-integrity.md            |  50 +++
+ .../windsurf_skills_workflows_phase1_evidence.md   | 388 +++++++++++++++++++++
+ 15 files changed, 1137 insertions(+)
 ```
 
-### git show --name-only HEAD
+### git show --name-only HEAD (Wave 3 — post-amend)
 
 ```
-commit aa33ee564b3650037ae9b4912172888b99e40ff5 (HEAD -> soccer_epiphanies)
+commit dfe35b440fc30522c8aa1d6597065ea808486fee (HEAD -> soccer_epiphanies, origin/soccer_epiphanies)
 Author: Siamese001 <siamese001@users.noreply.github.com>
 Date:   Thu Feb 19 06:25:54 2026 -0500
 
@@ -348,7 +415,7 @@ Date:   Thu Feb 19 06:25:54 2026 -0500
 docs/reports/plans/windsurf_skills_workflows_phase1_evidence.md
 ```
 
-### git diff --name-status aa33ee564b3650037ae9b4912172888b99e40ff5^!
+### git diff --name-status HEAD^!
 
 ```
 A       .windsurf/skills/evidence-bundle/command_capture_snippets.ps1
@@ -372,7 +439,7 @@ All 15 entries are `A` (added). No `M`, `D`, or other status. .windsurfrules is 
 
 ### Post-Commit Verification
 
-Commit hash: `aa33ee564b3650037ae9b4912172888b99e40ff5`
+Commit hash: `dfe35b440fc30522c8aa1d6597065ea808486fee`
 Files in commit: 15 — matches declared N = 15 exactly.
 No out-of-scope files committed.
 Pre-existing dirty files remain unstaged (unchanged).
@@ -386,3 +453,51 @@ Pre-existing dirty files remain unstaged (unchanged).
 - [x] No other repo files modified.
 - [x] One evidence file under docs/reports/plans/.
 - [x] Evidence contains raw outputs (no truncation).
+
+---
+
+## Hash Consistency Patch Commit — Pre-commit Hook Failure Evidence
+
+### Pre-commit raw output (hash consistency patch commit attempt)
+
+```
+[WARNING] Unstaged files detected.
+[INFO] Stashing unstaged files to C:\Users\amita\.cache\pre-commit\patch1771501475-34020.
+T0: Trailing Whitespace..................................................Passed
+T0: End-of-File Fixer....................................................Passed
+T0: Enforce LF Line Endings..............................................Passed
+T0: Check Merge Conflict Markers.........................................Passed
+T1: Python Syntax Validation.........................(no files to check)Skipped
+T2a: Ruff Lint & Auto-Fix............................(no files to check)Skipped
+T2b: Ruff Format.....................................(no files to check)Skipped
+T3a: Anti-Pattern Landmine Detection.................(no files to check)Skipped
+T3b: Report Location SSOT Check..........................................Passed
+T3c: Reject Tracked Generated Artifacts..................................Passed
+T3e: Pycache Purge.......................................................Passed
+T3f: Module Collision Guard..............................................Failed
+- hook id: module-collision-guard
+- exit code: 1
+
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\agentic_core\L5_safety\enforcement\module_collision_guard.py", line 1, in <module>
+    from agentic_core.L2_execution.tools import write_gateway as _wg
+ModuleNotFoundError: No module named 'agentic_core'
+
+[INFO] Restored changes from C:\Users\amita\.cache\pre-commit\patch1771501475-34020.
+```
+
+### --no-verify Bypass Authorization
+
+Bypass conditions verified (per user rules pre-commit bypass exception):
+1. Change set limited to governance file only:
+   `docs/reports/plans/windsurf_skills_workflows_phase1_evidence.md` — CONFIRMED
+2. Pre-commit fails due to repo-wide unrelated violation:
+   `module_collision_guard.py` line 1: `ModuleNotFoundError: No module named 'agentic_core'`
+   This is a pre-existing hook import failure unrelated to staged files — CONFIRMED
+3. Hook output captured verbatim above — CONFIRMED
+4. Unrelated path reported by hook:
+   `agentic_core/L5_safety/enforcement/module_collision_guard.py` (hook itself broken) — CONFIRMED
+5. Follow-on remediation: fix `module_collision_guard.py` import to be invocable
+   without `agentic_core` on sys.path (tracked as remediation item for next phase) — CONFIRMED
+
+--no-verify used on this commit only.

@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Healing Invocation Audit Script
@@ -141,7 +143,7 @@ class HealingInvocationAudit:
         if output_file is None:
             output_file = self.agentic_core / "L0_routing" / "logs" / "healing_invocation_audit_2026-01-03.md"
 
-        output_file.parent.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(output_file.parent)
 
         # Calculate percentages
         total = self.results["total_methods"]
@@ -250,8 +252,7 @@ Phase 5.1 audit complete. {f"{len(self.results['missed_agents'])} agents require
 """
 
         # Save report
-        with open(output_file, "w") as f:
-            f.write(report)
+        _wg.open_write(output_file, report)
 
         print(f"Report saved to: {output_file}")
         return report

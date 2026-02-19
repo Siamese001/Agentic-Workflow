@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # ruff: noqa: E501, E402
 
 """
@@ -29,7 +31,6 @@ Territory: agentic_core/L5_safety/enforcement/
 import json
 import logging
 import os
-import shutil
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -129,7 +130,7 @@ class ArchivalGatekeeper:
         self._l4_ledger_hook: Callable[[ArchivalResult], None] | None = None
 
         # Ensure archive directory exists
-        self.archive_root.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.archive_root)
 
         Logger.info(f"[ArchivalGatekeeper] Initialized with project_root: {self.project_root}")
         Logger.info(f"[ArchivalGatekeeper] Archive root: {self.archive_root}")
@@ -196,8 +197,7 @@ class ArchivalGatekeeper:
         """
         with self._log_lock:
             try:
-                with open(self.audit_log_path, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(result.to_dict()) + "\n")
+                _wg.append_text(self.audit_log_path, json.dumps(result.to_dict()) + "\n")
             except Exception as e:
                 Logger.error(f"[ArchivalGatekeeper] Failed to write audit log: {e}")
 
@@ -434,18 +434,18 @@ class ArchivalGatekeeper:
 
             # Create parent directories if needed
             if create_parents:
-                destination.parent.mkdir(parents=True, exist_ok=True)
+                _wg.ensure_dir(destination.parent)
 
             # If overwrite is True and dest exists, explicitly remove it
             # because shutil.move behavior varies (might nest directories)
             if destination.exists() and overwrite:
                 if destination.is_dir():
-                    shutil.rmtree(str(destination))
+                    _wg.remove_tree(str(destination))
                 else:
-                    destination.unlink()
+                    _wg.remove_file(destination)
 
             # Perform the move
-            shutil.move(str(source), str(destination))
+            _wg.move_path(str(source), str(destination))
             self._operation_count += 1
 
             result = ArchivalResult(
@@ -530,7 +530,7 @@ class ArchivalGatekeeper:
 
         try:
             # Create parent directories
-            archive_path.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(archive_path.parent)
 
             # Handle collision - add timestamp suffix if file exists
             if archive_path.exists():
@@ -540,7 +540,7 @@ class ArchivalGatekeeper:
                 archive_path = archive_path.parent / f"{stem}{timestamp_suffix}{suffix}"
 
             # Perform the archive (move to archive directory)
-            shutil.move(str(source), str(archive_path))
+            _wg.move_path(str(source), str(archive_path))
             self._operation_count += 1
 
             result = ArchivalResult(
@@ -626,7 +626,7 @@ class ArchivalGatekeeper:
 
         try:
             # Create parent directories
-            archive_path.parent.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(archive_path.parent)
 
             # Handle collision
             if archive_path.exists():
@@ -636,7 +636,7 @@ class ArchivalGatekeeper:
                 archive_path = archive_path.parent / f"{stem}{timestamp_suffix}{suffix}"
 
             # Perform soft delete (move to archive)
-            shutil.move(str(source), str(archive_path))
+            _wg.move_path(str(source), str(archive_path))
             self._operation_count += 1
 
             result = ArchivalResult(
@@ -754,8 +754,8 @@ class ArchivalGatekeeper:
 
         # Direct restore (bypass normal validation since source is in archive)
         try:
-            original_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(archived_path), str(original_path))
+            _wg.ensure_dir(original_path.parent)
+            _wg.move_path(str(archived_path), str(original_path))
             self._operation_count += 1
 
             result = ArchivalResult(

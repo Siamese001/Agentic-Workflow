@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 L5 Streamer - Live Reasoning Broadcast System
 
@@ -67,7 +69,7 @@ class L5Streamer:
         """Initialize the non-blocking stream worker and WebSocket server."""
         if self._streamer_initialized:
             return
-        self.stream_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.stream_dir)
         if not self.stream_task or self.stream_task.done():
             self.stream_task = asyncio.create_task(self._stream_worker())
             self._streamer_initialized = True
@@ -83,8 +85,7 @@ class L5Streamer:
             try:
                 payload = await self.stream_queue.get()
                 try:
-                    with open(self.log_path, "a", encoding="utf-8") as f:
-                        f.write(json.dumps(payload) + "\n")
+                    _wg.append_text(self.log_path, json.dumps(payload) + "\n")
                     if self._websocket_clients:
                         message = json.dumps(payload)
                         disconnected = set()

@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Deterministic Credential Scanner
@@ -8,7 +10,6 @@ Scans repository for exposed credentials using deterministic regex patterns.
 Read-only scanning only - no file modification or auto-remediation.
 """
 
-import json
 import re
 from pathlib import Path
 from typing import Any
@@ -151,12 +152,11 @@ def main():
 
     # Create artifacts directory if it doesn't exist
     artifacts_dir = root_path / "artifacts" / "security"
-    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(artifacts_dir)
 
     # Write report
     report_path = artifacts_dir / "credential_scan_report.json"
-    with open(report_path, "w") as f:
-        json.dump(scan_result, f, indent=2)
+    _wg.write_json(report_path, scan_result, indent=2)
 
     print(f"Scan complete. Report written to: {report_path}")
     print(f"Files scanned: {scan_result['files_scanned']}")

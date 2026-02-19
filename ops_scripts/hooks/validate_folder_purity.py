@@ -17,6 +17,21 @@ import sys
 from pathlib import Path
 
 
+# Transient / non-source directories excluded from all scans.
+_EXCLUDE_DIRS = {
+    "__pycache__", ".git", ".venv", "venv",
+    ".pytest_cache", ".pytest_tmp", ".mypy_cache", ".ruff_cache",
+    ".coverage", "dist", "build", ".tox", ".nox",
+    "node_modules", "archives", ".backup", "_quarantine",
+    "tests",
+}
+
+
+def _is_excluded(path: Path) -> bool:
+    """Return True if any path component is in the exclusion set."""
+    return bool(set(path.parts) & _EXCLUDE_DIRS)
+
+
 def check_agent_placement():
     """Check that Agent files are in reasoning/ folders only."""
     violations = []
@@ -24,12 +39,12 @@ def check_agent_placement():
     # Only scan project directories
     project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
 
-    for py_file in Path(".").rglob("*.py"):
-        if "tests" in str(py_file) or "__pycache__" in str(py_file):
+    for py_file in sorted(Path(".").rglob("*.py")):
+        if _is_excluded(py_file):
             continue
 
         # Skip if not in a project directory
-        if not any(project_dir in str(py_file) for project_dir in project_dirs):
+        if not any(project_dir in py_file.parts for project_dir in project_dirs):
             continue
 
         try:
@@ -66,12 +81,12 @@ def check_types_purity():
     # Only scan project directories
     project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
 
-    for py_file in Path(".").rglob("*_types.py"):
-        if "tests" in str(py_file) or "__pycache__" in str(py_file):
+    for py_file in sorted(Path(".").rglob("*_types.py")):
+        if _is_excluded(py_file):
             continue
 
         # Skip if not in a project directory
-        if not any(project_dir in str(py_file) for project_dir in project_dirs):
+        if not any(project_dir in py_file.parts for project_dir in project_dirs):
             continue
 
         try:
@@ -126,14 +141,14 @@ def check_engine_placement():
     # Only scan project directories
     project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
 
-    for py_file in Path(".").rglob("*Executor.py"):
-        if "tests" in str(py_file) or "__pycache__" in str(py_file):
+    for py_file in sorted(Path(".").rglob("*Executor.py")):
+        if _is_excluded(py_file):
             continue
 
         rel_path = str(py_file).replace("\\", "/")
 
         # Skip non-project directories
-        if not any(part in rel_path for part in project_dirs):
+        if not any(part in py_file.parts for part in project_dirs):
             continue
 
         # Unified rule: Executors must be in engines/

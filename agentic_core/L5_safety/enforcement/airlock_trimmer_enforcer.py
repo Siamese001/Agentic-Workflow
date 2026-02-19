@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Trim heavy airlock __init__.py files to meet 50-line limit.
 Condenses verbose __all__ lists and removes blank lines.
@@ -42,7 +44,7 @@ def trim_airlock(init_file: Any) -> Any:
         important: Any = all_items[:8]
         new_lines.append(f"__all__ = {important}")
     content: Any = "\n".join(new_lines) + "\n"
-    init_file.write_text(content, encoding="utf-8")
+    _wg.write_text(init_file, content, encoding="utf-8")
     return True
 
 

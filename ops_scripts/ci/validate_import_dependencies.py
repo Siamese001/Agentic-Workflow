@@ -10,6 +10,7 @@ import argparse
 import ast
 import importlib.util
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -293,14 +294,37 @@ class ImportDependencyValidator:
 
 BASELINE_FILE = Path(__file__).resolve().parents[2] / "ops_scripts" / "hooks" / "import_dep_baseline.txt"
 
+_LINE_NUM_RE = re.compile(r": Line \d+:")
+_PROJECT_ROOT_STR = str(Path(__file__).resolve().parents[2])
+
+
+def _normalize_baseline_key(entry: str, project_root: str = _PROJECT_ROOT_STR) -> str:
+    """Normalize a baseline entry to be path-style- and line-number-insensitive.
+
+    Converts the file path portion to a repo-relative forward-slash path and
+    strips 'Line N:' so that absolute vs relative path differences and
+    import-line shifts do not cause pre-existing violations to appear new.
+    """
+    colon_idx = entry.find(": ")
+    if colon_idx <= 0:
+        return entry
+    path_part = entry[:colon_idx]
+    rest = entry[colon_idx:]
+    path_norm = path_part.replace("\\", "/")
+    root_norm = project_root.replace("\\", "/")
+    if path_norm.startswith(root_norm):
+        path_norm = path_norm[len(root_norm) :].lstrip("/")
+    rest = _LINE_NUM_RE.sub(":", rest, count=1)
+    return path_norm + rest
+
 
 def load_import_baseline() -> set[str]:
-    """Load baseline of known import errors."""
+    """Load baseline of known import errors (normalized, location-insensitive)."""
     if not BASELINE_FILE.exists():
         return set()
     try:
         content = BASELINE_FILE.read_text(encoding="utf-8")
-        return {line.strip() for line in content.splitlines() if line.strip()}
+        return {_normalize_baseline_key(line.strip()) for line in content.splitlines() if line.strip()}
     except (OSError, UnicodeDecodeError):
         return set()
 
@@ -382,7 +406,7 @@ def main():
             all_errors.append(f"{py_file}: {err}")
 
     baseline = load_import_baseline()
-    new_errors = [e for e in all_errors if e not in baseline]
+    new_errors = [e for e in all_errors if _normalize_baseline_key(e) not in baseline]
 
     if new_errors:
         print("ERROR: New Import Dependency Errors Found")

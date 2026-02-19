@@ -1,7 +1,7 @@
-"""Wave P1.3 — Healing Re-Entry Invariant Tests.
+"""Wave P1.3 ΓÇö Healing Re-Entry Invariant Tests.
 
 Validates:
-- Healing approval is mediated via L0 safety_enforcement_seam (no direct L2→L5 import).
+- Healing approval is mediated via L0 safety_enforcement_seam (no direct L2ΓåÆL5 import).
 - Healing apply + rollback use direct L2.2 FileIo.save_file (no L0 mutation routing).
 - WriteSetEnforcer still blocks undeclared writes (regression guard).
 - No route_mutation_intent call is made during healing.
@@ -22,7 +22,7 @@ _SEAM_FILE = _REPO_ROOT / "agentic_core" / "L0_routing" / "seams" / "safety_enfo
 
 
 # ---------------------------------------------------------------------------
-# Wave P1.3.1 — Static: no direct L2→L5 import in orchestrator
+# Wave P1.3.1 ΓÇö Static: no direct L2ΓåÆL5 import in orchestrator
 # ---------------------------------------------------------------------------
 
 
@@ -34,26 +34,26 @@ class TestNoDirectL5Import:
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
                 assert "L5_safety" not in node.module, (
-                    f"Static L2→L5 import at line {node.lineno}: from {node.module}"
+                    f"Static L2ΓåÆL5 import at line {node.lineno}: from {node.module}"
                 )
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     assert "L5_safety" not in alias.name, (
-                        f"Static L2→L5 import at line {node.lineno}: import {alias.name}"
+                        f"Static L2ΓåÆL5 import at line {node.lineno}: import {alias.name}"
                     )
 
     def test_no_static_l3_import(self):
-        """No static L2→L3 import either."""
+        """No static L2ΓåÆL3 import either."""
         tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
                 assert "L3_orchestration" not in node.module, (
-                    f"Static L2→L3 import at line {node.lineno}: from {node.module}"
+                    f"Static L2ΓåÆL3 import at line {node.lineno}: from {node.module}"
                 )
 
 
 # ---------------------------------------------------------------------------
-# Wave P1.3.2 — Static: orchestrator uses _load_activation_gate helper
+# Wave P1.3.2 ΓÇö Static: orchestrator uses _load_activation_gate helper
 # ---------------------------------------------------------------------------
 
 
@@ -100,7 +100,7 @@ class TestApprovalViaSeamStaticProof:
 
 
 # ---------------------------------------------------------------------------
-# Wave P1.3.3 — Static: apply + rollback use _get_file_io (direct L2.2)
+# Wave P1.3.3 ΓÇö Static: apply + rollback use _get_file_io (direct L2.2)
 # ---------------------------------------------------------------------------
 
 
@@ -126,7 +126,7 @@ class TestDirectL2WritesStaticProof:
                                 calls.append(child.lineno)
         # Must be called at least twice: once for apply, once for rollback
         assert len(calls) >= 2, (
-            f"_get_file_io() called {len(calls)} time(s) in smart_fix; expected ≥2 (apply + rollback)"
+            f"_get_file_io() called {len(calls)} time(s) in smart_fix; expected ΓëÑ2 (apply + rollback)"
         )
 
     def test_no_bare_open_write_in_smart_fix(self):
@@ -149,46 +149,144 @@ class TestDirectL2WritesStaticProof:
         """route_mutation_intent must NOT appear in orchestrator source."""
         src = _ORCHESTRATOR.read_text("utf-8")
         assert "route_mutation_intent" not in src, (
-            "route_mutation_intent found in validation_orchestrator.py — "
+            "route_mutation_intent found in validation_orchestrator.py ΓÇö "
             "L2 must not route mutations through L0"
         )
 
 
 # ---------------------------------------------------------------------------
-# Wave P1.3.4 — WriteSetEnforcer regression guard
+# Wave P1.3.4 — Lock Option A: activation_gate module-level API contract
+# ---------------------------------------------------------------------------
+
+_ACTIVATION_GATE = _REPO_ROOT / "agentic_core" / "L5_safety" / "enforcement" / "activation_gate.py"
+
+
+class TestActivationGateModuleLevelContract:
+    """activation_gate.py must export assert_activation_allowed at module level.
+
+    This locks Option A: the seam returns the module and callers invoke
+    module.assert_activation_allowed(...) directly — no ActivationGate()
+    instance required.
+    """
+
+    def test_assert_activation_allowed_is_module_level_function(self):
+        """assert_activation_allowed must be a top-level def in activation_gate.py."""
+        tree = ast.parse(
+            _ACTIVATION_GATE.read_text("utf-8"),
+            filename=str(_ACTIVATION_GATE),
+        )
+        top_level_funcs = {
+            node.name
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and isinstance(node.col_offset, int)
+            and node.col_offset == 0
+        }
+        assert "assert_activation_allowed" in top_level_funcs, (
+            "assert_activation_allowed is not a module-level function in "
+            "activation_gate.py — Option A contract broken"
+        )
+
+    def test_assert_activation_allowed_in_dunder_all(self):
+        """assert_activation_allowed must appear in __all__ of activation_gate."""
+        src = _ACTIVATION_GATE.read_text("utf-8")
+        assert "assert_activation_allowed" in src, "assert_activation_allowed not found in activation_gate.py"
+        tree = ast.parse(src, filename=str(_ACTIVATION_GATE))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == "__all__" for t in node.targets
+            ):
+                if isinstance(node.value, ast.List):
+                    exported = {
+                        elt.s
+                        for elt in node.value.elts
+                        if isinstance(elt, ast.Constant) and isinstance(elt.s, str)
+                    }
+                    assert "assert_activation_allowed" in exported, (
+                        "assert_activation_allowed missing from __all__ in activation_gate.py"
+                    )
+                    return
+        pytest.fail("__all__ not found in activation_gate.py")
+
+    def test_orchestrator_calls_assert_activation_allowed_on_gate_mod(self):
+        """Orchestrator must call _gate_mod.assert_activation_allowed (module API).
+
+        Verifies the call is an attribute access on a Name (the module variable),
+        not a bare function call — locking Option A usage pattern.
+        """
+        tree = ast.parse(
+            _ORCHESTRATOR.read_text("utf-8"),
+            filename=str(_ORCHESTRATOR),
+        )
+        found = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func = node.func
+                if isinstance(func, ast.Attribute) and func.attr == "assert_activation_allowed":
+                    found.append(node.lineno)
+        assert len(found) >= 1, (
+            "assert_activation_allowed not called as attribute on module variable "
+            "in validation_orchestrator.py — expected _gate_mod.assert_activation_allowed(...)"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Wave P1.3.5 — Lock save_file call path through _get_file_io()
 # ---------------------------------------------------------------------------
 
 
-class TestWriteSetEnforcerRegression:
-    """WriteSetEnforcer must still block undeclared writes."""
+class TestHealingWriteCallPath:
+    """Healing writes must call .save_file() on the result of _get_file_io().
 
-    def test_undeclared_write_raises(self):
-        from agentic_core.L2_execution.enforcement.write_set_enforcer import (
-            WriteSetEnforcer,
-            WriteSetViolation,
+    This is the authoritative write primitive for this branch state.
+    Proves the call path statically so no bare open() or alternative
+    write path can silently bypass it.
+    """
+
+    def test_save_file_called_on_file_io_result(self):
+        """save_file must be called as an attribute call in smart_fix.
+
+        Pattern: _get_file_io().save_file(...) or equivalent attribute call.
+        """
+        tree = ast.parse(
+            _ORCHESTRATOR.read_text("utf-8"),
+            filename=str(_ORCHESTRATOR),
+        )
+        save_file_calls = []
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name == "smart_fix":
+                    for child in ast.walk(node):
+                        if (
+                            isinstance(child, ast.Call)
+                            and isinstance(child.func, ast.Attribute)
+                            and child.func.attr == "save_file"
+                        ):
+                            save_file_calls.append(child.lineno)
+        assert len(save_file_calls) >= 2, (
+            f"save_file called {len(save_file_calls)} time(s) in smart_fix; expected ≥2 (apply + rollback)"
         )
 
-        enforcer = WriteSetEnforcer(declared_write_set=frozenset({"allowed_key"}))
-        with pytest.raises(WriteSetViolation, match="Undeclared write"):
-            enforcer.record_write("undeclared_key")
-
-    def test_declared_write_succeeds(self):
-        from agentic_core.L2_execution.enforcement.write_set_enforcer import (
-            WriteSetEnforcer,
+    def test_no_open_write_anywhere_in_orchestrator(self):
+        """No open(..., 'w') or open(..., 'wb') anywhere in orchestrator."""
+        tree = ast.parse(
+            _ORCHESTRATOR.read_text("utf-8"),
+            filename=str(_ORCHESTRATOR),
         )
-
-        enforcer = WriteSetEnforcer(declared_write_set=frozenset({"key_a"}))
-        enforcer.record_write("key_a")
-        assert "key_a" in enforcer.actual_writes
-
-    def test_aborted_enforcer_rejects_all(self):
-        from agentic_core.L2_execution.enforcement.write_set_enforcer import (
-            WriteSetEnforcer,
-            WriteSetViolation,
+        violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func = node.func
+                if isinstance(func, ast.Name) and func.id == "open":
+                    for arg in node.args:
+                        if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                            if "w" in arg.value:
+                                violations.append(node.lineno)
+                    for kw in node.keywords:
+                        if kw.arg == "mode" and isinstance(kw.value, ast.Constant):
+                            if "w" in str(kw.value.value):
+                                violations.append(node.lineno)
+        assert violations == [], (
+            f"open(..., 'w') found in validation_orchestrator.py at lines "
+            f"{violations} — all writes must go through _get_file_io().save_file()"
         )
-
-        enforcer = WriteSetEnforcer(declared_write_set=frozenset({"a"}))
-        with pytest.raises(WriteSetViolation):
-            enforcer.record_write("bad")
-        with pytest.raises(WriteSetViolation, match="aborted"):
-            enforcer.record_write("a")

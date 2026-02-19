@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Fix Inherited Invocation - Add heal_repository() methods to agents missing explicit invocation.
@@ -115,7 +117,7 @@ def add_heal_repository(file_path: Path, class_name: str) -> bool:
 
     # Write back
     try:
-        file_path.write_text(new_source, encoding="utf-8")
+        _wg.write_text(file_path, new_source, encoding="utf-8")
         print(f"  [ADDED] heal_repository to {class_name}")
         return True
     except Exception as e:

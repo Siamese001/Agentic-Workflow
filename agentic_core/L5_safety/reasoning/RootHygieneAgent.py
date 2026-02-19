@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 File: agentic_core/L5_safety/validators/RootHygieneAgent.py
 Path: agentic_core/L5_safety/validators/RootHygieneAgent.py
@@ -13,7 +15,6 @@ Rationale:
     - Adds heal_repository() method for standard healing chain integration
 """
 
-import shutil
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -119,8 +120,8 @@ class RootHygieneAgent(SovereignBaseAgent):
             print("[DETECT] Illegal root 'scripts/' directory found.")
 
             if not self.dry_run:
-                ops_scripts.mkdir(exist_ok=True)
-                l0_scripts.mkdir(exist_ok=True, parents=True)
+                _wg.ensure_dir(ops_scripts)
+                _wg.ensure_dir(l0_scripts)
 
             for item in root_scripts.iterdir():
                 try:
@@ -136,7 +137,7 @@ class RootHygieneAgent(SovereignBaseAgent):
 
                         print(f"  - {item.name} -> {action}")
                         if not self.dry_run:
-                            shutil.move(str(item), str(target))
+                            _wg.move_path(str(item), str(target))
                         self.stats["scripts_evacuated"] += 1
 
                     elif item.is_dir():
@@ -145,8 +146,8 @@ class RootHygieneAgent(SovereignBaseAgent):
                         print(f"  - DIR {item.name}/ -> RELOCATE (Ops)")
                         if not self.dry_run:
                             if target.exists():
-                                shutil.rmtree(target)  # Force overwrite logic for dirs
-                            shutil.move(str(item), str(target))
+                                _wg.remove_tree(target)  # Force overwrite logic for dirs
+                            _wg.move_path(str(item), str(target))
                         self.stats["dirs_evacuated"] += 1
 
                 # guardian: allow-silent-swallow
@@ -157,7 +158,7 @@ class RootHygieneAgent(SovereignBaseAgent):
             # Cleanup empty dir
             if not self.dry_run:
                 try:
-                    root_scripts.rmdir()
+                    _wg.remove_dir(root_scripts)
                     print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
                     self.stats["illegal_dirs_removed"] += 1
                 except OSError:
@@ -174,13 +175,13 @@ class RootHygieneAgent(SovereignBaseAgent):
             print("\n[DETECT] Illegal root 'coverage_html/' found.")
 
             if not self.dry_run:
-                reports_cov.parent.mkdir(exist_ok=True)
+                _wg.ensure_dir(reports_cov.parent)
 
                 if reports_cov.exists():
-                    shutil.rmtree(reports_cov)
+                    _wg.remove_tree(reports_cov)
 
                 print("  - Moving to reports/coverage_html")
-                shutil.move(str(cov_html), str(reports_cov))
+                _wg.move_path(str(cov_html), str(reports_cov))
                 self.stats["coverage_relocated"] += 1
                 print("[SUCCESS] Coverage report relocated.")
         else:
@@ -195,9 +196,9 @@ class RootHygieneAgent(SovereignBaseAgent):
         if purge_script.exists():
             print("\n[REFILE] Organizing purge_cache.py -> ops_scripts/maintenance/")
             if not self.dry_run:
-                maint_script_dir.mkdir(exist_ok=True)
+                _wg.ensure_dir(maint_script_dir)
                 target = maint_script_dir / "purge_cache.py"
-                shutil.move(str(purge_script), str(target))
+                _wg.move_path(str(purge_script), str(target))
 
     def scan_root_violations(self, target_territory: str = None) -> dict[str, Any]:
         """
@@ -274,14 +275,13 @@ class RootHygieneAgent(SovereignBaseAgent):
                     self.purge_cache()
                     return {"status": "success", "action": "purged_cache"}
                 else:
-                    import shutil
                     from pathlib import Path
 
                     if target and Path(target).exists():
                         if Path(target).is_dir():
-                            shutil.rmtree(target)
+                            _wg.remove_tree(target)
                         else:
-                            Path(target).unlink()
+                            _wg.remove_file(Path(target))
                         return {"status": "success", "action": f"deleted {target}"}
 
             return {"status": "skipped", "reason": f"Unknown hygiene type: {v_type}"}

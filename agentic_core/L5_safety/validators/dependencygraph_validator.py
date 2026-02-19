@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Brief description of functionality and purpose."""
 
 import asyncio
@@ -332,8 +334,7 @@ class ValidationContext:
     def _save_memory(self):
         try:
             data = {"hashes": self.file_hashes, "skip": list(self.skip_files)}
-            with open(self.memory_file, "w") as f:
-                json.dump(data, f)
+            _wg.write_json(self.memory_file, data, indent=2)
         except Exception:
             pass
 
@@ -354,9 +355,8 @@ class ValidationContext:
         Writes content to a file, ensuring directory exists.
         """
         try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(content)
+            _wg.makedirs(os.path.dirname(path), exist_ok=True)
+            _wg.open_write(path, content)
             return True
         except Exception:
             return False
@@ -430,8 +430,7 @@ class ValidationContext:
         if self.file_backups:
             for file_path, content in self.file_backups.items():
                 try:
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(content)
+                    _wg.open_write(file_path, content)
                     print(f"   ↩️ Rolled back: {file_path}")
                 except Exception as e:
                     print(f"   [!] Rollback failed for {file_path}: {e}")

@@ -177,7 +177,9 @@ def scan_all_layer_files() -> list[ImportViolation]:
         if layer_dir is None:
             continue
 
-        for py_file in layer_dir.rglob("*.py"):
+        for py_file in sorted(layer_dir.rglob("*.py")):
+            if "__pycache__" in py_file.parts:
+                continue
             violations = detect_upward_imports(py_file)
             all_violations.extend(violations)
 
@@ -255,7 +257,9 @@ def collect_lazy_upward_imports(
         if layer_dir is None:
             continue
 
-        for py_file in layer_dir.rglob("*.py"):
+        for py_file in sorted(layer_dir.rglob("*.py")):
+            if "__pycache__" in py_file.parts:
+                continue
             try:
                 rel = py_file.relative_to(agentic_root)
             except ValueError:
@@ -364,7 +368,9 @@ def detect_lazy_seam_violations(
         if layer_dir is None:
             continue
 
-        for py_file in layer_dir.rglob("*.py"):
+        for py_file in sorted(layer_dir.rglob("*.py")):
+            if "__pycache__" in py_file.parts:
+                continue
             try:
                 rel = py_file.relative_to(agentic_root)
             except ValueError:

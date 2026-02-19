@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
@@ -26,7 +28,7 @@ def trim_airlock(file_path: Any) -> Any:
     cleaned: Any = [line for line in lines if line.strip() and (not line.strip().startswith("#"))]
     if len(cleaned) > 50:
         cleaned: Any = cleaned[:50]
-    file_path.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
+    _wg.write_text(file_path, "\n".join(cleaned) + "\n", encoding="utf-8")
     return len(cleaned)
 
 

@@ -5,19 +5,19 @@ Ensures all lazy seams from Phase 3B metric are registered in the allowlist.
 Implements LAZY_SEAM_UNREGISTERED invariant.
 """
 
-import json
-from pathlib import Path
-from typing import Dict, Any, List, Set
-
 # Import Phase 3B metric functions (replicated to avoid import issues)
 import ast
+import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 
 @dataclass
 class LazyUpwardImport:
     """A lazy upward import excluded by function/try guard."""
+
     source_file: Path
     source_layer: int
     target_layer: int
@@ -184,23 +184,26 @@ def lazy_upward_import_metric(
 class LazySeamEnforcer:
     """Enforces lazy seam allowlist compliance."""
 
+    lazy_upward_import_metric = staticmethod(lazy_upward_import_metric)
+
     def __init__(self, root_path: Path, allowlist_path: Path):
         self.root_path = root_path
         self.allowlist_path = allowlist_path
         self.allowlist_data = self._load_allowlist()
         self.violations = []
 
-    def _load_allowlist(self) -> Dict[str, Any]:
+    def _load_allowlist(self) -> dict[str, Any]:
         """Load allowlist from file."""
-        with open(self.allowlist_path, 'r', encoding='utf-8') as f:
+        with open(self.allowlist_path, encoding="utf-8") as f:
             return json.load(f)
 
-    def _create_seam_key(self, file_path: str, function_name: str,
-                        imported_modules: List[str], imported_symbols: List[tuple]) -> str:
+    def _create_seam_key(
+        self, file_path: str, function_name: str, imported_modules: list[str], imported_symbols: list[tuple]
+    ) -> str:
         """Create a unique key for a seam."""
         return f"{file_path}::{function_name}::{sorted(imported_modules)}::{sorted(imported_symbols)}"
 
-    def _get_allowlist_keys(self) -> Set[str]:
+    def _get_allowlist_keys(self) -> set[str]:
         """Get all allowed seam keys."""
         allowed_keys = set()
         for seam in self.allowlist_data["seams"]:
@@ -208,22 +211,22 @@ class LazySeamEnforcer:
                 seam["file_path"],
                 seam["function_name"],
                 seam.get("imported_modules", []),
-                seam.get("imported_symbols", [])
+                seam.get("imported_symbols", []),
             )
             allowed_keys.add(key)
         return allowed_keys
 
-    def scan_file(self, file_path: Path) -> List[Dict[str, Any]]:
+    def scan_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Scan a single file for lazy seams."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
             seams = []
 
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and node.name.startswith('_get_'):
+                if isinstance(node, ast.FunctionDef) and node.name.startswith("_get_"):
                     # Extract imports from within the function
                     imported_modules = set()
                     imported_symbols = []
@@ -234,9 +237,8 @@ class LazySeamEnforcer:
                                 imported_modules.add(alias.name)
                                 imported_symbols.append((alias.name, None))
                         elif isinstance(child, ast.ImportFrom):
-                            module = child.module or ''
+                            module = child.module or ""
                             for alias in child.names:
-                                full_import = f"{module}.{alias.name}" if module else alias.name
                                 imported_modules.add(module)
                                 imported_symbols.append((module, alias.name))
 
@@ -244,8 +246,8 @@ class LazySeamEnforcer:
                     seam = {
                         "file_path": str(file_path.relative_to(self.root_path)),
                         "function_name": node.name,
-                        "imported_modules": sorted(list(imported_modules)),
-                        "imported_symbols": imported_symbols
+                        "imported_modules": sorted(imported_modules),
+                        "imported_symbols": imported_symbols,
                     }
                     seams.append(seam)
 
@@ -255,16 +257,32 @@ class LazySeamEnforcer:
             print(f"Error scanning {file_path}: {e}")
             return []
 
-    def scan_codebase(self) -> List[Dict[str, Any]]:
+    def scan_codebase(self) -> list[dict[str, Any]]:
         """Scan entire codebase for lazy seams."""
         python_files = list(self.root_path.rglob("*.py"))
 
         # Skip patterns (same as scanner)
         skip_patterns = {
-            ".git", "__pycache__", ".pytest_cache", ".mypy_cache",
-            ".venv", "venv", "env", ".tox", "build", "dist", ".nox",
-            "site-packages", "tests", "test", "support", "artifacts",
-            "ops_scripts", "docs", "data", ".pytest_tmp"
+            ".git",
+            "__pycache__",
+            ".pytest_cache",
+            ".mypy_cache",
+            ".venv",
+            "venv",
+            "env",
+            ".tox",
+            "build",
+            "dist",
+            ".nox",
+            "site-packages",
+            "tests",
+            "test",
+            "support",
+            "artifacts",
+            "ops_scripts",
+            "docs",
+            "data",
+            ".pytest_tmp",
         }
 
         skip_file_patterns = {"test_", "_test.py", "conftest.py"}
@@ -280,7 +298,10 @@ class LazySeamEnforcer:
                 continue
 
             # Skip artifacts and ops scripts (focus on core source)
-            if any(pattern in file_path.parts for pattern in ["artifacts", "ops_scripts", "docs", "data", ".pytest_tmp"]):
+            if any(
+                pattern in file_path.parts
+                for pattern in ["artifacts", "ops_scripts", "docs", "data", ".pytest_tmp"]
+            ):
                 continue
 
             seams = self.scan_file(file_path)
@@ -288,13 +309,13 @@ class LazySeamEnforcer:
 
         return all_seams
 
-    def enforce(self) -> List[Dict[str, Any]]:
+    def enforce(self) -> list[dict[str, Any]]:
         """Enforce allowlist compliance using Phase 3B metric."""
         print("Scanning codebase for lazy seams (Phase 3B universe)...")
 
         # Get Phase 3B metric results
         agentic_core_path = self.root_path / "agentic_core"
-        metric = lazy_upward_import_metric(agentic_core_path)
+        metric = self.lazy_upward_import_metric(agentic_core_path)
         phase3b_seams = metric["items"]
 
         print(f"Found {len(phase3b_seams)} lazy seams")
@@ -310,14 +331,14 @@ class LazySeamEnforcer:
                 "file_path": str(seam.source_file.relative_to(self.root_path)),
                 "function_name": seam.context,
                 "imported_modules": [seam.import_statement] if seam.import_statement else [],
-                "imported_symbols": []  # Phase 3B doesn't track symbols separately
+                "imported_symbols": [],  # Phase 3B doesn't track symbols separately
             }
 
             key = self._create_seam_key(
                 seam_entry["file_path"],
                 seam_entry["function_name"],
                 seam_entry.get("imported_modules", []),
-                seam_entry.get("imported_symbols", [])
+                seam_entry.get("imported_symbols", []),
             )
 
             if key not in allowed_keys:
@@ -325,7 +346,7 @@ class LazySeamEnforcer:
                     "type": "LAZY_SEAM_UNREGISTERED",
                     "file_path": seam_entry["file_path"],
                     "function_name": seam_entry["function_name"],
-                    "description": f"Lazy seam not found in allowlist: {seam_entry['function_name']} in {seam_entry['file_path']}"
+                    "description": f"Lazy seam not found in allowlist: {seam_entry['function_name']} in {seam_entry['file_path']}",
                 }
                 violations.append(violation)
 

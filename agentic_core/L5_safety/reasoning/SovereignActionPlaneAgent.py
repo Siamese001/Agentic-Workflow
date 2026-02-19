@@ -11,6 +11,7 @@ from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """Sovereign Action Plane Implementation.
 
@@ -46,7 +47,7 @@ class SovereignToolsmith:
             output_dir: Directory for generated tools
         """
         self.output_dir: str = output_dir
-        os.makedirs(output_dir, exist_ok=True)
+        _wg.makedirs(output_dir, exist_ok=True)
 
     async def forge_diagnostic_tool(self, failure_context: str) -> str | None:
         """
@@ -63,8 +64,7 @@ class SovereignToolsmith:
         # guardian: allow-path-string
         tool_path: Any = os.path.join(self.output_dir, tool_name)
         try:
-            with open(tool_path, "w") as f:
-                f.write(tool_code)
+            _wg.open_write(tool_path, tool_code)
             os.chmod(tool_path, 493)
             Logger.info(f"Sovereign Toolsmith forged: {tool_path}")
             return tool_path
@@ -423,8 +423,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                             line = line.rstrip() + ")"
                     fixed_lines.append(line)
                 fixed_code = "\n".join(fixed_lines)
-            with open(tool_path, "w") as f:
-                f.write(fixed_code)
+            _wg.open_write(tool_path, fixed_code)
             try:
                 compile(fixed_code, tool_path, "exec")
                 return {"success": True, "message": "Syntax error fixed"}
@@ -462,14 +461,13 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
         content = request.parameters.get("content", "")
         try:
             if operation == "write":
-                with open(file_path, "w") as f:
-                    f.write(content)
+                _wg.open_write(file_path, content)
                 output = f"Successfully wrote to {file_path}"
             elif operation == "read":
                 with open(file_path) as f:
                     output = f.read()
             elif operation == "delete":
-                os.remove(file_path)
+                _wg.remove_file(file_path)
                 output = f"Successfully deleted {file_path}"
             else:
                 raise ValueError(f"Unknown operation: {operation}")

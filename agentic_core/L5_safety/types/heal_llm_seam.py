@@ -16,6 +16,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Literal
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
     "_HEAL_SEAM_CAPABILITY", default=False
@@ -273,7 +275,7 @@ def emit_heal_telemetry(
         project_root = current.parent.parent.parent.parent  # Up to agentic_core parent
         artifacts_root = project_root / "artifacts" / "consolidation" / "heal_telemetry"
 
-    artifacts_root.mkdir(parents=True, exist_ok=True)
+    _wg.ensure_dir(artifacts_root)
 
     filename = f"{record.inputs_hash}.json"
     filepath = artifacts_root / filename
@@ -293,7 +295,7 @@ def emit_heal_telemetry(
         # Already exists with identical content, no-op
         return filepath
 
-    filepath.write_bytes(content_bytes)
+    _wg.write_bytes(filepath, content_bytes)
     return filepath
 
 

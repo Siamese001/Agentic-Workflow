@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -301,11 +302,9 @@ class ThinkActObserveEngine:
         """
         if not self.state:
             raise ValueError("No state to save")
-        import json
 
-        with open(path, "w") as f:
-            assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(self.state.to_dict(), f, indent=2, default=str)
+        assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
+        _wg.write_json(path, self.state.to_dict(), indent=2)
         if self.enable_logging:
             LOGGER.info("state_saved", extra={"path": path})
 

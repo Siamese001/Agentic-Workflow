@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 MissionHistorian - L4 State Framework Agent
 Tracks mission execution history and audit trails.
@@ -28,10 +30,10 @@ class MissionHistorian:
         """
         self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
-            self.log_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.log_path, "w", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
+            _wg.init_csv(
+                self.log_path,
+                ["timestamp", "file", "action", "source", "destination", "reason"],
+            )
 
     def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
         """
@@ -45,9 +47,10 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
-            with open(self.log_path, "a", newline="", encoding="utf-8") as f:
-                writer: Any = csv.writer(f)
-                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
+            _wg.append_csv_row(
+                self.log_path,
+                [datetime.now().isoformat(), file_name, action, source, destination, reason],
+            )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         except Exception as e:
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")

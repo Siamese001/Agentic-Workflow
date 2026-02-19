@@ -7,6 +7,7 @@ import ast
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """Brief description of functionality and purpose."""
 
@@ -114,7 +115,7 @@ class DocstringComplianceAgent(SovereignBaseAgent):
                 added_count += 1
             if added_count > 0:
                 new_content: Any = "".join(new_lines)
-                file_path.write_text(new_content, encoding="utf-8")
+                _wg.write_text(file_path, new_content, encoding="utf-8")
                 message: Any = f"Added {added_count} Missing docstring(s)"
                 print(f"      [HEALED] {file_path.name}: {message}")
                 ctx.report(self.__class__.__name__, key_id=18, success=True, msg=message)

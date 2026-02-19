@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Brief description of functionality and purpose."""
 
 "Brief description of functionality and purpose."
-import shutil
 from pathlib import Path
 
 root: Any = Path("C:/Git/Agentic-Workflow")
@@ -39,21 +40,21 @@ def forge_fortress() -> Any:
     logging.info("FORTRESS FORGE: Initializing System Reconstruction...")
     for layer, stages in CORE_MAP.items():
         layer_path: Any = CORE / layer
-        layer_path.mkdir(parents=True, exist_ok=True)
-        (layer_path / "__init__.py").touch()
+        _wg.ensure_dir(layer_path)
+        _wg.touch_file(layer_path / "__init__.py")
         for stage in stages:
             stage_path: Any = layer_path / stage
-            stage_path.mkdir(parents=True, exist_ok=True)
-            (stage_path / "__init__.py").touch()
+            _wg.ensure_dir(stage_path)
+            _wg.touch_file(stage_path / "__init__.py")
             logging.debug(f"Stage Verified: {layer}/{stage}")
     for folder, stages in EXTERNAL_MAP.items():
         folder_path: Any = ROOT / folder
-        folder_path.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(folder_path)
         for stage in stages:
             stage_path: Any = folder_path / stage
-            stage_path.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(stage_path)
             if folder not in ["data", "archives"]:
-                (stage_path / "__init__.py").touch()
+                _wg.touch_file(stage_path / "__init__.py")
     for old_name, destination in ANNEXATION_PLAN.items():
         old_path: Any = ROOT / old_name
         if old_path.exists() and old_path.is_dir():
@@ -64,7 +65,7 @@ def forge_fortress() -> Any:
                 target: Any = destination / item.name
                 try:
                     if not target.exists():
-                        shutil.move(str(item), str(target))
+                        _wg.move_path(str(item), str(target))
                         logging.info(f"  [MOVED] {item.name}")
                     else:
                         logging.warning(f"  [COLLISION] {item.name} exists in target. Manual merge required.")
@@ -73,7 +74,7 @@ def forge_fortress() -> Any:
                     logging.error(f"  [FAILED] Move {item.name}: {e}")
             if not any(old_path.iterdir()):
                 try:
-                    old_path.rmdir()
+                    _wg.remove_dir(old_path)
                 # guardian: allow-silent-swallow
                 except:
                     pass

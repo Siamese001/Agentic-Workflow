@@ -3,6 +3,8 @@
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -32,7 +34,6 @@ Canon Key 51 Compliance: Includes heal_repository() method
 """
 import logging
 import os
-import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -252,9 +253,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
                 # Create backup
                 backup_dir = self.project_root / "archives" / "healing_backups" / "gravity"
-                backup_dir.mkdir(parents=True, exist_ok=True)
+                _wg.ensure_dir(backup_dir)
                 backup_path = backup_dir / f"{fix.file_path.name}.{int(os.times().system)}.bak"
-                shutil.copy2(fix.file_path, backup_path)
+                _wg.copy_file(fix.file_path, backup_path)
 
                 # Atomic Swap
                 os.replace(temp_path, fix.file_path)
@@ -265,7 +266,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 # Cleanup temp on failure
                 # guardian: allow-path-string
                 if os.path.exists(temp_path):
-                    os.unlink(temp_path)
+                    _wg.remove_file(temp_path)
                 raise write_err
 
         except Exception as e:

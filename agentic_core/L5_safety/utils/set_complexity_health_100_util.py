@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 #!/usr/bin/env python3
 """
 Set Complexity Health to 100% across all territories.
@@ -59,7 +61,7 @@ def main():
     updated_content = re.sub(r'"Health Breakdown":\s*"([^"]+)"', update_health_breakdown, updated_content)
 
     # Write back
-    DASHBOARD_PATH.write_text(updated_content, encoding="utf-8")
+    _wg.write_text(DASHBOARD_PATH, updated_content, encoding="utf-8")
 
     print(f"\n✅ Updated {len(changes)} values")
     print(f"Dashboard saved to: {DASHBOARD_PATH}")

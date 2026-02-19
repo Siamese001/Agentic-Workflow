@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 StructuralValidatorAgent - Facade Shell for Zero-Loss Consolidation.
 
@@ -18,7 +20,6 @@ import ast
 import logging
 import os
 import re
-import shutil
 import tempfile
 import threading
 from dataclasses import dataclass
@@ -267,13 +268,13 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
                 # Backup
                 backup_path = file_path.with_suffix(f".bak.{int(datetime.now().timestamp())}")
-                shutil.copy2(file_path, backup_path)
+                _wg.copy_file(file_path, backup_path)
 
                 # Atomic Swap
                 os.replace(temp_path, file_path)
                 return {"applied": True, "backup": str(backup_path)}
             except Exception as write_err:
-                os.unlink(temp_path)
+                _wg.remove_file(temp_path)
                 raise write_err
 
         except Exception as e:

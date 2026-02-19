@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """
 Canon Validator Mission Runner
 
@@ -569,9 +571,9 @@ def _handle_max_cycles_reached(ctx):
     print("\n[!] MAX HEALING CYCLES REACHED. Escalating...")
     if ctx.modified_files or ctx.signals:
         esc_dir = Path("observability/human_review")
-        esc_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(esc_dir)
         report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
-        (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
+        _wg.write_text(esc_dir / f"escalation_{int(time.time())}.md", report)
         print(f"   [ALERT] Manual Review Required. Report saved to: {esc_dir}")
 
 

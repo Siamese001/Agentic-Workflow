@@ -7,13 +7,13 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 Sprawl Inspector - Pre-Flight Architectural Survey
 Identifies low-density folders and excessive breadth for consolidation.
 Implements Key 49 (Universal Depth Law) and Key 41 (Modular Atomicity).
 """
-import json
 import os
 from datetime import datetime
 from pathlib import Path
@@ -155,7 +155,6 @@ if __name__ == "__main__":
     inspector: Any = SprawlInspectorAgent(AGENTIC_CORE_DIR)
     data: Any = inspector.inspect()
     inspector.print_summary()
-    with open("sprawl_report.json", "w") as f:
-        json.dump(data, f, indent=4)
+    _wg.write_json("sprawl_report.json", data, indent=4)
     print("\n[OK] Detailed sprawl map saved to sprawl_report.json")
     print("    Use this report to guide architectural consolidation.")

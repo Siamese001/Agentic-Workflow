@@ -1,3 +1,5 @@
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 """Duplicate Code Detector Agent - Detects duplicate files and code blocks.
 
 This module provides a batch agent that detects exact duplicate files and
@@ -316,7 +318,6 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         Returns:
             Dict with archiving results
         """
-        import shutil
         from datetime import datetime
 
         archived = []
@@ -327,7 +328,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         archive_dir = self.project_root / ARCHIVES_DIR / f"duplicates_{timestamp}"
 
         if not dry_run:
-            archive_dir.mkdir(parents=True, exist_ok=True)
+            _wg.ensure_dir(archive_dir)
             Logger.info(f"Created archive directory: {archive_dir}")
 
         for rec in recommendations:
@@ -346,10 +347,10 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         archived.append(delete_path_str)
                     else:
                         # Create parent directories in archive
-                        archive_target.parent.mkdir(parents=True, exist_ok=True)
+                        _wg.ensure_dir(archive_target.parent)
 
                         # Move file to archive
-                        shutil.move(str(full_path), str(archive_target))
+                        _wg.move_path(str(full_path), str(archive_target))
                         Logger.info(
                             f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}",
                         )
@@ -392,7 +393,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         Logger.info(f"[DRY RUN] Would delete: {delete_path_str}")
                         deleted.append(delete_path_str)
                     else:
-                        full_path.unlink()
+                        _wg.remove_file(full_path)
                         Logger.info(f"[DELETED] {delete_path_str}")
                         deleted.append(delete_path_str)
                 # guardian: allow-silent-swallow

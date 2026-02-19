@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # ruff: noqa: E501
 
 """ArchitectureGovernorAgent - Universal Architecture Governance
@@ -1081,16 +1083,14 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 # Purge sentinels before removing directory
                 for sentinel in [path / "__init__.py", path / ".gitkeep"]:
                     if sentinel.exists():
-                        sentinel.unlink()
+                        _wg.remove_file(sentinel)
 
                 # Remove __pycache__ if present
                 pycache = path / "__pycache__"
                 if pycache.exists():
-                    import shutil
+                    _wg.remove_tree(pycache, ignore_errors=True)
 
-                    shutil.rmtree(pycache, ignore_errors=True)
-
-                path.rmdir()
+                _wg.remove_dir(path)
                 try:
                     rel_path = path.relative_to(self.project_root)
                     Logger.info(f"  [CLEANUP] Removed empty directory: {rel_path}")
@@ -1179,12 +1179,11 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.warning(f"Skipping file {file_path.name} in baseline: {e}")
 
         # 4. Atomic Write
-        self.baseline_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.baseline_dir)
         baseline_path = self.baseline_dir / "golden_baseline.json"
 
         temp_path = baseline_path.with_suffix(".tmp")
-        with open(temp_path, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=4)
+        _wg.write_json(temp_path, manifest, indent=4)
         temp_path.replace(baseline_path)
 
         Logger.info(f"✅ BASELINE CAPTURED: {len(manifest['files'])} files tracked.")
@@ -1237,7 +1236,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         drift_violations: list[dict[str, Any]],
     ) -> None:
         """[PHASE 8] Saves immutable audit record."""
-        self.audit_log_dir.mkdir(parents=True, exist_ok=True)
+        _wg.ensure_dir(self.audit_log_dir)
 
         {
             "timestamp": datetime.utcnow().isoformat(),
@@ -1600,7 +1599,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.info(f"    [COGNITIVE] Moving {file_path.name} to {decision.target_path}")
 
                 # Ensure target directory exists
-                target.parent.mkdir(parents=True, exist_ok=True)
+                _wg.ensure_dir(target.parent)
 
                 # Use ArchivalGatekeeper for safe move
                 gatekeeper = self._get_archival_gatekeeper()

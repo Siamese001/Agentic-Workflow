@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
 Sovereign RAG Orchestrator - L3 Self-Optimizing RAG System
@@ -120,14 +121,15 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
 
         Persists learned configuration to disk.
         """
-        self.config_path.parent.mkdir(parents=True, exist_ok=True)
-        self.config_path.write_text(
+        _wg.ensure_dir(self.config_path.parent)
+        _wg.write_text(
+            self.config_path,
             json.dumps(
                 {
                     "faithfulness_threshold": self.faithfulness_threshold,
                     "max_hops": self.max_hops,
                     "base_top_k": self.base_top_k,
-                },
+                }
             ),
         )
 
