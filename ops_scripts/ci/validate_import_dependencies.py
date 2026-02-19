@@ -10,7 +10,7 @@ import argparse
 import ast
 import importlib.util
 import os
-import re as _re
+import re
 import sys
 from pathlib import Path
 
@@ -283,21 +283,28 @@ class ImportDependencyValidator:
 
 BASELINE_FILE = Path(__file__).resolve().parents[2] / "ops_scripts" / "hooks" / "import_dep_baseline.txt"
 
+_LINE_NUM_RE = re.compile(r": Line \d+:")
+_PROJECT_ROOT_STR = str(Path(__file__).resolve().parents[2])
 
-_LINE_NUM_RE = _re.compile(r": Line \d+:")
 
+def _normalize_baseline_key(entry: str, project_root: str = _PROJECT_ROOT_STR) -> str:
+    """Normalize a baseline entry to be path-style- and line-number-insensitive.
 
-def _normalize_baseline_key(entry: str) -> str:
-    """Strip 'Line N:' from a baseline entry for location-insensitive comparison.
-
-    This prevents import-shift false positives: adding an import that shifts
-    line numbers does not cause pre-existing baselined violations to appear new.
-
-    Example:
-        "foo.py: Line 22: Module 'x' not found"
-        -> "foo.py: Module 'x' not found"
+    Converts the file path portion to a repo-relative forward-slash path and
+    strips 'Line N:' so that absolute vs relative path differences and
+    import-line shifts do not cause pre-existing violations to appear new.
     """
-    return _LINE_NUM_RE.sub(":", entry, count=1)
+    colon_idx = entry.find(": ")
+    if colon_idx <= 0:
+        return entry
+    path_part = entry[:colon_idx]
+    rest = entry[colon_idx:]
+    path_norm = path_part.replace("\\", "/")
+    root_norm = project_root.replace("\\", "/")
+    if path_norm.startswith(root_norm):
+        path_norm = path_norm[len(root_norm) :].lstrip("/")
+    rest = _LINE_NUM_RE.sub(":", rest, count=1)
+    return path_norm + rest
 
 
 def load_import_baseline() -> set[str]:
