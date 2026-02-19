@@ -10,6 +10,7 @@ import argparse
 import ast
 import importlib.util
 import os
+import re as _re
 import sys
 from pathlib import Path
 
@@ -283,13 +284,29 @@ class ImportDependencyValidator:
 BASELINE_FILE = Path(__file__).resolve().parents[2] / "ops_scripts" / "hooks" / "import_dep_baseline.txt"
 
 
+_LINE_NUM_RE = _re.compile(r": Line \d+:")
+
+
+def _normalize_baseline_key(entry: str) -> str:
+    """Strip 'Line N:' from a baseline entry for location-insensitive comparison.
+
+    This prevents import-shift false positives: adding an import that shifts
+    line numbers does not cause pre-existing baselined violations to appear new.
+
+    Example:
+        "foo.py: Line 22: Module 'x' not found"
+        -> "foo.py: Module 'x' not found"
+    """
+    return _LINE_NUM_RE.sub(":", entry, count=1)
+
+
 def load_import_baseline() -> set[str]:
-    """Load baseline of known import errors."""
+    """Load baseline of known import errors (normalized, location-insensitive)."""
     if not BASELINE_FILE.exists():
         return set()
     try:
         content = BASELINE_FILE.read_text(encoding="utf-8")
-        return {line.strip() for line in content.splitlines() if line.strip()}
+        return {_normalize_baseline_key(line.strip()) for line in content.splitlines() if line.strip()}
     except (OSError, UnicodeDecodeError):
         return set()
 
@@ -369,7 +386,7 @@ def main():
             all_errors.append(f"{py_file}: {err}")
 
     baseline = load_import_baseline()
-    new_errors = [e for e in all_errors if e not in baseline]
+    new_errors = [e for e in all_errors if _normalize_baseline_key(e) not in baseline]
 
     if new_errors:
         print("ERROR: New Import Dependency Errors Found")
