@@ -739,7 +739,11 @@ class PreFlightValidator:
                 )
                 val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if val != 1:
-                    if self.dry_run:
+                    if os.getenv("AGENTIC_BYPASS_LONGPATHS_CHECK") == "1":
+                        logging.warning(
+                            "AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail"
+                        )
+                    elif self.dry_run:
                         logging.warning(
                             "Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode"
                         )
