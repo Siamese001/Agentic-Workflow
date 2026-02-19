@@ -208,6 +208,16 @@ class ImportDependencyValidator:
             # External module: module-level check is sufficient for this hook.
             return True, ""
 
+        # If the module resolves to a package __init__.py, the imported name may
+        # be a submodule (a .py file or sub-package) rather than a name defined
+        # inside __init__.py.  Check for that before parsing the source.
+        if module_path.name == "__init__.py":
+            pkg_dir = module_path.parent
+            if (pkg_dir / f"{imported_name}.py").exists() or (
+                pkg_dir / imported_name / "__init__.py"
+            ).exists():
+                return True, ""
+
         try:
             source = module_path.read_text(encoding="utf-8")
             tree = ast.parse(source, filename=str(module_path))

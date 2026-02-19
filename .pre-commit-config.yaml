@@ -136,7 +136,7 @@ repos:
       - id: module-collision-guard
         name: "T3f: Module Collision Guard"
         entry: python agentic_core/L5_safety/enforcement/module_collision_guard.py
-        language: python
+        language: system
         pass_filenames: false
         always_run: true
         require_serial: true
