@@ -1134,6 +1134,16 @@ class RuntimeStateManager:
         Writes to temp file, sets 600 permissions, then renames.
         """
         try:
+            from agentic_core.L0_routing.scripts.runtime_state_digest import (
+                compute_runtime_state_digest,
+            )
+
+            self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+
+        try:
             state_path = self.project_root / RUNTIME_STATE_FILE
             temp_dir = state_path.parent
             temp_dir.mkdir(parents=True, exist_ok=True)

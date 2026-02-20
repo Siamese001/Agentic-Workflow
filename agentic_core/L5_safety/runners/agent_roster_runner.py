@@ -33,12 +33,11 @@ def _get_ObservabilityProbeExecutor():
 def validate_agent_roster() -> dict:
     """Validate mandatory agent roster integrity."""
     try:
-        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
-            CognitiveDispositionAgent,
-        )
-
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
             ArchitectureGovernorAgent,
+        )
+        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
+            CognitiveDispositionAgent,
         )
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
