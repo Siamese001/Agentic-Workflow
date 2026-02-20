@@ -199,5 +199,5 @@ All other content is identical; only `start_time` and `end_time` fields differ.
 
 ## Evidence Footer
 
-- **Evidence commit hash:** (will be updated after commit)
-- **Git status:** `git status --porcelain` → clean (no untracked files affecting evidence)
+- **Evidence commit hash:** `afed26d2361541b3fde7f4312592e12bcfe84333`
+- **Git status:** `git status --porcelain` → 3 modified files + untracked artifacts (does not affect evidence integrity)
