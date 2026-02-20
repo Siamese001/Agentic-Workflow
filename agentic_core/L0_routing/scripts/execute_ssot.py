@@ -1135,10 +1135,12 @@ class RuntimeStateManager:
         """
         try:
             from agentic_core.L0_routing.scripts.runtime_state_digest import (
+                DIGEST_SCHEMA_VERSION,
                 compute_runtime_state_digest,
             )
 
             self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)
+            self.state["runtime_state_digest_schema_version"] = DIGEST_SCHEMA_VERSION
         # guardian: allow-silent-swallow
         except Exception:
             pass
