@@ -1,9 +1,9 @@
 {
-  "status": "running",
-  "start_time": "2026-02-20T12:36:49.705994",
-  "end_time": null,
-  "current_agent": "GravityLeakRepairAgent",
-  "current_layer": "L5 - Safety",
+  "status": "completed",
+  "start_time": "2026-02-20T13:39:44.901348",
+  "end_time": "2026-02-20T13:48:23.226259",
+  "current_agent": null,
+  "current_layer": "L5 - Compliance",
   "agents_order": [
     "prompt_governance",
     "L5_safety",
@@ -14,490 +14,950 @@
   "completed_agents": [
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-02-20T12:36:51.634360",
+      "time": "2026-02-20T13:39:46.871824",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-02-20T12:36:51.960370",
+      "time": "2026-02-20T13:39:47.219965",
       "success": true,
       "details": "Violations: 14 | Healed: 0 | Conf: 0.54"
     },
     {
       "agent": "FileClassificationAgent",
-      "time": "2026-02-20T12:36:52.479649",
+      "time": "2026-02-20T13:39:47.942738",
       "success": false,
       "details": "Early detection error: 'suggested_folder'"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-02-20T12:36:52.494006",
+      "time": "2026-02-20T13:39:47.952522",
       "success": false,
       "details": "Skipped - Low Confidence"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-02-20T12:36:53.923199",
+      "time": "2026-02-20T13:39:49.258468",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "GravityLeakRepairAgent",
-      "time": "2026-02-20T12:37:01.149869",
+      "time": "2026-02-20T13:39:58.538629",
       "success": true,
-      "details": "Violations: 452 | Fixed: 10"
+      "details": "Violations: 453 | Fixed: 10"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-02-20T12:37:04.260511",
+      "time": "2026-02-20T13:40:04.252910",
       "success": true,
       "details": "Architecture Valid"
     },
     {
       "agent": "DebateSynthesisAgent",
-      "time": "2026-02-20T12:37:04.270180",
+      "time": "2026-02-20T13:40:04.262738",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-02-20T12:37:04.274354",
+      "time": "2026-02-20T13:40:04.266350",
       "success": true,
       "details": "Violations: 1"
     },
     {
       "agent": "SovereignCertifier",
-      "time": "2026-02-20T12:37:04.280652",
+      "time": "2026-02-20T13:40:04.273073",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-02-20T12:37:04.289730",
+      "time": "2026-02-20T13:40:04.284604",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-02-20T12:37:04.718086",
+      "time": "2026-02-20T13:40:04.637218",
       "success": true,
       "details": "Violations: 14 | Conf: 0.44 (healing skipped)"
     },
     {
       "agent": "FileClassificationAgent",
-      "time": "2026-02-20T12:37:05.439382",
+      "time": "2026-02-20T13:40:05.217756",
       "success": false,
       "details": "Early detection error: 'suggested_folder'"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-02-20T12:37:05.446987",
+      "time": "2026-02-20T13:40:05.222944",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-02-20T12:37:09.579121",
+      "time": "2026-02-20T13:40:11.872990",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "GravityLeakRepairAgent",
-      "time": "2026-02-20T12:37:18.241777",
+      "time": "2026-02-20T13:40:25.031160",
       "success": true,
       "details": "Violations: 433 | Fixed: 10"
     },
     {
       "agent": "SystemArchitectAgent",
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.219631",
       "success": true,
       "details": "Architecture Valid"
     },
     {
       "agent": "DebateSynthesisAgent",
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.230992",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-02-20T12:37:21.811371",
+      "time": "2026-02-20T13:40:32.238510",
       "success": true,
       "details": "Violations: 1"
     },
     {
       "agent": "SovereignCertifier",
-      "time": "2026-02-20T12:37:21.823370",
+      "time": "2026-02-20T13:40:32.260839",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTReconcilerAgent",
-      "time": "2026-02-20T12:37:21.837245",
+      "time": "2026-02-20T13:40:32.274875",
       "success": true,
       "details": "Drift violations: 0"
     },
     {
       "agent": "LocationAgent",
-      "time": "2026-02-20T12:37:22.167966",
+      "time": "2026-02-20T13:40:32.629181",
       "success": true,
       "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
     },
     {
       "agent": "FileClassificationAgent",
-      "time": "2026-02-20T12:37:22.710168",
+      "time": "2026-02-20T13:40:33.231087",
       "success": false,
       "details": "Early detection error: 'suggested_folder'"
     },
     {
       "agent": "HierarchyAgent",
-      "time": "2026-02-20T12:37:22.718870",
+      "time": "2026-02-20T13:40:33.242671",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-02-20T12:37:26.505381",
+      "time": "2026-02-20T13:40:40.546115",
       "success": true,
       "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-20T13:45:05.573049",
+      "success": true,
+      "details": "Violations: 423 | Fixed: 8"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-20T13:45:17.508529",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-20T13:45:17.523146",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-20T13:45:17.532661",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-20T13:45:17.543445",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-20T13:45:17.574291",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-20T13:45:17.934398",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-20T13:45:18.842855",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-20T13:45:18.853778",
+      "success": true,
+      "details": "No violations found"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-20T13:45:32.166319",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-20T13:45:53.260853",
+      "success": true,
+      "details": "Violations: 401 | Fixed: 10"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-20T13:46:05.790225",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-20T13:46:05.801180",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-20T13:46:05.805259",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-20T13:46:05.815212",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-20T13:46:05.822920",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-20T13:46:06.197093",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-20T13:46:06.746647",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-20T13:46:06.755327",
+      "success": false,
+      "details": "Skipped - Low Confidence"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-20T13:46:25.138501",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-20T13:48:03.123031",
+      "success": true,
+      "details": "Violations: 391 | Fixed: 9"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-20T13:48:23.192352",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-20T13:48:23.202749",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-20T13:48:23.211958",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-20T13:48:23.223251",
+      "success": true,
+      "details": "Certificate Issued"
     }
   ],
   "events": [
     {
-      "time": "2026-02-20T12:36:49.705994",
+      "time": "2026-02-20T13:39:44.901348",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (L3 Attempt)"
     },
     {
-      "time": "2026-02-20T12:36:51.625960",
+      "time": "2026-02-20T13:39:46.864103",
       "type": "domain_start",
       "message": "Entering Domain: prompt_governance"
     },
     {
-      "time": "2026-02-20T12:36:51.625960",
+      "time": "2026-02-20T13:39:46.864103",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-02-20T12:36:51.634360",
+      "time": "2026-02-20T13:39:46.871824",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-02-20T12:36:51.637920",
+      "time": "2026-02-20T13:39:46.875341",
       "type": "agent_start",
       "message": "→ Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:36:51.939674",
+      "time": "2026-02-20T13:39:47.200541",
       "type": "decision",
       "message": "Location Healing: LLM-ARBITRATED-FLASH (0.54)"
     },
     {
-      "time": "2026-02-20T12:36:51.960370",
+      "time": "2026-02-20T13:39:47.219965",
       "type": "agent_end",
       "message": "✓ Completed LocationAgent"
     },
     {
-      "time": "2026-02-20T12:36:51.963073",
+      "time": "2026-02-20T13:39:47.226073",
       "type": "agent_start",
       "message": "→ Executing FileClassificationAgent (L5 - Safety (Early Detection))"
     },
     {
-      "time": "2026-02-20T12:36:52.479649",
+      "time": "2026-02-20T13:39:47.942738",
       "type": "agent_end",
       "message": "❌ Completed FileClassificationAgent"
     },
     {
-      "time": "2026-02-20T12:36:52.488127",
+      "time": "2026-02-20T13:39:47.949464",
       "type": "agent_start",
       "message": "→ Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:36:52.494006",
+      "time": "2026-02-20T13:39:47.952522",
       "type": "decision",
       "message": "Hierarchy Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:36:52.494006",
+      "time": "2026-02-20T13:39:47.952522",
       "type": "agent_end",
       "message": "❌ Completed HierarchyAgent"
     },
     {
-      "time": "2026-02-20T12:36:52.497071",
+      "time": "2026-02-20T13:39:47.957059",
       "type": "decision",
       "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:36:52.497071",
+      "time": "2026-02-20T13:39:47.957059",
       "type": "warning",
       "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:36:52.498136",
+      "time": "2026-02-20T13:39:47.957059",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:36:53.923199",
+      "time": "2026-02-20T13:39:49.258468",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-02-20T12:36:53.927762",
+      "time": "2026-02-20T13:39:49.261121",
       "type": "agent_start",
       "message": "→ Executing GravityLeakRepairAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:01.149869",
+      "time": "2026-02-20T13:39:58.538629",
       "type": "agent_end",
       "message": "✓ Completed GravityLeakRepairAgent"
     },
     {
-      "time": "2026-02-20T12:37:01.156037",
+      "time": "2026-02-20T13:39:58.542794",
       "type": "agent_start",
       "message": "→ Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:04.260511",
+      "time": "2026-02-20T13:40:04.252910",
       "type": "agent_end",
       "message": "✓ Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-02-20T12:37:04.266674",
+      "time": "2026-02-20T13:40:04.259627",
       "type": "agent_start",
       "message": "→ Executing DebateSynthesisAgent (Prompt Governance)"
     },
     {
-      "time": "2026-02-20T12:37:04.270180",
+      "time": "2026-02-20T13:40:04.262738",
       "type": "agent_end",
       "message": "✓ Completed DebateSynthesisAgent"
     },
     {
-      "time": "2026-02-20T12:37:04.271245",
+      "time": "2026-02-20T13:40:04.264278",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-02-20T12:37:04.274354",
+      "time": "2026-02-20T13:40:04.266350",
       "type": "agent_end",
       "message": "✓ Completed RootHygieneAgent"
     },
     {
-      "time": "2026-02-20T12:37:04.275355",
+      "time": "2026-02-20T13:40:04.268446",
       "type": "agent_start",
       "message": "→ Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-02-20T12:37:04.280652",
+      "time": "2026-02-20T13:40:04.273073",
       "type": "agent_end",
       "message": "✓ Completed SovereignCertifier"
     },
     {
-      "time": "2026-02-20T12:37:04.283184",
+      "time": "2026-02-20T13:40:04.276163",
       "type": "domain_start",
       "message": "Entering Domain: L5_safety"
     },
     {
-      "time": "2026-02-20T12:37:04.283184",
+      "time": "2026-02-20T13:40:04.276163",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-02-20T12:37:04.289730",
+      "time": "2026-02-20T13:40:04.284604",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-02-20T12:37:04.291237",
+      "time": "2026-02-20T13:40:04.285604",
       "type": "agent_start",
       "message": "→ Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:04.718086",
+      "time": "2026-02-20T13:40:04.637218",
       "type": "decision",
       "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:04.718086",
+      "time": "2026-02-20T13:40:04.637218",
       "type": "agent_end",
       "message": "✓ Completed LocationAgent"
     },
     {
-      "time": "2026-02-20T12:37:04.720594",
+      "time": "2026-02-20T13:40:04.638757",
       "type": "agent_start",
       "message": "→ Executing FileClassificationAgent (L5 - Safety (Early Detection))"
     },
     {
-      "time": "2026-02-20T12:37:05.439382",
+      "time": "2026-02-20T13:40:05.217756",
       "type": "agent_end",
       "message": "❌ Completed FileClassificationAgent"
     },
     {
-      "time": "2026-02-20T12:37:05.445485",
+      "time": "2026-02-20T13:40:05.222944",
       "type": "agent_start",
       "message": "→ Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:05.446987",
+      "time": "2026-02-20T13:40:05.222944",
       "type": "agent_end",
       "message": "✓ Completed HierarchyAgent"
     },
     {
-      "time": "2026-02-20T12:37:05.449673",
+      "time": "2026-02-20T13:40:05.227124",
       "type": "decision",
       "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:05.449673",
+      "time": "2026-02-20T13:40:05.227124",
       "type": "warning",
       "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:05.449673",
+      "time": "2026-02-20T13:40:05.227124",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:09.579121",
+      "time": "2026-02-20T13:40:11.872990",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-02-20T12:37:09.581205",
+      "time": "2026-02-20T13:40:11.874001",
       "type": "agent_start",
       "message": "→ Executing GravityLeakRepairAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:18.241777",
+      "time": "2026-02-20T13:40:25.031160",
       "type": "agent_end",
       "message": "✓ Completed GravityLeakRepairAgent"
     },
     {
-      "time": "2026-02-20T12:37:18.244823",
+      "time": "2026-02-20T13:40:25.032303",
       "type": "agent_start",
       "message": "→ Executing SystemArchitectAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.219631",
       "type": "agent_end",
       "message": "✓ Completed SystemArchitectAgent"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.223155",
       "type": "decision",
       "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.223155",
       "type": "warning",
       "message": "Healing skipped - Low confidence"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.223155",
       "type": "agent_start",
       "message": "→ Executing DebateSynthesisAgent (Prompt Governance)"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.230992",
       "type": "agent_end",
       "message": "✓ Completed DebateSynthesisAgent"
     },
     {
-      "time": "2026-02-20T12:37:21.793137",
+      "time": "2026-02-20T13:40:32.232525",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-02-20T12:37:21.811371",
+      "time": "2026-02-20T13:40:32.238510",
       "type": "agent_end",
       "message": "✓ Completed RootHygieneAgent"
     },
     {
-      "time": "2026-02-20T12:37:21.814370",
+      "time": "2026-02-20T13:40:32.242121",
       "type": "agent_start",
       "message": "→ Executing SovereignCertifier (L5 - Compliance)"
     },
     {
-      "time": "2026-02-20T12:37:21.823370",
+      "time": "2026-02-20T13:40:32.260839",
       "type": "agent_end",
       "message": "✓ Completed SovereignCertifier"
     },
     {
-      "time": "2026-02-20T12:37:21.830434",
+      "time": "2026-02-20T13:40:32.267514",
       "type": "domain_start",
       "message": "Entering Domain: L3_orchestration"
     },
     {
-      "time": "2026-02-20T12:37:21.830434",
+      "time": "2026-02-20T13:40:32.267514",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-02-20T12:37:21.837245",
+      "time": "2026-02-20T13:40:32.274875",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTReconcilerAgent"
     },
     {
-      "time": "2026-02-20T12:37:21.840248",
+      "time": "2026-02-20T13:40:32.278379",
       "type": "agent_start",
       "message": "→ Executing LocationAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:22.167966",
+      "time": "2026-02-20T13:40:32.629181",
       "type": "decision",
       "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:22.167966",
+      "time": "2026-02-20T13:40:32.629181",
       "type": "agent_end",
       "message": "✓ Completed LocationAgent"
     },
     {
-      "time": "2026-02-20T12:37:22.176509",
+      "time": "2026-02-20T13:40:32.632613",
       "type": "agent_start",
       "message": "→ Executing FileClassificationAgent (L5 - Safety (Early Detection))"
     },
     {
-      "time": "2026-02-20T12:37:22.710168",
+      "time": "2026-02-20T13:40:33.231087",
       "type": "agent_end",
       "message": "❌ Completed FileClassificationAgent"
     },
     {
-      "time": "2026-02-20T12:37:22.718870",
+      "time": "2026-02-20T13:40:33.237776",
       "type": "agent_start",
       "message": "→ Executing HierarchyAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:22.718870",
+      "time": "2026-02-20T13:40:33.242671",
       "type": "agent_end",
       "message": "✓ Completed HierarchyAgent"
     },
     {
-      "time": "2026-02-20T12:37:22.726586",
+      "time": "2026-02-20T13:40:33.246886",
       "type": "decision",
       "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:22.726586",
+      "time": "2026-02-20T13:40:33.246886",
       "type": "warning",
       "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
     },
     {
-      "time": "2026-02-20T12:37:22.726935",
+      "time": "2026-02-20T13:40:33.246886",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-02-20T12:37:26.505381",
+      "time": "2026-02-20T13:40:40.546115",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-02-20T12:37:26.508379",
+      "time": "2026-02-20T13:40:40.549238",
       "type": "agent_start",
       "message": "→ Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:05.575599",
+      "type": "agent_end",
+      "message": "✓ Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:05.605198",
+      "type": "agent_start",
+      "message": "→ Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.508529",
+      "type": "agent_end",
+      "message": "✓ Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:17.517897",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:45:17.517897",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-20T13:45:17.518435",
+      "type": "agent_start",
+      "message": "→ Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.523146",
+      "type": "agent_end",
+      "message": "✓ Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:17.526920",
+      "type": "agent_start",
+      "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.532661",
+      "type": "agent_end",
+      "message": "✓ Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:17.535168",
+      "type": "agent_start",
+      "message": "→ Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.543445",
+      "type": "agent_end",
+      "message": "✓ Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-20T13:45:17.549597",
+      "type": "domain_start",
+      "message": "Entering Domain: L2_execution"
+    },
+    {
+      "time": "2026-02-20T13:45:17.549597",
+      "type": "agent_start",
+      "message": "→ Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.574291",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:17.578551",
+      "type": "agent_start",
+      "message": "→ Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:17.934398",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:45:17.934398",
+      "type": "agent_end",
+      "message": "✓ Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:17.937421",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-20T13:45:18.842855",
+      "type": "agent_end",
+      "message": "❌ Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:18.850502",
+      "type": "agent_start",
+      "message": "→ Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:18.853778",
+      "type": "agent_end",
+      "message": "✓ Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:18.858374",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:45:18.858374",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:45:18.858374",
+      "type": "agent_start",
+      "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:32.166319",
+      "type": "agent_end",
+      "message": "✓ Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:32.168957",
+      "type": "agent_start",
+      "message": "→ Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:45:53.260853",
+      "type": "agent_end",
+      "message": "✓ Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-20T13:45:53.265226",
+      "type": "agent_start",
+      "message": "→ Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:46:05.790225",
+      "type": "agent_end",
+      "message": "✓ Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:05.796572",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:46:05.796572",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-20T13:46:05.796572",
+      "type": "agent_start",
+      "message": "→ Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-20T13:46:05.801180",
+      "type": "agent_end",
+      "message": "✓ Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:05.802731",
+      "type": "agent_start",
+      "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-20T13:46:05.805259",
+      "type": "agent_end",
+      "message": "✓ Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:05.808393",
+      "type": "agent_start",
+      "message": "→ Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-20T13:46:05.815212",
+      "type": "agent_end",
+      "message": "✓ Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-20T13:46:05.818856",
+      "type": "domain_start",
+      "message": "Entering Domain: L0_routing"
+    },
+    {
+      "time": "2026-02-20T13:46:05.818856",
+      "type": "agent_start",
+      "message": "→ Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-20T13:46:05.822920",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:05.822920",
+      "type": "agent_start",
+      "message": "→ Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:46:06.197093",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:46:06.197093",
+      "type": "agent_end",
+      "message": "✓ Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:06.199496",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-20T13:46:06.746647",
+      "type": "agent_end",
+      "message": "❌ Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:06.752905",
+      "type": "agent_start",
+      "message": "→ Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:46:06.755327",
+      "type": "decision",
+      "message": "Hierarchy Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:46:06.755327",
+      "type": "agent_end",
+      "message": "❌ Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:06.757403",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:46:06.757403",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-20T13:46:06.757403",
+      "type": "agent_start",
+      "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:46:25.138501",
+      "type": "agent_end",
+      "message": "✓ Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-20T13:46:25.140592",
+      "type": "agent_start",
+      "message": "→ Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:48:03.123031",
+      "type": "agent_end",
+      "message": "✓ Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-20T13:48:03.137059",
+      "type": "agent_start",
+      "message": "→ Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-20T13:48:23.192352",
+      "type": "agent_end",
+      "message": "✓ Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-20T13:48:23.199112",
+      "type": "agent_start",
+      "message": "→ Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-20T13:48:23.202749",
+      "type": "agent_end",
+      "message": "✓ Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-20T13:48:23.206866",
+      "type": "agent_start",
+      "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-20T13:48:23.211958",
+      "type": "agent_end",
+      "message": "✓ Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-20T13:48:23.214996",
+      "type": "agent_start",
+      "message": "→ Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-20T13:48:23.223251",
+      "type": "agent_end",
+      "message": "✓ Completed SovereignCertifier"
     }
   ],
   "meta_learning": {
@@ -514,954 +974,28 @@
   "compliance_scores": {
     "prompt_governance": 0.5368,
     "L5_safety": 0.43920000000000003,
-    "L3_orchestration": 0.48800000000000004
+    "L3_orchestration": 0.48800000000000004,
+    "L2_execution": 0.48800000000000004,
+    "L0_routing": 0.48800000000000004
   },
   "decisions_made": [],
   "compliance_report": {
-    "success": false,
+    "success": true,
     "stats": {
-      "violations_found": 103,
+      "violations_found": 0,
       "violations_fixed": 0,
       "errors": 0,
       "drift_detected": 0
     },
-    "violations": [
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py",
-        "message": "Class 'VulnerabilityTest' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\AdversarialRedTeamerAgent.py",
-        "message": "Class 'RedTeamResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py",
-        "message": "Gravity violation: L5 cannot import from L6 (module: agentic_core.L6_observability.dashboards.data_generator)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L5",
-        "target_layer": "L6"
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\BenchmarkingAgent.py",
-        "message": "Class 'BenchmarkResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\BenchmarkingAgent.py",
-        "message": "Class 'BenchmarkResultActual' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\BenchmarkingAgent.py",
-        "message": "Class 'BenchmarkSuite' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\BenchmarkingAgent.py",
-        "message": "Class 'BenchmarkContext' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
-        "message": "Class 'DetectionType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
-        "message": "Class 'Severity' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
-        "message": "Class 'Detection' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeDetectorAgent.py",
-        "message": "Class 'DetectorConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
-        "message": "Class 'EnforcementType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
-        "message": "Class 'ViolationSeverity' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
-        "message": "Class 'CodeViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeEnforcerAgent.py",
-        "message": "Class 'EnforcementConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
-        "message": "Class 'CodeHealingStrategy' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
-        "message": "Class 'HealingType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
-        "message": "Class 'HealingAction' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeHealerAgent.py",
-        "message": "Class 'HealerConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
-        "message": "Class 'ViolationType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
-        "message": "Class 'Violation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
-        "message": "Class 'RuleSet' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CodeValidatorAgent.py",
-        "message": "Class 'ValidationReport' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CognitiveDispositionAgent.py",
-        "message": "Class 'DispositionDecision' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
-        "message": "Class 'ComplexityAnalyzerStrategy' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
-        "message": "Class 'ComplexityViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ComplexityAnalyzerAgent.py",
-        "message": "Class 'ComplexityConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ConstitutionalReviewerAgent.py",
-        "message": "Class 'ConstitutionalReviewResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\CredentialScannerAgent.py",
-        "message": "Class 'CredentialMatch' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
-        "message": "Class 'DDDViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
-        "message": "Class 'MCPHardenedMixin' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\DDDAlignmentAgent.py",
-        "message": "Class 'SubatomicTestingMixin' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\DuplicateCodeDetectorAgent.py",
-        "message": "Class 'DuplicateFile' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\DynamicSealAgent.py",
-        "message": "Class 'SealResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\FileClassificationAgent.py",
-        "message": "Class 'ClassificationResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\FilesystemSSOTReconcilerAgent.py",
-        "message": "Class 'ReconciliationViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\FilesystemSSOTReconcilerAgent.py",
-        "message": "Class 'MCPHardenedMixin' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\FilesystemSSOTReconcilerAgent.py",
-        "message": "Class 'SubatomicTestingMixin' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\GenerativeGuardAgent.py",
-        "message": "Class 'CanonBaseAgentInterface' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
-        "message": "Class 'DependencyGraph' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
-        "message": "Class 'Violation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\GovernanceAgent.py",
-        "message": "Class 'MCPHardenedMixin' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\GravityLeakRepairAgent.py",
-        "message": "Class 'GravityFix' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\HygieneGuardianAgent.py",
-        "message": "Class 'HygieneViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'ValidationRejectionReason' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'Violation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'IntegrityGateResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'FinancialProofPoint' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'KeyTechnology' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'KeyExecutive' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'StrategicLayer' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'TechnicalLayer' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'LeadershipLayer' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'CitationMap' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\IntegrityGateExecutorAgent.py",
-        "message": "Class 'DeepResearchOutput' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py",
-        "message": "Gravity violation: L5 cannot import from L6 (module: agentic_core.L6_observability.reasoning.layer_decorator)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L5",
-        "target_layer": "L6"
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\NamingAgent.py",
-        "message": "Class 'PlacementResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\PreCommitSovereignAgent.py",
-        "message": "Class 'ViolationReport' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
-        "message": "Class 'HealingMetrics' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
-        "message": "Class 'FileAudit' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\PredictiveCostAuditorAgent.py",
-        "message": "Class 'CostReport' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ReportLocationAgent.py",
-        "message": "Class 'ReportLocationHealResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
-        "message": "Class 'ResourceType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
-        "message": "Class 'AllocationStatus' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
-        "message": "Class 'ResourceAllocation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
-        "message": "Class 'ResourceBudget' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\ResourceManagerAgent.py",
-        "message": "Class 'ResourceConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
-        "message": "Class 'SafetyThreatType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
-        "message": "Class 'ThreatSeverity' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
-        "message": "Class 'SafetyThreat' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyDetectorAgent.py",
-        "message": "Class 'SafetyConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
-        "message": "Class 'ExecutionStatus' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
-        "message": "Class 'BlockReason' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
-        "message": "Class 'ExecutionResult' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
-        "message": "Class 'SafetyGate' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyExecutorAgent.py",
-        "message": "Class 'ExecutorConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py",
-        "message": "Class 'ViolationCheck' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SafetyInspectorAgent.py",
-        "message": "Class 'ConstitutionalOverseer' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'PermissionLevel' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'SecurityAction' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'SecurityAuditEntry' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'AgentPermission' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'secure_config' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py",
-        "message": "Class 'secure_checkpoint' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
-        "message": "Class 'ThreatLevel' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
-        "message": "Class 'RuleType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
-        "message": "Class 'ThreatPattern' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
-        "message": "Class 'SafetyRule' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SelfUpdatingSafetyEngineAgent.py",
-        "message": "Class 'ThreatDetection' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent.py",
-        "message": "Class 'SovereignToolsmith' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\SovereignActionPlaneAgent.py",
-        "message": "Class 'SovereignSandbox' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
-        "message": "Class 'StructureViolationType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
-        "message": "Class 'StructureViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructuralValidatorAgent.py",
-        "message": "Class 'StructureConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
-        "message": "Class 'StructureViolationType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
-        "message": "Class 'StructureViolation' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
-        "message": "Class 'NamingRule' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureEnforcerAgent.py",
-        "message": "Class 'StructureConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
-        "message": "Class 'StructureHealingType' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
-        "message": "Class 'StructureHealingAction' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\StructureHealerAgent.py",
-        "message": "Class 'StructureHealerConfig' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "NAMING",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\reasoning\\TerritoryChangeHandlerAgent.py",
-        "message": "Class 'AutonomousRagDaemon' in agent file must end with 'Agent'",
-        "severity": "ERROR",
-        "suggestion": null,
-        "source_layer": null,
-        "target_layer": null
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\runners\\agent_roster_runner.py",
-        "message": "Gravity violation: L5 cannot import from L6 (module: agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L5",
-        "target_layer": "L6"
-      }
-    ],
+    "violations": [],
     "drift_violations": [],
     "target_territories": [
-      "L5_safety"
+      "L0_routing"
     ]
   },
-  "runtime_state_digest_sha256": "093099e5c7bcc231e4dfb20134d8a425522ae694144bbe75264c9267c62cd50d",
+  "runtime_state_digest_sha256": "ac0029d40eff267b1b39da81985db90b39bdb5bb1c7ce8932af9ce18ac6c13c4",
   "runtime_state_digest_schema_version": 1,
-  "current_territory": "L3_orchestration",
+  "current_territory": "L0_routing",
   "location_violations": [
     {
       "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\__init__.py",
@@ -1591,16 +1125,40 @@
   "gravity_violations": [
     {
       "type": "GRAVITY",
-      "message": "Found 433 gravity violations (layer inversions)",
+      "message": "Found 391 gravity violations (layer inversions)",
       "severity": "high",
       "recommended_action": "Review and fix layer boundary violations",
       "confidence": 0.9,
-      "violations_found": 433,
-      "violations_fixed": 10
+      "violations_found": 391,
+      "violations_fixed": 9
     }
   ],
   "conversational_violations": [],
   "hygiene_violations": [
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
     {
       "type": "ILLEGAL_CACHE_DIR",
       "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",

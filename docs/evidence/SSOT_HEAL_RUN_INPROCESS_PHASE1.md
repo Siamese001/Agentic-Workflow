@@ -1,7 +1,7 @@
 # SSOT Healing Run — In-Process Phase 1 Evidence
 
-**Date:** 2025-02-20  
-**Operator:** Cascade (SSOT Healing Execution Operator)  
+**Date:** 2025-02-20
+**Operator:** Cascade (SSOT Healing Execution Operator)
 **Mode:** In-Process Direct Function Invocation (No CLI/subprocess)
 
 ---
