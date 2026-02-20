@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.utils.layer_gravity import (
+from agentic_core.L4_state.utils.layer_gravity_util import (
     GRAVITY_RULES,
     LAYER_ORDER,
     extract_layer_from_module,
