@@ -291,3 +291,84 @@ def test_assembler_cannot_bypass_validator_monkeypatch():
                 context_data={"retrieval_metadata": _VALID_RETRIEVAL},
                 injections=[],
             )
+
+
+# ---------------------------------------------------------------------------
+# Wave 3 — Capability wiring closure
+# ---------------------------------------------------------------------------
+
+_VALID_TELEMETRY = {"hit_rate": 0.9, "recall_estimate": 0.85, "empty_result_signal": False}
+
+
+# telemetry_envelope validation
+def test_telemetry_envelope_valid_passes():
+    ok, code, normalized = _vcc({"telemetry_envelope": _VALID_TELEMETRY})
+    assert ok is True
+    assert code is None
+    assert normalized["telemetry_envelope"] == _VALID_TELEMETRY
+
+
+def test_telemetry_envelope_missing_hit_rate_fails():
+    te = {"recall_estimate": 0.5, "empty_result_signal": True}
+    ok, code, normalized = _vcc({"telemetry_envelope": te})
+    assert ok is False
+    assert code == "INVALID_TELEMETRY_ENVELOPE"
+    assert normalized == {}
+
+
+def test_telemetry_envelope_wrong_type_for_empty_result_signal_fails():
+    te = {"hit_rate": 0.9, "recall_estimate": 0.5, "empty_result_signal": "yes"}
+    ok, code, normalized = _vcc({"telemetry_envelope": te})
+    assert ok is False
+    assert code == "INVALID_TELEMETRY_ENVELOPE"
+    assert normalized == {}
+
+
+def test_telemetry_envelope_error_code_is_uppercase():
+    from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
+
+    assert osv.INVALID_TELEMETRY_ENVELOPE == osv.INVALID_TELEMETRY_ENVELOPE.upper()
+
+
+# iterative feedback directive
+def test_iterative_feedback_directive_exists_and_is_non_empty():
+    from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+
+    assert isinstance(ITERATIVE_FEEDBACK_DIRECTIVE, str)
+    assert len(ITERATIVE_FEEDBACK_DIRECTIVE) > 0
+
+
+def test_iterative_feedback_directive_contains_no_mutation_authority():
+    from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+
+    lower = ITERATIVE_FEEDBACK_DIRECTIVE.lower()
+    assert "no mutation" in lower or "read-only" in lower or "no authority" in lower
+
+
+# structured field pass-through: all three contract sections in one payload
+def test_full_structured_payload_passes_validator():
+    payload = {
+        "retrieval_metadata": _VALID_RETRIEVAL,
+        "citations": [_VALID_CITATION],
+        "telemetry_envelope": _VALID_TELEMETRY,
+        "other": "data",
+    }
+    ok, code, normalized = _vcc(payload)
+    assert ok is True
+    assert code is None
+    assert "retrieval_metadata" in normalized
+    assert "citations" in normalized
+    assert "telemetry_envelope" in normalized
+    assert normalized["other"] == "data"
+
+
+def test_full_structured_payload_normalized_is_copy():
+    payload = {
+        "retrieval_metadata": _VALID_RETRIEVAL,
+        "citations": [_VALID_CITATION],
+        "telemetry_envelope": _VALID_TELEMETRY,
+    }
+    ok, code, normalized = _vcc(payload)
+    assert ok is True
+    assert normalized is not payload
+    assert normalized["retrieval_metadata"] is not payload["retrieval_metadata"]

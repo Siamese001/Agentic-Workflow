@@ -118,6 +118,7 @@ MISSING_CITATION_FIELDS = "MISSING_CITATION_FIELDS"
 INCOMPLETE_RETRIEVAL_METADATA = "INCOMPLETE_RETRIEVAL_METADATA"
 MUTATION_VERB_IN_RETRIEVAL = "MUTATION_VERB_IN_RETRIEVAL"
 INVALID_RETRIEVAL_FIELD_CONSTRAINT = "INVALID_RETRIEVAL_FIELD_CONSTRAINT"
+INVALID_TELEMETRY_ENVELOPE = "INVALID_TELEMETRY_ENVELOPE"
 
 _invariant_validated = False
 
@@ -189,8 +190,24 @@ def validate_context_contract(payload: dict) -> tuple[bool, str | None, dict]:
                 return (False, MISSING_CITATION_FIELDS, {})
         normalized["citations"] = [{k: item[k] for k in _REQUIRED_CITATION_KEYS} for item in citations]
 
+    if "telemetry_envelope" in payload:
+        te = payload["telemetry_envelope"]
+        if not isinstance(te, dict):
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        if not isinstance(te.get("hit_rate"), (int, float)):
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        if not isinstance(te.get("recall_estimate"), (int, float)):
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        if not isinstance(te.get("empty_result_signal"), bool):
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        normalized["telemetry_envelope"] = {
+            "hit_rate": te["hit_rate"],
+            "recall_estimate": te["recall_estimate"],
+            "empty_result_signal": te["empty_result_signal"],
+        }
+
     for key, value in payload.items():
-        if key not in ("retrieval_metadata", "citations"):
+        if key not in ("retrieval_metadata", "citations", "telemetry_envelope"):
             normalized[key] = value
 
     return (True, None, normalized)

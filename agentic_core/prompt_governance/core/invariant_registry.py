@@ -24,6 +24,13 @@ MUTATION_BLOCK_SCHEMA: dict = {
 }
 
 
+ITERATIVE_FEEDBACK_DIRECTIVE: str = (
+    "PRIVATE REASONING ONLY: You may refine your internal query up to 3 times "
+    "before producing output. No mutation of external state. No authority granted. "
+    "Re-query is advisory and read-only."
+)
+
+
 def validate_invariant_registry() -> None:
     """Validate READ_ONLY_ISOLATION against MUTATION_BLOCK_SCHEMA.
 
