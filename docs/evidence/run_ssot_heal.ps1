@@ -70,6 +70,9 @@ else:
 sys.exit(exit_code if isinstance(exit_code, int) else 0)
 '@ | Out-File -FilePath $runnerScript -Encoding utf8
 
+# ── Baseline snapshot before run ────────────────────────────────────────────
+$baseDirty = @(git status --porcelain=v1 agentic_core/ 2>$null)
+
 # ── Synchronous execution with timeout ───────────────────────────────────────
 Write-Host "[RUN] Starting python (synchronous, ${timeoutSec}s timeout)..."
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -123,7 +126,12 @@ Remove-Item $runnerScript -Force -ErrorAction SilentlyContinue
 $runtimeSeconds = $sw.Elapsed.TotalSeconds
 $charmapCount   = (Select-String -Path $logPath -Pattern "charmap"            -ErrorAction SilentlyContinue | Measure-Object).Count
 $abstractCount  = (Select-String -Path $logPath -Pattern "Create abstraction layer" -ErrorAction SilentlyContinue | Measure-Object).Count
-$diffCount      = (git diff --name-only agentic_core/ 2>$null | Measure-Object).Count
+
+$afterDirty  = @(git status --porcelain=v1 agentic_core/ 2>$null)
+$basePaths   = $baseDirty  | ForEach-Object { $_.Substring(3).Trim() }
+$afterPaths  = $afterDirty | ForEach-Object { $_.Substring(3).Trim() }
+$newDirty    = @($afterPaths | Where-Object { $_ -notin $basePaths })
+$newDirtyCount = $newDirty.Count
 
 $runtimeFmt = "{0:N2}" -f $runtimeSeconds
 
@@ -134,7 +142,9 @@ EXIT_CODE=$exitCode
 RUNTIME_SECONDS=$runtimeFmt
 CHARMAP_COUNT=$charmapCount
 CREATE_ABSTRACTION_LAYER_COUNT=$abstractCount
-AGENTIC_CORE_DIFF_COUNT=$diffCount
+AGENTIC_CORE_DIRTY_BEFORE=$($baseDirty.Count)
+AGENTIC_CORE_DIRTY_AFTER=$($afterDirty.Count)
+AGENTIC_CORE_NEW_DIRTY_FROM_RUN_COUNT=$newDirtyCount
 "@
 $metricsBlock | Out-File -FilePath $logPath -Append -Encoding utf8
 Write-Host $metricsBlock
