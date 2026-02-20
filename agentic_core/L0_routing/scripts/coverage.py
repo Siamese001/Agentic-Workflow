@@ -80,18 +80,11 @@ class CoverageHealer:
         return False
 
 
-def _get_ConvergenceEngine():
-    """Lazy loader for ConvergenceEngine (upward L0->L3 seam)."""
+async def run_autonomous_remediation():
+    """Execute Phase 6 autonomous remediation loop."""
     from agentic_core.L3_orchestration.reasoning.mission_controller_convergence import (
         ConvergenceEngine,
     )
-
-    return ConvergenceEngine
-
-
-async def run_autonomous_remediation():
-    """Execute Phase 6 autonomous remediation loop."""
-    ConvergenceEngine = _get_ConvergenceEngine()
 
     print("🚀 Phase 6: Autonomous Remediation Loop")
     print("=" * 60)

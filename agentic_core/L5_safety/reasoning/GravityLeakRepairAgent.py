@@ -39,10 +39,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.utils.context_manager import get_context_manager
-from agentic_core.L4_state.utils.layer_gravity import LAYER_ORDER
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
+from agentic_core.L5_safety.validators.context_validator import get_context_manager
 
 Logger = logging.getLogger(__name__)
 
@@ -305,7 +304,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         # Get violations from StructuralValidatorAgent
         try:
-            from agentic_core.L5_safety.reasoning.StructuralValidatorAgent_types import (
+            from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import (
                 StructuralValidatorAgent,
                 StructureConfig,
             )

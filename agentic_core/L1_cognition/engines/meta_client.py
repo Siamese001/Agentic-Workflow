@@ -107,8 +107,8 @@ class MetaLearningClient:
 
     def __post_init__(self) -> None:
         """Initialize Redis and Pinecone connections."""
-        self._get_redis_connection()
-        self._get_pinecone_connection()
+        self._initialize_redis()
+        self._initialize_pinecone()
         Logger.info("[MetaLearningClient] Initialized with domain isolation")
 
     @classmethod
@@ -117,7 +117,7 @@ class MetaLearningClient:
         global _singleton_instance
         _singleton_instance = None
 
-    def _get_redis_connection(self) -> None:
+    def _initialize_redis(self) -> None:
         """Initialize Redis connection with fallback to local cache."""
         try:
             from pathlib import Path
@@ -133,7 +133,7 @@ class MetaLearningClient:
             Logger.warning(f"[MetaLearningClient] Redis unavailable, using local cache: {e}")
             self._redis_client = None
 
-    def _get_pinecone_connection(self) -> None:
+    def _initialize_pinecone(self) -> None:
         """Initialize Pinecone connection."""
         try:
             from pathlib import Path
@@ -421,7 +421,7 @@ class MetaLearningClient:
             Logger.error(f"[MetaLearningClient] Pattern retrieval failed: {e}")
             return []
 
-    def _get_embedding(self, violation: dict[str, Any]) -> list[float] | None:
+    def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
         """Generate embedding for a violation using the embedding service."""
         try:
             from pathlib import Path

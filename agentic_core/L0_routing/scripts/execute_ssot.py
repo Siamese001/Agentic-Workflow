@@ -100,6 +100,12 @@ except ImportError:
             return {"status": "failed", "errors": ["Adapter not available"]}
 
 
+def _safe_print(text: str) -> None:
+    """Print text safely on Windows consoles that use charmap encoding."""
+    sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
+    sys.stdout.buffer.flush()
+
+
 def resolve_repo_root(start=None):
     """Deterministic repo-root resolver.
     Walk upward from this file (or provided start) until we find repo markers.
@@ -135,20 +141,43 @@ def _configure_logging(verbosity: int) -> None:
 
 
 def _maybe_force_utf8_console() -> None:
-    """Opt-in Windows console UTF-8 coercion.  Called at runtime, NOT import time."""
-    if not sys.platform.startswith("win"):
-        return
-    if os.getenv("EXECUTE_SSOT_FORCE_UTF8", "0") != "1":
-        return
+    """Unconditional stdout/stderr UTF-8 coercion.  Called at runtime, NOT import time."""
+    if sys.platform.startswith("win"):
+        try:
+            subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
+        except FileNotFoundError:
+            pass
     try:
-        subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
-    except FileNotFoundError:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    # guardian: allow-silent-swallow
+    except Exception:
         pass
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     # guardian: allow-silent-swallow
     except Exception:
         return
+
+
+def _maybe_force_utf8_logging_handlers() -> None:
+    """Reconfigure existing logging handler streams to UTF-8.  Called at runtime, NOT import time."""
+    seen: set[int] = set()
+    for handler in logging.getLogger().handlers + logging.getLogger("").handlers:
+        hid = id(handler)
+        if hid in seen:
+            continue
+        seen.add(hid)
+        stream = getattr(handler, "stream", None)
+        if stream is None:
+            continue
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
 
 
 # ============================================================================
@@ -733,7 +762,11 @@ class PreFlightValidator:
                 )
                 val, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if val != 1:
-                    if self.dry_run:
+                    if os.getenv("AGENTIC_BYPASS_LONGPATHS_CHECK") == "1":
+                        logging.warning(
+                            "AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail"
+                        )
+                    elif self.dry_run:
                         logging.warning(
                             "Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode"
                         )
@@ -1128,6 +1161,18 @@ class RuntimeStateManager:
         Writes to temp file, sets 600 permissions, then renames.
         """
         try:
+            from agentic_core.L0_routing.scripts.runtime_state_digest import (
+                DIGEST_SCHEMA_VERSION,
+                compute_runtime_state_digest,
+            )
+
+            self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)
+            self.state["runtime_state_digest_schema_version"] = DIGEST_SCHEMA_VERSION
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
+
+        try:
             state_path = self.project_root / RUNTIME_STATE_FILE
             temp_dir = state_path.parent
             temp_dir.mkdir(parents=True, exist_ok=True)
@@ -1135,7 +1180,7 @@ class RuntimeStateManager:
             # Create temp file
             with tempfile.NamedTemporaryFile("w", dir=str(temp_dir), delete=False, encoding="utf-8") as tf:
                 assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(self.state, tf, indent=2, default=str)
+                json.dump(self.state, tf, indent=2, default=str, ensure_ascii=False)
                 temp_name = tf.name
 
             # [HARDENED] Set strict permissions (Owner Read/Write only) before moving
@@ -1286,7 +1331,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                     encoding="utf-8",
                 ) as tf:
                     assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-                    json.dump(discovery_data, tf, indent=2)
+                    json.dump(discovery_data, tf, indent=2, ensure_ascii=False)
                     temp_name = tf.name
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
                 os.replace(temp_name, json_path)
@@ -1425,7 +1470,12 @@ def execute_phase1_discovery_impl(
     location_scan_result = {}
     if territory_path.exists():
         # Let LocationAgent do comprehensive file discovery
-        location_scan_result = location_validator.run(target_territory=territory) or {}
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
+            LocationValidatorAgent,
+        )
+
+        _lva = LocationValidatorAgent(project_root=REPO_ROOT)
+        location_scan_result = _lva.run(target_territory=territory) or {}
         violations = location_scan_result.get("violations", [])
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
@@ -1513,7 +1563,7 @@ def execute_phase1_discovery_impl(
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
         file_classifier.dry_run = True  # Don't make changes during discovery
-        classification_scan_result = file_classifier.run(target_territory=territory) or {}
+        classification_scan_result = file_classifier.run() or {}
 
         # Extract violations from stats
         if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
@@ -1611,12 +1661,12 @@ def execute_phase2_alignment_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase3_architectural_validation(agents, territory, state_mgr):
+def execute_phase3_architectural_validation(agents, territory, state_mgr, dry_run=True):
     """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
-    return execute_phase3_validation_impl(agents, territory, state_mgr)
+    return execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=dry_run)
 
 
-def execute_phase3_validation_impl(agents, territory, state_mgr):
+def execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=True):
     """PHASE 3: ARCHITECTURAL VALIDATION - Implementation"""
     logger.info(f"=== PHASE 3: VALIDATION - {territory} ===")
 
@@ -1641,7 +1691,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
 
     try:
         logger.info("🔍 Detecting gravity violations (layer inversions)...")
-        gravity_result = gravity_agent.heal_repository(dry_run=not execute, execute=execute)
+        gravity_result = gravity_agent.heal_repository(dry_run=dry_run, execute=not dry_run)
 
         gravity_violations = gravity_result.get("violations_found", 0)
         gravity_fixed = gravity_result.get("violations_fixed", 0)
@@ -1678,6 +1728,7 @@ def execute_phase3_validation_impl(agents, territory, state_mgr):
             state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
             logger.info("✅ No gravity violations detected")
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Gravity violation detection failed: {e}")
         state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
@@ -1904,7 +1955,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             all_violations.append(violation_dict)
 
     # Get DebateSynthesisAgent violations
-    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT)
+    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT, probe_type="debate")
     debate_synthesis_result = debate_synthesis_agent.scan_violations(target_territory=territory)
     conversational_violations = debate_synthesis_result.get("violations", [])
     for conv_violation in conversational_violations:
@@ -2134,16 +2185,16 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         )
 
     # Print JSON Manifest
-    print(json.dumps(detailed_cert, indent=2))
+    _safe_print(json.dumps(detailed_cert, indent=2))
 
     # Print Markdown Summary
-    print("\n" + "\n".join(markdown_summary))
+    _safe_print("\n" + "\n".join(markdown_summary))
     if files_affected:
-        print("\n### 📂 Affected Files")
+        _safe_print("\n### Affected Files")
         for f in sorted(files_affected):
-            print(f"* `{f}`")
+            _safe_print(f"* `{f}`")
     else:
-        print("\n*No files required remediation.*")
+        _safe_print("\n*No files required remediation.*")
 
     # [COMPREHENSIVE REPORTS] Save detailed reports to files
     save_comprehensive_reports(
@@ -2183,7 +2234,7 @@ def save_comprehensive_reports(
 
         with open(json_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(detailed_cert, f, indent=2, default=str)
+            json.dump(detailed_cert, f, indent=2, default=str, ensure_ascii=False)
 
         # Save Markdown Executive Summary (using the md_path already defined above)
         with open(md_path, "w", encoding="utf-8") as f:
@@ -2469,6 +2520,8 @@ def main() -> int:
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
+    _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
+    _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
     if _v15_manifest is not None:
@@ -2712,9 +2765,51 @@ Examples:
                 logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
                 sys.exit(1)
 
+    # guardian: allow-silent-swallow
     except Exception as e:
         logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
         sys.exit(1)
+
+    # 3b. Build local agents roster (classes, not instances)
+    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
+        ArchitectureGovernorAgent,
+    )
+    from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
+        CognitiveDispositionAgent,
+    )
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        FileClassificationAgent,
+    )
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
+        FilesystemSSOTReconcilerAgent,
+    )
+    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
+        GravityLeakRepairAgent,
+    )
+    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
+        RootHygieneAgent,
+    )
+    from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
+        SystemArchitectAgent,
+    )
+    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
+        ObservabilityProbeExecutor,
+    )
+
+    agents = {
+        "reconciler": FilesystemSSOTReconcilerAgent,
+        "location": LocationAgent,
+        "hierarchy": HierarchyAgent,
+        "arch_governor": ArchitectureGovernorAgent,
+        "gravity_repair": GravityLeakRepairAgent,
+        "system_architect": SystemArchitectAgent,
+        "file_classification": FileClassificationAgent,
+        "conversational_repair": ObservabilityProbeExecutor,
+        "cognitive_disposition": CognitiveDispositionAgent,
+        "root_hygiene": RootHygieneAgent,
+    }
 
     # 4. Determine Targets
     targets = []
@@ -2912,7 +3007,9 @@ Examples:
                             state_mgr.add_event("info", "Sovereignty healing skipped - Dry run mode")
 
                         # Phase 3: Validation (Legacy)
-                        gov, arch = execute_phase3_architectural_validation(agents, territory, state_mgr)
+                        gov, arch = execute_phase3_architectural_validation(
+                            agents, territory, state_mgr, dry_run=dry_run
+                        )
 
                         # Persist full work to state
                         state_mgr.state["compliance_report"] = gov

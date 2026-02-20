@@ -27,16 +27,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.utils.layer_gravity import (
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+    StructuralValidatorStrategy,
+)
+from agentic_core.L4_state.utils.layer_gravity_util import (
     GRAVITY_RULES,
     LAYER_ORDER,
     extract_layer_from_module,
     extract_layer_from_path,
-)
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-    StructuralValidatorStrategy,
 )
 
 Logger = logging.getLogger(__name__)

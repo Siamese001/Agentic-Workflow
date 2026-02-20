@@ -1,0 +1,1369 @@
+{
+  "status": "completed",
+  "start_time": "2026-02-19T19:19:32.108541",
+  "end_time": "2026-02-19T19:20:25.434345",
+  "current_agent": null,
+  "current_layer": "L5 - Compliance",
+  "agents_order": [
+    "prompt_governance",
+    "L5_safety",
+    "L3_orchestration",
+    "L2_execution",
+    "L0_routing"
+  ],
+  "completed_agents": [
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-19T19:19:34.104927",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-19T19:19:34.417745",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.54 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-19T19:19:34.877299",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-19T19:19:38.177465",
+      "success": true,
+      "details": "Healed: 0"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-19T19:19:39.500373",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-19T19:19:45.442136",
+      "success": true,
+      "details": "Violations: 458 | Fixed: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-19T19:19:46.713335",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-19T19:19:46.720544",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-19T19:19:46.723116",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-19T19:19:46.727779",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-19T19:19:46.734387",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-19T19:19:47.041173",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.44 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-19T19:19:47.483803",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-19T19:19:47.489556",
+      "success": true,
+      "details": "No violations found"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-19T19:19:49.706606",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-19T19:19:55.612571",
+      "success": true,
+      "details": "Violations: 458 | Fixed: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-19T19:19:56.878148",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-19T19:19:56.886110",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-19T19:19:56.891786",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-19T19:19:56.901088",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-19T19:19:56.908528",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-19T19:19:57.216966",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-19T19:19:57.672551",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-19T19:19:57.681309",
+      "success": true,
+      "details": "No violations found"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-19T19:19:59.173132",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-19T19:20:05.050293",
+      "success": true,
+      "details": "Violations: 458 | Fixed: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-19T19:20:06.316963",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-19T19:20:06.325725",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-19T19:20:06.331592",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-19T19:20:06.338224",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-19T19:20:06.346282",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-19T19:20:06.654639",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-19T19:20:07.100432",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-19T19:20:07.109116",
+      "success": true,
+      "details": "No violations found"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-19T19:20:08.523051",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-19T19:20:14.459388",
+      "success": true,
+      "details": "Violations: 458 | Fixed: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-19T19:20:15.718087",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-19T19:20:15.726241",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-19T19:20:15.731453",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-19T19:20:15.738155",
+      "success": true,
+      "details": "Certificate Issued"
+    },
+    {
+      "agent": "FilesystemSSOTReconcilerAgent",
+      "time": "2026-02-19T19:20:15.746104",
+      "success": true,
+      "details": "Drift violations: 0"
+    },
+    {
+      "agent": "LocationAgent",
+      "time": "2026-02-19T19:20:16.048624",
+      "success": true,
+      "details": "Violations: 14 | Conf: 0.49 (healing skipped)"
+    },
+    {
+      "agent": "FileClassificationAgent",
+      "time": "2026-02-19T19:20:16.509551",
+      "success": false,
+      "details": "Early detection error: 'suggested_folder'"
+    },
+    {
+      "agent": "HierarchyAgent",
+      "time": "2026-02-19T19:20:16.520321",
+      "success": false,
+      "details": "Skipped - Low Confidence"
+    },
+    {
+      "agent": "ArchitectureGovernorAgent",
+      "time": "2026-02-19T19:20:18.238290",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "GravityLeakRepairAgent",
+      "time": "2026-02-19T19:20:24.122114",
+      "success": true,
+      "details": "Violations: 458 | Fixed: 0"
+    },
+    {
+      "agent": "SystemArchitectAgent",
+      "time": "2026-02-19T19:20:25.404975",
+      "success": true,
+      "details": "Architecture Valid"
+    },
+    {
+      "agent": "DebateSynthesisAgent",
+      "time": "2026-02-19T19:20:25.416861",
+      "success": true,
+      "details": "Violations: 0"
+    },
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-02-19T19:20:25.423064",
+      "success": true,
+      "details": "Violations: 1"
+    },
+    {
+      "agent": "SovereignCertifier",
+      "time": "2026-02-19T19:20:25.431287",
+      "success": true,
+      "details": "Certificate Issued"
+    }
+  ],
+  "events": [
+    {
+      "time": "2026-02-19T19:19:32.108541",
+      "type": "info",
+      "message": "Mission started: Unified Protocol: Multi-Domain Sweep (L3 Attempt)"
+    },
+    {
+      "time": "2026-02-19T19:19:34.100263",
+      "type": "domain_start",
+      "message": "Entering Domain: prompt_governance"
+    },
+    {
+      "time": "2026-02-19T19:19:34.100263",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:19:34.104927",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:34.108530",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:34.417745",
+      "type": "decision",
+      "message": "Location Healing: BLOCK: Confidence 0.54 requires LLM arbitration (Disabled)"
+    },
+    {
+      "time": "2026-02-19T19:19:34.417745",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:34.420889",
+      "type": "agent_start",
+      "message": "\u2192 Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-19T19:19:34.877299",
+      "type": "agent_end",
+      "message": "\u274c Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:34.881359",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:34.887039",
+      "type": "decision",
+      "message": "Hierarchy Healing: SOVEREIGN-AUTO (0.88)"
+    },
+    {
+      "time": "2026-02-19T19:19:38.177465",
+      "type": "agent_end",
+      "message": "\u2713 Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:38.181508",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:38.181508",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:38.181508",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:39.500373",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:39.504507",
+      "type": "agent_start",
+      "message": "\u2192 Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:45.442136",
+      "type": "agent_end",
+      "message": "\u2713 Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:45.446268",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:46.713335",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:46.717964",
+      "type": "agent_start",
+      "message": "\u2192 Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-19T19:19:46.721056",
+      "type": "agent_end",
+      "message": "\u2713 Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:46.722079",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:19:46.723116",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:46.725172",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-19T19:19:46.727779",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-19T19:19:46.731881",
+      "type": "domain_start",
+      "message": "Entering Domain: L5_safety"
+    },
+    {
+      "time": "2026-02-19T19:19:46.731881",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:19:46.734387",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:46.734916",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:47.041173",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:47.041173",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:47.043245",
+      "type": "agent_start",
+      "message": "\u2192 Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-19T19:19:47.483803",
+      "type": "agent_end",
+      "message": "\u274c Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:47.487991",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:47.489556",
+      "type": "agent_end",
+      "message": "\u2713 Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:47.491315",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:47.491315",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:47.491315",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:49.706606",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:49.708782",
+      "type": "agent_start",
+      "message": "\u2192 Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:55.612571",
+      "type": "agent_end",
+      "message": "\u2713 Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:55.614154",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:56.878148",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:56.881443",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:56.881443",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-19T19:19:56.881443",
+      "type": "agent_start",
+      "message": "\u2192 Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-19T19:19:56.886110",
+      "type": "agent_end",
+      "message": "\u2713 Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:56.888177",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:19:56.891786",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:56.894358",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-19T19:19:56.901088",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-19T19:19:56.904681",
+      "type": "domain_start",
+      "message": "Entering Domain: L3_orchestration"
+    },
+    {
+      "time": "2026-02-19T19:19:56.904681",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:19:56.908528",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:56.908528",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:57.216966",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:57.216966",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:57.220043",
+      "type": "agent_start",
+      "message": "\u2192 Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-19T19:19:57.672551",
+      "type": "agent_end",
+      "message": "\u274c Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:57.677403",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:57.681309",
+      "type": "agent_end",
+      "message": "\u2713 Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:57.684361",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:57.684361",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:19:57.684361",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:19:59.173132",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-19T19:19:59.176029",
+      "type": "agent_start",
+      "message": "\u2192 Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:05.050293",
+      "type": "agent_end",
+      "message": "\u2713 Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:05.054982",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.316963",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:06.322079",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:06.322079",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-19T19:20:06.322079",
+      "type": "agent_start",
+      "message": "\u2192 Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.325725",
+      "type": "agent_end",
+      "message": "\u2713 Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:06.327555",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.331592",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:06.334134",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.338224",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-19T19:20:06.343715",
+      "type": "domain_start",
+      "message": "Entering Domain: L2_execution"
+    },
+    {
+      "time": "2026-02-19T19:20:06.343715",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.346282",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:06.348858",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:06.654639",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:06.654639",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:06.658943",
+      "type": "agent_start",
+      "message": "\u2192 Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-19T19:20:07.100432",
+      "type": "agent_end",
+      "message": "\u274c Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:07.104573",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:07.109116",
+      "type": "agent_end",
+      "message": "\u2713 Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:07.112383",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:07.112383",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:07.112383",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:08.523051",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:08.525637",
+      "type": "agent_start",
+      "message": "\u2192 Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:14.459388",
+      "type": "agent_end",
+      "message": "\u2713 Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:14.462364",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:15.718087",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:15.722751",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:15.722751",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-19T19:20:15.722751",
+      "type": "agent_start",
+      "message": "\u2192 Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-19T19:20:15.726241",
+      "type": "agent_end",
+      "message": "\u2713 Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:15.727406",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:20:15.731453",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:15.731453",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-19T19:20:15.738155",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
+    },
+    {
+      "time": "2026-02-19T19:20:15.742838",
+      "type": "domain_start",
+      "message": "Entering Domain: L0_routing"
+    },
+    {
+      "time": "2026-02-19T19:20:15.742838",
+      "type": "agent_start",
+      "message": "\u2192 Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:20:15.746104",
+      "type": "agent_end",
+      "message": "\u2713 Completed FilesystemSSOTReconcilerAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:15.748190",
+      "type": "agent_start",
+      "message": "\u2192 Executing LocationAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:16.048624",
+      "type": "decision",
+      "message": "Location Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:16.048624",
+      "type": "agent_end",
+      "message": "\u2713 Completed LocationAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:16.050159",
+      "type": "agent_start",
+      "message": "\u2192 Executing FileClassificationAgent (L5 - Safety (Early Detection))"
+    },
+    {
+      "time": "2026-02-19T19:20:16.509551",
+      "type": "agent_end",
+      "message": "\u274c Completed FileClassificationAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:16.517195",
+      "type": "agent_start",
+      "message": "\u2192 Executing HierarchyAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:16.520321",
+      "type": "decision",
+      "message": "Hierarchy Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:16.520321",
+      "type": "agent_end",
+      "message": "\u274c Completed HierarchyAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:16.522411",
+      "type": "decision",
+      "message": "Sovereignty Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:16.522411",
+      "type": "warning",
+      "message": "Sovereignty healing skipped - SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:16.522411",
+      "type": "agent_start",
+      "message": "\u2192 Executing ArchitectureGovernorAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:18.238290",
+      "type": "agent_end",
+      "message": "\u2713 Completed ArchitectureGovernorAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:18.240882",
+      "type": "agent_start",
+      "message": "\u2192 Executing GravityLeakRepairAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:24.122114",
+      "type": "agent_end",
+      "message": "\u2713 Completed GravityLeakRepairAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:24.123144",
+      "type": "agent_start",
+      "message": "\u2192 Executing SystemArchitectAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-02-19T19:20:25.404975",
+      "type": "agent_end",
+      "message": "\u2713 Completed SystemArchitectAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:25.412725",
+      "type": "decision",
+      "message": "Arch Healing: SAFETY LOCK: Healing cycle detected: Unknown"
+    },
+    {
+      "time": "2026-02-19T19:20:25.412725",
+      "type": "warning",
+      "message": "Healing skipped - Low confidence"
+    },
+    {
+      "time": "2026-02-19T19:20:25.413262",
+      "type": "agent_start",
+      "message": "\u2192 Executing DebateSynthesisAgent (Prompt Governance)"
+    },
+    {
+      "time": "2026-02-19T19:20:25.416861",
+      "type": "agent_end",
+      "message": "\u2713 Completed DebateSynthesisAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:25.419905",
+      "type": "agent_start",
+      "message": "\u2192 Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-02-19T19:20:25.423064",
+      "type": "agent_end",
+      "message": "\u2713 Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-02-19T19:20:25.425097",
+      "type": "agent_start",
+      "message": "\u2192 Executing SovereignCertifier (L5 - Compliance)"
+    },
+    {
+      "time": "2026-02-19T19:20:25.431287",
+      "type": "agent_end",
+      "message": "\u2713 Completed SovereignCertifier"
+    }
+  ],
+  "meta_learning": {
+    "enabled": false,
+    "total_experiences": 0,
+    "patterns_extracted": 0,
+    "strategy_weights": {
+      "cot": 1.0,
+      "tot": 1.0,
+      "react": 1.0
+    },
+    "recent_experiences": []
+  },
+  "compliance_scores": {
+    "prompt_governance": 0.5368,
+    "L5_safety": 0.43920000000000003,
+    "L3_orchestration": 0.48800000000000004,
+    "L2_execution": 0.48800000000000004,
+    "L0_routing": 0.48800000000000004
+  },
+  "decisions_made": [],
+  "compliance_report": {
+    "success": false,
+    "stats": {
+      "violations_found": 20,
+      "violations_fixed": 0,
+      "errors": 0,
+      "drift_detected": 0
+    },
+    "violations": [
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+        "message": "Gravity violation: L0 cannot import from L2 (module: agentic_core.L2_execution.enforcement.healer_pipe_order)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L2"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\meta_control\\meta_apply.py",
+        "message": "Gravity violation: L0 cannot import from L2 (module: agentic_core.L2_execution.types.capability_token_types)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L2"
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\RootCustomsAgent.py",
+        "message": "Class 'RoutingDecision' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\RootCustomsAgent.py",
+        "message": "Class 'ASTAnalyzer' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\colors.py",
+        "message": "Gravity violation: L0 cannot import from L3 (module: agentic_core.L3_orchestration.Orchestrator)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L3"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\colors.py",
+        "message": "Gravity violation: L0 cannot import from L4 (module: agentic_core.L4_state.reasoning.CheckpointManagerAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L4"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\coverage.py",
+        "message": "Gravity violation: L0 cannot import from L3 (module: agentic_core.L3_orchestration.reasoning.mission_controller_convergence)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L3"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.CognitiveDispositionAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.FileClassificationAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.GravityLeakRepairAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.HierarchyAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.LocationAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.RootHygieneAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.SystemArchitectAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L6 (module: agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L6"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.LocationValidatorAgent)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execution_context.py",
+        "message": "Gravity violation: L0 cannot import from L3 (module: agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L3"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\hardened_orchestrator_wrapper_util.py",
+        "message": "Gravity violation: L0 cannot import from L1 (module: agentic_core.L1_cognition.P2_domain.context)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L1"
+      }
+    ],
+    "drift_violations": [],
+    "target_territories": [
+      "L0_routing"
+    ]
+  },
+  "runtime_state_digest_sha256": "23aed57a063ea7cd499dcbb7d02365b7951bc4c577682d21e474663a7365fcc9",
+  "current_territory": "L0_routing",
+  "location_violations": [
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\__init__.py",
+      "reason": "SHALLOW VIOLATION (agentic_core): depth 1 != 3"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\l2_phase_spec.py",
+      "reason": "LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\l2_phase_spec_types.py",
+      "reason": "LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\rg_execution_safety_enforcer.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\enforcement\\rg_execution_safety_enforcer.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\blueprint_hash.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\blueprint_hash.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\cross_layer.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\cross_layer.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\import_graph.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\import_graph.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\leaf_node.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\leaf_node.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\mixin_ast.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\mixin_ast.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\territory_diff.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\territory_diff.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\types.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\types.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\volatile_rules.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\volatile_rules.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\__init__.py",
+      "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\__init__.py' not in sovereign territory"
+    },
+    {
+      "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\golden_evaluation\\resume_quality_evaluator.py",
+      "reason": "APP-SPECIFIC IN CORE VIOLATION: 'resume_quality_evaluator.py' is application-specific and must not live in agentic_core. Move to 'apps_rg/reasoning/'."
+    }
+  ],
+  "location_scan_result": {
+    "violations": [
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\__init__.py",
+        "reason": "SHALLOW VIOLATION (agentic_core): depth 1 != 3"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\l2_phase_spec.py",
+        "reason": "LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\l2_phase_spec_types.py",
+        "reason": "LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\rg_execution_safety_enforcer.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\enforcement\\rg_execution_safety_enforcer.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\blueprint_hash.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\blueprint_hash.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\cross_layer.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\cross_layer.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\import_graph.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\import_graph.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\leaf_node.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\leaf_node.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\mixin_ast.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\mixin_ast.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\territory_diff.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\territory_diff.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\types.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\types.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\volatile_rules.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\volatile_rules.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\__init__.py",
+        "reason": "VOID VIOLATION: Path 'agentic_core\\L5_safety\\config\\structure_blueprint\\enforcement\\__init__.py' not in sovereign territory"
+      },
+      {
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L6_observability\\golden_evaluation\\resume_quality_evaluator.py",
+        "reason": "APP-SPECIFIC IN CORE VIOLATION: 'resume_quality_evaluator.py' is application-specific and must not live in agentic_core. Move to 'apps_rg/reasoning/'."
+      }
+    ],
+    "total_files_scanned": 1108,
+    "compliant_files": 1094,
+    "roots_scanned": [
+      "agentic_core"
+    ],
+    "status": "COMPLETE"
+  },
+  "classification_violations": [],
+  "classification_scan_result": {},
+  "gravity_violations": [
+    {
+      "type": "GRAVITY",
+      "message": "Found 458 gravity violations (layer inversions)",
+      "severity": "high",
+      "recommended_action": "Review and fix layer boundary violations",
+      "confidence": 0.9,
+      "violations_found": 458,
+      "violations_fixed": 0
+    }
+  ],
+  "conversational_violations": [],
+  "hygiene_violations": [
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "confidence": 0.6
+    }
+  ]
+}

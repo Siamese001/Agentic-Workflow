@@ -57,7 +57,7 @@ This prompt is an **executable repo-to-target transformation contract**. Evaluat
 | Discovery JSON | Scope authority | Exact schema conformance + `integrity_hash` per agent |
 | `structure_blueprint.py` | Structural SSOT | SHA-256 match required before audit proceeds |
 | L0–L6 Architecture Principles (P1–P6) | Gating invariants | P1–P6 checks applied wherever capability touches boundaries/authority/state |
-| Agentic Process V15 Diagrams (L0–L6) | Target capability SSOT | **Only** the V15 capabilities enumerated in §1–§16 are in-scope; no additional interpretation |
+| Agentic Process V15 Diagrams (L0–L6) | Target capability SSOT | **Only** the V15 capabilities enumerated in §1–§17 are in-scope; no additional interpretation |
 
 **Zero external inference rule**: If not explicitly present in one of the four sources → it does not exist.
 
@@ -69,7 +69,7 @@ Evaluate **only** capabilities enumerated in **§1–§15** (which are derived f
 * Focus on **gating failures** (P1–P6) and on **typed artifacts** that cross boundaries.
 
 PATCH (v5.4.2):
-* Capabilities are enumerated in **§1–§16** (Meta-learning is now in-scope as governed improvement).
+* Capabilities are enumerated in **§1–§17** (Meta-learning is now in-scope as governed improvement; Prompt Taxonomy added as §17).
 * Any meta-learning mechanism that performs direct mutation (bypassing L0/L5/HIL/L4 versioning) is a FAIL (P3/P6).
 
 ### 0.3 Evidence Standard (Strict)
@@ -355,7 +355,7 @@ Absence of proof = MISSING. Contradiction to an invariant = FAIL.
 <!-- VERSION: 0.1.0 -->
 # V15 TARGET STATE — CONSOLIDATED CAPABILITY LIST (v5.1) (ZERO-LOSS)
 
-> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING. Capabilities are enumerated in §1–§16.
+> Every numbered item is an independent, auditable capability. Absence of direct evidence = MISSING. Capabilities are enumerated in §1–§17.
 
 ---
 
@@ -955,7 +955,7 @@ Mandatory inclusions:
 
 ## SECTION B — TARGET STATE (PNG/V15-ALIGNED)
 
-You MUST express the target using the capability list in §1–§16 and the following control-plane rules:
+You MUST express the target using the capability list in §1–§17 and the following control-plane rules:
 
 1) **Single sanctioned execution path**
 2) **No mutation outside L2**
@@ -1003,7 +1003,7 @@ Coverage assertion (mandatory):
 
 ## SECTION 1 — GLOBAL FRAMEWORK EVIDENCE TABLE (KEEP)
 
-Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14, 15, 16
+Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14, 15, 16, 17
 
 **Format:** Table
 
@@ -1057,113 +1057,6 @@ Capabilities: 2, 3, 5, 6, 7, 8, 9, 11, 12, 13, 15
 | 9.1  | Shared mixins generic only              |                 |                                            |                          |                 |
 | 9.2  | heal() domain reasoning only            |                 |                                            | P3                       |                 |
 | 9.3  | No delegation to adapters/orchestrators |                 |                                            |                          |                 |
-| 12.1 | Inter-agent schema validation           |                 |                                            | P6                       |                 |
-| 12.2 | Side-effect registry                    |                 |                                            | P3                       |                 |
-| 11.1 | TokenCap & Perms Artifacts              |                 |                                            | P1                       |                 |
-| 13.1 | Semantic Clock Implementation           |                 |                                            | P2                       |                 |
-| 15.1 | Tier III Evacuation Ready               |                 |                                            | P1                       |                 |
-| 15.2 | Cognitive Diff Bundle Generation        |                 |                                            | P4                       |                 |
-
-Additional required per-agent gating checks (only as evidence-linked rows in Notes; do not invent new IDs):
-
-* P1 Fail-closed (missing schema/signature/health => reject)
-* P3 No silent state mutation (no writes outside execution boundary)
-* P4 TraceID propagation to artifacts
-* P5 Tokenized authority (if agent participates in write/commit decisions)
-* P6 Typed/versioned boundaries
-
-Completeness assertions (mandatory):
-* For every emitted per-agent matrix, every row MUST have Status populated (COMPLIANT/MISSING/FAIL).
-* If any Status is blank → FAIL audit integrity and STOP per 0.6.4.
-
----
-
-## SECTION 3 — SUMMARY (KEEP, BUT MUST REFERENCE SECTION A/B/C/D)
-
-| Forensic Summary |
-|-----------------|
-| Total capabilities evaluated: 16 |
-| Global compliance: Y% (COMPLIANT / total) |
-| ACTIVE agents audited: N |
-| Per-agent compliance table: |
-
-Compliance calculation rule:
-* Global compliance % = (#COMPLIANT global capabilities) / 10
-* Per-agent compliance % = (#COMPLIANT per-agent rows) / total per-agent rows
-* Round to nearest whole integer.
-
-Do NOT estimate percentages if abort condition triggered.
-
-| Agent | Compliance % | FAIL Count | Critical Gates Violated |
-|-------|--------------|------------|--------------------------|
-| ...   |              |            |                          |
-
-| Non-ACTIVE Agents |
-|-------------------|
-| GHOST / INVALID / SYNTAX_ERROR agents: |
-| • agent_name (file_path) — reason |
-
-| Audit Integrity Confirmations |
-| • No remediation language generated |
-| • No out-of-scope references |
-| • Evaluation bounded to discovery JSON + SSOT + P1–P6 only |
-
----
-
-## SECTION 4 — GAP SET (DETERMINISTIC) (KEEP, BUT MUST ALSO PRODUCE GAP_ID TABLE IN SECTION C)
-
-Return a table containing ONLY capabilities with status MISSING or FAIL.
-
-| Capability ID | Status (MISSING/FAIL) | Layer Scope (GLOBAL / L0..L6) | Evidence Pointer (if FAIL) |
-|--------------|------------------------|------------------------------|----------------------------|
-
-Rules:
-* Include GLOBAL capabilities (Section 1) and per-agent capabilities (Section 2) in one unified set.
-* If the same capability is missing across multiple agents, list it once as an aggregated Gap with `Impacted Agents: N` in Notes.
-
-Aggregation rules (non-negotiable):
-* Aggregation key = `(capability_id, layer_scope)`.
-* Status precedence: if ANY underlying instance is FAIL → aggregated Status = FAIL; else MISSING.
-* Evidence Pointer: required for FAIL (include ≥1 representative contradiction pointer); optional for MISSING.
-
-Deduplication rule:
-* A capability MUST NOT appear twice in Section 4.
-
----
-
-## SECTION 5 — IMPLEMENTATION PLAN (DETERMINISTIC / NO HEURISTICS) (KEEP, BUT MUST MAP 1:1 TO SECTION C GAP_IDs)
-
-Generate an implementation plan by applying the rules in §17 exactly.
-
-Format:
-| Wave | Priority (P0/P1/P2) | Capability IDs | Work Item (noun phrase) | Scope (files/agents) | Acceptance Evidence (exact commands) |
-|------|----------------------|---------------|--------------------------|----------------------|--------------------------------------|
-
-Constraints:
-* "Work Item" MUST NOT describe code edits; it must describe the missing system element (e.g., "Define Typed Artifact Schemas", "Add Guardian Signature Verification Gate").
-* "Scope" MUST be discovery-grounded (agent identities or file paths from discovery JSON). If unknown, write `UNKNOWN (requires discovery evidence)` and treat as blocking for that Wave.
-* "Acceptance Evidence" MUST be fixed commands (pytest targets, hash checks, schema validations) and MUST be sufficient to prove closure of the referenced capability IDs.
-
-Determinism rule:
-* Acceptance Evidence commands MUST NOT contain placeholders except `<repo_root>`.
-* If `<repo_root>` used, it MUST match discovery `meta.root_path`.
-
-Fallback evidence rule (mandatory):
-* If no pytest target is discoverable for a work item, Acceptance Evidence MUST include:
-  1) a schema/model import + instantiation check for the relevant artifact(s), AND
-  2) a deterministic CLI/script validation (e.g., discovery run, schema validator run), AND
-  3) a repo-wide grep/rg check proving wiring presence for the capability boundary.
-
----
-
-## SECTION 1 — GLOBAL FRAMEWORK EVIDENCE TABLE (KEEP)
-
-Capabilities: 1, 3, 4, 6, 7, 10, 11, 13, 14, 15, 16
-
-**Format:** Table
-
-| ID | Status (COMPLIANT / MISSING / FAIL) | Evidence Location (File + Symbol) | Notes |
-| -- | ----------------------------------- | --------------------------------- | ----- |
 
 Notes column rules:
 * Strictly factual.
@@ -1359,10 +1252,10 @@ Order waves strictly:
 9) **Wave 8:** Governed Improvement (Meta-learning) (§16): metrics → eval → proposals → promotion → replay gate
 
 Hard gate (Phase discipline):
-* Treat **Wave 7** as **Phase 5 (P0 hardening)** and **Wave 6 + §17.1 inclusions** as **Phase 6 (P0/P1 gap closure)**.
-* **Phase 7 / Wave 8 MUST NOT start** until **Phase 5 and Phase 6 are COMPLETE** (i.e., Wave 7 is CLOSED and all §17.1 explicit P0 inclusions are CLOSED).
+* Treat **Wave 7** as **Phase 5 (P0 hardening)** and **Wave 6 + §18.1 inclusions** as **Phase 6 (P0/P1 gap closure)**.
+* **Phase 7 / Wave 8 MUST NOT start** until **Phase 5 and Phase 6 are COMPLETE** (i.e., Wave 7 is CLOSED and all §18.1 explicit P0 inclusions are CLOSED).
 
-### 17.3 Dependency Resolution
+### 18.3 Dependency Resolution
 If a plan row depends on another capability ID, it MUST be placed in a later wave.
 Default dependencies (minimum):
 * §1.7 (typed artifacts) precedes any capability that emits/validates those artifacts.
@@ -1411,21 +1304,21 @@ Your output **MUST NOT** contain:
 * probabilistic language
 
 Allowed (v5.1):
-* deterministic implementation plan tables (Sections 4–5) adhering to §17
+* deterministic implementation plan tables (Sections 4–5) adhering to §18
 
 Violation invalidates the audit.
 
 ---
 
-## FINAL RULE (v5.4.2)
+## FINAL RULE (v5.4.4)
 
 This is a **current-state to target-state operational plan generator**.
 
-If a capability is not **explicit, deterministic, and provable** in the discovery-scoped code/config/tests, it is **MISSING** (or **FAIL** where illegal states or fail-closed violations are evidenced), and it MUST appear in Section 4 and be scheduled in Section 5 per §17.
+If a capability is not **explicit, deterministic, and provable** in the discovery-scoped code/config/tests, it is **MISSING** (or **FAIL** where illegal states or fail-closed violations are evidenced), and it MUST appear in Section 4 and be scheduled in Section 5 per §18.
 
 PATCH (v5.4.2) — Meta-learning enforcement:
 * If any form of "learning" performs direct mutation (bypassing L0/L5/HIL/L4 versioning), status = FAIL (P3/P6).
-* If §16 capabilities are requested but any Phase 5/6 P0 gates are open (P5.1, §12.3, or any §17.1 explicit P0 inclusion), §16 activation/promotion MUST be treated as blocked (P0) and scheduled only after those closures.
+* If §16 capabilities are requested but any Phase 5/6 P0 gates are open (P5.1, §12.3, or any §18.1 explicit P0 inclusion), §16 activation/promotion MUST be treated as blocked (P0) and scheduled only after those closures.
 
 PATCH (v5.4.3) — Mutation authority enforcement:
 * If `agentic_core/L2_execution/tools/write_gateway.py` does not exist, status = FAIL (P3/P0) for §12.3.
