@@ -27,6 +27,9 @@ builtins.input = lambda *a, **k: (_ for _ in ()).throw(
 )
 
 import os, sys, json, traceback, time
+import io
+import shutil
+from pathlib import Path
 
 sys.path.insert(0, ".")
 os.environ.setdefault("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
@@ -38,8 +41,163 @@ print("=== SSOT HEAL MODE RUN ===")
 print("AGENTIC_DENY_SOURCE_MUTATION=1")
 print("PYTHONUTF8=1")
 print("input() BLOCKED")
+print("agentic_core FS FENCE: ON")
 print("---------------------------")
 sys.stdout.flush()
+
+_REPO_ROOT = os.path.abspath(".")
+_AGENTIC_CORE_ROOT = os.path.abspath(os.path.join(_REPO_ROOT, "agentic_core"))
+
+def _abspath(p) -> str:
+    try:
+        return os.path.abspath(os.fspath(p))
+    except Exception:
+        return ""
+
+def _is_under(root: str, p: str) -> bool:
+    if not p:
+        return False
+    try:
+        rp = os.path.realpath(p)
+        rr = os.path.realpath(root)
+        return rp == rr or rp.startswith(rr + os.sep)
+    except Exception:
+        return False
+
+def _deny(msg: str) -> None:
+    raise RuntimeError(f"SOURCE_MUTATION_BLOCKED: {msg}")
+
+def _guard_path_for_write(path) -> None:
+    ap = _abspath(path)
+    if _is_under(_AGENTIC_CORE_ROOT, ap):
+        _deny(f"write agentic_core/{os.path.relpath(ap, _AGENTIC_CORE_ROOT)}")
+
+def _guard_path_for_mutation(path) -> None:
+    ap = _abspath(path)
+    if _is_under(_AGENTIC_CORE_ROOT, ap):
+        _deny(f"mutate agentic_core/{os.path.relpath(ap, _AGENTIC_CORE_ROOT)}")
+
+def _guard_path_for_move(src, dst) -> None:
+    asrc = _abspath(src)
+    adst = _abspath(dst)
+    if _is_under(_AGENTIC_CORE_ROOT, asrc):
+        _deny(f"move-from agentic_core/{os.path.relpath(asrc, _AGENTIC_CORE_ROOT)}")
+    if _is_under(_AGENTIC_CORE_ROOT, adst):
+        _deny(f"move-to agentic_core/{os.path.relpath(adst, _AGENTIC_CORE_ROOT)}")
+
+_orig_open = builtins.open
+def _open_guard(file, mode="r", *a, **k):
+    m = mode or "r"
+    if any(ch in m for ch in ("w", "a", "x", "+")):
+        _guard_path_for_write(file)
+    return _orig_open(file, mode, *a, **k)
+builtins.open = _open_guard
+io.open = _open_guard
+
+_orig_os_open = os.open
+def _os_open_guard(path, flags, mode=0o777):
+    write_flags = (
+        getattr(os, "O_WRONLY", 0) | getattr(os, "O_RDWR", 0) |
+        getattr(os, "O_CREAT", 0) | getattr(os, "O_TRUNC", 0) |
+        getattr(os, "O_APPEND", 0)
+    )
+    if flags & write_flags:
+        _guard_path_for_write(path)
+    return _orig_os_open(path, flags, mode)
+os.open = _os_open_guard
+
+_orig_unlink = os.unlink
+def _unlink_guard(path, *a, **k):
+    _guard_path_for_mutation(path)
+    return _orig_unlink(path, *a, **k)
+os.unlink = _unlink_guard
+os.remove = _unlink_guard
+
+_orig_rename = os.rename
+def _rename_guard(src, dst, *a, **k):
+    _guard_path_for_move(src, dst)
+    return _orig_rename(src, dst, *a, **k)
+os.rename = _rename_guard
+
+_orig_replace = os.replace
+def _replace_guard(src, dst, *a, **k):
+    _guard_path_for_move(src, dst)
+    return _orig_replace(src, dst, *a, **k)
+os.replace = _replace_guard
+
+_orig_mkdir = os.mkdir
+def _mkdir_guard(path, *a, **k):
+    _guard_path_for_mutation(path)
+    return _orig_mkdir(path, *a, **k)
+os.mkdir = _mkdir_guard
+
+_orig_makedirs = os.makedirs
+def _makedirs_guard(name, *a, **k):
+    _guard_path_for_mutation(name)
+    return _orig_makedirs(name, *a, **k)
+os.makedirs = _makedirs_guard
+
+_orig_rmdir = os.rmdir
+def _rmdir_guard(path, *a, **k):
+    _guard_path_for_mutation(path)
+    return _orig_rmdir(path, *a, **k)
+os.rmdir = _rmdir_guard
+
+_orig_shutil_move = shutil.move
+def _shutil_move_guard(src, dst, *a, **k):
+    _guard_path_for_move(src, dst)
+    return _orig_shutil_move(src, dst, *a, **k)
+shutil.move = _shutil_move_guard
+
+_orig_copy2 = shutil.copy2
+def _copy2_guard(src, dst, *a, **k):
+    _guard_path_for_write(dst)
+    return _orig_copy2(src, dst, *a, **k)
+shutil.copy2 = _copy2_guard
+
+_orig_copytree = shutil.copytree
+def _copytree_guard(src, dst, *a, **k):
+    _guard_path_for_write(dst)
+    return _orig_copytree(src, dst, *a, **k)
+shutil.copytree = _copytree_guard
+
+_orig_p_open = Path.open
+def _path_open_guard(self, mode="r", *a, **k):
+    m = mode or "r"
+    if any(ch in m for ch in ("w", "a", "x", "+")):
+        _guard_path_for_write(self)
+    return _orig_p_open(self, mode, *a, **k)
+Path.open = _path_open_guard
+
+_orig_write_text = Path.write_text
+def _write_text_guard(self, *a, **k):
+    _guard_path_for_write(self)
+    return _orig_write_text(self, *a, **k)
+Path.write_text = _write_text_guard
+
+_orig_write_bytes = Path.write_bytes
+def _write_bytes_guard(self, *a, **k):
+    _guard_path_for_write(self)
+    return _orig_write_bytes(self, *a, **k)
+Path.write_bytes = _write_bytes_guard
+
+_orig_path_unlink = Path.unlink
+def _path_unlink_guard(self, *a, **k):
+    _guard_path_for_mutation(self)
+    return _orig_path_unlink(self, *a, **k)
+Path.unlink = _path_unlink_guard
+
+_orig_path_rename = Path.rename
+def _path_rename_guard(self, target, *a, **k):
+    _guard_path_for_move(self, target)
+    return _orig_path_rename(self, target, *a, **k)
+Path.rename = _path_rename_guard
+
+_orig_path_replace = Path.replace
+def _path_replace_guard(self, target, *a, **k):
+    _guard_path_for_move(self, target)
+    return _orig_path_replace(self, target, *a, **k)
+Path.replace = _path_replace_guard
 
 from agentic_core.L0_routing.scripts.execute_ssot import _legacy_main
 
