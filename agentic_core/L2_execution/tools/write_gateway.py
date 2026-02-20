@@ -21,10 +21,64 @@ from typing import Any, Sequence
 
 Logger: Any = logging.getLogger("L2.WriteGateway")
 
+# =============================================================================
+# Source Root Fence — Prevent self-mutation during SSOT heal runs
+# =============================================================================
+
+_REPO_ROOT: Path | None = None
+
+
+def _get_repo_root() -> Path:
+    """Lazily resolve repo root (parent of agentic_core)."""
+    global _REPO_ROOT
+    if _REPO_ROOT is None:
+        _REPO_ROOT = Path(__file__).resolve().parents[3]
+    return _REPO_ROOT
+
+
+_SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset(
+    {
+        "agentic_core",
+        "prompt_governance",
+        "tests",
+        "ops_scripts",
+        "apps_shared",
+    }
+)
+
+_SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
+    "docs/evidence",
+    "docs/reports",
+    "archives/healing_backups",
+    "runtime_state.json",
+    ".backup",
+)
+
+
+def _deny_writes_into_source_roots(path: Path) -> None:
+    """Raise RuntimeError if path is under a tracked source root."""
+    if os.environ.get("AGENTIC_DENY_SOURCE_MUTATION") != "1":
+        return
+    repo_root = _get_repo_root()
+    try:
+        rel = path.resolve().relative_to(repo_root)
+        rel_str = str(rel).replace("\\", "/")
+    except ValueError:
+        return
+    for safe_prefix in _SAFE_OUTPUT_PREFIXES:
+        if rel_str.startswith(safe_prefix):
+            return
+    top_dir = rel.parts[0] if rel.parts else ""
+    if top_dir in _SOURCE_ROOTS_RELATIVE:
+        raise RuntimeError(
+            f"SOURCE_MUTATION_BLOCKED: Write to tracked source prohibited during SSOT heal. path={rel_str}"
+        )
+
 
 def write_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
     """Write text content to a file, creating parent dirs as needed."""
     p = Path(path)
+    _deny_writes_into_source_roots(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding=encoding)
     Logger.debug(f"[WriteGateway] write_text: {p}")
@@ -34,6 +88,7 @@ def write_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
 def write_bytes(path: str | Path, data: bytes) -> str:
     """Write binary content to a file, creating parent dirs as needed."""
     p = Path(path)
+    _deny_writes_into_source_roots(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(data)
     Logger.debug(f"[WriteGateway] write_bytes: {p}")
@@ -43,6 +98,7 @@ def write_bytes(path: str | Path, data: bytes) -> str:
 def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:
     """Serialize obj as JSON and write to file."""
     p = Path(path)
+    _deny_writes_into_source_roots(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=indent)
@@ -53,6 +109,7 @@ def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:
 def append_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
     """Append text to a file, creating parent dirs as needed."""
     p = Path(path)
+    _deny_writes_into_source_roots(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "a", encoding=encoding) as f:
         f.write(content)
@@ -63,6 +120,7 @@ def append_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
 def open_write(path: str | Path, content: str, encoding: str = "utf-8") -> str:
     """Open file in write mode and write content."""
     p = Path(path)
+    _deny_writes_into_source_roots(p)
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "w", encoding=encoding) as f:
         f.write(content)
@@ -106,6 +164,7 @@ def remove_tree(path: str | Path) -> None:
 def copy_file(src: str | Path, dst: str | Path) -> str:
     """Copy a file preserving metadata."""
     s, d = Path(src), Path(dst)
+    _deny_writes_into_source_roots(d)
     d.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(s, d)
     Logger.debug(f"[WriteGateway] copy_file: {s} -> {d}")
@@ -115,6 +174,7 @@ def copy_file(src: str | Path, dst: str | Path) -> str:
 def move_path(src: str | Path, dst: str | Path) -> str:
     """Move/rename a file or directory."""
     s, d = Path(src), Path(dst)
+    _deny_writes_into_source_roots(d)
     d.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(str(s), str(d))
     Logger.debug(f"[WriteGateway] move_path: {s} -> {d}")
@@ -124,6 +184,7 @@ def move_path(src: str | Path, dst: str | Path) -> str:
 def rename_path(src: str | Path, dst: str | Path) -> Path:
     """Rename a file or directory."""
     s, d = Path(src), Path(dst)
+    _deny_writes_into_source_roots(d)
     s.rename(d)
     Logger.debug(f"[WriteGateway] rename_path: {s} -> {d}")
     return d
