@@ -111,6 +111,91 @@ def _validate_dict_schema(obj: Any, schema: dict) -> tuple[bool, str | None, dic
     return (True, None, {})
 
 
+_REQUIRED_RETRIEVAL_KEYS: tuple[str, ...] = ("namespace", "max_k", "version")
+_REQUIRED_CITATION_KEYS: tuple[str, ...] = ("source_doc_id", "offset_start", "offset_end", "timestamp")
+
+MISSING_CITATION_FIELDS = "MISSING_CITATION_FIELDS"
+INCOMPLETE_RETRIEVAL_METADATA = "INCOMPLETE_RETRIEVAL_METADATA"
+MUTATION_VERB_IN_RETRIEVAL = "MUTATION_VERB_IN_RETRIEVAL"
+INVALID_RETRIEVAL_FIELD_CONSTRAINT = "INVALID_RETRIEVAL_FIELD_CONSTRAINT"
+
+_invariant_validated = False
+
+
+def validate_context_contract(payload: dict) -> tuple[bool, str | None, dict]:
+    """Validate a context payload against prompt governance contracts.
+
+    Args:
+        payload: Context dict to validate. Never mutated.
+
+    Returns:
+        (ok, error_code, normalized) where:
+          ok           — True if valid
+          error_code   — None if valid, else one of the ERROR_CODE constants
+          normalized   — new dict (not same object as payload) on success, {} on failure
+    """
+    global _invariant_validated
+    if not _invariant_validated:
+        from agentic_core.prompt_governance.core.invariant_registry import validate_invariant_registry
+
+        validate_invariant_registry()
+        _invariant_validated = True
+
+    from agentic_core.prompt_governance.core.invariant_registry import READ_ONLY_ISOLATION
+
+    forbidden_verbs: list[str] = READ_ONLY_ISOLATION["forbidden_verbs"]
+
+    normalized: dict = {}
+
+    if "retrieval_metadata" in payload:
+        rm = payload["retrieval_metadata"]
+        if not isinstance(rm, dict):
+            return (False, INCOMPLETE_RETRIEVAL_METADATA, {})
+
+        missing = [k for k in _REQUIRED_RETRIEVAL_KEYS if k not in rm]
+        if missing:
+            return (False, INCOMPLETE_RETRIEVAL_METADATA, {})
+
+        namespace = rm["namespace"]
+        max_k = rm["max_k"]
+        version = rm["version"]
+
+        if not isinstance(namespace, str) or not namespace:
+            return (False, INVALID_RETRIEVAL_FIELD_CONSTRAINT, {})
+        if not isinstance(max_k, int) or max_k <= 0:
+            return (False, INVALID_RETRIEVAL_FIELD_CONSTRAINT, {})
+        if not isinstance(version, str) or not version:
+            return (False, INVALID_RETRIEVAL_FIELD_CONSTRAINT, {})
+
+        for key in rm:
+            if key in forbidden_verbs:
+                return (False, MUTATION_VERB_IN_RETRIEVAL, {})
+
+        normalized["retrieval_metadata"] = {
+            "namespace": namespace,
+            "max_k": max_k,
+            "version": version,
+        }
+
+    if "citations" in payload:
+        citations = payload["citations"]
+        if not isinstance(citations, list):
+            return (False, MISSING_CITATION_FIELDS, {})
+        for item in citations:
+            if not isinstance(item, dict):
+                return (False, MISSING_CITATION_FIELDS, {})
+            missing = [k for k in _REQUIRED_CITATION_KEYS if k not in item]
+            if missing:
+                return (False, MISSING_CITATION_FIELDS, {})
+        normalized["citations"] = [{k: item[k] for k in _REQUIRED_CITATION_KEYS} for item in citations]
+
+    for key, value in payload.items():
+        if key not in ("retrieval_metadata", "citations"):
+            normalized[key] = value
+
+    return (True, None, normalized)
+
+
 def _check_node(value: Any, schema: dict, path: str) -> list[str]:
     """Recursively validate a value against a schema node. Returns list of error strings."""
     errors: list[str] = []

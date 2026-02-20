@@ -18,7 +18,10 @@ from typing import Any, NamedTuple
 from pydantic import BaseModel
 
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
-from agentic_core.prompt_governance.security.validators.output_schema_validator import validate_against_schema
+from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+    validate_against_schema,
+    validate_context_contract,
+)
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
 __all__ = [
@@ -219,6 +222,13 @@ You are {role}. Your objective is {objective}.
             template = self.templates[template_name].template
         else:
             template = self.template
+
+        # ENFORCEMENT: Single path — delegate to validate_context_contract
+        if not isinstance(context_data, dict):
+            raise SecurityIntegrityError("INVALID_CONTEXT_TYPE")
+        _ok, _err, _ = validate_context_contract(context_data)
+        if not _ok:
+            raise SecurityIntegrityError(_err)
 
         # SECURITY: Sanitize all user input through InputSanitizer
         try:
