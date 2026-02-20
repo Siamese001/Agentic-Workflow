@@ -71,7 +71,7 @@ class HealingMemoryEmbedder:
     def __post_init__(self) -> None:
         """Initialize embedding agent."""
         if not self._initialized:
-            self._get_embedding_agent()
+            self._initialize_embedding_agent()
             self._initialized = True
 
     @classmethod
@@ -80,7 +80,7 @@ class HealingMemoryEmbedder:
         global _embedder_singleton
         _embedder_singleton = None
 
-    def _get_embedding_agent(self) -> None:
+    def _initialize_embedding_agent(self) -> None:
         """Initialize the embedding agent with fallback."""
         try:
             from pathlib import Path

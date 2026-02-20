@@ -50,14 +50,15 @@ class TestMaybeForceUtf8Console:
         assert reconfigured.get("encoding") == "utf-8"
         assert reconfigured.get("errors") == "replace"
 
-    def test_no_op_on_non_windows(self, monkeypatch):
-        """No reconfigure called on linux."""
+    def test_reconfigures_on_non_windows_too(self, monkeypatch):
+        """Reconfigure is called on linux (no longer gated to Windows only)."""
         monkeypatch.setattr(sys, "platform", "linux")
-        called = []
+        reconfigured = {}
 
         class FakeStream:
-            def reconfigure(self, **kw):
-                called.append(True)
+            def reconfigure(self, encoding, errors="strict"):
+                reconfigured["encoding"] = encoding
+                reconfigured["errors"] = errors
 
         monkeypatch.setattr(sys, "stdout", FakeStream())
         monkeypatch.setattr(sys, "stderr", FakeStream())
@@ -65,7 +66,8 @@ class TestMaybeForceUtf8Console:
         fn = _import_console_fn()
         fn()
 
-        assert called == []
+        assert reconfigured.get("encoding") == "utf-8"
+        assert reconfigured.get("errors") == "replace"
 
     def test_reconfigure_exception_is_swallowed(self, monkeypatch):
         """If reconfigure raises, _maybe_force_utf8_console does not propagate."""
@@ -109,14 +111,14 @@ class TestMaybeForceUtf8LoggingHandlers:
         assert reconfigure_calls[0]["encoding"] == "utf-8"
         assert reconfigure_calls[0]["errors"] == "replace"
 
-    def test_no_op_on_non_windows(self, monkeypatch):
-        """No reconfigure called on linux."""
+    def test_reconfigures_on_non_windows_too(self, monkeypatch):
+        """Reconfigure is called on linux (no longer gated to Windows only)."""
         monkeypatch.setattr(sys, "platform", "linux")
         reconfigure_calls = []
 
         class FakeStream:
-            def reconfigure(self, **kw):
-                reconfigure_calls.append(kw)
+            def reconfigure(self, encoding, errors="strict"):
+                reconfigure_calls.append({"encoding": encoding, "errors": errors})
 
         handler = logging.StreamHandler()
         handler.stream = FakeStream()
@@ -130,7 +132,9 @@ class TestMaybeForceUtf8LoggingHandlers:
         finally:
             root_logger.handlers = original_handlers
 
-        assert reconfigure_calls == []
+        assert len(reconfigure_calls) >= 1
+        assert reconfigure_calls[0]["encoding"] == "utf-8"
+        assert reconfigure_calls[0]["errors"] == "replace"
 
     def test_handler_without_stream_is_skipped(self, monkeypatch):
         """Handlers without a stream attribute are silently skipped."""

@@ -1,31 +1,25 @@
-# SSOT heal runner — .NET Process-based, unbuffered, 10min timeout, input() blocked
-# No Tee-Object, no pipe chains, incremental streaming to file
+# SSOT heal runner — fully synchronous, no Tee-Object, no jobs, no async
+# Timeout via Start-Process + Wait-Process, redirect *>&1 to Out-File
 
+$ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+
+# ── Environment ──────────────────────────────────────────────────────────────
+$env:PYTHONUTF8                       = "1"
+$env:AGENTIC_DENY_SOURCE_MUTATION     = "1"
 $env:AGENTIC_ALLOW_MUTATION_FOR_TESTS = "1"
-$env:AGENTIC_BYPASS_LONGPATHS_CHECK = "1"
-$env:AGENTIC_DENY_SOURCE_MUTATION = "1"
-$env:PYTHONUTF8 = "1"
+$env:AGENTIC_BYPASS_LONGPATHS_CHECK   = "1"
 
 $logPath      = "docs/evidence/ssot_heal_run_output.txt"
 $stateCopy    = "docs/evidence/runtime_state.run.json"
 $runnerScript = "docs/evidence/_ssot_heal_runner_tmp.py"
-$ssotFile     = "agentic_core/L0_routing/scripts/execute_ssot.py"
 $timeoutSec   = 600  # 10 minutes
 
-# Delete prior outputs
-Remove-Item $logPath -Force -ErrorAction SilentlyContinue
+# ── Clean prior outputs ─────────────────────────────────────────────────────
+Remove-Item $logPath   -Force -ErrorAction SilentlyContinue
 Remove-Item $stateCopy -Force -ErrorAction SilentlyContinue
 
-# ============================================================================
-# PRE-FLIGHT: Restore SSOT entrypoint
-# ============================================================================
-Write-Host "[PRE-FLIGHT] Restoring $ssotFile from HEAD..."
-git restore --source=HEAD -- $ssotFile 2>&1 | Out-Null
-
-# ============================================================================
-# Generate temp runner with input() blocked
-# ============================================================================
+# ── Generate temp runner (input() blocked) ───────────────────────────────────
 @'
 import builtins
 builtins.input = lambda *a, **k: (_ for _ in ()).throw(
@@ -41,8 +35,7 @@ os.environ.setdefault("AGENTIC_BYPASS_LONGPATHS_CHECK", "1")
 start_time = time.time()
 
 print("=== SSOT HEAL MODE RUN ===")
-print("AGENTIC_ALLOW_MUTATION_FOR_TESTS=1")
-print("AGENTIC_BYPASS_LONGPATHS_CHECK=1")
+print("AGENTIC_DENY_SOURCE_MUTATION=1")
 print("PYTHONUTF8=1")
 print("input() BLOCKED")
 print("---------------------------")
@@ -77,38 +70,45 @@ else:
 sys.exit(exit_code if isinstance(exit_code, int) else 0)
 '@ | Out-File -FilePath $runnerScript -Encoding utf8
 
-# ============================================================================
-# Execute with timeout using Start-Process + job
-# ============================================================================
-Write-Host "[RUN] Starting python with ${timeoutSec}s timeout..."
+# ── Synchronous execution with timeout ───────────────────────────────────────
+Write-Host "[RUN] Starting python (synchronous, ${timeoutSec}s timeout)..."
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
 
-$job = Start-Job -ScriptBlock {
-    param($script, $log)
-    Set-Location $using:PWD
-    $env:PYTHONUTF8 = "1"
-    $env:AGENTIC_ALLOW_MUTATION_FOR_TESTS = "1"
-    $env:AGENTIC_BYPASS_LONGPATHS_CHECK = "1"
-    python -u $script 2>&1 | Out-File -FilePath $log -Encoding utf8
-    $LASTEXITCODE
-} -ArgumentList $runnerScript, $logPath
+$proc = Start-Process -FilePath "python" `
+    -ArgumentList "-u", $runnerScript `
+    -NoNewWindow -PassThru `
+    -RedirectStandardOutput  "$logPath.stdout" `
+    -RedirectStandardError   "$logPath.stderr"
 
-$completed = Wait-Job -Job $job -Timeout $timeoutSec
+$finished = $proc.WaitForExit($timeoutSec * 1000)
+$sw.Stop()
 
-if ($null -eq $completed) {
-    Write-Host "[TIMEOUT] Process exceeded ${timeoutSec}s, killing..."
-    Stop-Job -Job $job
-    Remove-Job -Job $job -Force
-    "`n=== TIMEOUT ===`nProcess killed after ${timeoutSec} seconds" | Out-File -FilePath $logPath -Append -Encoding utf8
+if (-not $finished) {
+    Write-Host "[TIMEOUT] Process exceeded ${timeoutSec}s - killing pid $($proc.Id)..."
+    Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
     $exitCode = -1
 } else {
-    $exitCode = Receive-Job -Job $job
-    Remove-Job -Job $job
+    $exitCode = $proc.ExitCode
     if ($null -eq $exitCode) { $exitCode = 0 }
 }
 
-Write-Host "[RUN] Python exit code: $exitCode"
+# ── Merge stdout + stderr into single log (no Tee-Object) ───────────────────
+$mergedLines = @()
+if (Test-Path "$logPath.stdout") {
+    $mergedLines += Get-Content "$logPath.stdout" -Encoding utf8 -ErrorAction SilentlyContinue
+}
+if (Test-Path "$logPath.stderr") {
+    $stderrLines = Get-Content "$logPath.stderr" -Encoding utf8 -ErrorAction SilentlyContinue
+    if ($stderrLines) { $mergedLines += ""; $mergedLines += "=== STDERR ==="; $mergedLines += $stderrLines }
+}
+$mergedLines | Out-File -FilePath $logPath -Encoding utf8
+Remove-Item "$logPath.stdout" -Force -ErrorAction SilentlyContinue
+Remove-Item "$logPath.stderr" -Force -ErrorAction SilentlyContinue
 
-# Copy runtime_state.json if it exists
+$elapsedFmt = "{0:N2}" -f $sw.Elapsed.TotalSeconds
+Write-Host "[RUN] Python exit code: $exitCode  (${elapsedFmt}s)"
+
+# ── Copy runtime_state.json ─────────────────────────────────────────────────
 if (Test-Path "runtime_state.json") {
     Copy-Item "runtime_state.json" -Destination $stateCopy -Force
     Write-Host "runtime_state.run.json: COPIED"
@@ -116,16 +116,31 @@ if (Test-Path "runtime_state.json") {
     Write-Host "runtime_state.json: NOT_FOUND"
 }
 
-# Clean up temp runner
+# ── Clean up temp runner ────────────────────────────────────────────────────
 Remove-Item $runnerScript -Force -ErrorAction SilentlyContinue
 
-# ============================================================================
-# POST-FLIGHT: Restore tracked corruption
-# ============================================================================
-Write-Host "[POST-FLIGHT] Restoring tracked files to HEAD..."
-git restore --source=HEAD -- agentic_core/ 2>&1 | Out-Null
+# ── POST-FLIGHT metrics ─────────────────────────────────────────────────────
+$runtimeSeconds = $sw.Elapsed.TotalSeconds
+$charmapCount   = (Select-String -Path $logPath -Pattern "charmap"            -ErrorAction SilentlyContinue | Measure-Object).Count
+$abstractCount  = (Select-String -Path $logPath -Pattern "Create abstraction layer" -ErrorAction SilentlyContinue | Measure-Object).Count
+$diffCount      = (git diff --name-only agentic_core/ 2>$null | Measure-Object).Count
 
-Write-Host "--- Tail of $logPath ---"
-Get-Content $logPath -ErrorAction SilentlyContinue | Select-Object -Last 40
+$runtimeFmt = "{0:N2}" -f $runtimeSeconds
+
+$metricsBlock = @"
+
+=== POST-FLIGHT METRICS ===
+EXIT_CODE=$exitCode
+RUNTIME_SECONDS=$runtimeFmt
+CHARMAP_COUNT=$charmapCount
+CREATE_ABSTRACTION_LAYER_COUNT=$abstractCount
+AGENTIC_CORE_DIFF_COUNT=$diffCount
+"@
+$metricsBlock | Out-File -FilePath $logPath -Append -Encoding utf8
+Write-Host $metricsBlock
+
+# ── Tail ────────────────────────────────────────────────────────────────────
+Write-Host "`n--- Tail of $logPath ---"
+Get-Content $logPath -ErrorAction SilentlyContinue | Select-Object -Last 30
 
 exit $exitCode

@@ -141,13 +141,12 @@ def _configure_logging(verbosity: int) -> None:
 
 
 def _maybe_force_utf8_console() -> None:
-    """Unconditional Windows console UTF-8 coercion.  Called at runtime, NOT import time."""
-    if not sys.platform.startswith("win"):
-        return
-    try:
-        subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
-    except FileNotFoundError:
-        pass
+    """Unconditional stdout/stderr UTF-8 coercion.  Called at runtime, NOT import time."""
+    if sys.platform.startswith("win"):
+        try:
+            subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
+        except FileNotFoundError:
+            pass
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     # guardian: allow-silent-swallow
@@ -162,8 +161,6 @@ def _maybe_force_utf8_console() -> None:
 
 def _maybe_force_utf8_logging_handlers() -> None:
     """Reconfigure existing logging handler streams to UTF-8.  Called at runtime, NOT import time."""
-    if not sys.platform.startswith("win"):
-        return
     seen: set[int] = set()
     for handler in logging.getLogger().handlers + logging.getLogger("").handlers:
         hid = id(handler)
@@ -1334,7 +1331,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                     encoding="utf-8",
                 ) as tf:
                     assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-                    json.dump(discovery_data, tf, indent=2)
+                    json.dump(discovery_data, tf, indent=2, ensure_ascii=False)
                     temp_name = tf.name
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
                 os.replace(temp_name, json_path)
@@ -2237,7 +2234,7 @@ def save_comprehensive_reports(
 
         with open(json_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(detailed_cert, f, indent=2, default=str)
+            json.dump(detailed_cert, f, indent=2, default=str, ensure_ascii=False)
 
         # Save Markdown Executive Summary (using the md_path already defined above)
         with open(md_path, "w", encoding="utf-8") as f:
