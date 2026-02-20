@@ -141,20 +141,46 @@ def _configure_logging(verbosity: int) -> None:
 
 
 def _maybe_force_utf8_console() -> None:
-    """Opt-in Windows console UTF-8 coercion.  Called at runtime, NOT import time."""
+    """Unconditional Windows console UTF-8 coercion.  Called at runtime, NOT import time."""
     if not sys.platform.startswith("win"):
-        return
-    if os.getenv("EXECUTE_SSOT_FORCE_UTF8", "0") != "1":
         return
     try:
         subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
     except FileNotFoundError:
         pass
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    # guardian: allow-silent-swallow
+    except Exception:
+        pass
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     # guardian: allow-silent-swallow
     except Exception:
         return
+
+
+def _maybe_force_utf8_logging_handlers() -> None:
+    """Reconfigure existing logging handler streams to UTF-8.  Called at runtime, NOT import time."""
+    if not sys.platform.startswith("win"):
+        return
+    seen: set[int] = set()
+    for handler in logging.getLogger().handlers + logging.getLogger("").handlers:
+        hid = id(handler)
+        if hid in seen:
+            continue
+        seen.add(hid)
+        stream = getattr(handler, "stream", None)
+        if stream is None:
+            continue
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        # guardian: allow-silent-swallow
+        except Exception:
+            pass
 
 
 # ============================================================================
@@ -1157,7 +1183,7 @@ class RuntimeStateManager:
             # Create temp file
             with tempfile.NamedTemporaryFile("w", dir=str(temp_dir), delete=False, encoding="utf-8") as tf:
                 assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-                json.dump(self.state, tf, indent=2, default=str)
+                json.dump(self.state, tf, indent=2, default=str, ensure_ascii=False)
                 temp_name = tf.name
 
             # [HARDENED] Set strict permissions (Owner Read/Write only) before moving
@@ -2497,6 +2523,8 @@ def main() -> int:
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
+    _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
+    _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
     if _v15_manifest is not None:
