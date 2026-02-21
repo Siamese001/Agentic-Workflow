@@ -145,3 +145,65 @@ class TestPathRouter:
 
         # Should be Path.B due to sanitized flag, not Path.C
         assert selected == Path.B
+
+
+@pytest.mark.unit
+class TestElevatorShaftSeam:
+    """Test Elevator Shaft seam contains no business logic."""
+
+    def test_load_context_jit_returns_empty_dict(self):
+        """Test seam returns deterministic empty dict."""
+        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+
+        result = load_context_jit("test_intent")
+
+        assert result == {}
+        assert isinstance(result, dict)
+
+    def test_seam_has_no_forbidden_imports(self):
+        """Test seam contains no forbidden imports."""
+        import ast
+
+        seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
+
+        # Read and parse the seam file
+        with open(seam_file, encoding="utf-8") as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+
+        # Check for forbidden imports
+        forbidden_imports = ["L2_", "L5_", "datetime", "time"]
+        found_forbidden = []
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if any(forbidden in alias.name for forbidden in forbidden_imports):
+                        found_forbidden.append(alias.name)
+            elif isinstance(node, ast.ImportFrom):
+                if node.module and any(forbidden in node.module for forbidden in forbidden_imports):
+                    found_forbidden.append(f"from {node.module}")
+
+        assert not found_forbidden, f"Forbidden imports found: {found_forbidden}"
+
+    def test_seam_has_no_routing_logic(self):
+        """Test seam contains no routing decision logic."""
+        import ast
+
+        seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
+
+        with open(seam_file, encoding="utf-8") as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+
+        # Check for control flow statements (routing logic)
+        forbidden_nodes = (ast.If, ast.For, ast.While, ast.Try)
+        found_nodes = []
+
+        for node in ast.walk(tree):
+            if isinstance(node, forbidden_nodes):
+                found_nodes.append(type(node).__name__)
+
+        assert not found_nodes, f"Control flow statements found: {found_nodes}"
