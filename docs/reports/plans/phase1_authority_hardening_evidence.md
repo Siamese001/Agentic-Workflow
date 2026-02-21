@@ -1,17 +1,24 @@
 # Phase 1 Authority Hardening Evidence
 
 ## Git Commit Hash
-**PENDING — updated at end of this wave (see bottom)**
+**c03cbf58d** — evidence: set final commit hash in Phase 1 evidence file
 
-## Modified Files (from commit ace6057e8)
-- agentic_core/L0_routing/enforcement/execution_gateway.py (+243/-92)
-- agentic_core/L1_cognition/types/execution_intent.py [NEW]
-- agentic_core/L1_cognition/validators/truth_keeper_validator.py (os import removed)
-- agentic_core/L2_execution/enforcement/durable_write_wrapper.py [NEW]
-- agentic_core/L5_safety/reasoning/guardian_decision.py [NEW]
-- ops_scripts/hooks/landmine_baseline.txt (+3)
-- tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py [NEW]
-- tests/agentic_core/test_authority_hardening.py [NEW]
+## Modified Files (git show --stat c03cbf58d)
+```
+docs/reports/plans/phase1_authority_hardening_evidence.md | 1 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+Cumulative files introduced across Phase 1 (ace6057e8 → c03cbf58d):
+- agentic_core/L0_routing/enforcement/execution_gateway.py
+- agentic_core/L1_cognition/types/execution_intent.py
+- agentic_core/L1_cognition/validators/truth_keeper_validator.py
+- agentic_core/L2_execution/enforcement/durable_write_wrapper.py
+- agentic_core/L5_safety/reasoning/guardian_decision.py
+- ops_scripts/hooks/landmine_baseline.txt
+- pytest.ini
+- tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py
+- tests/agentic_core/test_authority_hardening.py
 
 ## Discovery Fix (Wave 1 RCA)
 `conftest.py::pytest_collection_modifyitems` deselects all items that lack
@@ -25,9 +32,14 @@ files; `tests/agentic_core/L1_cognition` and `tests/agentic_core` added to
 ## Environment
 
 ```
-python --version  =>  Python 3.12.10
-pytest --version  =>  pytest 9.0.2
-git status --porcelain=v1  =>  (clean — only untracked raw capture files)
+Python 3.12.10
+```
+```
+pytest 9.0.2
+```
+```
+?? docs/reports/plans/pytest_ah_raw.txt
+?? docs/reports/plans/pytest_l1_raw.txt
 ```
 
 ---
@@ -186,4 +198,4 @@ All architectural integrity checks passed.
 ---
 
 ## Commit Hash
-**1ff5fc750** — evidence: replace fabricated pytest output with verbatim 72+16 passed transcripts
+**c03cbf58d** — evidence: set final commit hash in Phase 1 evidence file
