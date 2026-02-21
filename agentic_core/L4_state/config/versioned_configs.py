@@ -56,10 +56,12 @@ class RoutingConfig:
     depth_breaker: int = 10
     escalation_threshold: float = 0.85
     fallback_mode: str = "safe"
+    anomaly_routing_threshold: float = 0.75
 
     def canonical_bytes(self) -> bytes:
         doc = {
             "version": self.version,
+            "anomaly_routing_threshold": self.anomaly_routing_threshold,
             "depth_breaker": self.depth_breaker,
             "escalation_threshold": self.escalation_threshold,
             "fallback_mode": self.fallback_mode,
