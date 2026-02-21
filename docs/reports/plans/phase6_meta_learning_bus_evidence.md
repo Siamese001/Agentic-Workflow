@@ -1,10 +1,8 @@
 # Git HEAD
-```f31fce5bf7eb98cecea0eb37dcf25da95a3fa685```
+```1632d15a6180e43a660208b7e7ca54f4f11e176b```
 
 # Git Status
-```M "docs/technical/Base Agent Hierarchy.md"
- M docs/technical/agentic_process_mapping.md
-?? tools/evidence/phase6_meta_learning_bus_evidence.py```
+``````
 
 # Meta Learning Bus Tests
 ```[1m============================= test session starts =============================[0m
@@ -95,9 +93,13 @@ tests/unit/L0_routing/test_path_router.py::TestElevatorShaftSeam::test_seam_has_
 ```No wall-clock tokens foundNo forbidden L4 mutation tokens found```
 
 # Git Show --stat
-```commit f31fce5bf7eb98cecea0eb37dcf25da95a3fa685
+```commit 1632d15a6180e43a660208b7e7ca54f4f11e176b
 Author: Siamese001 <siamese001@users.noreply.github.com>
-Date:   Sat Feb 21 11:06:58 2026 -0500
+Date:   Sat Feb 21 11:07:56 2026 -0500
 
-    feat(meta): add apply_next with injected meta_apply gate (Phase 6.2)
+    docs: update technical documentation files
+
+ docs/technical/Base Agent Hierarchy.md    | 80 ++++++++++++++++++-------------
+ docs/technical/agentic_process_mapping.md | 26 +++++-----
+ 2 files changed, 60 insertions(+), 46 deletions(-)
 ```
