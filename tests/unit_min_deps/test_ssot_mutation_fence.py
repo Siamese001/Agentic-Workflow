@@ -45,6 +45,24 @@ class TestProtectedRootEnforcement:
         target_path = Path(".github/workflows/test.yml")
         with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
             enforce_protected_root(target_path, allow_override=False)
+    
+    def test_exception_includes_matched_root_agentic_core(self):
+        """Test that exception message includes the matched immutable root."""
+        target_path = Path("agentic_core/test_file.py")
+        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
+            enforce_protected_root(target_path, allow_override=False)
+    
+    def test_exception_includes_matched_root_tests(self):
+        """Test that exception message includes matched root for tests directory."""
+        target_path = Path("tests/test_file.py")
+        with pytest.raises(SourceMutationBlocked, match="matched_root=tests"):
+            enforce_protected_root(target_path, allow_override=False)
+    
+    def test_exception_includes_matched_root_github(self):
+        """Test that exception message includes matched root for .github directory."""
+        target_path = Path(".github/workflows/test.yml")
+        with pytest.raises(SourceMutationBlocked, match=r"matched_root=\.github"):
+            enforce_protected_root(target_path, allow_override=False)
 
 
 @pytest.mark.unit_min_deps

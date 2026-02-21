@@ -75,14 +75,16 @@ def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
         try:
             if resolved.is_relative_to(immutable_root):
                 raise SourceMutationBlocked(
-                    f"Protected root mutation blocked: {target_path}"
+                    f"Protected root mutation blocked: target={resolved} "
+                    f"matched_root={immutable_root.name}"
                 )
         except AttributeError:
             # Fallback for Python < 3.9
             try:
                 resolved.relative_to(immutable_root)
                 raise SourceMutationBlocked(
-                    f"Protected root mutation blocked: {target_path}"
+                    f"Protected root mutation blocked: target={resolved} "
+                    f"matched_root={immutable_root.name}"
                 )
             except ValueError:
                 pass
