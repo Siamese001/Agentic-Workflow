@@ -1,0 +1,167 @@
+"""Wave 2 tests — assembler slot rendering, manifest hash, SLOT_ORDER enforcement."""
+
+from __future__ import annotations
+
+import hashlib
+from unittest.mock import patch
+
+import pytest
+
+pytestmark = pytest.mark.unit_min_deps
+
+_VALID_CONTEXT = {"namespace": "ns1", "max_k": 5, "version": "v1"}
+
+
+def _make_assembler():
+    from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
+
+    with patch(
+        "agentic_core.prompt_governance.core.prompt_assembler.PromptAssembler._load_templates",
+        return_value=None,
+    ):
+        return PromptAssembler()
+
+
+# ---------------------------------------------------------------------------
+# Slot labels present in assembled output
+# ---------------------------------------------------------------------------
+
+
+def test_assembled_output_contains_slot_s0():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert "<SLOT_S0>" in text
+
+
+def test_assembled_output_contains_slot_d0():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert "<SLOT_D0>" in text
+
+
+def test_assembled_output_contains_slot_i0():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert "<SLOT_I0>" in text
+
+
+def test_assembled_output_contains_slot_c0():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert "<SLOT_C0>" in text
+
+
+def test_assembled_output_contains_slot_u0():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert "<SLOT_U0>" in text
+
+
+def test_slot_order_in_assembled_output():
+    """S0 must appear before D0, D0 before I0, I0 before C0, C0 before U0."""
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    positions = {
+        slot: text.index(f"<{slot}>") for slot in ("SLOT_S0", "SLOT_D0", "SLOT_I0", "SLOT_C0", "SLOT_U0")
+    }
+    order = ["SLOT_S0", "SLOT_D0", "SLOT_I0", "SLOT_C0", "SLOT_U0"]
+    for i in range(len(order) - 1):
+        assert positions[order[i]] < positions[order[i + 1]], f"{order[i]} must appear before {order[i + 1]}"
+
+
+# ---------------------------------------------------------------------------
+# C0 context rendered in output
+# ---------------------------------------------------------------------------
+
+
+def test_c0_context_data_rendered_in_output():
+    ctx = {"namespace": "myns", "max_k": 3, "version": "v2"}
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=ctx, injections=[])
+    assert "myns" in text
+
+
+# ---------------------------------------------------------------------------
+# Manifest hash
+# ---------------------------------------------------------------------------
+
+
+def test_manifest_hash_is_non_empty_after_assemble():
+    a = _make_assembler()
+    a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert a._last_manifest_hash != ""
+
+
+def test_manifest_hash_is_sha256_hex():
+    a = _make_assembler()
+    a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    h = a._last_manifest_hash
+    assert len(h) == 64
+    assert all(c in "0123456789abcdef" for c in h)
+
+
+def test_manifest_hash_is_deterministic():
+    a1 = _make_assembler()
+    a2 = _make_assembler()
+    a1.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    a2.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    assert a1._last_manifest_hash == a2._last_manifest_hash
+
+
+def test_manifest_hash_changes_with_different_input():
+    a = _make_assembler()
+    a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    h1 = a._last_manifest_hash
+    a.assemble(role="Agent", objective="Different", context_data=_VALID_CONTEXT, injections=[])
+    h2 = a._last_manifest_hash
+    assert h1 != h2
+
+
+def test_manifest_hash_matches_sha256_of_text():
+    a = _make_assembler()
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    expected = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    assert a._last_manifest_hash == expected
+
+
+# ---------------------------------------------------------------------------
+# assemble_with_schema returns AssembledPrompt with manifest_hash
+# ---------------------------------------------------------------------------
+
+
+def test_assemble_with_schema_returns_assembled_prompt_with_hash():
+    from agentic_core.prompt_governance.core.prompt_assembler import AssembledPrompt
+
+    a = _make_assembler()
+    result = a.assemble_with_schema(
+        role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[]
+    )
+    assert isinstance(result, AssembledPrompt)
+    assert isinstance(result.manifest_hash, str)
+    assert len(result.manifest_hash) == 64
+
+
+def test_assembled_prompt_is_frozen():
+    a = _make_assembler()
+    result = a.assemble_with_schema(
+        role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[]
+    )
+    with pytest.raises((AttributeError, TypeError)):
+        result.manifest_hash = "mutated"  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# SLOT_ORDER enforcement — all 5 slots always present
+# ---------------------------------------------------------------------------
+
+
+def test_assembler_slot_map_covers_all_slot_order_keys():
+    """Verify that the assembler internally builds a slot for every key in SLOT_ORDER."""
+    from agentic_core.prompt_governance.contracts.slot_contracts import SLOT_ORDER
+
+    a = _make_assembler()
+    # If any slot were missing, assemble() would raise ValueError("SLOT_MISSING:...")
+    # This test asserts no such error is raised for a valid payload
+    text = a.assemble(role="Agent", objective="Test", context_data=_VALID_CONTEXT, injections=[])
+    for slot_key in SLOT_ORDER:
+        assert f"<SLOT_{slot_key}>" in text, f"SLOT_{slot_key} missing from assembled output"

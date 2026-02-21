@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
-from .output_schema_validator import validate_against_schema, validate_context_contract
+from .output_schema_validator import (
+    validate_against_schema,
+    validate_context_contract,
+    validate_healer_reentry,
+)
 
-__all__ = ["validate_against_schema", "validate_context_contract"]
+__all__ = ["validate_against_schema", "validate_context_contract", "validate_healer_reentry"]

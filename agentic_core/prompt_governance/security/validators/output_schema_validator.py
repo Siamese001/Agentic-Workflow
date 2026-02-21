@@ -119,8 +119,35 @@ INCOMPLETE_RETRIEVAL_METADATA = "INCOMPLETE_RETRIEVAL_METADATA"
 MUTATION_VERB_IN_RETRIEVAL = "MUTATION_VERB_IN_RETRIEVAL"
 INVALID_RETRIEVAL_FIELD_CONSTRAINT = "INVALID_RETRIEVAL_FIELD_CONSTRAINT"
 INVALID_TELEMETRY_ENVELOPE = "INVALID_TELEMETRY_ENVELOPE"
+HEALER_REENTRY_VIOLATION = "HEALER_REENTRY_VIOLATION"
+
+_MUTATION_AUTHORITY_MARKERS: tuple[str, ...] = ("durable_write", "fs_mutation", "db_commit")
 
 _invariant_validated = False
+
+
+def validate_healer_reentry(metadata: dict) -> tuple[bool, str | None]:
+    """Validate that a healing proposal carries the required re-entry gate marker.
+
+    Rules:
+    - If metadata["healing_proposal"] is True, metadata["reentry_gate"] must also be True.
+    - No durable mutation authority markers are allowed in metadata values.
+
+    Returns:
+        (ok, error_code) — ok=True if valid, error_code=None if valid.
+    """
+    if not isinstance(metadata, dict):
+        return (False, HEALER_REENTRY_VIOLATION)
+
+    if metadata.get("healing_proposal") is True:
+        if metadata.get("reentry_gate") is not True:
+            return (False, HEALER_REENTRY_VIOLATION)
+
+    for value in metadata.values():
+        if isinstance(value, str) and value in _MUTATION_AUTHORITY_MARKERS:
+            return (False, HEALER_REENTRY_VIOLATION)
+
+    return (True, None)
 
 
 def validate_context_contract(payload: dict) -> tuple[bool, str | None, dict]:

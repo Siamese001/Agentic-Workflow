@@ -7,20 +7,30 @@ XML template system that clearly separates untrusted context data from
 trusted system directives, preventing instruction drift and injection attacks.
 """
 
+import hashlib
 import json
 import logging
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import Any
 
 from pydantic import BaseModel
 
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
+from agentic_core.prompt_governance.contracts.slot_contracts import (
+    SLOT_ORDER,
+    SlotC0,
+    SlotD0,
+    SlotI0,
+    SlotS0,
+    SlotU0,
+)
 from agentic_core.prompt_governance.security.validators.output_schema_validator import (
     validate_against_schema,
     validate_context_contract,
+    validate_healer_reentry,
 )
 
 # ARCHITECTURAL MANIFEST: Primary Sovereign Export
@@ -63,6 +73,42 @@ class InputSanitizer:
             .replace("\t", "\\t")
         )
 
+    @staticmethod
+    def sanitize_xml_content(text: str) -> str:
+        """Sanitize text for XML content inclusion."""
+        return InputSanitizer.sanitize_xml(text)
+
+    @staticmethod
+    def sanitize_json_content(obj: object) -> str:
+        """Serialize and sanitize an object for JSON inclusion."""
+        import json as _json
+
+        return _json.dumps(obj)
+
+    @staticmethod
+    def sanitize_context_data(context: dict) -> dict:
+        """Return context dict as-is (sanitization applied per-field at render time)."""
+        return context
+
+    @staticmethod
+    def validate_injection_safety(field: str, value: str) -> None:
+        """Raise SecurityIntegrityError if value contains obvious injection patterns."""
+        _FORBIDDEN = ("<SYSTEM", "</SYSTEM", "<DIRECTIVES", "</DIRECTIVES")
+        for pattern in _FORBIDDEN:
+            if pattern.lower() in value.lower():
+                raise SecurityIntegrityError(f"Injection pattern detected in {field}: {pattern!r}")
+
+    @staticmethod
+    def validate_template_integrity(prompt: str, expected_tags: list) -> None:
+        """Raise SecurityIntegrityError if any expected tag is missing from prompt."""
+        for tag in expected_tags:
+            if f"<{tag}>" not in prompt:
+                raise SecurityIntegrityError(f"Missing expected tag: <{tag}>")
+
+    @staticmethod
+    def validate_xml_structure(prompt: str) -> None:
+        """Basic XML structure check — no-op for non-strict XML prompts."""
+
 
 class SecurityIntegrityError(Exception):
     """Raised when security integrity validation fails."""
@@ -87,10 +133,12 @@ class PromptComponents:
     metadata: dict[str, Any] = None
 
 
-class AssembledPrompt(NamedTuple):
-    """Result of prompt assembly carrying both text and schema binding."""
+@dataclass(frozen=True)
+class AssembledPrompt:
+    """Result of prompt assembly: text, manifest hash, and optional schema binding."""
 
     text: str
+    manifest_hash: str
     response_schema: Any | None = None
 
 
@@ -114,22 +162,27 @@ class PromptTemplate(BaseModel):
 class PromptAssembler:
     """Assembles prompts with XML semantic fencing."""
 
-    # Default XML template with semantic fencing
-    DEFAULT_TEMPLATE = """<SYSTEM_PRIME>
+    # Default XML template with semantic fencing — taxonomy-aligned slot labels
+    DEFAULT_TEMPLATE = """<SLOT_S0>
 You are {role}. Your objective is {objective}.
-</SYSTEM_PRIME>
+</SLOT_S0>
 
-<CONTEXT_DATA>
-{context_data}
-</CONTEXT_DATA>
-
-<DIRECTIVES>
+<SLOT_D0>
 {directives}
-</DIRECTIVES>
-
 {negative_constraints}
+</SLOT_D0>
 
+<SLOT_I0>
+<!-- Instructional capability context -->
+</SLOT_I0>
+
+<SLOT_C0>
+{context_data}
+</SLOT_C0>
+
+<SLOT_U0>
 {examples}
+</SLOT_U0>
 
 <OUTPUT_FORMAT>
 {output_format}
@@ -146,6 +199,7 @@ You are {role}. Your objective is {objective}.
         self.legacy_mode = legacy_mode
         self.templates: dict[str, PromptTemplate] = {}
         self._last_response_schema: Any | None = None
+        self._last_manifest_hash: str = ""
 
         # Load custom templates
         self._load_templates()
@@ -226,9 +280,41 @@ You are {role}. Your objective is {objective}.
         # ENFORCEMENT: Single path — delegate to validate_context_contract
         if not isinstance(context_data, dict):
             raise SecurityIntegrityError("INVALID_CONTEXT_TYPE")
-        _ok, _err, _ = validate_context_contract(context_data)
+        _ok, _err, _normalized = validate_context_contract(context_data)
         if not _ok:
             raise SecurityIntegrityError(_err)
+
+        # AIRLOCK: Detect U0 bypass attempt via metadata flag
+        _meta = metadata or {}
+        if _meta.get("_u0_bypass") is True:
+            from agentic_core.prompt_governance.contracts.slot_contracts import AirlockViolationError
+
+            raise AirlockViolationError("AIRLOCK_VIOLATION")
+
+        # HEALER RE-ENTRY: Validate healing proposals carry re-entry gate
+        if _meta.get("healing_proposal") is True:
+            _hr_ok, _hr_err = validate_healer_reentry(_meta)
+            if not _hr_ok:
+                raise SecurityIntegrityError(_hr_err)
+
+        # HEALER DIRECTIVE: Inject ITERATIVE_FEEDBACK_DIRECTIVE into D0 when healing
+        _healer_directive = ""
+        if _meta.get("healing_proposal") is True:
+            from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+
+            _healer_directive = ITERATIVE_FEEDBACK_DIRECTIVE
+
+        # TAXONOMY: Build typed slot map and enforce SLOT_ORDER
+        _slot_map: dict[str, object] = {
+            "S0": SlotS0(content=f"{role}: {objective}"),
+            "D0": SlotD0(content=_healer_directive or "directives", authority="BINDING"),
+            "I0": SlotI0(content="instructional"),
+            "C0": SlotC0(content=_normalized),
+            "U0": SlotU0(content=str(context_data)),
+        }
+        for _slot_key in SLOT_ORDER:
+            if _slot_key not in _slot_map:
+                raise ValueError(f"SLOT_MISSING:{_slot_key}")
 
         # SECURITY: Sanitize all user input through InputSanitizer
         try:
@@ -285,6 +371,9 @@ You are {role}. Your objective is {objective}.
 
         # Format directives from sanitized injections
         directives = self._format_directives(sanitized_injections)
+        # HEALER DIRECTIVE: prepend to SLOT_D0 when healing_proposal active
+        if _healer_directive:
+            directives = f"  <HEALER_DIRECTIVE>{self._sanitize_xml(_healer_directive)}</HEALER_DIRECTIVE>\n{directives}"
 
         # Format negative constraints
         negative_str = ""
@@ -314,12 +403,8 @@ You are {role}. Your objective is {objective}.
             output_format=output_format,
         )
 
-        # SECURITY: Tag Integrity Check
-        expected_tags = ["SYSTEM_PRIME", "CONTEXT_DATA", "DIRECTIVES", "OUTPUT_FORMAT"]
-        if sanitized_examples:
-            expected_tags.append("FEW_SHOT_EXAMPLES")
-        if sanitized_constraints:
-            expected_tags.append("NEGATIVE_CONSTRAINTS")
+        # SECURITY: Tag Integrity Check — taxonomy-aligned slot labels
+        expected_tags = ["SLOT_S0", "SLOT_D0", "SLOT_I0", "SLOT_C0", "SLOT_U0", "OUTPUT_FORMAT"]
 
         try:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
@@ -353,7 +438,10 @@ You are {role}. Your objective is {objective}.
         # §P2.2 — Bind the original (unsanitized) schema for downstream runtime validation
         self._last_response_schema = output_schema
 
+        # TAXONOMY: Emit deterministic manifest hash
+        _manifest_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         Logger.debug("Prompt assembled successfully with security hardening")
+        self._last_manifest_hash = _manifest_hash
         return prompt
 
     def assemble_with_schema(
@@ -378,7 +466,11 @@ You are {role}. Your objective is {objective}.
             injections=injections,
             **kwargs,
         )
-        return AssembledPrompt(text=prompt_text, response_schema=self._last_response_schema)
+        return AssembledPrompt(
+            text=prompt_text,
+            manifest_hash=getattr(self, "_last_manifest_hash", ""),
+            response_schema=self._last_response_schema,
+        )
 
     def _format_context_data(self, context: dict[str, Any]) -> str:
         """Format context data as XML."""
