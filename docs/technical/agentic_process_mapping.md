@@ -10,7 +10,7 @@
           +-----------------------------------------+                      +-----------------------------------------+                      +-----------------------------------------+
           | apps_interactive                        |                      | apps_autonomous                         |                      | apps_admin                              |
           |-----------------------------------------|                      |-----------------------------------------|                      |-----------------------------------------|
-          | - Chat UIs / CLI tools                  |                      | - Webhook receivers                     |                      | - Control Dashboards                    |
+          | - Chat UIs / CLI tools                  |                      | - Webhook receivers                     |                      | - Direct API endpoints                  |
           | - Direct API endpoints                  |                      | - Direct API endpoints                  |                      | - System event listeners                |
           | - Human-in-the-loop views               |                      | - System event listeners                |                      | - Telemetry monitors                    |
           +-----------------------------------------+                      +-----------------------------------------+                      +-----------------------------------------+
@@ -151,19 +151,19 @@
 =============================================================================================================================================================================================================
   CRITICAL DISSEMINATION GUARANTEES
 =============================================================================================================================================================================================================
-| 1. AIRLOCK INTEGRITY: User Prompt (L1) cannot touch L2 Execution without passing L0, L4 state wrapping, and L5 safety gating.                                                                             |
-| 2. FENCING ENFORCEMENT: Role fences (Injections) are applied at the Assembly Stage, ensuring L2 never receives an unfenced/ungoverned intent.                                                             |
-| 3. CONTEXT LOADING DISCIPLINE: Dependencies are loaded via the Elevator Shaft at runtime (L0 <-> L5), maintaining L0's weightless authority.                                                              |
-| 4. RE-ENTRY CONTROL: Healing proposals (L2.3) hold zero durable mutation power; they must recursively pass the Assembly and Safety gates again.                                                           |
-| 5. DATA PARITY: The Surgical Manifest ensures high-resolution data is preserved across the Validator -> Healer communication pipe.                                                                        |
-| 6. SANDBOX CONTAINMENT: L2 strictly encapsulates mutation. L2.1 locks the envelope, L2.2 executes, and L2.3 rolls back to the L2.1 baseline on failure.                                                   |
-| 7. CONTRACT BINDING: The Check-ID Registry absolutely restricts L2.1; unregistered intents physically cannot be invoked.                                                                                  |
-| 8. ATOMIC GRANULARITY: L3 intents are shredded into atomic check_ids at the Assembly Stage to minimize failure blast radius.                                                                              |
-| 9. SEMANTIC INTEGRITY: Semantic Drift Guards prevent automated RAG index corruption over continuous agentic mutation loops.                                                                               |
-| 10. RESOURCE PROTECTION: Execution is strictly bound by L2.2 Quota Limits and L2.3 Cascade Failure Circuits to prevent infinite burn.                                                                     |
-| 11. JUST-IN-TIME CONTEXT: The L0 Elevator Shaft prevents context rot by dynamically loading data only when required by the reasoning path.                                                                |
-| 12. COGNITIVE OBSERVABILITY: The L1 Thinking Layer logs intent and reasoning, transitioning telemetry from system health to decision tracking.                                                            |
-| 13. ADVERSARIAL SANITIZATION: The Assembly Stage classifies and strips prompt hijacking attempts to preserve the agent's core constitution.                                                               |
-| 14. MULTI-AGENT COORDINATION: The L4 Master State maintains a shared Blackboard KV store to synchronize independent agents without blocking.                                                              |
-| 15. ZERO-TRUST & RECONCILIATION: L2.1 strictly scopes tool access, while background workers ensure L4 state matches actual L2.2 mutation reality.                                                         |
+| 1. NO SKIPPING THE SAFETY GATES: Prevents un-governed direct execution.                                                                                                                                   |
+| 2. ALWAYS ATTACH THE SAFETY FENCES: Stops agents from exceeding roles.                                                                                                                                    |
+| 3. ONLY LOAD DATA WHEN NEEDED: Keeps context windows lean/accurate.                                                                                                                                       |
+| 4. HEALED PLANS MUST RE-CLEAR SAFETY: Erases "trust" for corrected actions.                                                                                                                               |
+| 5. DON'T LOSE DATA ON ERROR: Ensures healers have full context.                                                                                                                                           |
+| 6. ISOLATE EVERY CHANGE IN SANDBOX: Zero durable damage on failure.                                                                                                                                       |
+| 7. ONLY USE PRE-APPROVED SYSTEM TOOLS: Physically blocks rogue function calls.                                                                                                                            |
+| 8. BREAK TASKS INTO TINY PIECES: Minimizes blast radius of errors.                                                                                                                                        |
+| 9. PROTECT KNOWLEDGE FROM AGENT DRIFT: Prevents agents from corrupting truth.                                                                                                                             |
+| 10. STOP AGENTS FROM BURNING MONEY: Kills infinite loops and spikes.                                                                                                                                      |
+| 11. FRESH DATA ONLY AT RUNTIME: Prevents outdated "context rot."                                                                                                                                          |
+| 12. RECORD THE WHY, NOT WHAT: Focuses telemetry on decision logic.                                                                                                                                        |
+| 13. REMOVE ALL PROMPT HIJACK ATTEMPTS: Neutralizes "ignore instructions" attacks.                                                                                                                         |
+| 14. SHARE MEMORY ACROSS ALL AGENTS: Prevents agents from colliding/stalling.                                                                                                                              |
+| 15. DOUBLE-CHECK DATA MATCHES THE WORLD: Detects "ghost" or hidden mutations.                                                                                                                             |
 =============================================================================================================================================================================================================
