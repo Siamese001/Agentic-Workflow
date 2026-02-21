@@ -72,20 +72,31 @@ def get_default_protected_root_policy() -> ProtectedRootPolicy:
     )
 
 
-def _emit_block_event(target: Path, matched_root: str, log_path: str) -> None:
+def _emit_block_event(
+    target: Path, 
+    matched_root: str, 
+    log_path: str,
+    ts_utc_override: str | None = None
+) -> None:
     """Emit a deterministic JSONL event for a blocked write attempt.
     
     Args:
         target: Normalized path that was blocked
         matched_root: Name of the immutable root that matched
         log_path: Path to JSONL log file
+        ts_utc_override: Optional fixed timestamp for deterministic replay (tests only)
     
     Failures are swallowed to avoid masking the block exception.
     """
     try:
         # Create event record (deterministic: stable field order via dataclass)
+        if ts_utc_override is not None:
+            ts = ts_utc_override
+        else:
+            ts = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        
         event = ProtectedRootBlockEvent(
-            ts_utc=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            ts_utc=ts,
             target=str(target),
             matched_root=matched_root,
             caller="mutation_prohibition:enforce_protected_root"

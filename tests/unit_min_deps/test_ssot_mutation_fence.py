@@ -358,3 +358,98 @@ class TestFenceSelfCheck:
         # Verify write_text source contains enforce_protected_root
         source = inspect.getsource(write_gateway.write_text)
         assert "enforce_protected_root" in source
+
+
+@pytest.mark.unit_min_deps
+class TestDeterministicReplay:
+    """Test deterministic replay verification for protected-root fence behavior."""
+    
+    def test_replay_block_event_is_identical_under_fixed_clock(self, tmp_path, monkeypatch):
+        """Test that blocked-write telemetry is identical across runs with fixed timestamp."""
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+            _emit_block_event,
+        )
+        
+        target_path = Path("agentic_core/test_file.py").resolve()
+        matched_root = "agentic_core"
+        fixed_ts = "2026-02-21T23:00:00+00:00"
+        
+        # Run 1: Emit event with fixed timestamp
+        log_file_1 = tmp_path / "run1.jsonl"
+        _emit_block_event(target_path, matched_root, str(log_file_1), ts_utc_override=fixed_ts)
+        
+        # Run 2: Emit event with same fixed timestamp
+        log_file_2 = tmp_path / "run2.jsonl"
+        _emit_block_event(target_path, matched_root, str(log_file_2), ts_utc_override=fixed_ts)
+        
+        # Verify JSONL lines are bitwise identical
+        content_1 = log_file_1.read_text(encoding='utf-8')
+        content_2 = log_file_2.read_text(encoding='utf-8')
+        
+        assert content_1 == content_2, "JSONL output should be identical under fixed clock"
+        
+        # Verify content is valid JSON with expected fields
+        import json
+        event = json.loads(content_1.strip())
+        assert event["ts_utc"] == fixed_ts
+        assert event["matched_root"] == matched_root
+        assert "target" in event
+        assert "caller" in event
+    
+    def test_self_check_output_is_bitwise_identical_across_runs(self):
+        """Test that self-check JSON output is bitwise identical across multiple runs."""
+        import subprocess
+        import json
+        
+        # Run self-check twice
+        result_1 = subprocess.run(
+            ["python", "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint", "--fence-self-check"],
+            capture_output=True,
+            text=True
+        )
+        
+        result_2 = subprocess.run(
+            ["python", "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint", "--fence-self-check"],
+            capture_output=True,
+            text=True
+        )
+        
+        # Both should succeed
+        assert result_1.returncode == 0
+        assert result_2.returncode == 0
+        
+        # Outputs should be bitwise identical
+        assert result_1.stdout == result_2.stdout, "Self-check output should be deterministic"
+        
+        # Verify it's valid JSON
+        output = json.loads(result_1.stdout.strip())
+        assert output["status"] == "ok"
+        assert output["checks"] == 4
+    
+    def test_block_event_without_override_uses_real_time(self, tmp_path):
+        """Test that block events without override use real UTC time (not deterministic)."""
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+            _emit_block_event,
+        )
+        import time
+        
+        target_path = Path("agentic_core/test_file.py").resolve()
+        matched_root = "agentic_core"
+        
+        # Run 1
+        log_file_1 = tmp_path / "run1.jsonl"
+        _emit_block_event(target_path, matched_root, str(log_file_1))
+        
+        # Small delay to ensure different timestamp
+        time.sleep(1.1)
+        
+        # Run 2
+        log_file_2 = tmp_path / "run2.jsonl"
+        _emit_block_event(target_path, matched_root, str(log_file_2))
+        
+        # Verify timestamps are different (real time behavior)
+        import json
+        event_1 = json.loads(log_file_1.read_text().strip())
+        event_2 = json.loads(log_file_2.read_text().strip())
+        
+        assert event_1["ts_utc"] != event_2["ts_utc"], "Real timestamps should differ across runs"
