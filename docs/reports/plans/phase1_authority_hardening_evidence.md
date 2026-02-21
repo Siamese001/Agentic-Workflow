@@ -1,193 +1,189 @@
 # Phase 1 Authority Hardening Evidence
 
 ## Git Commit Hash
-**a247e7075** (fix: pytest discovery for authority hardening tests + evidence repair)
+**PENDING — updated at end of this wave (see bottom)**
 
-## Modified Files
+## Modified Files (from commit ace6057e8)
 - agentic_core/L0_routing/enforcement/execution_gateway.py (+243/-92)
-- agentic_core/L1_cognition/types/execution_intent.py (+59) [NEW]
-- agentic_core/L1_cognition/validators/truth_keeper_validator.py (+4/-4)
-- agentic_core/L2_execution/enforcement/durable_write_wrapper.py (+66) [NEW]
-- agentic_core/L5_safety/reasoning/guardian_decision.py (+141) [NEW]
+- agentic_core/L1_cognition/types/execution_intent.py [NEW]
+- agentic_core/L1_cognition/validators/truth_keeper_validator.py (os import removed)
+- agentic_core/L2_execution/enforcement/durable_write_wrapper.py [NEW]
+- agentic_core/L5_safety/reasoning/guardian_decision.py [NEW]
 - ops_scripts/hooks/landmine_baseline.txt (+3)
-- tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py (+90) [NEW]
-- tests/agentic_core/test_authority_hardening.py (+275) [NEW]
+- tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py [NEW]
+- tests/agentic_core/test_authority_hardening.py [NEW]
 
-## L1 Import Audit Results
-- **Total L1 files audited**: 71
-- **Files with forbidden imports**: 0
-- **Files compliant**: 71
-- **Forbidden imports detected**: subprocess, redis, pinecone, requests, http, socket, sqlite, psycopg, boto
-- **Files with write operations**: 0
-
-**Violations removed**:
-- truth_keeper_validator.py: Removed `import os` and `os.getenv()` call
-- consensus_validator.py: Identified os imports (environment access pattern noted for future remediation)
-- codebase_mapper.py: Identified os imports (filesystem access pattern noted for future remediation)
-
-## Mutation Counter Enforcement
-**Global tracking implemented**:
-- `MUTATION_GUARD` for L1 purity enforcement
-- `MUTATION_COUNTER` for L2.2 sole mutation authority
-- `CURRENT_PHASE` tracking for envelope separation
-
-**Runtime assertions added**:
-```python
-assert_l1_purity(instance)  # Verifies no redis/pinecone/subprocess/filesystem access
-assert CURRENT_PHASE == "L2.2"  # Enforces sole mutation point
-```
-
-## Guardian Integration Proof
-**L5 Guardian active blocking implemented**:
-- GuardianDecision dataclass with allow/escalate/violations tracking
-- L5Guardian class with tool allowlist, file scope, token budget, agent permissions
-- Integration into L2.1 validation phase with GuardianViolationError
-- State bus logging for decision serialization
-
-**Enforcement capabilities**:
-- Tool allowlist enforcement (file_read, file_write, ast_parse, llm_call, etc.)
-- File access scope restrictions (/tmp, /workspace, agentic_core)
-- Token budget limits (1M tokens with escalation on excess)
-- Agent permission matrix (L1: read/transform, L2: read/write/validate, etc.)
-
-## New Tests Listed
-**L1 Purity Tests**:
-- test_l1_purity_enforcement.py: Static AST import audit for all L1 files
-- ExecutionIntent and L1Result creation tests
-- Runtime purity assertion tests
-- Mutation guard tracking tests
-
-**L2 Envelope Tests**:
-- Durable write wrapper phase enforcement
-- Mutation counter tracking
-- Atomic snapshot and rollback integrity
-- Healing loop non-mutation rules
-
-**L5 Guardian Tests**:
-- GuardianDecision creation and serialization
-- Valid execution allowance
-- Disallowed tool blocking
-- Excess budget blocking with escalation
-- Unauthorized agent permission blocking
-- GuardianViolationError handling
-
-**Integration Tests**:
-- No durable writes outside L2.2
-- Atomicity and rollback integrity
-- Healing cannot mutate state
-
-## pytest -q Output (Verbatim)
-
-### Environment
-```
-python --version  →  Python 3.12.10
-pytest --version  →  pytest 9.0.2
-git status --porcelain=v1:
- M pytest.ini
- M tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py
- M tests/agentic_core/test_authority_hardening.py
-```
-
-### Command: python -m pytest -q tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py
-```
-platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
-rootdir: C:\Git\Agentic-Workflow
-configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
-plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
-asyncio: mode=Mode.STRICT
-
-tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path0] PASSED
-tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path1] PASSED
-tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path2] PASSED
-... (71 parametrized tests) ...
-tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_import_audit_summary PASSED
-
-72 passed in 0.20s
-```
-
-### Command: python -m pytest -q tests/agentic_core/test_authority_hardening.py
-```
-platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
-rootdir: C:\Git\Agentic-Workflow
-configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
-plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
-asyncio: mode=Mode.STRICT
-
-tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_execution_intent_creation PASSED
-tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_l1_result_creation PASSED
-tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_assert_l1_purity_passes PASSED
-tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_assert_l1_purity_fails PASSED
-tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_mutation_guard_tracking PASSED
-tests/agentic_core/test_authority_hardening.py::TestL2Envelope::test_durable_write_enforces_phase PASSED
-tests/agentic_core/test_authority_hardening.py::TestL2Envelope::test_mutation_counter_tracking PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_decision_creation PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_allows_valid_execution PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_disallowed_tool PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_excess_budget PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_unauthorized_agent PASSED
-tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_violation_error PASSED
-tests/agentic_core/test_authority_hardening.py::TestIntegration::test_no_durable_writes_outside_commit PASSED
-tests/agentic_core/test_authority_hardening.py::TestIntegration::test_atomicity_and_rollback_integrity PASSED
-tests/agentic_core/test_authority_hardening.py::TestIntegration::test_healing_cannot_mutate_state PASSED
-
-16 passed in 0.07s
-```
-
-### Root Cause of Prior "no tests ran"
-`conftest.py::pytest_collection_modifyitems` deselects all items lacking
+## Discovery Fix (Wave 1 RCA)
+`conftest.py::pytest_collection_modifyitems` deselects all items that lack
 `integration_full_deps`, `governance`, or `unit_min_deps` markers.
-**Fix**: added `pytestmark = pytest.mark.unit_min_deps` to both test files
-and added `tests/agentic_core/L1_cognition` + `tests/agentic_core` to
+Fix applied: `pytestmark = pytest.mark.unit_min_deps` added to both test
+files; `tests/agentic_core/L1_cognition` and `tests/agentic_core` added to
 `pytest.ini` `testpaths`.
 
-## L1 Audit Proof (Fully Evidenced)
+---
 
-### Audit Scope and Methodology
-**Audit Command**: `python -c "from tests.agentic_core.L1_cognition.test_l1_purity_enforcement import test_l1_import_audit_summary; test_l1_import_audit_summary()"`
+## Environment
 
-**Audit Root**: `agentic_core/L1_cognition/` (recursive glob `**/*.py`)
+```
+python --version  =>  Python 3.12.10
+pytest --version  =>  pytest 9.0.2
+git status --porcelain=v1  =>  (clean — only untracked raw capture files)
+```
 
-**Forbidden Imports**: subprocess, redis, pinecone, requests, http, socket, sqlite, psycopg, boto
+---
 
-**Forbidden Write Modes**: open(..., "w"), open(..., "a"), open(..., "x")
+## pytest -q — test_l1_purity_enforcement.py (verbatim)
 
-### Audit Results (Verifiable)
-- **Total files scanned**: 71 Python files
-- **Files with violations**: 0
-- **Files compliant**: 71
-- **Audit completeness**: 100% (all L1 files accounted for)
-- **Scope verification**: All files are within `agentic_core/L1_cognition/` directory structure
+Command: `python -m pytest -q tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py`
 
-### Sample File Listing (First 20 + Last 20)
-The audit output above shows the complete sorted list of all 71 files with their compliance status [OK], proving the audit scope and results are fully traceable.
+```
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 72 items
 
-### Violations Remediated
-- **truth_keeper_validator.py**: Removed `import os` and `os.getenv()` call
-- **consensus_validator.py**: Contains os imports (noted for future remediation - environment access pattern)
-- **codebase_mapper.py**: Contains os imports (noted for future remediation - filesystem access pattern)
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path0] PASSED [  1%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path1] PASSED [  2%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path2] PASSED [  4%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path3] PASSED [  5%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path4] PASSED [  6%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path5] PASSED [  8%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path6] PASSED [  9%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path7] PASSED [ 11%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path8] PASSED [ 12%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path9] PASSED [ 13%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path10] PASSED [ 15%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path11] PASSED [ 16%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path12] PASSED [ 18%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path13] PASSED [ 19%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path14] PASSED [ 20%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path15] PASSED [ 22%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path16] PASSED [ 23%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path17] PASSED [ 25%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path18] PASSED [ 26%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path19] PASSED [ 27%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path20] PASSED [ 29%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path21] PASSED [ 30%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path22] PASSED [ 31%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path23] PASSED [ 33%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path24] PASSED [ 34%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path25] PASSED [ 36%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path26] PASSED [ 37%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path27] PASSED [ 38%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path28] PASSED [ 40%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path29] PASSED [ 41%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path30] PASSED [ 43%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path31] PASSED [ 44%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path32] PASSED [ 45%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path33] PASSED [ 47%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path34] PASSED [ 48%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path35] PASSED [ 50%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path36] PASSED [ 51%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path37] PASSED [ 52%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path38] PASSED [ 54%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path39] PASSED [ 55%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path40] PASSED [ 56%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path41] PASSED [ 58%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path42] PASSED [ 59%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path43] PASSED [ 61%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path44] PASSED [ 62%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path45] PASSED [ 63%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path46] PASSED [ 65%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path47] PASSED [ 66%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path48] PASSED [ 68%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path49] PASSED [ 69%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path50] PASSED [ 70%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path51] PASSED [ 72%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path52] PASSED [ 73%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path53] PASSED [ 75%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path54] PASSED [ 76%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path55] PASSED [ 77%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path56] PASSED [ 79%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path57] PASSED [ 80%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path58] PASSED [ 81%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path59] PASSED [ 83%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path60] PASSED [ 84%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path61] PASSED [ 86%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path62] PASSED [ 87%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path63] PASSED [ 88%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path64] PASSED [ 90%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path65] PASSED [ 91%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path66] PASSED [ 93%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path67] PASSED [ 94%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path68] PASSED [ 95%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path69] PASSED [ 97%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_no_mutation_imports[file_path70] PASSED [ 98%]
+tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_import_audit_summary PASSED [100%]
 
-**Note**: The remaining os imports in consensus_validator.py and codebase_mapper.py are detected but do not violate the current forbidden import list (os is not in the forbidden set). They represent environment and filesystem access patterns that may be addressed in future phases.
+============================ slowest 10 durations =============================
+0.07s call     tests/agentic_core/L1_cognition/test_l1_purity_enforcement.py::test_l1_import_audit_summary
 
-## No Upward Static Imports Confirmed
-**Import verification**:
-- All new modules use absolute imports from project root
-- No circular dependencies introduced
-- L1 modules remain pure with only stdlib imports
-- L2/L5 modules properly layered with upward dependency flow
+(9 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================= 72 passed in 0.18s ==============================
+```
 
-**Layer separation maintained**:
-- L1: Pure transformation, ExecutionIntent output only
-- L2: Explicit envelope (0/1/2/3), sole mutation in L2.2
-- L5: Active blocking before L2.2, policy enforcement
+---
 
-## Acceptance Criteria Status
-✅ **Wave 1 Complete**: L1 purity enforced, forbidden imports removed, ExecutionIntent pattern implemented
-✅ **Wave 2 Complete**: L2 envelope separation, sole mutation point enforced, atomic snapshots implemented
-✅ **Wave 3 Complete**: L5 Guardian active blocking, policy enforcement, state bus logging
+## pytest -q — test_authority_hardening.py (verbatim)
 
-**All invariants provable via tests and static audits**:
-- L1 cannot perform mutations (runtime + static verification)
-- Durable writes only occur in L2.2 (global counter enforcement)
-- Guardian blocks disallowed actions before L2.2 (negative tests pass)
-- No behavior regressions (existing functionality preserved)
-- All new components have comprehensive test coverage
+Command: `python -m pytest -q tests/agentic_core/test_authority_hardening.py`
+
+```
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 16 items
+
+tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_execution_intent_creation PASSED [  6%]
+tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_l1_result_creation PASSED [ 12%]
+tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_assert_l1_purity_passes PASSED [ 18%]
+tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_assert_l1_purity_fails PASSED [ 25%]
+tests/agentic_core/test_authority_hardening.py::TestL1Purity::test_mutation_guard_tracking PASSED [ 31%]
+tests/agentic_core/test_authority_hardening.py::TestL2Envelope::test_durable_write_enforces_phase PASSED [ 37%]
+tests/agentic_core/test_authority_hardening.py::TestL2Envelope::test_mutation_counter_tracking PASSED [ 43%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_decision_creation PASSED [ 50%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_allows_valid_execution PASSED [ 56%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_disallowed_tool PASSED [ 62%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_excess_budget PASSED [ 68%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_blocks_unauthorized_agent PASSED [ 75%]
+tests/agentic_core/test_authority_hardening.py::TestL5Guardian::test_guardian_violation_error PASSED [ 81%]
+tests/agentic_core/test_authority_hardening.py::TestIntegration::test_no_durable_writes_outside_commit PASSED [ 87%]
+tests/agentic_core/test_authority_hardening.py::TestIntegration::test_atomicity_and_rollback_integrity PASSED [ 93%]
+tests/agentic_core/test_authority_hardening.py::TestIntegration::test_healing_cannot_mutate_state PASSED [100%]
+
+=========================== GUARDIAN LAYER SUMMARY ============================
+Guardian tests run: 6
+Passed: 16
+Failed: 0
+Errors: 0
+
+GUARDIAN STATUS: PASS
+All architectural integrity checks passed.
+
+============================ slowest 10 durations =============================
+
+(10 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================= 16 passed in 0.06s ==============================
+```
+
+---
+
+## L1 Import Audit Scope
+
+- **Audit root**: `agentic_core/L1_cognition/` (recursive `**/*.py`)
+- **Total files**: 71
+- **Forbidden imports checked**: subprocess, redis, pinecone, requests, http, socket, sqlite, psycopg, boto
+- **Forbidden write modes**: open(..., "w"), open(..., "a"), open(..., "x")
+- **Violations found**: 0
+- **Method**: AST walk per file — `test_l1_no_mutation_imports` is parametrized over all 71 files; each is a separate PASSED line above
+
+---
+
+## Commit Hash
+**PENDING — set after commit**
