@@ -2,7 +2,7 @@
 # L4 as Versioned State Bus + Grounded Retrieval — Runtime Integration
 
 ## Commit Hash
-**cb3a71ac0** — phase2.1: wire manifest hash validation + retrieval anchors + config thresholds into runtime paths
+**85327788e** — phase2.1: add end-to-end gateway.execute() tests proving L2.0 hash enforcement
 
 ## Modified / New Files
 - `agentic_core/L0_routing/enforcement/execution_gateway.py` [MODIFIED — L2.0 wired]
@@ -36,7 +36,7 @@
 
 ---
 
-## Required Proof Commands (Verbatim, captured from clean tree after commit cb3a71ac0)
+## Required Proof Commands (Verbatim, captured from clean tree after commit 85327788e)
 
 ### 1. python --version
 ```
@@ -58,7 +58,17 @@ pytest 9.0.2
 
 ```
 
-### 5. python -m pytest -q tests/agentic_core/test_phase2_integration.py
+### 5. git rev-parse HEAD
+```
+85327788eb999e8810515c45d12c4a0993e02270
+```
+
+### 6. git log -1 --oneline
+```
+85327788e (HEAD -> Codemap_defects) phase2.1: add end-to-end gateway.execute() tests proving L2.0 hash enforcement
+```
+
+### 7. python -m pytest -q tests/agentic_core/test_phase2_integration.py
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
@@ -66,30 +76,35 @@ rootdir: C:\Git\Agentic-Workflow
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collected 14 items
+collected 18 items
 
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_missing_hashes_rejected PASSED [  7%]
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_mismatched_hash_rejected PASSED [ 14%]
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_correct_hashes_accepted PASSED [ 21%]
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_object_manifest_with_correct_hashes_accepted PASSED [ 28%]
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_object_manifest_missing_hash_rejected PASSED [ 35%]
-tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_gateway_validate_manifest_imports_validator PASSED [ 42%]
-tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_sovereign_rag_orchestrator_imports_anchors PASSED [ 50%]
-tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_anchored_result_coverage_enforcement_end_to_end PASSED [ 57%]
-tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_anchor_violation_error_has_violation_code PASSED [ 64%]
-tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_sovereign_rag_orchestrator_imports_get_active_configs PASSED [ 71%]
-tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_default_budget_max_k_matches_prior_constant PASSED [ 78%]
-tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_default_routing_depth_breaker_matches_prior_constant PASSED [ 85%]
-tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_config_change_propagates PASSED [ 92%]
-tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_inline_literal_8_replaced_in_orchestrator PASSED [100%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_missing_hashes_rejected PASSED [  5%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_mismatched_hash_rejected PASSED [ 11%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_correct_hashes_accepted PASSED [ 16%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_object_manifest_with_correct_hashes_accepted PASSED [ 22%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_object_manifest_missing_hash_rejected PASSED [ 27%]
+tests/agentic_core/test_phase2_integration.py::TestManifestHashValidationIntegration::test_gateway_validate_manifest_imports_validator PASSED [ 33%]
+tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_sovereign_rag_orchestrator_imports_anchors PASSED [ 38%]
+tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_anchored_result_coverage_enforcement_end_to_end PASSED [ 44%]
+tests/agentic_core/test_phase2_integration.py::TestRetrievalAnchorIntegration::test_anchor_violation_error_has_violation_code PASSED [ 50%]
+tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_sovereign_rag_orchestrator_imports_get_active_configs PASSED [ 55%]
+tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_default_budget_max_k_matches_prior_constant PASSED [ 61%]
+tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_default_routing_depth_breaker_matches_prior_constant PASSED [ 66%]
+tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_config_change_propagates PASSED [ 72%]
+tests/agentic_core/test_phase2_integration.py::TestDeterminismThresholdsIntegration::test_inline_literal_8_replaced_in_orchestrator PASSED [ 77%]
+tests/agentic_core/test_phase2_integration.py::TestGatewayExecuteEndToEnd::test_gateway_accepts_manifest_without_hash_fields PASSED [ 83%]
+tests/agentic_core/test_phase2_integration.py::TestGatewayExecuteEndToEnd::test_gateway_accepts_manifest_with_correct_hashes PASSED [ 88%]
+tests/agentic_core/test_phase2_integration.py::TestGatewayExecuteEndToEnd::test_gateway_rejects_manifest_with_mismatched_hash_via_execute PASSED [ 94%]
+tests/agentic_core/test_phase2_integration.py::TestGatewayExecuteEndToEnd::test_gateway_rejects_manifest_with_missing_hash_via_execute PASSED [100%]
 
 ============================ slowest 10 durations =============================
 
-(10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 14 passed in 0.06s ==============================
+0.02s call     tests/agentic_core/test_phase2_integration.py::TestGatewayExecuteEndToEnd::test_gateway_accepts_manifest_without_hash_fields
+(9 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 18 passed in 0.08s ==============================
 ```
 
-### 6. python -m pytest -q tests/agentic_core/test_phase2_versioned_config.py tests/agentic_core/test_phase2_retrieval_anchors.py tests/agentic_core/test_phase2_determinism_thresholds.py
+### 8. python -m pytest -q tests/agentic_core/test_phase2_versioned_config.py tests/agentic_core/test_phase2_retrieval_anchors.py tests/agentic_core/test_phase2_determinism_thresholds.py
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
@@ -176,6 +191,12 @@ tests/agentic_core/test_phase2_determinism_thresholds.py::TestStaticAudit::test_
 | Parity lock: BudgetConfig.max_k default == 10 (prior constant) | PASS |
 | Parity lock: RoutingConfig.depth_breaker default == 10 (prior constant) | PASS |
 | Config mutation propagates to config_hash (not hardcoded) | PASS |
-| All 59 tests pass (45 unit + 14 integration) | PASS |
-| Single commit cb3a71ac0 | PASS |
+| TestGatewayExecuteEndToEnd: legacy manifest (no hash fields) accepted by gateway.execute() | PASS |
+| TestGatewayExecuteEndToEnd: correct hashes accepted by gateway.execute() | PASS |
+| TestGatewayExecuteEndToEnd: mismatched hash rejected by gateway.execute() (real L2.0 path) | PASS |
+| TestGatewayExecuteEndToEnd: missing hash rejected by gateway.execute() (real L2.0 path) | PASS |
+| git rev-parse HEAD = 85327788eb999e8810515c45d12c4a0993e02270 | PASS |
+| git log -1 --oneline matches commit message | PASS |
+| All 63 tests pass (45 unit + 18 integration) | PASS |
+| Single tip commit 85327788e | PASS |
 | Evidence file updated in place, no raw capture files | PASS |
