@@ -143,10 +143,39 @@ class L4ActiveConfigs:
         }
 
 
+@dataclass
+class MLCacheConfig:
+    """Versioned ML cache policy: TTL, max entries, eviction mode."""
+
+    version: str = "1.0.0"
+    default_ttl_seconds: int = 3600
+    max_entries: int = 1000
+    eviction_mode: str = "lru"
+
+    def canonical_bytes(self) -> bytes:
+        doc = {
+            "version": self.version,
+            "default_ttl_seconds": self.default_ttl_seconds,
+            "eviction_mode": self.eviction_mode,
+            "max_entries": self.max_entries,
+        }
+        return json.dumps(doc, sort_keys=True, separators=(",", ":")).encode()
+
+    @property
+    def config_hash(self) -> str:
+        return _sha256(self.canonical_bytes())
+
+
 # Module-level singleton — the authoritative L4 SSOT instance
 _ACTIVE_CONFIGS = L4ActiveConfigs()
+_ML_CACHE_CONFIG = MLCacheConfig()
 
 
 def get_active_configs() -> L4ActiveConfigs:
     """Return the module-level L4 SSOT active config registry."""
     return _ACTIVE_CONFIGS
+
+
+def get_ml_cache_config() -> MLCacheConfig:
+    """Return the module-level ML cache config singleton."""
+    return _ML_CACHE_CONFIG
