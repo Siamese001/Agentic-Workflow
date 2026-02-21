@@ -186,4 +186,4 @@ All architectural integrity checks passed.
 ---
 
 ## Commit Hash
-**PENDING — set after commit**
+**1ff5fc750** — evidence: replace fabricated pytest output with verbatim 72+16 passed transcripts
