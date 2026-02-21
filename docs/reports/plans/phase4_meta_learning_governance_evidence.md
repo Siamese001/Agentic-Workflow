@@ -1,6 +1,9 @@
 # Phase 4 Evidence — Meta-Learning Write Governance + Compatibility
 
-## Phase 4.1 Commit Hash (LATEST — Real-Path Enforcement)
+## Phase 4.2 Commit Hash (LATEST — Clean-Tree Proof)
+**58a3612c8** — gitignore: exclude docs/technical/Archive/ (user-local untracked dir)
+
+## Phase 4.1 Commit Hash (Real-Path Enforcement)
 **6e8c7f849** — phase4.1: enforce sandbox guard in mixin write paths + end-to-end-shaped tests
 
 ## Phase 4.0 Commit Hash (Envelope + Compatibility + Cache Config)
@@ -49,7 +52,7 @@
 
 ---
 
-## Required Proof Commands (Verbatim, captured from clean tree after commit 6e8c7f849)
+## Required Proof Commands (Verbatim, captured from clean tree after commit 58a3612c8)
 
 ### 1. python --version
 ```
@@ -63,25 +66,24 @@ pytest 9.0.2
 
 ### 3. git status --porcelain=v1
 ```
- D docs/technical/EXECUTE_SSOT_README.md
-?? docs/technical/Archive/
+
 ```
-(Note: `docs/technical/EXECUTE_SSOT_README.md` is a pre-existing unstaged deletion unrelated to Phase 4. All Phase 4 files are committed and clean.)
+(EMPTY — clean working tree)
 
 ### 4. git diff --name-only
 ```
-docs/technical/EXECUTE_SSOT_README.md
+
 ```
-(Pre-existing, not from Phase 4 changes.)
+(EMPTY — no unstaged changes)
 
 ### 5. git rev-parse HEAD
 ```
-6e8c7f84923159eea1e18c84364fb8fad696035f
+58a3612c8a4932af37a31e8da4c4b593065621ff
 ```
 
 ### 6. git log -1 --oneline
 ```
-6e8c7f849 (HEAD -> Codemap_defects) phase4.1: enforce sandbox guard in mixin write paths + end-to-end-shaped tests
+58a3612c8 (HEAD -> Codemap_defects) gitignore: exclude docs/technical/Archive/ (user-local untracked dir)
 ```
 
 ### 7. python -m pytest -q tests/agentic_core/test_phase4_ml_write_envelope.py
@@ -219,8 +221,10 @@ tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestDirectClientBypass
 
 | Objective | Test / Proof | Status |
 |-----------|-------------|--------|
-| git rev-parse HEAD = 6e8c7f84923159eea1e18c84364fb8fad696035f | proof cmd 5 | PASS |
-| git log -1 --oneline matches Phase 4.1 commit | proof cmd 6 | PASS |
+| git status --porcelain=v1 is EMPTY | proof cmd 3 | PASS |
+| git diff --name-only is EMPTY | proof cmd 4 | PASS |
+| git rev-parse HEAD = 58a3612c8a4932af37a31e8da4c4b593065621ff | proof cmd 5 | PASS |
+| git log -1 --oneline matches Phase 4.2 commit | proof cmd 6 | PASS |
 | **Objective #1: ml_store_healing_pattern() blocked outside sandbox** | test_mixin_store_healing_pattern_blocked_outside_sandbox | PASS |
 | **Objective #1: ml_cache_set() blocked outside sandbox** | test_mixin_cache_set_blocked_outside_sandbox | PASS |
 | **Objective #1: client.store_healing_pattern never called outside sandbox** | test_store_healing_pattern_client_never_called_outside_sandbox | PASS |
