@@ -11,7 +11,7 @@
           | apps_interactive                        |                      | apps_autonomous                         |                      | apps_admin                              |
           |-----------------------------------------|                      |-----------------------------------------|                      |-----------------------------------------|
           | - Chat UIs / CLI tools                  |                      | - Webhook receivers                     |                      | - Direct API endpoints                  |
-          | - Direct API endpoints                  |                      | - Direct API endpoints                  |                      | - System event listeners                |
+          | - Direct API endpoints                  |                      | - Human-in-the-loop views               |                      | - System event listeners                |
           | - Human-in-the-loop views               |                      | - System event listeners                |                      | - Telemetry monitors                    |
           +-----------------------------------------+                      +-----------------------------------------+                      +-----------------------------------------+
                         |                                                               |                                                               |
@@ -166,4 +166,135 @@
 | 13. REMOVE ALL PROMPT HIJACK ATTEMPTS: Neutralizes "ignore instructions" attacks.                                                                                                                         |
 | 14. SHARE MEMORY ACROSS ALL AGENTS: Prevents agents from colliding/stalling.                                                                                                                              |
 | 15. DOUBLE-CHECK DATA MATCHES THE WORLD: Detects "ghost" or hidden mutations.                                                                                                                             |
+=============================================================================================================================================================================================================
+
+=============================================================================================================================================================================================================
+  APPENDIX: HIGH-SIGNAL DETAILED COMPONENT BRIDGES
+=============================================================================================================================================================================================================
+
+COMPONENT 1: THE L3 "HANDSHAKE" BRIDGE (AUTHORITY FLOW)
+-------------------------------------------------------
+[ L4: MASTER STATE ] <----------------------------+
+| - Dependency DAG |                              |
+| - Job Registry   |                              | (4) [UPDATE] SYNC SHARED TEAM MEMORY
++------------------+                              |     (Records completion/fail)
+         |                                        |
+         | (1) [READ] SYNC PRODUCTION BOARD       |
+         v                                        |
++---------------------------------------+         |
+| L3: ORCHESTRATOR (THE SUPERVISOR)     |         |
+|---------------------------------------|         |
+| [LOGIC] ENFORCE DEPENDENCY DAG        | --------+
+|         (Picks next valid task)       |
+|                                       |
+| [AUTH ] STAMP WORK CONTRACT           | --------+
+|         (Signs the Work Order)        |         |
++---------------------------------------+         |
+                                                  | (2) [HANDSHAKE] THE CONTRACT
+                                                  |     (Includes inputs + permissions)
+                                                  v
+                                        +-----------------------+
+                                        | L2: EXECUTION AGENT   |
+                                        |-----------------------|
+                                        | - [ACT] Runs Tool     |
+                                        | - [RES] Emits Result  |
+                                        +-----------------------+
+                                                  |
+                                                  | (3) [REPORT] TASK STATUS
+                                                  +-----------------------+
+
+COMPONENT 2: THE "ESCALATION" BRIDGE (L3 -> L5 HARD STOP)
+---------------------------------------------------------
+[ L3: SUPERVISOR ]
+        |
+        | (1) [EVALUATE] SYNC PRODUCTION BOARD
+        |     (Detects Impossible Dependency)
+        |
+        +----------------------------------------+
+        |  [IF] LOGIC VIOLATION DETECTED         |
+        +----------------------------------------+
+        |                                        |
+        | [X] BYPASS EXECUTION (L2)              |
+        | [!] FLAG LOGIC VIOLATION               |
+        |                                        |
+        +------------------+---------------------+
+                           |
+                           | (2) [ESCALATE] FAIL-SAFE REJECTION PATH
+                           |     (Requires Manual Review or Redesign)
+                           v
+              +----------------------------+
+              | L5: SAFETY GATE (GUARDIAN) |
+              |----------------------------|
+              | - [STOP] HARD STOP TRIGGER  |
+              | - [AUDT] RECORD VIOLATION   |
+              +----------------------------+
+
+COMPONENT 3: THE "LOOP-BACK" BRIDGE (L5 -> L1 REDESIGN)
+-------------------------------------------------------
++---------------------------------------+
+| L5: SAFETY GATE (THE GUARDIAN)        |
+|---------------------------------------|
+| [STOP] HARD STOP REJECTION PATH       | (1) L3 signals Logic Violation
+| [RPT ] RECORD VIOLATION RATIONALE     |     (Logic is broken/dangerous)
++---------------------------------------+
+                 |
+                 | (2) [RE-ROUTE] RE-SUBMIT TO REDESIGN
+                 |     (Attached: Failure Reason + State Snapshot)
+                 v
++---------------------------------------+
+| L1: THINKING LAYER (THE ARCHITECT)    |
+|---------------------------------------|
+| [PLAN] RE-GENERATE ATOMIC STRATEGY    | (3) L1 consumes L5 "Report"
+| [FIX ] RESOLVE DEPENDENCY GAP         |     (Updates the Blueprint)
++---------------------------------------+
+                 |
+                 | (4) [SUBMIT] LOG ORIGINAL USER INTENT
+                 v
+        [ L0 ROUTING STAGE ]
+
+COMPONENT 4: THE "BLACK BOX" TRACEABILITY (L4 AUDIT LOGIC)
+----------------------------------------------------------
++-------------------------------------------------------+
+| L4: AUDIT LEDGER & BLACK BOX [I::IMemoryStore]        |
+|-------------------------------------------------------|
+| [LOG ] RECORD VIOLATION RATIONALE                     | <--- (1) L5 writes the "Fault"
+|        (Fault: Dependency Gap in Task B)              |
+|                                                       |
+| [LINK] ANCHOR KNOWLEDGE DRIFT                         | <--- (2) L4 ties Fault to original U0
+|        (Trace: User Intent -> Failed Plan)            |
+|                                                       |
+| [SYNC] UPDATE SHARED TEAM MEMORY                      | <--- (3) L1 reads Fault + Snapshot
+|        (Corrected Plan replaces Failed Plan)          |
++-------------------------------------------------------+
+                |                                ^
+                | (4) [PULL] DATA FOR TRAINING   |
+                v                                |
++-------------------------------------------------------+
+| META-LEARNING BUS (THE OPTIMIZER)                     |
+|-------------------------------------------------------|
+| - [ANALYZE] ROOT CAUSE ANALYSIS (RCA)                 |
+| - [COMMIT ] COMMIT NEW SYSTEM VERSIONS                |
++-------------------------------------------------------+
+
+COMPONENT 5: THE "LOOP-BREAKER" BRIDGE (L6 SYSTEM-WIDE HALT)
+------------------------------------------------------------
++-------------------------------------------------------+
+| L6: SENSOR GRID & SECURITY ROOM                       |
+|-------------------------------------------------------|
+| [SGNL] ANOMALY SIGNAL GENERATOR                       | (1) L6 detects "Redesign Loop"
+|        (Redesign_Count > Threshold)                   |     (Recursive logic failure)
+|                                                       |
+| [TLM ] CROSS-LAYER TELEMETRY                          | (2) Scans L1, L3, and L5 logs
+|        (Confirming infinite loop pattern)              |
++-------------------------------------------------------+
+                |
+                | (3) [BROADCAST] BREAK RECURSIVE CYCLES
+                |     (Emergency Signal: STALL_DETECTED)
+                v
++---------------------------------------+       +---------------------------------------+
+| L0: ROUTER / PATH SELECTOR            |       | L5: SAFETY GATE (THE GUARDIAN)        |
+|---------------------------------------|       |---------------------------------------|
+| [SEL ] FORCE PATH D (HUMAN REVIEW)    | <---> | [STOP] HARD STOP REJECTION PATH       |
+|        (Breaks the AI loop)           |       |        (Escalates to Human Override)  |
++---------------------------------------+       +---------------------------------------+
 =============================================================================================================================================================================================================
