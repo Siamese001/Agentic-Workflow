@@ -1,65 +1,103 @@
-==================================================================================================================================================
-                            AGENTIC SYSTEM — L2 MUTATION ENVELOPE (DUPER DRILL DOWN: AST-SYMMETRIC SANDBOX)
-                                             (A+++++ ZERO-LOSS WIDESCREEN ASCII OVERWRITE)
-==================================================================================================================================================
+=========================================================================================================================================================
+                                                 AGENTIC SYSTEM — FULL ZERO-LOSS ARCHITECTURE (COMPACT)
+                                           (DISTRIBUTED STATE INTEGRATION WITH EXTERNAL RAG & PROMPT TAXONOMY)
+=========================================================================================================================================================
 
-[ THE ELEVATOR SHAFT (RUNTIME SEAM) ] <-----------------------------------------------------------+
-(Structural Foundation: L0 | Runtime Connection: L5 Safety)                                       |
-+-----------------------------------------------------------------------------------------+       |
-| ✅ ALLOWED: Interfaces (ABCs), Contracts (Schemas), Loader Methods                      |       |
-| ❌ FORBIDDEN: Governance Logic, Side Effects, Static Upward Imports                     |       |
-+-----------------------------------------------------------------------------------------+       |
-                                                                                                  |
-==================================================================================================|===============================================
-  L2 — CONTROLLED MUTATION ENVELOPE (STRICT EXECUTION BOUNDARY)                                   |
-==================================================================================================|===============================================
+=========================================================================================================================================================
+  APPS_* LAYER (CLIENT INTERFACES) — ZERO INTERNAL AUTHORITY
+=========================================================================================================================================================
+          +-----------------------------+          +-----------------------------+          +-----------------------------+
+          | apps_interactive            |          | apps_autonomous             |          | apps_admin                  |
+          |-----------------------------|          |-----------------------------|          |-----------------------------|
+          | - Chat UIs / CLI tools      |          | - Webhook receivers         |          | - Control Dashboards        |
+          | - Human-in-the-loop views   |          | - System event listeners    |          | - Telemetry monitors        |
+          +-----------------------------+          +-----------------------------+          +-----------------------------+
+                        |                                          |                                          |
+                        v (Initiates)                              v (Triggers)                               v (Routes via API)
 
-      +-------------------------------------------+        +=================================================================+
-      | L2.0 — PRE-COMMIT SETUP (IMMUTABLE)       |        | STATE: [ NON-MUTATING ]                                         |
-      |-------------------------------------------|        |-----------------------------------------------------------------|
-      | • Normalizes L3 "Action Intent" payload   | <----> | • READ: L4 Config (Budgets, Locks, Active Permissions)|
-      | • Initializes "Immutable Run Envelope"    |        | • Creates: Runtime Workspace Sandbox                            |
-      | • Declares intended side-effects (L4 Log) |        | • Authority: ZERO (Setup Only)                        |
-      +-------------------------------------------+        +=================================================================+
-                            |
-                            v (Run Envelope)
-      +-------------------------------------------+        +=================================================================+
- +--> | L2.1 — VALIDATOR (HIGH-RES AST ANALYSIS)  |        | STATE: [ NON-MUTATING ]                                         |
- |    |-------------------------------------------|        |-----------------------------------------------------------------|
- |    | • Deep Inheritance & Decorator Checks     | <----> | • THE ELEVATOR RIDE: Dynamic L5 Policy Load           |
- |    | • Node-Level Logic Inference (AST Tree)   |        | • Snapshot: boundary_snapshot.json (Pre-Flight)    |
- |    | • Static Boundary & Contract Enforcement  |        | • EMITS: [SURGICAL MANIFEST] (Node IDs, AST Snippets)|
- |    +-------------------------------------------+        +=================================================================+
- |              |                          |
- |              | (PASS)                   | (VALIDATION FAIL: Schema/Sim Error)
- |              v                          |
- |    +-------------------------------------------+        +=================================================================+
- |    | L2.2 — EXECUTION (SOLE MUTATION POINT)    |        | STATE: [ STRICTLY MUTATING ]                                    |
- |    |-------------------------------------------|        |-----------------------------------------------------------------|
- |    | • APPLIES APPROVED CHANGE SET (AST-BASED) | =====> | • SOLE durable write authority to FS / DB / Tools     |
- |    | • Constrained by Resource/Token Budgets   |        | • High-Res Node Mutation (Zero-Loss Fixes)            |
- |    | • Performs Tool/SDK API Operations        | <===== | • Returns: Success Result OR Raw Error Stack          |
- |    +-------------------------------------------+        +=================================================================+
- |             |                          |
- |             | (SUCCESS)                | (FAILURE: Error Root / Rollback)
- |             v                          v
- |    +-------------------------+    +-------------------------------------------+        +=================================+
- |    | FINAL OUTCOME LOGGING   |    | L2.3 — HEALER (HIGH-RES RECOVERY ENGINE)  |        | STATE: [ NON-MUTATING ]         |
- |    |-------------------------|    |-------------------------------------------|        |---------------------------------|
- |    | • Outcome versioned (L4)|    | • Reverts to boundary_snapshot|        | • Cannot Commit Durable Changes |
- |    | • [EXITS LOOP]          |    | • Root Cause via Manifest Diff  |        | • MUST re-enter L2.1  |
- |    +-------------------------+    | • Generates: revised_action_proposal.json |        +=================================+
- |                                   +-------------------------------------------+
- |                                                |
- +------------------------------------------------+
-             (RETRY LOOP: All Healing MUST re-validate through L2.1 & L5 Safety)
+=========================================================================================================================================================
+  ENTRY PRODUCERS (NO AUTHORITY)                                                                              STATE BUS (ANCHOR)
+=========================================================================================================================================================
+      [ EXTERNAL KNOWLEDGE ]           USER REQUEST               SYSTEM EVENT               ADMIN REQUEST      [ EXTERNAL MODEL REGISTRY ]
+      +--------------------+                 |                          |                          |            +-------------------------+            ^^
+      |  Vector Databases  |                 v                          v                          v            |  Weights & Checkpoints  |            ||
+      | [C0] & [CACHE_LOCK]|  +----------------------------+  +----------------------------+  +--------------------------------------------+            ||
+      +--------------------+  | L1 – THINKING LAYER        |  | L6 – DETECTION (GUARDIAN)  |  | L4: BLUEPRINT VAULT & PROD DB              | <===========||
+               |              |----------------------------|  |----------------------------|  |--------------------------------------------|            ||
+               | (RAG Read)   | - [U0] USER PROMPT         |  | - [TLM] CROSS-LAYER TLM    |  | [RULES] L4 never authorizes/executes.      |            ||
+               +------------->| - [C0] Context Retrieval   |  | - [SGNL] ANOMALY SIGNAL    |  | [STATE] [TMPL] REASONING, [TOOL] INVENTORY |            ||
+                              | - [LOG] LOG USER INTENT    |  | - [RCA] ROOT CAUSE ANALYSIS|  | [RAG  ] [TRTH] ANCHOR KNOWLEDGE DRIFT      |            ||
+                              +----------------------------+  +----------------------------+  +--------------------------------------------+            ||
+                                         || (WRITE: [U0])           || (WRITE: Telemetry)                                                               ||
+======================================================================================================================================================||=
+  CONTROL SPINE (AUTHORITY STARTS HERE)                                                                                                               ||
+======================================================================================================================================================||=
+                                         |                          |                                                                                 ||
+                                         v                          v                                                                                 ||
+                        +-----------------------------------------------------------------------+                                                     ||
+                        | L0 – ROUTING (THE FIRST AUTHORITY GATE)                               | <========================(READ: Routing Config)=====||
+                        |-----------------------------------------------------------------------|                                                     ||
+                        | - [JIT] Load context via "Elevator Shaft" (L0 <-> L5)                 |   +-------------------------------------------+     ||
+                        | - Classifies intent vs. L4 Routing State                              |   | [ META-LEARNING & OPTIMIZATION BUS ]      |     ||
+                        |                                                                       |   |-------------------------------------------|     ||
+                        | ML Integration:                                                       |   | 1. [PULL] DATA (From L4 Black Box Audit)  |     ||
+                        | [1. Pattern Analysis]========(Match Intent Logs)======================|==>| 2. ANALYZE: [RCA] ROOT CAUSE ANALYSIS     |     ||
+                        | [2. Threshold Tuning]========(Assess Risk Limits)=====================|==>| 3. OPTIMIZE & COMMIT: Writes to L4 Anchor |====>||
+                        +-----------------------------------------------------------------------+   +-------------------------------------------+     ||
+                                                          v                                                                                           ||
+                        +-----------------------------------------------------------------------+                                                     ||
+                        | ASSEMBLY STAGE (SANDBOX AIRLOCK & DETERMINISTIC COMPOSITION)          |                                                     ||
+                        |-----------------------------------------------------------------------|                                                     ||
+                        | [S0] SYSTEM Rules | [I0] Identity Mixins | [D0] Tool Fences (L5)      |                                                     ||
+                        | => [BLOCK] BLOCK HOSTILE INPUTS | [SPLIT] SPLIT INTO ATOMIC TASKS     |                                                     ||
+                        +-----------------------------------------------------------------------+                                                     ||
+                                                          v                                                                                           ||
+          +-----------------------------+-----------------+-----------------+-----------------------------+                                          ||
+          v                             v                                   v                             v                                          ||
++=======================+     +=======================+           +=======================+     +=======================+                             ||
+| PATH A: READ-ONLY     |     | PATH B: POLICY FIRST  |           | PATH C: EXECUTE DIRECT|     | PATH D: HUMAN REVIEW  |                             ||
++=======================+     +=======================+           +=======================+     +=======================+                             ||
+           |                             |                                   |                             |                                          ||
+           v                             v                                   v                             v                                          ||
++-----------------------+     +-----------------------+           +-----------------------+     +-----------------------+                             ||
+| Final Response        |     | L3 – ORCHESTRATOR     |           | L3 – ORCHESTRATION    |     | L3 – ORCHESTRATOR     |                             ||
+|-----------------------|     |-----------------------|           |-----------------------|     |-----------------------|                             ||
+| - No system mutation  |     | - [HNDS] HANDSHAKE    |           | - [HNDS] HANDSHAKE    |     | - [MANUAL] Approve    |                             ||
+| - Logged outcome      |     | - [SYNC] INSTR SYNTH  |           | - [SYNC] INSTR SYNTH  |     | - [ESC ] To Senior    |                             ||
+|                       |     | - [ESC ] TO L5 GUARD  |           | - [ESC ] TO L5 GUARD  |     +-----------------------+                             ||
+| ML consumes outcome   |     | - [GATE] Block Halluc |           |    [IF] VIOLATION?    |                |                                          ||
++-----------------------+     +-----------------------+           <=(Yes)===+=== (No)===>      +-------(If Approved)------->||                        ||
+           |                             |                                  |                  v                            ||                        ||
+           |                             v                                  |       +-----------------------+               ||                        ||
+           |                  +-----------------------+                     |       | L5 – SAFETY GATE      | <=============+                         ||
+           |                  | L5 – SAFETY GATE      | <===================+       |-----------------------|                                         ||
+           |                  |-----------------------|                             | - [STMP] COMPLIANCE   |                                         ||
+           |                  | - [RISK] RISK TIER    |                             | - [STOP] HARD STOP    |                                         ||
+           |                  | - [STMP] COMPLIANCE   |                             | - [BLOCK] HOSTILE     |======(Evaluate Human Bias)=============>||
+           |                  | - [STOP] HARD STOP    |                             +-----------------------+                                         ||
+           |                  +-----------------------+                                        |                                                      ||
+           |                             |                                                     | (Pass)                                               ||
+           |      [RE-ROUTE L1] <==(Fail)+---(Pass)==> [AUTH] STAMP WORK CONTRACT (Paths B & C) |                                                      ||
+           |                             v                                                     v                                                      ||
+           |           +=======================================================================================================+                      ||
+           |           | \\\ L2 – UNIFIED EXECUTION CORE (MUTATION SANDBOX & SINGULAR BOTTLENECK)                          /// |                      ||
+           |           |=======================================================================================================|                      ||
+           |           |  +-> [L2.1: Validator]  -> [FREEZ] CLEAN STATE | [CLAIM] EXCLUSIVE WRITE | [GUARD] INTEGRITY        |                      ||
+           |           |  |   [L2.2: Execution]  -> [WRITE] COMMIT VERIFIED CHANGE | [CEIL] TERMINATE STUCK CYCLES         |                      ||
+           |           |  |   [L2.3: Healer   ]  -> [ROOT] CAPTURE ROOT | [RESET] REVERT STATE | [CURE] FIX AND RETRY        |                      ||
+           |           +=======================================================================================================+                      ||
+           |                                                      |                                                                                   ||
+           v                                                      v                                                                                   ||
++------------------------------------------------------------------------------------------------------------------------------+                      ||
+| FINAL DECISION / OUTCOME LOGGING (SYNC TEAM MEMORY | RECON DATA MATCHES REALITY)                                             |                      ||
++------------------------------------------------------------------------------------------------------------------------------+                      ||
+                                                          |                                                                                           ||
+                                                          +===(ZERO-LOSS LOOP: COMMIT TO L4 VIA META-LEARNING BUS)===================================>||
 
-==================================================================================================================================================
-                                             L2 DUPER-DRILL INTEGRITY GUARANTEES
-==================================================================================================================================================
-| 1. SINGULARITY OF MUTATION: Durable state change is strictly quarantined to L2.2. No other module holds commit authority.            |
-| 2. RESOLUTION SYMMETRY: L2.3 (Healer) receives High-Res AST data (Surgical Manifest) from L2.1/L2.2 to prevent "Fragile Systems".    |
-| 3. NON-DESTRUCTIVE HEALING: Recovery logic uses node-level surgery rather than regex to preserve comments, formatting, and history.  |
-| 4. DYNAMIC SAFETY: The "Elevator Shaft" allows L2.1 to reach upward into L5 Safety logic at runtime without static circular imports. |
-| 5. RECOVERY ATOMICIY: Healing proposals are not "auto-committed"; they are treated as fresh intents requiring full re-validation. |
-==================================================================================================================================================
+=========================================================================================================================================================
+  CRITICAL DISSEMINATION GUARANTEES (5-WORD MAX)
+=========================================================================================================================================================
+| 1. NO SKIPPING SAFETY GATES | 4. HEALS MUST RE-CLEAR SAFETY | 7. ONLY USE APPROVED TOOLS    | 10. STOP AGENTS BURNING MONEY | 13. REMOVE HIJACK ATTEMPTS |
+| 2. ALWAYS ATTACH FENCES     | 5. DON'T LOSE DATA ON ERROR   | 8. BREAK TASKS INTO PIECES    | 11. FRESH DATA ONLY AT RUNTIME| 14. SHARE MEMORY ALL AGENTS|
+| 3. LOAD DATA ONLY AS NEEDED | 6. ISOLATE CHANGES IN SANDBOX | 9. PROTECT FROM AGENT DRIFT   | 12. RECORD THE WHY, NOT WHAT  | 15. DOUBLE-CHECK DATA MATCH|
+=========================================================================================================================================================

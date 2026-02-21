@@ -41,11 +41,11 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 
 def _preflight_import_check() -> None:
     """Diagnostic-only helper to verify critical imports can be resolved.
-    
+
     This function checks that the execute_ssot_entrypoint can be imported
     and that _legacy_main symbol exists without invoking any runtime behavior.
     Raises RuntimeError with detailed message if any check fails.
-    
+
     NOTE: This function is intentionally NOT called anywhere in Wave 1.
     It will be wired into the startup sequence in Wave 2.
     """
