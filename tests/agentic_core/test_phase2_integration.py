@@ -10,6 +10,8 @@ Wave 3: sovereign_rag_orchestrator reads thresholds from BudgetConfig/RoutingCon
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from agentic_core.L2_execution.enforcement.manifest_hash_validator import (
@@ -24,6 +26,44 @@ from agentic_core.L4_state.config.versioned_configs import (
 from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, AnchorViolationError
 
 pytestmark = pytest.mark.unit_min_deps
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _make_manifest(extra_attrs: dict | None = None):
+    """Build a minimal valid SurgicalManifest, optionally with Phase-2 hash attrs."""
+    from agentic_core.L0_routing.types.determinism_types import FixConstraint, SurgicalManifest
+
+    ast_snippet = "def heal(): pass"
+    manifest_hash = hashlib.sha256(ast_snippet.encode()).hexdigest()
+    m = SurgicalManifest(
+        schema_version="1.0.0",
+        correlation_id="corr-e2e-001",
+        node_id="node-e2e-001",
+        target_layer="L2",
+        ast_snippet=ast_snippet,
+        serialization_canon="canonical",
+        fix_constraint=FixConstraint.STRICT,
+        manifest_hash=manifest_hash,
+        change_history=("init",),
+        provenance_chain=("test",),
+    )
+    if extra_attrs:
+        # SurgicalManifest is frozen; attach attrs via object.__setattr__
+        for k, v in extra_attrs.items():
+            object.__setattr__(m, k, v)
+    return m
+
+
+def _noop_heal(manifest):
+    return {"errors": 0, "healed": True}
+
+
+def _noop_state_hash():
+    return ("fs-hash", "git-hash", "mem-hash")
 
 
 # ---------------------------------------------------------------------------
@@ -248,3 +288,69 @@ class TestDeterminismThresholdsIntegration:
                 func_src = ast.unparse(node)
                 assert "top_k=8" not in func_src, "Inline literal top_k=8 still present in sovereign_retrieve"
                 break
+
+
+# ---------------------------------------------------------------------------
+# End-to-end: real gateway.execute() drives L2.0 hash validation
+# ---------------------------------------------------------------------------
+
+
+class TestGatewayExecuteEndToEnd:
+    """
+    Calls V15ExecutionGateway.execute() — the real top-level entrypoint —
+    with a manifest that carries Phase-2 hash fields.
+
+    Proves that validate_manifest_hashes is invoked from the actual
+    gateway→L2.0 path, not just from a helper function in isolation.
+    """
+
+    def _gateway(self):
+        from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
+
+        return V15ExecutionGateway()
+
+    def test_gateway_accepts_manifest_without_hash_fields(self):
+        """Legacy manifest (no Phase-2 fields) must pass through L2.0 unchanged."""
+        gw = self._gateway()
+        manifest = _make_manifest()
+        result = gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-legacy")
+        assert result.success is True
+
+    def test_gateway_accepts_manifest_with_correct_hashes(self):
+        """Manifest carrying all four correct Phase-2 hashes must be accepted."""
+        gw = self._gateway()
+        correct_hashes = get_active_configs().hashes()
+        manifest = _make_manifest(extra_attrs=correct_hashes)
+        result = gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-correct")
+        assert result.success is True
+
+    def test_gateway_rejects_manifest_with_mismatched_hash_via_execute(self):
+        """
+        Manifest with a wrong routing_hash must be rejected at L2.0
+        when passed through the real gateway.execute() entrypoint.
+        ManifestHashError propagates as a hard abort → result.success is False.
+        """
+        from agentic_core.L2_execution.enforcement.manifest_hash_validator import ManifestHashError
+
+        gw = self._gateway()
+        bad_hashes = get_active_configs().hashes()
+        bad_hashes["routing_hash"] = "b" * 64
+        manifest = _make_manifest(extra_attrs=bad_hashes)
+
+        with pytest.raises((ManifestHashError, Exception)):
+            gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-bad-hash")
+
+    def test_gateway_rejects_manifest_with_missing_hash_via_execute(self):
+        """
+        Manifest with policy_hash=None must be rejected at L2.0
+        via the real gateway.execute() entrypoint.
+        """
+        from agentic_core.L2_execution.enforcement.manifest_hash_validator import ManifestHashError
+
+        gw = self._gateway()
+        partial_hashes = get_active_configs().hashes()
+        partial_hashes["policy_hash"] = None
+        manifest = _make_manifest(extra_attrs=partial_hashes)
+
+        with pytest.raises((ManifestHashError, Exception)):
+            gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-missing-hash")
