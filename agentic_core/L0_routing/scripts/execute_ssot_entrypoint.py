@@ -57,6 +57,11 @@ Examples:
         help="Print the deterministic execution plan and exit. Requires --legacy.",
     )
     parser.add_argument(
+        "--fence-self-check",
+        action="store_true",
+        help="Run deterministic fence self-check (validates policy + wiring; no mutations).",
+    )
+    parser.add_argument(
         "--v15-enforcement",
         type=int,
         choices=(0, 1),
@@ -72,6 +77,12 @@ Examples:
     )
 
     pre_args, remaining = parser.parse_known_args()
+
+    # [FENCE SELF-CHECK MODE] No legacy flag required
+    if pre_args.fence_self_check:
+        from agentic_core.L0_routing.scripts.execute_ssot import run_fence_self_check
+        run_fence_self_check()
+        return 0
 
     if not pre_args.legacy:
         parser.print_help()

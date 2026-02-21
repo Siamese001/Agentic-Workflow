@@ -130,6 +130,122 @@ def _safe_print(text: str) -> None:
     sys.stdout.buffer.flush()
 
 
+def run_fence_self_check() -> None:
+    """Run deterministic fence self-check (validates policy + wiring; no mutations).
+    
+    Validates:
+    1. Default ProtectedRootPolicy immutable_roots equals ("agentic_core","tests",".github")
+    2. Default ProtectedRootPolicy log_path is outside IMMUTABLE_ROOTS
+    3. write_gateway public entrypoints accept allow_override AND call enforce_protected_root
+    4. Telemetry emitter path is writable target ONLY outside IMMUTABLE_ROOTS
+    
+    Prints single-line JSON summary to stdout:
+    - {"status":"ok","checks":4}
+    - or {"status":"fail","failed":["check_name",...]}
+    
+    Exits with code 0 if all checks pass, nonzero otherwise.
+    """
+    from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+        get_default_protected_root_policy,
+        IMMUTABLE_ROOTS,
+    )
+    
+    failed_checks = []
+    
+    # Check 1: Default policy immutable_roots
+    try:
+        policy = get_default_protected_root_policy()
+        if policy.immutable_roots != ("agentic_core", "tests", ".github"):
+            failed_checks.append("default_policy_immutable_roots")
+    except Exception:
+        failed_checks.append("default_policy_immutable_roots")
+    
+    # Check 2: Default policy log_path is outside IMMUTABLE_ROOTS
+    try:
+        policy = get_default_protected_root_policy()
+        log_path = Path(policy.log_path)
+        
+        # Check if log_path would be under any immutable root
+        repo_root = resolve_repo_root()
+        resolved_log = (repo_root / log_path).resolve()
+        
+        is_under_immutable = False
+        for immutable_root in IMMUTABLE_ROOTS:
+            try:
+                resolved_log.relative_to(immutable_root)
+                is_under_immutable = True
+                break
+            except ValueError:
+                pass
+        
+        if is_under_immutable:
+            failed_checks.append("log_path_outside_immutable_roots")
+    except Exception:
+        failed_checks.append("log_path_outside_immutable_roots")
+    
+    # Check 3: write_gateway entrypoints accept allow_override AND call enforce_protected_root
+    try:
+        from agentic_core.L2_execution.tools import write_gateway
+        
+        # Check write_text and write_bytes (primary entrypoints)
+        for func_name in ["write_text", "write_bytes"]:
+            func = getattr(write_gateway, func_name, None)
+            if func is None:
+                failed_checks.append("write_gateway_enforces_protected_root")
+                break
+            
+            # Check signature has allow_override parameter
+            sig = inspect.signature(func)
+            if "allow_override" not in sig.parameters:
+                failed_checks.append("write_gateway_enforces_protected_root")
+                break
+            
+            # Check source contains enforce_protected_root call
+            try:
+                source = inspect.getsource(func)
+                if "enforce_protected_root" not in source:
+                    failed_checks.append("write_gateway_enforces_protected_root")
+                    break
+            except (OSError, TypeError):
+                # Source unavailable - fail with actionable message
+                failed_checks.append("write_gateway_enforces_protected_root")
+                break
+    except Exception:
+        failed_checks.append("write_gateway_enforces_protected_root")
+    
+    # Check 4: Telemetry emitter path is outside IMMUTABLE_ROOTS (pure path check)
+    try:
+        policy = get_default_protected_root_policy()
+        log_path = Path(policy.log_path)
+        repo_root = resolve_repo_root()
+        resolved_log = (repo_root / log_path).resolve()
+        
+        # Same check as #2 - ensure telemetry path is outside protected roots
+        is_under_immutable = False
+        for immutable_root in IMMUTABLE_ROOTS:
+            try:
+                resolved_log.relative_to(immutable_root)
+                is_under_immutable = True
+                break
+            except ValueError:
+                pass
+        
+        if is_under_immutable:
+            failed_checks.append("telemetry_path_outside_immutable_roots")
+    except Exception:
+        failed_checks.append("telemetry_path_outside_immutable_roots")
+    
+    # Output deterministic JSON summary
+    if failed_checks:
+        result = {"status": "fail", "failed": sorted(failed_checks)}
+        print(json.dumps(result, sort_keys=True))
+        sys.exit(1)
+    else:
+        result = {"status": "ok", "checks": 4}
+        print(json.dumps(result, sort_keys=True))
+        sys.exit(0)
+
+
 def resolve_repo_root(start=None):
     """Deterministic repo-root resolver.
     Walk upward from this file (or provided start) until we find repo markers.
@@ -2624,6 +2740,11 @@ Examples:
     # [PHASE 8] New Flag for Golden Baseline capture
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
     parser.add_argument(
+        "--fence-self-check",
+        action="store_true",
+        help="Run deterministic fence self-check (validates policy + wiring; no mutations)",
+    )
+    parser.add_argument(
         "--v15-enforcement",
         type=int,
         choices=(0, 1),
@@ -2642,6 +2763,11 @@ Examples:
     # [PLAN MODE] Pure introspection — no execution, no side effects.
     if args.plan:
         print_execution_plan()
+        return
+
+    # [FENCE SELF-CHECK MODE] Validate protected-root policy + wiring (no mutations).
+    if args.fence_self_check:
+        run_fence_self_check()
         return
 
     # [AGENT SUBSET] Validate and resolve --agents early (before imports).

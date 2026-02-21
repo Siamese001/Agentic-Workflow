@@ -294,3 +294,67 @@ class TestEnvVarIsolation:
         # Should still block (default behavior)
         with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
             enforce_protected_root(target_path, allow_override=False)
+
+
+@pytest.mark.unit_min_deps
+class TestFenceSelfCheck:
+    """Test fence self-check mode validates policy + wiring."""
+    
+    def test_self_check_ok_path(self):
+        """Test that self-check produces status ok JSON when all checks pass."""
+        import subprocess
+        import json
+        
+        result = subprocess.run(
+            ["python", "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint", "--fence-self-check"],
+            capture_output=True,
+            text=True
+        )
+        
+        # Should exit 0
+        assert result.returncode == 0, f"Expected exit 0, got {result.returncode}. stderr: {result.stderr}"
+        
+        # Should output valid JSON
+        output = json.loads(result.stdout.strip())
+        assert output["status"] == "ok"
+        assert output["checks"] == 4
+    
+    def test_self_check_fails_with_bad_log_path(self, monkeypatch):
+        """Test that self-check fails when log_path is under agentic_core."""
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+            ProtectedRootPolicy,
+            get_default_protected_root_policy,
+        )
+        
+        # Monkeypatch get_default_protected_root_policy to return bad log_path
+        def bad_policy():
+            return ProtectedRootPolicy(
+                immutable_roots=("agentic_core", "tests", ".github"),
+                log_path="agentic_core/bad_log.jsonl"  # Under protected root!
+            )
+        
+        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
+        monkeypatch.setattr(
+            "agentic_core.L0_routing.enforcement.mutation_prohibition.get_default_protected_root_policy",
+            bad_policy
+        )
+        
+        # Run self-check
+        with pytest.raises(SystemExit) as exc_info:
+            execute_ssot_module.run_fence_self_check()
+        
+        # Should exit with nonzero
+        assert exc_info.value.code != 0
+    
+    def test_self_check_validates_write_gateway_wiring(self):
+        """Test that self-check validates write_gateway has enforce_protected_root calls."""
+        from agentic_core.L2_execution.tools import write_gateway
+        import inspect
+        
+        # Verify write_text has allow_override parameter
+        sig = inspect.signature(write_gateway.write_text)
+        assert "allow_override" in sig.parameters
+        
+        # Verify write_text source contains enforce_protected_root
+        source = inspect.getsource(write_gateway.write_text)
+        assert "enforce_protected_root" in source
