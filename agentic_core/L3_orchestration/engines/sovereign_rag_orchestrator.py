@@ -24,6 +24,8 @@ from agentic_core.L3_orchestration.types.rag_provider_types import (
     RagQuery,
     RagResult,
 )
+from agentic_core.L4_state.config.versioned_configs import get_active_configs
+from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -103,17 +105,19 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
 
         Loads configuration from persistent storage or uses defaults.
         """
+        _budget_cfg = get_active_configs().budget
+        _routing_cfg = get_active_configs().routing
         if self.config_path.exists():
             config = json.loads(self.config_path.read_text())
             self.faithfulness_threshold = config.get("faithfulness_threshold", 0.88)
-            self.max_hops = config.get("max_hops", 3)
-            self.base_top_k = config.get("base_top_k", 12)
+            self.max_hops = config.get("max_hops", _routing_cfg.depth_breaker)
+            self.base_top_k = config.get("base_top_k", _budget_cfg.max_k)
         else:
             # guardian: allow-magic-config
             self.faithfulness_threshold = 0.88
             # guardian: allow-magic-config
-            self.max_hops = 3
-            self.base_top_k = 12
+            self.max_hops = _routing_cfg.depth_breaker
+            self.base_top_k = _budget_cfg.max_k
 
     def _save_sovereign_config(self) -> None:
         """
@@ -282,7 +286,8 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             for t in tasks:
                 all_queries.extend(t.result())
             all_queries: Any = list(dict.fromkeys(all_queries))
-            tasks: Any = [self.retriever.hybrid_search(q, top_k=8) for q in all_queries]
+            _hop_top_k = get_active_configs().budget.max_k
+            tasks: Any = [self.retriever.hybrid_search(q, top_k=_hop_top_k) for q in all_queries]
             results_lists: Any = await asyncio.gather(*tasks)
             retrieved: Any = [doc for sublist in results_lists for doc in sublist]
             unique_docs: Any = self.retriever.deduplicate_by_hash(retrieved, set())
@@ -290,9 +295,24 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             if len(all_documents) >= top_k:
                 break
         final_docs: Any = await self.guardrail.rerank_documents(all_documents, query, top_k=top_k)
+        _anchors = [
+            AnchoredResult(
+                content=doc.content if hasattr(doc, "content") else str(doc),
+                anchor=RetrievalAnchor(
+                    source_doc_id=getattr(doc, "doc_id", getattr(doc, "id", f"doc-{i}")),
+                    chunk_id=getattr(doc, "chunk_id", f"chunk-{i}"),
+                    char_start=0,
+                    char_end=len(doc.content if hasattr(doc, "content") else str(doc)),
+                    retrieved_at_utc=RetrievalAnchor.now_utc(),
+                    version_hash=getattr(doc, "content_hash", getattr(doc, "hash", "unknown")),
+                ),
+            )
+            for i, doc in enumerate(final_docs)
+        ]
         result: Any = {
             "query": query,
             "documents": final_docs,
+            "anchors": _anchors,
             "faithfulness": 0.85,
             "top_k": top_k,
             "hops": hop + 1,

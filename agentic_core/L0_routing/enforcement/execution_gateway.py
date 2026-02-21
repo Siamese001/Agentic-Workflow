@@ -181,6 +181,16 @@ class V15ExecutionGateway:
         manifest = validate_execution_input(execution_input)
         validate_manifest_emission(manifest)
 
+        # L2.0 config-hash binding: if manifest carries any Phase-2 hash fields,
+        # all four must be present and match the L4 SSOT active configs.
+        _HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
+        if any(hasattr(manifest, f) and getattr(manifest, f) is not None for f in _HASH_FIELDS):
+            from agentic_core.L2_execution.enforcement.manifest_hash_validator import (
+                validate_manifest_hashes,
+            )
+
+            validate_manifest_hashes(manifest)
+
         # Dedupe check
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
         dedupe_hit = signal_hash in self._seen_signals
