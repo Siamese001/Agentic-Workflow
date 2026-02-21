@@ -1,8 +1,8 @@
 # Git HEAD
-```fa638ba30e24402cc4147401472bdd4cec1f3f54```
+```ed78c0af90c1e71662a55eb038c86552ad653efb```
 
 # Git Status
-```?? tools/evidence/```
+``````
 
 # Assembly Stage Tests
 ```[1m============================= test session starts =============================[0m
@@ -64,13 +64,13 @@ tests/unit/L0_routing/test_assembly_stage.py::TestAssemblyStage::test_shred_hand
 ```No forbidden wall-clock tokens found```
 
 # Git Show --stat
-```commit fa638ba30e24402cc4147401472bdd4cec1f3f54
+```commit ed78c0af90c1e71662a55eb038c86552ad653efb
 Author: Siamese001 <siamese001@users.noreply.github.com>
-Date:   Sat Feb 21 08:41:46 2026 -0500
+Date:   Sat Feb 21 08:42:38 2026 -0500
 
-    feat(L0): add SANITIZE+SHRED to Assembly Stage (Phase 2.2)
+    docs: phase2 Assembly Stage evidence bundle (Phase 2.3)
 
- agentic_core/L0_routing/engines/assembly_stage.py |  89 ++++++++++++++++-
- tests/unit/L0_routing/test_assembly_stage.py      | 111 +++++++++++++++++++++-
- 2 files changed, 197 insertions(+), 3 deletions(-)
+ .../plans/phase2_assembly_stage_evidence.md        |  76 ++++++++++++
+ tools/evidence/phase2_assembly_stage_evidence.py   | 133 +++++++++++++++++++++
+ 2 files changed, 209 insertions(+)
 ```
