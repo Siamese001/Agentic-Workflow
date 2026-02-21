@@ -1,0 +1,236 @@
+"""
+Phase 9 — Wave 2 Tests: ReplayBundleStore + ReplayVerifier (integrity + prior-only).
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from agentic_core.L4_state.enforcement.replay_bundle_store import (
+    ReplayBundleStore,
+    ReplayVerificationError,
+    ReplayVerifier,
+    VerifiedReplay,
+)
+from agentic_core.L4_state.types.replay_bundle import ReplayBundle, build_replay_bundle
+
+pytestmark = pytest.mark.unit_min_deps
+
+_MH = "m" * 64
+_CONFIG = {"policy_hash": "ph1", "routing_hash": "rh1", "model_hash": "mh1", "budget_hash": "bh1"}
+
+
+def _make_bundle(**overrides) -> ReplayBundle:
+    defaults: dict = {
+        "mission_id": "mission-test",
+        "execution_start_tick": 5,
+        "execution_end_tick": 10,
+        "manifest_hash": _MH,
+        "active_config_hashes": dict(_CONFIG),
+    }
+    defaults.update(overrides)
+    return build_replay_bundle(**defaults)
+
+
+class TestReplayBundleStore:
+    def test_store_and_fetch(self):
+        store = ReplayBundleStore()
+        b = _make_bundle()
+        rh = store.store_replay_bundle(b)
+        assert rh == b.replay_hash
+        fetched = store.fetch_replay_bundle(rh)
+        assert fetched is b
+
+    def test_fetch_missing_returns_none(self):
+        store = ReplayBundleStore()
+        assert store.fetch_replay_bundle("nonexistent") is None
+
+    def test_idempotent_store(self):
+        store = ReplayBundleStore()
+        b = _make_bundle()
+        store.store_replay_bundle(b)
+        store.store_replay_bundle(b)
+        assert store.count() == 1
+
+    def test_count_increments(self):
+        store = ReplayBundleStore()
+        b1 = _make_bundle(mission_id="m1")
+        b2 = _make_bundle(mission_id="m2")
+        store.store_replay_bundle(b1)
+        store.store_replay_bundle(b2)
+        assert store.count() == 2
+
+
+class TestVerifierRejectsMissingComponent:
+    def test_verifier_rejects_missing_component(self):
+        """
+        Core Wave 2 guarantee: verifier raises MISSING_CITATION_HASH when
+        citation_hash not in known_citation_hashes registry.
+        """
+        b = _make_bundle(retrieval_used=True, citation_hash="c" * 64)
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_citation_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_CITATION_HASH"
+
+    def test_verifier_rejects_missing_config_hash(self):
+        b = _make_bundle(active_config_hashes={"policy_hash": "ph-secret"})
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_config_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_CONFIG_HASH"
+
+    def test_verifier_rejects_missing_signal_hash(self):
+        b = _make_bundle(prior_detection_signal_hash="sh-secret")
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_signal_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_SIGNAL_HASH"
+
+    def test_verifier_rejects_missing_violation_hash(self):
+        b = _make_bundle(prior_violation_event_hashes=["vh-secret"])
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_violation_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_VIOLATION_HASH"
+
+    def test_verifier_rejects_missing_intent_hash(self):
+        b = _make_bundle(tool_intent_hashes=["ih-secret"])
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_intent_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_INTENT_HASH"
+
+    def test_verifier_rejects_missing_result_hash(self):
+        b = _make_bundle(tool_result_hashes=["rh-secret"])
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, known_result_hashes={"other_hash"})
+        assert exc_info.value.code == "MISSING_RESULT_HASH"
+
+    def test_verifier_passes_when_all_hashes_present(self):
+        b = _make_bundle(
+            retrieval_used=True,
+            citation_hash="c" * 64,
+            prior_detection_signal_hash="sh1",
+            prior_violation_event_hashes=["vh1"],
+            tool_intent_hashes=["ih1"],
+            tool_result_hashes=["rh1"],
+        )
+        verifier = ReplayVerifier()
+        result = verifier.verify(
+            b,
+            known_citation_hashes={"c" * 64},
+            known_signal_hashes={"sh1"},
+            known_violation_hashes={"vh1"},
+            known_intent_hashes={"ih1"},
+            known_result_hashes={"rh1"},
+        )
+        assert isinstance(result, VerifiedReplay)
+        assert result.replay_hash == b.replay_hash
+
+
+class TestVerifierRejectsHashTampering:
+    def test_verifier_rejects_hash_tampering(self):
+        """
+        Core Wave 2 guarantee: verifier raises REPLAY_HASH_MISMATCH when
+        replay_hash does not match recomputed value.
+        """
+        b = _make_bundle()
+        # Tamper: directly set replay_hash to wrong value
+        object.__setattr__(b, "replay_hash", "tampered" + "0" * 57)
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b)
+        assert exc_info.value.code == "REPLAY_HASH_MISMATCH"
+
+    def test_verifier_passes_on_untampered_bundle(self):
+        b = _make_bundle()
+        verifier = ReplayVerifier()
+        result = verifier.verify(b)
+        assert isinstance(result, VerifiedReplay)
+        assert "hash_integrity" in result.checks_passed
+
+    def test_verified_replay_carries_mission_id(self):
+        b = _make_bundle(mission_id="mission-XYZ")
+        verifier = ReplayVerifier()
+        result = verifier.verify(b)
+        assert result.mission_id == "mission-XYZ"
+
+    def test_verified_replay_carries_ticks(self):
+        b = _make_bundle(execution_start_tick=3, execution_end_tick=7)
+        verifier = ReplayVerifier()
+        result = verifier.verify(b)
+        assert result.execution_start_tick == 3
+        assert result.execution_end_tick == 7
+
+
+class TestVerifierRejectsSameCycleInfluence:
+    def test_verifier_rejects_same_cycle_influence(self):
+        """
+        Core Wave 2 guarantee: verifier raises SAME_CYCLE_SIGNAL when
+        prior_signal_tick >= execution_start_tick.
+        """
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_detection_signal_hash="sh1",
+        )
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, prior_signal_tick=10)  # same-cycle: tick == start
+        assert exc_info.value.code == "SAME_CYCLE_SIGNAL"
+
+    def test_verifier_rejects_future_signal(self):
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_detection_signal_hash="sh1",
+        )
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, prior_signal_tick=11)  # future: tick > start
+        assert exc_info.value.code == "SAME_CYCLE_SIGNAL"
+
+    def test_verifier_passes_prior_signal(self):
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_detection_signal_hash="sh1",
+        )
+        verifier = ReplayVerifier()
+        result = verifier.verify(b, prior_signal_tick=9)  # prior: tick < start
+        assert "signal_prior_only" in result.checks_passed
+
+    def test_verifier_rejects_same_cycle_violation(self):
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_violation_event_hashes=["vh1"],
+        )
+        verifier = ReplayVerifier()
+        with pytest.raises(ReplayVerificationError) as exc_info:
+            verifier.verify(b, prior_violation_ticks={"vh1": 10})  # same-cycle
+        assert exc_info.value.code == "SAME_CYCLE_VIOLATION"
+
+    def test_verifier_passes_prior_violation(self):
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_violation_event_hashes=["vh1"],
+        )
+        verifier = ReplayVerifier()
+        result = verifier.verify(b, prior_violation_ticks={"vh1": 9})  # prior
+        assert "violations_prior_only" in result.checks_passed
+
+    def test_verifier_no_signal_hash_skips_prior_only_check(self):
+        """If prior_detection_signal_hash is empty, prior_signal_tick check is skipped."""
+        b = _make_bundle(
+            execution_start_tick=10,
+            execution_end_tick=15,
+            prior_detection_signal_hash="",
+        )
+        verifier = ReplayVerifier()
+        # Even with a same-cycle tick, no signal hash means check is skipped
+        result = verifier.verify(b, prior_signal_tick=10)
+        assert isinstance(result, VerifiedReplay)
