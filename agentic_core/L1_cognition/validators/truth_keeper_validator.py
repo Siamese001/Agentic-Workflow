@@ -6,7 +6,6 @@ import ast
 
 "Brief description of functionality and purpose."
 import logging
-import os
 from typing import Any
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +31,8 @@ class TruthKeeper:
             llm_client: LLM client for consistency checking
         """
         self.llm_client = llm_client
-        self.api_key = os.getenv("GOOGLE_API_KEY")
+        # L1 Purity: No environment access - API key must be provided externally
+        self.api_key = None
 
     async def check_file_consistency(self, file_path: str) -> dict[str, Any]:
         """

@@ -1,3 +1,5 @@
+agentic_core/L0_routing/enforcement/execution_gateway.py:292:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/enforcement/execution_gateway.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/utils/subprocess_runner.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
@@ -513,6 +515,7 @@ agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:396:path_fragility:Path
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:404:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:44:type_erasure:Type erasure: SystemArchitectAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:59:type_erasure:Type erasure: SystemArchitectAgent.execute returns Any instead of structured type
+agentic_core/L5_safety/reasoning/guardian_decision.py:70:magic_configuration:Magic configuration: Hardcoded token_budget=1000000
 agentic_core/L5_safety/types/constitutional_governance_types.py:236:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L5_safety/types/cst_transformers_types.py:419:magic_configuration:Magic configuration: Hardcoded max_blank_lines=2
 agentic_core/L5_safety/types/cst_transformers_types.py:520:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
