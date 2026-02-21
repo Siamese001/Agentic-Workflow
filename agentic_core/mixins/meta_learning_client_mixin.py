@@ -23,6 +23,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.L2_execution.types.ml_write_intent import (
+    MLWriteEnvelopeViolation,
+    is_commit_sandbox_active,
+)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -241,6 +246,9 @@ class MetaLearningClientMixin:
                 Logger.warning(f"[{self.__class__.__name__}] Pattern rate limited for domain: {domain}")
                 return None
 
+        if not is_commit_sandbox_active():
+            raise MLWriteEnvelopeViolation("ml_store_healing_pattern() called outside L2.2 commit sandbox")
+
         try:
             pattern_id = MetaLearningClientMixin._ml_client.store_healing_pattern(
                 violation,
@@ -335,6 +343,9 @@ class MetaLearningClientMixin:
 
             # Validate and normalize TTL
             ttl = MetaLearningClientMixin._ml_guardrails.validate_ttl(ttl)
+
+        if not is_commit_sandbox_active():
+            raise MLWriteEnvelopeViolation("ml_cache_set() called outside L2.2 commit sandbox")
 
         try:
             success = MetaLearningClientMixin._ml_client.cache_set(key, value, domain, ttl)
