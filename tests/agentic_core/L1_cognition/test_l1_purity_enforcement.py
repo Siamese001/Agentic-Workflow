@@ -76,15 +76,44 @@ def test_l1_import_audit_summary() -> None:
 
     print("\nL1 Import Audit Summary:")
     print(f"  Total L1 files: {total_files}")
+    print("  L1 root: agentic_core/L1_cognition")
+
+    # Show first 20 and last 20 files for provability
+    sorted_files = sorted([f.relative_to(Path.cwd()) for f in l1_files])
+
+    print(f"  Audited files (first 20 of {total_files}):")
+    for i, file_path in enumerate(sorted_files[:20]):
+        violations = parse_file_for_forbidden_imports(file_path)
+        status = "VIOLATION" if violations else "OK"
+        print(f"    {i + 1:2d}. {file_path} [{status}]")
+
+    if total_files > 40:
+        print(f"    ... ({total_files - 40} files omitted) ...")
+        print(f"  Audited files (last 20 of {total_files}):")
+        for i, file_path in enumerate(sorted_files[-20:], total_files - 19):
+            violations = parse_file_for_forbidden_imports(file_path)
+            status = "VIOLATION" if violations else "OK"
+            print(f"    {i:2d}. {file_path} [{status}]")
+    elif total_files > 20:
+        print(f"  Audited files (remaining {total_files - 20}):")
+        for i, file_path in enumerate(sorted_files[20:], 21):
+            violations = parse_file_for_forbidden_imports(file_path)
+            status = "VIOLATION" if violations else "OK"
+            print(f"    {i:2d}. {file_path} [{status}]")
 
     violation_count = 0
+    violation_files = []
     for file_path in l1_files:
         violations = parse_file_for_forbidden_imports(file_path)
         if violations:
             violation_count += 1
+            violation_files.append(str(file_path.relative_to(Path.cwd())))
             print(f"  VIOLATION: {file_path.relative_to(Path.cwd())}: {violations}")
 
     print(f"  Files with violations: {violation_count}")
     print(f"  Files compliant: {total_files - violation_count}")
+
+    if violation_files:
+        print(f"  Violation files: {violation_files}")
 
     assert violation_count == 0, f"{violation_count} L1 files have forbidden imports"

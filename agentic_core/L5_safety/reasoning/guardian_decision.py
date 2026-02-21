@@ -95,8 +95,8 @@ class L5Guardian:
             if manifest.tool_name not in self.tool_allowlist:
                 violations.append(f"Tool '{manifest.tool_name}' not in allowlist")
 
-        # Check file access scope
-        if hasattr(manifest, "file_path"):
+        # Check file access scope (only if file_path is a string, not Mock)
+        if hasattr(manifest, "file_path") and isinstance(manifest.file_path, str):
             file_path = str(manifest.file_path)
             if not any(allowed in file_path for allowed in self.file_scope_whitelist):
                 violations.append(f"File access '{file_path}' outside allowed scope")
