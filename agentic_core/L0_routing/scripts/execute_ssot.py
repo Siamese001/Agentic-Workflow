@@ -39,6 +39,34 @@ from typing import Any, Optional
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
+def _preflight_import_check() -> None:
+    """Diagnostic-only helper to verify critical imports can be resolved.
+    
+    This function checks that the execute_ssot_entrypoint can be imported
+    and that _legacy_main symbol exists without invoking any runtime behavior.
+    Raises RuntimeError with detailed message if any check fails.
+    
+    NOTE: This function is intentionally NOT called anywhere in Wave 1.
+    It will be wired into the startup sequence in Wave 2.
+    """
+    try:
+        # Check that _legacy_main exists in this module (execute_ssot.py)
+        if not hasattr(sys.modules[__name__], '_legacy_main'):
+            raise RuntimeError(
+                "CRITICAL: _legacy_main not found in execute_ssot module"
+            )
+        # Access the attribute to ensure it's resolvable
+        legacy_main = getattr(sys.modules[__name__], '_legacy_main')
+        if not callable(legacy_main):
+            raise RuntimeError(
+                "CRITICAL: _legacy_main attribute is not callable"
+            )
+    except (AttributeError, TypeError) as exc:
+        raise RuntimeError(
+            f"CRITICAL: Failed to resolve _legacy_main from execute_ssot module: {exc}"
+        ) from exc
+
+
 def _optional_runtime_guard():
     """Lazy import to avoid import-time failure in bootstrap contexts.
 
