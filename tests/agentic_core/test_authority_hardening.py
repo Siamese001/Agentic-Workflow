@@ -10,6 +10,8 @@ from unittest.mock import Mock
 
 import pytest
 
+pytestmark = pytest.mark.unit_min_deps
+
 from agentic_core.L1_cognition.types.execution_intent import (
     ExecutionIntent,
     L1Result,

@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.unit_min_deps
+
 FORBIDDEN_IMPORTS = {
     "subprocess",
     "redis",
