@@ -1,7 +1,7 @@
 # Phase 1 Authority Hardening Evidence
 
 ## Git Commit Hash
-**PENDING — updated at commit time (see bottom of file)**
+**a247e7075** (fix: pytest discovery for authority hardening tests + evidence repair)
 
 ## Modified Files
 - agentic_core/L0_routing/enforcement/execution_gateway.py (+243/-92)
