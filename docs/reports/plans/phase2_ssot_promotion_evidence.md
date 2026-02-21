@@ -2,7 +2,7 @@
 # L4 as Versioned State Bus + Grounded Retrieval
 
 ## Commit Hash
-**PENDING — set after commit**
+**a73bb0e84** — phase2: L4 versioned config SSOT + retrieval anchors + determinism thresholds
 
 ## Modified Files (new files only — no existing files changed)
 - `agentic_core/L4_state/config/versioned_configs.py` [NEW]
