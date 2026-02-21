@@ -1,59 +1,73 @@
 ==================================================================================================================================================
-                             SOVEREIGN ARCHITECTURE: HIERARCHY & CAPABILITY MAP (v4.0 — HARDENED)
-                                          (A+++++ ZERO-LOSS WIDESCREEN ASCII OVERWRITE)
+                             SOVEREIGN ARCHITECTURE: HIERARCHY & CAPABILITY MAP (v4.1 — REPO-VERIFIED)
+                                          agentic_core/base_agents/ — ground-truth as of agent_discovery_full.json
 ==================================================================================================================================================
 
 [ LEGEND ]
 ! [[ ]] = ROOT FOUNDATION (The Unchangeable Core / Infrastructure SSOT)
 ~ ~~ ~~ = MIXIN CAPABILITY (Power-up: "Has-A" / Behavior Bundle)
-+ < >   = LAYER TEMPLATE (Identity: "Is-A" / Functional Logic)
++ < >   = LAYER BASE CLASS (Identity: "Is-A" / Functional Logic)
 # { }   = CONCRETE AGENT (Production Instance / Final Class)
 @ [ ]   = DECISION FLOW (Governance & State Mapping)
 
 ==================================================================================================================================================
 [ STEP 1: ! [[ SovereignBaseAgent ]] — ROOT SINGLE SOURCE OF TRUTH (SSOT) ! ]
-(Grandparent Foundation: Versioning, Name, Core Registry)
+(Root @dataclass Foundation: Security Validation, Core Registry, V15 Gateway)
+  File: agentic_core/base_agents/SovereignBaseAgent.py
 ==================================================================================================================================================
                                          |
                                          v
          /================================================================================================\
-         | @ [ MIXIN BUNDLE: CAPABILITY DEFINITION ]                                                      |
+         | @ [ MIXIN BUNDLE INJECTED DIRECTLY INTO SovereignBaseAgent (MRO order) ]                      |
          |------------------------------------------------------------------------------------------------|
-         | ~ HealerMixin ~              (Self-Repair / Rollback / AST Surgery)             |
-         | ~ MCPHardenedMixin ~         (Security / Multi-Source Auth / Audit)           |
-         | ~ RateLimitMixin ~           (Resource Protection / Token Budgets)                |
-         | ~ StateValidationMixin ~     (Data Integrity / High-Res AST Checks)             |
-         | ~ ContextPropagationMixin ~  (Distributed Tracing / Memory Manager)             |
-         | ~ SubatomicTestingMixin ~    (Fine-Grained Validation / Sandbox Setup)           |
+         | ~ AtomicExecutionMixin ~        (Rollback / Atomic Commit Authority)                          |
+         | ~ infrastructure_mixin ~        (Core Infrastructure / Legacy Gateway)                        |
+         | ~ SubatomicTestingMixin ~        (Fine-Grained Validation / Sandbox Setup)                    |
+         | ~ ConfigMixin ~                 (Configuration Management)                                    |
+         | ~ LLMProviderMixin ~            (LLM Provider Abstraction)                                    |
+         | ~ EmbeddingMixin ~              (Embedding Model Access)                                      |
+         | ~ HealingStrategyMixin ~        (Self-Repair / Rollback / AST Surgery)                       |
+         | ~ ValidatorMixin ~              (Data Integrity / High-Res AST Checks)                        |
+         | ~ AuditTrailMixin ~             (Black-Box Telemetry / Audit Log)                             |
+         | ~ MetaLearningClientMixin ~     (Healing Pattern Memory / Redis + Pinecone)                   |
+         | ~ GoldenContextMixin ~          (Anti-Context Drift / Token Overload Guard)                   |
+         | ~ RuntimeSafetyMixin ~          (Process Lifecycle / Operational Safety)                      |
          \================================================================================================/
                                          |
-                                         | (MRO Inheritance Path: Core -> Mixins -> Layer)
+                                         | (MRO Flow: Specialized -> Layer Base -> SovereignBaseAgent -> [Mixins] -> object)
                                          v
 ==================================================================================================================================================
-[ STEP 2: + LAYER LEVEL: THE ACTIVE TEMPLATES + ]
-(Layer Leads Select Mixins per Identity — Strictly Downward Static Imports)
+[ STEP 2: + LAYER BASE CLASSES (agentic_core/base_agents/) + ]
+(Each layer base subclasses SovereignBaseAgent — strictly downward static imports)
 ==================================================================================================================================================
 
-    + < L6ObservabilityBaseAgent > (Metrics, Dashboarding, Passive Detection)
-                   |
-    + < L5SafetyBaseAgent >        (Guardrails, EvaluatorBase, Policy Enforcement)
-                   |               ** THE ELEVATOR SHAFT ** (Runtime Seam to L0)
-    + < L4StateBaseAgent >         (Knowledge, RAG, Redis/Pinecone, Drift State)
-                   |
-    + < OrchestrationBaseAgent >   (SupervisorBase, Task Planning, Delegation)
-                   |
-    + < L2ExecutionBaseAgent >     (ToolInterfaceBase, Sandbox, AST Commit Authority)
-                   |
-    + < L1CognitionAgent >         (Reasoning, Adaptive Execution, Proposal Gen)
-                   |
-    + < L0MaintenanceAgent >       (Housekeeping, Foundation Loader, Root Registry)
+    + < L6ObservabilityBase >   (Metrics, Dashboarding, Telemetry, Log Aggregation)
+                   |              File: agentic_core/base_agents/L6ObservabilityBase.py
+    + < L5SafetyBase >          (Guardrails, Gravity Checks, Policy Enforcement)
+                   |              File: agentic_core/base_agents/L5SafetyBase.py
+                   |              ** THE ELEVATOR SHAFT ** (Runtime Seam to L0)
+    + < L4StateBase >           (Validation Context, State Ledger, Memory Persistence)
+                   |              File: agentic_core/base_agents/L4StateBase.py
+    + < L3OrchestrationBase >   (Workflow Coordination, Task Planning, Delegation)
+                   |              File: agentic_core/base_agents/L3OrchestrationBase.py
+    + < L2ExecutionBase >       (Tool Registry, MCP Protocol, Action Execution)
+                   |              File: agentic_core/base_agents/L2ExecutionBase.py
+    + < L1CognitionBase >       (Intent Analysis, Memory Retrieval, Meta-Learning)
+                   |              File: agentic_core/base_agents/L1CognitionBase.py
+    + < L0RoutingBase >         (Boot-time Routing, Healing Delegation, Root Registry)
+                   |              File: agentic_core/base_agents/L0RoutingBase.py
+
+    + < LightweightAgentBase >  (Minimal-MRO alternative: CostGuardrail, Context,
+                                  Tracing, Caching, Metrics — no SovereignBaseAgent)
+                                  File: agentic_core/base_agents/LightweightBase.py
 
 ==================================================================================================================================================
 [ STEP 3: # PRODUCTION LEVEL: THE ACTUAL FLEET # ]
-(268 Concrete Instance Classes — Final Mixin Inheritance)
+(186 Concrete Agent Classes — verified via artifacts/discovery/agent_discovery_full.json)
+  Layer breakdown: L0(6) L1(12) L2(11) L3(14) L4(4) L5(84) L6(14) apps_lic(27) apps_rg(12) apps_shared(1) knowledge(1)
 ==================================================================================================================================================
 |                                                                                                                                                |
-|    # { BootstrapAgent }    # { GospelSyncAgent }    # { HealAgent }    # { SovereignRAGAgent }                                                |
+|  # { BootstrapAgent }  # { GospelSyncAgent }  # { BenchmarkingAgent }  # { DocstringComplianceAgent }  # { ASTValidatorAgent }               |
 |                                                                                                                                                |
 ==================================================================================================================================================
 
@@ -61,8 +75,8 @@
                                              ARCHITECTURAL INTEGRITY GUARANTEES
 ==================================================================================================================================================
 | 1. SSOT ANCHOR: All agents ultimately subclass [[ SovereignBaseAgent ]] for unified versioning and name registration.              |
-| 2. MIXIN ATOMICITY: Capabilities like ~HealerMixin~ are modular, allowing agents to "Has-A" specific behaviors without core mutation.|
-| 3. MRO STACKING: Class resolution follows the strict path: Foundation -> Mixins -> Layer Identity -> Concrete Instance.       |
-| 4. IMPORT HYGIENE: Static imports move strictly downward (L6->L0); upward moves occur ONLY via the L0 Elevator Shaft at runtime.    |
-| 5. RESOLUTION SYMMETRY: L2.2 and L2.3 utilize the ~HealerMixin~ surgical manifests for zero-loss, AST-based system recovery.      |
+| 2. MIXIN ATOMICITY: Capabilities like ~HealingStrategyMixin~ are modular, injected at root so all agents inherit them.             |
+| 3. MRO STACKING: Class resolution follows: Specialized Mixins -> Layer Base -> SovereignBaseAgent -> [Root Mixins] -> object.      |
+| 4. IMPORT HYGIENE: Static imports move strictly downward (L6->L0); upward moves occur ONLY via the L0 Elevator Shaft at runtime.   |
+| 5. LIGHTWEIGHT PATH: LightweightAgentBase provides a shallow-MRO (~8 classes) alternative for simple agents that skip healing.     |
 ==================================================================================================================================================

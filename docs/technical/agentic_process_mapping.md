@@ -26,15 +26,15 @@
       +--------------------+                           |                                           |                                          |                    +-------------------------+
       |  Vector Databases  |                           v                                           v                                          v                    |  Weights & Checkpoints  |
       |  NoSQL / Documents |          +------------------------------------------+  +-----------------------------------------+  +---------------------------------------------------------------+
-      | [C0] & [CACHE_LOCK]|          | L1 – THINKING LAYER                      |  | L6 – DETECTION (PASSIVE GUARDIANS)      |  | L4: MASTER VERSIONED STATE [I::IMemoryStore]                  |
+      | [C0] & [CACHE_LOCK]|          | L1 – THINKING LAYER                      |  | L6 – DETECTION (PASSIVE GUARDIANS)      |  | L4: BLUEPRINT VAULT & PROD DB [I::IMemoryStore]               |
       +--------------------+          |------------------------------------------|  |-----------------------------------------|  |---------------------------------------------------------------|
-               |                      | - Generates [U0: USER PROMPT] (ZERO auth)|  | - Runs non-blocking monitoring scripts  |  | [ RULES ] - L4 never authorizes. L4 never executes.           |
-               | (Semantic Search)    | - Reads L4 active model version          |  | - Detects violations/anomalies          |  |           - Future executions use updated versions via L0.    |
-               +--------------------->| - Retrieval from RAG index (READ only)   |  | - Emits structured event summaries      |  |           - All ML improvements written as versioned updates. |
+               |                      | - Generates [U0: USER PROMPT] (ZERO auth)|  | - [TLM] CROSS-LAYER TELEMETRY           |  | [ RULES ] - L4 never authorizes. L4 never executes.           |
+               | (Semantic Search)    | - Reads L4 active model version          |  | - [SGNL] ANOMALY SIGNAL GENERATOR       |  |           - Future executions use updated versions via L0.    |
+               +--------------------->| - Retrieval from RAG index (READ only)   |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)       |  |           - All ML improvements written as versioned updates. |
                                       | - Augments prompt with [C0] Context      |  | - Cannot decide next action             |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)       |
                                       | - Cannot approve / Cannot execute        |  | - Monitors [COG_TELEMETRY] integrity    |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)   |
-                                      | - [LOG] LOG ORIGINAL USER INTENT         |  | ML Integration:                         |  | [ STATE ] - Active Models, Policy VC, [SYNC] TEAM MEMORY      |
-                                      | ML Integration:                          |  | • Improves anomaly classifiers          |  |           - Guardian Scripts, Detection Parameters            |
+                                      | - [LOG] LOG ORIGINAL USER INTENT         |  | ML Integration:                         |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY    |
+                                      | ML Integration:                          |  | • Improves anomaly classifiers          |  |           - [TOOL] TOOL & CAPABILITY INVENTORY, Policy VC     |
                                       | • Model calibration                      |  | • Refines signal grouping               |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT (IMemoryStore)      |
                                       | • Drift detection                        |  |                                         |  |           - Embedding Model Reference                         |
                                       +------------------------------------------+  +-----------------------------------------+  |           - Retrieval Top-K / Thresholds                      |
@@ -87,9 +87,9 @@
           +-------------------------------+         +-------------------------------+       +-------------------------------+       +---------------------------+                               ||
           | Final Response                |         | L3 – ORCHESTRATION [IOrch]    |       | L3 – ORCHESTRATION [IOrch]    |       | L3 – ORCHESTRATION [IOrch]|                               ||
           |-------------------------------|         |-------------------------------|       |-------------------------------|       |---------------------------|                               ||
-          | - No system mutation          |         | - Coordinates multi-step      |       | - Coordinates workflow        |       | - Prepares review artifact|                               ||
-          | - Logged outcome              |         |   tool sequence & chunking    |       |   via hierarchical shredding  |       +---------------------------+                               ||
-          |                               |         | - Propagates determinism      |       | - [GATE] Block hallucination  |                      |                                            ||
+          | - No system mutation          |         | - [HNDS] SEQUENTIAL HANDSHAKE |       | - [HNDS] SEQUENTIAL HANDSHAKE |       | - Prepares review artifact|                               ||
+          | - Logged outcome              |         | - [SYNC] WORK INSTRUCT SYNTH  |       | - [SYNC] WORK INSTRUCT SYNTH  |       +---------------------------+                               ||
+          |                               |         | - [ESC] ESCALATE TO L5 GUARD  |       | - [ESC] ESCALATE TO L5 GUARD  |                      |                                            ||
           | ML consumes outcome           |         | - [GATE] Block hallucination  |       | ML Integration:               |                      v                                            ||
           |                               |         | - [SEED] Force strict heal    |       | [1. Efficiency Tuner]         |======(Evaluate Bottlenecks)======================================>||
           |                               |         +-------------------------------+       | [2. Planning Optimization]    |======(Tune Pipeline Efficiency)==================================>||
@@ -98,10 +98,10 @@
                           |                         +-------------------------------+                      |                        +---------------------------+                               ||
                           |                         | L5 – SAFETY [I::IValidator]   |                      |                        | HUMAN REVIEW              |                               ||
                           |                         |-------------------------------|                      |                        |---------------------------|                               ||
-                          |                         | - [BLOCK] BLOCK HOSTILE INPUT |                      |                        | - Manual approve/reject   |                               ||
-                          |                         | - [LIMIT] STOP RESOURCE SPEND |                      |                        |                           |                               ||
-                          |                         | - Injects [D0: INJECTIONS]    |                      |                        | ML Integration:           |                               ||
-                          |                         |   (BINDING Role Fences)       |                      |                        | [1. Reviewer Calibration] |======(Evaluate Human Bias)====>||
+                          |                         | - [RISK] RISK TIER CLASSIFY   |                      |                        | - Manual approve/reject   |                               ||
+                          |                         | - [STMP] COMPLIANCE HASH/STAMP|                      |                        |                           |                               ||
+                          |                         | - [STOP] HARD STOP REJECTION  |                      |                        | ML Integration:           |                               ||
+                          |                         | - [BLOCK] BLOCK HOSTILE INPUT |                      |                        | [1. Reviewer Calibration] |======(Evaluate Human Bias)====>||
                           |                         | ML Integration:               |                      v                        +---------------------------+                               ||
                           |                         | [1. Anomaly Classifier]       |======(Track False Pos/Neg)===============================================================================>||
                           |                         |                               |======(Analyze Block Accuracy)============================================================================>||
