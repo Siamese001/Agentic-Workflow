@@ -16,6 +16,8 @@ import logging
 import os
 import shutil
 from contextlib import contextmanager
+from dataclasses import dataclass, asdict
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Generator
 
@@ -36,6 +38,41 @@ _ENV_OVERRIDE_KEY = "AGENTIC_ALLOW_MUTATION_FOR_TESTS"
 class SourceMutationBlocked(RuntimeError):
     """Raised when attempting to mutate a protected root directory."""
     pass
+
+
+@dataclass
+class ProtectedRootBlockEvent:
+    """Event record for blocked protected-root write attempts."""
+    ts_utc: str  # ISO8601, seconds precision
+    target: str  # Normalized path string
+    matched_root: str  # Name of the immutable root that matched
+    caller: str  # module:function best-effort
+
+
+def _emit_block_event(target: Path, matched_root: str) -> None:
+    """Emit a deterministic JSONL event for a blocked write attempt.
+    
+    Failures are swallowed to avoid masking the block exception.
+    """
+    try:
+        # Create event record
+        event = ProtectedRootBlockEvent(
+            ts_utc=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            target=str(target),
+            matched_root=matched_root,
+            caller="mutation_prohibition:enforce_protected_root"
+        )
+        
+        # Write to JSONL log (deterministic: sorted keys, newline-terminated)
+        log_path = Path("logs/ssot_protected_root_blocks.jsonl")
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(log_path, 'a', encoding='utf-8') as f:
+            json.dump(asdict(event), f, sort_keys=True)
+            f.write('\n')
+    except Exception:
+        # Swallow logging failures to avoid masking the block exception
+        pass
 
 
 def _get_repo_root() -> Path:
@@ -74,6 +111,7 @@ def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
     for immutable_root in IMMUTABLE_ROOTS:
         try:
             if resolved.is_relative_to(immutable_root):
+                _emit_block_event(resolved, immutable_root.name)
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} "
                     f"matched_root={immutable_root.name}"
@@ -82,6 +120,7 @@ def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
             # Fallback for Python < 3.9
             try:
                 resolved.relative_to(immutable_root)
+                _emit_block_event(resolved, immutable_root.name)
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} "
                     f"matched_root={immutable_root.name}"
