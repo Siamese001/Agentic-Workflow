@@ -129,3 +129,49 @@ class TestTelemetryRecorder:
         self.recorder.record("test", {}, commit_tick=2, timestamp=1234567890)
         events = self.recorder.get_events()
         assert events[1]["timestamp"] == 1234567890
+
+    def test_no_wall_clock_calls(self, monkeypatch):
+        """Negative test: TelemetryRecorder must not call wall-clock APIs."""
+
+        # Create sentinel that raises if any wall-clock API is called
+        class WallClockSentinel:
+            def __call__(self):
+                raise RuntimeError("Wall-clock API 'time' was called - not allowed in deterministic mode")
+
+            def __getattr__(self, name):
+                raise RuntimeError(f"Wall-clock API '{name}' was called - not allowed in deterministic mode")
+
+        # Patch common wall-clock sources
+        import datetime
+        import logging
+        import time
+
+        monkeypatch.setattr(time, "time", WallClockSentinel())
+        monkeypatch.setattr(time, "monotonic", WallClockSentinel())
+        monkeypatch.setattr(time, "perf_counter", WallClockSentinel())
+        # Patch datetime at module level
+        monkeypatch.setattr(datetime, "datetime", WallClockSentinel())
+        # Patch logging module's time reference
+        monkeypatch.setattr(logging, "time", WallClockSentinel())
+
+        # Disable logging to avoid time.time() calls from logging module
+        self.recorder.logger.disabled = True
+
+        # These operations should NOT trigger wall-clock calls
+        self.recorder.record("test_event", {"data": "value"}, commit_tick=123)
+
+        record = OutcomeRecord(
+            execution_latency_ms=100.0,
+            outcome_accuracy=0.95,
+            compute_cost_tokens=50,
+            human_correction_rate=0.1,
+            state_diff={},
+            l2_commit_hash="hash123",
+            record_hash="record456",
+        )
+        self.recorder.log_async(record)
+
+        result = self.recorder.reconcile("hash1", "hash2", commit_tick=456)
+
+        # If we reach here, no wall-clock APIs were called
+        assert result.ghost_mutation_detected is True
