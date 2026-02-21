@@ -9,6 +9,8 @@ from unittest.mock import patch, MagicMock, mock_open
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     enforce_protected_root,
     SourceMutationBlocked,
+    ProtectedRootPolicy,
+    get_default_protected_root_policy,
 )
 from agentic_core.L2_execution.tools import write_gateway
 
@@ -164,3 +166,81 @@ class TestBlockEventEmission:
             msg = str(e)
             assert "target=" in msg
             assert "matched_root=tests" in msg
+
+
+@pytest.mark.unit_min_deps
+class TestPolicyContract:
+    """Test protected-root policy contract and configurability."""
+    
+    def test_default_policy_immutable_roots(self):
+        """Test that default policy has exactly the canonical immutable roots."""
+        policy = get_default_protected_root_policy()
+        assert policy.immutable_roots == ("agentic_core", "tests", ".github")
+    
+    def test_default_policy_log_path(self):
+        """Test that default policy has the canonical log path."""
+        policy = get_default_protected_root_policy()
+        assert policy.log_path == "logs/ssot_protected_root_blocks.jsonl"
+    
+    def test_policy_override_log_path_writes_to_tmp(self, tmp_path):
+        """Test that overriding policy.log_path writes JSONL to tmp_path (no writes to repo logs)."""
+        target_path = Path("agentic_core/test_file.py")
+        log_file = tmp_path / "test_blocks.jsonl"
+        
+        # Create custom policy with tmp_path log
+        custom_policy = ProtectedRootPolicy(
+            immutable_roots=("agentic_core", "tests", ".github"),
+            log_path=str(log_file)
+        )
+        
+        # Ensure tmp log doesn't exist before test
+        assert not log_file.exists()
+        
+        # Attempt block with custom policy
+        with pytest.raises(SourceMutationBlocked):
+            enforce_protected_root(target_path, allow_override=False, policy=custom_policy)
+        
+        # Verify JSONL was written to tmp_path
+        assert log_file.exists()
+        
+        # Verify event structure
+        lines = log_file.read_text().strip().split('\n')
+        assert len(lines) == 1  # Exactly one event written
+        event = json.loads(lines[0])
+        assert event["matched_root"] == "agentic_core"
+        assert "target" in event
+        assert "ts_utc" in event
+        assert "caller" in event
+    
+    def test_policy_override_immutable_roots_changes_matched_root(self, tmp_path):
+        """Test that changing policy.immutable_roots changes matched_root in exception and event."""
+        target_path = Path("custom_protected/test_file.py")
+        log_file = tmp_path / "test_blocks.jsonl"
+        
+        # Create custom policy with different immutable roots
+        custom_policy = ProtectedRootPolicy(
+            immutable_roots=("custom_protected",),
+            log_path=str(log_file)
+        )
+        
+        # Attempt block with custom policy
+        try:
+            enforce_protected_root(target_path, allow_override=False, policy=custom_policy)
+            assert False, "Should have raised SourceMutationBlocked"
+        except SourceMutationBlocked as e:
+            msg = str(e)
+            assert "matched_root=custom_protected" in msg
+        
+        # Verify event has correct matched_root
+        assert log_file.exists()
+        lines = log_file.read_text().strip().split('\n')
+        event = json.loads(lines[-1])
+        assert event["matched_root"] == "custom_protected"
+    
+    def test_policy_none_uses_default(self):
+        """Test that policy=None uses the default policy."""
+        target_path = Path("agentic_core/test_file.py")
+        
+        # Should block with default policy
+        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
+            enforce_protected_root(target_path, allow_override=False, policy=None)

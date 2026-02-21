@@ -32,7 +32,7 @@ _ENV_OVERRIDE_KEY = "AGENTIC_ALLOW_MUTATION_FOR_TESTS"
 
 
 # =============================================================================
-# Protected-Root Enforcement (Wave 2)
+# Protected-Root Enforcement (Wave 2+)
 # =============================================================================
 
 class SourceMutationBlocked(RuntimeError):
@@ -49,13 +49,41 @@ class ProtectedRootBlockEvent:
     caller: str  # module:function best-effort
 
 
-def _emit_block_event(target: Path, matched_root: str) -> None:
+@dataclass
+class ProtectedRootPolicy:
+    """Policy contract for protected-root enforcement.
+    
+    This defines which roots are immutable and where block events are logged.
+    Pure dataclass with no side effects.
+    """
+    immutable_roots: tuple[str, ...]  # Root names (e.g., "agentic_core", "tests", ".github")
+    log_path: str  # JSONL log destination for block events
+
+
+def get_default_protected_root_policy() -> ProtectedRootPolicy:
+    """Get the default protected-root policy (pure; constant return).
+    
+    Returns:
+        ProtectedRootPolicy with canonical immutable roots and log path
+    """
+    return ProtectedRootPolicy(
+        immutable_roots=("agentic_core", "tests", ".github"),
+        log_path="logs/ssot_protected_root_blocks.jsonl"
+    )
+
+
+def _emit_block_event(target: Path, matched_root: str, log_path: str) -> None:
     """Emit a deterministic JSONL event for a blocked write attempt.
+    
+    Args:
+        target: Normalized path that was blocked
+        matched_root: Name of the immutable root that matched
+        log_path: Path to JSONL log file
     
     Failures are swallowed to avoid masking the block exception.
     """
     try:
-        # Create event record
+        # Create event record (deterministic: stable field order via dataclass)
         event = ProtectedRootBlockEvent(
             ts_utc=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
             target=str(target),
@@ -64,10 +92,10 @@ def _emit_block_event(target: Path, matched_root: str) -> None:
         )
         
         # Write to JSONL log (deterministic: sorted keys, newline-terminated)
-        log_path = Path("logs/ssot_protected_root_blocks.jsonl")
-        log_path.parent.mkdir(parents=True, exist_ok=True)
+        log_file = Path(log_path)
+        log_file.parent.mkdir(parents=True, exist_ok=True)
         
-        with open(log_path, 'a', encoding='utf-8') as f:
+        with open(log_file, 'a', encoding='utf-8') as f:
             json.dump(asdict(event), f, sort_keys=True)
             f.write('\n')
     except Exception:
@@ -80,25 +108,43 @@ def _get_repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-IMMUTABLE_ROOTS = (
-    _get_repo_root() / "agentic_core",
-    _get_repo_root() / "tests", 
-    _get_repo_root() / ".github",
-)
+# Backward compatibility: IMMUTABLE_ROOTS derived from default policy
+def _get_immutable_roots() -> tuple[Path, ...]:
+    """Get immutable root paths from default policy (for backward compatibility)."""
+    policy = get_default_protected_root_policy()
+    repo_root = _get_repo_root()
+    return tuple(repo_root / root_name for root_name in policy.immutable_roots)
 
 
-def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
+IMMUTABLE_ROOTS = _get_immutable_roots()
+
+
+def enforce_protected_root(
+    target_path: Path, 
+    *, 
+    allow_override: bool,
+    policy: ProtectedRootPolicy | None = None
+) -> None:
     """Block writes to protected root directories unless explicitly overridden.
     
     Args:
         target_path: Path being written to
         allow_override: If True, bypass the protection (audited CLI override)
+        policy: Optional policy override (for tests only). If None, uses default policy.
         
     Raises:
         SourceMutationBlocked: If target_path is under a protected root and override is disabled
     """
     if allow_override:
         return
+    
+    # Use provided policy or default
+    if policy is None:
+        policy = get_default_protected_root_policy()
+    
+    # Resolve immutable roots from policy
+    repo_root = _get_repo_root()
+    immutable_roots = tuple(repo_root / root_name for root_name in policy.immutable_roots)
         
     # Resolve path without requiring existence
     try:
@@ -108,10 +154,10 @@ def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
         resolved = target_path
     
     # Check if path is under any immutable root
-    for immutable_root in IMMUTABLE_ROOTS:
+    for immutable_root in immutable_roots:
         try:
             if resolved.is_relative_to(immutable_root):
-                _emit_block_event(resolved, immutable_root.name)
+                _emit_block_event(resolved, immutable_root.name, policy.log_path)
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} "
                     f"matched_root={immutable_root.name}"
@@ -120,7 +166,7 @@ def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
             # Fallback for Python < 3.9
             try:
                 resolved.relative_to(immutable_root)
-                _emit_block_event(resolved, immutable_root.name)
+                _emit_block_event(resolved, immutable_root.name, policy.log_path)
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} "
                     f"matched_root={immutable_root.name}"
