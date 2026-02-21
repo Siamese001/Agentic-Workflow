@@ -57,13 +57,22 @@ class RoutingConfig:
     escalation_threshold: float = 0.85
     fallback_mode: str = "safe"
     anomaly_routing_threshold: float = 0.75
+    # Phase 5 — time-shifted escalation routing policy
+    escalation_window_ticks: int = 10
+    escalation_severity_threshold: float = 0.75
+    escalation_violation_code_denylist: tuple[str, ...] = ()
+    escalation_mode: str = "normal"
 
     def canonical_bytes(self) -> bytes:
         doc = {
             "version": self.version,
             "anomaly_routing_threshold": self.anomaly_routing_threshold,
             "depth_breaker": self.depth_breaker,
+            "escalation_mode": self.escalation_mode,
+            "escalation_severity_threshold": self.escalation_severity_threshold,
             "escalation_threshold": self.escalation_threshold,
+            "escalation_violation_code_denylist": sorted(self.escalation_violation_code_denylist),
+            "escalation_window_ticks": self.escalation_window_ticks,
             "fallback_mode": self.fallback_mode,
         }
         return json.dumps(doc, sort_keys=True, separators=(",", ":")).encode()
