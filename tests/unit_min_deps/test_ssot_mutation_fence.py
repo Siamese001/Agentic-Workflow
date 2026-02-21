@@ -244,3 +244,53 @@ class TestPolicyContract:
         # Should block with default policy
         with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
             enforce_protected_root(target_path, allow_override=False, policy=None)
+
+
+@pytest.mark.unit_min_deps
+class TestEnvVarIsolation:
+    """Test that env vars do not affect protected-root enforcement in SSOT path."""
+    
+    def test_env_allow_mutation_does_not_bypass_protected_root(self, monkeypatch):
+        """Test that AGENTIC_ALLOW_MUTATION_FOR_TESTS does not bypass protected-root enforcement."""
+        target_path = Path("agentic_core/test_file.py")
+        
+        # Set env var that should NOT affect protected-root behavior
+        monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
+        
+        # Should still block (env var should not affect protected-root enforcement)
+        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
+            enforce_protected_root(target_path, allow_override=False)
+    
+    def test_env_deny_mutation_does_not_change_protected_root(self, monkeypatch):
+        """Test that AGENTIC_DENY_SOURCE_MUTATION does not change protected-root behavior."""
+        target_path = Path("agentic_core/test_file.py")
+        
+        # Set env var that should NOT affect protected-root behavior
+        monkeypatch.setenv("AGENTIC_DENY_SOURCE_MUTATION", "1")
+        
+        # Should still block (same behavior with or without env var)
+        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
+            enforce_protected_root(target_path, allow_override=False)
+    
+    def test_cli_override_works_regardless_of_env(self, monkeypatch):
+        """Test that CLI override (allow_override=True) works regardless of env vars."""
+        target_path = Path("agentic_core/test_file.py")
+        
+        # Set env vars that should NOT interfere
+        monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "0")
+        monkeypatch.setenv("AGENTIC_DENY_SOURCE_MUTATION", "1")
+        
+        # CLI override should allow bypass regardless of env vars
+        enforce_protected_root(target_path, allow_override=True)  # Should not raise
+    
+    def test_unset_env_vars_do_not_change_behavior(self, monkeypatch):
+        """Test that unsetting env vars does not change protected-root behavior."""
+        target_path = Path("agentic_core/test_file.py")
+        
+        # Ensure env vars are unset
+        monkeypatch.delenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", raising=False)
+        monkeypatch.delenv("AGENTIC_DENY_SOURCE_MUTATION", raising=False)
+        
+        # Should still block (default behavior)
+        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
+            enforce_protected_root(target_path, allow_override=False)

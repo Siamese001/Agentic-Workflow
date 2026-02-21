@@ -62,9 +62,12 @@ _SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
 
 
 def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
-    """Raise RuntimeError if path is under a tracked source root."""
-    if os.environ.get("AGENTIC_DENY_SOURCE_MUTATION") != "1":
-        return
+    """Raise RuntimeError if path is under a tracked source root.
+    
+    NOTE: This is a legacy defense-in-depth check. Primary protection is via
+    enforce_protected_root() which uses ProtectedRootPolicy (no env vars).
+    This function remains active for non-protected source roots.
+    """
     repo_root = _get_repo_root()
     try:
         rel = path.resolve().relative_to(repo_root)
