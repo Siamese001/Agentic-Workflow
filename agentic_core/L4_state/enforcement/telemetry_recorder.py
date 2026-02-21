@@ -9,9 +9,11 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import time
 from dataclasses import asdict, dataclass
 from typing import Any
+
+# guardian: allow-magic-configuration
+MAX_EVENTS = 100
 
 # Phase 1 scope: in-memory with write-through to list (simulating durable log)
 # No external deps, no real persistence
@@ -52,13 +54,16 @@ class TelemetryRecorder:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def record(self, event_type: str, data: dict[str, Any], commit_tick: int) -> str:
+    def record(
+        self, event_type: str, data: dict[str, Any], commit_tick: int, timestamp: int | None = None
+    ) -> str:
         """Record a telemetry event.
 
         Args:
             event_type: Type of telemetry event
             data: Event data payload
             commit_tick: Current commit tick
+            timestamp: Optional caller-supplied timestamp (not used in ID derivation)
 
         Returns:
             Event ID (SHA-256 of event content)
@@ -67,8 +72,10 @@ class TelemetryRecorder:
             "event_type": event_type,
             "data": data,
             "commit_tick": commit_tick,
-            "timestamp": time.time(),
         }
+        if timestamp is not None:
+            event["timestamp"] = timestamp
+
         event_json = json.dumps(event, sort_keys=True, separators=(",", ":"))
         event_id = hashlib.sha256(event_json.encode("utf-8")).hexdigest()
 
@@ -95,13 +102,12 @@ class TelemetryRecorder:
             {
                 "event_type": "outcome_record",
                 "record": asdict(record),
-                "timestamp": time.time(),
             }
         )
 
         self.logger.info(f"Outcome logged async: {record.record_hash[:8]}")
 
-    def reconcile(self, l4_state_hash: str, actual_hash: str) -> ReconResult:
+    def reconcile(self, l4_state_hash: str, actual_hash: str, commit_tick: int = 0) -> ReconResult:
         """Reconcile L4 state vs actual mutation reality.
 
         Args:
@@ -134,13 +140,12 @@ class TelemetryRecorder:
                 "actual_hash": actual_hash,
                 "details": details,
             },
-            commit_tick=int(time.time()),
+            commit_tick=commit_tick,
         )
 
         return result
 
-    # guardian: allow-magic-configuration
-    def get_events(self, event_type: Optional[str] = None, limit: int = 100) -> list[dict[str, Any]]:
+    def get_events(self, event_type: str | None = None, limit: int = MAX_EVENTS) -> list[dict[str, Any]]:
         """Retrieve telemetry events.
 
         Args:

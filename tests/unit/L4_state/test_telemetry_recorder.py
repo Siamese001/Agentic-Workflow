@@ -119,11 +119,13 @@ class TestTelemetryRecorder:
         events = self.recorder.get_events()
         assert events[0]["commit_tick"] == 42
 
-    def test_record_includes_timestamp(self):
-        import time
-
-        before = time.time()
+    def test_record_timestamp_optional(self):
+        # By default, no timestamp is included
         self.recorder.record("test", {}, commit_tick=1)
-        after = time.time()
         events = self.recorder.get_events()
-        assert before <= events[0]["timestamp"] <= after
+        assert "timestamp" not in events[0]
+
+        # Caller can supply timestamp explicitly
+        self.recorder.record("test", {}, commit_tick=2, timestamp=1234567890)
+        events = self.recorder.get_events()
+        assert events[1]["timestamp"] == 1234567890
