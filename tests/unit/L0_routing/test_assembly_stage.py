@@ -28,7 +28,7 @@ class TestAssemblyStage:
         assert payload.u0_user_prompt == "User prompt"
         assert payload.d0_injections == ""
         assert payload.sanitized is False
-        assert payload.check_ids == ()
+        assert payload.check_ids == ("User prompt",)  # Shredded into single check ID
         assert payload.manifest_hash != ""
 
     def test_same_inputs_produce_identical_manifest_hash(self):
@@ -127,3 +127,112 @@ class TestAssemblyStage:
         )
         assert payload2.d0_injections == "Injection"
         assert payload2.manifest_hash != payload1.manifest_hash
+
+    def test_sanitization_changes_text_and_sets_flag(self):
+        """Test that sanitization changes text and sets sanitized=True."""
+        raw_prompt = "User request with [SYSTEM] hijack attempt"
+
+        payload = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=raw_prompt,
+        )
+
+        # Should remove [SYSTEM] marker
+        assert "[SYSTEM]" not in payload.u0_user_prompt
+        assert payload.u0_user_prompt == "User request with  hijack attempt"
+        assert payload.sanitized is True
+
+    def test_sanitization_no_op_sets_flag_false(self):
+        """Test that no-op sanitization sets sanitized=False."""
+        clean_prompt = "Clean user prompt"
+
+        payload = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=clean_prompt,
+        )
+
+        assert payload.u0_user_prompt == clean_prompt
+        assert payload.sanitized is False
+
+    def test_sanitization_changes_hash(self):
+        """Test that sanitization changes the manifest hash via the sanitized flag."""
+        raw_prompt = "Prompt with [ADMIN] marker"
+
+        payload_raw = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=raw_prompt,
+        )
+
+        payload_clean = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt="Prompt with  marker",  # Already sanitized version
+        )
+
+        # Content should be same after sanitization
+        assert payload_raw.u0_user_prompt == payload_clean.u0_user_prompt
+        assert payload_raw.sanitized is True
+        assert payload_clean.sanitized is False
+        # Hash should be DIFFERENT because sanitized flag is part of manifest
+        assert payload_raw.manifest_hash != payload_clean.manifest_hash
+
+    def test_shred_produces_stable_sorted_check_ids(self):
+        """Test that shredding produces stable, lexicographically sorted check IDs."""
+        prompt = """1. First task
+3. Third task
+2. Second task
+- Bullet point
+* Another bullet"""
+
+        payload = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=prompt,
+        )
+
+        # Should extract and sort check IDs
+        expected_ids = ("Another bullet", "Bullet point", "First task", "Second task", "Third task")
+        assert payload.check_ids == expected_ids
+        # Verify they are sorted
+        assert tuple(sorted(payload.check_ids)) == payload.check_ids
+
+    def test_shred_fallback_to_single_check_id(self):
+        """Test shred fallback when no delimiters found."""
+        prompt = "Simple single line prompt"
+
+        payload = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=prompt,
+        )
+
+        assert payload.check_ids == ("Simple single line prompt",)
+
+    def test_shred_handles_empty_and_whitespace_lines(self):
+        """Test that shredding handles empty lines and whitespace correctly."""
+        prompt = """1. First task
+
+
+2. Second task
+
+   - Bullet after spaces"""
+
+        payload = AirlockAssembler.assemble(
+            s0_system="System",
+            i0_instructional="Instructions",
+            c0_context="Context",
+            u0_user_prompt=prompt,
+        )
+
+        # Should ignore empty lines and strip whitespace
+        expected_ids = ("Bullet after spaces", "First task", "Second task")
+        assert payload.check_ids == expected_ids

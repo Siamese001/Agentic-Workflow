@@ -74,6 +74,80 @@ class AirlockAssembler:
     """
 
     @staticmethod
+    def _sanitize(u0_user_prompt: str) -> str:
+        """
+        Deterministic minimal sanitizer for user prompts.
+
+        Performs exact, deterministic substitutions only - no ML or fuzzy matching.
+
+        Args:
+            u0_user_prompt: Raw user prompt text
+
+        Returns:
+            Sanitized user prompt text
+        """
+        sanitized = u0_user_prompt
+
+        # Strip NUL characters
+        sanitized = sanitized.replace("\x00", "")
+
+        # Normalize CRLF to LF
+        sanitized = sanitized.replace("\r\n", "\n").replace("\r", "\n")
+
+        # Remove/replace obvious prompt-hijack markers
+        hijack_patterns = [
+            ("[SYSTEM]", ""),
+            ("[ADMIN]", ""),
+            ("[ROOT]", ""),
+            ("[ESCALATE]", ""),
+            ("[BYPASS]", ""),
+            ("[OVERRIDE]", ""),
+        ]
+
+        for pattern, replacement in hijack_patterns:
+            sanitized = sanitized.replace(pattern, replacement)
+
+        return sanitized
+
+    @staticmethod
+    def _shred(u0_user_prompt: str) -> tuple[str, ...]:
+        """
+        Deterministic shred of user prompt into atomic intent check IDs.
+
+        Splits by common intent delimiters and returns lexicographically sorted IDs.
+
+        Args:
+            u0_user_prompt: User prompt text to shred
+
+        Returns:
+            Tuple of stable, lexicographically sorted check IDs
+        """
+        lines = u0_user_prompt.strip().split("\n")
+        check_ids = []
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Check for numbered list items (1., 2., etc.)
+            if line and line[0].isdigit() and "." in line[:10]:
+                check_id = line.split(".", 1)[1].strip()
+                if check_id:
+                    check_ids.append(check_id)
+            # Check for bullet points (-, *, •)
+            elif line.startswith(("-", "*", "•")):
+                check_id = line[1:].strip()
+                if check_id:
+                    check_ids.append(check_id)
+            else:
+                # Use the full line as a check_id if no delimiter
+                check_ids.append(line)
+
+        # Return lexicographically sorted tuple for stability
+        return tuple(sorted(check_ids))
+
+    @staticmethod
     def assemble(
         *,
         s0_system: str,
@@ -85,6 +159,8 @@ class AirlockAssembler:
         """
         Assemble a governed payload from component slots.
 
+        Performs sanitization first, then shredding, then computes manifest hash.
+
         Args:
             s0_system: System prompt slot
             d0_injections: Reserved injection slot (default empty)
@@ -95,13 +171,22 @@ class AirlockAssembler:
         Returns:
             GovernedPayload with deterministic manifest hash
         """
-        # Create payload with slot order S0→D0→I0→C0→U0
+        # Step 1: Sanitize user prompt
+        sanitized_prompt = AirlockAssembler._sanitize(u0_user_prompt)
+        sanitized = sanitized_prompt != u0_user_prompt
+
+        # Step 2: Shred sanitized prompt into check IDs
+        check_ids = AirlockAssembler._shred(sanitized_prompt)
+
+        # Step 3: Create payload with slot order S0→D0→I0→C0→U0
         payload = GovernedPayload(
             s0_system=s0_system,
             d0_injections=d0_injections,
             i0_instructional=i0_instructional,
             c0_context=c0_context,
-            u0_user_prompt=u0_user_prompt,
+            u0_user_prompt=sanitized_prompt,
+            check_ids=check_ids,
+            sanitized=sanitized,
         )
 
         return payload
