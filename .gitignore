@@ -108,6 +108,7 @@ artifacts/import_health/import_health_report.json
 docs/technical/*.png
 docs/technical/*.jpeg
 docs/technical/*.md
+docs/technical/Archive/
 
 # Root README (auto-generated / user-local)
 /README.md
