@@ -51,16 +51,12 @@ def _preflight_import_check() -> None:
     """
     try:
         # Check that _legacy_main exists in this module (execute_ssot.py)
-        if not hasattr(sys.modules[__name__], '_legacy_main'):
-            raise RuntimeError(
-                "CRITICAL: _legacy_main not found in execute_ssot module"
-            )
+        if not hasattr(sys.modules[__name__], "_legacy_main"):
+            raise RuntimeError("CRITICAL: _legacy_main not found in execute_ssot module")
         # Access the attribute to ensure it's resolvable
-        legacy_main = getattr(sys.modules[__name__], '_legacy_main')
+        legacy_main = sys.modules[__name__]._legacy_main
         if not callable(legacy_main):
-            raise RuntimeError(
-                "CRITICAL: _legacy_main attribute is not callable"
-            )
+            raise RuntimeError("CRITICAL: _legacy_main attribute is not callable")
     except (AttributeError, TypeError) as exc:
         raise RuntimeError(
             f"CRITICAL: Failed to resolve _legacy_main from execute_ssot module: {exc}"

@@ -62,7 +62,27 @@ cache/               # Unauthorized root folder - strictly ignored
 
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
+tmp*                 # Cascade/temp subprocess temp files
 .tmp/                # Temporary directory - strictly ignored
+
+# Runtime state artifacts
+runtime_state*.json  # Agentic framework execution telemetry
+temp_complete_rules*.md # Temporary documentation artifacts
+
+# Guardian test output files
+guardian_*.txt       # Guardian framework test output
+guardian_*.json      # Guardian framework JSON results
+
+# Debug and temporary files
+*.debug.log          # Pytest and other debug logs
+pytestdebug.log      # Pytest debug output
+pytest_quick.ini     # Temporary pytest configuration
+phase*_violation_analysis.py # One-time analysis scripts
+
+# Temporary analysis files
+.tmp_*sites.txt      # Import sites analysis artifacts
+*_sites.txt          # Site analysis files
+.tmp_*.txt           # General temporary files
 
 # [SSOT VIOLATION FIX] Legacy healing backup folder - deprecated
 # Now using .healing_backups/ as the canonical backup location

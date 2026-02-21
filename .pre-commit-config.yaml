@@ -124,7 +124,7 @@ repos:
       # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
       - id: purge-cache
         name: "T3e: Pycache Purge"
-        entry: python ops_scripts/maintenance/purge_cache.py --quiet
+        entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
         language: system
         pass_filenames: false
         always_run: true
