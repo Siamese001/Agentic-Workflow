@@ -1,0 +1,199 @@
+"""
+Unit tests for L0→L2 Execution Orchestrator - deterministic layer binding.
+"""
+
+from unittest.mock import Mock
+
+import pytest
+
+from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+from agentic_core.L0_routing.engines.path_router import Path
+from agentic_core.L2_execution.cid_registry import ExecutionCycle
+from agentic_core.L5_safety.enforcement.conf_calib_gate import RiskDecision, RiskLevel
+
+
+@pytest.mark.unit
+class TestExecutionOrchestrator:
+    """Test ExecutionOrchestrator deterministic behavior."""
+
+    def setup_method(self):
+        """Set up test dependencies."""
+        # Create mock dependencies
+        self.assembler = Mock()
+        self.path_router = Mock()
+        self.d0_engine = Mock()
+        self.risk_gate = Mock()
+        self.cid_registry = Mock()
+        self.reentry_loop = Mock()
+        self.vigilance_dispatcher = Mock()
+        self.meta_bus = Mock()
+
+        # Create orchestrator
+        self.orchestrator = ExecutionOrchestrator(
+            assembler=self.assembler,
+            path_router=self.path_router,
+            d0_engine=self.d0_engine,
+            risk_gate=self.risk_gate,
+            cid_registry=self.cid_registry,
+            reentry_loop=self.reentry_loop,
+            vigilance_dispatcher=self.vigilance_dispatcher,
+            meta_bus=self.meta_bus,
+        )
+
+    def test_orchestrator_initialization(self):
+        """Test orchestrator stores all dependencies."""
+        assert self.orchestrator.assembler is self.assembler
+        assert self.orchestrator.path_router is self.path_router
+        assert self.orchestrator.d0_engine is self.d0_engine
+        assert self.orchestrator.risk_gate is self.risk_gate
+        assert self.orchestrator.cid_registry is self.cid_registry
+        assert self.orchestrator.reentry_loop is self.reentry_loop
+        assert self.orchestrator.vigilance_dispatcher is self.vigilance_dispatcher
+        assert self.orchestrator.meta_bus is self.meta_bus
+
+    def test_execute_deterministic_identical_inputs_identical_results(self):
+        """Test identical inputs produce identical result dicts."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.A
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(allow=True, level=RiskLevel.LOW, reasons=())
+
+        cycle = ExecutionCycle(cid="execute_A", attempt=1, status="new")
+        self.cid_registry.new_cycle.return_value = cycle
+
+        # Execute twice with same input
+        intent_input = {"action": "test", "data": "value"}
+        result1 = self.orchestrator.execute(intent_input)
+        result2 = self.orchestrator.execute(intent_input)
+
+        # Results should be structurally identical
+        assert result1["path"] == result2["path"] == Path.A
+        assert result1["risk"].allow is True and result2["risk"].allow is True
+        assert result1["risk"].level == result2["risk"].level == RiskLevel.LOW
+        assert result1["cycle"].attempt == result2["cycle"].attempt == 1
+
+    def test_execute_no_mutation_of_inputs(self):
+        """Test execute does not mutate input parameters."""
+        intent_input = {"action": "test", "data": "original"}
+        original_input = intent_input.copy()
+
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.B
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=True, level=RiskLevel.MEDIUM, reasons=("SANITIZED_INPUT",)
+        )
+
+        cycle = ExecutionCycle(cid="execute_B", attempt=1, status="new")
+        self.cid_registry.new_cycle.return_value = cycle
+
+        # Execute
+        result = self.orchestrator.execute(intent_input)
+
+        # Verify input unchanged
+        assert intent_input == original_input
+
+        # Verify result structure
+        assert result["path"] == Path.B
+        assert result["risk"].allow is True
+        assert result["risk"].level == RiskLevel.MEDIUM
+        assert result["cycle"].attempt == 1
+
+    def test_execute_flow_calls_all_components(self):
+        """Test execute calls all components in correct order."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = [Mock()]
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.C
+        self.d0_engine.render_d0.return_value = "<D0>rendered</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=False, level=RiskLevel.HIGH, reasons=("D0_DENY_EXECUTION",)
+        )
+
+        cycle = ExecutionCycle(cid="execute_C", attempt=1, status="new")
+        self.cid_registry.new_cycle.return_value = cycle
+
+        # Execute
+        intent_input = {"action": "test"}
+        result = self.orchestrator.execute(intent_input)
+
+        # Verify all components called
+        self.assembler.assemble.assert_called_once_with(intent_input)
+        self.path_router.select_path.assert_called_once_with(payload)
+        self.d0_engine.render_d0.assert_called_once_with(payload.d0_injections)
+        self.risk_gate.evaluate.assert_called_once_with(
+            payload_like=payload, d0_injections="<D0>rendered</D0>"
+        )
+        self.cid_registry.new_cycle.assert_called_once_with("execute_C")
+
+        # Verify result structure
+        assert result["path"] == Path.C
+        assert result["risk"].allow is False
+        assert result["risk"].level == RiskLevel.HIGH
+        assert result["cycle"] == cycle
+
+    def test_execute_with_different_paths(self):
+        """Test execute works correctly with different paths."""
+        # Setup for Path.D
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.D
+        self.d0_engine.render_d0.return_value = "<D0>path D</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(allow=True, level=RiskLevel.LOW, reasons=())
+
+        cycle = ExecutionCycle(cid="execute_D", attempt=1, status="new")
+        self.cid_registry.new_cycle.return_value = cycle
+
+        # Execute
+        result = self.orchestrator.execute({"path": "D"})
+
+        # Verify result
+        assert result["path"] == Path.D
+        assert result["cycle"].cid == "execute_D"
+
+        # Verify CID registry called with correct path
+        self.cid_registry.new_cycle.assert_called_once_with("execute_D")
+
+    def test_execute_result_structure_completeness(self):
+        """Test execute returns complete result structure."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.A
+        self.d0_engine.render_d0.return_value = "<D0>test</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=True, level=RiskLevel.MEDIUM, reasons=("MANY_CHECK_IDS",)
+        )
+
+        cycle = ExecutionCycle(cid="execute_A", attempt=1, status="new")
+        self.cid_registry.new_cycle.return_value = cycle
+
+        # Execute
+        result = self.orchestrator.execute({"test": "data"})
+
+        # Verify result has all required keys
+        assert "path" in result
+        assert "risk" in result
+        assert "cycle" in result
+
+        # Verify result types
+        assert isinstance(result["path"], Path)
+        assert isinstance(result["risk"], RiskDecision)
+        assert isinstance(result["cycle"], ExecutionCycle)
+
+        # Verify no extra keys
+        assert len(result) == 3
