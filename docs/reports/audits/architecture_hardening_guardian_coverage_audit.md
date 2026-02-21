@@ -1,7 +1,7 @@
 # Architecture Hardening & SSOT Enforcement — Guardian Test Coverage Audit
 
-**Generated:** 2026-02-18  
-**Scope:** 6-Phase Windsurf System Prompt Audit Items  
+**Generated:** 2026-02-18
+**Scope:** 6-Phase Windsurf System Prompt Audit Items
 **Purpose:** Map each audit requirement to existing Guardian test coverage (Y/N)
 
 ---

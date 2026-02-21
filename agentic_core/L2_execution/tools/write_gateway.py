@@ -24,7 +24,6 @@ Logger: Any = logging.getLogger("L2.WriteGateway")
 # Import protected-root enforcement
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     enforce_protected_root,
-    SourceMutationBlocked,
 )
 
 # =============================================================================
@@ -63,7 +62,7 @@ _SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
 
 def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     """Raise RuntimeError if path is under a tracked source root.
-    
+
     NOTE: This is a legacy defense-in-depth check. Primary protection is via
     enforce_protected_root() which uses ProtectedRootPolicy (no env vars).
     This function remains active for non-protected source roots.
@@ -79,12 +78,12 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
             return
     top_dir = rel.parts[0] if rel.parts else ""
     if top_dir in _SOURCE_ROOTS_RELATIVE:
-        raise RuntimeError(
-            f"SOURCE_MUTATION_BLOCKED: {verb} {rel_str}"
-        )
+        raise RuntimeError(f"SOURCE_MUTATION_BLOCKED: {verb} {rel_str}")
 
 
-def write_text(path: str | Path, content: str, encoding: str = "utf-8", *, allow_override: bool = False) -> str:
+def write_text(
+    path: str | Path, content: str, encoding: str = "utf-8", *, allow_override: bool = False
+) -> str:
     """Write text content to a file, creating parent dirs as needed."""
     p = Path(path)
     enforce_protected_root(p, allow_override=allow_override)
