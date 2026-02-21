@@ -60,13 +60,14 @@ class ExecutionOrchestrator:
         3) Render D0
         4) Evaluate risk
         5) Start ExecutionCycle
-        6) Return structured result dict
+        6) Handle re-entry if risk disallowed
+        7) Return structured result dict
 
         Args:
             intent_input: Input intent dictionary
 
         Returns:
-            Structured result dict with path, risk, and cycle
+            Structured result dict with path, risk, cycle, and state
         """
         # 1) Assemble intent into payload
         payload = self.assembler.assemble(intent_input)
@@ -83,9 +84,15 @@ class ExecutionOrchestrator:
         # 5) Start execution cycle
         cycle = self.cid_registry.new_cycle(f"execute_{path.value}")
 
-        # 6) Return structured result
-        return {
-            "path": path,
-            "risk": risk,
-            "cycle": cycle,
-        }
+        # 6) Handle re-entry if risk disallowed
+        if not risk.allow:
+            if self.reentry_loop.should_retry(cycle):
+                # Advance cycle for retry
+                cycle = self.reentry_loop.advance(cycle)
+                return {"path": path, "risk": risk, "cycle": cycle, "state": "retry"}
+            else:
+                # Terminal blocked state
+                return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
+
+        # 7) Return successful execution state
+        return {"path": path, "risk": risk, "cycle": cycle, "state": "success"}

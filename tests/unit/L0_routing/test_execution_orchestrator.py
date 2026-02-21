@@ -140,7 +140,9 @@ class TestExecutionOrchestrator:
         assert result["path"] == Path.C
         assert result["risk"].allow is False
         assert result["risk"].level == RiskLevel.HIGH
-        assert result["cycle"] == cycle
+        assert result["state"] == "retry"  # Risk disallowed, should retry
+        # Cycle should be advanced since should_retry defaults to True for Mock
+        self.reentry_loop.advance.assert_called_once_with(cycle)
 
     def test_execute_with_different_paths(self):
         """Test execute works correctly with different paths."""
@@ -196,4 +198,130 @@ class TestExecutionOrchestrator:
         assert isinstance(result["cycle"], ExecutionCycle)
 
         # Verify no extra keys
-        assert len(result) == 3
+        assert len(result) == 4
+        assert "state" in result
+        assert result["state"] == "success"
+
+    def test_execute_risk_disallowed_with_retry_available(self):
+        """Test execute returns retry state when risk disallowed and retry available."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.A
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=False, level=RiskLevel.HIGH, reasons=("D0_DENY_EXECUTION",)
+        )
+
+        # Setup cycle and reentry loop for retry
+        initial_cycle = ExecutionCycle(cid="execute_A", attempt=1, status="new")
+        advanced_cycle = ExecutionCycle(cid="execute_A", attempt=2, status="retry")
+
+        self.cid_registry.new_cycle.return_value = initial_cycle
+        self.reentry_loop.should_retry.return_value = True
+        self.reentry_loop.advance.return_value = advanced_cycle
+
+        # Execute
+        result = self.orchestrator.execute({"test": "data"})
+
+        # Verify retry state
+        assert result["path"] == Path.A
+        assert result["risk"].allow is False
+        assert result["cycle"] == advanced_cycle  # Advanced cycle
+        assert result["state"] == "retry"
+
+        # Verify reentry loop called correctly
+        self.reentry_loop.should_retry.assert_called_once_with(initial_cycle)
+        self.reentry_loop.advance.assert_called_once_with(initial_cycle)
+
+    def test_execute_risk_disallowed_no_retry_available(self):
+        """Test execute returns blocked state when risk disallowed and no retry available."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.B
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=False, level=RiskLevel.HIGH, reasons=("D0_DENY_EXECUTION",)
+        )
+
+        # Setup cycle and reentry loop for no retry
+        cycle = ExecutionCycle(cid="execute_B", attempt=3, status="retry")
+
+        self.cid_registry.new_cycle.return_value = cycle
+        self.reentry_loop.should_retry.return_value = False
+
+        # Execute
+        result = self.orchestrator.execute({"test": "data"})
+
+        # Verify blocked state
+        assert result["path"] == Path.B
+        assert result["risk"].allow is False
+        assert result["cycle"] == cycle  # Original cycle (not advanced)
+        assert result["state"] == "blocked"
+
+        # Verify reentry loop called but advance not called
+        self.reentry_loop.should_retry.assert_called_once_with(cycle)
+        self.reentry_loop.advance.assert_not_called()
+
+    def test_execute_max_attempts_enforced(self):
+        """Test that max_attempts is enforced through reentry loop."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.C
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=False, level=RiskLevel.HIGH, reasons=("D0_DENY_EXECUTION",)
+        )
+
+        # Simulate reaching max_attempts
+        cycle_at_max = ExecutionCycle(cid="execute_C", attempt=5, status="retry")
+
+        self.cid_registry.new_cycle.return_value = cycle_at_max
+        self.reentry_loop.should_retry.return_value = False  # Max attempts reached
+
+        # Execute
+        result = self.orchestrator.execute({"test": "data"})
+
+        # Verify blocked state at max attempts
+        assert result["state"] == "blocked"
+        assert result["cycle"].attempt == 5
+        self.reentry_loop.advance.assert_not_called()
+
+    def test_execute_deterministic_cycle_increments(self):
+        """Test cycle increments are deterministic."""
+        # Setup mocks
+        payload = Mock()
+        payload.d0_injections = []
+
+        self.assembler.assemble.return_value = payload
+        self.path_router.select_path.return_value = Path.A
+        self.d0_engine.render_d0.return_value = "<D0>content</D0>"
+        self.risk_gate.evaluate.return_value = RiskDecision(
+            allow=False, level=RiskLevel.HIGH, reasons=("D0_DENY_EXECUTION",)
+        )
+
+        # Setup deterministic cycle progression
+        cycle1 = ExecutionCycle(cid="execute_A", attempt=1, status="new")
+        cycle2 = ExecutionCycle(cid="execute_A", attempt=2, status="retry")
+
+        self.cid_registry.new_cycle.return_value = cycle1
+        self.reentry_loop.should_retry.return_value = True
+        self.reentry_loop.advance.return_value = cycle2
+
+        # Execute twice with same input
+        intent_input = {"test": "deterministic"}
+        result1 = self.orchestrator.execute(intent_input)
+        result2 = self.orchestrator.execute(intent_input)
+
+        # Both should produce same deterministic result
+        assert result1["state"] == result2["state"] == "retry"
+        assert result1["cycle"].attempt == result2["cycle"].attempt == 2
+        assert result1["cycle"].cid == result2["cycle"].cid == "execute_A"
