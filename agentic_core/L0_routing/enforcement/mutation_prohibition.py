@@ -30,6 +30,65 @@ _ENV_OVERRIDE_KEY = "AGENTIC_ALLOW_MUTATION_FOR_TESTS"
 
 
 # =============================================================================
+# Protected-Root Enforcement (Wave 2)
+# =============================================================================
+
+class SourceMutationBlocked(RuntimeError):
+    """Raised when attempting to mutate a protected root directory."""
+    pass
+
+
+def _get_repo_root() -> Path:
+    """Get repository root directory."""
+    return Path(__file__).resolve().parents[3]
+
+
+IMMUTABLE_ROOTS = (
+    _get_repo_root() / "agentic_core",
+    _get_repo_root() / "tests", 
+    _get_repo_root() / ".github",
+)
+
+
+def enforce_protected_root(target_path: Path, *, allow_override: bool) -> None:
+    """Block writes to protected root directories unless explicitly overridden.
+    
+    Args:
+        target_path: Path being written to
+        allow_override: If True, bypass the protection (audited CLI override)
+        
+    Raises:
+        SourceMutationBlocked: If target_path is under a protected root and override is disabled
+    """
+    if allow_override:
+        return
+        
+    # Resolve path without requiring existence
+    try:
+        resolved = target_path.resolve(strict=False)
+    except Exception:
+        # If resolution fails, use the original path
+        resolved = target_path
+    
+    # Check if path is under any immutable root
+    for immutable_root in IMMUTABLE_ROOTS:
+        try:
+            if resolved.is_relative_to(immutable_root):
+                raise SourceMutationBlocked(
+                    f"Protected root mutation blocked: {target_path}"
+                )
+        except AttributeError:
+            # Fallback for Python < 3.9
+            try:
+                resolved.relative_to(immutable_root)
+                raise SourceMutationBlocked(
+                    f"Protected root mutation blocked: {target_path}"
+                )
+            except ValueError:
+                pass
+
+
+# =============================================================================
 # Core guard
 # =============================================================================
 

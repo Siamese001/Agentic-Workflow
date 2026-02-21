@@ -21,6 +21,12 @@ from typing import Any, Sequence
 
 Logger: Any = logging.getLogger("L2.WriteGateway")
 
+# Import protected-root enforcement
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+    enforce_protected_root,
+    SourceMutationBlocked,
+)
+
 # =============================================================================
 # Source Root Fence — Prevent self-mutation during SSOT heal runs
 # =============================================================================
@@ -75,9 +81,10 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
         )
 
 
-def write_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
+def write_text(path: str | Path, content: str, encoding: str = "utf-8", *, allow_override: bool = False) -> str:
     """Write text content to a file, creating parent dirs as needed."""
     p = Path(path)
+    enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding=encoding)
@@ -85,9 +92,10 @@ def write_text(path: str | Path, content: str, encoding: str = "utf-8") -> str:
     return str(p)
 
 
-def write_bytes(path: str | Path, data: bytes) -> str:
+def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) -> str:
     """Write binary content to a file, creating parent dirs as needed."""
     p = Path(path)
+    enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(data)

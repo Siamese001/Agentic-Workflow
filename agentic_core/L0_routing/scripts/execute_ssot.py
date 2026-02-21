@@ -2524,6 +2524,12 @@ def main() -> int:
         help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
     )
     pre_parser.add_argument(
+        "--allow-protected-root-mutation",
+        action="store_true",
+        default=False,
+        help="Allow writes to protected root directories (audited override).",
+    )
+    pre_parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -2535,15 +2541,21 @@ def main() -> int:
     _apply_v15_enforcement_flag(pre_args)
     _maybe_force_utf8_console()
 
+    # Log protected-root override status exactly once
+    if pre_args.allow_protected_root_mutation:
+        print("[PROTECTED-ROOT] override ENABLED: protected root mutation permitted")
+    else:
+        print("[PROTECTED-ROOT] override DISABLED: protected root mutation blocked")
+
     try:
-        _legacy_main(remaining, repo_root=REPO_ROOT)
+        _legacy_main(remaining, repo_root=REPO_ROOT, allow_protected_root_mutation=pre_args.allow_protected_root_mutation)
     except SystemExit as exc:
         return int(exc.code) if exc.code is not None else 0
     return 0
 
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
-def _legacy_main(extra_argv=None, *, repo_root: Path | None = None):
+def _legacy_main(extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False):
     _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
     _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
@@ -2854,6 +2866,16 @@ Examples:
     else:
         targets = ["prompt_governance"]  # Default safe target
         mission_mode = "Default Scan"
+
+    # Domain targeting hardening for protected roots
+    if args.domains and not allow_protected_root_mutation:
+        for domain in ["L0_routing", "L2_execution", "L3_orchestration", "L5_safety"]:
+            if domain in targets:
+                domain_path = project_root / "agentic_core" / domain
+                if domain_path.exists():
+                    print(f"[PROTECTED-ROOT] domain {domain} forced dry_run=True (protected root)")
+                    dry_run = True
+                    break
 
     # 5. Execute Mission
     # [HARDENED] Wrap entire autonomous execution in NonInteractiveGuard
