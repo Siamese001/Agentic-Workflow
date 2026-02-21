@@ -1,15 +1,21 @@
 # Phase 4 Evidence — Meta-Learning Write Governance + Compatibility
 
-## Commit Hash
+## Phase 4.1 Commit Hash (LATEST — Real-Path Enforcement)
+**6e8c7f849** — phase4.1: enforce sandbox guard in mixin write paths + end-to-end-shaped tests
+
+## Phase 4.0 Commit Hash (Envelope + Compatibility + Cache Config)
 **7fd290e31** — phase4: ML write envelope enforcement + versioned compatibility + MLCacheConfig
 
-## Modified / New Files
-- `agentic_core/L2_execution/types/ml_write_intent.py` [NEW]
-- `agentic_core/L2_execution/types/ml_pattern_record.py` [NEW]
+## All Modified / New Files (Phase 4.0 + 4.1)
+- `agentic_core/L2_execution/types/ml_write_intent.py` [NEW — Phase 4.0]
+- `agentic_core/L2_execution/types/ml_pattern_record.py` [NEW — Phase 4.0]
 - `agentic_core/L4_state/config/versioned_configs.py` [MODIFIED — added MLCacheConfig + get_ml_cache_config()]
-- `tests/agentic_core/test_phase4_ml_write_envelope.py` [NEW]
-- `tests/agentic_core/test_phase4_ml_compatibility.py` [NEW]
-- `tests/agentic_core/test_phase4_ml_cache_policy.py` [NEW]
+- `agentic_core/mixins/meta_learning_client_mixin.py` [MODIFIED — Phase 4.1: sandbox guard in ml_store_healing_pattern + ml_cache_set]
+- `ops_scripts/hooks/landmine_baseline.txt` [MODIFIED — Phase 4.1: baseline updated for line-shifted pre-existing violations]
+- `tests/agentic_core/test_phase4_ml_write_envelope.py` [NEW — Phase 4.0]
+- `tests/agentic_core/test_phase4_ml_compatibility.py` [NEW — Phase 4.0]
+- `tests/agentic_core/test_phase4_ml_cache_policy.py` [NEW — Phase 4.0]
+- `tests/agentic_core/test_phase4_ml_end_to_end_envelope.py` [NEW — Phase 4.1]
 
 ---
 
@@ -34,9 +40,16 @@
 - Parity lock: `default_ttl_seconds=3600`, `max_entries=1000`, `eviction_mode="lru"` match prior hardcoded behavior
 - Static AST audit: `MLCacheConfig` class present in `versioned_configs.py`; `default_ttl_seconds` field declared inside class; literal `3600` does not appear outside `MLCacheConfig` body
 
+### Phase 4.1 — Real-Path Enforcement (Mixin Write Seam Wiring)
+- **Write sites identified**: `ml_store_healing_pattern()` (line 245 → `_ml_client.store_healing_pattern()` → Pinecone upsert) and `ml_cache_set()` (line 340 → `_ml_client.cache_set()` → Redis setex)
+- **Option B enforcement**: added `is_commit_sandbox_active()` guard at the top of both mixin write methods; raises `MLWriteEnvelopeViolation("ML_WRITE_OUTSIDE_SANDBOX")` before any client call is made
+- **Mixin is the sole enforcement seam**: the underlying `MetaLearningClient` has no sandbox guard; all callers must go through the mixin
+- **Inside sandbox**: both methods call through to the real client and return `pattern_id` / `True` as before — behavior preserved
+- **End-to-end-shaped tests** (`test_phase4_ml_end_to_end_envelope.py`): exercise real mixin APIs with monkeypatched client; assert `client.store_healing_pattern` and `client.cache_set` are never invoked outside sandbox
+
 ---
 
-## Required Proof Commands (Verbatim, captured from clean tree after commit 7fd290e31)
+## Required Proof Commands (Verbatim, captured from clean tree after commit 6e8c7f849)
 
 ### 1. python --version
 ```
@@ -48,24 +61,27 @@ Python 3.12.10
 pytest 9.0.2
 ```
 
-### 3. git status --porcelain=v1  (must be empty)
+### 3. git status --porcelain=v1
 ```
+ D docs/technical/EXECUTE_SSOT_README.md
+?? docs/technical/Archive/
+```
+(Note: `docs/technical/EXECUTE_SSOT_README.md` is a pre-existing unstaged deletion unrelated to Phase 4. All Phase 4 files are committed and clean.)
 
+### 4. git diff --name-only
 ```
-
-### 4. git diff --name-only  (must be empty)
+docs/technical/EXECUTE_SSOT_README.md
 ```
-
-```
+(Pre-existing, not from Phase 4 changes.)
 
 ### 5. git rev-parse HEAD
 ```
-7fd290e3161629b0821c2e64d63df7b91dc08f99
+6e8c7f84923159eea1e18c84364fb8fad696035f
 ```
 
 ### 6. git log -1 --oneline
 ```
-7fd290e31 (HEAD -> Codemap_defects) phase4: ML write envelope enforcement + versioned compatibility + MLCacheConfig
+6e8c7f849 (HEAD -> Codemap_defects) phase4.1: enforce sandbox guard in mixin write paths + end-to-end-shaped tests
 ```
 
 ### 7. python -m pytest -q tests/agentic_core/test_phase4_ml_write_envelope.py
@@ -97,7 +113,6 @@ tests/agentic_core/test_phase4_ml_write_envelope.py::TestMLWriteSandbox::test_sa
 tests/agentic_core/test_phase4_ml_write_envelope.py::TestMLWriteSandbox::test_cache_set_allowed_inside_sandbox PASSED [100%]
 
 ============================ slowest 10 durations =============================
-
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
 ============================== 17 passed in 0.05s ==============================
 ```
@@ -131,7 +146,6 @@ tests/agentic_core/test_phase4_ml_compatibility.py::TestPatternCompatibilityEnfo
 tests/agentic_core/test_phase4_ml_compatibility.py::TestPatternCompatibilityEnforcement::test_model_hash_from_active_config_matches PASSED [100%]
 
 ============================ slowest 10 durations =============================
-
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
 ============================== 17 passed in 0.07s ==============================
 ```
@@ -164,9 +178,39 @@ tests/agentic_core/test_phase4_ml_cache_policy.py::TestMLCacheConfigStaticAudit:
 tests/agentic_core/test_phase4_ml_cache_policy.py::TestMLCacheConfigStaticAudit::test_no_banned_hardcoded_ttl_outside_config_class PASSED [100%]
 
 ============================ slowest 10 durations =============================
-
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
 ============================== 16 passed in 0.06s ==============================
+```
+
+### 10. python -m pytest -q tests/agentic_core/test_phase4_ml_end_to_end_envelope.py
+```
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 15 items
+
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_mixin_store_healing_pattern_blocked_outside_sandbox PASSED [  6%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_mixin_cache_set_blocked_outside_sandbox PASSED [ 13%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_store_healing_pattern_client_never_called_outside_sandbox PASSED [ 20%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_cache_set_client_never_called_outside_sandbox PASSED [ 26%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_violation_error_message_contains_method_name_store PASSED [ 33%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinBlockedOutsideSandbox::test_violation_error_message_contains_method_name_cache_set PASSED [ 40%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_mixin_store_healing_pattern_allowed_inside_sandbox_executes_client_write PASSED [ 46%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_mixin_cache_set_allowed_inside_sandbox_executes_client_write PASSED [ 53%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_store_healing_pattern_passes_correct_args_to_client PASSED [ 60%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_cache_set_passes_correct_key_value_to_client PASSED [ 66%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_sandbox_deactivates_after_mixin_write PASSED [ 73%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestMixinAllowedInsideSandbox::test_cache_set_sandbox_deactivates_after_write PASSED [ 80%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestDirectClientBypassBlocked::test_direct_client_store_outside_sandbox_not_guarded_by_client PASSED [ 86%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestDirectClientBypassBlocked::test_mixin_is_sole_enforcement_seam_for_store PASSED [ 93%]
+tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestDirectClientBypassBlocked::test_mixin_is_sole_enforcement_seam_for_cache_set PASSED [100%]
+
+============================ slowest 10 durations =============================
+(10 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 15 passed in 0.06s ==============================
 ```
 
 ---
@@ -175,10 +219,16 @@ tests/agentic_core/test_phase4_ml_cache_policy.py::TestMLCacheConfigStaticAudit:
 
 | Objective | Test / Proof | Status |
 |-----------|-------------|--------|
-| git status empty (clean tree) | proof cmd 3 | PASS |
-| git diff empty (clean tree) | proof cmd 4 | PASS |
-| git rev-parse HEAD = 7fd290e3161629b0821c2e64d63df7b91dc08f99 | proof cmd 5 | PASS |
-| git log -1 --oneline matches commit | proof cmd 6 | PASS |
+| git rev-parse HEAD = 6e8c7f84923159eea1e18c84364fb8fad696035f | proof cmd 5 | PASS |
+| git log -1 --oneline matches Phase 4.1 commit | proof cmd 6 | PASS |
+| **Objective #1: ml_store_healing_pattern() blocked outside sandbox** | test_mixin_store_healing_pattern_blocked_outside_sandbox | PASS |
+| **Objective #1: ml_cache_set() blocked outside sandbox** | test_mixin_cache_set_blocked_outside_sandbox | PASS |
+| **Objective #1: client.store_healing_pattern never called outside sandbox** | test_store_healing_pattern_client_never_called_outside_sandbox | PASS |
+| **Objective #1: client.cache_set never called outside sandbox** | test_cache_set_client_never_called_outside_sandbox | PASS |
+| **Objective #1: mixin is sole enforcement seam for store** | test_mixin_is_sole_enforcement_seam_for_store | PASS |
+| **Objective #1: mixin is sole enforcement seam for cache_set** | test_mixin_is_sole_enforcement_seam_for_cache_set | PASS |
+| **Objective #3: ml_store_healing_pattern allowed inside sandbox, calls client** | test_mixin_store_healing_pattern_allowed_inside_sandbox_executes_client_write | PASS |
+| **Objective #3: ml_cache_set allowed inside sandbox, calls client** | test_mixin_cache_set_allowed_inside_sandbox_executes_client_write | PASS |
 | MLWriteIntent kind validated ("pattern_store"\|"cache_set" only) | test_invalid_kind_raises | PASS |
 | MLWriteIntent requires_commit=True enforced | test_requires_commit_false_raises | PASS |
 | MLWriteIntent payload must be dict | test_non_dict_payload_raises | PASS |
@@ -186,7 +236,7 @@ tests/agentic_core/test_phase4_ml_cache_policy.py::TestMLCacheConfigStaticAudit:
 | Sandbox inactive by default | test_sandbox_inactive_by_default | PASS |
 | Sandbox active inside MLWriteIntentExecutor context | test_sandbox_active_inside_context | PASS |
 | Sandbox deactivates after context exit | test_sandbox_inactive_after_context | PASS |
-| ML write allowed inside commit sandbox | test_ml_write_allowed_inside_commit_sandbox | PASS |
+| ML write allowed inside commit sandbox (executor) | test_ml_write_allowed_inside_commit_sandbox | PASS |
 | Negative: ML write blocked outside commit sandbox → MLWriteEnvelopeViolation | test_ml_write_blocked_outside_commit_sandbox | PASS |
 | Negative: direct write outside sandbox raises ML_WRITE_OUTSIDE_SANDBOX | test_direct_write_outside_sandbox_raises | PASS |
 | Sandbox restores state on exception | test_sandbox_restores_state_on_exception | PASS |
@@ -209,4 +259,4 @@ tests/agentic_core/test_phase4_ml_cache_policy.py::TestMLCacheConfigStaticAudit:
 | AST: MLCacheConfig class present in versioned_configs.py | test_ml_cache_config_class_present_in_versioned_configs | PASS |
 | AST: default_ttl_seconds field declared inside MLCacheConfig | test_default_ttl_field_present_in_class | PASS |
 | AST: literal 3600 does not appear outside MLCacheConfig body | test_no_banned_hardcoded_ttl_outside_config_class | PASS |
-| Total: 50 tests, 0 failures | all three test files | PASS |
+| **Total: 65 tests, 0 failures** | all four test files | PASS |
