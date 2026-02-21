@@ -132,43 +132,44 @@ def _safe_print(text: str) -> None:
 
 def run_fence_self_check() -> None:
     """Run deterministic fence self-check (validates policy + wiring; no mutations).
-    
+
     Validates:
     1. Default ProtectedRootPolicy immutable_roots equals ("agentic_core","tests",".github")
     2. Default ProtectedRootPolicy log_path is outside IMMUTABLE_ROOTS
     3. write_gateway public entrypoints accept allow_override AND call enforce_protected_root
     4. Telemetry emitter path is writable target ONLY outside IMMUTABLE_ROOTS
-    
+
     Prints single-line JSON summary to stdout:
     - {"status":"ok","checks":4}
     - or {"status":"fail","failed":["check_name",...]}
-    
+
     Exits with code 0 if all checks pass, nonzero otherwise.
     """
     from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        get_default_protected_root_policy,
         IMMUTABLE_ROOTS,
+        get_default_protected_root_policy,
     )
-    
+
     failed_checks = []
-    
+
     # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
         if policy.immutable_roots != ("agentic_core", "tests", ".github"):
             failed_checks.append("default_policy_immutable_roots")
+    # guardian: allow-silent-swallow
     except Exception:
         failed_checks.append("default_policy_immutable_roots")
-    
+
     # Check 2: Default policy log_path is outside IMMUTABLE_ROOTS
     try:
         policy = get_default_protected_root_policy()
         log_path = Path(policy.log_path)
-        
+
         # Check if log_path would be under any immutable root
         repo_root = resolve_repo_root()
         resolved_log = (repo_root / log_path).resolve()
-        
+
         is_under_immutable = False
         for immutable_root in IMMUTABLE_ROOTS:
             try:
@@ -177,29 +178,30 @@ def run_fence_self_check() -> None:
                 break
             except ValueError:
                 pass
-        
+
         if is_under_immutable:
             failed_checks.append("log_path_outside_immutable_roots")
+    # guardian: allow-silent-swallow
     except Exception:
         failed_checks.append("log_path_outside_immutable_roots")
-    
+
     # Check 3: write_gateway entrypoints accept allow_override AND call enforce_protected_root
     try:
         from agentic_core.L2_execution.tools import write_gateway
-        
+
         # Check write_text and write_bytes (primary entrypoints)
         for func_name in ["write_text", "write_bytes"]:
             func = getattr(write_gateway, func_name, None)
             if func is None:
                 failed_checks.append("write_gateway_enforces_protected_root")
                 break
-            
+
             # Check signature has allow_override parameter
             sig = inspect.signature(func)
             if "allow_override" not in sig.parameters:
                 failed_checks.append("write_gateway_enforces_protected_root")
                 break
-            
+
             # Check source contains enforce_protected_root call
             try:
                 source = inspect.getsource(func)
@@ -210,16 +212,17 @@ def run_fence_self_check() -> None:
                 # Source unavailable - fail with actionable message
                 failed_checks.append("write_gateway_enforces_protected_root")
                 break
+    # guardian: allow-silent-swallow
     except Exception:
         failed_checks.append("write_gateway_enforces_protected_root")
-    
+
     # Check 4: Telemetry emitter path is outside IMMUTABLE_ROOTS (pure path check)
     try:
         policy = get_default_protected_root_policy()
         log_path = Path(policy.log_path)
         repo_root = resolve_repo_root()
         resolved_log = (repo_root / log_path).resolve()
-        
+
         # Same check as #2 - ensure telemetry path is outside protected roots
         is_under_immutable = False
         for immutable_root in IMMUTABLE_ROOTS:
@@ -229,12 +232,13 @@ def run_fence_self_check() -> None:
                 break
             except ValueError:
                 pass
-        
+
         if is_under_immutable:
             failed_checks.append("telemetry_path_outside_immutable_roots")
+    # guardian: allow-silent-swallow
     except Exception:
         failed_checks.append("telemetry_path_outside_immutable_roots")
-    
+
     # Output deterministic JSON summary
     if failed_checks:
         result = {"status": "fail", "failed": sorted(failed_checks)}
@@ -2664,16 +2668,65 @@ def main() -> int:
         print("[PROTECTED-ROOT] override DISABLED: protected root mutation blocked")
 
     try:
-        _legacy_main(remaining, repo_root=REPO_ROOT, allow_protected_root_mutation=pre_args.allow_protected_root_mutation)
+        _legacy_main(
+            remaining,
+            repo_root=REPO_ROOT,
+            allow_protected_root_mutation=pre_args.allow_protected_root_mutation,
+        )
     except SystemExit as exc:
         return int(exc.code) if exc.code is not None else 0
     return 0
 
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
-def _legacy_main(extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False):
+def _legacy_main(
+    extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
+):
     _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
     _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
+
+    # [WAVE 2] Import/symbol preflight check (fail-fast if critical symbols missing)
+    try:
+        _preflight_import_check()
+        logger.info("[PREFLIGHT] Import/symbol check PASSED")
+    except RuntimeError as exc:
+        logger.critical(f"[PREFLIGHT] FAILED: {exc}")
+        sys.exit(1)
+
+    # [WAVE 2] Startup fence self-test (abort if fence inactive)
+    if not allow_protected_root_mutation:
+        try:
+            from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                SourceMutationBlocked,
+                enforce_protected_root,
+            )
+
+            # Attempt to write to agentic_core/.tmp_fence_probe
+            probe_path = REPO_ROOT / "agentic_core" / ".tmp_fence_probe"
+            fence_active = False
+
+            try:
+                # This should raise SourceMutationBlocked if fence is active
+                enforce_protected_root(probe_path, allow_override=False)
+                # If we get here, fence is NOT active - CRITICAL FAILURE
+                logger.critical("[FENCE-SELF-TEST] FAILED: Protected root fence is INACTIVE")
+                sys.exit(1)
+            except SourceMutationBlocked:
+                # Expected: fence blocked the write
+                fence_active = True
+
+            if fence_active:
+                logger.info("[FENCE-SELF-TEST] PASSED: Protected root fence is ACTIVE")
+            else:
+                logger.critical("[FENCE-SELF-TEST] FAILED: Fence state indeterminate")
+                sys.exit(1)
+
+        except ImportError as exc:
+            logger.critical(f"[FENCE-SELF-TEST] FAILED: Cannot import fence module: {exc}")
+            sys.exit(1)
+    else:
+        logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
+
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
     if _v15_manifest is not None:
@@ -2999,7 +3052,8 @@ Examples:
             if domain in targets:
                 domain_path = project_root / "agentic_core" / domain
                 if domain_path.exists():
-                    print(f"[PROTECTED-ROOT] domain {domain} forced dry_run=True (protected root)")
+                    logger.warning(f"[PROTECTED-ROOT] forcing dry_run=True for {domain}")
+                    print(f"[PROTECTED-ROOT] forcing dry_run=True for {domain}")
                     dry_run = True
                     break
 
