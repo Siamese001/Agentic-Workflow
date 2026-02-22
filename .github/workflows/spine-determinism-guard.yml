@@ -23,3 +23,6 @@ jobs:
 
       - name: Run AST spine bypass + randomness guard
         run: python ops_scripts/ci/check_spine_bypass.py
+
+      - name: Run spine adapter contract guard
+        run: python ops_scripts/ci/check_spine_adapter_contract.py

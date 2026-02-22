@@ -20,9 +20,9 @@ from typing import Any
 from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler, GovernedPayload
 from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 from agentic_core.L0_routing.engines.path_router import PathRouter
-from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
+from agentic_core.L2_execution.cid_registry import CIDRegistry
 from agentic_core.L2_execution.reentry_loop import ReEntryLoop
-from apps_shared.utils.determinism_util import canonical_hash, strip_nondeterministic
+from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
 # Default maximum re-entry attempts for the RG spine.
 _DEFAULT_MAX_REENTRY_ATTEMPTS: int = 3
@@ -98,7 +98,7 @@ class _RgAssemblerAdapter:
 # ---------------------------------------------------------------------------
 
 
-class RgSpineAdapter:
+class RgSpineAdapter(BaseSpineAdapter):
     """
     Canonical RG spine adapter.
 
@@ -110,59 +110,32 @@ class RgSpineAdapter:
     here (enforced by check_spine_bypass.py CI guard).
     """
 
+    # RG-specific prefix
+    _PREFIX: str = "rg-"
+
     def __init__(self, max_reentry_attempts: int = _DEFAULT_MAX_REENTRY_ATTEMPTS) -> None:
-        self._cid_registry = CIDRegistry()
-        self._reentry_loop = ReEntryLoop(
+        """Initialize RG spine adapter with dependency wiring."""
+        # Create core dependencies
+        cid_registry = CIDRegistry()
+        reentry_loop = ReEntryLoop(
             max_attempts=max_reentry_attempts,
-            cid_registry=self._cid_registry,
+            cid_registry=cid_registry,
         )
-        self._orchestrator = ExecutionOrchestrator(
+        orchestrator = ExecutionOrchestrator(
             assembler=_RgAssemblerAdapter(),
             path_router=PathRouter(),
             d0_engine=_NullD0Engine(),
             risk_gate=_NullRiskGate(),
-            cid_registry=self._cid_registry,
-            reentry_loop=self._reentry_loop,
+            cid_registry=cid_registry,
+            reentry_loop=reentry_loop,
             vigilance_dispatcher=_NullVigilanceDispatcher(),
             meta_bus=_NullMetaBus(),
         )
 
-    def execute(self, intent_input: dict[str, Any]) -> dict[str, Any]:
-        """
-        Route a RG intent through the canonical spine.
-
-        Steps:
-          1) Strip nondeterministic fields from intent_input.
-          2) Derive deterministic CID via canonical hash.
-          3) Pre-register CID in CIDRegistry before any HOP stage runs.
-          4) Inject cid into intent_input so downstream stages can read it.
-          5) Delegate to ExecutionOrchestrator.execute().
-          6) Return result dict augmented with cid.
-
-        Args:
-            intent_input: Dict with RG slot keys (s0_system, i0_instructional,
-                          c0_context, u0_user_prompt, d0_injections).
-
-        Returns:
-            Result dict from ExecutionOrchestrator plus ``cid`` key.
-        """
-        # Step 1: Strip nondeterministic fields from intent_input.
-        stripped = strip_nondeterministic(intent_input)
-
-        # Step 2: Derive deterministic CID via canonical hash.
-        cid = "rg-" + canonical_hash(stripped)[:16]
-
-        # Step 3: Pre-register CID before any HOP stage runs.
-        cycle: ExecutionCycle = self._cid_registry.new_cycle(cid)
-
-        # Step 4: Thread cid into intent_input for downstream visibility.
-        enriched = dict(intent_input)
-        enriched["_cid"] = cid
-        enriched["_cycle_attempt"] = cycle.attempt
-
-        # Step 5: Delegate to orchestrator (it will re-assemble internally).
-        result = self._orchestrator.execute(enriched)
-
-        # Step 6: Augment result with cid.
-        result["cid"] = cid
-        return result
+        # Initialize base adapter with dependencies and RG prefix
+        super().__init__(
+            cid_registry=cid_registry,
+            orchestrator=orchestrator,
+            prefix=self._PREFIX,
+            max_reentry_attempts=max_reentry_attempts,
+        )
