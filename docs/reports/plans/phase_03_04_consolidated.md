@@ -8,7 +8,7 @@ Phase 4: Production-grade spine adapter hardening (CID invariants, import stabil
 8ee4159c242fc9ead544d9c1ef97916ab8f1653d
 
 ## EVIDENCE_COMMIT
-PENDING
+f68642bddf640ce8f740b8e11538fbe1a349abde
 
 ## CODE_SCOPE
 ```
