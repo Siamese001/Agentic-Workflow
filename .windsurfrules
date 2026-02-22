@@ -2,37 +2,48 @@
 # CONSTITUTIONAL LOCKS (NEVER VIOLATE)
 # ================================================================
 
-## -1. Execution Modality Lock (PHASED, EVIDENCE-BUNDLED, PAUSE)
-Windsurf MUST operate in strict phases and MUST pause after each phase.
+## -1. Execution Modality Lock (PHASED, EVIDENCE-BUNDLED)
+Windsurf MUST operate in strict phases, but MAY bundle up to 2 phases per response when explicitly requested.
 
-Per phase, Windsurf MUST:
-- Execute only that phase's steps (no future steps).
-- Write ALL verification evidence to a single file under `docs/reports/plans/` (see §16A).
-- End the phase response with only: evidence file path + commit hash + modified file list.
-- STOP (no additional narrative, no next-phase instructions).
+Per response, Windsurf MUST:
+- Execute only the explicitly requested phases (no future steps).
+- Write ALL verification evidence to EXACTLY ONE canonical evidence file under `docs/reports/plans/` (see §16A).
+- Never create per-wave or per-phase standalone evidence files in the same response.
+- End the response with only: evidence file path + final commit hash(es) + modified file list.
+- STOP (no additional narrative).
 
 Hard violation cases (IMMEDIATE FAIL):
-- Executing multiple phases in one response.
+- Executing phases not explicitly requested.
 - Running unrequested repair commands.
 - Modifying files outside declared scope.
 - Pasting raw command output inline instead of evidence file.
-- Continuing after acceptance criteria is met.
 
 ## -2. Execution Evidence Gate (ANTI-SPIN LOCK)
-All phase execution MUST include raw evidence capture and executed test outcomes:
+All requested execution MUST include raw evidence capture and executed test outcomes.
 
-Per phase, Windsurf MUST:
-- Capture ALL command outputs using PowerShell `Tee-Object -FilePath $E -Append` with `2>&1`
-- Store evidence in a SINGLE file per phase under `docs/reports/plans/` or `docs/reports/sub/`
-- Authoritative pytest commands MUST show tests EXECUTED (e.g., "19 passed", explicit failures)
-- "no tests ran" output is AUTOMATIC FAIL regardless of collection count
-- Chat output MUST be limited to: evidence file path + commit hash + STOP
+Per response, Windsurf MUST:
+- Capture ALL command outputs via a Python-only evidence runner that:
+  - uses subprocess argv arrays (shell=False)
+  - writes outputs into the single canonical evidence file under `docs/reports/plans/` 
+  - FAILS if argv0 contains "pwsh" or "powershell" (case-insensitive)
+- Store evidence in EXACTLY ONE file under `docs/reports/plans/` (no `docs/reports/sub/` for response-final evidence)
+- Authoritative pytest commands MUST show test pass/fail outcomes.
+- Evidence must be deterministic and self-verifying.
 
 Hard violation cases (IMMEDIATE FAIL):
-- Evidence not captured via Tee-Object (2>&1)
-- pytest output shows "no tests ran"
-- Multiple evidence files per phase
-- Chat includes narrative beyond required outputs
+- Any PowerShell usage for evidence capture (including Tee-Object).
+- Any subprocess invocation with shell=True.
+
+## -2A. ASCII-Only Evidence Output Lock (NO ANSI / NO NON-ASCII)
+Evidence runners and contract gates MUST produce ASCII-only embedded command outputs.
+Required:
+- pytest MUST be invoked with: `python -m pytest -q --color=no` 
+- Evidence runner MUST strip ANSI escape sequences from captured output (hard-fail if any remain).
+- Evidence runner MUST hard-fail if any non-ASCII bytes remain in the final evidence file.
+
+## -2B. Evidence Non-Contradiction Lock (SINGLE CANONICAL OUTCOME)
+The single evidence file MUST NOT contain contradictory outcomes for the same gate/run.
+Hard fail if both success and failure markers appear for a single gate (e.g., "EXIT CODE: 1"/"FAILED" alongside "OK"/"passed").
 
 ## -3. Wave/Phase Budget Lock (ANTI-INFINITE LOOP)
 Maximum execution budgets to prevent spin:
@@ -50,6 +61,25 @@ Hard violation cases (IMMEDIATE FAIL):
 - Excessively long-running phases without documentation
 
 ---
+
+## 0. Determinism First (NO HEURISTICS)
+- Deterministic inputs.
+- Deterministic outputs.
+- No randomness.
+- No time-based behavior.
+
+## 0A. Canonical Provenance Lock (CODE_COMMIT / FILES_CHANGED_CODE)
+When evidence includes CODE_COMMIT and FILES_CHANGED_CODE:
+- CODE_COMMIT MUST be a 40-hex commit that exists.
+- FILES_CHANGED_CODE MUST be derived ONLY from:
+  `git show --name-only --pretty=format: <CODE_COMMIT>` 
+  and MUST be verbatim (no hand-maintained lists).
+- Evidence commit (EVIDENCE_COMMIT) and FILES_CHANGED_EVIDENCE (if present) MUST be derived ONLY from:
+  `git show --name-only --pretty=format: <EVIDENCE_COMMIT>` 
+
+Hard violation cases (IMMEDIATE FAIL):
+- "Parent commit" or other workaround used to dodge hash-loop prevention if it breaks FILES_CHANGED_CODE fidelity.
+- Evidence file lists files that do not match the corresponding git show output exactly.
 
 ## 0. SSOT Plan & Artifact Location
 ALL plans, reports, markdown artifacts MUST be saved to:
@@ -1014,6 +1044,245 @@ Use `--no-edit` flag to avoid editor hang and check for conflicts:
 - Evidence files must show `--no-edit` flag usage
 - Conflict status must be documented before operations
 - Any editor-related failures must be captured in evidence
+
+Violation: HARD FAIL
+
+---
+
+---
+
+# ================================================================
+# EVIDENCE CONTRACT v2 GOVERNANCE (Lessons Learned: Phases 2–12)
+# ================================================================
+
+## 54. CODE_COMMIT Selection by Content, Not Position
+
+**RCA LESSON**: Using "parent commit" or "commit before evidence changes" as CODE_COMMIT breaks
+FILES_CHANGED_CODE fidelity. CODE_COMMIT must be selected by what files it changed, not by
+its position relative to HEAD.
+
+**Required:**
+- CODE_COMMIT MUST be the commit whose `git show --name-only` output includes the actual
+  phase code artifacts (e.g., the new scripts, tests, or source files introduced in the phase).
+- To identify CODE_COMMIT: run `git log -n 30 --name-only --pretty=oneline -- <scope_dirs>`
+  and select the commit whose file list matches the declared INSPECTED_FILES.
+- NEVER use "parent of HEAD" or "commit before evidence" as a proxy for CODE_COMMIT.
+
+**Verification:**
+- `git show --name-only --pretty=format: <CODE_COMMIT>` MUST include at least one file
+  from the phase's declared scope.
+- FILES_CHANGED_CODE in evidence MUST be verbatim output of that command.
+
+Violation: HARD FAIL
+
+---
+
+## 55. Hash-Loop Prevention: Draft Mode vs Seal Mode
+
+**RCA LESSON**: Unconditional CODE_COMMIT != HEAD enforcement blocked legitimate evidence
+generation when CODE_COMMIT was the most recent code commit and evidence had not yet been
+committed.
+
+**Two-Mode Contract:**
+- **Draft mode** (no `--evidence-commit`): CODE_COMMIT MAY equal current HEAD. Evidence
+  file is written with `EVIDENCE_COMMIT: PENDING`.
+- **Seal mode** (`--evidence-commit` provided): CODE_COMMIT MUST NOT equal current HEAD
+  (hash-loop prevention active). EVIDENCE_COMMIT MUST be a different, existing commit.
+
+**Two-Commit Sequence (mandatory):**
+1. Commit all code changes → this is CODE_COMMIT.
+2. Run runner in draft mode with `--code-commit <CODE_COMMIT>`.
+3. Commit the evidence file → this is EVIDENCE_COMMIT.
+4. Re-run runner in seal mode with both `--code-commit` and `--evidence-commit`.
+5. Commit the sealed evidence file.
+
+**Forbidden:**
+- Using a parent/ancestor commit as CODE_COMMIT to dodge hash-loop detection when it
+  causes FILES_CHANGED_CODE to show unrelated files.
+- Merging code commit and evidence commit into a single commit.
+
+Violation: HARD FAIL
+
+---
+
+## 56. Evidence Runner Hard-Fail on Non-Zero Commands
+
+**RCA LESSON**: When a required command (pytest, checker) exits non-zero during evidence
+generation, the runner continued and wrote the failure output into the evidence file.
+This produced evidence with contradictory outcomes (failure markers + success markers
+from later commands).
+
+**Required:**
+- Evidence runners MUST hard-fail (`sys.exit(1)`) if any required command exits non-zero.
+- The evidence file MUST NOT be committed if any required command failed.
+- Failure output MUST be printed to stdout/stderr but NOT written to the evidence file
+  as a committed artifact.
+
+**Pattern:**
+```python
+if failed_commands:
+    print("ERROR: The following required commands failed:")
+    for title, rc in failed_commands:
+        print(f"  - {title}: exit {rc}")
+    sys.exit(1)
+```
+
+Violation: HARD FAIL
+
+---
+
+## 57. No INSPECTED_FILE_CONTENTS in Evidence Files
+
+**RCA LESSON**: Embedding full source file contents in evidence files caused false-positive
+contradiction detection. Source code contains strings like `EXIT CODE:`, `ERROR:`, `FAILED`
+as variable names, print statements, and comments — indistinguishable from actual command
+output failures.
+
+**Required:**
+- Evidence files MUST NOT embed full source file contents (no `INSPECTED_FILE_CONTENTS`
+  section or equivalent).
+- INSPECTED_FILES section lists file paths only (context declaration, not content dump).
+- If source content is needed for audit, reference the git commit hash — do not embed.
+
+**Forbidden:**
+- Any markdown section that embeds raw Python/YAML/JSON source inside a code fence
+  where that source contains strings matching failure/success markers.
+
+Violation: HARD FAIL
+
+---
+
+## 58. ASCII-Only Print Statements in All CI/Tooling Scripts
+
+**RCA LESSON**: Unicode characters (✅, ❌, 🚨) in `print()` statements caused
+`UnicodeEncodeError` on Windows cp1252 terminals, producing Tracebacks in evidence files
+that were captured as failure output.
+
+**Required:**
+- ALL `print()` statements in `ops_scripts/`, `tools/evidence/`, and `.github/` scripts
+  MUST use ASCII-only text.
+- Forbidden Unicode patterns: ✅ ❌ 🚨 ⚠️ and any codepoint > 0x7F in print strings.
+- Replacement patterns:
+  - `✅` → `OK:`
+  - `❌` → `FAIL:` or `  -`
+  - `🚨` → `ERROR:`
+- Evidence runners MUST strip ANSI escape sequences AND replace non-ASCII chars with `?`
+  before writing captured output to evidence files.
+- Evidence runners MUST byte-scan the final evidence file and hard-fail if any byte > 0x7F
+  remains.
+
+Violation: HARD FAIL
+
+---
+
+## 59. Tooling/Apps Runtime Boundary
+
+**RCA LESSON**: Evidence runners and CI scripts must remain pure tooling. Importing
+`apps_*` runtime modules into tooling creates coupling that breaks the tooling/runtime
+separation and can cause import-time side effects during evidence generation.
+
+**Required:**
+- `tools/evidence/`, `ops_scripts/ci/`, `ops_scripts/hooks/` MUST NOT contain
+  `import apps_*` or `from apps_* import` statements.
+- `apps_*` modules may only be referenced as string paths in INSPECTED_FILES sections.
+- Enforced by `ops_scripts/ci/check_tooling_apps_boundary.py` (AST-based).
+- This checker MUST be run as part of the contract gates suite.
+
+**Allowed:**
+- String references: `"apps_lic/engines/lic_spine_adapter.py"` in a list literal.
+- Path construction: `Path("apps_lic") / "engines"` for file I/O only.
+
+Violation: HARD FAIL
+
+---
+
+## 60. Unified Contract Gates Entrypoint
+
+**RCA LESSON**: Running pytest, evidence checker, and boundary guard as separate CI steps
+with no unified entrypoint caused ordering drift and made it impossible to verify the full
+gate suite locally with a single command.
+
+**Required:**
+- A single `ops_scripts/ci/run_contract_gates.py` entrypoint MUST exist that runs all
+  contract gates in deterministic order:
+  1. `python -m pytest -q --color=no`
+  2. `python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans`
+  3. `python ops_scripts/ci/check_tooling_apps_boundary.py`
+- This entrypoint MUST use subprocess argv arrays (shell=False).
+- This entrypoint MUST fail if argv0 contains `pwsh` or `powershell`.
+- CI workflow MUST invoke this entrypoint (or equivalent ordered steps) — never ad-hoc.
+- Local and CI gate execution MUST be identical in ordering and scope.
+
+Violation: HARD FAIL
+
+---
+
+## 61. Evidence File Single-Pass Rebuild (No Append)
+
+**RCA LESSON**: Evidence runners that appended to existing evidence files produced files
+with multiple runs' outputs, creating contradictory outcomes (old failure + new success
+in the same file).
+
+**Required:**
+- Evidence runners MUST rebuild the evidence file from scratch on every run.
+- `evidence_lines = []` MUST be initialized at the top of `main()`.
+- The final `write_text()` call MUST overwrite the entire file, never append.
+- No `open(path, 'a')` or equivalent append mode in evidence runners.
+
+**Verification:**
+- Before writing, assert that `evidence_lines` was constructed in the current run only.
+- The evidence file's first line MUST be the phase title heading (not prior run content).
+
+Violation: HARD FAIL
+
+---
+
+## 62. Evidence Contradiction Detection Scope
+
+**RCA LESSON**: Contradiction detection that scanned the entire evidence file (including
+embedded source code and INSPECTED_FILE_CONTENTS) produced false positives. Contradiction
+detection must be scoped to command output sections only.
+
+**Required:**
+- Contradiction detection MUST only scan sections between command output fences
+  (lines between ` ``` ` delimiters that follow a `## <CommandTitle>` heading).
+- Source code, INSPECTED_FILES paths, and prose sections are EXCLUDED from
+  contradiction scanning.
+- A "contradiction" is defined as: within a single command output section, both
+  a failure marker (`EXIT CODE: [1-9]`, `^FAILED `, `ERROR: N gate(s) failed`) AND
+  a success marker (`OK:`, `passed`) appear.
+- Cross-section contradictions (failure in one command, success in another) are NOT
+  contradictions — they are expected when some gates pass and others fail.
+
+Violation: HARD FAIL
+
+---
+
+## 63. Evidence Contract v2 Required Sections (Canonical Shape)
+
+**RCA LESSON**: Multiple repair cycles were caused by evidence files missing required
+sections or having sections in wrong order. The canonical shape must be enforced by the
+runner, not by post-hoc checkers.
+
+**Required sections in order (every consolidated evidence file):**
+1. `# <Phase Title>` — markdown H1
+2. `## Scope` — phase description
+3. `## CODE_COMMIT` — exactly one 40-hex hash
+4. `## EVIDENCE_COMMIT` — exactly one 40-hex hash (or `PENDING` in draft mode)
+5. `## FILES_CHANGED_CODE` — verbatim `git show --name-only` output for CODE_COMMIT
+6. `## FILES_CHANGED_EVIDENCE` — verbatim `git show --name-only` output for EVIDENCE_COMMIT
+7. `## INSPECTED_FILES` — list of file paths (no content)
+8. One `## <CommandTitle>` section per required command, each containing:
+   - `$ <command>` invocation line
+   - Full ASCII-only stdout
+   - `EXIT CODE: N` only if N != 0
+
+**Forbidden:**
+- Sections in wrong order.
+- Multiple CODE_COMMIT or EVIDENCE_COMMIT values.
+- Non-ASCII bytes anywhere in the file.
+- `INSPECTED_FILE_CONTENTS` or equivalent source-embedding sections.
+- Duplicate command output sections from prior runs.
 
 Violation: HARD FAIL
 
