@@ -1,0 +1,1303 @@
+# ================================================================
+# CONSTITUTIONAL LOCKS (NEVER VIOLATE)
+# ================================================================
+
+## -1. Execution Modality Lock (PHASED, EVIDENCE-BUNDLED)
+Windsurf MUST operate in strict phases, but MAY bundle up to 2 phases per response when explicitly requested.
+
+Per response, Windsurf MUST:
+- Execute only the explicitly requested phases (no future steps).
+- Write ALL verification evidence to EXACTLY ONE canonical evidence file under `docs/reports/plans/` (see §16A).
+- Never create per-wave or per-phase standalone evidence files in the same response.
+- End the response with only: evidence file path + final commit hash(es) + modified file list.
+- STOP (no additional narrative).
+
+Hard violation cases (IMMEDIATE FAIL):
+- Executing phases not explicitly requested.
+- Running unrequested repair commands.
+- Modifying files outside declared scope.
+- Pasting raw command output inline instead of evidence file.
+
+## -2. Execution Evidence Gate (ANTI-SPIN LOCK)
+All requested execution MUST include raw evidence capture and executed test outcomes.
+
+Per response, Windsurf MUST:
+- Capture ALL command outputs via a Python-only evidence runner that:
+  - uses subprocess argv arrays (shell=False)
+  - writes outputs into the single canonical evidence file under `docs/reports/plans/` 
+  - FAILS if argv0 contains "pwsh" or "powershell" (case-insensitive)
+- Store evidence in EXACTLY ONE file under `docs/reports/plans/` (no `docs/reports/sub/` for response-final evidence)
+- Authoritative pytest commands MUST show test pass/fail outcomes.
+- Evidence must be deterministic and self-verifying.
+
+Hard violation cases (IMMEDIATE FAIL):
+- Any PowerShell usage for evidence capture (including Tee-Object).
+- Any subprocess invocation with shell=True.
+
+## -2A. ASCII-Only Evidence Output Lock (NO ANSI / NO NON-ASCII)
+Evidence runners and contract gates MUST produce ASCII-only embedded command outputs.
+Required:
+- pytest MUST be invoked with: `python -m pytest -q --color=no` 
+- Evidence runner MUST strip ANSI escape sequences from captured output (hard-fail if any remain).
+- Evidence runner MUST hard-fail if any non-ASCII bytes remain in the final evidence file.
+
+## -2B. Evidence Non-Contradiction Lock (SINGLE CANONICAL OUTCOME)
+The single evidence file MUST NOT contain contradictory outcomes for the same gate/run.
+Hard fail if both success and failure markers appear for a single gate (e.g., "EXIT CODE: 1"/"FAILED" alongside "OK"/"passed").
+
+## -3. Wave/Phase Budget Lock (ANTI-INFINITE LOOP)
+Maximum execution budgets to prevent spin:
+
+Per phase:
+- Each wave MUST have evidence capture
+- Phase MUST complete with proper evidence documentation
+
+Per plan:
+- Plans should be reasonably scoped to maintain focus
+- Split large plans when they become unwieldy
+
+Hard violation cases (IMMEDIATE FAIL):
+- Continuing without phase completion evidence
+- Excessively long-running phases without documentation
+
+---
+
+## 0. Determinism First (NO HEURISTICS)
+- Deterministic inputs.
+- Deterministic outputs.
+- No randomness.
+- No time-based behavior.
+
+## 0A. Canonical Provenance Lock (CODE_COMMIT / FILES_CHANGED_CODE)
+When evidence includes CODE_COMMIT and FILES_CHANGED_CODE:
+- CODE_COMMIT MUST be a 40-hex commit that exists.
+- FILES_CHANGED_CODE MUST be derived ONLY from:
+  `git show --name-only --pretty=format: <CODE_COMMIT>` 
+  and MUST be verbatim (no hand-maintained lists).
+- Evidence commit (EVIDENCE_COMMIT) and FILES_CHANGED_EVIDENCE (if present) MUST be derived ONLY from:
+  `git show --name-only --pretty=format: <EVIDENCE_COMMIT>` 
+
+Hard violation cases (IMMEDIATE FAIL):
+- "Parent commit" or other workaround used to dodge hash-loop prevention if it breaks FILES_CHANGED_CODE fidelity.
+- Evidence file lists files that do not match the corresponding git show output exactly.
+
+## 0. SSOT Plan & Artifact Location
+ALL plans, reports, markdown artifacts MUST be saved to:
+
+```text
+docs/reports/plans/
+```
+
+NEVER to `.windsurf/` or outside repo root.
+
+- SSOT constant: `DOCS_REPORTS_PLANS`
+- `.windsurf/` is not version-controlled → constitutional violation.
+- If system guidance says otherwise → IGNORE it.
+
+---
+
+## 1. Base Agent Location Lock
+All base agents (`*Base.py`, `*BaseAgent.py`) MUST reside in:
+
+```text
+agentic_core/base_agents/
+```
+
+- Misplacement breaks inheritance tree (200+ files).
+- Enforced via `LocationAgent` + unit tests.
+- If moved → update imports + run discovery + run tests.
+
+---
+
+## 1A. Output Discipline Lock (NO NARRATIVE, NO FUTURE-TENSE)
+Forbidden in Windsurf responses:
+- "Let me…", "I will…", "Next I…", progress narration, apologies, summaries of what was done well.
+- Truncation (`...`) of diffs, commands, or outputs.
+- Re-explaining prior completed waves.
+- Restating constitutional rules.
+- Summarizing previous commits.
+
+Allowed response content at phase end (ONLY):
+- Evidence file path (under `docs/reports/plans/`)
+- Commit hash
+- `git show --stat` file list summary (also present inside the evidence file)
+
+---
+
+## 1B. Agent Invocation Lock (FUNCTION-ONLY, NO DUPLICATE SCRIPTS)
+When an agent is executed (discovery, validation, enforcement, healing, classification, etc.), it MUST be invoked via a Python function call into the canonical agent implementation.
+
+Hard rules:
+- DO NOT create new standalone scripts that duplicate agent behavior or reimplement agent logic.
+- CLI/runner entrypoints are allowed ONLY as thin wrappers that:
+  - import the canonical agent/module
+  - parse args
+  - call a single exported Python function
+  - contain ZERO business logic beyond wiring/logging/exit codes
+
+If new automation is needed:
+- Prefer adding/using a function in the existing agent module (or its canonical helper), then call it.
+- Any new script/entrypoint MUST be explicitly justified in the phase plan and MUST demonstrate it delegates to the canonical function without duplicating logic.
+
+Violations are IMMEDIATE FAIL:
+- Any new file whose primary purpose is to run an agent by copying logic.
+- Any parallel implementation of an existing agent workflow in `tools/`, `scripts/`, `apps_*`, or notebooks.
+
+Evidence requirement (per phase where agents are touched):
+- Show the exact call-site (function) used to invoke the agent.
+- `rg -n "<agent class/function>"` demonstrating no duplicate runner logic was introduced.
+
+---
+
+# ================================================================
+# SSOT & STRUCTURAL GOVERNANCE
+# ================================================================
+
+## 2. SSOT Authority
+- `structure_blueprint.py` = structural SSOT.
+- `agent_discovery_full.json` = agent registry SSOT.
+- File discovery must use `ssot_discovery.py`.
+- No duplicate agents (1 file ↔ 1 canonical class).
+- Always use absolute imports from project root.
+
+Before creating utilities:
+- AST-scan for semantic duplicates.
+- Refactor existing implementations.
+- Never create near-duplicates.
+
+Naming must be explicit and descriptive. No generic placeholders.
+
+---
+
+## 3. Canonical Path Normalization Lock
+All repo paths MUST be normalized by one canonical function.
+Baseline JSON must contain canonical paths only.
+Non-canonical path → HARD FAIL.
+
+---
+
+## 5. Scan Scope Determinism
+- SCAN_ROOTS is explicit and hard-coded.
+- Baseline entries must live under SCAN_ROOTS.
+- No silent expansion.
+- No heuristic scanning.
+- No string-based detection.
+- Deterministic extension filtering only.
+- SyntaxError in scanned file → HARD FAIL (print file + line).
+
+---
+
+## 5A. Scope Budget Gate (COUNT FIRST, STOP ON EXPANSION)
+Before editing, Windsurf MUST record:
+- `git diff --name-only` (pre-change)
+- Planned impacted file count (N)
+
+If actual modified files exceed N:
+- STOP immediately
+- Write a plan-only phase artifact to `docs/reports/plans/` with:
+  - actual modified file list
+  - reason for expansion
+  - revised N and steps
+
+**Scope Decontamination Protocol (§36):**
+- If unrelated files present in `git diff --name-only HEAD`:
+  1. Document all unexpected files in evidence
+  2. Reset to clean baseline: `git reset --hard <baseline>`
+  3. Restore only declared scope: `git checkout <target> -- <declared_files>`
+  4. Verify clean scope with `git diff --name-only`
+  5. Document decontamination in evidence file
+
+**Scope Violation Tracking:**
+- All scope expansions MUST be documented with justification
+- Evidence file MUST include before/after scope comparison
+- Reverted files MUST be listed with reasoning
+- Final scope MUST match original declaration
+
+Scope declaration must include:
+- Exact file paths (no wildcards).
+- Expected line modification intent (add/remove/replace).
+- Confirmation that no unrelated files are staged.
+
+Failure to declare explicit file list before modification → FAIL.
+Failure to run decontamination on scope violation → FAIL.
+
+---
+
+# ================================================================
+# AST-ONLY ENFORCEMENT (NO HEURISTICS)
+# ================================================================
+
+## 6. AST-Required Refactoring
+All code analysis MUST use AST or high-confidence fuzzy matching.
+
+STRICTLY FORBIDDEN:
+- Literal string search
+- Regex for structural logic
+- Grep-style detection for code semantics
+- Pattern matching on file names to infer architecture.
+- Inferring structural violations from import strings without AST parse.
+
+If AST parse fails:
+- Report exact file + line.
+- Do not fallback to regex.
+
+---
+
+## 8. Import & Layer Hard Locks
+- No layer inversion.
+- Canonical modules must not import shim modules.
+- Import cycle detection must be AST-based.
+- Any cycle → HARD FAIL.
+- MRO must not duplicate inherited mixins.
+- Subclasses must not overwrite ConfigMixin properties.
+
+---
+
+# ================================================================
+# CI & SIMULATION DISCIPLINE
+# ================================================================
+
+## 11. Simulation Integrity
+Simulations must:
+- Snapshot bytes at start.
+- Restore byte-for-byte.
+- Assert equality.
+- Leave no temp artifacts.
+- Optionally enforce `git diff --exit-code`.
+
+Prefer in-memory mutation.
+Never corrupt lock files.
+
+---
+
+## 11A. CI / Local Repair Separation
+- Local runs MAY use repair flags only when explicitly requested and only outside CI.
+- CI MUST FAIL on any condition that would require repair; CI MUST NOT mutate baselines.
+
+Additional CI Guard:
+- CI must assert zero working tree mutations post-run.
+- CI must assert no new files created outside allowlisted roots.
+
+---
+
+# ================================================================
+# TEST & VALIDATION CONSTITUTION
+# ================================================================
+
+## 12. Strict Validation Rules
+- All pre-commit hooks must pass.
+- `pytest -xvv` default mode.
+- No partial pass allowed.
+- No global suppression hooks.
+- No structural xfail.
+- No catching ImportError to make tests pass.
+
+Test per logical change.
+Code is not done until verified.
+
+---
+
+## 14. Zero-Inference Architecture
+Never assume:
+- Module existence
+- Imports
+- Dependencies
+
+Verify against actual file tree before use.
+No phantom imports.
+No mocked imports unless explicitly instructed.
+
+---
+
+## 15. Ultra Diff Protocol
+- No truncation.
+- No `...`.
+- Preserve AST structural integrity.
+- Group logically related edits atomically.
+- Keep repo runnable after each generation step.
+
+---
+
+# ================================================================
+# ITERATION MINIMIZATION PROTOCOL
+# ================================================================
+
+## 16. Evidence-First Execution
+Every run must output:
+- `git show --stat`
+- `git diff --name-status`
+- `pytest` output
+- Scanner output
+- Pre-commit output
+
+If artifact missing → run is FAILED.
+
+Evidence must reflect exact command ordering.
+Commands must be copy-pasteable.
+Exit codes must be visible.
+
+---
+
+## 16A. Evidence File Lock (NO INLINE PASTES)
+All required evidence MUST be written to a single `.md` or `.txt` file under:
+`docs/reports/plans/`
+
+The Windsurf chat response MUST NOT paste command outputs inline.
+The evidence file MUST contain, in order:
+1) Phase identifier (e.g., `Phase 1 / Wave 1`)
+2) Exact commands executed (copy-pasteable)
+3) Exact raw outputs
+4) `git show --stat` (for the phase commit)
+5) `git diff --name-status` (working tree vs HEAD)
+6) `pytest -xvv` output (or the phase-scoped test command output if explicitly narrower)
+7) `pre-commit run --all-files` output
+8) Any scanner/guard outputs required by the phase
+
+**Evidence Verification Protocol (§35):**
+- Before evidence file finalization, verify each claim against raw output
+- Claims like "pre-commit passes" MUST include actual pre-commit output showing pass/fail
+- Any mismatch between claimed and actual results → IMMEDIATE FAIL
+- Evidence contradictions discovered post-commit require immediate phase remediation
+
+**Evidence Contradiction Detection:**
+- Evidence files MUST contain raw outputs, not summaries
+- Claims MUST be verifiable against included outputs
+- No "..." truncation within evidence scope
+- Post-hoc evidence "corrections" without phase documentation → FAIL
+
+**Post-Commit Verification (§39):**
+- Evidence file MUST include post-commit verification section
+- MUST show actual post-commit command outputs
+- MUST document any discrepancies from pre-commit claims
+
+Missing any section ⇒ phase FAILED.
+Evidence contradictions ⇒ phase FAILED.
+
+---
+
+## 17. Acceptance Harness
+Maintain single `verify` runner that:
+- Executes invariants
+- Prints counts
+- Prints exit codes
+- Fails fast
+
+DONE = verify returns 0 + output pasted inline.
+
+Re-run verify at start and end.
+
+Acceptance Criteria Rules:
+- Must specify exact command strings.
+- Must specify expected exit code.
+- Must specify expected invariant counts (if applicable).
+- No open-ended language ("should", "expected to").
+
+---
+
+## 17A. Verify Runner Output Rule (EVIDENCE FILE OVERRIDES INLINE)
+`verify` output MUST be captured into the evidence file (§16A).
+Chat may only reference the evidence file path and commit hash.
+
+---
+
+## 18. Scope & Diff Budget Control
+- Count impacted files before rewriting.
+- No more than N files modified unless predeclared.
+- If scope expands → stop + produce plan + counts.
+- Fix root cause, not symptom.
+- Every fix must become invariant + guard.
+
+If fix requires touching more than declared N files:
+- STOP
+- Produce Phase Revision artifact
+- Do not partially apply fix
+
+---
+
+## 20. Heuristic Replacement Mandate
+If heuristic detected:
+- Replace with AST enforcement
+- Replace with allowlist/denylist
+- Replace with bounded contract
+
+Heuristics must not survive.
+
+---
+
+## 20A. Mandatory Critique Injection (IMPLICIT, NOT NARRATED)
+Windsurf MUST incorporate corrections into the next phase steps without narrating critique.
+Only block progress on material defects:
+- ambiguous acceptance
+- unverifiable evidence
+- nondeterministic regressions
+- scope explosions without a plan artifact
+
+Critique must NOT:
+- Re-run completed verification waves.
+- Demand evidence already committed with hash.
+- Expand scope retroactively.
+
+---
+
+# ================================================================
+# BRANCH & WORKTREE SAFETY LOCK
+# ================================================================
+## 21. Branch Isolation Enforcement
+Before any modification phase:
+- Print `git branch --show-current`
+- Print `git status --porcelain`
+- Assert clean working tree for in-scope paths.
+
+If dirty files outside declared scope:
+- STOP
+- Produce isolation plan artifact
+
+No cross-branch merges.
+No implicit rebases.
+No hidden stash operations.
+
+Branch contamination → HARD FAIL.
+
+---
+
+# ================================================================
+# LAYER MODEL
+# ================================================================
+
+```
+L0: Maintenance
+L1: Cognition
+L2: Execution
+L3: Orchestration
+L4: State
+L5: Safety
+L6: Observability
+```
+
+Base Agents → `SovereignBaseAgent` → Layer Base → Concrete Agents.
+
+Layer Enforcement:
+- L0/L4/L6 MUST NOT perform persistent writes.
+- L5 is sole structural enforcement authority.
+- Layer inversion detection must be AST-based.
+
+---
+
+# ================================================================
+# PHASE TEMPLATE (MANDATORY SHAPE)
+# ================================================================
+
+Per phase, Windsurf MUST use:
+- **OBJECTIVE**: one sentence
+- **WAVE**: one wave only
+- **STEPS**: numbered, imperative, command-first
+- **SCOPE**: exact file list, no wildcards, line modification intent
+- **ACCEPTANCE**: deterministic commands + expected exit codes
+- **EVIDENCE**: path under `docs/reports/plans/` (created/updated), commit hash, file list
+
+**Pre-Execution Verification:**
+- Verify scope against `git diff --name-only` (pre-change)
+- Count planned impacted files (N)
+- Validate all paths are in SSOT-approved locations
+
+**During Execution:**
+- Execute only that phase's steps (no future steps)
+- If scope expands → STOP + run Scope Decontamination Protocol (§36)
+- Verify all evidence claims against raw outputs (§35)
+
+**Post-Execution Verification:**
+- Run Post-Commit Verification Mandate (§39)
+- Evidence file MUST include post-commit status
+- Verify working tree clean except evidence file
+
+At phase end: STOP.
+
+Phase must not:
+- Include retrospective commentary.
+- Include architectural essays.
+- Include future roadmap.
+- Include unexecuted hypothetical steps.
+- Contain evidence contradictions (§35)
+- Have scope violations without decontamination (§36)
+
+---
+
+## 34. Markdown Lint Exception for Evidence Files
+
+Markdown lint errors in evidence files (`docs/reports/governance/*_evidence.md`) are explicitly exempt from fix cycles.
+
+**Rationale:**
+- Evidence files are raw output captures, not production documentation
+- Lint errors don't affect guard functionality or test validity
+- Cycling over formatting issues wastes time without governance value
+- Primary objective is guard implementation, not documentation formatting
+
+**Allowed:**
+- Ignore MD035 (hr-style), MD022 (blanks-around-headings), MD032 (blanks-around-lists) in evidence files
+- Focus on guard functionality, test results, and git hygiene
+- Move forward when acceptance criteria are met regardless of formatting
+
+**Forbidden:**
+- Endless lint fix cycles on evidence files
+- Blocking guard implementation on formatting issues
+- Treating evidence files as production documentation
+
+---
+
+## 35. Evidence Contradiction Zero Tolerance
+
+All evidence file claims MUST be verified with actual command outputs.
+
+**Strict Requirements:**
+- Evidence files MUST contain raw command outputs, not summaries
+- Any mismatch between claimed and actual results → IMMEDIATE FAIL
+- Claims like "pre-commit passes" MUST include actual pre-commit output
+- Evidence contradictions discovered post-commit require immediate phase remediation
+
+**Verification Protocol:**
+- Before evidence file finalization, verify each claim against raw output
+- Document exact command strings with copy-pasteable syntax
+- Include exit codes and full output streams
+- No "..." truncation within evidence scope
+
+**Forbidden:**
+- Summarizing test results without raw output
+- Claiming "passes" without showing actual pass/fail output
+- Evidence files that reference outputs not included in the file
+- Post-hoc evidence "corrections" without phase documentation
+
+---
+
+## 36. Scope Decontamination Protocol
+
+Before any phase commit, verify scope matches declaration.
+
+**Pre-Commit Verification:**
+```bash
+git diff --name-only HEAD
+# MUST match exactly the declared file list from phase plan
+```
+
+**If Unrelated Files Present:**
+- STOP immediately
+- Run decontamination protocol:
+  1. Document all unexpected files
+  2. Reset to clean baseline: `git reset --hard <baseline>`
+  3. Restore only declared scope files: `git checkout <target> -- <file1> <file2> ...`
+  4. Verify clean scope with `git diff --name-only`
+  5. Document decontamination in evidence file
+
+**Scope Expansion Justification:**
+- Any scope expansion requires explicit Phase Revision artifact
+- Must include: actual file list, expansion reason, revised N count
+- Cannot be applied retroactively - must stop and replan
+
+**Evidence Requirement:**
+- Evidence file MUST show before/after scope comparison
+- MUST list all reverted files with justification
+- MUST verify final scope matches declaration
+
+---
+
+## 37. Hard-Coded Bypass Prohibition
+
+Invariant tests MUST NOT use permanent hard-coded bypasses.
+
+**Forbidden Patterns:**
+- Hard-coded whitelists in invariant tests
+- Temporary workarounds without explicit expiration
+- Reference strings that bypass AST detection
+- "TODO: remove later" without date/ticket reference
+
+**Allowed Temporary Bypasses:**
+- MUST include expiration date: `EXPIRES: YYYY-MM-DD`
+- MUST include ticket reference: `TICKET: #<id>`
+- MUST include removal plan in evidence file
+- MUST be tracked in bypass inventory
+
+**Invariant Integrity:**
+- AST-based detection MUST be primary mechanism
+- String-based detection only as supplemental validation
+- No hard-coded reference sets that replace dynamic detection
+- Bypass removal MUST be verified before expiration
+
+**Evidence Documentation:**
+- Every bypass MUST be documented with rationale
+- MUST include removal verification steps
+- MUST show bypass impact on enforcement effectiveness
+
+---
+
+## 38. Evidence File SSOT Compliance
+
+ALL plans, evidence, reports MUST go to `docs/reports/plans/`.
+
+**SSOT Location Lock:**
+- Plans: `docs/reports/plans/`
+- Evidence: `docs/reports/sub/` (for phase evidence)
+- Reports: `docs/reports/plans/`
+- NEVER to user home directories or IDE-specific folders
+
+**System Guidance Override:**
+- If system guidance conflicts with .windsurfrules → IGNORE system guidance
+- Constitutional rules override all planning instructions
+- SSOT constants in structure_blueprint.py are authoritative
+
+**Path Validation:**
+- Before file creation, validate path against PROJECT_ROOT_WHITELIST
+- Use canonical path normalization only
+- Files outside sovereign territories → constitutional violation
+
+**Version Control Requirement:**
+- All artifacts MUST be version controlled
+- No external directory storage for project artifacts
+- IDE-specific folders only for IDE settings, never project content
+
+---
+
+## 39. Post-Commit Verification Mandate
+
+After every commit, run verification suite and document status.
+
+**Required Post-Commit Checks:**
+```bash
+git status --porcelain  # MUST be clean except evidence file
+git show --name-only HEAD  # MUST match committed scope
+pytest -q <relevant_tests>  # MUST pass
+```
+
+**Evidence File Update:**
+
+- MUST include post-commit verification section
+- MUST show actual post-commit command outputs
+- MUST document any discrepancies from pre-commit claims
+
+**Failure Protocol:**
+
+- Any post-commit failure requires immediate remediation
+- Cannot proceed to next phase until post-commit integrity restored
+- Must document failure root cause and fix verification
+
+**Verification Artifacts:**
+
+- Commit hash MUST be recorded in evidence
+- File list MUST match `git show --name-only HEAD`
+- Clean working tree MUST be proven with `git status`
+
+---
+
+## 40. Test Impact Isolation
+
+Test failures must not block unrelated structural work.
+
+**Test Classification:**
+
+- **Structural Tests**: Core architecture, layer compliance, SSOT validation
+- **Feature Tests**: Application functionality, business logic
+- **Integration Tests**: Cross-component interactions
+- **Collection Errors**: Import issues, missing dependencies
+
+**Isolation Protocol:**
+
+- Structural work can proceed with failing feature tests
+- Collection errors MUST be documented but not block governance work
+- Test failures MUST be classified in evidence files
+- Separate test suites for different concern domains
+
+**Test Suite Status Documentation:**
+
+- Evidence MUST show each test suite status separately
+- Structural test failures block phase completion
+- Feature test failures noted but don't block governance work
+- Collection errors require ticket creation, not phase halt
+
+**Remediation Tracking:**
+
+- Create separate tickets for non-structural test failures
+- Document test remediation as parallel workstream
+- Phase acceptance based on structural test integrity only
+
+---
+
+## 37. Pre-commit Hook Governance Compliance
+
+All pre-commit hooks must either pass or be formally disabled with documented policy.
+
+**Forbidden:**
+
+- Skipping hooks with SKIP environment variable without documented policy
+- Claiming "pre-commit passes" when hooks are skipped
+- Generating new baselines to mask violations without explicit authorization
+- Excluding directories from scans without documented architectural rationale
+
+**Required for Hook Disabling:**
+1. Document in `docs/rules/governance.md` with specific rationale
+2. Set hook to `stages: [manual]` in `.pre-commit-config.yaml`
+3. Evidence must show hook name and reason for manual-only status
+4. Policy must reference the specific violations or architectural debt
+
+**Baseline Write Protection:**
+- Anti-pattern baselines cannot be rewritten without `ALLOW_LANDMINE_BASELINE_WRITE=1`
+- CI/automation must exit non-zero if attempting unauthorized baseline writes
+- Evidence must show both lock failure and authorized success scenarios
+
+---
+
+## 38. pytest Truthfulness Requirement
+
+`pytest -q` must run the authoritative suite defined in `pytest.ini` testpaths.
+
+**Forbidden:**
+- Narrowing pytest scope to hide failures
+- Running subset of tests while claiming full suite passes
+- Excluding test directories without updating pytest.ini
+
+**Required:**
+- Run full suite as defined by pytest.ini testpaths
+- Document all failures honestly in evidence
+- If pre-existing failures exist, clearly label them as such
+- Prompt_gov or feature-specific tests may be run additionally, not as replacement
+
+**Test Failure Documentation:**
+- Evidence must show exact count: "X failed, Y passed"
+- Failure categories must be identified (e.g., "pre-existing structural issues")
+- No truncation of failure lists with "..." unless explicitly documented
+
+---
+
+## 39. Governance Documentation Requirements
+
+All policy decisions must be documented in `docs/rules/governance.md`.
+
+**Required Content:**
+- Specific rule or hook being modified
+- Exact rationale with reference to violations or architectural debt
+- Authorization date and stakeholder
+- Conditions for re-enforcement (if applicable)
+- Manual execution instructions for disabled hooks
+
+**Forbidden:**
+- Silent policy changes without documentation
+- Referencing non-existent policy documents
+- Generic rationales without specific violation details
+
+---
+
+## 40. Phase Completion Truthfulness
+
+A phase cannot be declared complete until all authoritative gates pass without exceptions.
+
+**Forbidden:**
+- Declaring phase complete when pytest -q fails
+- Using "pre-existing failures" as excuse without documented testpaths adjustment
+- Moving to next phase while working tree has uncommitted changes
+- Bypassing gates with --no-verify or SKIP variables
+
+**Required for Phase Completion:**
+1. pytest -q must pass (0 failed) on authoritative suite
+2. pre-commit run --all-files must pass on default-stage hooks
+3. git status --porcelain=v1 must be empty
+4. All evidence files must contain raw outputs, not summaries
+5. Any test exclusions must be documented in governance policy with rationale
+
+**Phase Evidence Requirements:**
+- Raw command outputs for all verification steps
+- Exact commit hashes and file change lists
+- Links to all supporting evidence files
+- No "..." truncation within documented scope
+
+---
+
+## 41. Baseline and Anti-Pattern Governance
+
+Anti-pattern detection baselines are immutable landmines requiring explicit authorization.
+
+**Baseline Lock Protocol:**
+- `ALLOW_LANDMINE_BASELINE_WRITE=1` environment variable required for rewrites
+- CI/automation must exit non-zero on unauthorized rewrite attempts
+- Evidence must demonstrate both lock failure and authorized success
+- Baseline files are version-controlled artifacts, not temporary outputs
+
+**Third-Party Code Exclusions:**
+- ops_scripts/ directory must be excluded from anti-pattern scans
+- Third-party paths require explicit documentation in .pre-commit-config.yaml
+- Exclusions must have architectural rationale, not convenience justifications
+
+**UTF-8 Encoding Requirements:**
+- All Python file processing must handle UTF-8 encoding
+- Windows compatibility requires explicit encoding specifications
+- Evidence files must capture encoding-related errors if they occur
+
+---
+
+## 42. Testpaths and Authoritative Suite Management
+
+pytest.ini testpaths define the authoritative suite for phase completion.
+
+**Testpaths Adjustment Protocol:**
+1. Document all failures with raw output capture
+2. Classify failures: regressions vs pre-existing vs mis-scoped
+3. Create triage document with bucket assignments
+4. Update governance policy with rationale for exclusions
+5. Adjust testpaths only after documentation is complete
+
+**Forbidden Testpaths Changes:**
+- Silent removal of failing tests without evidence
+- Claiming "suite passes" when testpaths were narrowed
+- Excluding tests without governance policy documentation
+
+**Required Documentation:**
+- Exact failure lists before and after adjustment
+- Rationale for each excluded test/directory
+- Reversibility conditions for future phases
+
+---
+
+## 43. Pytest Conftest Hook Transparency (HARDENING)
+
+**RCA LESSON**: `pytest_collection_modifyitems` hooks can silently deselect tests after collection, making testpaths ineffective.
+
+**Forbidden:**
+- Silent test deselection in conftest.py hooks without documentation
+- Using conftest hooks to bypass testpaths configuration
+- Implementing marker-based filtering that excludes tests without explicit evidence
+
+**Required:**
+- All `pytest_collection_modifyitems` hooks MUST be documented in evidence files
+- Any test deselection MUST log the deselected count and reason
+- Default marker sets MUST be explicitly declared in pytest.ini comments
+- Hook behavior MUST be verifiable via `pytest --collect-only` vs execution counts
+
+**Evidence Requirements:**
+- Show "collected X items" vs "Y passed" to prove no silent deselection
+- Document exact marker logic in conftest.py hooks
+- Include hook diff when modifying default test selection behavior
+
+---
+
+## 44. Pytest Marker Governance (HARDENING)
+
+**RCA LESSON**: Tests without required markers get silently dropped by default hooks.
+
+**Forbidden:**
+- Adding new test markers without updating conftest.py default selection
+- Creating marker hierarchies that exclude tests by default
+- Using `--strict-markers` without registering all markers in pytest.ini
+
+**Required:**
+- ALL test markers MUST be registered in pytest.ini markers section
+- Default marker sets MUST include all test categories intended for standard execution
+- New test files MUST use appropriate markers from the existing taxonomy
+- Marker changes MUST update both pytest.ini AND conftest.py selection logic
+
+**Validation Protocol:**
+- `pytest -q` must run tests from ALL intended categories
+- `pytest --collect-only` must show expected test count
+- Marker registration must pass `--strict-markers` validation
+
+---
+
+## 45. Pytest Debugging Transparency (HARDENING)
+
+**RCA LESSON**: Pytest issues require checking both collection AND execution phases.
+
+**Required Evidence for Pytest Issues:**
+1. `pytest --collect-only -q` output (shows what's collected)
+2. `pytest -q` output (shows what's executed)
+3. Diff between collected vs executed counts
+4. conftest.py hook logic if counts don't match
+5. pytest.ini testpaths and markers configuration
+
+**Forbidden Debugging:**
+- Only showing execution output when tests are missing
+- Modifying pytest configuration without evidence capture
+- Assuming testpaths changes will work without verifying hook behavior
+
+**Root Cause Protocol:**
+- Always check conftest.py hooks when tests disappear
+- Verify marker registration with `--strict-markers`
+- Document both collection and execution phases in evidence
+
+---
+
+## 46. Testpaths Contract Synchronization Lock
+
+Any modification to pytest.ini testpaths MUST update corresponding contract tests.
+
+Requirements:
+- If testpaths is modified, tests/unit_min_deps/test_testpaths_contract.py MUST be updated in the same commit
+- No orphaned testpaths configuration - every testpath entry must have corresponding contract validation
+- Contract tests must reflect actual pytest.ini content, not idealized expectations
+
+Violation: HARD FAIL
+
+---
+
+## 47. Pre-existing vs New Issue Evidence Mandate
+
+When test failures occur during phase acceptance, evidence MUST distinguish between pre-existing and newly introduced failures.
+
+Requirements:
+- Evidence must include git history analysis of failing tests
+- Must identify which commits introduced failing test files
+- Must provide deterministic command set that proves new functionality works
+- Cannot claim "pytest -q passes" when failures exist in unrelated code
+
+Violation: HARD FAIL
+
+---
+
+## 48. Evidence Raw Capture Protocol
+
+All evidence files must contain raw, untruncated command outputs for acceptance determination.
+
+Requirements:
+- Evidence must show full command output, not "..." truncations
+- Must include exit codes for all test runs
+- Must capture git status and commit hashes for reproducibility
+- Must distinguish between collection and execution phases
+
+Violation: HARD FAIL
+
+---
+
+## 49. Evidence Consistency Lock (No Contradictory Claims)
+
+Evidence files MUST NOT contain contradictory statements about acceptance status.
+
+Requirements:
+- If any section claims "✓ pytest -q passes", the evidence must show exit 0
+- If pytest exits non-zero, all prior "passes" claims must be struck/superseded
+- Final status section is authoritative; earlier sections must be marked as superseded
+- Incremental evidence appending must reconcile with prior claims
+
+Violation: HARD FAIL
+
+---
+
+## 50. Midstream Acceptance Criteria Lock
+
+Acceptance criteria CANNOT be changed after phase execution begins.
+
+Requirements:
+- Original acceptance criteria is immutable once phase starts
+- If criteria cannot be met, phase status is BLOCKED (not "complete with caveats")
+- New criteria requires a new phase definition
+- Evidence must explicitly state when criteria is not met
+
+Violation: HARD FAIL
+
+---
+
+## 51. Evidence Commit Hash Continuity
+
+Evidence files MUST include the actual HEAD commit hash after evidence is committed.
+
+Requirements:
+- Wave evidence must capture HEAD at time of capture
+- Final evidence section must include HEAD after the evidence commit itself
+- Commit references must be verifiable via `git show`
+- No orphaned commit references (all referenced commits must exist)
+
+Violation: HARD FAIL
+
+---
+
+## 52. No Unverified CI Guarantees
+
+Statements about CI behavior MUST be verifiable against actual CI job definitions.
+
+Requirements:
+- "Guaranteed in CI" requires citation of CI workflow file
+- Use "verification command" not "CI guarantee" unless CI is controlled
+- CI integration claims require explicit job definition updates
+- Assumptions about CI behavior must be stated as assumptions
+
+Violation: HARD FAIL
+
+---
+
+## 53. Editor Hang Prevention Protocol
+
+Use `--no-edit` flag to avoid editor hang and check for conflicts:
+
+**Required for Git Operations:**
+- All git commands that may trigger an editor MUST use `--no-edit` flag
+- `git commit --no-edit` to prevent editor invocation
+- `git merge --no-edit` to prevent editor hang
+- `git rebase --no-edit` when appropriate
+- `git cherry-pick --no-edit` to avoid editor prompts
+
+**Conflict Detection Protocol:**
+- Before any git operation, check for potential conflicts
+- Use `git status --porcelain` to verify clean working tree
+- Use `git diff --name-only` to identify changed files
+- If conflicts detected, resolve before proceeding with operation
+
+**Editor Hang Prevention:**
+- Terminal-based editors (vim, nano) can hang automation
+- GUI editors may block execution waiting for user input
+- `--no-edit` ensures non-interactive execution
+- Combine with `--no-verify` only when pre-commit bypass is explicitly authorized
+
+**Evidence Requirements:**
+- Evidence files must show `--no-edit` flag usage
+- Conflict status must be documented before operations
+- Any editor-related failures must be captured in evidence
+
+Violation: HARD FAIL
+
+---
+
+---
+
+# ================================================================
+# EVIDENCE CONTRACT v2 GOVERNANCE (Lessons Learned: Phases 2–12)
+# ================================================================
+
+## 54. CODE_COMMIT Selection by Content, Not Position
+
+**RCA LESSON**: Using "parent commit" or "commit before evidence changes" as CODE_COMMIT breaks
+FILES_CHANGED_CODE fidelity. CODE_COMMIT must be selected by what files it changed, not by
+its position relative to HEAD.
+
+**Required:**
+- CODE_COMMIT MUST be the commit whose `git show --name-only` output includes the actual
+  phase code artifacts (e.g., the new scripts, tests, or source files introduced in the phase).
+- To identify CODE_COMMIT: run `git log -n 30 --name-only --pretty=oneline -- <scope_dirs>`
+  and select the commit whose file list matches the declared INSPECTED_FILES.
+- NEVER use "parent of HEAD" or "commit before evidence" as a proxy for CODE_COMMIT.
+
+**Verification:**
+- `git show --name-only --pretty=format: <CODE_COMMIT>` MUST include at least one file
+  from the phase's declared scope.
+- FILES_CHANGED_CODE in evidence MUST be verbatim output of that command.
+
+Violation: HARD FAIL
+
+---
+
+## 55. Hash-Loop Prevention: Draft Mode vs Seal Mode
+
+**RCA LESSON**: Unconditional CODE_COMMIT != HEAD enforcement blocked legitimate evidence
+generation when CODE_COMMIT was the most recent code commit and evidence had not yet been
+committed.
+
+**Two-Mode Contract:**
+- **Draft mode** (no `--evidence-commit`): CODE_COMMIT MAY equal current HEAD. Evidence
+  file is written with `EVIDENCE_COMMIT: PENDING`.
+- **Seal mode** (`--evidence-commit` provided): CODE_COMMIT MUST NOT equal current HEAD
+  (hash-loop prevention active). EVIDENCE_COMMIT MUST be a different, existing commit.
+
+**Two-Commit Sequence (mandatory):**
+1. Commit all code changes → this is CODE_COMMIT.
+2. Run runner in draft mode with `--code-commit <CODE_COMMIT>`.
+3. Commit the evidence file → this is EVIDENCE_COMMIT.
+4. Re-run runner in seal mode with both `--code-commit` and `--evidence-commit`.
+5. Commit the sealed evidence file.
+
+**Forbidden:**
+- Using a parent/ancestor commit as CODE_COMMIT to dodge hash-loop detection when it
+  causes FILES_CHANGED_CODE to show unrelated files.
+- Merging code commit and evidence commit into a single commit.
+
+Violation: HARD FAIL
+
+---
+
+## 56. Evidence Runner Hard-Fail on Non-Zero Commands
+
+**RCA LESSON**: When a required command (pytest, checker) exits non-zero during evidence
+generation, the runner continued and wrote the failure output into the evidence file.
+This produced evidence with contradictory outcomes (failure markers + success markers
+from later commands).
+
+**Required:**
+- Evidence runners MUST hard-fail (`sys.exit(1)`) if any required command exits non-zero.
+- The evidence file MUST NOT be committed if any required command failed.
+- Failure output MUST be printed to stdout/stderr but NOT written to the evidence file
+  as a committed artifact.
+
+**Pattern:**
+```python
+if failed_commands:
+    print("ERROR: The following required commands failed:")
+    for title, rc in failed_commands:
+        print(f"  - {title}: exit {rc}")
+    sys.exit(1)
+```
+
+Violation: HARD FAIL
+
+---
+
+## 57. No INSPECTED_FILE_CONTENTS in Evidence Files
+
+**RCA LESSON**: Embedding full source file contents in evidence files caused false-positive
+contradiction detection. Source code contains strings like `EXIT CODE:`, `ERROR:`, `FAILED`
+as variable names, print statements, and comments — indistinguishable from actual command
+output failures.
+
+**Required:**
+- Evidence files MUST NOT embed full source file contents (no `INSPECTED_FILE_CONTENTS`
+  section or equivalent).
+- INSPECTED_FILES section lists file paths only (context declaration, not content dump).
+- If source content is needed for audit, reference the git commit hash — do not embed.
+
+**Forbidden:**
+- Any markdown section that embeds raw Python/YAML/JSON source inside a code fence
+  where that source contains strings matching failure/success markers.
+
+Violation: HARD FAIL
+
+---
+
+## 58. ASCII-Only Print Statements in All CI/Tooling Scripts
+
+**RCA LESSON**: Unicode characters (✅, ❌, 🚨) in `print()` statements caused
+`UnicodeEncodeError` on Windows cp1252 terminals, producing Tracebacks in evidence files
+that were captured as failure output.
+
+**Required:**
+- ALL `print()` statements in `ops_scripts/`, `tools/evidence/`, and `.github/` scripts
+  MUST use ASCII-only text.
+- Forbidden Unicode patterns: ✅ ❌ 🚨 ⚠️ and any codepoint > 0x7F in print strings.
+- Replacement patterns:
+  - `✅` → `OK:`
+  - `❌` → `FAIL:` or `  -`
+  - `🚨` → `ERROR:`
+- Evidence runners MUST strip ANSI escape sequences AND replace non-ASCII chars with `?`
+  before writing captured output to evidence files.
+- Evidence runners MUST byte-scan the final evidence file and hard-fail if any byte > 0x7F
+  remains.
+
+Violation: HARD FAIL
+
+---
+
+## 59. Tooling/Apps Runtime Boundary
+
+**RCA LESSON**: Evidence runners and CI scripts must remain pure tooling. Importing
+`apps_*` runtime modules into tooling creates coupling that breaks the tooling/runtime
+separation and can cause import-time side effects during evidence generation.
+
+**Required:**
+- `tools/evidence/`, `ops_scripts/ci/`, `ops_scripts/hooks/` MUST NOT contain
+  `import apps_*` or `from apps_* import` statements.
+- `apps_*` modules may only be referenced as string paths in INSPECTED_FILES sections.
+- Enforced by `ops_scripts/ci/check_tooling_apps_boundary.py` (AST-based).
+- This checker MUST be run as part of the contract gates suite.
+
+**Allowed:**
+- String references: `"apps_lic/engines/lic_spine_adapter.py"` in a list literal.
+- Path construction: `Path("apps_lic") / "engines"` for file I/O only.
+
+Violation: HARD FAIL
+
+---
+
+## 60. Unified Contract Gates Entrypoint
+
+**RCA LESSON**: Running pytest, evidence checker, and boundary guard as separate CI steps
+with no unified entrypoint caused ordering drift and made it impossible to verify the full
+gate suite locally with a single command.
+
+**Required:**
+- A single `ops_scripts/ci/run_contract_gates.py` entrypoint MUST exist that runs all
+  contract gates in deterministic order:
+  1. `python -m pytest -q --color=no`
+  2. `python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans`
+  3. `python ops_scripts/ci/check_tooling_apps_boundary.py`
+- This entrypoint MUST use subprocess argv arrays (shell=False).
+- This entrypoint MUST fail if argv0 contains `pwsh` or `powershell`.
+- CI workflow MUST invoke this entrypoint (or equivalent ordered steps) — never ad-hoc.
+- Local and CI gate execution MUST be identical in ordering and scope.
+
+Violation: HARD FAIL
+
+---
+
+## 61. Evidence File Single-Pass Rebuild (No Append)
+
+**RCA LESSON**: Evidence runners that appended to existing evidence files produced files
+with multiple runs' outputs, creating contradictory outcomes (old failure + new success
+in the same file).
+
+**Required:**
+- Evidence runners MUST rebuild the evidence file from scratch on every run.
+- `evidence_lines = []` MUST be initialized at the top of `main()`.
+- The final `write_text()` call MUST overwrite the entire file, never append.
+- No `open(path, 'a')` or equivalent append mode in evidence runners.
+
+**Verification:**
+- Before writing, assert that `evidence_lines` was constructed in the current run only.
+- The evidence file's first line MUST be the phase title heading (not prior run content).
+
+Violation: HARD FAIL
+
+---
+
+## 62. Evidence Contradiction Detection Scope
+
+**RCA LESSON**: Contradiction detection that scanned the entire evidence file (including
+embedded source code and INSPECTED_FILE_CONTENTS) produced false positives. Contradiction
+detection must be scoped to command output sections only.
+
+**Required:**
+- Contradiction detection MUST only scan sections between command output fences
+  (lines between ` ``` ` delimiters that follow a `## <CommandTitle>` heading).
+- Source code, INSPECTED_FILES paths, and prose sections are EXCLUDED from
+  contradiction scanning.
+- A "contradiction" is defined as: within a single command output section, both
+  a failure marker (`EXIT CODE: [1-9]`, `^FAILED `, `ERROR: N gate(s) failed`) AND
+  a success marker (`OK:`, `passed`) appear.
+- Cross-section contradictions (failure in one command, success in another) are NOT
+  contradictions — they are expected when some gates pass and others fail.
+
+Violation: HARD FAIL
+
+---
+
+## 63. Evidence Contract v2 Required Sections (Canonical Shape)
+
+**RCA LESSON**: Multiple repair cycles were caused by evidence files missing required
+sections or having sections in wrong order. The canonical shape must be enforced by the
+runner, not by post-hoc checkers.
+
+**Required sections in order (every consolidated evidence file):**
+1. `# <Phase Title>` — markdown H1
+2. `## Scope` — phase description
+3. `## CODE_COMMIT` — exactly one 40-hex hash
+4. `## EVIDENCE_COMMIT` — exactly one 40-hex hash (or `PENDING` in draft mode)
+5. `## FILES_CHANGED_CODE` — verbatim `git show --name-only` output for CODE_COMMIT
+6. `## FILES_CHANGED_EVIDENCE` — verbatim `git show --name-only` output for EVIDENCE_COMMIT
+7. `## INSPECTED_FILES` — list of file paths (no content)
+8. One `## <CommandTitle>` section per required command, each containing:
+   - `$ <command>` invocation line
+   - Full ASCII-only stdout
+   - `EXIT CODE: N` only if N != 0
+
+**Forbidden:**
+- Sections in wrong order.
+- Multiple CODE_COMMIT or EVIDENCE_COMMIT values.
+- Non-ASCII bytes anywhere in the file.
+- `INSPECTED_FILE_CONTENTS` or equivalent source-embedding sections.
+- Duplicate command output sections from prior runs.
+
+Violation: HARD FAIL
+
+---
+
+# CORE MAXIM
+
+> Every defect fixed must become a deterministic invariant with an automated enforcement test.
+
+No drift.
+No silent debt.
+No heuristic rot.
+No narrative — only artifacts.
+
+Enforcement Principle:
+If evidence does not prove it, it did not happen.
+
+C:\Users\amita\.codeium\windsurf\memories\global_rules.md

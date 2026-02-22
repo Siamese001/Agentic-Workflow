@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "territory": "prompt_governance",
+    "timestamp": "2026-02-22T15:32:20.311364",
+    "status": "NON-COMPLIANT",
+    "sovereignty_level": "L5",
+    "report_type": "detailed_violations"
+  },
+  "summary": {
+    "total_violations": 4,
+    "severity_breakdown": {
+      "high": 2,
+      "medium": 1,
+      "low": 1
+    },
+    "violation_types": [
+      "ILLEGAL_CACHE_DIR",
+      "ILLEGAL_ROOT_SCRIPTS",
+      "GRAVITY",
+      "LOCATION"
+    ]
+  },
+  "violations": [
+    {
+      "type": "LOCATION",
+      "source": "LocationAgent",
+      "file": "C:\\\\\\\\Git\\\\\\\\Agentic-Workflow\\\\\\\\agentic_core\\\\\\\\__init__.py",
+      "message": "File 'C:\\\\\\\\Git\\\\\\\\Agentic-Workflow\\\\\\\\agentic_core\\\\\\\\__init__.py' violates location rules: SHALLOW VIOLATION (agentic_core): depth 1 != 3",
+      "reason": "SHALLOW VIOLATION (agentic_core): depth 1 != 3",
+      "severity": "medium",
+      "recommended_action": "Fix location/naming issue",
+      "llm_triggered": false,
+      "confidence": 0.792
+    },
+    {
+      "type": "GRAVITY",
+      "source": "GravityLeakRepairAgent",
+      "file": "unknown",
+      "message": "Found 394 gravity violations (layer inversions)",
+      "count": 394,
+      "severity": "high",
+      "recommended_action": "Review and fix layer boundary violations",
+      "llm_triggered": false,
+      "confidence": 0.9
+    },
+    {
+      "type": "ILLEGAL_ROOT_SCRIPTS",
+      "source": "RootHygieneAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\scripts",
+      "message": "Illegal 'scripts/' directory in project root",
+      "severity": "high",
+      "recommended_action": "Move scripts to ops_scripts/ or agentic_core/L0_routing/scripts/",
+      "llm_triggered": false,
+      "confidence": 0.9
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "source": "RootHygieneAgent",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Illegal cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Add .pytest_cache to .gitignore and remove from root",
+      "llm_triggered": false,
+      "confidence": 0.6
+    }
+  ],
+  "agents_executed": [
+    "ArchitectureGovernorAgent",
+    "GravityLeakRepairAgent",
+    "FilesystemSSOTReconcilerAgent",
+    "DebateSynthesisAgent",
+    "HierarchyAgent",
+    "FileClassificationAgent",
+    "LocationAgent",
+    "SystemArchitectAgent",
+    "RootHygieneAgent"
+  ]
+}

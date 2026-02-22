@@ -13,9 +13,10 @@ def test_cross_app_cid_prefixes():
     """Given same semantic payload, LIC CID starts with 'lic-' and RG CID starts with 'rg-'."""
     payload = {"s0_system": "test", "i0_instructional": "instruction"}
 
-    with patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch, \
-         patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch:
-
+    with (
+        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
+        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
+    ):
         # Return fresh dicts to avoid mutation
         mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
         mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
@@ -35,9 +36,10 @@ def test_cross_app_cid_hash_bodies_identical():
     """Given same semantic payload, CID hash bodies (without prefix) are identical."""
     payload = {"s0_system": "test", "i0_instructional": "instruction"}
 
-    with patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch, \
-         patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch:
-
+    with (
+        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
+        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
+    ):
         # Return fresh dicts to avoid mutation
         mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
         mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
@@ -50,7 +52,7 @@ def test_cross_app_cid_hash_bodies_identical():
 
         # Extract hash bodies (remove prefixes)
         lic_hash_body = lic_result["cid"][4:]  # Remove "lic-"
-        rg_hash_body = rg_result["cid"][3:]    # Remove "rg-"
+        rg_hash_body = rg_result["cid"][3:]  # Remove "rg-"
 
         assert lic_hash_body == rg_hash_body
 
@@ -60,9 +62,10 @@ def test_cross_app_cid_determinism():
     """Running twice with identical canonicalized payload yields identical CID each time."""
     payload = {"s0_system": "test", "i0_instructional": "instruction"}
 
-    with patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch, \
-         patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch:
-
+    with (
+        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
+        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
+    ):
         # Return fresh dicts to avoid mutation
         mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
         mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
@@ -87,9 +90,10 @@ def test_cross_app_cid_difference():
     payload1 = {"s0_system": "test", "i0_instructional": "instruction"}
     payload2 = {"s0_system": "test", "i0_instructional": "different"}
 
-    with patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch, \
-         patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch:
-
+    with (
+        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
+        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
+    ):
         # Return fresh dicts to avoid mutation
         mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
         mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
@@ -122,11 +126,12 @@ def test_cross_app_call_order_invariant():
     """new_cycle called before orchestrator.execute for both apps."""
     payload = {"s0_system": "test", "i0_instructional": "instruction"}
 
-    with patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch, \
-         patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch, \
-         patch("apps_lic.engines.lic_spine_adapter.CIDRegistry") as mock_lic_registry, \
-         patch("apps_rg.engines.rg_spine_adapter.CIDRegistry") as mock_rg_registry:
-
+    with (
+        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
+        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
+        patch("apps_lic.engines.lic_spine_adapter.CIDRegistry") as mock_lic_registry,
+        patch("apps_rg.engines.rg_spine_adapter.CIDRegistry") as mock_rg_registry,
+    ):
         # Setup mocks
         mock_cycle = MagicMock()
         mock_cycle.attempt = 1

@@ -69,7 +69,7 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Track if we're in __init__ method."""
         old_in_init = self.in_init_method
-        self.in_init_method = (node.name == "__init__")
+        self.in_init_method = node.name == "__init__"
         self.generic_visit(node)
         self.in_init_method = old_in_init
 
@@ -79,9 +79,11 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
         if isinstance(node.func, ast.Name) and node.func.id == "CIDRegistry":
             # Allow CIDRegistry() in __init__ methods of spine adapter classes
             # when it's used to create the dependency for the base class
-            if not (self.current_class and
-                   ("spine" in self.current_class.lower() or "adapter" in self.current_class.lower()) and
-                   self.in_init_method):
+            if not (
+                self.current_class
+                and ("spine" in self.current_class.lower() or "adapter" in self.current_class.lower())
+                and self.in_init_method
+            ):
                 self.uses_cid_registry_constructor = True
                 self.violations.append(
                     f"Line {node.lineno}: Direct CIDRegistry() constructor call detected. "

@@ -1,0 +1,66 @@
+{
+  "meta": {
+  "metrics": {
+  "governance_log": {
+    "scan_summary": {
+      "file_types": {}
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\__init__.py', 'reason': 'SHALLOW VIOLATION (agentic_core): depth 1 != 3'}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\__init__.",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L2_execution\\\\types\\\\l2_phase_spec.py', 'reason': \"LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L2_execut",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L2_execution\\\\types\\\\l2_phase_spec_types.py', 'reason': \"LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_'\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L2_execut",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\enforcement\\\\rg_execution_safety_enforcer.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\enforcement\\\\rg_execution_safety_enforcer.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\blueprint_hash.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\blueprint_hash.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\cross_layer.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\cross_layer.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\import_graph.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\import_graph.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\leaf_node.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\leaf_node.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\mixin_ast.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\mixin_ast.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\territory_diff.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\territory_diff.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\types.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\types.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\volatile_rules.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\volatile_rules.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\__init__.py', 'reason': \"VOID VIOLATION: Path 'agentic_core\\\\L5_safety\\\\config\\\\structure_blueprint\\\\enforcement\\\\__init__.py' not in sovereign territory\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L5_safety",
+    {
+      "message": "{'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L6_observability\\\\golden_evaluation\\\\resume_quality_evaluator.py', 'reason': \"APP-SPECIFIC IN CORE VIOLATION: 'resume_quality_evaluator.py' is application-specific and must not live in agentic_core. Move to 'apps_rg/reasoning/'.\"}",
+      "recommended_action": "Fix location/naming issue: {'file': 'C:\\\\Git\\\\Agentic-Workflow\\\\agentic_core\\\\L6_observ",
+    {
+    {
+    {
+  "file_scan_stats": {}
+| 1 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 2 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 3 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 4 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 5 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 6 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 7 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 8 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 9 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 10 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 11 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 12 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 13 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
+| 14 | LOCATION | `unknown` | {'file': 'C:\\Git\\Agentic-Workflow\\agentic_core\... | medium | No | 79.2% | Fix location/naming issue: {'f... |
