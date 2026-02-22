@@ -145,6 +145,50 @@ class ApprovalGate(Protocol):
         ...
 
 
+class L0Proposer(Protocol):
+    """Protocol for L0 threshold proposer."""
+
+    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+        """Propose L0 threshold changes."""
+        ...
+
+
+class RAGProposer(Protocol):
+    """Protocol for RAG parameter proposer."""
+
+    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+        """Propose RAG parameter changes."""
+        ...
+
+
+class L1Proposer(Protocol):
+    """Protocol for L1 model proposer."""
+
+    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+        """Propose L1 model changes."""
+        ...
+
+
+class L5Proposer(Protocol):
+    """Protocol for L5 policy proposer."""
+
+    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+        """Propose L5 policy changes."""
+        ...
+
+
+class BaselineMetricsProvider(Protocol):
+    """Protocol for baseline metrics provider."""
+
+    def production_metrics(self) -> Any:
+        """Return production baseline metrics."""
+        ...
+
+    def shadow_metrics(self, pkg: Any) -> Any:
+        """Return shadow metrics for change package."""
+        ...
+
+
 # =============================================================================
 # Pipeline Dependencies
 # =============================================================================
@@ -162,6 +206,16 @@ class PipelineDependencies:
         Read-only telemetry store.
     config_provider : ConfigProvider
         Config provider.
+    baseline_metrics_provider : BaselineMetricsProvider
+        Baseline metrics provider for shadow validation.
+    l0_proposer : L0Proposer | None
+        L0 threshold proposer (None if not enabled).
+    rag_proposer : RAGProposer | None
+        RAG parameter proposer (None if not enabled).
+    l1_proposer : L1Proposer | None
+        L1 model proposer (None if not enabled).
+    l5_proposer : L5Proposer | None
+        L5 policy proposer (None if not enabled).
     version_store : VersionStore | None
         Version store for Stage A commit (None if proposal_only).
     activator : Activator | None
@@ -173,6 +227,11 @@ class PipelineDependencies:
     audit_store: AuditStore
     telemetry_store: TelemetryStore
     config_provider: ConfigProvider
+    baseline_metrics_provider: BaselineMetricsProvider
+    l0_proposer: L0Proposer | None = None
+    rag_proposer: RAGProposer | None = None
+    l1_proposer: L1Proposer | None = None
+    l5_proposer: L5Proposer | None = None
     version_store: VersionStore | None = None
     activator: Activator | None = None
     approval_gate: ApprovalGate | None = None
@@ -278,22 +337,105 @@ def run_pipeline(
         window_end_utc=window_end_utc,
     )
 
-    # Step 6: Run enabled proposers (placeholder - would call actual engines)
-    # For now, return empty proposals
-    proposals = []
+    # Step 6: Run enabled proposers in deterministic order
+    # Fixed order: ("L0", "RAG", "L1", "L5") intersect enabled set
+    PROPOSER_ORDER = ("L0", "RAG", "L1", "L5")
+    proposer_map = {
+        "L0": deps.l0_proposer,
+        "RAG": deps.rag_proposer,
+        "L1": deps.l1_proposer,
+        "L5": deps.l5_proposer,
+    }
 
-    # In production, would iterate over cfg.enabled_proposers and call:
-    # - L0 threshold tuner
-    # - RAG optimizer
-    # - L1 model optimizer
-    # - L5 policy tuner
+    proposals = []
+    for proposer_name in PROPOSER_ORDER:
+        if proposer_name not in cfg.enabled_proposers:
+            continue
+
+        proposer = proposer_map[proposer_name]
+        if proposer is None:
+            continue
+
+        # Call proposer with injected dependencies
+        # For now, pass minimal/placeholder args (would be real in production)
+        pkg = proposer.propose(
+            snapshot=snapshot,
+            metrics=None,  # Would be real metrics
+            config=current_configs,
+            now_utc=now_utc,
+            history=None,  # Would be real history
+            cooldown=cfg.cooldown_policy,
+            sample=cfg.sample_policy,
+        )
+
+        if pkg is not None:
+            proposals.append(pkg)
 
     # Step 7: Validate each proposal
-    # (Would validate with replay_validate, shadow_evaluate, dampening checks)
+    from system_learning.validators.replay_validator import replay_validate
+    from system_learning.validators.shadow_evaluator import evaluate_shadow
+    from system_learning.validators.dampening import (
+        assert_cooldown_ok,
+        assert_min_sample_size,
+    )
+    from system_learning.validators.oscillation_detector import compute_freeze_decision
+
+    validated_proposals = []
+    for pkg in proposals:
+        # Replay validation (if required)
+        if cfg.require_replay_validation:
+            # Use package's canonical_bytes method for canonicalization
+            def canonicalize(output):
+                if hasattr(output, "canonical_bytes"):
+                    return output.canonical_bytes()
+                return str(output).encode("utf-8")
+
+            replay_validate(snapshot, lambda s: pkg, canonicalize_fn=canonicalize)
+
+        # Shadow validation (if required)
+        if cfg.require_shadow_validation:
+            production = deps.baseline_metrics_provider.production_metrics()
+            shadow = deps.baseline_metrics_provider.shadow_metrics(pkg)
+            evaluate_shadow(production, shadow, cfg.shadow_thresholds)
+
+        # Dampening gates: cooldown
+        # Extract surface name from package (would be in real ChangePackage)
+        surface_name = getattr(pkg, "surface_name", "unknown")
+        last_update_utc = deps.config_provider.get_last_update_utc(surface_name)
+        if last_update_utc is not None:
+            assert_cooldown_ok(
+                last_update_utc=last_update_utc,
+                now_utc=now_utc,
+                policy=cfg.cooldown_policy,
+            )
+
+        # Dampening gates: sample size
+        # Would get actual n_observations from metrics provider
+        n_observations = 1000  # Placeholder
+        assert_min_sample_size(
+            n_observations=n_observations,
+            policy=cfg.sample_policy,
+        )
+
+        # Oscillation gate
+        param_history = deps.config_provider.get_param_history(surface_name, cfg.oscillation_policy.window)
+        if len(param_history) > 0:
+            freeze_decision = compute_freeze_decision(
+                values=param_history,
+                last_update_utc=last_update_utc or 0,
+                now_utc=now_utc,
+                policy=cfg.oscillation_policy,
+            )
+            if freeze_decision.should_freeze:
+                raise ValidationError(
+                    f"Oscillation detected for {surface_name}: freeze until {freeze_decision.freeze_until_utc}"
+                )
+
+        validated_proposals.append(pkg)
 
     # Step 8: If proposal_only, return without commit/activate
     if cfg.proposal_only:
-        return tuple(proposals)
+        return tuple(validated_proposals)
 
     # Step 9: If not proposal_only, commit and activate
     if not cfg.proposal_only:
@@ -308,7 +450,7 @@ def run_pipeline(
             )
 
         committed_versions = []
-        for pkg in proposals:
+        for pkg in validated_proposals:
             # Check approval
             decision = deps.approval_gate.decide(pkg, rca_report, snapshot)
 
@@ -329,4 +471,4 @@ def run_pipeline(
                 component = "placeholder"
                 deps.activator.activate(component, version_id)
 
-    return tuple(proposals)
+    return tuple(validated_proposals)

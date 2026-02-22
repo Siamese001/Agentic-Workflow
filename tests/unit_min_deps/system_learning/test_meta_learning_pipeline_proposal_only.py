@@ -71,6 +71,33 @@ class FakeConfigProvider:
         return self.histories.get(surface_name, ())
 
 
+class FakeBaselineMetricsProvider:
+    """In-memory fake baseline metrics provider."""
+
+    def __init__(self):
+        from system_learning.validators.shadow_evaluator import ShadowMetrics
+        self.production = ShadowMetrics(
+            p95_latency_ms=100.0,
+            error_rate=0.01,
+            safety_violation_count=0,
+            cpu_pct=50.0,
+            mem_mb=1000.0,
+        )
+        self.shadow = ShadowMetrics(
+            p95_latency_ms=105.0,
+            error_rate=0.015,
+            safety_violation_count=0,
+            cpu_pct=52.0,
+            mem_mb=1020.0,
+        )
+
+    def production_metrics(self):
+        return self.production
+
+    def shadow_metrics(self, pkg):
+        return self.shadow
+
+
 class FakeVersionStore:
     """In-memory fake version store."""
 
@@ -126,6 +153,7 @@ class TestProposalOnlyMode:
             audit_store=audit_store,
             telemetry_store=telemetry_store,
             config_provider=config_provider,
+            baseline_metrics_provider=FakeBaselineMetricsProvider(),
         )
 
         # Execute
@@ -171,6 +199,7 @@ class TestProposalOnlyMode:
             audit_store=audit_store,
             telemetry_store=telemetry_store,
             config_provider=config_provider,
+            baseline_metrics_provider=FakeBaselineMetricsProvider(),
             version_store=version_store,  # Provided but should not be called
         )
 
@@ -215,6 +244,7 @@ class TestProposalOnlyMode:
             audit_store=audit_store,
             telemetry_store=telemetry_store,
             config_provider=config_provider,
+            baseline_metrics_provider=FakeBaselineMetricsProvider(),
             activator=activator,  # Provided but should not be called
         )
 
@@ -280,6 +310,7 @@ class TestDeterminism:
             audit_store=audit_store,
             telemetry_store=telemetry_store,
             config_provider=config_provider,
+            baseline_metrics_provider=FakeBaselineMetricsProvider(),
         )
 
         # Execute multiple times
