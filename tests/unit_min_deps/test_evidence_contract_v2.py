@@ -208,14 +208,14 @@ def test_validate_evidence_contract_structure():
          patch.object(contract, 'validate_commit_exists') as mock_exists, \
          patch.object(contract, 'validate_hash_loop_prevention') as mock_loop:
         
-        # Test without evidence_commit
+        # Test without evidence_commit (draft mode - no hash-loop check)
         contract.validate_evidence_contract_structure("a" * 40, require_evidence_commit=False)
         
         mock_hash.assert_called_once_with("a" * 40)
         mock_exists.assert_called_once_with("a" * 40)
-        mock_loop.assert_called_once_with("a" * 40)
+        mock_loop.assert_not_called()  # Not called in draft mode
         
-        # Test with evidence_commit
+        # Test with evidence_commit (hash-loop check enabled)
         mock_hash.reset_mock()
         mock_exists.reset_mock()
         mock_loop.reset_mock()
@@ -224,7 +224,7 @@ def test_validate_evidence_contract_structure():
         
         assert mock_hash.call_count == 2
         assert mock_exists.call_count == 2
-        mock_loop.assert_called_once_with("a" * 40)
+        mock_loop.assert_called_once_with("a" * 40)  # Called when evidence_commit provided
 
 
 @pytest.mark.unit_min_deps
