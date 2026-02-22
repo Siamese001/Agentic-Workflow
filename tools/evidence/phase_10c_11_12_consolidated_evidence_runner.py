@@ -8,8 +8,11 @@ Generates consolidated evidence for:
 - Phase 12: CI Ordering + Hard-Fail Wiring
 
 Uses Evidence Contract v2 helper for scope isolation and self-verification.
+All command outputs are stripped of ANSI escape sequences before embedding.
+Runner hard-fails if any required command exits non-zero.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -17,6 +20,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from evidence_contract_v2 import EvidenceContractV2
+
+_ANSI_RE = re.compile(r'\x1b\[[0-9;]*[mABCDEFGHJKSTfhilmnprsu]')
+
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI escape sequences and replace remaining non-ASCII with '?'."""
+    text = _ANSI_RE.sub('', text)
+    return ''.join(c if ord(c) < 128 else '?' for c in text)
 
 
 def main():
@@ -105,33 +116,30 @@ def main():
         ),
     ]
     
+    failed_commands = []
     for cmd, title in commands:
         evidence_lines.append(f"## {title}")
         evidence_lines.append("```")
         evidence_lines.append(f"$ {' '.join(cmd)}")
-        
+
         rc, out, err = contract.run_cmd(cmd)
-        evidence_lines.append(out)
-        if err:
-            evidence_lines.append(f"STDERR: {err}")
+        out_clean = strip_ansi(out)
+        err_clean = strip_ansi(err)
+        evidence_lines.append(out_clean)
+        if err_clean.strip():
+            evidence_lines.append(f"STDERR: {err_clean}")
         if rc != 0:
             evidence_lines.append(f"EXIT CODE: {rc}")
-        
+            failed_commands.append((title, rc))
+
         evidence_lines.append("```")
         evidence_lines.append("")
-    
-    # Embed full contents of inspected files
-    evidence_lines.append("## INSPECTED_FILE_CONTENTS")
-    evidence_lines.append("")
-    
-    for filepath in sections["INSPECTED_FILES"]:
-        full_path = repo_root / filepath
-        evidence_lines.append(f"### {filepath}")
-        evidence_lines.append("```")
-        content = EvidenceContractV2.read_file_content(full_path)
-        evidence_lines.append(content)
-        evidence_lines.append("```")
-        evidence_lines.append("")
+
+    if failed_commands:
+        print("ERROR: The following required commands failed:")
+        for title, rc in failed_commands:
+            print(f"  - {title}: exit {rc}")
+        sys.exit(1)
     
     # Write evidence file with LF line endings and no trailing whitespace
     evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
