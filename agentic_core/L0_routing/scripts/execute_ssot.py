@@ -23,7 +23,6 @@ import os
 import platform
 import signal
 import stat  # [HARDENED] For permission bits
-import subprocess
 import sys
 import tempfile
 import time
@@ -37,6 +36,11 @@ from types import FrameType
 from typing import Any, Optional
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+
+# Safe subprocess wrapper for mutation protection
+from agentic_core.L2_execution.tools.safe_subprocess import (
+    safe_subprocess_run,
+)
 
 
 def _preflight_import_check() -> None:
@@ -288,7 +292,13 @@ def _maybe_force_utf8_console() -> None:
     """Unconditional stdout/stderr UTF-8 coercion.  Called at runtime, NOT import time."""
     if sys.platform.startswith("win"):
         try:
-            subprocess.run(["chcp", "65001"], stdout=DEVNULL, stderr=DEVNULL, check=False)
+            safe_subprocess_run(
+                ["chcp", "65001"],
+                stdout=DEVNULL,
+                stderr=DEVNULL,
+                check=False,
+                allow_protected_root_mutation=True,
+            )
         except FileNotFoundError:
             pass
     try:

@@ -11,13 +11,11 @@ ToolsmithAgent - L2 Tool Creation Agent
 
 """
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
-from typing import Any
 
+from agentic_core.L2_execution.tools.write_gateway import write_json, write_text
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
@@ -352,15 +350,13 @@ class ToolsmithAgent(SovereignBaseAgent):
         directory: Any = directory or Path("generated_tools")
         directory.mkdir(exist_ok=True)
         file_path: Any = directory / f"{name}.py"
-        with open(file_path, "w") as f:
-            f.write(tool.code)
+        # Use write_gateway for safe file operations
+        write_text(str(file_path), tool.code)
         if tool.test_code:
             test_path: Any = directory / f"test_{name}.py"
-            with open(test_path, "w") as f:
-                f.write(tool.test_code)
+            write_text(str(test_path), tool.test_code)
         spec_path: Any = directory / f"{name}_spec.json"
-        with open(spec_path, "w") as f:
-            json.dump(tool.spec.to_dict(), f, indent=2)
+        write_json(str(spec_path), tool.spec.to_dict())
         Logger.info(f"Saved tool {name} to {directory}")
         return True
 
@@ -497,7 +493,7 @@ class ToolsmithAgent(SovereignBaseAgent):
                     results["seeded"].append(f"[DRY RUN] {file_path.relative_to(project_root)}")
                 else:
                     try:
-                        file_path.write_text(content, encoding="utf-8")
+                        write_text(str(file_path), content)
                         results["seeded"].append(str(file_path.relative_to(project_root)))
                         Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
                     except OSError as e:

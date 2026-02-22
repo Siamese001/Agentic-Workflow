@@ -32,13 +32,13 @@ import json
 import logging
 import os
 import platform
-import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
 
 # ==============================================================================
@@ -293,9 +293,9 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
 
 def get_git_commit(root: Path) -> str:
     try:
-        out = subprocess.check_output(
+        out = safe_subprocess_check_output(
             ["git", "-C", str(root), "rev-parse", "HEAD"],
-            stderr=subprocess.DEVNULL,
+            allow_protected_root_mutation=True,
         )
         return out.decode("utf-8").strip()
     # guardian: allow-silent-swallow

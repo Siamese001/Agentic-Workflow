@@ -26,7 +26,6 @@ import hashlib
 import json
 import logging
 import platform
-import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -58,6 +57,7 @@ from agentic_core.L0_routing.utils.ssot_discovery_util import (
     invalidate_cache,
     load_agent_discovery,
 )
+from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
 
 classification_cache_context = get_classification_cache_context()
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
@@ -127,11 +127,11 @@ def sha256_file(path: Path) -> str:
 
 def get_git_commit(root: Path) -> str:
     try:
-        out = subprocess.check_output(
+        out = safe_subprocess_check_output(
             ["git", "-C", str(root), "rev-parse", "HEAD"],
-            stderr=subprocess.DEVNULL,
+            allow_protected_root_mutation=True,
         )
-        return out.decode("utf-8").strip()
+        return out.strip()
     # guardian: allow-silent-swallow
     except Exception:
         return ""
