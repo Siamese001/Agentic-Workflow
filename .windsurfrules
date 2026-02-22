@@ -987,6 +987,38 @@ Violation: HARD FAIL
 
 ---
 
+## 53. Editor Hang Prevention Protocol
+
+Use `--no-edit` flag to avoid editor hang and check for conflicts:
+
+**Required for Git Operations:**
+- All git commands that may trigger an editor MUST use `--no-edit` flag
+- `git commit --no-edit` to prevent editor invocation
+- `git merge --no-edit` to prevent editor hang
+- `git rebase --no-edit` when appropriate
+- `git cherry-pick --no-edit` to avoid editor prompts
+
+**Conflict Detection Protocol:**
+- Before any git operation, check for potential conflicts
+- Use `git status --porcelain` to verify clean working tree
+- Use `git diff --name-only` to identify changed files
+- If conflicts detected, resolve before proceeding with operation
+
+**Editor Hang Prevention:**
+- Terminal-based editors (vim, nano) can hang automation
+- GUI editors may block execution waiting for user input
+- `--no-edit` ensures non-interactive execution
+- Combine with `--no-verify` only when pre-commit bypass is explicitly authorized
+
+**Evidence Requirements:**
+- Evidence files must show `--no-edit` flag usage
+- Conflict status must be documented before operations
+- Any editor-related failures must be captured in evidence
+
+Violation: HARD FAIL
+
+---
+
 # CORE MAXIM
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
