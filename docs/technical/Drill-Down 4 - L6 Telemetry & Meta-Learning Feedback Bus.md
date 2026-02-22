@@ -5,8 +5,11 @@
 
     [ ASYNC EVENT FIREHOSE (Kafka / Redpanda Topics) ]
     +---------------------------------------------------------------------------------+
-    | PAYLOAD: { "trace_id": "hex_9f2", "layer": "L2.2", "metric_type": "ast_fail",   |
-    |            "duration_ms": 1402, "payload_hash": "a94a8fe", "human_override": 1 }|
+    | ExecutionTrace: { "trace_id": "hex_9f2", "plan_hash": "a94a8fe", "actor": "L2.2",|
+    |                   "target": "L4_ledger", "diff": "{...}", "policy_hash": "abc123x",|
+    |                   "timestamp": 1708628400, "prev_hash": "0x88fA...",             |
+    |                   "replay_key": "hash(trace_id+plan_hash+transcript)" }         |
+    | TelemetryEvent: { "layer": "L2.2", "metric_type": "ast_fail", "duration": 1402 }|
     +---------------------------------------------------------------------------------+
                           ||
                           || (Push: Zero-Blocking UDP / gRPC streams)
@@ -22,11 +25,11 @@
 |   |-----------------------------------------------------------------|      |-----------------------------------------------------------------|          |
 |   | [1.1] eBPF Hooks: Monitors L2 Sandbox syscalls & syscall depth  |      | [2.1] Feature Vector: [Latency, Token_Usage, Depth, Auth_Tier]  |          |
 |   | [1.2] Memory Leak Detection: Watches micro-VM heap drift        | <==> | [2.2] Isolation Forest: Flags recursive HOP loops if score>0.92 |          |
-|   | [1.3] Zero-Overhead: No impact on active L2 execution sandbox   |      | [2.3] [!] STALL: Fires emergency gRPC halt to L0 Gate on alert  |          |
-|   | [1.4] Cosine Similarity Drift: Detects embedding baseline drift |      | [2.4] [BROADCAST] BREAK RECURSIVE CYCLES: Triggers Stall &      |          |
-|   | [1.5] Violation Detection: Observes [DRIFT] / [VIOLATION] flags |      |        Forces PATH D (Human Review) on recursive loop detect    |          |
-|   +-----------------------------------------------------------------+      +-----------------------------------------------------------------+          |
-|                             ||                                                                       ||                                                   |
+|   | [1.3] Zero-Overhead: No impact on active L2 execution sandbox   |      | [2.3] [!] ESCALATION FLAG: Emits [CRITICAL_ANOMALY] to L4.A     |          |
+|   | [1.4] Cosine Similarity Drift: Detects embedding baseline drift |      |       (L0 reads this on the next tick to force PATH D).         |          |
+|   | [1.5] Violation Detection: Observes [DRIFT] / [VIOLATION] flags |      | [2.4] [BROADCAST] BREAK RECURSIVE CYCLES: Flags loop in L4.B,   |          |
+|   +-----------------------------------------------------------------+      |       triggering L0 to route to PATH D on next cycle.           |          |
+|                             ||                                             +-----------------------------------------------------------------+          |
 |                             v                                                                        v                                                   |
 |   +----------------------------------------------------------------------------------------------------------------------------------+                   |
 |   | 3.0 L6.B — SIGNAL GROUPER (NOISE FILTER & CROSS-NAMESPACE CORRELATOR)                                                            |                   |
@@ -34,7 +37,7 @@
 |   | [3.1] Noise Filtering: Discards low-confidence L6.A signals below statistical significance threshold                             |                   |
 |   | [3.2] Cross-Namespace Correlation: Joins events across L1/L2/L3/L5 trace namespaces into unified incident record                 |                   |
 |   | [3.3] Grouped Telemetry Emit: Produces [GROUPED_TELEMETRY] bundle -> written to L4.B Telemetry Storage                          |                   |
-|   | [3.4] [SYSTEM_STATE_WARNING]: Emits structured warning signal when aggregated score exceeds drift threshold                      |                   |
+|   | [3.4] [SYSTEM_STATE_WARNING]: Emits structured warning signal to L4 when aggregated score exceeds drift threshold                |                   |
 |   | [3.5] Derived Indicators: Computes [drift_confidence_score] -> written to L4.B Routing State                                     |                   |
 |   |                                                                                                                                  |                   |
 |   | ML Integration:                                                                                                                  |                   |
@@ -48,7 +51,7 @@
 |   |----------------------------------------------------------------------------------------------------------------------------------|                   |
 |   | [4.1] Causal Graph: Maps failure back to source (L1 RAG vs. L2 Logic vs. L5 Safety Policy)                                       |                   |
 |   | [4.2] Teacher Evaluation (LLM-as-a-Judge): High-reasoning model (GPT-4o/Claude) grades agent output                             |                   |
-|   |        against Path D Human Correction — produces quality score per interaction                                                  |                   |
+|   |        against Path D HumanDecisionArtifact — produces quality score per interaction                                             |                   |
 |   | [4.3] DPO Pair Gen: Formats interaction into JSONL { "chosen": [Human], "rejected": [Agent] } for fine-tuning                    |                   |
 |   | [4.4] Reasoning Feedback: L6 warning signals consumed by L1.C Reasoning & Re-Planning loop                                       |                   |
 |   |        -> L1.C adjusts reasoning methodology, selects new routing path, emits refined proposal                                   |                   |
@@ -103,7 +106,8 @@
 |  |-------------------------------------------------------------------------------------------|                                                           |
 |  | Derives: [DRIFT_SCORE]             — aggregated from L4.A cosine drift + L4.B rate        |                                                           |
 |  | Derives: [VIOLATION_RATE]          — rolling count of violations per time window          |                                                           |
-|  | Commits: [OUTCOME_LOGS]            — L2 execution outcomes versioned and anchored         |                                                           |
+|  | Commits: [OUTCOME_LOGS]            — L2 ExecutionTraces versioned and anchored            |                                                           |
+|  |                                      via cryptographic hash chaining (prev_hash).         |                                                           |
 |  | Reads:   [EMBEDDER_ID]             — active embedding model identifier                    |                                                           |
 |  | Writes:  [DRIFT_METRICS]           — final drift signal committed for L0 consumption      |                                                           |
 |  | Reads:   [ACTIVE_POLICY_VERSION]   — current governance policy hash                       |                                                           |
@@ -190,26 +194,4 @@
 | L5    | BLOCK   | Inbound: [L1 Proposal] / Outbound: [Decision]            | GATEKEEPER (Can kill a process before it reaches L2 Execution)              |
 | L0    | ROUTE   | Inbound: [L4 State Bundle] / Outbound: [Path A/B/C/D]    | FIRST AUTHORITY (Evaluates L4 state, assigns execution path)                |
 | L2    | EXECUTE | Inbound: [Approved Action] / Outbound: [State Diff]      | SOLE MUTATION POINT (Only layer that may write durable state changes)       |
-+==========================================================================================================================================================+
-
-+==========================================================================================================================================================+
-| TIME-SHIFTED ARCHITECTURAL GUARANTEES                                                                                                                    |
-|==========================================================================================================================================================|
-| 1. STRICT ISOLATION:   L6 possesses ZERO authority to route or block. It only WRITES telemetry to L4.                                                   |
-| 2. INDIRECT INFLUENCE: L6 and L0 have ZERO direct communication. L6 informs the state; the state informs the router.                                    |
-| 3. EVOLUTIONARY LAG:   Detection occurs in Run t. Routing behavior adapts in Run t+1 based on updated L4 parameters.                                    |
-| 4. ANCHORING:          All routing decisions in L0 are bound by versioned thresholds derived from L4.B background aggregation.                          |
-+==========================================================================================================================================================+
-
-+==========================================================================================================================================================+
-| CRITICAL ARCHITECTURAL INVARIANTS                                                                                                                        |
-|==========================================================================================================================================================|
-| 1. APPS INITIATION:    The apps layer initiates requests but cannot pass authority tokens beyond L1/L6.                                                  |
-| 2. ASYNC PRODUCERS:    L1 and L6 are asynchronous, unprivileged agents that observe/propose but never execute.                                           |
-| 3. NON-MUTANT THINKING:L1 generates reasoning without the ability to mutate the system.                                                                  |
-| 4. PASSIVE GUARDIAN:   L6 monitors for anomalies/drift without the power to block or execute system actions.                                             |
-| 5. L4 MASTER BUS:      L4 is the single source of truth — stores all configurations, telemetry, proposals, and derived aggregates.                      |
-| 6. THE BRIDGE:         L4 acts as the sole bridge between L1/L6 and the Control Spine (L0). No bypass is architecturally possible.                      |
-| 7. PRIVILEGED ROUTING: L0 is the first authority node, evaluating L4 state to route the next execution path.                                            |
-| 8. ISOLATION:          Strict boundaries ensure no direct communication between L1/L6 and the Routing Authority (L0).                                   |
 +==========================================================================================================================================================+

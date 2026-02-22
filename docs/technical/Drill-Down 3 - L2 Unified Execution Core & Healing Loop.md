@@ -42,7 +42,8 @@
 |  | - Evaluates Policy + Permissions against proposed action                                  |      | - Sandbox Constraints                    |         |
 |  | - [CONF_CALIB] Risk Gate: Limits blind execution via confidence calibration thresholds    |      +------------------------------------------+         |
 |  | - [RISK]  RISK TIER CLASSIFY: Assigns tier 1–5 to proposed action                        |                                                           |
-|  | - [STMP]  COMPLIANCE HASH/STAMP: Stamps action with policy version hash                  |                                                           |
+|  | - [STMP]  COMPLIANCE HASH/STAMP: Cryptographically signs Canonical JSON InstructionPacket|                                                           |
+|  |           (trace_id + plan_hash + allowed_tools + code_block).                           |                                                           |
 |  | - [STOP]  HARD STOP REJECTION: Immediately blocks tier 4–5 actions                       |                                                           |
 |  | - [BLOCK] BLOCK HOSTILE INPUT: Strips any residual injection vectors                     |                                                           |
 |  |                                                                                           |                                                           |
@@ -71,9 +72,12 @@
 |   | [1.1] Redlock Acquisition: Acquires N/2+1 Redis quorum locks    |      | [2.1] Merkle Tree Construction: Computes hashes for target rows |          |
 |   | [1.2] TTL Lease: Sets hard execution expiry (e.g., 5000ms)      | <==> | [2.2] Baseline Anchoring: Stores hash in ephemeral L2 cache     |          |
 |   | [1.3] RBAC Token Verification: Validates JWT scopes for task    |      |       Emits: boundary_snapshot.json (pre-execution baseline)   |          |
-|   | [FREEZ] FREEZE CLEAN SYSTEM STATE before any write begins       |      | [2.3] Resource Prediction: L6-fed cgroup RAM/CPU allocation     |          |
-|   | [CLAIM] CLAIM EXCLUSIVE WRITE ACCESS (blocks concurrent writes) |      +-----------------------------------------------------------------+          |
-|   | [GUARD] PRESERVE EXISTING CODE INTEGRITY (read-before-write)    |                                                                                   |
+|   | [1.4] Signature Verification: Validates HMAC-SHA256 of Canonical|      | [2.3] Resource Prediction: L6-fed cgroup RAM/CPU allocation     |          |
+|   |       Plan. If tampered, Hard Reject.                           |      +-----------------------------------------------------------------+          |
+|   | [1.5] ToolBudget Caps: Enforces hard limits on max_compute_ms,  |                                                                                   |
+|   |       memory_mb, and stdout_bytes.                              |                                                                                   |
+|   | [FREEZ] FREEZE CLEAN SYSTEM STATE before any write begins       |                                                                                   |
+|   | [CLAIM] CLAIM EXCLUSIVE WRITE ACCESS (blocks concurrent writes) |                                                                                   |
 |   +-----------------------------------------------------------------+                                                                                   |
 |                             ||                                                                       ||                                                   |
 |                             v                                                                        v                                                   |
@@ -97,8 +101,13 @@
 |   | [4.1] Micro-VM Boot: Isolated Firecracker instance (<150ms)     |      | • [OOM Guard]: Kills VM if RAM > cgroup_limit (512MB)           |          |
 |   | [4.2] Execution Ceilings: Hard cgroup CPU/Memory starvation caps| <==> | • [Latency Check]: Ceiling [CEIL] triggers L2.3 if > 2000ms     |          |
 |   | [4.3] Virtual Network: Zero external ingress/egress allowed     |      | • [Diff Engine]: Generates JSON Patch (RFC 6902) post-run       |          |
-|   | SOLE DURABLE MUTATION POINT — only L2.2 may write to state      |      +-----------------------------------------------------------------+          |
-|   | [QUOTA] KILL INFINITE COMPUTE BURN: Hard cycle ceiling enforced |                                                                                   |
+|   | [4.4] PTC CONTRACTS ENFORCED: Strict ToolCall -> ToolResult     |      +-----------------------------------------------------------------+          |
+|   |       execution. STDOUT-ONLY RULE: Output constrained to        |                                                                                   |
+|   |       structured ToolTranscript (max bytes, redacted).          |                                                                                   |
+|   | [4.5] UWG INTERCEPT (SINGLE MUTATION AUTHORITY): Runtime        |                                                                                   |
+|   |       blocking of ALL non-gateway writes (FS/DB/Vector).        |                                                                                   |
+|   |       Translates to Audit Envelope: [trace_id, plan_hash, actor,|                                                                                   |
+|   |       target, diff, policy_hash, timestamp].                    |                                                                                   |
 |   | [FEEDBACK] INJECT FAILURE CONTEXT: On error, enriches error     |                                                                                   |
 |   |            payload with execution trace before routing to healer|                                                                                   |
 |   +-----------------------------------------------------------------+                                                                                   |
@@ -116,7 +125,10 @@
 |   | [5.4] [WRITE] COMMIT      |      | [RESET]   REVERT STATE: Restores pre-execution snapshot         |                                                 |
 |   |       VERIFIED STATE      |      | [CURE]    FIX AND RETRY: Correction Strategy Synthesis          |                                                 |
 |   |       CHANGE to L4        |      |           Generates revised_action_proposal.json                |                                                 |
-|   +---------------------------+      | [6.1] Cap: If retries > 3, hard abort to Path D (Human Review)  |                                                 |
+|   +---------------------------+      | [RE-SIGN] RE-SIGN RULE: Old signatures are strictly invalid.    |                                                 |
+|                                      |           Healed plans MUST generate a new plan_hash and        |                                                 |
+|                                      |           re-clear L5 Safety Gate for a new HMAC signature.     |                                                 |
+|                                      | [6.1] Cap: If retries > 3, hard abort to Path D (Human Review)  |                                                 |
 |                                      +-----------------------------------------------------------------+                                                 |
 |                                                         ||                                                                                               |
 |   [ DATA MUTATION & RAG SYNC ]                          || (4. Error Root / Rollback Req)                                                               |
@@ -126,7 +138,7 @@
 |   | • Vector Store Write: Async push to external vector store        |                                                                                   |
 |   | • [TRTH] ANCHOR KNOWLEDGE DRIFT: Prevents stale embeddings       |                                                                                   |
 |   |   from persisting across sessions — drift detected and flagged   |                                                                                   |
-|   | • [ASYNC_SYNC]: Vector store write is non-blocking after L2.2    |                                                                                   |
+|   | • [ASYNC_SYNC]: Vector store write is non-blocking after UWG     |                                                                                   |
 |   |   confirms commit — state update does not block response path    |                                                                                   |
 |   +-----------------------------------------------------------------+                                                                                   |
 |                                                                                                                                                          |
@@ -161,27 +173,10 @@
 +==========================================================================================================================================================+
 | FINAL DECISION / OUTCOME LOGGING                                                                                                                         |
 |==========================================================================================================================================================|
-| - Outcome and state diffs are versioned and committed to L4 audit log                                                                                    |
+| - Outcome and state diffs are versioned and committed to L4 audit log via Audit Envelope                                                                 |
 | - [SYNC]  UPDATE SHARED TEAM MEMORY: Non-blocking state update occurs only after L2.2 confirms commit                                                    |
 | - [RECON] VERIFY DATA MATCHES REALITY: Detects ghost mutations across state layers (L4 vs. live state)                                                   |
 | - Metrics captured: Execution Latency, Outcome Accuracy, Compute Cost, Human Correction Rate                                                             |
 |                                                                                                                                                          |
 |  +===(ZERO-LOSS LOOP: COMMIT TO L4 VIA META-LEARNING BUS)=================================================================>  L4 ANCHOR (VERSIONED UPDATE) |
-+==========================================================================================================================================================+
-
-+==========================================================================================================================================================+
-| CRITICAL DISSEMINATION GUARANTEES (L2 SCOPE)                                                                                                            |
-|==========================================================================================================================================================|
-| 1.  NO SKIPPING THE SAFETY GATES: Every proposed action — including healed ones — must clear L5 before L2 entry.                                        |
-| 2.  ALWAYS ATTACH THE SAFETY FENCES: [D0] fences from L5 Elevator Shaft remain active throughout L2 execution.                                          |
-| 3.  ONLY LOAD DATA WHEN NEEDED: [JIT] context loading prevents stale or over-broad context injection.                                                    |
-| 4.  HEALED PLANS MUST RE-CLEAR SAFETY: Zero trust on corrected actions — trust is not inherited from prior approved_action.json.                         |
-| 5.  DON'T LOSE DATA ON ERROR: [FEEDBACK] enriches error payload before routing to healer — full context preserved.                                       |
-| 6.  ISOLATE EVERY CHANGE IN SANDBOX: Firecracker micro-VM ensures zero durable damage on failure.                                                        |
-| 7.  ONLY USE PRE-APPROVED SYSTEM TOOLS: [CID] physically blocks rogue function calls not in L4 capability registry.                                      |
-| 8.  BREAK TASKS INTO TINY PIECES: [SHRED] at L3 minimizes blast radius — each atomic sub-action is independently scoped.                                 |
-| 9.  PROTECT KNOWLEDGE FROM AGENT DRIFT: [TRTH] anchoring prevents agents from corrupting the vector truth store.                                         |
-| 10. STOP AGENTS FROM BURNING MONEY: [QUOTA] + [CEIL] kill infinite loops and compute spikes before they propagate.                                       |
-| 11. RECORD THE WHY, NOT WHAT: [ROOT] RCA captures decision logic and stack trace — not just the error code.                                              |
-| 12. DOUBLE-CHECK DATA MATCHES THE WORLD: [RECON] detects ghost or hidden mutations across state layers post-commit.                                      |
 +==========================================================================================================================================================+
