@@ -9,7 +9,7 @@ Phase 12: CI Ordering + Hard-Fail Wiring (repo-wide, deterministic)
 d77f6650c850768f50ad0151e69a33c8e87d3899
 
 ## EVIDENCE_COMMIT
-PENDING
+4f6428d4ff6ddb5e8aabce392ea98c88ec5b8550
 
 ## FILES_CHANGED_CODE
 ```
@@ -18,7 +18,7 @@ tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py
 
 ## FILES_CHANGED_EVIDENCE
 ```
-PENDING (will be filled after commit)
+docs/reports/plans/phase_10c_11_12_consolidated.md
 ```
 
 ## INSPECTED_FILES
@@ -439,7 +439,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:06:38 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 18:09:12 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 PASSED                                                                   [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED [ 33%]
@@ -569,7 +569,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:06:59 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 18:09:33 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [ 44%]
@@ -656,7 +656,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:06:59 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 18:09:33 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 51%]
@@ -1253,17 +1253,17 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.13s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.12s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.45s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.21s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-1.98s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.58s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
-1.58s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-1.56s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
-1.56s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
-================= 1177 passed, 4 warnings in 62.90s (0:01:02) =================
+3.09s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.00s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+2.96s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+2.92s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.60s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.27s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.53s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_no_nondeterministic_fields
+1.53s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
+1.52s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_base_class_name_extraction
+1.51s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
+================= 1177 passed, 4 warnings in 67.22s (0:01:07) =================
 ```
 
 ## Evidence Contract v2 Checker
@@ -1698,7 +1698,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:07:41 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 18:10:20 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 PASSED                                                                   [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED [ 33%]
@@ -1828,7 +1828,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:08:02 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 18:10:41 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [ 44%]
@@ -1915,7 +1915,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-22 18:08:02 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 18:10:41 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 51%]
@@ -2512,17 +2512,17 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.08s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.49s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.29s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-2.00s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.57s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_no_nondeterministic_fields
-1.56s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
-1.54s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
-1.54s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-================= 1177 passed, 4 warnings in 62.47s (0:01:02) =================
+3.09s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+3.06s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+3.05s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.00s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+2.39s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.38s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.54s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_base_class_name_extraction
+1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_summary_counts_consistent
+1.53s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_dynamic_violation_summary
+1.52s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
+================= 1177 passed, 4 warnings in 67.47s (0:01:07) =================
 
 
 [Evidence Contract v2 Checker]
