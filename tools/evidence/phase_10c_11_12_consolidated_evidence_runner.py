@@ -88,7 +88,7 @@ def main():
     # Command outputs
     commands = [
         (
-            [sys.executable, "-m", "pytest", "-q"],
+            [sys.executable, "-m", "pytest", "-q", "--color=no"],
             "Full Test Suite",
         ),
         (

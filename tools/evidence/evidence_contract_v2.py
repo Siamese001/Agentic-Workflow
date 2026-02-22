@@ -114,8 +114,8 @@ class EvidenceContractV2:
             )
     
     def validate_evidence_contract_structure(
-        self, 
-        code_commit: str, 
+        self,
+        code_commit: str,
         evidence_commit: Optional[str] = None,
         require_evidence_commit: bool = False
     ) -> None:
@@ -123,7 +123,11 @@ class EvidenceContractV2:
         # Validate CODE_COMMIT
         self.validate_commit_hash(code_commit)
         self.validate_commit_exists(code_commit)
-        self.validate_hash_loop_prevention(code_commit)
+        
+        # Hash-loop prevention: only enforce when EVIDENCE_COMMIT is provided
+        # In draft mode (no EVIDENCE_COMMIT), CODE_COMMIT can equal HEAD
+        if evidence_commit:
+            self.validate_hash_loop_prevention(code_commit)
         
         # Validate EVIDENCE_COMMIT if required
         if require_evidence_commit:

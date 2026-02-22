@@ -45,7 +45,7 @@ def main():
     
     gates = [
         (
-            [sys.executable, "-m", "pytest", "-q"],
+            [sys.executable, "-m", "pytest", "-q", "--color=no"],
             "Full Test Suite",
         ),
         (
