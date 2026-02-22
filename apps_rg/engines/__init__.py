@@ -6,18 +6,6 @@ importable directly from their modules, e.g.:
     from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 """
 
-from .ResumeAssemblyAgent import (
-    ResumeAssemblyAgent,
-    get_resume_executive_summary,
-    get_resume_skills_section,
-)
-from .RGStrategyExecutor import RGStrategyExecutor
-from .RGValidationExecutor import RGValidationExecutor
+# No eager imports - all modules imported directly to avoid import errors
 
-__all__ = [
-    "RGStrategyExecutor",
-    "RGValidationExecutor",
-    "ResumeAssemblyAgent",
-    "get_resume_skills_section",
-    "get_resume_executive_summary",
-]
+__all__ = []
