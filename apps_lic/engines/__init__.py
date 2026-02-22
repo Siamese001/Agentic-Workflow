@@ -6,15 +6,33 @@ importable directly from their modules, e.g.:
     from apps_lic.engines.OutreachSignalRouterAgent import OutreachSignalRouterAgent
 """
 
-from .ExecutiveStrategyAgent import (
-    ExecutiveStrategyAgent,
-    get_exec_interviewer_profile,
-    get_exec_shadow_audit,
-    get_exec_strategy_roadmap,
-)
-from .HOPPipelineExecutor import HOPPipelineExecutor
-from .LICValidationExecutor import LICValidationExecutor
-from .OutreachMessageAgent import OutreachMessageAgent
+try:
+    from apps_lic.enforcement.ExecutiveStrategyAgent import (
+        ExecutiveStrategyAgent,
+        get_exec_interviewer_profile,
+        get_exec_shadow_audit,
+        get_exec_strategy_roadmap,
+    )
+except ImportError:
+    ExecutiveStrategyAgent = None  # type: ignore[assignment,misc]
+    get_exec_interviewer_profile = None  # type: ignore[assignment]
+    get_exec_shadow_audit = None  # type: ignore[assignment]
+    get_exec_strategy_roadmap = None  # type: ignore[assignment]
+
+try:
+    from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor
+except ImportError:
+    HOPPipelineExecutor = None  # type: ignore[assignment,misc]
+
+try:
+    from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+except ImportError:
+    LICValidationExecutor = None  # type: ignore[assignment,misc]
+
+try:
+    from apps_lic.reasoning.OutreachMessageAgent import OutreachMessageAgent
+except ImportError:
+    OutreachMessageAgent = None  # type: ignore[assignment,misc]
 
 __all__ = [
     "ExecutiveStrategyAgent",
