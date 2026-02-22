@@ -26,3 +26,9 @@ jobs:
 
       - name: Run spine adapter contract guard
         run: python ops_scripts/ci/check_spine_adapter_contract.py
+
+      - name: Run evidence contract tests
+        run: python -m pytest -q tests/unit_min_deps/test_evidence_contract_v2.py
+
+      - name: Run evidence contract checker
+        run: python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans

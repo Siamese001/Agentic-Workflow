@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Phase 5-6 Consolidated Evidence Runner (v2)
+Phase 7-8 Consolidated Evidence Runner
 
 Generates consolidated evidence for:
-- Phase 5: Cross-App Spine Normalization & Contract Lock
-- Phase 6: Spine Integrity Guardrail (Structural Enforcement)
+- Phase 7: Evidence Contract v2: Scope Isolation + Self-Verification
+- Phase 8: CI Enforcement: Evidence Contract Guardrail
 
-Updated to use Evidence Contract v2 helper for scope isolation and self-verification.
+Uses Evidence Contract v2 helper for scope isolation and self-verification.
 """
 
 import sys
@@ -19,21 +19,21 @@ from evidence_contract_v2 import EvidenceContractV2
 
 
 def main():
-    """Generate Phases 5-6 consolidated evidence using Contract v2."""
-    args = EvidenceContractV2.parse_args("Generate Phases 5-6 consolidated evidence")
+    """Generate Phases 7-8 consolidated evidence using Contract v2."""
+    args = EvidenceContractV2.parse_args("Generate Phases 7-8 consolidated evidence")
     
     code_commit = args.code_commit
     evidence_commit = args.evidence_commit
     
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_05_06_consolidated.md"
+    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_07_08_consolidated.md"
 
-    print(f"Generating Phases 5-6 consolidated evidence: {evidence_file}")
+    print(f"Generating Phases 7-8 consolidated evidence: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")
     if evidence_commit:
         print(f"EVIDENCE_COMMIT: {evidence_commit}")
     
-    # Initialize contract helper with allowed prefixes for phases 5-6
+    # Initialize contract helper with allowed prefixes for phases 7-8
     allowed_prefixes = {
         "apps_shared/",
         "apps_lic/", 
@@ -58,23 +58,21 @@ def main():
     
     # Start building evidence content
     evidence_lines = []
-    evidence_lines.append("# Phases 5-6: Spine Adapter Normalization & Structural Enforcement (Consolidated)")
+    evidence_lines.append("# Phases 7-8: Evidence Contract v2 + CI Enforcement (Consolidated)")
     evidence_lines.append("")
     evidence_lines.append("## Scope")
-    evidence_lines.append("Phase 5: Cross-App Spine Normalization & Contract Lock")
-    evidence_lines.append("Phase 6: Spine Integrity Guardrail (Structural Enforcement)")
+    evidence_lines.append("Phase 7: Evidence Contract v2: Scope Isolation + Self-Verification")
+    evidence_lines.append("Phase 8: CI Enforcement: Evidence Contract Guardrail")
     evidence_lines.append("")
     
     # Build evidence sections using contract helper
     inspected = [
-        "apps_shared/spine/base_spine_adapter.py",
-        "apps_lic/engines/lic_spine_adapter.py",
-        "apps_rg/engines/rg_spine_adapter.py",
-        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
-        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
-        "tests/unit_min_deps/test_spine_cross_app_contract.py",
-        "ops_scripts/ci/check_spine_adapter_contract.py",
+        "tools/evidence/evidence_contract_v2.py",
         "tools/evidence/phase05_06_consolidated_evidence_runner.py",
+        "tools/evidence/phase07_08_consolidated_evidence_runner.py",
+        "tests/unit_min_deps/test_evidence_contract_v2.py",
+        "ops_scripts/ci/check_evidence_contract_v2.py",
+        ".github/workflows/spine-determinism-guard.yml",
     ]
     
     sections = contract.build_evidence_sections(
@@ -87,28 +85,16 @@ def main():
     # Command outputs
     commands = [
         (
-            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
-            "LIC Unit Tests",
-        ),
-        (
-            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
-            "RG Unit Tests",
-        ),
-        (
-            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_spine_cross_app_contract.py"],
-            "Cross-App Contract Tests",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_spine_bypass.py"],
-            "Spine Bypass Check",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_spine_adapter_contract.py"],
-            "Spine Adapter Contract Guard",
+            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_evidence_contract_v2.py"],
+            "Evidence Contract v2 Unit Tests",
         ),
         (
             [sys.executable, "-m", "pytest", "-q"],
             "Full Test Suite",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
+            "Evidence Contract v2 Checker",
         ),
     ]
     
