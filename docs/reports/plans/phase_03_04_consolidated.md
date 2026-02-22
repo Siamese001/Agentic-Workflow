@@ -5,10 +5,10 @@ Phase 3: Single-evidence-per-response contract implementation
 Phase 4: Production-grade spine adapter hardening (CID invariants, import stability, governance)
 
 ## CODE_COMMIT
-03a61d116dda49020c42eb7602181b1495c6737e
+e4af2fa829e9ba267af68519a0b631147ba61632
 
 ## EVIDENCE_COMMIT
-6b1d8a29bf34e8fd562ba15bfa2d102023fa3968
+PENDING
 
 ## FILES_CHANGED (in CODE_COMMIT)
 ```
@@ -46,7 +46,7 @@ tests/unit_min_deps/test_apps_lic_spine_adapter.py::test_adapter_state_success_o
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-[32m============================== [32m[1m7 passed[0m[32m in 0.04s[0m[32m ==============================[0m
+[32m============================== [32m[1m7 passed[0m[32m in 0.06s[0m[32m ==============================[0m
 ```
 
 ## RG Unit Tests
@@ -71,7 +71,7 @@ tests/unit_min_deps/test_apps_rg_spine_adapter.py::test_adapter_state_success_on
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-[32m============================== [32m[1m7 passed[0m[32m in 0.03s[0m[32m ==============================[0m
+[32m============================== [32m[1m7 passed[0m[32m in 0.04s[0m[32m ==============================[0m
 ```
 
 ## Full Test Suite
@@ -449,7 +449,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:33:00 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 14:40:21 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
@@ -579,7 +579,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:33:20 [[1m[31m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 14:40:43 [[1m[31m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 [32mPASSED[0m[32m                                                                   [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises [32mPASSED[0m[32m [ 42%][0m
@@ -666,7 +666,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash [32mPASSED[0m[32m [ 49%][0m
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:33:20 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 14:40:43 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 [32mPASSED[0m[32m                                                                   [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket [32mPASSED[0m[32m [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls [32mPASSED[0m[32m [ 50%][0m
@@ -1244,12 +1244,12 @@ tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_duplicat
 [33m============================== warnings summary ===============================[0m
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
-  c:\Git\Agentic-Workflow\tests\governance\test_healing_reentry.py:203: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
+  C:\Git\Agentic-Workflow\tests\governance\test_healing_reentry.py:203: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
     if isinstance(elt, ast.Constant) and isinstance(elt.s, str)
 
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
-  c:\Git\Agentic-Workflow\tests\governance\test_healing_reentry.py:201: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
+  C:\Git\Agentic-Workflow\tests\governance\test_healing_reentry.py:201: DeprecationWarning: Attribute s is deprecated and will be removed in Python 3.14; use value instead
     elt.s
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
@@ -1263,17 +1263,17 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.39s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-3.14s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-3.11s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.40s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+3.07s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+3.07s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
 3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.74s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.75s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_dynamic_violation_summary
-1.59s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_allowlist_matches_scanner_total
-1.59s call     tests/governance/test_vllm_isolation.py::test_transitive_import_graph_clean
-1.57s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_allowlist_enforcement_no_unregistered_seams
-[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 72.92s (0:01:12)[0m[33m =================[0m
+2.75s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.54s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.79s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_negative_remove_allowlist_entry_causes_violation
+1.78s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_allowlist_enforcement_no_unregistered_seams
+1.78s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_allowlist_matches_scanner_total
+1.75s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_negative_synthetic_seam_causes_violation
+[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 73.54s (0:01:13)[0m[33m =================[0m
 ```
 
 ## Spine Bypass Check
@@ -1285,685 +1285,150 @@ $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe ops_scripts/
 ## Git Diff Stat
 ```
 $ git diff --stat
-...wn 1 - L1 [U0] Transformation & RAG Pipeline.md |  12 +-
- ...ll-Down 2 - L0 Routing Gate & Elevator Shaft.md |  39 +++--
- ...3 - L2 Unified Execution Core & Healing Loop.md | 112 +++++++-------
- docs/technical/agentic_process_mapping.md          | 165 ++++++++++++---------
- .../phase03_04_consolidated_evidence_runner.py     |  48 +++---
- 5 files changed, 198 insertions(+), 178 deletions(-)
+agentic_core/L0_routing/types/guardian_registry.py |   8 ++
+ .../enforcement/module_collision_guard.py          | 106 +++++++++++++++++++++
+ 2 files changed, 114 insertions(+)
 ```
 
 ## Git Full Diff
 ```
 $ git diff
-diff --git a/docs/technical/Drill-Down 1 - L1 [U0] Transformation & RAG Pipeline.md b/docs/technical/Drill-Down 1 - L1 [U0] Transformation & RAG Pipeline.md
-index 310c7b471..305f50856 100644
---- a/docs/technical/Drill-Down 1 - L1 [U0] Transformation & RAG Pipeline.md
-+++ b/docs/technical/Drill-Down 1 - L1 [U0] Transformation & RAG Pipeline.md
-@@ -113,7 +113,8 @@
- |                  [ LOOP: FALLBACK TO 2.0 EXPANSION ]     +-----------------------------------------------------------------------------------------+     |
- |                  (Triggers broader metadata filters)     | 4.0 DETERMINISTIC ASSEMBLY, FENCING & CRYPTOGRAPHIC PACKAGING                           |     |
- |                                                          |-----------------------------------------------------------------------------------------|     |
--|                                                          | [4.1] Budget Math: Total(128k) = L4_Rules(10k) + C0(90k) + U0(8k) + Reserved_Out(20k)   |     |
-+|                                                          | [4.1] Token Budgeting: Calculates dynamic limits and explicitly emits TokenControl      |     |
-+|                                                          |       Artifact (prompt_hash, token_ceilings) validated against L4 thresholds.           |     |
- |                                                          | [4.2] Delimiter Fencing: Wraps truth in `<grounding_context> [C0] </grounding_context>` |     |
- |                                                          | [4.3] XML Role Hydration: Maps strictly to System, User, and Assistant message arrays   |     |
- |                                                          | [4.4] Payload Freeze: Computes SHA-256 hash of final string to prevent L0 tampering     |     |
-@@ -121,9 +122,10 @@
- |                                                                                          ||                                                              |
- +==========================================================================================||==============================================================+
-                                                                                            ||
--                                                                                           || (Emits: SHA-256 Locked [U0] Payload -> { intent_vector,
--                                                                                           ||          tool_candidates, est_complexity, raw_reasoning,
--                                                                                           ||          grounding_context [C0], payload_hash })
-+                                                                                           || (Emits: SHA-256 Locked [U0] Payload & TokenControl Artifact
-+                                                                                           ||          -> { intent_vector, tool_candidates, est_complexity,
-+                                                                                           ||             raw_reasoning, grounding_context [C0],
-+                                                                                           ||             payload_hash, TokenControl Artifact })
-                                                                                            v
-                                                      +---------------------------------------------------------------------+
-                                                      | TO: L0 – ROUTING (THE FIRST AUTHORITY GATE)                         |
-@@ -159,4 +161,4 @@
-                           +---------------------------+
-                           | PATH D: HUMAN REVIEW      |
-                           | (Stall + Escalation Flag) |
--                          +---------------------------+
-+                          +---------------------------+
-\ No newline at end of file
-diff --git a/docs/technical/Drill-Down 2 - L0 Routing Gate & Elevator Shaft.md b/docs/technical/Drill-Down 2 - L0 Routing Gate & Elevator Shaft.md
-index 9cb78831e..df8ddf0b5 100644
---- a/docs/technical/Drill-Down 2 - L0 Routing Gate & Elevator Shaft.md
-+++ b/docs/technical/Drill-Down 2 - L0 Routing Gate & Elevator Shaft.md
-@@ -5,11 +5,11 @@
+diff --git a/agentic_core/L0_routing/types/guardian_registry.py b/agentic_core/L0_routing/types/guardian_registry.py
+index 698da1f3c..58dee612d 100644
+--- a/agentic_core/L0_routing/types/guardian_registry.py
++++ b/agentic_core/L0_routing/types/guardian_registry.py
+@@ -117,6 +117,14 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
+                 tier="fast",
+                 enabled_by_default=True,
+             ),
++            GuardianSpec(
++                guardian_id="module_collision",
++                entrypoint_module="agentic_core.L5_safety.enforcement.module_collision_guard",
++                entrypoint_fn="run_module_collision_guardian",
++                check_ids=("roots_validation", "baseline_compliance"),
++                tier="fast",
++                enabled_by_default=True,
++            ),
+             GuardianSpec(
+                 guardian_id="contract_integrity",
+                 entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_contract_integrity",
+diff --git a/agentic_core/L5_safety/enforcement/module_collision_guard.py b/agentic_core/L5_safety/enforcement/module_collision_guard.py
+index 40f0b61af..b9cc26498 100644
+--- a/agentic_core/L5_safety/enforcement/module_collision_guard.py
++++ b/agentic_core/L5_safety/enforcement/module_collision_guard.py
+@@ -328,6 +328,112 @@ def discover_roots(repo_root: Path) -> dict[str, Path]:
+     return dict(sorted(roots.items()))
 
-                                                     [ FROM: L1 – THINKING LAYER ]
-                                                     +---------------------------------------------------------------------------------+
--                                                    | PAYLOAD: { "hash": "a94a8fe5ccb19", "auth_tier": "L1_VERIFIED",                 |
-+                                                    | PAYLOAD: { "payload_hash": "a94a8fe5ccb19", "auth_tier": "L1_VERIFIED",         |
-                                                     |            "intent_vector": <768-dim float32>,                                  |
-                                                     |            "tool_candidates": ["resume_writer", "jd_parser"],                  |
--                                                    |            "est_complexity": 0.74,                                              |
--                                                    |            "raw_reasoning": "<CoT trace>",                                     |
-+                                                    |            "TokenControl": {"prompt_hash": "...", "ceilings": 4096},            |
-+                                                    |            "est_complexity": 0.74, "raw_reasoning": "<CoT trace>",              |
-                                                     |            "body": Array[ <System: S0>, <Context: C0>, <User: U0> ] }           |
-                                                     +---------------------------------------------------------------------------------+
-                                                                       ||
-@@ -25,7 +25,7 @@
- |  | L1 Proposal Signal:                       |   | anomaly_score   — cross-layer telemetry output    |                                                  |
- |  |  - intent_vector                          |   | drift_metric    — embedding drift from baseline   |                                                  |
- |  |  - tool_candidates                        |   | injection_flag  — TRUE if jailbreak detected      |                                                  |
--|  |  - est_complexity                         |   | context_usage   — % of context window consumed    |                                                  |
-+|  |  - TokenControl Artifact                  |   | context_usage   — % of context window consumed    |                                                  |
- |  |  - raw_reasoning                          |   +---------------------------------------------------+                                                  |
- |  +------------------------------------------+                      ||                                                                                   |
- |                    ||                                               ||                                                                                   |
-@@ -34,7 +34,7 @@
- |                               +-----------------------------------------------------------------------------------------+                                |
- |                               | 1.0 CONTEXTUAL INGESTION & ENRICHMENT                                                   |                                |
- |                               |-----------------------------------------------------------------------------------------|                                |
--|   [ L4 ROUTING STATE ]        | [1.1] Cryptographic Handshake: Re-hashes payload. IF hash(body) != hash_header -> DROP  |  ( READ: Global Config,   )    |
-+|   [ L4 ROUTING STATE ]        | [1.1] Cryptographic Handshake: Re-hashes payload. IF hash(body) != payload_hash -> DROP |  ( READ: Global Config,   )    |
- |   +--------------------+      | [1.2] Trace_ID Binding: Assigns Immutable Trace_ID + attaches current Policy Hash       | <==( Active Capability Inv,)    |
- |   | - RBAC Matrix      | <==> | [1.3] Signal Correlation: Correlates L1.intent_vector with L6.anomaly_score             |  ( Routing Weights/Rules, )    |
- |   | - Fallback Rules   |      | [1.4] State Lock: Grabs ephemeral Redis lock for Session ID to prevent race conditions  |  ( System Budgets         )    |
-@@ -79,7 +79,7 @@
- |                               | [4.1] Tool Inventory Check: Are L1.tool_candidates actually online in L2?               |                                |
- |                               |       - Queries live capability registry (L4 [TOOL] CAPABILITY INVENTORY)              |                                |
- |                               |       - Any missing tool -> immediate reject back to L1 for replanning                 |                                |
--|                               | [4.2] Budget Forecasting: L1.est_complexity * unit_cost vs. remaining system budget     |                                |
-+|                               | [4.2] Budget Forecasting: Validates L1 `TokenControl` ceilings vs. L4 system limits     |                                |
- |                               |       - IF cost > budget ceiling -> reject to L1 (triggers CoT -> ToT escalation)      |                                |
- |                               |       - IF budget OK -> proceed to Assembly Stage                                      |                                |
- |                               | [4.3] Reject Path: Emits rejection reason + signal back to L1 Cognitive Router          |  ( WRITE: Routing Decision,  ) |
-@@ -101,8 +101,7 @@
- |                               | [5.6] SPLIT Into Atomic Tasks: Breaks compound intent into minimal-scope sub-tasks      |                                |
- |                               |       - Limits blast radius of any single sub-task failure                              |                                |
- |                               |       - Each sub-task gets independent RBAC token                                       |                                |
--|                               | [5.7] Token Cap Verification: Final tiktoken pass to ensure 0% chance of OOM error      |                                |
--|                               |       Budget: Total(128k) = S0+D0+I0(10k) + C0(90k) + U0(8k) + Reserved_Out(20k)       |                                |
-+|                               | [5.7] Token Cap Verification: Final tiktoken pass mapping to L1 `TokenControl` limits   |                                |
- |                               +-----------------------------------------------------------------------------------------+                                |
- |                                                         ||                                                                                               |
- |                                                         v                                                                                                |
-@@ -115,14 +114,19 @@
- |                               | [6.2] RBAC Binding: Attaches specific L4 authorization tokens to each DAG node          |                                |
- |                               |       - Token scope = minimum required permissions only (least-privilege)               |                                |
- |                               | [6.3] Path Evaluation: Emits locked DAG payload to explicit Execution Path (A, B, C, D) |                                |
-+|                               | [6.4] Custody Handoff Rule: DAG logical workflow state and DAG-branch retries are       |                                |
-+|                               |       explicitly assigned to L3 Orchestrator; physical tool execution and compute       |                                |
-+|                               |       healing are strictly assigned to L2 Sandbox.                                      |                                |
- |                               +-----------------------------------------------------------------------------------------+                                |
- |                                                         ||                                                                                               |
- |                                                         v                                                                                                |
- |                               +-----------------------------------------------------------------------------------------+                                |
--|                               | 7.0 POLICY-AWARE DISPATCH                                                               |                                |
-+|                               | 7.0 POLICY-AWARE DISPATCH & CONTRACT SEALING                                            |                                |
- |                               |-----------------------------------------------------------------------------------------|                                |
- |                               | [7.1] Route Mode Stamp: Stamps final "Route Mode" (A/B/C/D) on the artifact             |                                |
--|                               | [7.2] Decision Object Seal: Encrypts and seals the final Decision Object                |                                |
-+|                               | [7.2] Cryptographic Signing: Generates the strict InstructionPacket contract [trace_id, |                                |
-+|                               |       policy_hash, route_mode, token_budget, allowed_tools[], signature(HMAC-SHA256)]   |                                |
-+|                               |       using the L0 Service Key to seal the payload against downstream tampering.        |                                |
- |                               | [7.3] Queue Emission: Emits payload to specific downstream queue for target path        |                                |
- |                               +-----------------------------------------------------------------------------------------+                                |
- |                                                         ||                                                                                               |
-@@ -137,7 +141,7 @@
- |                                                                                                                                                          |
- +=========================================================||===========================================================================================||==+
-                                                           ||
--                                                          || (Emits: RBAC-Locked DAG Payload => Path A, B, C, or D)
-+                                                          || (Emits: Cryptographically Signed InstructionPacket => Path A, B, C, or D)
-                                                           v
-            +-----------------------------+-----------------------------+-----------------------------+-----------------------------+
-            | IF (Tier 1 & Read-Only)     | IF (Tier 2-3 & Rule Bound)  | IF (Tier 1-2 & Trusted Auth)| IF (Tier 4-5 OR Conf < 0.88)|
-@@ -147,10 +151,13 @@
-   | READ-ONLY       |           | POLICY CHECK    |           | EXECUTE DIRECTLY|           | HUMAN REVIEW    |
-   | RESPONSE        |           | FIRST (L3+L5)   |           | (L3 + L2)       |           | (Stall + Flag)  |
-   +=================+           +=================+           +=================+           +=================+
--  | - No mutation   |           | - L3 Orchestrate|           | - L3 Orchestrate|           | - Prepares      |
--  | - Logged outcome|           | - L5 Validate   |           | - L2 Execute    |           |   review artifact|
--  | - ML consumes   |           | - L2 Execute    |           | - ML: Efficiency|           | - Manual        |
--  |   outcome       |           |   if approved   |           |   Tuner active  |           |   approve/reject|
-+  | - No mutation   |           | - L3 Orchestrate|           | - L3 Orchestrate|           | - Requests      |
-+  | - Logged outcome|           | - L5 Validate   |           | - L2 Execute    |           |   HumanDecision-|
-+  | - ML consumes   |           | - L2 Execute    |           | - ML: Efficiency|           |   Artifact      |
-+  |   outcome       |           |   if approved   |           |   Tuner active  |           |   [trace_id,    |
-+  |                 |           |                 |           |                 |           |   policy_hash,  |
-+  |                 |           |                 |           |                 |           |   action,       |
-+  |                 |           |                 |           |                 |           |   reviewer_sig] |
-   +=================+           +=================+           +=================+           +=================+
 
-   [ L0 REJECT -> L1 REPLAN PATH ]
-@@ -160,4 +167,4 @@
-   | L1 Cognitive Router receives signal -> selects alternate methodology                      |
-   | Retry budget: configurable via L4 (default: 3 attempts)                                  |
-   | On exhaustion: L0 forces PATH D (Human Review) regardless of Risk Tier                   |
--  +-------------------------------------------------------------------------------------------+
-+  +-------------------------------------------------------------------------------------------+
-\ No newline at end of file
-diff --git a/docs/technical/Drill-Down 3 - L2 Unified Execution Core & Healing Loop.md b/docs/technical/Drill-Down 3 - L2 Unified Execution Core & Healing Loop.md
-index e15032af9..ff86a2ed1 100644
---- a/docs/technical/Drill-Down 3 - L2 Unified Execution Core & Healing Loop.md
-+++ b/docs/technical/Drill-Down 3 - L2 Unified Execution Core & Healing Loop.md
-@@ -5,13 +5,12 @@
-
-                                    [ FROM: L0 ROUTING — PATH B, C, OR D ]
-                                    +---------------------------------------------------------------------------------+
--                                   | PAYLOAD: { "task_id": "dag_node_4", "rbac_token": "jwt_write_scoped",           |
--                                   |            "action_type": "python_exec", "code_block": "df.dropna().to_sql()",  |
--                                   |            "route_mode": "PATH_C", "trace_id": "trc_88x2_node4",               |
--                                   |            "dag": { "nodes": [...], "edges": [...] } }                          |
-+                                   | INSTRUCTION PACKET: { "trace_id": "trc_88x2_node4", "policy_hash": "abc123x",   |
-+                                   |   "route_mode": "PATH_C", "token_budget": 4096, "allowed_tools": ["python"],    |
-+                                   |   "signature": "<HMAC-SHA256>", "dag": { "nodes": [...], "edges": [...] } }     |
-                                    +---------------------------------------------------------------------------------+
-                                                          ||
--                                                         || (Push: RBAC-Locked DAG Payload)
-+                                                         || (Push: Cryptographically Signed InstructionPacket)
-                                                          v
- +==========================================================================================================================================================+
- | \\\ L3 – ORCHESTRATION (ENTRY GATE & BLAST-RADIUS MINIMIZER)                                                                                        /// |
-@@ -20,13 +19,17 @@
- |  +-------------------------------------------------------------------------------------------+                                                           |
- |  | L3 ORCHESTRATION HANDSHAKE                                                                |                                                           |
- |  |-------------------------------------------------------------------------------------------|                                                           |
--|  | - [HNDS] SEQUENTIAL HANDSHAKE: Verifies DAG node ordering before any action is proposed   |                                                           |
--|  | - [SYNC] WORK INSTRUCTION SYNTHESIS: Translates DAG node into concrete action descriptor  |                                                           |
-+|  | - [DAG]   OWNS LOGICAL WORKFLOW & DAG BRANCH RETRIES: L3 assumes ownership of workflow    |                                                           |
-+|  |           state and navigation. If a logical branch fails, L3 replans the DAG path.       |                                                           |
-+|  | - [RULE]  DOES NOT EXECUTE OR HEAL: L3 strictly orchestrates. It possesses zero physical  |                                                           |
-+|  |           tool execution authority and does not perform compute-level healing.            |                                                           |
-+|  | - [HNDS]  SEQUENTIAL HANDSHAKE: Verifies DAG node ordering before any action is proposed  |                                                           |
-+|  | - [SYNC]  WORK INSTRUCTION SYNTHESIS: Translates DAG node into concrete action descriptor |                                                           |
- |  | - [SHRED] MINIMIZE BLAST RADIUS: Decomposes compound intent into atomic sub-actions       |                                                           |
- |  |           Each sub-action is independently scoped — failure cannot cascade sideways       |                                                           |
- |  | - [GATE]  BLOCK HALLUCINATION: Rejects any proposed action that references non-existent   |                                                           |
- |  |           tools, schemas, or data paths before forwarding to L5                           |                                                           |
--|  | - [ESC]   ESCALATE TO L5 GUARD: All proposed actions forwarded to L5 Safety — no bypass  |                                                           |
-+|  | - [ESC]   ESCALATE TO L5 GUARD: All proposed actions forwarded to L5 Safety — no bypass   |                                                           |
- |  +-------------------------------------------------------------------------------------------+                                                           |
- |                                         ||                                                                                                               |
- |                                         || (1. Proposed Action)                                                                                         |
-@@ -40,15 +43,16 @@
- |  |-------------------------------------------------------------------------------------------|<====>| - Guardian Script Definitions            |         |
- |  | - Runs BLOCKING guardian scripts (no async — L2 cannot proceed until L5 returns)          |      | - Policy & Permissions Schema            |         |
- |  | - Evaluates Policy + Permissions against proposed action                                  |      | - Sandbox Constraints                    |         |
--|  | - [CONF_CALIB] Risk Gate: Limits blind execution via confidence calibration thresholds    |      +------------------------------------------+         |
-+|  | - [STMP]  VERIFY L0 HMAC SIGNATURE: Drops payload if InstructionPacket signature is bad   |      +------------------------------------------+         |
-+|  | - [CONF_CALIB] Risk Gate: Limits blind execution via confidence calibration thresholds    |                                                           |
- |  | - [RISK]  RISK TIER CLASSIFY: Assigns tier 1–5 to proposed action                        |                                                           |
--|  | - [STMP]  COMPLIANCE HASH/STAMP: Stamps action with policy version hash                  |                                                           |
- |  | - [STOP]  HARD STOP REJECTION: Immediately blocks tier 4–5 actions                       |                                                           |
--|  | - [BLOCK] BLOCK HOSTILE INPUT: Strips any residual injection vectors                     |                                                           |
-+|  | - [BLOCK] ACTIVE HOSTILE INPUT CUT: Strips any residual injection vectors                 |                                                           |
- |  |                                                                                           |                                                           |
--|  | OUTCOME:  ALLOW  -> emits approved_action.json -> proceeds to L2.1 Validator             |                                                           |
--|  |           BLOCK  -> emits rejection signal -> re-routes to L1 for replanning             |                                                           |
--|  |           ESCALATE -> forwards to HUMAN REVIEW (PATH D)                                  |                                                           |
-+|  | OUTCOME:  ALLOW  -> emits SandboxEnvelope [trace_id, tool_id, sanitized_args,             |                                                           |
-+|  |                     stdout_byte_limit, compute_ms_limit] -> proceeds to L2.1 Validator    |                                                           |
-+|  |           BLOCK  -> emits rejection signal -> re-routes to L3 or L1 for logical replan    |                                                           |
-+|  |           ESCALATE -> forwards to HUMAN REVIEW GATE (PATH D)                              |                                                           |
- |  +-------------------------------------------------------------------------------------------+                                                           |
- |                                                                                                                                                          |
- |  ML Integration:                                                                                                                                         |
-@@ -58,10 +62,10 @@
- |                                                                                                                                                          |
- +==========================================================================================================================================================+
-                                          ||
--                                         || (2. IF ALLOW: approved_action.json)
-+                                         || (2. IF ALLOW: SandboxEnvelope [trace, tool, args, limits])
-                                          v
- +==========================================================================================================================================================+
--| \\\ L2 – UNIFIED EXECUTION CORE (SINGULAR BOTTLENECK FOR SYSTEM MUTATION)                                                                           /// |
-+| \\\ L2 – UNIFIED EXECUTION CORE (PTC SANDBOX: ACTION & IMPLEMENTATION FACTORY FLOOR)                                                                /// |
- |==========================================================================================================================================================|
- |                                                                                                                                                          |
- |   [ PRE-EXECUTION AUTHORITY & LOCKING ]                                                                                                                  |
-@@ -83,11 +87,11 @@
- |   | [3.1] Abstract Syntax Tree (AST) Parsing: Deconstructs LLM code into logical nodes                                               |                   |
- |   | [3.2] Node Blocklist: Physically strips `os.system`, `subprocess`, `shutil`, and raw `eval()` calls                              |                   |
- |   | [3.3] SQL Injection Guard: Parametrizes all raw strings before passing to database drivers                                       |                   |
--|   | [CID]  RESTRICT UNREGISTERED INTENTS: Rejects any action referencing a tool not in L4 capability registry                       |                   |
--|   | [ZERO_TRUST] SCOPE MINIMAL TOOL ACCESS: Each action granted only the minimum permissions required                               |                   |
-+|   | [CID]  RESTRICT UNREGISTERED INTENTS: Rejects any action referencing a tool not in L4 capability registry                        |                   |
-+|   | [ZERO_TRUST] SCOPE MINIMAL TOOL ACCESS: Each action granted only the minimum permissions required                                |                   |
- |   | [3.4] Sandbox Dry-Run / Diff Analysis: Simulates action in read-only mode, generates expected diff                               |                   |
--|   |        IF diff matches approved_action.json -> proceed to Execution                                                              |                   |
--|   |        IF diff diverges -> treat as VALIDATION FAIL -> route to L2.3 Healer                                                     |                   |
-+|   |        IF diff matches approved SandboxEnvelope -> proceed to Execution                                                          |                   |
-+|   |        IF diff diverges -> treat as VALIDATION FAIL -> route to L2.3 Healer Agent                                                |                   |
- |   +----------------------------------------------------------------------------------------------------------------------------------+                   |
- |                             ||                                                                                                                           |
- |                             v                                                                                                                            |
-@@ -97,7 +101,8 @@
- |   | [4.1] Micro-VM Boot: Isolated Firecracker instance (<150ms)     |      | • [OOM Guard]: Kills VM if RAM > cgroup_limit (512MB)           |          |
- |   | [4.2] Execution Ceilings: Hard cgroup CPU/Memory starvation caps| <==> | • [Latency Check]: Ceiling [CEIL] triggers L2.3 if > 2000ms     |          |
- |   | [4.3] Virtual Network: Zero external ingress/egress allowed     |      | • [Diff Engine]: Generates JSON Patch (RFC 6902) post-run       |          |
--|   | SOLE DURABLE MUTATION POINT — only L2.2 may write to state      |      +-----------------------------------------------------------------+          |
-+|   | [4.4] UWG INTERCEPT: All durable mutations intercepted by       |      +-----------------------------------------------------------------+          |
-+|   |       Universal Write Gateway (UWG). No direct disk/DB access.  |                                                                                   |
- |   | [QUOTA] KILL INFINITE COMPUTE BURN: Hard cycle ceiling enforced |                                                                                   |
- |   | [FEEDBACK] INJECT FAILURE CONTEXT: On error, enriches error     |                                                                                   |
- |   |            payload with execution trace before routing to healer|                                                                                   |
-@@ -106,28 +111,31 @@
- |           +-----------------++-----------------+                                                                                                         |
- |           || (Exit Code 0: Success)           || (Exit Code >0: Failure / Validation Fail)                                                               |
- |           v                                   v                                                                                                          |
--|   +---------------------------+      +-----------------------------------------------------------------+                                                 |
--|   | 5.0 COMMIT & RELEASE      |      | 6.0 THE DETERMINISTIC HEALER & RECOVERY ENGINE [L2.3: IHealer] |                                                 |
--|   |---------------------------|      |-----------------------------------------------------------------|                                                 |
--|   | [5.1] JSON Patch Apply    |      | [UNDO]    RESET STATE: Destroys micro-VM, reverts to            |                                                 |
--|   |       (RFC 6902 diff)     |      |           boundary_snapshot.json Merkle baseline                |                                                 |
--|   | [5.2] Telemetry Emit      |      | [CIRCUIT] KILL RUN: Prevents loop limits / infinite retry spin  |                                                 |
--|   | [5.3] Mutex Release       |      | [ROOT]    CAPTURE ROOT CAUSE: Extracts stack trace + error log  |                                                 |
--|   | [5.4] [WRITE] COMMIT      |      | [RESET]   REVERT STATE: Restores pre-execution snapshot         |                                                 |
--|   |       VERIFIED STATE      |      | [CURE]    FIX AND RETRY: Correction Strategy Synthesis          |                                                 |
--|   |       CHANGE to L4        |      |           Generates revised_action_proposal.json                |                                                 |
--|   +---------------------------+      | [6.1] Cap: If retries > 3, hard abort to Path D (Human Review)  |                                                 |
--|                                      +-----------------------------------------------------------------+                                                 |
-+|   +-----------------------------------+      +-----------------------------------------------------------------+                                         |
-+|   | 5.0 COMMIT & RELEASE              |      | 6.0 THE DETERMINISTIC RECOVERY ENGINE [L2.3: IHealer]           |                                         |
-+|   |-----------------------------------|      |-----------------------------------------------------------------|                                         |
-+|   | [5.1] JSON Patch Apply            |      | Healer Agent [♦ I::IHealer ♦]                                   |                                         |
-+|   |       (RFC 6902 diff)             |      | [AUTH]    SOLE AUTHORITY FOR PHYSICAL TOOL RETRIES & COMPUTE    |                                         |
-+|   | [5.2] Telemetry Emit              |      |           RECOVERY. (Workflow retries are owned by L3).         |                                         |
-+|   | [5.3] Mutex Release               |      | [UNDO]    RESET STATE: Destroys micro-VM, reverts to            |                                         |
-+|   | [5.4] [UWG] UNIVERSAL WRITE       |      |           boundary_snapshot.json Merkle baseline                |                                         |
-+|   |       GATEWAY (Deny-By-Default)   |      | [CIRCUIT] KILL RUN: Prevents loop limits / infinite retry spin  |                                         |
-+|   |       * Mediates ALL FS, DB,      |      | [ROOT]    CAPTURE ROOT CAUSE: Extracts stack trace + error log  |                                         |
-+|   |         Ledger, and Vector Writes |      | [RESET]   REVERT STATE: Restores pre-execution snapshot         |                                         |
-+|   |       * Enforces [trace_id, target|      | [CURE]    FIX AND RETRY: Correction Strategy Synthesis          |                                         |
-+|   |         diff, ts] standard        |      |           Generates revised_action_proposal.json                |                                         |
-+|   +-----------------------------------+      | [6.1] Cap: If retries > 3, hard abort to Path D (Human Review)  |                                         |
-+|                                              +-----------------------------------------------------------------+                                         |
- |                                                         ||                                                                                               |
- |   [ DATA MUTATION & RAG SYNC ]                          || (4. Error Root / Rollback Req)                                                               |
- |   +-----------------------------------------------------------------+                                                                                   |
- |   | • Sandbox Snapshot Revert (on failure — byte-for-byte restore)  |                                                                                   |
--|   | • Embedding Generation: Computes new vector for mutated content  |                                                                                   |
--|   | • Vector Store Write: Async push to external vector store        |                                                                                   |
--|   | • [TRTH] ANCHOR KNOWLEDGE DRIFT: Prevents stale embeddings       |                                                                                   |
--|   |   from persisting across sessions — drift detected and flagged   |                                                                                   |
--|   | • [ASYNC_SYNC]: Vector store write is non-blocking after L2.2    |                                                                                   |
--|   |   confirms commit — state update does not block response path    |                                                                                   |
-+|   | • Embedding Generation: Computes new vector for mutated content |                                                                                   |
-+|   | • UWG Vector Store Write: Async push to external vector store   |                                                                                   |
-+|   | • [TRTH] ANCHOR KNOWLEDGE DRIFT: Prevents stale embeddings      |                                                                                   |
-+|   |   from persisting across sessions — drift detected and flagged  |                                                                                   |
-+|   | • [ASYNC_SYNC]: Vector store write is non-blocking after UWG    |                                                                                   |
-+|   |   confirms commit — state update does not block response path   |                                                                                   |
- |   +-----------------------------------------------------------------+                                                                                   |
- |                                                                                                                                                          |
- |   ML Integration (feeds Meta-Learning Bus):                                                                                                              |
-@@ -146,7 +154,7 @@
- |  revised_action_proposal.json  ====>  L3 ORCHESTRATION  ====>  L5 SAFETY GATE  ====>  L2.1 VALIDATOR  ====>  L2.2 EXECUTION                             |
- |                                                                                                                                                          |
- |  INVARIANT: Any healed or revised plan MUST re-clear L5 Safety before retry.                                                                             |
--|             There is ZERO direct path from L2.3 Healer to L2.2 Execution.                                                                               |
-+|             There is ZERO direct path from Healer Agent to L2.2 Execution.                                                                               |
- |             Bypassing L5 on a healed plan is a HARD CONSTITUTIONAL VIOLATION.                                                                            |
- |                                                                                                                                                          |
- |  [SEED] FORCE STRICT HEAL DETERMINISM: During L3 re-entry after healing, non-deterministic                                                               |
-@@ -161,27 +169,11 @@
- +==========================================================================================================================================================+
- | FINAL DECISION / OUTCOME LOGGING                                                                                                                         |
- |==========================================================================================================================================================|
--| - Outcome and state diffs are versioned and committed to L4 audit log                                                                                    |
--| - [SYNC]  UPDATE SHARED TEAM MEMORY: Non-blocking state update occurs only after L2.2 confirms commit                                                    |
-+| - Outcome and state diffs are versioned and committed to L4 audit log via ExecutionTrace contract                                                        |
-+|   [trace_id, plan_hash, actor, target_resource, state_diff, timestamp, replay_key(Hash of trace+plan+transcript)]                                        |
-+| - [SYNC]  UPDATE SHARED TEAM MEMORY: Mediated by UWG, occurs only after successful Sandbox confirm                                                       |
- | - [RECON] VERIFY DATA MATCHES REALITY: Detects ghost mutations across state layers (L4 vs. live state)                                                   |
- | - Metrics captured: Execution Latency, Outcome Accuracy, Compute Cost, Human Correction Rate                                                             |
- |                                                                                                                                                          |
- |  +===(ZERO-LOSS LOOP: COMMIT TO L4 VIA META-LEARNING BUS)=================================================================>  L4 ANCHOR (VERSIONED UPDATE) |
--+==========================================================================================================================================================+
--
--+==========================================================================================================================================================+
--| CRITICAL DISSEMINATION GUARANTEES (L2 SCOPE)                                                                                                            |
--|==========================================================================================================================================================|
--| 1.  NO SKIPPING THE SAFETY GATES: Every proposed action — including healed ones — must clear L5 before L2 entry.                                        |
--| 2.  ALWAYS ATTACH THE SAFETY FENCES: [D0] fences from L5 Elevator Shaft remain active throughout L2 execution.                                          |
--| 3.  ONLY LOAD DATA WHEN NEEDED: [JIT] context loading prevents stale or over-broad context injection.                                                    |
--| 4.  HEALED PLANS MUST RE-CLEAR SAFETY: Zero trust on corrected actions — trust is not inherited from prior approved_action.json.                         |
--| 5.  DON'T LOSE DATA ON ERROR: [FEEDBACK] enriches error payload before routing to healer — full context preserved.                                       |
--| 6.  ISOLATE EVERY CHANGE IN SANDBOX: Firecracker micro-VM ensures zero durable damage on failure.                                                        |
--| 7.  ONLY USE PRE-APPROVED SYSTEM TOOLS: [CID] physically blocks rogue function calls not in L4 capability registry.                                      |
--| 8.  BREAK TASKS INTO TINY PIECES: [SHRED] at L3 minimizes blast radius — each atomic sub-action is independently scoped.                                 |
--| 9.  PROTECT KNOWLEDGE FROM AGENT DRIFT: [TRTH] anchoring prevents agents from corrupting the vector truth store.                                         |
--| 10. STOP AGENTS FROM BURNING MONEY: [QUOTA] + [CEIL] kill infinite loops and compute spikes before they propagate.                                       |
--| 11. RECORD THE WHY, NOT WHAT: [ROOT] RCA captures decision logic and stack trace — not just the error code.                                              |
--| 12. DOUBLE-CHECK DATA MATCHES THE WORLD: [RECON] detects ghost or hidden mutations across state layers post-commit.                                      |
--+==========================================================================================================================================================+
-++==========================================================================================================================================================+
-\ No newline at end of file
-diff --git a/docs/technical/agentic_process_mapping.md b/docs/technical/agentic_process_mapping.md
-index 67c797cdd..ad132c42f 100644
---- a/docs/technical/agentic_process_mapping.md
-+++ b/docs/technical/agentic_process_mapping.md
-@@ -16,22 +16,23 @@
-                               |   • Message Architecture & Compliance                    |          |   • Content Quality & Strategy                           |          |   • InfrastructureUpgradesOrchestrator                   |
-                               |   • Outreach Learning & Validation                       |          |   • Fact Check & Strategic Planning                      |          |                                                          |
-                               |                                                          |          |                                                          |          | enforcement/ (11 strategies)                             |
--                              | engines/ (4 engines)                                     |          | engines/ (47 engines)                                    |          |   • AdaptiveretrievalgateStrategy                        |
-+                              | engines/ (5 engines)                                     |          | engines/ (48 engines)                                    |          |   • AdaptiveretrievalgateStrategy                        |
-                               |   • control_plane.py (orchestration)                     |          |   • achievement_prioritizer_engine                       |          |   • CircuitbreakerStrategy                               |
-                               |   • hop_stage_registry.py (workflow)                     |          |   • ats_compatibility_engine                             |          |   • DecomposedqueryagentStrategy                         |
-                               |   • message_body_composer.py                             |          |   • content_quality_engine                               |          |                                                          |
--                              |                                                          |          |   • resume_orchestrator_engine                           |          | config/ (6 configs)                                      |
--                              | config/ (9 configs)                                      |          |   • skill_ordering_engine                                |          |   • environment_config.py                                |
--                              |   • agent_specs.json (HOP pipeline specs)                |          |   • template_optimizer_engine                            |          |   • integration_config.py                                |
--                              |   • loader_config.py                                     |          |                                                          |          |                                                          |
--                              |                                                          |          | config/ (5 configs)                                      |          | data/ (2 knowledge bases)                                |
--                              | tools/ (48 tools)                                        |          |   • agent_spec_config.py (Pydantic schemas)              |          |   • master_resume.json (Amit's experience)               |
--                              | types/ (20 domain models)                                |          |   • reasoning_toggles_config.py                          |          |   • sender_knowledge_base.json                           |
--                              | validators/ (6 validators)                               |          |                                                          |          |                                                          |
--                              | enforcement/ (1 strategy)                                |          | tools/ (33 tools)                                        |          | types/ (3 shared types)                                  |
--                              |   • ExecutiveStrategyAgent                               |          | types/ (16 domain models)                                |          | validators/ (2 validators)                               |
--                              +----------------------------------------------------------+          | validators/ (5 validators)                               |          +----------------------------------------------------------+
--                                                       |                                            +----------------------------------------------------------+                                       |
-+                              |   • lic_spine_adapter.py                                 |          |   • resume_orchestrator_engine                           |          | config/ (6 configs)                                      |
-+                              |                                                          |          |   • skill_ordering_engine                                |          |   • environment_config.py                                |
-+                              | config/ (9 configs)                                      |          |   • template_optimizer_engine                            |          |   • integration_config.py                                |
-+                              |   • agent_specs.json (HOP pipeline specs)                |          |   • rg_spine_adapter.py                                  |          |                                                          |
-+                              |   • loader_config.py                                     |          |                                                          |          | data/ (2 knowledge bases)                                |
-+                              |                                                          |          | config/ (5 configs)                                      |          |   • master_resume.json (Amit's experience)               |
-+                              | tools/ (48 tools)                                        |          |   • agent_spec_config.py (Pydantic schemas)              |          |   • sender_knowledge_base.json                           |
-+                              | types/ (20 domain models)                                |          |   • reasoning_toggles_config.py                          |          |                                                          |
-+                              | validators/ (6 validators)                               |          |                                                          |          | types/ (3 shared types)                                  |
-+                              | enforcement/ (1 strategy)                                |          | tools/ (33 tools)                                        |          | validators/ (2 validators)                               |
-+                              |   • ExecutiveStrategyAgent                               |          | types/ (16 domain models)                                |          | utils/ (1 module)                                        |
-+                              +----------------------------------------------------------+          | validators/ (5 validators)                               |          |   • determinism_util.py (canon+hash)                     |
-+                                                       |                                            +----------------------------------------------------------+          +----------------------------------------------------------+
-                                                        | (Campaign Workflow Requests)                                            | (Resume Generation Requests)                                        | (Shared Services & Knowledge)
-                                                        v                                                                         v                                                                     v
-
-@@ -45,21 +46,24 @@
-           |  NoSQL / Documents |          +------------------------------------------------------+  +-----------------------------------------------------+  +---------------------------------------------------------------------------+                                  ||
-           | [C0] & [CACHE_LOCK]|          | L1: COGNITIVE STUDIO [PHASE 1-4 / PTC COMPILER]      |  | L6: OBSERVABILITY & ANOMALY DETECTION               |  | L4: STATE, MEMORY & PERSISTENCE [♦ I::IMemoryStore ♦]                     | <==(Pulls Updated Weights & Checkpoints)==||
-           +--------------------+          |------------------------------------------------------|  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
--                   |                      | - Generates [U0: USER PROMPT] (ZERO auth)            |  | - P1: INGESTION: Execution Latency, Error Rates     |  | - P1: COGNITIVE REGISTRY: Active Models, Prompts, Templates, Calibration  |                                  ||
--                   | (Semantic Search)    | - Reads L4 active model version                      |  | - P2: ANOMALY ENGINE: anomaly_score, Detect Drift   |  | - P2: CAPABILITY REGISTRY: Tool Availability, API Credentials, Policies   |                                  ||
--                   +--------------------->| - Retrieval from RAG index (READ only)               |  | - P3: BROADCAST: Emit anomaly, drift, injection     |  | - P3: WORKFLOW MEMORY: Active Job States, Pending Steps, Dependency DAG   |                                  ||
--                                          | - Augments prompt with [C0] Context                  |  | - P4: ARCHIVER: Store Raw Metrics, System Snapshots |  | - P4: TELEMETRY LEDGER: Routing Decisions, Execution Logs, Error Reports  |                                  ||
--                                          | - Cannot approve / Cannot execute                    |  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
--                                          | - P1: PRIMING: Hydrate via Knowledge Graph, Sem-Mem  |  | - [TLM] CROSS-LAYER TELEMETRY                       |  | [ RULES ] - L4 never authorizes. L4 never executes.                       |                                  ||
--                                          | - P2: ORCHESTRATION: Coordinator, Tool Agents Draft  |  | - [SGNL] ANOMALY SIGNAL GENERATOR                   |  |           - Future executions use updated versions via L0.                |                                  ||
--                                          | - P3: PTC CALIBRATION: Simulate CoT, Calc Complexity |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)                   |  |           - All ML improvements written as versioned updates.             |                                  ||
--                                          | - P4: SYNTHESIS: Emit intent, tools, raw_reasoning   |  | =>[BROADCAST] BREAK RECURSIVE CYCLES                |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)                   |                                  ||
--                                          | - [LOG] LOG ORIGINAL USER INTENT                     |  |   (Triggers Stall & Forces Path D)                  |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)               |                                  ||
--                                          | ML Integration:                                      |  | ML Integration:                                     |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY                |                                  ||
--                                          | • Model calibration                                  |  | • Improves anomaly classifiers                      |  |           - [TOOL] TOOL INVENTORY (Python/Bash enabled)                   |                                  ||
--                                          | • Drift detection                                    |  | • Refines signal grouping                           |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT [♦ I::IMemoryStore ♦]           |                                  ||
--                                          +------------------------------------------------------+  +-----------------------------------------------------+  |           - Embedding Model Reference                                     |                                  ||
--                                                    || (WRITE: [U0] & Script Proposals)                       || (WRITE: Structured Telemetry)               | [ LOGS ]  - Drift Metrics, Escalations, Meta-Learning                     |                                  ||
-+                   |                      | [1. WORKING MEMORY] - Reads L4 model/RAG index       |  | - [1.1] INGESTION: Execution Latency, Error Rates   |  | - [1.1] COGNITIVE REGISTRY: Active Models, Prompts, Templates, Calib      |                                  ||
-+                   | (Semantic Search)    | - Hydrate Task Schema, Conv History, Env Snapshot    |  | - [1.2] ANOMALY ENGINE: anomaly_score, Detect Drift |  | - [1.2] CAPABILITY REGISTRY: Tool Availability, API Credentials, Policies   |                                  ||
-+                   +--------------------->| - Augments prompt with [C0] Context (ZERO auth)      |  | - [1.3] BROADCAST: Emit anomaly, drift, injection   |  | - [1.3] WORKFLOW MEMORY: Active Job States, Pending Steps, Dependency DAG   |                                  ||
-+                                          | [2. THOUGHT GENERATION & PLANNING]                   |  | - [1.4] ARCHIVER: Store Raw Metrics, Sys Snapshots  |  | - [1.4] TELEMETRY LEDGER: Routing Decisions, Execution Logs, Error Reports  |                                  ||
-+                                          | - [2.1] PRIMING: Hydrate via Knowledge Graph, Sem-Mem|  | - [METRICS] Validates quantitative execution claims |  |---------------------------------------------------------------------------|                                  ||
-+                                          | - [2.2] ORCHESTRATION: Coordinator, Tool Agents Draft|  |             (e.g. comparing TokenControl baseline)  |  | [ RULES ] - L4 never authorizes. L4 never executes.                       |                                  ||
-+                                          | - [2.3] PTC CALIBRATION: Simulate CoT, Calc Complex  |  |-----------------------------------------------------|  |           - Future executions use updated versions via L0.                |                                  ||
-+                                          | - [2.4] SYNTHESIS: Emit intent, tools, raw_reasoning |  | - [TLM] CROSS-LAYER TELEMETRY                       |  |           - All ML improvements written as versioned updates.             |                                  ||
-+                                          | - Emits Plan_Provenance Artifact (trace_id)          |  | - [SGNL] ANOMALY SIGNAL GENERATOR                   |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)                   |                                  ||
-+                                          | [3. COGNITIVE SAFETY CHECK (PRE-COMPUTE)]            |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)                   |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)               |                                  ||
-+                                          | - [3.1] Dynamic Guardrails (Pre-Compute local filter)|  | =>[BROADCAST] BREAK RECURSIVE CYCLES                |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY                |                                  ||
-+                                          | - [3.2] Emits TokenControl Artifact (locks budget)   |  |   (Triggers Stall & Forces Path D)                  |  |           - [TOOL] TOOL INVENTORY (Python/Bash enabled)                   |                                  ||
-+                                          | - [3.3] LOG ORIGINAL USER INTENT                     |  | ML Integration:                                     |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT [♦ I::IMemoryStore ♦]           |                                  ||
-+                                          | ML Integration:                                      |  | • Improves anomaly classifiers                      |  |           - [SUPERVISOR]: Knowledge Supervisor (Dense Retrain/Growth Loop)|                                  ||
-+                                          | • Model calibration                                  |  | • Refines signal grouping                           |  |           - [HYBRID RAG]: RetrievalQuery -> Rerank -> CitationBundle      |                                  ||
-+                                          | • Drift detection                                    |  |                                                     |  | [ LOGS ]  - Drift Metrics, Escalations, Meta-Learning                     |                                  ||
-+                                          +------------------------------------------------------+  +-----------------------------------------------------+  |           - [MEMORY]: Case-Associative Schema & Semantic Hooks            |                                  ||
-+                                                    || (WRITE: [U0] & Script Proposals)                       || (WRITE: Structured Telemetry)               |           - [EPISODIC]: Links Episodic Signals to Policy Outcomes         |                                  ||
-                                                     =========================================================================================================+---------------------------------------------------------------------------+                                  ||
-                                                                                  (READ: Model Config, RAG Config, Detection Config Parameters)                                                                                                                              ||
-                                                                                                                                                                                                                                                                             ||
-@@ -75,16 +79,19 @@
-                                                                | - Classifies intent vs. L4 Routing State                                  |          +---------------------------------------------------------------------+                                               ||
-                                                                | - [JIT] Load context on-demand via the "Elevator Shaft" (L0 <-> L5)       |          | [ META-LEARNING & OPTIMIZATION BUS ]                                |                                               ||
-                                                                | - Cannot evaluate rules / Cannot execute                                  |          |---------------------------------------------------------------------|                                               ||
--                                                               | - P1: INGEST: Assign Trace_ID, Policy Hash, Correlate L1 vs L6            |          | 1. [PULL] DATA FOR TRAINING (From L4 Black Box Audit)               |                                               ||
--                                                               | - P2: ELECTION: Deterministic Ruleset, Learned ML, Guardian Override      |          | 2. ANALYZE: [RCA] ROOT CAUSE ANALYSIS                               |                                               ||
--                                                               | - P3: ARBITRATION: Check Tool Inventory, Budget Forecast, Rate Limits     |          | 3. OPTIMIZE & COMMIT: Writes versions to L4 Anchor                  |====(Writes Optimized Rules & Checkpoints)====>||
--                                                               | - P4: DISPATCH: Stamp Route Mode, Encrypt/Seal Signed Execution Plan      |          +---------------------------------------------------------------------+                                               ||
-+                                                               | - [1.1] INGEST: Assign Trace_ID, Policy Hash, Correlate L1 vs L6          |          | 1. [PULL] DATA FOR TRAINING (From L4 Black Box Audit)               |                                               ||
-+                                                               | - [1.2] ELECTION: Deterministic Ruleset, Learned ML, Guardian Override    |          | 2. ANALYZE: [RCA] ROOT CAUSE ANALYSIS                               |                                               ||
-+                                                               |   * IF (Risk_Score < 0.2) AND (Op == READ) -> Path A (Fast Lane)          |          | 3. OPTIMIZE & COMMIT: Writes versions to L4 Anchor                  |====(Writes Optimized Rules & Checkpoints)====>||
-+                                                               |   * IF (Ambiguity > Threshold) -> Consult Learned Router Model (L4)       |          +---------------------------------------------------------------------+                                               ||
-+                                                               |   * IF (L6 Signal == CRITICAL) -> Force Path D (Human Review)             |                                                                                                                                ||
-+                                                               | - [1.3] ARBITRATION: Check Tool Inventory, Budget Forecast, Rate Limits   |                                                                                                                                ||
-+                                                               | - [1.4] DISPATCH: Stamp Route Mode, Encrypt/Seal Signed Execution Plan    |                                                                                                                                ||
-                                                                | ML Integration:                                                           |                                                                                                                                ||
-                                                                | [1. Pattern Analysis ]=======(Match Intent Logs)==========================|===============================================================================================================================>||
-                                                                | [2. Threshold Tuning ]=======(Assess Risk Limits)=========================|===============================================================================================================================>||
-                                                                | [3. Path Optimization]=======(Optimize Routing)===========================|===============================================================================================================================>||
-                                                                +---------------------------------------------------------------------------+                                                                                                                                ||
--                                                                                                   v (Dispatches Signed Execution Plan)                                                                                                                                     ||
-+                                                                                                   v Dispatches InstructionPacket (See Core Data Contracts)                                                                                                                 ||
-                                                                +---------------------------------------------------------------------------+                                                                                                                                ||
-                                                                | ASSEMBLY STAGE (SANDBOX AIRLOCK & DETERMINISTIC COMPOSITION)              |                                                                                                                                ||
-                                                                |---------------------------------------------------------------------------|                                                                                                                                ||
-@@ -94,7 +101,7 @@
-                                                                | [C0: DEPENDENCY]    - Elevator Shaft/RAG injected knowledge               |                                                                                                                                ||
-                                                                | [U0: USER PROMPT]   - Raw intent (L1)                                     |                                                                                                                                ||
-                                                                | => Final Package = Validated Script ready for Path B/C Execution          |                                                                                                                                ||
--                                                               | => [BLOCK] BLOCK HOSTILE INPUT VECTORS (Neutralize Attack Paths)          |                                                                                                                                ||
-+                                                               | => [BLOCK] L5 Hostile Input Vector Neutralization applied                 |                                                                                                                                ||
-                                                                | => [SPLIT] SPLIT INTO ATOMIC TASKS (Limit Scope, Prevent Collateral)      |                                                                                                                                ||
-                                                                | - Emits: Governed Payload => Passes to Paths A / B / C / D                |                                                                                                                                ||
-                                                                +---------------------------------------------------------------------------+                                                                                                                                ||
-@@ -111,36 +118,36 @@
-               +-----------------------------------+         +-----------------------------------+      |      +-----------------------------------+       +-----------------------------------+                                                                         ||
-               | Final Response                    |         | L3 – ORCHESTRATION [♦ I::IOrch ♦] |      |      | L3 – ORCHESTRATION [♦ I::IOrch ♦] |       | L3 – ORCHESTRATION [♦ I::IOrch ♦] |                                                                         ||
-               |-----------------------------------|         |-----------------------------------|      |      |-----------------------------------|       |-----------------------------------|                                                                         ||
--              | - No system mutation              |         | - [HNDS] SEQUENTIAL HANDSHAKE     |      |      | - [HNDS] SEQUENTIAL HANDSHAKE     |       | - Prepares review artifact        |                                                                         ||
--              | - Logged outcome                  |         | - [SYNC] WORK INSTRUCT SYNTH      |      |      | - [SYNC] WORK INSTRUCT SYNTH      |       +-----------------------------------+                                                                         ||
--              |                                   |         | - [ESC] ESCALATE TO L5 GUARD      |      |      | - [ESC] ESCALATE TO L5 GUARD      |                         |                                                                                             ||
--              | ML consumes outcome               |         | - [GATE] Block hallucination      |      |      | - P1: EVALUATE Result vs DAG      |                         v                                                                                             ||
--              |                                   |         | - [SEED] Force strict heal        |      |      | - P2: SEQUENCE Branches & Parallel|       ML Integration:                                                                                                 ||
--              |                                   |         | - P1: EVALUATE Result vs DAG      |      |      | - P3: COORDINATE Cross-Agent Sync |       [1. Efficiency Tuner]             |======(Evaluate Pipeline Bottlenecks)=======================================>||
--              |                                   |         | - P2: SEQUENCE Branches & Parallel|      |      | - P4: ROUTE Complete, Escalate, L2|       [2. Planning Optimization]        |======(Tune Orchestration Efficiency)=======================================>||
--              +-----------------------------------+         | - P3: COORDINATE Cross-Agent Sync |      |      +-----------------------------------+                                                                                                                     ||
--                              |                             | - P4: ROUTE Complete, Escalate, L2|      |                           |                                                                                                                                    ||
--                              |                             +-----------------------------------+      |                [IF] LOGIC VIOLATION DETECTED?                                                                                                                  ||
-+              | - No system mutation              |         | - [DAG] OWNS LOGICAL WORKFLOW &   |      |      | - [DAG] OWNS LOGICAL WORKFLOW &   |       | - Prepares review artifact        |                                                                         ||
-+              | - Logged outcome                  |         |         DAG BRANCH RETRIES        |      |      |         DAG BRANCH RETRIES        |       | - [RULE] DOES NOT EXECUTE OR HEAL |                                                                         ||
-+              |                                   |         | - [RULE] DOES NOT EXECUTE OR HEAL |      |      | - [RULE] DOES NOT EXECUTE OR HEAL |       +-----------------------------------+                                                                         ||
-+              | ML consumes outcome               |         | - [HNDS] SEQUENTIAL HANDSHAKE     |      |      | - [HNDS] SEQUENTIAL HANDSHAKE     |                         |                                                                                             ||
-+              |                                   |         | - [SYNC] WORK INSTRUCT SYNTH      |      |      | - [SYNC] WORK INSTRUCT SYNTH      |                         v                                                                                             ||
-+              |                                   |         | - [2.1] EVALUATE Result vs DAG    |      |      | - [2.1] EVALUATE Result vs DAG    |       ML Integration:                                                                                                 ||
-+              |                                   |         | - [2.2] SEQUENCE Branches & Sync  |      |      | - [2.2] SEQUENCE Branches & Sync  |       [1. Efficiency Tuner]             |======(Evaluate Pipeline Bottlenecks)=======================================>||
-+              +-----------------------------------+         | - [2.3] ROUTE Complete or Escalate|      |      | - [2.3] ROUTE Complete or Escalate|       [2. Planning Optimization]        |======(Tune Orchestration Efficiency)=======================================>||
-+                              |                             +-----------------------------------+      |      +-----------------------------------+                                                                                                                     ||
-+                              |                                            |                           |                           |                                                                                                                                    ||
-+                              |                                            |                           |                [IF] LOGIC VIOLATION DETECTED?                                                                                                                  ||
-                               |                                            |                           |                <=======(Yes: [!] ESCALATE)=========+                                                                                                           ||
-                               |                                            v (Passes to Safety Guard)  |                           |                        |                                                                                                           ||
-                               |                             +-----------------------------------+      |                           |                        |                           +-----------------------------------+                                           ||
--                              |                             | L5: SAFETY [♦ I::IValidator ♦]    | <====+===========================+                        |                           | HUMAN REVIEW                      |                                           ||
-+                              |                             | L5: SAFETY [♦ I::IValidator ♦]    | <====+===========================+                        |                           | HUMAN REVIEW GATE                 |                                           ||
-                               |                             |-----------------------------------|    (No)                                                   |                           |-----------------------------------|                                           ||
--                              |                             | - [RISK] RISK TIER CLASSIFY       |      |                                                    |                           | - Manual approve/reject           |                                           ||
--                              |                             | - [STMP] COMPLIANCE HASH/STAMP    |      |                                                    |                           |                                   |                                           ||
--                              |                             | - [STOP] HARD STOP REJECTION      |      |                                                    |                           | ML Integration:                   |                                           ||
--                              |                             | - [BLOCK] BLOCK HOSTILE INPUT     |      |                                                    |                           | [1. Reviewer Calibration]         |======(Evaluate Human Reviewer Bias)==========>||
--                              |                             | - P1: VALIDATE Proposal vs Policy |      |                                                    |                           +-----------------------------------+                                           ||
--                              |                             | - P2: ENFORCE Approve, Remediate  |      v                                                    +---------------------------+                |                                                              ||
--                              |                             | - P3: REMEDIATE Safety Retry/Fix  |======(Track False Positive & Negatives)================================================================|=============================================================>||
--                              |                             | - P4: CERTIFY Audit Logs & Hashes |======(Analyze Safety Block Accuracy)===================================================================|=============================================================>||
--                              |                             | ML: Policy Optimization           |======(Tune Safety Rule Strictness)=====================================================================|=============================================================>||
--                              |                             |                                   |======(Adapt Risk Threshold Configs)====================================================================|=============================================================>||
--                              |                             +-----------------------------------+                                                                                                        | (If Approved)                                                ||
--                              |                                            |                                                                                                                             |                                                              ||
--                              |                 [RE-ROUTE TO L1] <==(Fail)-+-(Pass)==> [AUTH] STAMP WORK CONTRACT (Sandbox Permission Granted)                                                           |                                                              ||
--                              |                   (If Rejected)            |           (Applies to Paths B & C)                                                                                      |                                                              ||
--                              |                                            v (Grants Sandbox Execution Permission)                                                                                       v (Routes Human Decision)                                      ||
-+                              |                             | - [RISK] RISK TIER CLASSIFY       |      |                                                    |                           | - Evidence Pack: Policy Eval, Risk|                                           ||
-+                              |                             | - [STMP] VERIFY L0 HMAC SIGNATURE |      |                                                    |                           |   Score, Logs, State Snapshots    |                                           ||
-+                              |                             | - [STOP] HARD STOP REJECTION      |      |                                                    |                           | - Action: Approve / Modify / Reject                                           ||
-+                              |                             | - [BLOCK] ACTIVE HOSTILE INPUT CUT|      |                                                    |                           | - Output: HumanDecisionArtifact   |                                           ||
-+                              |                             | - [3.1] VALIDATE Proposal vs Policy|     |                                                    |                           | - [LOOP] Bidirectional Policy Sync|                                           ||
-+                              |                             | - [3.2] ENFORCE Approve, Remediate|      |                                                    |                           |   -> Inject to L0 Guardian        |                                           ||
-+                              |                             | - [3.3] REMEDIATE Safety Retry/Fix|      |                                                    |                           |   -> Revise/Retool via L2 Healer  |                                           ||
-+                              |                             | ML: Policy Optimization           |      v                                                    |                           | ML Integration:                   |                                           ||
-+                              |                             |                                   |======(Track False Positive & Negatives)===================+---------------------------+ [1. Reviewer Calibration]         |======(Evaluate Human Reviewer Bias)==========>||
-+                              |                             +-----------------------------------+======(Analyze Safety Block Accuracy)===================================================|=============================================================>||              ||
-+                              |                                            |                     ======(Tune Safety Rule Strictness)=====================================================|=============================================================>||              ||
-+                              |                 [RE-ROUTE TO L1] <==(Fail)-+-(Pass)==> [AUTH] STA======(Adapt Risk Threshold Configs)====================================================|=============================================================>||              ||
-+                              |                   (If Rejected)            |           (Applies to Paths B & C)                                                                          | (If Approved)                                                ||              ||
-+                              |                                            v (Grants Sandbox Execution Permission)                                                                       v (Routes Human Decision)                                      ||              ||
-                               |                             +=======================================================================================================================================================================================================+   ||
-                               |                             | \\\ L2 – UNIFIED EXECUTION CORE (PTC SANDBOX: ACTION & IMPLEMENTATION FACTORY FLOOR)                                                                                                              /// |   ||
-                               |                             |=======================================================================================================================================================================================================|   ||
-@@ -151,25 +158,28 @@
-                               |                             |  |    -> [FREEZ] FREEZE CLEAN SYSTEM STATE                         |  [2. Resource Predictor] =======(Optimize Sandbox Compute Cost)=================================================================>||
-                               |                             |  |    -> [CLAIM] CLAIM EXCLUSIVE WRITE ACCESS                      |  [3. RL Rollback Refiner]=======(Self-Correct Healer Logic)=====================================================================>||
-                               |                             |  |    -> [GUARD] PRESERVE EXISTING CODE INTEGRITY                  |                                                                                                                                  |   ||
--                              |                             |  |         v                                                       |  [ INFERENCE & TOKEN COMPRESSION ]                                                                                               |   ||
--                              |                             |  |   [P2: PTC EXECUTION] [♦ I::IMemoryStore ♦]                     |  - N tools called in 1 inference pass                                                                                            |   ||
--                              |                             |  |    -> Invoke Tool, Capture Output, Invoke Chained Tools         |  - Context window isolated from raw data                                                                                         |   ||
--                              |                             |  |    -> [TOOL 1..N] await query_database(sql_N)                   |  - Token Cost: ~37% LOWER                                                                                                        |   ||
--                              |                             |  |    -> [FILTER] AGGREGATE RAW DATA IN SANDBOX                    |                                                                                                                                  |   ||
--                              |                             |  |    -> [WRITE] COMMIT VERIFIED STATE CHANGE                      |  [ DATA MUTATION ]               [ EXTERNAL RAG ]                                                                                |   ||
-+                              |                             |  |         v Enters via SandboxEnvelope (See Core Data Contracts)                                                                                                                                     |   ||
-+                              |                             |  |   [P2: PTC EXECUTION] [♦ I::IMemoryStore ♦]                     |  [ INFERENCE & TOKEN COMPRESSION ]                                                                                               |   ||
-+                              |                             |  |    -> Invoke Tool, Capture Output, Invoke Chained Tools         |  - N tools called in 1 inference pass                                                                                            |   ||
-+                              |                             |  |    -> [TOOL 1..N] await query_database(sql_N)                   |  - Context window isolated from raw data                                                                                         |   ||
-+                              |                             |  |    -> [FILTER] AGGREGATE RAW DATA IN SANDBOX                    |  - Token Cost: ~37% LOWER (vs. legacy baseline in L6)                                                                            |   ||
-+                              |                             |  |    -> [UWG] UNIVERSAL WRITE GATEWAY (Deny-By-Default)           |                                                                                                                                  |   ||
-+                              |                             |  |       * Mediates ALL FS, DB, Ledger, and Vector Writes          |  [ DATA MUTATION ]               [ EXTERNAL RAG ]                                                                                |   ||
-                               |                             |  |    -> [CEIL] TERMINATE STUCK COMPUTE CYCLES                     |  - Sandbox Snapshot Revert       +--------------+                                                                                |   ||
-                               |                             |  |         v                                                       |  - Embedding generation          | Vector Store |                                                                                |   ||
--                              |                             |  |   [Evaluation     ]--+                                          |  - Vector store write ---------> +--------------+                                                                                |   ||
-+                              |                             |  |   [Evaluation     ]--+                                          |  - UWG Vector store write -----> +--------------+                                                                                |   ||
-                               |                             |  |         | (Fail)     |                                          |  - [TRTH] ANCHOR KNOWLEDGE DRIFT | [ASYNC_SYNC] |                                                                                |   ||
-                               |                             |  |         v            |                                          |    OVER TIME                     +--------------+                                                                                |   ||
--                              |                             |  +-- [P3: PTC HEALER ]  |                                          |                                                                                                                                  |   ||
--                              |                             |  |   [♦ I::IHealer ♦]   |                                          |                                                                                                                                  |   ||
--                              |                             |  |    -> Detect Failures, Apply Retry Policies, Escalate           |                                                                                                                                  |   ||
-+                              |                             |  +-- [P3: PTC HEALER]   |                                          |                                                                                                                                  |   ||
-+                              |                             |  |   Healer Agent [♦ I::IHealer ♦]                                 |                                                                                                                                  |   ||
-+                              |                             |  |    -> [AUTH] SOLE AUTHORITY FOR PHYSICAL TOOL RETRIES           |                                                                                                                                  |   ||
-+                              |                             |  |              & COMPUTE RECOVERY                                 |                                                                                                                                  |   ||
-+                              |                             |  |    -> Validator Sub-Agent: PreCommitSnapshot, ProposedAction    |                                                                                                                                  |   ||
-                               |                             |  |    -> [ROOT] CAPTURE ROOT CAUSE                                 |                                                                                                                                  |   ||
-                               |                             |  |    -> [RESET] REVERT CLEAN STATE                                |                                                                                                                                  |   ||
-                               |                             |  |    -> [PARSE] STACK TRACE / MACHINE FAILURE                     |                                                                                                                                  |   ||
-                               |                             |  |    -> [PATCH] RECOMPILE SCRIPT                                  |                                                                                                                                  |   ||
--                              |                             |  |    -> [CURE] FIX AND RETRY OR ESCALATE TO L5                    |                                                                                                                                  |   ||
-+                              |                             |  |    -> [CURE] FIX AND RETRY OR ESCALATE TO L3                    |                                                                                                                                  |   ||
-                               |                             |  |         v                                                       |                                                                                                                                  |   ||
-                               |                             |  |   [P4: SYNTHESIZER] (Pass)<--+                                  |                                                                                                                                  |   ||
-                               |                             |  |    -> Aggregate Outputs, Validate Schema, Final Artifact        |                                                                                                                                  |   ||
-@@ -180,15 +190,22 @@
-               +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
-               | FINAL DECISION / OUTCOME LOGGING                                                                                                                                                                                                                   |    ||
-               |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|    ||
--              | - Outcome and state diffs are logged and versioned                                                                                                                                                                                                 |    ||
-+              | - Outcome and state diffs are logged via ExecutionTrace contract (See Core Data Contracts below)                                                                                                                                                   |    ||
-               | - [L1 UPDATE] FINAL ANSWER GENERATED USING ONLY STDOUT SUMMARY (Maintains PTC Context Isolation)                                                                                                                                                   |    ||
--              | - [SYNC] UPDATE SHARED TEAM MEMORY & ACTIVITY LEDGER (Non-blocking state update occurs only after L2.2 confirms)                                                                                                                                   |    ||
-+              | - [SYNC] UPDATE SHARED TEAM MEMORY & ACTIVITY LEDGER (Mediated by Universal Write Gateway)                                                                                                                                                         |    ||
-               | - [RECON] VERIFY DATA MATCHES REALITY (Detect ghost mutations across state layers)                                                                                                                                                                 |    ||
-               | - Metrics captured: Execution Latency, Outcome Accuracy, Compute Cost, Human Correction Rate                                                                                                                                                       |    ||
-               +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
-                                                                                        |                                                                                                                                                                                ||
-                                                                                        +===(Commits Final State to Activity Ledger)====================================================================================================================================>||
-
-+==============================================================================================================================================================================================================================================================================
-+  CORE DATA CONTRACTS & CRYPTOGRAPHIC PRIMITIVES (ENFORCEABLE BOUNDARIES)
-+==============================================================================================================================================================================================================================================================================
-+| [1] InstructionPacket (L0 -> L2/L3/L5)  : [trace_id, policy_hash, route_mode, token_budget, allowed_tools[], signature(HMAC-SHA256)]                                                                                                                                       |
-+| [2] SandboxEnvelope (L2 Entry)          : [trace_id, tool_id, sanitized_args, stdout_byte_limit, compute_ms_limit] (Filtered strictly by allowed_tools[])                                                                                                                  |
-+| [3] ExecutionTrace (L6/L4 Audit)        : [trace_id, plan_hash, actor, target_resource, state_diff, timestamp, replay_key(Hash of trace+plan+transcript)] -> Append-only.                                                                                                  |
-+| [4] HumanDecisionArtifact (Path D)      : [trace_id, policy_hash, reviewer_id, action:[APPROVE|MODIFY_DIFF|REJECT], reviewer_signature]                                                                                                                                    |
- ==============================================================================================================================================================================================================================================================================
-   CRITICAL DISSEMINATION GUARANTEES
- ==============================================================================================================================================================================================================================================================================
-@@ -207,4 +224,4 @@
- | 13. REMOVE ALL PROMPT HIJACK ATTEMPTS: Neutralizes "ignore instructions" attacks.                                                                                                                                                                                          |
- | 14. SHARE MEMORY ACROSS ALL AGENTS: Prevents agents from colliding/stalling.                                                                                                                                                                                               |
- | 15. DOUBLE-CHECK DATA MATCHES THE WORLD: Detects "ghost" or hidden mutations.                                                                                                                                                                                              |
--==============================================================================================================================================================================================================================================================================
-+==============================================================================================================================================================================================================================================================================
-\ No newline at end of file
-diff --git a/tools/evidence/phase03_04_consolidated_evidence_runner.py b/tools/evidence/phase03_04_consolidated_evidence_runner.py
-index 184b49fe3..4233aacaa 100644
---- a/tools/evidence/phase03_04_consolidated_evidence_runner.py
-+++ b/tools/evidence/phase03_04_consolidated_evidence_runner.py
-@@ -76,16 +76,30 @@ def main():
-     evidence_lines.append("PENDING")
-     evidence_lines.append("")
-
--    # CODE_SCOPE
--    evidence_lines.append("## CODE_SCOPE")
-+    # FILES_CHANGED: derived from git show on CODE_COMMIT
-+    rc, show_out, show_err = run_cmd(
-+        ["git", "show", "--name-only", "--pretty=format:", code_commit], cwd=repo_root
-+    )
-+    changed_files = [f for f in show_out.strip().splitlines() if f.strip()]
-+    evidence_lines.append("## FILES_CHANGED (in CODE_COMMIT)")
-+    evidence_lines.append("```")
-+    for f in changed_files:
-+        evidence_lines.append(f)
-+    evidence_lines.append("```")
-+    evidence_lines.append("")
++def run_module_collision_guardian(
++    repo_root: Path | None = None,
++    write_artifacts_dir: str | None = None,
++    timestamp: str | None = None,
++):
++    """
++    Guardian wrapper for module collision detection.
 +
-+    # INSPECTED_FILES: context files whose contents are embedded for verification
-+    inspected = [
-+        "tools/evidence/phase03_04_consolidated_evidence_runner.py",
-+        "apps_lic/engines/__init__.py",
-+        "apps_rg/engines/__init__.py",
-+        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
-+        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
-+    ]
-+    evidence_lines.append("## INSPECTED_FILES (context snapshots, not necessarily changed)")
-     evidence_lines.append("```")
--    evidence_lines.append("Phase 3:")
--    evidence_lines.append("  tools/evidence/phase03_04_consolidated_evidence_runner.py")
--    evidence_lines.append("Phase 4:")
--    evidence_lines.append("  apps_lic/engines/__init__.py")
--    evidence_lines.append("  apps_rg/engines/__init__.py")
--    evidence_lines.append("  tests/unit_min_deps/test_apps_lic_spine_adapter.py")
--    evidence_lines.append("  tests/unit_min_deps/test_apps_rg_spine_adapter.py")
-+    for f in inspected:
-+        evidence_lines.append(f)
-     evidence_lines.append("```")
-     evidence_lines.append("")
-
-@@ -101,10 +115,6 @@ def main():
-         ),
-         ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
-         ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
--        (
--            ["git", "show", "--name-only", "--pretty=format:", code_commit],
--            f"Files Changed in CODE_COMMIT ({code_commit[:8]})",
--        ),
-         (["git", "diff", "--stat"], "Git Diff Stat"),
-         (["git", "diff"], "Git Full Diff"),
-     ]
-@@ -126,16 +136,8 @@ def main():
-         evidence_lines.append("```")
-         evidence_lines.append("")
-
--    # File contents - dynamically determine which files were changed
--    files_to_include = [
--        "tools/evidence/phase03_04_consolidated_evidence_runner.py",
--        "apps_lic/engines/__init__.py",
--        "apps_rg/engines/__init__.py",
--        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
--        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
--    ]
--
--    for filepath in files_to_include:
-+    # Inspected file contents (context snapshots for verification)
-+    for filepath in inspected:
-         full_path = repo_root / filepath
-         if full_path.exists():
-             evidence_lines.append(f"## {filepath}")
++    Returns GuardianResult conforming to guardian contract.
++    """
++    from agentic_core.L0_routing.types.guardian_contract import (
++        ArtifactType,
++        CheckStatus,
++        GuardianResult,
++        GuardianStatus,
++    )
++
++    if repo_root is None:
++        repo_root = get_repo_root()
++
++    result = GuardianResult(
++        guardian_id="module_collision",
++        timestamp=timestamp,
++        summary="Module collision detection - prevents duplicate modules and import path conflicts",
++    )
++
++    try:
++        roots_to_scan = discover_roots(repo_root)
++
++        # Validate roots exist
++        missing_roots = [name for name, path in roots_to_scan.items() if not path.exists()]
++        if missing_roots:
++            result.add_check(
++                check_id="roots_validation",
++                status=CheckStatus.FAIL,
++                details=f"Missing roots: {missing_roots}",
++                evidence={"missing_roots": missing_roots},
++            )
++            result.summary = f"FAIL: Missing {len(missing_roots)} required roots"
++            return result
++
++        # Scan all roots
++        scans = {}
++        total_files = 0
++        for root_name, root_path in roots_to_scan.items():
++            scans[root_name] = scan_directory(root_path, repo_root)
++            total_files += sum(len(files) for files in scans[root_name].values())
++
++        result.metrics["roots_scanned"] = len(roots_to_scan)
++        result.metrics["total_files_scanned"] = total_files
++
++        # Detect collisions
++        collisions = detect_collisions(scans)
++
++        # Load baseline
++        baseline = load_baseline()
++
++        # Check against baseline
++        violations = check_against_baseline(collisions, baseline)
++
++        # Count collision types
++        for collision_type, items in collisions.items():
++            result.metrics[f"{collision_type}_count"] = len(items)
++
++        if violations:
++            result.add_check(
++                check_id="baseline_compliance",
++                status=CheckStatus.FAIL,
++                details=f"Found {len(violations)} new or grown module collisions",
++                evidence={
++                    "violations": violations[:10],  # Limit to first 10 for payload size
++                    "total_violations": len(violations),
++                },
++            )
++            result.summary = f"FAIL: {len(violations)} new/grown module collisions detected"
++            result.remediation_hints.extend([
++                "Review collision violations and resolve duplicates",
++                "Update baseline with MODULE_COLLISION_UPDATE_BASELINE=1 if intentional",
++                "Check for accidental file duplication or import path conflicts",
++            ])
++        else:
++            total_collisions = sum(len(items) for items in collisions.values())
++            result.add_check(
++                check_id="baseline_compliance",
++                status=CheckStatus.PASS,
++                details=f"No new collisions. Existing baselined: {total_collisions} groups",
++                evidence={"baselined_collision_groups": total_collisions},
++            )
++            result.summary = f"PASS: No new module collisions ({total_collisions} baselined)"
++
++        # Add baseline artifact reference
++        baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
++        if baseline_path.exists():
++            result.add_artifact(
++                artifact_type=ArtifactType.JSON,
++                path=str(baseline_path),
++                description="Module collision baseline (allowed duplicates)",
++            )
++
++    except Exception as e:
++        result.set_error(f"Unexpected error during module collision scan: {e}")
++        result.remediation_hints.append("Check guardian logs for stack trace")
++
++    return result
++
++
+ def main():
+     """Main entry point."""
+     repo_root = get_repo_root()
 ```
 
 ## tools/evidence/phase03_04_consolidated_evidence_runner.py
