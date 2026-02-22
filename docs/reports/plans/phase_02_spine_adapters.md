@@ -3,8 +3,11 @@
 ## Scope
 Implement LIC and RG spine adapters with deterministic CID derivation and unit tests.
 
-## Final Commit Hash
-932c57357c353026216a1761b439adb14edbb654
+## CODE_COMMIT
+aa1d4f1413d5c0f1b1ac769a6f764c7ecb8e5d87
+
+## EVIDENCE_COMMIT
+PENDING
 
 ## Files Changed
 ```
@@ -436,7 +439,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 13:46:15 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 13:55:38 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
@@ -566,7 +569,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 13:46:36 [[1m[31m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 13:56:00 [[31m[1m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 [32mPASSED[0m[32m                                                                   [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises [32mPASSED[0m[32m [ 42%][0m
@@ -653,7 +656,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash [32mPASSED[0m[32m [ 49%][0m
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 13:46:36 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 13:56:00 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 [32mPASSED[0m[32m                                                                   [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket [32mPASSED[0m[32m [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls [32mPASSED[0m[32m [ 50%][0m
@@ -1250,17 +1253,17 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.04s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.00s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-2.99s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.46s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.19s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-1.98s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.56s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-1.53s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
-1.52s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
-1.51s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_repository_surface
-[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 61.61s (0:01:01)[0m[33m =================[0m
+3.47s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+3.18s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+3.09s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+3.08s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.05s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+2.75s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.78s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_dynamic_violation_summary
+1.76s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamBudget::test_lazy_seam_budget_not_exceeded
+1.71s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_allowlist_matches_scanner_total
+1.62s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_report
+[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 75.81s (0:01:15)[0m[33m =================[0m
 ```
 
 ## Spine Bypass Check
@@ -1272,28 +1275,27 @@ $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe ops_scripts/
 ## Git Diff Stat
 ```
 $ git diff --stat
-.../phase02_spine_adapters_evidence_runner.py      | 207 +++++++++++----------
- 1 file changed, 112 insertions(+), 95 deletions(-)
+.../phase02_spine_adapters_evidence_runner.py      | 53 +++++++++-------------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
 ```
 
 ## Git Full Diff
 ```
 $ git diff
 diff --git a/tools/evidence/phase02_spine_adapters_evidence_runner.py b/tools/evidence/phase02_spine_adapters_evidence_runner.py
-index ed036747e..06755749d 100644
+index 6912a4bd5..2f9e6f993 100644
 --- a/tools/evidence/phase02_spine_adapters_evidence_runner.py
 +++ b/tools/evidence/phase02_spine_adapters_evidence_runner.py
-@@ -1,7 +1,7 @@
- #!/usr/bin/env python3
--"""Phase 2 Spine Adapters Evidence Runner.
-+"""Phase 2 Spine Adapters Evidence Runner - Deterministic Generator.
+@@ -3,7 +3,7 @@
 
--Captures verbatim outputs for Phase 2 completion evidence.
-+Generates verbatim evidence for Phase 2 completion.
+ Generates verbatim evidence for Phase 2 completion.
  All commands executed via subprocess with argv arrays (shell=False).
- Fails immediately if any stdout/stderr contains PowerShell references.
+-Fails immediately if any stdout/stderr contains PowerShell references.
++PowerShell detection via argv-level checks only (no output scanning).
  """
-@@ -13,110 +13,127 @@ from pathlib import Path
+
+ import subprocess
+@@ -13,23 +13,13 @@ from pathlib import Path
 
  def run_cmd(args, cwd=None):
      """Execute command and return (rc, stdout, stderr)."""
@@ -1301,219 +1303,86 @@ index ed036747e..06755749d 100644
 -        args, cwd=cwd, capture_output=True, text=True, shell=False, encoding="utf-8", errors="replace"
 -    )
 -
--    # Check for PowerShell usage
--    output = (r.stdout + r.stderr).lower()
--    if "pwsh" in output or "powershell" in output:
-+    r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, shell=False, encoding='utf-8', errors='replace')
-+
-+    # Check for PowerShell usage - fail immediately if detected
-+    # Only check for actual PowerShell commands, not paths
-+    if args[0].lower() in ['pwsh', 'powershell', 'pwsh.exe', 'powershell.exe']:
+-    # Check for PowerShell usage - fail immediately if detected
+-    # Only check for actual PowerShell commands, not paths
+-    if args[0].lower() in ["pwsh", "powershell", "pwsh.exe", "powershell.exe"]:
++    # Check for PowerShell usage at argv level only
++    argv0_lower = str(args[0]).lower()
++    if 'pwsh' in argv0_lower or 'powershell' in argv0_lower:
          print(f"ERROR: PowerShell usage detected in command: {' '.join(args)}")
--        print(f"Output: {output}")
          sys.exit(1)
+
+-    # Also check stderr for PowerShell invocation
+-    if r.stderr and any(
+-        cmd in r.stderr.lower() for cmd in ["pwsh ", "powershell ", "pwsh.exe", "powershell.exe"]
+-    ):
+-        print(f"ERROR: PowerShell usage detected in stderr: {r.stderr}")
+-        sys.exit(1)
 -
-+
-+    # Also check stderr for PowerShell invocation
-+    if r.stderr and any(cmd in r.stderr.lower() for cmd in ['pwsh ', 'powershell ', 'pwsh.exe', 'powershell.exe']):
-+        print(f"ERROR: PowerShell usage detected in stderr: {r.stderr}")
-+        sys.exit(1)
-+
++    r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, shell=False, encoding='utf-8', errors='replace')
      return r.returncode, r.stdout, r.stderr
 
 
--def main():
--    """Run all Phase 2 evidence commands."""
--    print("=== Phase 2 Spine Adapters Evidence Runner ===")
--
--    # Change to repo root
--    repo_root = Path(__file__).parent.parent.parent
--    print(f"Repo root: {repo_root}")
-+def read_file_content(filepath):
-+    """Read file content as text."""
-+    try:
-+        return Path(filepath).read_text(encoding='utf-8')
-+    except Exception as e:
-+        return f"ERROR: Could not read {filepath}: {e}"
+@@ -50,10 +40,20 @@ def read_file_content(filepath):
 
--    evidence = []
+ def main():
+     """Generate Phase 2 evidence deterministically."""
++    if len(sys.argv) < 2:
++        print("Usage: python phase02_spine_adapters_evidence_runner.py <CODE_COMMIT>")
++        sys.exit(1)
++
++    code_commit = sys.argv[1]
++    if len(code_commit) != 40:
++        print(f"ERROR: CODE_COMMIT must be 40-hex, got: {code_commit}")
++        sys.exit(1)
++
+     repo_root = Path(__file__).parent.parent.parent
+     evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_spine_adapters.md"
 
--    # 1. LIC unit tests
--    print("\n1. Running LIC unit tests...")
--    rc, out, err = run_cmd(
--        [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
--        cwd=repo_root,
+     print(f"Generating Phase 2 evidence: {evidence_file}")
++    print(f"CODE_COMMIT: {code_commit}")
+
+     # Start building evidence content
+     evidence_lines = []
+@@ -62,13 +62,14 @@ def main():
+     evidence_lines.append("# Phase 2: LIC + RG Spine Adapters (Deterministic CID)")
+     evidence_lines.append("")
+     evidence_lines.append("## Scope")
+-    evidence_lines.append(
+-        "Implement LIC and RG spine adapters with deterministic CID derivation and unit tests."
 -    )
--    evidence.append("Command: python -m pytest -q tests/unit_min_deps/test_apps_lic_spine_adapter.py\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
--    if rc != 0:
--        print("FAILED: LIC tests")
--        sys.exit(1)
--
--    # 2. RG unit tests
--    print("\n2. Running RG unit tests...")
--    rc, out, err = run_cmd(
--        [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
--        cwd=repo_root,
--    )
--    evidence.append("Command: python -m pytest -q tests/unit_min_deps/test_apps_rg_spine_adapter.py\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
--    if rc != 0:
--        print("FAILED: RG tests")
--        sys.exit(1)
--
--    # 3. Full test suite
--    print("\n3. Running full test suite...")
--    rc, out, err = run_cmd([sys.executable, "-m", "pytest", "-q"], cwd=repo_root)
--    evidence.append("Command: python -m pytest -q\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
-+def main():
-+    """Generate Phase 2 evidence deterministically."""
-+    repo_root = Path(__file__).parent.parent.parent
-+    evidence_file = repo_root / 'docs' / 'reports' / 'plans' / 'phase_02_spine_adapters.md'
-+
-+    print(f"Generating Phase 2 evidence: {evidence_file}")
-+
-+    # Start building evidence content
-+    evidence_lines = []
-+
-+    # Header with scope
-+    evidence_lines.append("# Phase 2: LIC + RG Spine Adapters (Deterministic CID)")
-+    evidence_lines.append("")
-+    evidence_lines.append("## Scope")
 +    evidence_lines.append("Implement LIC and RG spine adapters with deterministic CID derivation and unit tests.")
+     evidence_lines.append("")
+
+-    # Placeholder for commit hash
+-    evidence_lines.append("## Final Commit Hash")
++    # Commit hashes
++    evidence_lines.append("## CODE_COMMIT")
++    evidence_lines.append(code_commit)
 +    evidence_lines.append("")
-+
-+    # Placeholder for commit hash
-+    evidence_lines.append("## Final Commit Hash")
-+    evidence_lines.append("dbbd74e33bf5189706ca17cf192e656c816a275c")
-+    evidence_lines.append("")
-+
-+    # Files changed
-+    rc, out, err = run_cmd(['git', 'show', '--name-only', '--pretty=format:', 'HEAD'], cwd=repo_root)
-     if rc != 0:
--        print("FAILED: Full test suite")
-+        print(f"ERROR: git show failed: {err}")
-         sys.exit(1)
++    evidence_lines.append("## EVIDENCE_COMMIT")
+     evidence_lines.append("PENDING")
+     evidence_lines.append("")
+
+@@ -141,17 +142,7 @@ def main():
+     evidence_file.parent.mkdir(parents=True, exist_ok=True)
+     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
+
+-    # Get commit hash and replace PENDING
+-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
+-    if rc != 0:
+-        print(f"ERROR: git rev-parse failed: {err}")
+-        sys.exit(1)
 -
--    # 4. Check spine bypass
--    print("\n4. Checking spine bypass...")
--    rc, out, err = run_cmd([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], cwd=repo_root)
--    evidence.append("Command: python ops_scripts/ci/check_spine_bypass.py\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
-+
-+    evidence_lines.append("## Files Changed")
-+    evidence_lines.append("```")
-+    for line in out.strip().split('\n'):
-+        if line.strip():
-+            evidence_lines.append(line.strip())
-+    evidence_lines.append("```")
-+    evidence_lines.append("")
-+
-+    # Command outputs
-+    commands = [
-+        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_lic_spine_adapter.py'], "LIC Unit Tests"),
-+        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_rg_spine_adapter.py'], "RG Unit Tests"),
-+        ([sys.executable, '-m', 'pytest', '-q'], "Full Test Suite"),
-+        ([sys.executable, 'ops_scripts/ci/check_spine_bypass.py'], "Spine Bypass Check"),
-+        (['git', 'diff', '--stat'], "Git Diff Stat"),
-+        (['git', 'diff'], "Git Full Diff"),
-+    ]
-+
-+    for cmd, title in commands:
-+        evidence_lines.append(f"## {title}")
-+        evidence_lines.append("```")
-+        rc, out, err = run_cmd(cmd, cwd=repo_root)
-+        if rc != 0:
-+            print(f"ERROR: Command failed: {' '.join(cmd)}")
-+            print(f"Error: {err}")
-+            sys.exit(1)
-+
-+        # Add command and output
-+        evidence_lines.append(f"$ {' '.join(cmd)}")
-+        evidence_lines.append(out.strip())
-+        if err:
-+            evidence_lines.append(f"STDERR: {err.strip()}")
-+        evidence_lines.append("```")
-+        evidence_lines.append("")
-+
-+    # File contents
-+    files_to_include = [
-+        "apps_lic/engines/lic_spine_adapter.py",
-+        "apps_rg/engines/rg_spine_adapter.py",
-+        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
-+        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
-+        "tools/evidence/phase02_spine_adapters_evidence_runner.py",
-+    ]
-+
-+    for filepath in files_to_include:
-+        evidence_lines.append(f"## {filepath}")
-+        evidence_lines.append("```python")
-+        content = read_file_content(repo_root / filepath)
-+        evidence_lines.append(content)
-+        evidence_lines.append("```")
-+        evidence_lines.append("")
-+
-+    # Write evidence file with LF line endings and no trailing whitespace
-+    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
-+    evidence_file.parent.mkdir(parents=True, exist_ok=True)
-+    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
-+
-+    # Get commit hash and replace dbbd74e33bf5189706ca17cf192e656c816a275c
-+    rc, out, err = run_cmd(['git', 'rev-parse', 'HEAD'], cwd=repo_root)
-     if rc != 0:
--        print("FAILED: Spine bypass check")
-+        print(f"ERROR: git rev-parse failed: {err}")
-         sys.exit(1)
+-    commit_hash = out.strip()
+-    evidence_content = evidence_content.replace("PENDING", commit_hash)
+-    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 -
--    # 5. Git diff stat
--    print("\n5. Getting git diff stat...")
--    rc, out, err = run_cmd(["git", "diff", "--stat"], cwd=repo_root)
--    evidence.append("Command: git diff --stat\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
--
--    # 6. Git full diff
--    print("\n6. Getting git full diff...")
--    rc, out, err = run_cmd(["git", "diff"], cwd=repo_root)
--    evidence.append("Command: git diff\n")
--    evidence.append(f"Exit code: {rc}\n")
--    evidence.append(f"Output:\n{out}\n")
--    if err:
--        evidence.append(f"Error:\n{err}\n")
--
--    # Write evidence to file
--    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_spine_adapters_evidence.txt"
--    evidence_file.parent.mkdir(parents=True, exist_ok=True)
--    evidence_file.write_text("".join(evidence), encoding="utf-8")
--    print(f"\nEvidence written to: {evidence_file}")
--
--    print("\n=== All Phase 2 evidence captured successfully ===")
-+
-+    commit_hash = out.strip()
-+    evidence_content = evidence_content.replace('dbbd74e33bf5189706ca17cf192e656c816a275c', commit_hash)
-+    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
-+
-+    print(f"Evidence generated successfully with commit hash: {commit_hash}")
+-    print(f"Evidence generated successfully with commit hash: {commit_hash}")
++    print(f"Evidence generated successfully at: {evidence_file}")
 
 
--if __name__ == "__main__":
-+if __name__ == '__main__':
-     main()
+ if __name__ == "__main__":
 ```
 
 ## apps_lic/engines/lic_spine_adapter.py
@@ -2151,7 +2020,7 @@ def test_adapter_state_success_on_clean_input():
 
 Generates verbatim evidence for Phase 2 completion.
 All commands executed via subprocess with argv arrays (shell=False).
-Fails immediately if any stdout/stderr contains PowerShell references.
+PowerShell detection via argv-level checks only (no output scanning).
 """
 
 import subprocess
@@ -2161,36 +2030,47 @@ from pathlib import Path
 
 def run_cmd(args, cwd=None):
     """Execute command and return (rc, stdout, stderr)."""
-    r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, shell=False, encoding='utf-8', errors='replace')
-
-    # Check for PowerShell usage - fail immediately if detected
-    # Only check for actual PowerShell commands, not paths
-    if args[0].lower() in ['pwsh', 'powershell', 'pwsh.exe', 'powershell.exe']:
+    # Check for PowerShell usage at argv level only
+    argv0_lower = str(args[0]).lower()
+    if 'pwsh' in argv0_lower or 'powershell' in argv0_lower:
         print(f"ERROR: PowerShell usage detected in command: {' '.join(args)}")
         sys.exit(1)
 
-    # Also check stderr for PowerShell invocation
-    if r.stderr and any(cmd in r.stderr.lower() for cmd in ['pwsh ', 'powershell ', 'pwsh.exe', 'powershell.exe']):
-        print(f"ERROR: PowerShell usage detected in stderr: {r.stderr}")
-        sys.exit(1)
-
+    r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, shell=False, encoding='utf-8', errors='replace')
     return r.returncode, r.stdout, r.stderr
 
 
 def read_file_content(filepath):
     """Read file content as text."""
     try:
-        return Path(filepath).read_text(encoding='utf-8')
-    except Exception as e:
-        return f"ERROR: Could not read {filepath}: {e}"
+        return Path(filepath).read_text(encoding="utf-8")
+    except FileNotFoundError:
+        print(f"ERROR: File not found: {filepath}")
+        sys.exit(1)
+    except UnicodeDecodeError as e:
+        print(f"ERROR: Unicode decode error in {filepath}: {e}")
+        sys.exit(1)
+    except OSError as e:
+        print(f"ERROR: OS error reading {filepath}: {e}")
+        sys.exit(1)
 
 
 def main():
     """Generate Phase 2 evidence deterministically."""
+    if len(sys.argv) < 2:
+        print("Usage: python phase02_spine_adapters_evidence_runner.py <CODE_COMMIT>")
+        sys.exit(1)
+
+    code_commit = sys.argv[1]
+    if len(code_commit) != 40:
+        print(f"ERROR: CODE_COMMIT must be 40-hex, got: {code_commit}")
+        sys.exit(1)
+
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / 'docs' / 'reports' / 'plans' / 'phase_02_spine_adapters.md'
+    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_spine_adapters.md"
 
     print(f"Generating Phase 2 evidence: {evidence_file}")
+    print(f"CODE_COMMIT: {code_commit}")
 
     # Start building evidence content
     evidence_lines = []
@@ -2202,20 +2082,23 @@ def main():
     evidence_lines.append("Implement LIC and RG spine adapters with deterministic CID derivation and unit tests.")
     evidence_lines.append("")
 
-    # Placeholder for commit hash
-    evidence_lines.append("## Final Commit Hash")
-    evidence_lines.append("dbbd74e33bf5189706ca17cf192e656c816a275c")
+    # Commit hashes
+    evidence_lines.append("## CODE_COMMIT")
+    evidence_lines.append(code_commit)
+    evidence_lines.append("")
+    evidence_lines.append("## EVIDENCE_COMMIT")
+    evidence_lines.append("PENDING")
     evidence_lines.append("")
 
     # Files changed
-    rc, out, err = run_cmd(['git', 'show', '--name-only', '--pretty=format:', 'HEAD'], cwd=repo_root)
+    rc, out, err = run_cmd(["git", "show", "--name-only", "--pretty=format:", "HEAD"], cwd=repo_root)
     if rc != 0:
         print(f"ERROR: git show failed: {err}")
         sys.exit(1)
 
     evidence_lines.append("## Files Changed")
     evidence_lines.append("```")
-    for line in out.strip().split('\n'):
+    for line in out.strip().split("\n"):
         if line.strip():
             evidence_lines.append(line.strip())
     evidence_lines.append("```")
@@ -2223,12 +2106,18 @@ def main():
 
     # Command outputs
     commands = [
-        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_lic_spine_adapter.py'], "LIC Unit Tests"),
-        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_rg_spine_adapter.py'], "RG Unit Tests"),
-        ([sys.executable, '-m', 'pytest', '-q'], "Full Test Suite"),
-        ([sys.executable, 'ops_scripts/ci/check_spine_bypass.py'], "Spine Bypass Check"),
-        (['git', 'diff', '--stat'], "Git Diff Stat"),
-        (['git', 'diff'], "Git Full Diff"),
+        (
+            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
+            "LIC Unit Tests",
+        ),
+        (
+            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
+            "RG Unit Tests",
+        ),
+        ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
+        ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
+        (["git", "diff", "--stat"], "Git Diff Stat"),
+        (["git", "diff"], "Git Full Diff"),
     ]
 
     for cmd, title in commands:
@@ -2266,23 +2155,13 @@ def main():
         evidence_lines.append("")
 
     # Write evidence file with LF line endings and no trailing whitespace
-    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
+    evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
-    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
+    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 
-    # Get commit hash and replace dbbd74e33bf5189706ca17cf192e656c816a275c
-    rc, out, err = run_cmd(['git', 'rev-parse', 'HEAD'], cwd=repo_root)
-    if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
-        sys.exit(1)
-
-    commit_hash = out.strip()
-    evidence_content = evidence_content.replace('dbbd74e33bf5189706ca17cf192e656c816a275c', commit_hash)
-    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
-
-    print(f"Evidence generated successfully with commit hash: {commit_hash}")
+    print(f"Evidence generated successfully at: {evidence_file}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 ```

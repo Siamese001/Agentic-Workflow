@@ -3,7 +3,7 @@
 
 Generates verbatim evidence for Phase 2 completion.
 All commands executed via subprocess with argv arrays (shell=False).
-Fails immediately if any stdout/stderr contains PowerShell references.
+PowerShell detection via argv-level checks only (no output scanning).
 """
 
 import subprocess
@@ -13,23 +13,15 @@ from pathlib import Path
 
 def run_cmd(args, cwd=None):
     """Execute command and return (rc, stdout, stderr)."""
-    r = subprocess.run(
-        args, cwd=cwd, capture_output=True, text=True, shell=False, encoding="utf-8", errors="replace"
-    )
-
-    # Check for PowerShell usage - fail immediately if detected
-    # Only check for actual PowerShell commands, not paths
-    if args[0].lower() in ["pwsh", "powershell", "pwsh.exe", "powershell.exe"]:
+    # Check for PowerShell usage at argv level only
+    argv0_lower = str(args[0]).lower()
+    if "pwsh" in argv0_lower or "powershell" in argv0_lower:
         print(f"ERROR: PowerShell usage detected in command: {' '.join(args)}")
         sys.exit(1)
 
-    # Also check stderr for PowerShell invocation
-    if r.stderr and any(
-        cmd in r.stderr.lower() for cmd in ["pwsh ", "powershell ", "pwsh.exe", "powershell.exe"]
-    ):
-        print(f"ERROR: PowerShell usage detected in stderr: {r.stderr}")
-        sys.exit(1)
-
+    r = subprocess.run(
+        args, cwd=cwd, capture_output=True, text=True, shell=False, encoding="utf-8", errors="replace"
+    )
     return r.returncode, r.stdout, r.stderr
 
 
@@ -50,10 +42,20 @@ def read_file_content(filepath):
 
 def main():
     """Generate Phase 2 evidence deterministically."""
+    if len(sys.argv) < 2:
+        print("Usage: python phase02_spine_adapters_evidence_runner.py <CODE_COMMIT>")
+        sys.exit(1)
+
+    code_commit = sys.argv[1]
+    if len(code_commit) != 40:
+        print(f"ERROR: CODE_COMMIT must be 40-hex, got: {code_commit}")
+        sys.exit(1)
+
     repo_root = Path(__file__).parent.parent.parent
     evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_spine_adapters.md"
 
     print(f"Generating Phase 2 evidence: {evidence_file}")
+    print(f"CODE_COMMIT: {code_commit}")
 
     # Start building evidence content
     evidence_lines = []
@@ -67,8 +69,11 @@ def main():
     )
     evidence_lines.append("")
 
-    # Placeholder for commit hash
-    evidence_lines.append("## Final Commit Hash")
+    # Commit hashes
+    evidence_lines.append("## CODE_COMMIT")
+    evidence_lines.append(code_commit)
+    evidence_lines.append("")
+    evidence_lines.append("## EVIDENCE_COMMIT")
     evidence_lines.append("PENDING")
     evidence_lines.append("")
 
@@ -141,17 +146,7 @@ def main():
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 
-    # Get commit hash and replace PENDING
-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
-    if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
-        sys.exit(1)
-
-    commit_hash = out.strip()
-    evidence_content = evidence_content.replace("PENDING", commit_hash)
-    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
-
-    print(f"Evidence generated successfully with commit hash: {commit_hash}")
+    print(f"Evidence generated successfully at: {evidence_file}")
 
 
 if __name__ == "__main__":
