@@ -5,6 +5,7 @@ Single evidence file for entire Phases 3-4 run.
 Python-only execution, argv-level PowerShell detection, LF endings.
 """
 
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -41,17 +42,26 @@ def read_file_content(filepath):
 
 def main():
     """Generate Phases 3-4 consolidated evidence."""
+    parser = argparse.ArgumentParser(description="Generate Phases 3-4 consolidated evidence")
+    parser.add_argument("--code-commit", required=True, help="40-hex commit hash for CODE_COMMIT")
+    args = parser.parse_args()
+
+    code_commit = args.code_commit
+    if len(code_commit) != 40 or not all(c in "0123456789abcdefABCDEF" for c in code_commit):
+        print(f"ERROR: Invalid CODE_COMMIT format: {code_commit}")
+        sys.exit(1)
+
     repo_root = Path(__file__).parent.parent.parent
     evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_03_04_consolidated.md"
 
     print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
+    print(f"CODE_COMMIT: {code_commit}")
 
-    # Get CODE_COMMIT (current HEAD before evidence commit)
-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
+    # Verify CODE_COMMIT exists
+    rc, out, err = run_cmd(["git", "cat-file", "-e", code_commit], cwd=repo_root)
     if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
+        print(f"ERROR: CODE_COMMIT does not exist: {code_commit}")
         sys.exit(1)
-    code_commit = out.strip()
 
     # Start building evidence content
     evidence_lines = []
@@ -80,6 +90,9 @@ def main():
     rc, show_out, show_err = run_cmd(
         ["git", "show", "--name-only", "--pretty=format:", code_commit], cwd=repo_root
     )
+    if rc != 0:
+        print(f"ERROR: git show on CODE_COMMIT failed: {show_err}")
+        sys.exit(1)
     changed_files = [f for f in show_out.strip().splitlines() if f.strip()]
     evidence_lines.append("## FILES_CHANGED (in CODE_COMMIT)")
     evidence_lines.append("```")
@@ -87,6 +100,19 @@ def main():
         evidence_lines.append(f)
     evidence_lines.append("```")
     evidence_lines.append("")
+
+    # Get current HEAD for EVIDENCE_COMMIT validation
+    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
+    if rc != 0:
+        print(f"ERROR: git rev-parse failed: {err}")
+        sys.exit(1)
+    current_head = out.strip()
+
+    # Validate CODE_COMMIT != current HEAD (prevent hash loops)
+    if code_commit == current_head:
+        print(f"ERROR: CODE_COMMIT ({code_commit}) == current HEAD ({current_head})")
+        print("This would create a hash loop. Use a commit from before the evidence changes.")
+        sys.exit(1)
 
     # INSPECTED_FILES: context files whose contents are embedded for verification
     inspected = [
@@ -100,6 +126,13 @@ def main():
     evidence_lines.append("```")
     for f in inspected:
         evidence_lines.append(f)
+    evidence_lines.append("```")
+    evidence_lines.append("")
+
+    # FILES_CHANGED (in EVIDENCE_COMMIT) - will be determined after commit
+    evidence_lines.append("## FILES_CHANGED (in EVIDENCE_COMMIT)")
+    evidence_lines.append("```")
+    evidence_lines.append("PENDING (will be filled after commit)")
     evidence_lines.append("```")
     evidence_lines.append("")
 
@@ -152,9 +185,21 @@ def main():
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 
+    # Sanity check: evidence file should not start with Python code
+    content_start = evidence_file.read_text(encoding="utf-8")[:200]
+    if content_start.strip().startswith("#!/usr/bin/env python") or "def main()" in content_start[:200]:
+        print("ERROR: Evidence file appears to contain Python code instead of markdown")
+        print("This indicates the runner content was written to the evidence file.")
+        sys.exit(1)
+
     print(f"Evidence generated successfully: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")
     print("EVIDENCE_COMMIT: PENDING (will be filled after commit)")
+    print(f"Current HEAD: {current_head}")
+    print("\nTo complete the evidence contract:")
+    print("1. Commit this evidence file")
+    print("2. Update EVIDENCE_COMMIT with the new commit hash")
+    print("3. Update FILES_CHANGED (in EVIDENCE_COMMIT) with git show output")
 
 
 if __name__ == "__main__":
