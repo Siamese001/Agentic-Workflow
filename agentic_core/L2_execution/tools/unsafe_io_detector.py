@@ -96,7 +96,7 @@ class UnsafePatternVisitor(ast.NodeVisitor):
                 return self.source_lines[line_idx].strip()
         return ""
 
-    def visit(self, node: ast.AST, source: str = None) -> List[UnsafePattern]:
+    def visit(self, node: ast.AST, source: str = None) -> list[UnsafePattern]:
         """Visit AST with optional source code for context."""
         if source:
             self.source = source
@@ -105,7 +105,7 @@ class UnsafePatternVisitor(ast.NodeVisitor):
         return self.findings
 
 
-def scan_for_unsafe_patterns(code: str, file_path: str) -> List[UnsafePattern]:
+def scan_for_unsafe_patterns(code: str, file_path: str) -> list[UnsafePattern]:
     """
     Scan Python code for unsafe I/O and subprocess patterns.
 
@@ -128,7 +128,7 @@ def scan_for_unsafe_patterns(code: str, file_path: str) -> List[UnsafePattern]:
 
 def scan_directory_for_unsafe_patterns(
     directory: Path, recursive: bool = True, file_pattern: str = "*.py"
-) -> List[UnsafePattern]:
+) -> list[UnsafePattern]:
     """
     Scan a directory for unsafe patterns in Python files.
 
@@ -162,7 +162,7 @@ def scan_directory_for_unsafe_patterns(
     return all_findings
 
 
-def get_scoped_directories(repo_root: Path) -> List[Path]:
+def get_scoped_directories(repo_root: Path) -> list[Path]:
     """Get the list of directories that should be scanned for unsafe patterns."""
     scoped_dirs = [
         repo_root / "agentic_core" / "L0_routing" / "reasoning",
