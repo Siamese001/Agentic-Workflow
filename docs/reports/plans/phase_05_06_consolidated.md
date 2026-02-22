@@ -8,7 +8,7 @@ Phase 6: Spine Integrity Guardrail (Structural Enforcement)
 9019b99cd50827d8365c92b917e759febaf3f5d3
 
 ## EVIDENCE_COMMIT
-PENDING
+b10729348e9ac18d38a776f6c7af7558e233c0c3
 
 ## FILES_CHANGED (in CODE_COMMIT)
 ```
@@ -22,7 +22,7 @@ docs/technical/Drill-Down 7 - Path D HITL.md
 
 ## FILES_CHANGED (in EVIDENCE_COMMIT)
 ```
-PENDING (will be filled after commit)
+docs/reports/plans/phase_05_06_consolidated.md
 ```
 
 ## INSPECTED_FILES (context snapshots, not necessarily changed)
